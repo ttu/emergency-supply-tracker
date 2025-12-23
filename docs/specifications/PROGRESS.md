@@ -3,8 +3,8 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 15
-**Completed Steps:** 15/61 (25%)
+**Current Step:** Step 16
+**Completed Steps:** 16/61 (26%)
 
 ---
 
@@ -88,7 +88,7 @@
   - Define 70 recommended items
   - Create src/data/recommendedItems.ts
 
-- [ ] **Step 15:** Create Calculation Utilities
+- [x] **Step 15:** Create Calculation Utilities
   - Implement household multiplier calculation
   - Implement recommended quantity calculation
   - Write tests
