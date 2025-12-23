@@ -3,8 +3,8 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 24
-**Completed Steps:** 24/61 (39%)
+**Current Step:** Step 25
+**Completed Steps:** 25/61 (41%)
 
 ---
 
@@ -145,7 +145,7 @@
   - Create locales/en/products.json
   - Create locales/en/units.json
 
-- [ ] **Step 24:** Create Translation Files (Finnish)
+- [x] **Step 24:** Create Translation Files (Finnish)
   - Create locales/fi/common.json
   - Create locales/fi/categories.json
   - Create locales/fi/products.json

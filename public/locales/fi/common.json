@@ -1,0 +1,59 @@
+{
+  "app": {
+    "title": "Hätävarastojen Seuranta",
+    "tagline": "Seuraa hätävarastojasi ja pysy valmiina"
+  },
+  "navigation": {
+    "dashboard": "Näkymä",
+    "inventory": "Varasto",
+    "settings": "Asetukset"
+  },
+  "actions": {
+    "add": "Lisää",
+    "edit": "Muokkaa",
+    "delete": "Poista",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "export": "Vie",
+    "import": "Tuo",
+    "clear": "Tyhjennä"
+  },
+  "status": {
+    "ok": "OK",
+    "warning": "Varoitus",
+    "critical": "Kriittinen"
+  },
+  "alerts": {
+    "outOfStock": "Loppu varastosta",
+    "expired": "Vanhentunut",
+    "expiringSoon": "Vanhenee pian",
+    "lowQuantity": "Vähän jäljellä",
+    "missingItem": "Suositeltu tuote puuttuu"
+  },
+  "household": {
+    "title": "Kotitalouden Asetukset",
+    "adults": "Aikuiset",
+    "children": "Lapset",
+    "supplyDays": "Varastojen Kesto (päivää)",
+    "hasFreezer": "Pakastin",
+    "presets": {
+      "single": "Yksin Asuva",
+      "couple": "Pariskunta",
+      "family": "Perhe"
+    }
+  },
+  "settings": {
+    "title": "Asetukset",
+    "language": "Kieli",
+    "theme": "Teema",
+    "advancedFeatures": "Lisäominaisuudet",
+    "calorieTracking": "Kaloriseuranta",
+    "powerManagement": "Sähköhallinta",
+    "waterTracking": "Vesiseuranta"
+  },
+  "themes": {
+    "light": "Vaalea",
+    "dark": "Tumma",
+    "auto": "Automaattinen"
+  }
+}
