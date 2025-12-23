@@ -6,7 +6,17 @@ export type Unit =
   | 'grams'
   | 'cans'
   | 'bottles'
-  | 'packages';
+  | 'packages'
+  | 'jars'
+  | 'canisters'
+  | 'boxes'
+  | 'days'
+  | 'rolls'
+  | 'tubes'
+  | 'meters'
+  | 'pairs'
+  | 'euros'
+  | 'sets';
 export type ItemStatus = 'ok' | 'warning' | 'critical';
 export type StandardCategoryId =
   | 'water-beverages'
