@@ -3,7 +3,7 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 6
+**Current Step:** Step 7
 
 ---
 
@@ -40,7 +40,7 @@
   - Add format scripts
   - Format existing code
 
-- [ ] **Step 6:** Set Up Pre-commit Hooks
+- [x] **Step 6:** Set Up Pre-commit Hooks
   - Install Husky and lint-staged
   - Create pre-commit hook
   - Add lint-staged configuration
@@ -412,8 +412,8 @@
 ## Statistics
 
 **Total Steps:** 61
-**Completed:** 6 (10%)
-**Remaining:** 55
+**Completed:** 7 (11%)
+**Remaining:** 54
 **Current Phase:** Phase 0 - Project Setup
 
 ---
