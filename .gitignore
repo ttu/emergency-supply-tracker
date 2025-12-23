@@ -34,3 +34,5 @@ coverage
 # Personal AI agent workflows
 AGENTS.local.md
 .claude
+*storybook.log
+storybook-static
