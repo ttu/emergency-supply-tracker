@@ -3,8 +3,8 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 17
-**Completed Steps:** 17/61 (28%)
+**Current Step:** Step 18
+**Completed Steps:** 18/61 (30%)
 
 ---
 
@@ -98,7 +98,7 @@
   - Handle expiration date logic
   - Write tests
 
-- [ ] **Step 17:** Create Inventory Context
+- [x] **Step 17:** Create Inventory Context
   - Create InventoryContext.tsx
   - Implement add/update/delete item functions
   - Connect to LocalStorage
