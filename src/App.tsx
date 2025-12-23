@@ -1,11 +1,16 @@
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import './App.css';
 
 function App() {
+  const { t } = useTranslation();
+
   return (
     <div className="app">
       <header className="header">
-        <h1>Emergency Supply Tracker</h1>
-        <p className="subtitle">72 Hour Preparedness</p>
+        <h1>{t('app.title')}</h1>
+        <p className="subtitle">{t('app.tagline')}</p>
+        <LanguageSwitcher />
       </header>
       <main className="main">
         <p>Coming soon...</p>

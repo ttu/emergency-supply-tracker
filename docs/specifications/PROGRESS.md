@@ -3,8 +3,8 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 25
-**Completed Steps:** 25/61 (41%)
+**Current Step:** Step 26
+**Completed Steps:** 26/61 (43%)
 
 ---
 
@@ -151,7 +151,7 @@
   - Create locales/fi/products.json
   - Create locales/fi/units.json
 
-- [ ] **Step 25:** Implement Language Switching
+- [x] **Step 25:** Implement Language Switching
   - Create LanguageSwitcher component
   - Update app to use translations
   - Test language switching
