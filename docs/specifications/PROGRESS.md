@@ -3,7 +3,7 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 4
+**Current Step:** Step 5
 
 ---
 
@@ -29,7 +29,7 @@
   - Create GitHub Actions deploy workflow
   - Add deployment notes to README
 
-- [ ] **Step 4:** Configure ESLint
+- [x] **Step 4:** Configure ESLint
   - Install ESLint dependencies
   - Create eslint.config.js
   - Add lint scripts to package.json
@@ -412,8 +412,8 @@
 ## Statistics
 
 **Total Steps:** 61
-**Completed:** 4 (7%)
-**Remaining:** 57
+**Completed:** 5 (8%)
+**Remaining:** 56
 **Current Phase:** Phase 0 - Project Setup
 
 ---
