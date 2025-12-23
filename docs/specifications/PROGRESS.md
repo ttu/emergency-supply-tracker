@@ -3,7 +3,7 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 8
+**Current Step:** Step 9
 
 ---
 
@@ -51,7 +51,7 @@
   - Write first test (App.test.tsx)
   - Add test scripts
 
-- [ ] **Step 8:** Add CI Workflow
+- [x] **Step 8:** Add CI Workflow
   - Create .github/workflows/ci.yml
   - Configure lint, test, build jobs
 
@@ -412,8 +412,8 @@
 ## Statistics
 
 **Total Steps:** 61
-**Completed:** 8 (13%)
-**Remaining:** 53
+**Completed:** 9 (15%)
+**Remaining:** 52
 **Current Phase:** Phase 0 - Project Setup
 
 ---
