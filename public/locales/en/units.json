@@ -1,0 +1,19 @@
+{
+  "pieces": "pieces",
+  "liters": "liters",
+  "kilograms": "kilograms",
+  "grams": "grams",
+  "cans": "cans",
+  "bottles": "bottles",
+  "packages": "packages",
+  "jars": "jars",
+  "canisters": "canisters",
+  "boxes": "boxes",
+  "days": "days",
+  "rolls": "rolls",
+  "tubes": "tubes",
+  "meters": "meters",
+  "pairs": "pairs",
+  "euros": "euros",
+  "sets": "sets"
+}

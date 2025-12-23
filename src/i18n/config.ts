@@ -1,30 +1,18 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-
-// Import translation files (will be created in next steps)
-const resources = {
-  en: {
-    common: {},
-    categories: {},
-    products: {},
-    units: {},
-  },
-  fi: {
-    common: {},
-    categories: {},
-    products: {},
-    units: {},
-  },
-};
+import HttpBackend from 'i18next-http-backend';
 
 i18n
+  .use(HttpBackend)
   .use(initReactI18next)
   .init({
-    resources,
     lng: 'en', // default language
     fallbackLng: 'en',
     ns: ['common', 'categories', 'products', 'units'],
     defaultNS: 'common',
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    },
     interpolation: {
       escapeValue: false, // React already escapes
     },

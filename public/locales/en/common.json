@@ -1,0 +1,59 @@
+{
+  "app": {
+    "title": "Emergency Supply Tracker",
+    "tagline": "Track your emergency supplies and stay prepared"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "settings": "Settings"
+  },
+  "actions": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "export": "Export",
+    "import": "Import",
+    "clear": "Clear"
+  },
+  "status": {
+    "ok": "OK",
+    "warning": "Warning",
+    "critical": "Critical"
+  },
+  "alerts": {
+    "outOfStock": "Out of stock",
+    "expired": "Expired",
+    "expiringSoon": "Expiring soon",
+    "lowQuantity": "Low quantity",
+    "missingItem": "Missing recommended item"
+  },
+  "household": {
+    "title": "Household Configuration",
+    "adults": "Adults",
+    "children": "Children",
+    "supplyDays": "Supply Duration (days)",
+    "hasFreezer": "Has Freezer",
+    "presets": {
+      "single": "Single Person",
+      "couple": "Couple",
+      "family": "Family"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "advancedFeatures": "Advanced Features",
+    "calorieTracking": "Calorie Tracking",
+    "powerManagement": "Power Management",
+    "waterTracking": "Water Tracking"
+  },
+  "themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "auto": "Auto"
+  }
+}
