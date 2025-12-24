@@ -3,8 +3,8 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 28
-**Completed Steps:** 28/61 (46%)
+**Current Step:** Step 29
+**Completed Steps:** 29/61 (48%)
 
 ---
 
@@ -171,7 +171,7 @@
   - Add variants (primary, secondary, danger)
   - Write tests
 
-- [ ] **Step 28:** Create Input Components
+- [x] **Step 28:** Create Input Components
   - Create Input.tsx for text/number/date
   - Create Input.stories.tsx
   - Add labels and validation display
