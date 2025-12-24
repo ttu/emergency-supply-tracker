@@ -56,6 +56,7 @@ export interface UserSettings {
     powerManagement: boolean;
     waterTracking: boolean;
   };
+  onboardingCompleted?: boolean;
 }
 
 // Category
