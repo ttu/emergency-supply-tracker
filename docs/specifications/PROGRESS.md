@@ -210,7 +210,7 @@
   - Add language selection
   - Write tests
 
-- [ ] **Step 34:** Create Household Setup Components
+- [x] **Step 34:** Create Household Setup Components
   - Create HouseholdPresetSelector
   - Create HouseholdForm
   - Add validation
