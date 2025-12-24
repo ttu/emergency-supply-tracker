@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import './i18n/config';
@@ -9,12 +9,18 @@ import { SettingsProvider } from './contexts/SettingsProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <SettingsProvider>
-      <HouseholdProvider>
-        <InventoryProvider>
-          <App />
-        </InventoryProvider>
-      </HouseholdProvider>
-    </SettingsProvider>
+    <Suspense
+      fallback={
+        <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>
+      }
+    >
+      <SettingsProvider>
+        <HouseholdProvider>
+          <InventoryProvider>
+            <App />
+          </InventoryProvider>
+        </HouseholdProvider>
+      </SettingsProvider>
+    </Suspense>
   </StrictMode>,
 );

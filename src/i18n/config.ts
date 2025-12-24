@@ -16,9 +16,8 @@ i18n
     interpolation: {
       escapeValue: false, // React already escapes
     },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
+    react: {
+      useSuspense: true,
     },
   })
   .catch((error) => {
