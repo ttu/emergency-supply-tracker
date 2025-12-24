@@ -190,7 +190,7 @@
   - Add focus trap and ESC handler
   - Write tests
 
-- [ ] **Step 31:** Create Card and Badge Components
+- [x] **Step 31:** Create Card and Badge Components
   - Create Card.tsx and Badge.tsx
   - Create stories for both
   - Write tests
