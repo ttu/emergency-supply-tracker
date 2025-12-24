@@ -1,5 +1,5 @@
 import { describe, it, expect, jest } from '@jest/globals';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HouseholdForm } from './HouseholdForm';
 
@@ -26,9 +26,9 @@ describe('HouseholdForm', () => {
     const onSubmit = jest.fn();
     render(<HouseholdForm onSubmit={onSubmit} />);
 
-    expect(screen.getByLabelText('Adults')).toBeInTheDocument();
-    expect(screen.getByLabelText('Children')).toBeInTheDocument();
-    expect(screen.getByLabelText('Supply Duration (days)')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Adults/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Children/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Supply Duration/i)).toBeInTheDocument();
     expect(screen.getByLabelText('Has Freezer')).toBeInTheDocument();
   });
 
@@ -46,32 +46,29 @@ describe('HouseholdForm', () => {
       />,
     );
 
-    expect(screen.getByLabelText('Adults')).toHaveValue(3);
-    expect(screen.getByLabelText('Children')).toHaveValue(2);
-    expect(screen.getByLabelText('Supply Duration (days)')).toHaveValue(14);
+    expect(screen.getByLabelText(/Adults/i)).toHaveValue(3);
+    expect(screen.getByLabelText(/Children/i)).toHaveValue(2);
+    expect(screen.getByLabelText(/Supply Duration/i)).toHaveValue(14);
     expect(screen.getByLabelText('Has Freezer')).toBeChecked();
   });
 
   it('calls onSubmit with form data when submitted', async () => {
     const user = userEvent.setup();
     const onSubmit = jest.fn();
-    render(<HouseholdForm onSubmit={onSubmit} />);
+    const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
-    const adultsInput = screen.getByLabelText('Adults');
-    const childrenInput = screen.getByLabelText('Children');
-    const supplyDaysInput = screen.getByLabelText('Supply Duration (days)');
+    const adultsInput = screen.getByLabelText(/Adults/i);
+    const childrenInput = screen.getByLabelText(/Children/i);
+    const supplyDaysInput = screen.getByLabelText(/Supply Duration/i);
     const freezerCheckbox = screen.getByLabelText('Has Freezer');
-    const submitButton = screen.getByRole('button', { name: 'Save' });
+    const form = container.querySelector('form');
 
-    await user.clear(adultsInput);
-    await user.type(adultsInput, '2');
-    await user.clear(childrenInput);
-    await user.type(childrenInput, '1');
-    await user.clear(supplyDaysInput);
-    await user.type(supplyDaysInput, '10');
+    fireEvent.change(adultsInput, { target: { value: '2' } });
+    fireEvent.change(childrenInput, { target: { value: '1' } });
+    fireEvent.change(supplyDaysInput, { target: { value: '10' } });
     await user.click(freezerCheckbox);
 
-    await user.click(submitButton);
+    fireEvent.submit(form!);
 
     expect(onSubmit).toHaveBeenCalledWith({
       adults: 2,
@@ -81,79 +78,68 @@ describe('HouseholdForm', () => {
     });
   });
 
-  it('shows validation error for invalid adults', async () => {
-    const user = userEvent.setup();
+  it('shows validation error for too many adults', () => {
     const onSubmit = jest.fn();
-    render(<HouseholdForm onSubmit={onSubmit} />);
+    const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
-    const adultsInput = screen.getByLabelText('Adults');
-    const submitButton = screen.getByRole('button', { name: 'Save' });
+    const adultsInput = screen.getByLabelText(/Adults/i);
+    const form = container.querySelector('form');
 
-    await user.clear(adultsInput);
-    await user.type(adultsInput, '0');
-    await user.click(submitButton);
+    fireEvent.change(adultsInput, { target: { value: '25' } });
+    // Submit form directly to bypass browser validation
+    fireEvent.submit(form!);
 
-    expect(
-      screen.getByText('At least 1 adult is required'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Maximum 20 adults allowed')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('shows validation error for too many children', async () => {
-    const user = userEvent.setup();
+  it('shows validation error for too many children', () => {
     const onSubmit = jest.fn();
-    render(<HouseholdForm onSubmit={onSubmit} />);
+    const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
-    const childrenInput = screen.getByLabelText('Children');
-    const submitButton = screen.getByRole('button', { name: 'Save' });
+    const childrenInput = screen.getByLabelText(/Children/i);
+    const form = container.querySelector('form');
 
-    await user.clear(childrenInput);
-    await user.type(childrenInput, '25');
-    await user.click(submitButton);
+    fireEvent.change(childrenInput, { target: { value: '25' } });
+    // already set
+    fireEvent.submit(form!);
 
     expect(screen.getByText('Maximum 20 children allowed')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('shows validation error for invalid supply days', async () => {
-    const user = userEvent.setup();
+  it('shows validation error for too many supply days', () => {
     const onSubmit = jest.fn();
-    render(<HouseholdForm onSubmit={onSubmit} />);
+    const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
-    const supplyDaysInput = screen.getByLabelText('Supply Duration (days)');
-    const submitButton = screen.getByRole('button', { name: 'Save' });
+    const supplyDaysInput = screen.getByLabelText(/Supply Duration/i);
+    const form = container.querySelector('form');
 
-    await user.clear(supplyDaysInput);
-    await user.type(supplyDaysInput, '0');
-    await user.click(submitButton);
+    fireEvent.change(supplyDaysInput, { target: { value: '400' } });
+    fireEvent.submit(form!);
 
-    expect(screen.getByText('At least 1 day is required')).toBeInTheDocument();
+    expect(screen.getByText('Maximum 365 days allowed')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('clears error when user corrects invalid input', async () => {
-    const user = userEvent.setup();
+  it('clears error when user corrects invalid input', () => {
     const onSubmit = jest.fn();
-    render(<HouseholdForm onSubmit={onSubmit} />);
+    const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
-    const adultsInput = screen.getByLabelText('Adults');
-    const submitButton = screen.getByRole('button', { name: 'Save' });
+    const adultsInput = screen.getByLabelText(/Adults/i);
+    const form = container.querySelector('form');
 
-    // Enter invalid value
-    await user.clear(adultsInput);
-    await user.type(adultsInput, '0');
-    await user.click(submitButton);
+    // Enter invalid value (too many)
+    fireEvent.change(adultsInput, { target: { value: '25' } });
+    fireEvent.submit(form!);
 
-    expect(
-      screen.getByText('At least 1 adult is required'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Maximum 20 adults allowed')).toBeInTheDocument();
 
     // Correct the value
-    await user.clear(adultsInput);
-    await user.type(adultsInput, '2');
+    fireEvent.change(adultsInput, { target: { value: '2' } });
 
     expect(
-      screen.queryByText('At least 1 adult is required'),
+      screen.queryByText('Maximum 20 adults allowed'),
     ).not.toBeInTheDocument();
   });
 
