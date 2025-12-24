@@ -2,6 +2,9 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import HttpBackend from 'i18next-http-backend';
 
+// Get base path from Vite's import.meta.env.BASE_URL
+const basePath = import.meta.env.BASE_URL || '/';
+
 i18n
   .use(HttpBackend)
   .use(initReactI18next)
@@ -11,7 +14,7 @@ i18n
     ns: ['common', 'categories', 'products', 'units'],
     defaultNS: 'common',
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: `${basePath}locales/{{lng}}/{{ns}}.json`,
     },
     interpolation: {
       escapeValue: false, // React already escapes
