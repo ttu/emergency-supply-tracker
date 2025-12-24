@@ -195,7 +195,7 @@
   - Create stories for both
   - Write tests
 
-- [ ] **Step 32:** Create Layout Components
+- [x] **Step 32:** Create Layout Components
   - Create Header.tsx
   - Create Footer.tsx
   - Create Layout.tsx wrapper

@@ -1,0 +1,37 @@
+.footer {
+  width: 100%;
+  background-color: var(--color-background);
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.copyright {
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+
+  .links {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
