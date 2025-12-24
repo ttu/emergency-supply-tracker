@@ -69,6 +69,9 @@ export const WithCustomSelected: Story = {
 };
 
 export const Interactive: Story = {
+  args: {
+    onSelectPreset: () => {},
+  },
   render: () => {
     const InteractiveSelector = () => {
       const [selected, setSelected] = useState<string | undefined>(undefined);

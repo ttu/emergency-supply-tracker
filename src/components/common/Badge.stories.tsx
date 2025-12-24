@@ -75,6 +75,9 @@ export const Large: Story = {
 };
 
 export const StatusExamples: Story = {
+  args: {
+    children: 'Status',
+  },
   render: () => (
     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
       <Badge variant="success">In Stock</Badge>
@@ -87,6 +90,9 @@ export const StatusExamples: Story = {
 };
 
 export const SizeComparison: Story = {
+  args: {
+    children: 'Size',
+  },
   render: () => (
     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
       <Badge size="small" variant="success">
@@ -103,6 +109,9 @@ export const SizeComparison: Story = {
 };
 
 export const ExpirationDates: Story = {
+  args: {
+    children: 'Date',
+  },
   render: () => (
     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
       <Badge variant="success">Expires: 2026</Badge>

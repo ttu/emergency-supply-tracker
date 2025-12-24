@@ -43,6 +43,11 @@ function ModalWrapper({
 }
 
 export const Default: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    children: 'Content',
+  },
   render: () => (
     <ModalWrapper title="Default Modal">
       <p>This is a basic modal with some content inside.</p>
@@ -52,6 +57,11 @@ export const Default: Story = {
 };
 
 export const WithoutTitle: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    children: 'Content',
+  },
   render: () => (
     <ModalWrapper>
       <h3>Custom Content</h3>
@@ -64,6 +74,11 @@ export const WithoutTitle: Story = {
 };
 
 export const SmallSize: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    children: 'Content',
+  },
   render: () => (
     <ModalWrapper title="Small Modal" size="small">
       <p>This is a small modal, perfect for simple confirmations or alerts.</p>
@@ -72,6 +87,11 @@ export const SmallSize: Story = {
 };
 
 export const MediumSize: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    children: 'Content',
+  },
   render: () => (
     <ModalWrapper title="Medium Modal" size="medium">
       <p>
@@ -84,6 +104,11 @@ export const MediumSize: Story = {
 };
 
 export const LargeSize: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    children: 'Content',
+  },
   render: () => (
     <ModalWrapper title="Large Modal" size="large">
       <p>
@@ -96,6 +121,11 @@ export const LargeSize: Story = {
 };
 
 export const WithForm: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    children: 'Content',
+  },
   render: () => (
     <ModalWrapper title="Add New Item">
       <form
@@ -135,6 +165,11 @@ export const WithForm: Story = {
 };
 
 export const WithLongContent: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    children: 'Content',
+  },
   render: () => (
     <ModalWrapper title="Scrollable Content">
       <p>This modal has a lot of content that will scroll.</p>
@@ -150,6 +185,11 @@ export const WithLongContent: Story = {
 };
 
 export const ConfirmationDialog: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    children: 'Content',
+  },
   render: () => (
     <ModalWrapper title="Confirm Deletion" size="small">
       <p>
