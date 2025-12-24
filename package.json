@@ -14,6 +14,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:storybook": "vitest --project=storybook --run",
+    "test:all": "npm run test && npm run test:storybook",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
