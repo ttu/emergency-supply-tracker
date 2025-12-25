@@ -22,13 +22,19 @@
 .select {
   padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-md);
   font-family: var(--font-family);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  background-color: var(--color-surface);
+  font-size: var(--font-size-md);
+  color: #212121 !important;
+  background-color: #ffffff !important;
   transition: all 0.2s;
   cursor: pointer;
+  -webkit-text-fill-color: #212121;
+}
+
+.select option {
+  color: #212121 !important;
+  background-color: #ffffff;
 }
 
 .select:hover:not(:disabled) {

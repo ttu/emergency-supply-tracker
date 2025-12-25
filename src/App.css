@@ -33,7 +33,7 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   background-color: white;
-  color: var(--color-text);
+  color: #212121;
   cursor: pointer;
   transition: border-color var(--transition-fast);
 }
