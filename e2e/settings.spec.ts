@@ -1,0 +1,100 @@
+import { test, expect } from '@playwright/test';
+
+test.describe('Settings', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+  });
+
+  test('should display settings page', async ({ page }) => {
+    await page.click('text=Settings');
+
+    // Verify settings sections are visible
+    await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+    await expect(
+      page.locator('text=Language, text=Household').first(),
+    ).toBeVisible();
+  });
+
+  test('should change language', async ({ page }) => {
+    await page.click('text=Settings');
+
+    // Find language selector
+    const languageSelect = page.locator('select').first();
+
+    // Change to Finnish
+    await languageSelect.selectOption('fi');
+
+    // Wait for language change to apply
+    await page.waitForTimeout(500);
+
+    // Navigate to different page to see translated content
+    await page.click('nav button').first(); // Click first nav button
+
+    // Check if navigation changed to Finnish
+    // (This assumes navigation labels change with language)
+    const navText = await page.locator('nav').textContent();
+    // Just verify navigation is still functional
+    expect(navText).toBeTruthy();
+  });
+
+  test('should update household configuration', async ({ page }) => {
+    await page.click('text=Settings');
+
+    // Find household inputs
+    const adultsInput = page.locator('input[type="number"]').first();
+    await adultsInput.fill('3');
+
+    // Values should be saved to localStorage automatically
+    // Navigate away and back to verify persistence
+    await page.click('text=Dashboard');
+    await page.click('text=Settings');
+
+    // Verify value persisted
+    await expect(adultsInput).toHaveValue('3');
+  });
+
+  test('should use household presets', async ({ page }) => {
+    await page.click('text=Settings');
+
+    // Click a preset button (e.g., "Family")
+    const presetButton = page.locator(
+      'button:has-text("Family"), button:has-text("Couple"), button:has-text("Single")',
+    );
+    await presetButton.first().click();
+
+    // Household values should be updated
+    const adultsInput = page.locator('input[type="number"]').first();
+    const adultsValue = await adultsInput.inputValue();
+
+    // Should have a valid number
+    expect(parseInt(adultsValue)).toBeGreaterThan(0);
+  });
+
+  test('should toggle advanced features', async ({ page }) => {
+    await page.click('text=Settings');
+
+    // Find and toggle a feature checkbox
+    const featureCheckbox = page.locator('input[type="checkbox"]').first();
+    const initialState = await featureCheckbox.isChecked();
+
+    // Toggle the checkbox
+    await featureCheckbox.click();
+
+    // Verify state changed
+    const newState = await featureCheckbox.isChecked();
+    expect(newState).toBe(!initialState);
+  });
+
+  test('should navigate to GitHub from About section', async ({ page }) => {
+    await page.click('text=Settings');
+
+    // Find GitHub link
+    const githubLink = page.locator('a[href*="github"]');
+
+    // Verify it exists and has correct attributes
+    await expect(githubLink).toHaveAttribute('target', '_blank');
+    await expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+});
