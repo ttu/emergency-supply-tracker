@@ -41,7 +41,7 @@ export const ItemForm = ({
   onSubmit,
   onCancel,
 }: ItemFormProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'categories', 'units']);
 
   const [formData, setFormData] = useState<FormData>(() => ({
     name: item?.name || '',
@@ -128,18 +128,18 @@ export const ItemForm = ({
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.id,
-    label: t(`categories.${cat.id}`),
+    label: t(cat.id, { ns: 'categories' }),
     icon: cat.icon,
   }));
 
   const unitOptions = [
-    { value: 'pieces', label: t('units.pieces') },
-    { value: 'liters', label: t('units.liters') },
-    { value: 'kilograms', label: t('units.kilograms') },
-    { value: 'cans', label: t('units.cans') },
-    { value: 'bottles', label: t('units.bottles') },
-    { value: 'packages', label: t('units.packages') },
-    { value: 'boxes', label: t('units.boxes') },
+    { value: 'pieces', label: t('pieces', { ns: 'units' }) },
+    { value: 'liters', label: t('liters', { ns: 'units' }) },
+    { value: 'kilograms', label: t('kilograms', { ns: 'units' }) },
+    { value: 'cans', label: t('cans', { ns: 'units' }) },
+    { value: 'bottles', label: t('bottles', { ns: 'units' }) },
+    { value: 'packages', label: t('packages', { ns: 'units' }) },
+    { value: 'boxes', label: t('boxes', { ns: 'units' }) },
   ];
 
   return (

@@ -199,4 +199,71 @@ test.describe('Inventory Management', () => {
     await expect(page.locator('text=Searchable Item A')).toBeVisible();
     await expect(page.locator('text=Different Item B')).toBeVisible();
   });
+
+  test('should display translated template names and categories', async ({
+    page,
+  }) => {
+    // Navigate to Inventory
+    await page.click('text=Inventory');
+
+    // Click "Add from Template"
+    await page.click('text=Add from Template');
+
+    // Wait for template selector to appear
+    await expect(page.locator('text=Select Template')).toBeVisible();
+
+    // Verify template names are translated (not showing translation keys)
+    // Should see "Bottled Water" not "products.bottled-water"
+    await expect(page.locator('text=Bottled Water')).toBeVisible();
+
+    // Verify no translation keys are showing
+    await expect(
+      page.locator('text=products.products.bottled-water'),
+    ).not.toBeVisible();
+    await expect(
+      page.locator('text=categories.water-beverages'),
+    ).not.toBeVisible();
+
+    // Verify category filter shows translated names
+    const categorySelect = page.locator('select').last();
+    const categoryOptions = await categorySelect
+      .locator('option')
+      .allTextContents();
+
+    // Should include "Water & Beverages" not "categories.water-beverages"
+    expect(categoryOptions.some((opt) => opt.includes('Water'))).toBe(true);
+    expect(categoryOptions.some((opt) => opt.startsWith('categories.'))).toBe(
+      false,
+    );
+
+    // Click on a template and verify form has translated categories
+    await page.click('text=Bottled Water');
+
+    // Wait for form
+    await page.waitForSelector('select[name="category"]');
+
+    // Open category dropdown
+    const formCategorySelect = page.locator('select[name="category"]');
+    const formOptions = await formCategorySelect
+      .locator('option')
+      .allTextContents();
+
+    // Should show "Water & Beverages" not "categories.water-beverages"
+    expect(formOptions.some((opt) => opt.includes('Water & Beverages'))).toBe(
+      true,
+    );
+    expect(formOptions.some((opt) => opt.startsWith('categories.'))).toBe(
+      false,
+    );
+
+    // Check unit dropdown
+    const unitSelect = page.locator('select[name="unit"]');
+    const unitOptions = await unitSelect.locator('option').allTextContents();
+
+    // Should show translated units like "liters", "pieces" not "units.liters"
+    expect(
+      unitOptions.some((opt) => opt === 'liters' || opt === 'Liters'),
+    ).toBe(true);
+    expect(unitOptions.some((opt) => opt.startsWith('units.'))).toBe(false);
+  });
 });

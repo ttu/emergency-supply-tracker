@@ -22,7 +22,7 @@ import styles from './Inventory.module.css';
 type SortBy = 'name' | 'quantity' | 'expiration';
 
 export function Inventory() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'products']);
   const { items, addItem, updateItem, deleteItem } = useInventory();
   const { household } = useHousehold();
 
@@ -129,7 +129,7 @@ export function Inventory() {
     const recommendedQty = calculateRecommendedQuantity(template, household);
 
     const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
-      name: t(`products.${template.i18nKey}`),
+      name: t(template.i18nKey.replace('products.', ''), { ns: 'products' }),
       categoryId: template.category,
       quantity: 0,
       unit: template.unit,

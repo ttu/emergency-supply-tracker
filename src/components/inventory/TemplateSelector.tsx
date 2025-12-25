@@ -16,12 +16,14 @@ export const TemplateSelector = ({
   categories,
   onSelectTemplate,
 }: TemplateSelectorProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'categories', 'products', 'units']);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
 
   const filteredTemplates = templates.filter((template) => {
-    const templateName = t(`products.${template.i18nKey}`).toLowerCase();
+    // i18nKey is like 'products.bottled-water', extract the key part
+    const key = template.i18nKey.replace('products.', '');
+    const templateName = t(key, { ns: 'products' }).toLowerCase();
     const matchesSearch = templateName.includes(searchQuery.toLowerCase());
     const matchesCategory =
       !selectedCategoryId || template.category === selectedCategoryId;
@@ -29,10 +31,10 @@ export const TemplateSelector = ({
   });
 
   const categoryOptions = [
-    { value: '', label: t('inventory.allCategories') },
+    { value: '', label: t('allCategories', { ns: 'inventory' }) },
     ...categories.map((cat) => ({
       value: cat.id,
-      label: t(`categories.${cat.id}`),
+      label: t(cat.id, { ns: 'categories' }),
       icon: cat.icon,
     })),
   ];
@@ -81,14 +83,16 @@ export const TemplateSelector = ({
                 <div className={styles.templateIcon}>{category?.icon}</div>
                 <div className={styles.templateInfo}>
                   <h3 className={styles.templateName}>
-                    {t(`products.${template.i18nKey}`)}
+                    {t(template.i18nKey.replace('products.', ''), {
+                      ns: 'products',
+                    })}
                   </h3>
                   <p className={styles.templateCategory}>
-                    {t(`categories.${template.category}`)}
+                    {t(template.category, { ns: 'categories' })}
                   </p>
                   <p className={styles.templateQuantity}>
                     {t('templateSelector.recommended')}: {template.baseQuantity}{' '}
-                    {t(`units.${template.unit}`)}
+                    {t(template.unit, { ns: 'units' })}
                   </p>
                 </div>
               </button>
