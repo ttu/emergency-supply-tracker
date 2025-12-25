@@ -1,0 +1,85 @@
+.nav {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  margin-bottom: 1.5rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.nav::-webkit-scrollbar {
+  height: 6px;
+}
+
+.nav::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+.nav::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.categoryButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.categoryButton:hover {
+  border-color: var(--color-primary);
+  background: var(--color-background);
+}
+
+.categoryButton:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.categoryButton.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.icon {
+  font-size: var(--font-size-xl);
+  line-height: 1;
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .nav {
+    gap: 0.375rem;
+  }
+
+  .categoryButton {
+    min-width: 70px;
+    padding: 0.625rem 0.75rem;
+  }
+
+  .icon {
+    font-size: var(--font-size-lg);
+  }
+
+  .label {
+    font-size: var(--font-size-xs);
+  }
+}

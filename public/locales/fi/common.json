@@ -65,5 +65,24 @@
     "exportShoppingList": "Vie Ostoslista",
     "preparednessScore": "Valmiustaso",
     "noAlerts": "Ei hälytyksiä - kaikki kunnossa!"
+  },
+  "inventory": {
+    "categoryNavigation": "Kategorianavigaatio",
+    "allCategories": "Kaikki",
+    "noItems": "Ei tuotteita",
+    "expired": "Vanhentunut",
+    "expiresIn": "Vanhenee {{days}} päivässä",
+    "searchPlaceholder": "Hae tuotteita...",
+    "searchLabel": "Hae varastosta",
+    "filter": {
+      "status": "Suodata tilalla",
+      "allStatuses": "Kaikki Tilat"
+    },
+    "sort": {
+      "label": "Järjestä",
+      "name": "Nimi",
+      "quantity": "Määrä",
+      "expiration": "Vanhentuminen"
+    }
   }
 }

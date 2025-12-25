@@ -1,0 +1,50 @@
+.filterBar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.search {
+  flex: 1;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+}
+
+.filters > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Tablet and desktop */
+@media (min-width: 768px) {
+  .filterBar {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .search {
+    flex: 2;
+  }
+
+  .filters {
+    flex: 1;
+    max-width: 400px;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .filterBar {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

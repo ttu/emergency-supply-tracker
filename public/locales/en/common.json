@@ -65,5 +65,24 @@
     "exportShoppingList": "Export Shopping List",
     "preparednessScore": "Preparedness Score",
     "noAlerts": "No alerts - you're all set!"
+  },
+  "inventory": {
+    "categoryNavigation": "Category Navigation",
+    "allCategories": "All",
+    "noItems": "No items found",
+    "expired": "Expired",
+    "expiresIn": "Expires in {{days}} days",
+    "searchPlaceholder": "Search items...",
+    "searchLabel": "Search inventory items",
+    "filter": {
+      "status": "Filter by status",
+      "allStatuses": "All Statuses"
+    },
+    "sort": {
+      "label": "Sort by",
+      "name": "Name",
+      "quantity": "Quantity",
+      "expiration": "Expiration"
+    }
   }
 }

@@ -1,0 +1,154 @@
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.card.clickable {
+  cursor: pointer;
+}
+
+.card.clickable:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card.clickable:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.name {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+  flex: 1;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quantity {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: var(--font-size-lg);
+}
+
+.current {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.separator {
+  color: var(--color-text-secondary);
+}
+
+.recommended {
+  color: var(--color-text-secondary);
+}
+
+.unit {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-left: 0.25rem;
+}
+
+.progressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.progressBar {
+  flex: 1;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: var(--radius-full);
+}
+
+.progressFill.ok {
+  background: var(--color-success);
+}
+
+.progressFill.warning {
+  background: var(--color-warning);
+}
+
+.progressFill.critical {
+  background: var(--color-danger);
+}
+
+.percentage {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  min-width: 45px;
+  text-align: right;
+}
+
+.expiration,
+.location {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.expired {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-medium);
+}
+
+.expiringSoon {
+  color: var(--color-warning);
+  font-weight: var(--font-weight-medium);
+}
+
+.expirationDate {
+  color: var(--color-text-secondary);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .card {
+    padding: 0.875rem;
+  }
+
+  .name {
+    font-size: var(--font-size-base);
+  }
+
+  .quantity {
+    font-size: var(--font-size-md);
+  }
+
+  .progressWrapper {
+    gap: 0.5rem;
+  }
+
+  .percentage {
+    min-width: 40px;
+    font-size: var(--font-size-xs);
+  }
+}
