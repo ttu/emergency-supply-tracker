@@ -1,4 +1,4 @@
-import type { ItemStatus } from '../../types';
+import type { ItemStatus, InventoryItem } from '../../types';
 
 export function getItemStatus(
   currentQuantity: number,
@@ -23,4 +23,16 @@ export function getItemStatus(
   if (currentQuantity < recommendedQuantity * 0.5) return 'warning';
 
   return 'ok';
+}
+
+/**
+ * Calculate status for an inventory item
+ */
+export function calculateItemStatus(item: InventoryItem): ItemStatus {
+  return getItemStatus(
+    item.quantity,
+    item.recommendedQuantity,
+    item.expirationDate,
+    item.neverExpires,
+  );
 }

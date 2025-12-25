@@ -3,8 +3,8 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 37
-**Completed Steps:** 37/61 (61%)
+**Current Step:** Step 38
+**Completed Steps:** 38/61 (62%)
 
 ---
 
@@ -239,10 +239,11 @@
   - Create CategoryGrid
   - Create Storybook stories for all
 
-- [ ] **Step 38:** Implement Dashboard Logic
+- [x] **Step 38:** Implement Dashboard Logic
   - Calculate overall preparedness
   - Calculate per-category status
   - Calculate alert counts
+  - Write tests for all utilities
 
 - [ ] **Step 39:** Create Dashboard Page
   - Compose dashboard components
@@ -413,8 +414,8 @@
 ## Statistics
 
 **Total Steps:** 61
-**Completed:** 37 (61%)
-**Remaining:** 24
+**Completed:** 38 (62%)
+**Remaining:** 23
 **Current Phase:** Phase 6 - Dashboard View
 
 ---
