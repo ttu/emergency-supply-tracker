@@ -84,6 +84,12 @@
     "expiresIn": "Expires in {{days}} days",
     "searchPlaceholder": "Search items...",
     "searchLabel": "Search inventory items",
+    "addFromTemplate": "Add from Template",
+    "addCustomItem": "Add Custom Item",
+    "addItem": "Add Item",
+    "editItem": "Edit Item",
+    "selectTemplate": "Select Template",
+    "confirmDelete": "Are you sure you want to delete this item?",
     "filter": {
       "status": "Filter by status",
       "allStatuses": "All Statuses"

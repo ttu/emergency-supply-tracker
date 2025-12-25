@@ -84,6 +84,12 @@
     "expiresIn": "Vanhenee {{days}} päivässä",
     "searchPlaceholder": "Hae tuotteita...",
     "searchLabel": "Hae varastosta",
+    "addFromTemplate": "Lisää Mallista",
+    "addCustomItem": "Lisää Oma Tuote",
+    "addItem": "Lisää Tuote",
+    "editItem": "Muokkaa Tuotetta",
+    "selectTemplate": "Valitse Malli",
+    "confirmDelete": "Haluatko varmasti poistaa tämän tuotteen?",
     "filter": {
       "status": "Suodata tilalla",
       "allStatuses": "Kaikki Tilat"
