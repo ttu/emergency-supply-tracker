@@ -16,6 +16,7 @@
     "test:coverage": "jest --coverage",
     "test:storybook": "vitest --project=storybook --run",
     "test:all": "npm run test && npm run test:storybook",
+    "validate": "npm run format:check && npm run lint && npm test && npm run build",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
