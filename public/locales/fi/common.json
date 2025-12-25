@@ -55,5 +55,15 @@
     "light": "Vaalea",
     "dark": "Tumma",
     "auto": "Automaattinen"
+  },
+  "dashboard": {
+    "alerts": "Hälytykset",
+    "quickActions": "Pikatoiminnot",
+    "categoriesOverview": "Kategoriat",
+    "addItems": "Lisää Tuotteita",
+    "viewInventory": "Näytä Varasto",
+    "exportShoppingList": "Vie Ostoslista",
+    "preparednessScore": "Valmiustaso",
+    "noAlerts": "Ei hälytyksiä - kaikki kunnossa!"
   }
 }

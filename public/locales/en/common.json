@@ -55,5 +55,15 @@
     "light": "Light",
     "dark": "Dark",
     "auto": "Auto"
+  },
+  "dashboard": {
+    "alerts": "Alerts",
+    "quickActions": "Quick Actions",
+    "categoriesOverview": "Categories Overview",
+    "addItems": "Add Items",
+    "viewInventory": "View Inventory",
+    "exportShoppingList": "Export Shopping List",
+    "preparednessScore": "Preparedness Score",
+    "noAlerts": "No alerts - you're all set!"
   }
 }
