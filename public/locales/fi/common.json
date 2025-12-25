@@ -54,6 +54,18 @@
   },
   "settings": {
     "title": "Asetukset",
+    "sections": {
+      "language": "Kieli",
+      "household": "Kotitalouden Asetukset",
+      "dataManagement": "Tietojen Hallinta",
+      "about": "Tietoja",
+      "dangerZone": "Vaaravyöhyke"
+    },
+    "about": {
+      "version": "Versio",
+      "versionNumber": "0.0.0",
+      "viewOnGitHub": "Näytä GitHubissa"
+    },
     "language": {
       "label": "Kieli"
     },

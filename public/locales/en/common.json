@@ -54,6 +54,18 @@
   },
   "settings": {
     "title": "Settings",
+    "sections": {
+      "language": "Language",
+      "household": "Household Configuration",
+      "dataManagement": "Data Management",
+      "about": "About",
+      "dangerZone": "Danger Zone"
+    },
+    "about": {
+      "version": "Version",
+      "versionNumber": "0.0.0",
+      "viewOnGitHub": "View on GitHub"
+    },
     "language": {
       "label": "Language"
     },
