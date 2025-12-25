@@ -54,12 +54,38 @@
   },
   "settings": {
     "title": "Settings",
-    "language": "Language",
+    "language": {
+      "label": "Language"
+    },
     "theme": "Theme",
-    "advancedFeatures": "Advanced Features",
-    "calorieTracking": "Calorie Tracking",
-    "powerManagement": "Power Management",
-    "waterTracking": "Water Tracking"
+    "household": {
+      "adults": "Adults",
+      "children": "Children",
+      "supplyDays": "Supply Duration (days)",
+      "hasFreezer": "Has Freezer",
+      "freezerHoldTime": "Freezer Hold Time (hours)",
+      "presets": {
+        "label": "Quick Presets",
+        "single": "Single Person",
+        "couple": "Couple",
+        "family": "Family"
+      }
+    },
+    "advanced": {
+      "title": "Advanced Features",
+      "calorieTracking": {
+        "label": "Calorie Tracking",
+        "description": "Track daily calorie requirements and monitor food supplies based on nutritional needs"
+      },
+      "powerManagement": {
+        "label": "Power Management",
+        "description": "Calculate battery usage and manage backup power sources"
+      },
+      "waterTracking": {
+        "label": "Water Tracking",
+        "description": "Monitor water consumption and storage requirements"
+      }
+    }
   },
   "themes": {
     "light": "Light",

@@ -54,12 +54,38 @@
   },
   "settings": {
     "title": "Asetukset",
-    "language": "Kieli",
+    "language": {
+      "label": "Kieli"
+    },
     "theme": "Teema",
-    "advancedFeatures": "Lisäominaisuudet",
-    "calorieTracking": "Kaloriseuranta",
-    "powerManagement": "Sähköhallinta",
-    "waterTracking": "Vesiseuranta"
+    "household": {
+      "adults": "Aikuiset",
+      "children": "Lapset",
+      "supplyDays": "Varastojen Kesto (päivää)",
+      "hasFreezer": "Pakastin",
+      "freezerHoldTime": "Pakastimen Säilytysaika (tuntia)",
+      "presets": {
+        "label": "Pikavalinnat",
+        "single": "Yksin Asuva",
+        "couple": "Pariskunta",
+        "family": "Perhe"
+      }
+    },
+    "advanced": {
+      "title": "Lisäominaisuudet",
+      "calorieTracking": {
+        "label": "Kaloriseuranta",
+        "description": "Seuraa päivittäistä kaloritarvetta ja valvo ruokavaroja ravitsemustarpeiden perusteella"
+      },
+      "powerManagement": {
+        "label": "Sähköhallinta",
+        "description": "Laske pattereiden käyttö ja hallinnoi varavirtavaroja"
+      },
+      "waterTracking": {
+        "label": "Vesiseuranta",
+        "description": "Seuraa vedenkulutusta ja varastointitarpeita"
+      }
+    }
   },
   "themes": {
     "light": "Vaalea",
