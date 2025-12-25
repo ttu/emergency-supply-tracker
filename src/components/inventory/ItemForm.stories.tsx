@@ -1,0 +1,69 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { ItemForm } from './ItemForm';
+import { STANDARD_CATEGORIES } from '../../data/standardCategories';
+import type { InventoryItem } from '../../types';
+
+const meta = {
+  title: 'Components/Inventory/ItemForm',
+  component: ItemForm,
+  parameters: {
+    layout: 'padded',
+  },
+  argTypes: {
+    onSubmit: { action: 'form submitted' },
+    onCancel: { action: 'form cancelled' },
+  },
+} satisfies Meta<typeof ItemForm>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+const now = new Date().toISOString();
+const futureDate = new Date(
+  Date.now() + 365 * 24 * 60 * 60 * 1000,
+).toISOString();
+
+const sampleItem: InventoryItem = {
+  id: '1',
+  name: 'Bottled Water',
+  categoryId: 'water-beverages',
+  quantity: 20,
+  unit: 'liters',
+  recommendedQuantity: 28,
+  neverExpires: false,
+  expirationDate: futureDate,
+  location: 'Pantry',
+  notes: 'Check expiration dates regularly',
+  createdAt: now,
+  updatedAt: now,
+};
+
+export const NewItem: Story = {
+  args: {
+    categories: STANDARD_CATEGORIES,
+    onSubmit: () => {},
+    onCancel: () => {},
+  },
+};
+
+export const EditItem: Story = {
+  args: {
+    item: sampleItem,
+    categories: STANDARD_CATEGORIES,
+    onSubmit: () => {},
+    onCancel: () => {},
+  },
+};
+
+export const ItemWithNeverExpires: Story = {
+  args: {
+    item: {
+      ...sampleItem,
+      neverExpires: true,
+      expirationDate: undefined,
+    },
+    categories: STANDARD_CATEGORIES,
+    onSubmit: () => {},
+    onCancel: () => {},
+  },
+};

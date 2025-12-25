@@ -8,6 +8,16 @@
     "inventory": "Inventory",
     "settings": "Settings"
   },
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "export": "Export",
+    "import": "Import",
+    "clear": "Clear"
+  },
   "actions": {
     "add": "Add",
     "edit": "Edit",
@@ -84,5 +94,30 @@
       "quantity": "Quantity",
       "expiration": "Expiration"
     }
+  },
+  "itemForm": {
+    "name": "Item Name",
+    "category": "Category",
+    "quantity": "Current Quantity",
+    "unit": "Unit",
+    "recommendedQuantity": "Recommended Quantity",
+    "neverExpires": "Never Expires",
+    "expirationDate": "Expiration Date",
+    "location": "Location",
+    "notes": "Notes",
+    "errors": {
+      "nameRequired": "Name is required",
+      "categoryRequired": "Category is required",
+      "quantityInvalid": "Quantity must be 0 or greater",
+      "recommendedQuantityInvalid": "Recommended quantity must be 0 or greater",
+      "expirationRequired": "Expiration date is required (or check 'Never Expires')"
+    }
+  },
+  "templateSelector": {
+    "searchPlaceholder": "Search templates...",
+    "searchLabel": "Search item templates",
+    "categoryLabel": "Filter by category",
+    "noTemplates": "No templates found",
+    "recommended": "Recommended"
   }
 }

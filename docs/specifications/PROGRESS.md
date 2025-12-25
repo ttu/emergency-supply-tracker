@@ -3,8 +3,8 @@
 **Project:** Emergency Supply Tracker
 **Started:** 2025-12-23
 **Status:** In Progress
-**Current Step:** Step 41
-**Completed Steps:** 40/61 (66%)
+**Current Step:** Step 42
+**Completed Steps:** 41/61 (67%)
 
 ---
 
@@ -262,7 +262,7 @@
   - Create FilterBar
   - Create Storybook stories for all
 
-- [ ] **Step 41:** Create Add/Edit Item Form
+- [x] **Step 41:** Create Add/Edit Item Form
   - Create ItemForm component
   - Create TemplateSelector
   - Add form validation
@@ -415,8 +415,8 @@
 ## Statistics
 
 **Total Steps:** 61
-**Completed:** 40 (66%)
-**Remaining:** 21
+**Completed:** 41 (67%)
+**Remaining:** 20
 **Current Phase:** Phase 7 - Inventory View
 
 ---

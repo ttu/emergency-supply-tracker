@@ -8,6 +8,16 @@
     "inventory": "Varasto",
     "settings": "Asetukset"
   },
+  "common": {
+    "add": "Lisää",
+    "edit": "Muokkaa",
+    "delete": "Poista",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "export": "Vie",
+    "import": "Tuo",
+    "clear": "Tyhjennä"
+  },
   "actions": {
     "add": "Lisää",
     "edit": "Muokkaa",
@@ -84,5 +94,30 @@
       "quantity": "Määrä",
       "expiration": "Vanhentuminen"
     }
+  },
+  "itemForm": {
+    "name": "Tuotteen Nimi",
+    "category": "Kategoria",
+    "quantity": "Nykyinen Määrä",
+    "unit": "Yksikkö",
+    "recommendedQuantity": "Suositeltu Määrä",
+    "neverExpires": "Ei Vanhene",
+    "expirationDate": "Vanhenemispäivä",
+    "location": "Sijainti",
+    "notes": "Muistiinpanot",
+    "errors": {
+      "nameRequired": "Nimi vaaditaan",
+      "categoryRequired": "Kategoria vaaditaan",
+      "quantityInvalid": "Määrän täytyy olla 0 tai suurempi",
+      "recommendedQuantityInvalid": "Suositellun määrän täytyy olla 0 tai suurempi",
+      "expirationRequired": "Vanhenemispäivä vaaditaan (tai valitse 'Ei Vanhene')"
+    }
+  },
+  "templateSelector": {
+    "searchPlaceholder": "Hae malleja...",
+    "searchLabel": "Hae tuotemalleja",
+    "categoryLabel": "Suodata kategorialla",
+    "noTemplates": "Ei malleja",
+    "recommended": "Suositeltu"
   }
 }
