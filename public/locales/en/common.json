@@ -142,6 +142,8 @@
     "auto": "Auto"
   },
   "dashboard": {
+    "title": "Emergency Supplies Dashboard",
+    "subtitle": "Tracking supplies for {{people}} people for {{days}} days",
     "alerts": "Alerts",
     "quickActions": "Quick Actions",
     "categoriesOverview": "Categories Overview",
@@ -149,7 +151,16 @@
     "viewInventory": "View Inventory",
     "exportShoppingList": "Export Shopping List",
     "preparednessScore": "Preparedness Score",
-    "noAlerts": "No alerts - you're all set!"
+    "noAlerts": "No alerts - you're all set!",
+    "preparedness": {
+      "needsWork": "Needs Work",
+      "good": "Good Progress",
+      "excellent": "Well Prepared"
+    },
+    "category": {
+      "items": "Items",
+      "completion": "Completion"
+    }
   },
   "inventory": {
     "categoryNavigation": "Category Navigation",

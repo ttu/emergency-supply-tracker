@@ -142,6 +142,8 @@
     "auto": "Automaattinen"
   },
   "dashboard": {
+    "title": "Hätävarastojen Hallinta",
+    "subtitle": "Seurataan varastoja {{people}} henkilölle {{days}} päiväksi",
     "alerts": "Hälytykset",
     "quickActions": "Pikatoiminnot",
     "categoriesOverview": "Kategoriat",
@@ -149,7 +151,16 @@
     "viewInventory": "Näytä Varasto",
     "exportShoppingList": "Vie Ostoslista",
     "preparednessScore": "Valmiustaso",
-    "noAlerts": "Ei hälytyksiä - kaikki kunnossa!"
+    "noAlerts": "Ei hälytyksiä - kaikki kunnossa!",
+    "preparedness": {
+      "needsWork": "Vaatii Huomiota",
+      "good": "Hyvä Edistys",
+      "excellent": "Hyvin Valmistautunut"
+    },
+    "category": {
+      "items": "Tuotteet",
+      "completion": "Valmius"
+    }
   },
   "inventory": {
     "categoryNavigation": "Kategorianavigaatio",
