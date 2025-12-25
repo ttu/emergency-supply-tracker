@@ -31,7 +31,9 @@ describe('Settings Page', () => {
   it('should render all section titles', () => {
     renderWithProviders(<Settings />);
 
-    expect(screen.getByText('settings.sections.language')).toBeInTheDocument();
+    expect(
+      screen.getByText('settings.sections.appearance'),
+    ).toBeInTheDocument();
     expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
     expect(screen.getByText('settings.advanced.title')).toBeInTheDocument();
     expect(

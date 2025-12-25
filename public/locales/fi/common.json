@@ -56,7 +56,7 @@
   "settings": {
     "title": "Asetukset",
     "sections": {
-      "language": "Kieli",
+      "appearance": "Ulkoasu",
       "household": "Kotitalouden Asetukset",
       "dataManagement": "Tietojen Hallinta",
       "about": "Tietoja",
@@ -70,7 +70,12 @@
     "language": {
       "label": "Kieli"
     },
-    "theme": "Teema",
+    "theme": {
+      "label": "Teema",
+      "description": "Valitse värimaailma",
+      "light": "Vaalea",
+      "dark": "Tumma"
+    },
     "household": {
       "adults": "Aikuiset",
       "children": "Lapset",

@@ -74,8 +74,8 @@
   --z-tooltip: 1100;
 }
 
-/* Dark theme */
-@media (prefers-color-scheme: dark) {
+/* Dark theme - Disabled automatic detection, use explicit theme class instead */
+/* @media (prefers-color-scheme: dark) {
   :root {
     --color-text: #ffffff;
     --color-text-secondary: #b0b0b0;
@@ -84,7 +84,7 @@
     --color-surface: #1e1e1e;
     --color-border: #333333;
   }
-}
+} */
 
 /* Theme override classes */
 [data-theme='light'] {

@@ -56,7 +56,7 @@
   "settings": {
     "title": "Settings",
     "sections": {
-      "language": "Language",
+      "appearance": "Appearance",
       "household": "Household Configuration",
       "dataManagement": "Data Management",
       "about": "About",
@@ -70,7 +70,12 @@
     "language": {
       "label": "Language"
     },
-    "theme": "Theme",
+    "theme": {
+      "label": "Theme",
+      "description": "Choose your preferred color scheme",
+      "light": "Light",
+      "dark": "Dark"
+    },
     "household": {
       "adults": "Adults",
       "children": "Children",

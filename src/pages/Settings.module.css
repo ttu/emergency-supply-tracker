@@ -47,6 +47,12 @@
   color: var(--color-danger);
 }
 
+.appearanceSettings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
 .dataButtons {
   display: flex;
   flex-direction: column;

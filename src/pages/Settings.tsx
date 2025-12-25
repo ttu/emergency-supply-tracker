@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../components/settings/LanguageSelector';
+import { ThemeSelector } from '../components/settings/ThemeSelector';
 import { HouseholdForm } from '../components/settings/HouseholdForm';
 import { AdvancedFeatures } from '../components/settings/AdvancedFeatures';
 import { ExportButton } from '../components/settings/ExportButton';
@@ -18,12 +19,15 @@ export function Settings() {
       </header>
 
       <div className={styles.content}>
-        {/* Language Settings */}
+        {/* Appearance Settings */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>
-            {t('settings.sections.language')}
+            {t('settings.sections.appearance')}
           </h2>
-          <LanguageSelector />
+          <div className={styles.appearanceSettings}>
+            <LanguageSelector />
+            <ThemeSelector />
+          </div>
         </section>
 
         {/* Household Configuration */}

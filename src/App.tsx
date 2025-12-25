@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { SettingsProvider } from './contexts/SettingsProvider';
 import { HouseholdProvider } from './contexts/HouseholdProvider';
 import { InventoryProvider } from './contexts/InventoryProvider';
+import { ThemeApplier } from './components/ThemeApplier';
 import { Navigation, PageType } from './components/common/Navigation';
 import { Dashboard } from './pages/Dashboard';
 import { Inventory } from './pages/Inventory';
@@ -29,14 +30,19 @@ function App() {
 
   return (
     <SettingsProvider>
-      <HouseholdProvider>
-        <InventoryProvider>
-          <div className="app">
-            <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
-            <main className="main">{renderPage()}</main>
-          </div>
-        </InventoryProvider>
-      </HouseholdProvider>
+      <ThemeApplier>
+        <HouseholdProvider>
+          <InventoryProvider>
+            <div className="app">
+              <Navigation
+                currentPage={currentPage}
+                onNavigate={setCurrentPage}
+              />
+              <main className="main">{renderPage()}</main>
+            </div>
+          </InventoryProvider>
+        </HouseholdProvider>
+      </ThemeApplier>
     </SettingsProvider>
   );
 }

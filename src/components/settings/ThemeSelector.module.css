@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.select {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.select:hover {
+  border-color: var(--color-primary);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.description {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
