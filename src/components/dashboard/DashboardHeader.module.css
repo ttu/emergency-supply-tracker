@@ -1,0 +1,133 @@
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.title {
+  color: white;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: var(--font-size-lg);
+  margin: 0;
+}
+
+.scoreSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.scoreCircle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.scoreSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.scoreBackground {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 8;
+}
+
+.scoreProgress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.scoreProgress.scoreGood {
+  stroke: #4caf50;
+}
+
+.scoreProgress.scoreWarning {
+  stroke: #ffc107;
+}
+
+.scoreProgress.scoreCritical {
+  stroke: #f44336;
+}
+
+.scoreValue {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.scoreNumber {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: white;
+}
+
+.scorePercent {
+  font-size: var(--font-size-lg);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.scoreLabel {
+  color: white;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: var(--spacing-lg);
+  }
+
+  .content {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .titleSection {
+    text-align: center;
+  }
+
+  .title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .subtitle {
+    font-size: var(--font-size-md);
+  }
+
+  .scoreCircle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .scoreNumber {
+    font-size: var(--font-size-2xl);
+  }
+}

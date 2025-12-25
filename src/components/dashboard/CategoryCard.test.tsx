@@ -1,0 +1,150 @@
+import { describe, it, expect, jest } from '@jest/globals';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { CategoryCard } from './CategoryCard';
+
+// Mock react-i18next
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'status.ok': 'OK',
+        'status.warning': 'Warning',
+        'status.critical': 'Critical',
+        'dashboard.category.items': 'Items',
+        'dashboard.category.completion': 'Completion',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
+describe('CategoryCard', () => {
+  it('renders category name', () => {
+    render(
+      <CategoryCard
+        categoryId="water-beverages"
+        categoryName="Water & Beverages"
+        itemCount={12}
+        status="ok"
+        completionPercentage={95}
+      />,
+    );
+
+    expect(screen.getByText('Water & Beverages')).toBeInTheDocument();
+  });
+
+  it('renders item count', () => {
+    render(
+      <CategoryCard
+        categoryId="food"
+        categoryName="Food"
+        itemCount={18}
+        status="ok"
+        completionPercentage={85}
+      />,
+    );
+
+    expect(screen.getByText('18')).toBeInTheDocument();
+  });
+
+  it('renders completion percentage', () => {
+    render(
+      <CategoryCard
+        categoryId="medical-health"
+        categoryName="Medical & Health"
+        itemCount={5}
+        status="warning"
+        completionPercentage={60}
+      />,
+    );
+
+    expect(screen.getByText('60%')).toBeInTheDocument();
+  });
+
+  it('renders status badge with correct variant', () => {
+    render(
+      <CategoryCard
+        categoryId="food"
+        categoryName="Food"
+        itemCount={10}
+        status="ok"
+        completionPercentage={90}
+      />,
+    );
+
+    expect(screen.getByText('OK')).toBeInTheDocument();
+  });
+
+  it('calls onClick when card is clicked', async () => {
+    const user = userEvent.setup();
+    const onClick = jest.fn();
+
+    render(
+      <CategoryCard
+        categoryId="water-beverages"
+        categoryName="Water & Beverages"
+        itemCount={12}
+        status="ok"
+        completionPercentage={95}
+        onClick={onClick}
+      />,
+    );
+
+    const card = screen.getByRole('button');
+    await user.click(card);
+
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('has button role when onClick is provided', () => {
+    render(
+      <CategoryCard
+        categoryId="food"
+        categoryName="Food"
+        itemCount={10}
+        status="ok"
+        completionPercentage={90}
+        onClick={() => {}}
+      />,
+    );
+
+    expect(screen.getByRole('button')).toBeInTheDocument();
+  });
+
+  it('does not have button role when onClick is not provided', () => {
+    render(
+      <CategoryCard
+        categoryId="food"
+        categoryName="Food"
+        itemCount={10}
+        status="ok"
+        completionPercentage={90}
+      />,
+    );
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('handles keyboard interaction when clickable', async () => {
+    const user = userEvent.setup();
+    const onClick = jest.fn();
+
+    render(
+      <CategoryCard
+        categoryId="food"
+        categoryName="Food"
+        itemCount={10}
+        status="ok"
+        completionPercentage={90}
+        onClick={onClick}
+      />,
+    );
+
+    const card = screen.getByRole('button');
+    card.focus();
+    await user.keyboard('{Enter}');
+
+    expect(onClick).toHaveBeenCalled();
+  });
+});
