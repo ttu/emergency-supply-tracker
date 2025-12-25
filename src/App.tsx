@@ -6,6 +6,7 @@ import { Navigation, PageType } from './components/common/Navigation';
 import { Dashboard } from './pages/Dashboard';
 import { Inventory } from './pages/Inventory';
 import { Settings } from './pages/Settings';
+import { Help } from './pages/Help';
 import './App.css';
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
         return <Inventory />;
       case 'settings':
         return <Settings />;
+      case 'help':
+        return <Help />;
       default:
         return <Dashboard />;
     }

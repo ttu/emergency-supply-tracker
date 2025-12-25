@@ -1,0 +1,166 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--color-background);
+}
+
+.header {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+}
+
+.subtitle {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.section h2 {
+  color: var(--color-text);
+  margin: 0 0 1.5rem 0;
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 0.5rem;
+}
+
+.topics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.topic {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.topicButton {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  text-align: left;
+  font-size: 1rem;
+  color: var(--color-text);
+  transition: background-color 0.2s;
+}
+
+.topicButton:hover {
+  background-color: var(--color-background);
+}
+
+.topicButton:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.topicQuestion {
+  font-weight: 600;
+  flex: 1;
+}
+
+.topicIcon {
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+  color: var(--color-text-secondary);
+}
+
+.topicIcon.expanded {
+  transform: rotate(180deg);
+}
+
+.topicAnswer {
+  padding: 0 1rem 1rem 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  white-space: pre-line;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tipsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tipsList li {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background-color: white;
+  border-left: 4px solid var(--color-primary);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tipsList li::before {
+  content: '💡 ';
+  margin-right: 0.5rem;
+}
+
+.link {
+  display: inline-block;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--color-primary);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.link:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.link:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .section h2 {
+    font-size: 1.25rem;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+}

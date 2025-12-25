@@ -6,7 +6,8 @@
   "navigation": {
     "dashboard": "Näkymä",
     "inventory": "Varasto",
-    "settings": "Asetukset"
+    "settings": "Asetukset",
+    "help": "Ohje"
   },
   "common": {
     "add": "Lisää",
@@ -194,5 +195,61 @@
     "categoryLabel": "Suodata kategorialla",
     "noTemplates": "Ei malleja",
     "recommended": "Suositeltu"
+  },
+  "help": {
+    "title": "Ohje & UKK",
+    "subtitle": "Löydä vastauksia yleisiin kysymyksiin Hätävarasto-sovelluksen käytöstä",
+    "faqTitle": "Usein Kysytyt Kysymykset",
+    "quickTipsTitle": "Pikavinkki",
+    "contactTitle": "Tarvitsetko Lisää Apua?",
+    "contactText": "Jos sinulla on kysymyksiä tai löysit bugin, käy GitHub-sivustollamme.",
+    "githubLink": "Käy GitHub-sivustolla",
+    "gettingStarted": {
+      "question": "Miten aloitan?",
+      "answer": "Aloita määrittämällä kotitaloutesi tiedot Asetuksissa. Lisää sitten tuotteita varastoosi joko suositelluista malleista tai luo mukautettuja tuotteita. Kojelauta näyttää valmiuspisteesi ja mahdolliset hälytykset."
+    },
+    "householdSize": {
+      "question": "Miksi kotitalouden koko on tärkeä?",
+      "answer": "Suositellut määrät lasketaan kotitaloutesi koon ja varastojakson perusteella. Esimerkiksi 4 hengen perhe, joka suunnittelee 72 tunnin varalle, tarvitsee enemmän varastoja kuin yksin asuva henkilö."
+    },
+    "recommendedItems": {
+      "question": "Mitä ovat suositellut tuotteet?",
+      "answer": "Suositellut tuotteet ovat ennalta määritettyjä malleja, jotka perustuvat hätätilanteen varautumisohjeisiin. Ne sisältävät ehdotetut määrät, yksiköt ja kategoriat täydellisen hätävaraston rakentamisen avuksi."
+    },
+    "expirationDates": {
+      "question": "Miten viimeinen käyttöpäivä toimii?",
+      "answer": "Tuotteilla voi olla viimeinen käyttöpäivä tai ne voidaan merkitä 'Ei Vanhene' -tilaan. Sovellus hälyttää, kun tuotteet ovat vanhentumassa pian (30 päivän sisällä) tai ovat jo vanhentuneet. Jotkut tuotteet kuten paristot ja lääkkeet tulisi vaihtaa säännöllisesti."
+    },
+    "categories": {
+      "question": "Mitkä ovat eri kategoriat?",
+      "answer": "Sovellus järjestää tarvikkeet 9 kategoriaan: Ruoka, Vesi, Ensiapu, Työkalut & Turvallisuus, Hygienia, Asiakirjat, Viestintä, Vaatteet ja Muu. Tämä auttaa varmistamaan kattavan suojan kaikissa oleellisissa tarvikkeiden tyypeissä."
+    },
+    "statusColors": {
+      "question": "Mitä tilavärit tarkoittavat?",
+      "answer": "Vihreä (OK) = Sinulla on riittävästi tarvikkeita\nKeltainen (Varoitus) = Tarvikkeet ovat vähissä tai vanhentumassa pian\nPunainen (Kriittinen) = Tarvikkeet ovat loppu tai vanhentuneet\n\nKojelauta näyttää värikoodatun tilan jokaiselle kategorialle."
+    },
+    "exportImport": {
+      "question": "Miten varmuuskopioin tietoni?",
+      "answer": "Mene Asetukset → Tietojen Hallinta ja napsauta 'Vie Tiedot'. Tämä lataa JSON-tiedoston kaikilla tiedoillasi. Voit tuoda tämän tiedoston myöhemmin palauttaaksesi tietosi tai siirtääksesi ne toiseen laitteeseen."
+    },
+    "dataStorage": {
+      "question": "Mihin tietoni tallennetaan?",
+      "answer": "Kaikki tiedot tallennetaan paikallisesti selaimesi localStorage-tilaan. Mitään ei lähetetä ulkoisille palvelimille, mikä varmistaa yksityisyytesi. Selaimen tietojen tyhjentäminen kuitenkin poistaa varastosi, joten käytä vientiominaisuutta varmuuskopioihin."
+    },
+    "shoppingList": {
+      "question": "Miten luon ostoslistan?",
+      "answer": "Mene Asetukset → Tietojen Hallinta ja napsauta 'Vie Ostoslista'. Tämä luo tekstitiedoston, jossa luetellaan kaikki täydennystä vaativat tuotteet kategoriaan ryhmiteltynä nykyisillä ja suositelluilla määrillä."
+    },
+    "preparednessScore": {
+      "question": "Miten valmiuspisteet lasketaan?",
+      "answer": "Pisteet perustuvat suositeltujen tuotteiden prosenttiosuuteen, jotka sinulla on riittävässä määrässä. Se ottaa huomioon: varastoidut tuotteet vs. suositellut tuotteet, nykyiset määrät vs. suositellut määrät ja vanhenemistilan. Yli 80% pisteet osoittavat hyvää valmistautumista."
+    },
+    "tips": {
+      "tip1": "Aseta realistinen varastojakso (vähintään 72 tuntia, suositus 2 viikkoa)",
+      "tip2": "Tarkista viimeiset käyttöpäivät säännöllisesti ja vaihda tarvikkeet ennen vanhenemista",
+      "tip3": "Säilytä hätätarvikkeet helposti saatavilla olevissa, merkityissä säilytysastioissa",
+      "tip4": "Vie tietosi säännöllisesti varmuuskopioksi",
+      "tip5": "Tarkista ja päivitä varastosi vähintään kerran kaudessa"
+    }
   }
 }

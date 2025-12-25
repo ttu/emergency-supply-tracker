@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import styles from './Navigation.module.css';
 
-export type PageType = 'dashboard' | 'inventory' | 'settings';
+export type PageType = 'dashboard' | 'inventory' | 'settings' | 'help';
 
 interface NavigationProps {
   currentPage: PageType;
@@ -15,6 +15,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
     { page: 'dashboard', label: t('navigation.dashboard') },
     { page: 'inventory', label: t('navigation.inventory') },
     { page: 'settings', label: t('navigation.settings') },
+    { page: 'help', label: t('navigation.help') },
   ];
 
   return (

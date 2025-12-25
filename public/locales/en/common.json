@@ -6,7 +6,8 @@
   "navigation": {
     "dashboard": "Dashboard",
     "inventory": "Inventory",
-    "settings": "Settings"
+    "settings": "Settings",
+    "help": "Help"
   },
   "common": {
     "add": "Add",
@@ -194,5 +195,61 @@
     "categoryLabel": "Filter by category",
     "noTemplates": "No templates found",
     "recommended": "Recommended"
+  },
+  "help": {
+    "title": "Help & FAQ",
+    "subtitle": "Find answers to common questions about using the Emergency Supply Tracker",
+    "faqTitle": "Frequently Asked Questions",
+    "quickTipsTitle": "Quick Tips",
+    "contactTitle": "Need More Help?",
+    "contactText": "If you have questions or found a bug, please visit our GitHub repository.",
+    "githubLink": "Visit GitHub Repository",
+    "gettingStarted": {
+      "question": "How do I get started?",
+      "answer": "Start by configuring your household information in Settings. Then add items to your inventory either from recommended templates or create custom items. The dashboard will show your preparedness score and any alerts."
+    },
+    "householdSize": {
+      "question": "Why does household size matter?",
+      "answer": "Recommended quantities are calculated based on your household size and supply duration. For example, a family of 4 planning for 72 hours will need more supplies than a single person."
+    },
+    "recommendedItems": {
+      "question": "What are recommended items?",
+      "answer": "Recommended items are pre-configured templates based on emergency preparedness guidelines. They include suggested quantities, units, and categories to help you build a complete emergency supply kit."
+    },
+    "expirationDates": {
+      "question": "How do expiration dates work?",
+      "answer": "Items can have expiration dates or be marked as 'Never Expires'. The app will alert you when items are expiring soon (within 30 days) or have already expired. Some items like batteries and medications should be rotated regularly."
+    },
+    "categories": {
+      "question": "What are the different categories?",
+      "answer": "The app organizes supplies into 9 categories: Food, Water, First Aid, Tools & Safety, Hygiene, Documents, Communication, Clothing, and Other. This helps you ensure comprehensive coverage across all essential supply types."
+    },
+    "statusColors": {
+      "question": "What do the status colors mean?",
+      "answer": "Green (OK) = You have adequate supplies\nYellow (Warning) = Supplies are low or expiring soon\nRed (Critical) = Supplies are out of stock or expired\n\nThe dashboard shows color-coded status for each category."
+    },
+    "exportImport": {
+      "question": "How do I backup my data?",
+      "answer": "Go to Settings → Data Management and click 'Export Data'. This downloads a JSON file with all your data. You can import this file later to restore your data or transfer it to another device."
+    },
+    "dataStorage": {
+      "question": "Where is my data stored?",
+      "answer": "All data is stored locally in your browser's localStorage. Nothing is sent to external servers, ensuring your privacy. However, clearing browser data will delete your inventory, so use the export feature for backups."
+    },
+    "shoppingList": {
+      "question": "How do I create a shopping list?",
+      "answer": "Go to Settings → Data Management and click 'Export Shopping List'. This generates a text file listing all items that need restocking, grouped by category with current vs. recommended quantities."
+    },
+    "preparednessScore": {
+      "question": "How is the preparedness score calculated?",
+      "answer": "The score is based on the percentage of recommended items you have in adequate quantities. It considers: stocked items vs. recommended items, current quantities vs. recommended quantities, and expiration status. A score of 80% or higher indicates good preparedness."
+    },
+    "tips": {
+      "tip1": "Set realistic supply duration (72 hours minimum, 2 weeks recommended)",
+      "tip2": "Check expiration dates regularly and rotate supplies before they expire",
+      "tip3": "Store emergency supplies in accessible, labeled containers",
+      "tip4": "Export your data regularly as a backup",
+      "tip5": "Review and update your inventory at least once per season"
+    }
   }
 }
