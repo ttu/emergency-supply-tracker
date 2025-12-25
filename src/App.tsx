@@ -1,24 +1,40 @@
-import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from './components/common/LanguageSwitcher';
+import { useState } from 'react';
+import { SettingsProvider } from './contexts/SettingsProvider';
+import { HouseholdProvider } from './contexts/HouseholdProvider';
+import { InventoryProvider } from './contexts/InventoryProvider';
+import { Navigation, PageType } from './components/common/Navigation';
+import { Dashboard } from './pages/Dashboard';
+import { Inventory } from './pages/Inventory';
+import { Settings } from './pages/Settings';
 import './App.css';
 
 function App() {
-  const { t } = useTranslation();
+  const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'inventory':
+        return <Inventory />;
+      case 'settings':
+        return <Settings />;
+      default:
+        return <Dashboard />;
+    }
+  };
 
   return (
-    <div className="app">
-      <header className="header">
-        <h1>{t('app.title')}</h1>
-        <p className="subtitle">{t('app.tagline')}</p>
-        <LanguageSwitcher />
-      </header>
-      <main className="main">
-        <p>Coming soon...</p>
-      </main>
-      <footer className="footer">
-        <p>v0.1.0 | Based on 72tuntia.fi guidelines</p>
-      </footer>
-    </div>
+    <SettingsProvider>
+      <HouseholdProvider>
+        <InventoryProvider>
+          <div className="app">
+            <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+            <main className="main">{renderPage()}</main>
+          </div>
+        </InventoryProvider>
+      </HouseholdProvider>
+    </SettingsProvider>
   );
 }
 
