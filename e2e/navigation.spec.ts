@@ -14,7 +14,7 @@ test.describe('Navigation', () => {
     // Navigate to Inventory
     await page.click('text=Inventory');
     await expect(
-      page.locator('button:has-text("Add from Template")'),
+      page.locator('button', { hasText: 'Add from Template' }),
     ).toBeVisible();
 
     // Navigate to Settings
@@ -23,15 +23,11 @@ test.describe('Navigation', () => {
 
     // Navigate to Help
     await page.click('text=Help');
-    await expect(
-      page.locator('h1:has-text("Help"), h1:has-text("FAQ")'),
-    ).toBeVisible();
+    await expect(page.locator('h1', { hasText: 'Help' })).toBeVisible();
 
     // Navigate back to Dashboard
     await page.click('text=Dashboard');
-    await expect(
-      page.locator('text=Quick Actions, text=Preparedness'),
-    ).toBeVisible();
+    await expect(page.locator('text=Quick Actions')).toBeVisible();
   });
 
   test('should show active navigation state', async ({ page }) => {
@@ -62,7 +58,7 @@ test.describe('Navigation', () => {
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.fill('input[name="recommendedQuantity"]', '1');
     await page.check('input[type="checkbox"]');
-    await page.click('button:has-text("Save")');
+    await page.click('button[type="submit"]');
 
     // Navigate away to Settings
     await page.click('text=Settings');
@@ -85,7 +81,7 @@ test.describe('Navigation', () => {
     // Navigate to different pages
     await page.click('text=Inventory');
     await expect(
-      page.locator('button:has-text("Add from Template")'),
+      page.locator('button', { hasText: 'Add from Template' }),
     ).toBeVisible();
 
     await page.click('text=Settings');

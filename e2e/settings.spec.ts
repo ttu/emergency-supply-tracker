@@ -12,9 +12,8 @@ test.describe('Settings', () => {
 
     // Verify settings sections are visible
     await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
-    await expect(
-      page.locator('text=Language, text=Household').first(),
-    ).toBeVisible();
+    await expect(page.locator('text=Appearance')).toBeVisible();
+    await expect(page.locator('text=Household Configuration')).toBeVisible();
   });
 
   test('should change language', async ({ page }) => {
@@ -30,7 +29,8 @@ test.describe('Settings', () => {
     await page.waitForTimeout(500);
 
     // Navigate to different page to see translated content
-    await page.click('nav button').first(); // Click first nav button
+    const firstNavButton = page.locator('nav button').first();
+    await firstNavButton.click();
 
     // Check if navigation changed to Finnish
     // (This assumes navigation labels change with language)
@@ -59,10 +59,8 @@ test.describe('Settings', () => {
     await page.click('text=Settings');
 
     // Click a preset button (e.g., "Family")
-    const presetButton = page.locator(
-      'button:has-text("Family"), button:has-text("Couple"), button:has-text("Single")',
-    );
-    await presetButton.first().click();
+    const presetButton = page.locator('button', { hasText: 'Family' });
+    await presetButton.click();
 
     // Household values should be updated
     const adultsInput = page.locator('input[type="number"]').first();

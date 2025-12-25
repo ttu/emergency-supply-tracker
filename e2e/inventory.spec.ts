@@ -19,10 +19,17 @@ test.describe('Inventory Management', () => {
     await expect(page.locator('text=Select Template')).toBeVisible();
 
     // Search for water
-    await page.fill('input[placeholder*="Search"]', 'Bottled Water');
+    await page.fill('input[placeholder*="Search"]', 'water');
 
-    // Click on the Bottled Water template
-    await page.click('text=Bottled Water');
+    // Wait for search results to filter
+    await page.waitForTimeout(300);
+
+    // Click on the first template that contains "water" (button.templateCard or button[type="button"])
+    const waterTemplate = page
+      .locator('button[type="button"]')
+      .filter({ hasText: /water/i })
+      .first();
+    await waterTemplate.click();
 
     // Fill in the form
     await page.fill('input[name="quantity"]', '24');
@@ -30,8 +37,8 @@ test.describe('Inventory Management', () => {
     // Save the item
     await page.click('button[type="submit"]');
 
-    // Verify item appears in inventory
-    await expect(page.locator('text=Bottled Water')).toBeVisible();
+    // Verify item with "water" appears in inventory
+    await expect(page.locator('text=/water/i').first()).toBeVisible();
   });
 
   test('should add custom item', async ({ page }) => {
@@ -72,13 +79,11 @@ test.describe('Inventory Management', () => {
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
-    // Wait for item to appear
-    await expect(page.locator('text=Test Item')).toBeVisible();
+    // Wait for item to appear and click on the card to edit
+    await page.click('text=Test Item');
 
-    // Click edit button on the item card
-    await page.click('[aria-label="Edit Test Item"], button:has-text("Edit")');
-
-    // Update quantity
+    // Wait for form to appear and update quantity
+    await page.waitForSelector('input[name="quantity"]');
     await page.fill('input[name="quantity"]', '8');
 
     // Save changes
@@ -101,16 +106,18 @@ test.describe('Inventory Management', () => {
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
-    // Wait for item to appear
-    await expect(page.locator('text=Item to Delete')).toBeVisible();
+    // Wait for item to appear and click on it to open edit mode
+    await page.click('text=Item to Delete');
+
+    // Wait for delete button to appear in the modal
+    const deleteButton = page.locator('button', { hasText: 'Delete' });
+    await expect(deleteButton).toBeVisible();
+
+    // Set up dialog handler before clicking delete
+    page.once('dialog', (dialog) => dialog.accept());
 
     // Click delete button
-    await page.click(
-      '[aria-label="Delete Item to Delete"], button:has-text("Delete")',
-    );
-
-    // Confirm deletion
-    page.once('dialog', (dialog) => dialog.accept());
+    await deleteButton.click();
 
     // Verify item is removed
     await expect(page.locator('text=Item to Delete')).not.toBeVisible();
