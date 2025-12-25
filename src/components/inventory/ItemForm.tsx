@@ -147,6 +147,7 @@ export const ItemForm = ({
       <div className={styles.formGroup}>
         <Input
           id="name"
+          name="name"
           label={t('itemForm.name')}
           type="text"
           value={formData.name}
@@ -159,6 +160,7 @@ export const ItemForm = ({
       <div className={styles.formGroup}>
         <Select
           id="categoryId"
+          name="category"
           label={t('itemForm.category')}
           value={formData.categoryId}
           options={categoryOptions}
@@ -172,6 +174,7 @@ export const ItemForm = ({
         <div className={styles.formGroup}>
           <Input
             id="quantity"
+            name="quantity"
             label={t('itemForm.quantity')}
             type="number"
             value={formData.quantity}
@@ -186,6 +189,7 @@ export const ItemForm = ({
         <div className={styles.formGroup}>
           <Select
             id="unit"
+            name="unit"
             label={t('itemForm.unit')}
             value={formData.unit}
             options={unitOptions}
@@ -197,6 +201,7 @@ export const ItemForm = ({
       <div className={styles.formGroup}>
         <Input
           id="recommendedQuantity"
+          name="recommendedQuantity"
           label={t('itemForm.recommendedQuantity')}
           type="number"
           value={formData.recommendedQuantity}
