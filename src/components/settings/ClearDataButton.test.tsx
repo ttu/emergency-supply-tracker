@@ -1,0 +1,74 @@
+import { render, screen, fireEvent } from '@testing-library/react';
+import { ClearDataButton } from './ClearDataButton';
+import * as localStorage from '../../utils/storage/localStorage';
+
+// Mock i18next
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
+// Mock localStorage utilities
+jest.mock('../../utils/storage/localStorage');
+
+describe('ClearDataButton', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    global.alert = jest.fn();
+    global.confirm = jest.fn(() => false);
+  });
+
+  it('should render clear data button', () => {
+    render(<ClearDataButton />);
+
+    expect(screen.getByText('settings.clearData.button')).toBeInTheDocument();
+    expect(screen.getByText('settings.clearData.warning')).toBeInTheDocument();
+  });
+
+  it('should not clear data if first confirmation is cancelled', () => {
+    global.confirm = jest.fn(() => false);
+
+    render(<ClearDataButton />);
+
+    const button = screen.getByText('settings.clearData.button');
+    fireEvent.click(button);
+
+    expect(global.confirm).toHaveBeenCalledTimes(1);
+    expect(localStorage.clearAppData).not.toHaveBeenCalled();
+  });
+
+  it('should not clear data if second confirmation is cancelled', () => {
+    global.confirm = jest
+      .fn()
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false);
+
+    render(<ClearDataButton />);
+
+    const button = screen.getByText('settings.clearData.button');
+    fireEvent.click(button);
+
+    expect(global.confirm).toHaveBeenCalledTimes(2);
+    expect(localStorage.clearAppData).not.toHaveBeenCalled();
+  });
+
+  it('should clear data when both confirmations are accepted', () => {
+    global.confirm = jest.fn(() => true);
+
+    render(<ClearDataButton />);
+
+    const button = screen.getByText('settings.clearData.button');
+
+    // Note: window.location.reload() will throw in jsdom, so we catch it
+    try {
+      fireEvent.click(button);
+    } catch {
+      // Expected - window.location.reload() not implemented in jsdom
+    }
+
+    expect(global.confirm).toHaveBeenCalledTimes(2);
+    expect(localStorage.clearAppData).toHaveBeenCalled();
+    expect(global.alert).toHaveBeenCalledWith('settings.clearData.success');
+  });
+});

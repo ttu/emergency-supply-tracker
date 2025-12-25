@@ -85,6 +85,37 @@
         "label": "Water Tracking",
         "description": "Monitor water consumption and storage requirements"
       }
+    },
+    "export": {
+      "button": "Export Data",
+      "description": "Download all your data as a JSON file for backup or transfer",
+      "noData": "No data to export"
+    },
+    "import": {
+      "button": "Import Data",
+      "description": "Import data from a previously exported JSON file",
+      "confirmOverwrite": "This will replace all your current data. Are you sure?",
+      "success": "Data imported successfully",
+      "error": "Failed to import data. Please check the file format.",
+      "invalidFormat": "Invalid file format. Please select a valid backup file."
+    },
+    "shoppingList": {
+      "button": "Export Shopping List",
+      "description": "Generate a shopping list for items that need restocking",
+      "title": "Shopping List - Emergency Supplies",
+      "generated": "Generated",
+      "current": "Current",
+      "recommended": "Recommended",
+      "items": "items",
+      "noItems": "All items are fully stocked!",
+      "noItemsAlert": "No items need restocking. All supplies are adequate!"
+    },
+    "clearData": {
+      "button": "Clear All Data",
+      "warning": "⚠️ This action cannot be undone!",
+      "confirmMessage": "Are you sure you want to delete all your data? This cannot be undone.",
+      "confirmAgain": "Last chance! This will permanently delete everything. Continue?",
+      "success": "All data has been cleared"
     }
   },
   "themes": {

@@ -85,6 +85,37 @@
         "label": "Vesiseuranta",
         "description": "Seuraa vedenkulutusta ja varastointitarpeita"
       }
+    },
+    "export": {
+      "button": "Vie Tiedot",
+      "description": "Lataa kaikki tietosi JSON-tiedostona varmuuskopiointia tai siirtoa varten",
+      "noData": "Ei vietäviä tietoja"
+    },
+    "import": {
+      "button": "Tuo Tiedot",
+      "description": "Tuo tiedot aiemmin viedystä JSON-tiedostosta",
+      "confirmOverwrite": "Tämä korvaa kaikki nykyiset tietosi. Oletko varma?",
+      "success": "Tiedot tuotu onnistuneesti",
+      "error": "Tietojen tuonti epäonnistui. Tarkista tiedostomuoto.",
+      "invalidFormat": "Virheellinen tiedostomuoto. Valitse kelvollinen varmuuskopiotiedosto."
+    },
+    "shoppingList": {
+      "button": "Vie Ostoslista",
+      "description": "Luo ostoslista tuotteista, jotka tarvitsevat täydennystä",
+      "title": "Ostoslista - Hätävarat",
+      "generated": "Luotu",
+      "current": "Nykyinen",
+      "recommended": "Suositeltu",
+      "items": "tuotetta",
+      "noItems": "Kaikki tuotteet ovat täynnä!",
+      "noItemsAlert": "Mikään tuote ei tarvitse täydennystä. Kaikki varat ovat riittävät!"
+    },
+    "clearData": {
+      "button": "Tyhjennä Kaikki Tiedot",
+      "warning": "⚠️ Tätä toimintoa ei voi perua!",
+      "confirmMessage": "Haluatko varmasti poistaa kaikki tietosi? Tätä ei voi perua.",
+      "confirmAgain": "Viimeinen mahdollisuus! Tämä poistaa kaiken pysyvästi. Jatketaanko?",
+      "success": "Kaikki tiedot on tyhjennetty"
     }
   },
   "themes": {
