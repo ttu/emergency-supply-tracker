@@ -2,10 +2,18 @@ import type { InventoryItem } from '../../types';
 import type { Alert } from '../../components/dashboard/AlertBanner';
 import { STANDARD_CATEGORIES } from '../../data/standardCategories';
 
+type TranslationFunction = (
+  key: string,
+  options?: Record<string, string | number>,
+) => string;
+
 /**
  * Generate alerts for expired items
  */
-function generateExpirationAlerts(items: InventoryItem[]): Alert[] {
+function generateExpirationAlerts(
+  items: InventoryItem[],
+  t: TranslationFunction,
+): Alert[] {
   const alerts: Alert[] = [];
   const now = new Date();
 
@@ -23,14 +31,16 @@ function generateExpirationAlerts(items: InventoryItem[]): Alert[] {
       alerts.push({
         id: `expired-${item.id}`,
         type: 'critical',
-        message: 'Item has expired',
+        message: t('alerts.expiration.expired'),
         itemName: item.name,
       });
     } else if (daysUntilExpiration <= 7) {
       alerts.push({
         id: `expiring-soon-${item.id}`,
         type: 'warning',
-        message: `Expiring in ${daysUntilExpiration} days`,
+        message: t('alerts.expiration.expiringSoon', {
+          days: daysUntilExpiration,
+        }),
         itemName: item.name,
       });
     }
@@ -42,7 +52,10 @@ function generateExpirationAlerts(items: InventoryItem[]): Alert[] {
 /**
  * Generate alerts for categories with low stock (aggregated by category)
  */
-function generateCategoryStockAlerts(items: InventoryItem[]): Alert[] {
+function generateCategoryStockAlerts(
+  items: InventoryItem[],
+  t: TranslationFunction,
+): Alert[] {
   const alerts: Alert[] = [];
 
   STANDARD_CATEGORIES.forEach((category) => {
@@ -71,21 +84,25 @@ function generateCategoryStockAlerts(items: InventoryItem[]): Alert[] {
       alerts.push({
         id: `category-out-of-stock-${category.id}`,
         type: 'critical',
-        message: 'No items in stock',
+        message: t('alerts.stock.outOfStock'),
         itemName: category.name,
       });
     } else if (percentOfRecommended < 25) {
       alerts.push({
         id: `category-critically-low-${category.id}`,
         type: 'critical',
-        message: `Critically low (${Math.round(percentOfRecommended)}% stocked)`,
+        message: t('alerts.stock.criticallyLow', {
+          percent: Math.round(percentOfRecommended),
+        }),
         itemName: category.name,
       });
     } else if (percentOfRecommended < 50) {
       alerts.push({
         id: `category-low-stock-${category.id}`,
         type: 'warning',
-        message: `Running low (${Math.round(percentOfRecommended)}% stocked)`,
+        message: t('alerts.stock.runningLow', {
+          percent: Math.round(percentOfRecommended),
+        }),
         itemName: category.name,
       });
     }
@@ -97,9 +114,12 @@ function generateCategoryStockAlerts(items: InventoryItem[]): Alert[] {
 /**
  * Generate all alerts for dashboard
  */
-export function generateDashboardAlerts(items: InventoryItem[]): Alert[] {
-  const expirationAlerts = generateExpirationAlerts(items);
-  const categoryStockAlerts = generateCategoryStockAlerts(items);
+export function generateDashboardAlerts(
+  items: InventoryItem[],
+  t: TranslationFunction,
+): Alert[] {
+  const expirationAlerts = generateExpirationAlerts(items, t);
+  const categoryStockAlerts = generateCategoryStockAlerts(items, t);
 
   // Combine alerts (removed item-level critical alerts as they're now covered by category alerts)
   const allAlerts = [...expirationAlerts, ...categoryStockAlerts];

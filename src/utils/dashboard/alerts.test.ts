@@ -2,6 +2,20 @@ import { generateDashboardAlerts, countAlerts } from './alerts';
 import type { InventoryItem } from '../../types';
 import type { Alert } from '../../components/dashboard/AlertBanner';
 
+// Mock translation function
+const mockT = (key: string, options?: Record<string, string | number>) => {
+  // Simple mock that returns the key with interpolated values
+  if (key === 'alerts.expiration.expired') return 'Item has expired';
+  if (key === 'alerts.expiration.expiringSoon')
+    return `Expiring in ${options?.days} days`;
+  if (key === 'alerts.stock.outOfStock') return 'No items in stock';
+  if (key === 'alerts.stock.criticallyLow')
+    return `Critically low (${options?.percent}% stocked)`;
+  if (key === 'alerts.stock.runningLow')
+    return `Running low (${options?.percent}% stocked)`;
+  return key;
+};
+
 describe('generateDashboardAlerts', () => {
   beforeEach(() => {
     // Set a fixed date for testing
@@ -15,7 +29,7 @@ describe('generateDashboardAlerts', () => {
 
   it('should return empty array for no items', () => {
     const items: InventoryItem[] = [];
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     expect(alerts).toEqual([]);
   });
 
@@ -36,7 +50,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const expiredAlert = alerts.find((a) => a.id === 'expired-1');
 
     expect(expiredAlert).toBeDefined();
@@ -62,7 +76,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const expiringAlert = alerts.find((a) => a.id === 'expiring-soon-1');
 
     expect(expiringAlert).toBeDefined();
@@ -87,7 +101,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const expirationAlerts = alerts.filter(
       (a) => a.id.includes('expired') || a.id.includes('expiring'),
     );
@@ -112,7 +126,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const stockAlert = alerts.find((a) =>
       a.id.includes('category-out-of-stock'),
     );
@@ -139,7 +153,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const stockAlert = alerts.find((a) =>
       a.id.includes('category-critically-low'),
     );
@@ -167,7 +181,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const stockAlert = alerts.find((a) => a.id.includes('category-low-stock'));
 
     expect(stockAlert).toBeDefined();
@@ -193,7 +207,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const stockAlerts = alerts.filter((a) => a.id.includes('category'));
 
     expect(stockAlerts).toHaveLength(0);
@@ -229,7 +243,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
 
     // Critical alerts should come before warning alerts
     const criticalIndices = alerts
@@ -263,7 +277,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const stockAlerts = alerts.filter((a) => a.id.includes('stock'));
 
     // Should not generate stock alerts when recommended is 0
@@ -300,7 +314,7 @@ describe('generateDashboardAlerts', () => {
       },
     ];
 
-    const alerts = generateDashboardAlerts(items);
+    const alerts = generateDashboardAlerts(items, mockT);
     const categoryAlerts = alerts.filter((a) => a.id.includes('category'));
 
     // Total: 15 liters / 35 liters = 42.8% (between 25% and 50%)

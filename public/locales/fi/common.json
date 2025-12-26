@@ -35,11 +35,15 @@
     "critical": "Kriittinen"
   },
   "alerts": {
-    "outOfStock": "Loppu varastosta",
-    "expired": "Vanhentunut",
-    "expiringSoon": "Vanhenee pian",
-    "lowQuantity": "Vähän jäljellä",
-    "missingItem": "Suositeltu tuote puuttuu"
+    "expiration": {
+      "expired": "Tuote on vanhentunut",
+      "expiringSoon": "Vanhenee {{days}} päivässä"
+    },
+    "stock": {
+      "outOfStock": "Ei varastossa",
+      "criticallyLow": "Kriittisen vähän ({{percent}}% varastossa)",
+      "runningLow": "Vähissä ({{percent}}% varastossa)"
+    }
   },
   "household": {
     "title": "Kotitalouden Asetukset",

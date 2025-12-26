@@ -35,11 +35,15 @@
     "critical": "Critical"
   },
   "alerts": {
-    "outOfStock": "Out of stock",
-    "expired": "Expired",
-    "expiringSoon": "Expiring soon",
-    "lowQuantity": "Low quantity",
-    "missingItem": "Missing recommended item"
+    "expiration": {
+      "expired": "Item has expired",
+      "expiringSoon": "Expiring in {{days}} days"
+    },
+    "stock": {
+      "outOfStock": "No items in stock",
+      "criticallyLow": "Critically low ({{percent}}% stocked)",
+      "runningLow": "Running low ({{percent}}% stocked)"
+    }
   },
   "household": {
     "title": "Household Configuration",

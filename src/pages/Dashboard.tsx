@@ -60,7 +60,10 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   );
 
   // Generate alerts
-  const allAlerts = useMemo(() => generateDashboardAlerts(items), [items]);
+  const allAlerts = useMemo(
+    () => generateDashboardAlerts(items, t),
+    [items, t],
+  );
 
   // Filter out dismissed alerts
   const activeAlerts = useMemo(
