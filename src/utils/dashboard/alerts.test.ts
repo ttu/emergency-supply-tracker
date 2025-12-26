@@ -95,12 +95,12 @@ describe('generateDashboardAlerts', () => {
     expect(expirationAlerts).toHaveLength(0);
   });
 
-  it('should generate out of stock alerts', () => {
+  it('should generate category out of stock alerts', () => {
     const items: InventoryItem[] = [
       {
         id: '1',
         name: 'Water',
-        categoryId: 'water',
+        categoryId: 'water-beverages',
         quantity: 0,
         unit: 'gallons',
         recommendedQuantity: 28,
@@ -113,19 +113,21 @@ describe('generateDashboardAlerts', () => {
     ];
 
     const alerts = generateDashboardAlerts(items);
-    const stockAlert = alerts.find((a) => a.id === 'out-of-stock-1');
+    const stockAlert = alerts.find((a) =>
+      a.id.includes('category-out-of-stock'),
+    );
 
     expect(stockAlert).toBeDefined();
     expect(stockAlert?.type).toBe('critical');
-    expect(stockAlert?.message).toBe('Out of stock');
+    expect(stockAlert?.message).toBe('No items in stock');
   });
 
-  it('should generate critically low stock alerts', () => {
+  it('should generate category critically low stock alerts', () => {
     const items: InventoryItem[] = [
       {
         id: '1',
         name: 'Water',
-        categoryId: 'water',
+        categoryId: 'water-beverages',
         quantity: 5,
         unit: 'gallons',
         recommendedQuantity: 28, // 5/28 = 17.8% < 25%
@@ -138,19 +140,22 @@ describe('generateDashboardAlerts', () => {
     ];
 
     const alerts = generateDashboardAlerts(items);
-    const stockAlert = alerts.find((a) => a.id === 'critically-low-1');
+    const stockAlert = alerts.find((a) =>
+      a.id.includes('category-critically-low'),
+    );
 
     expect(stockAlert).toBeDefined();
     expect(stockAlert?.type).toBe('critical');
-    expect(stockAlert?.message).toBe('Critically low stock');
+    expect(stockAlert?.message).toContain('Critically low');
+    expect(stockAlert?.message).toContain('%');
   });
 
-  it('should generate low stock warning alerts', () => {
+  it('should generate category low stock warning alerts', () => {
     const items: InventoryItem[] = [
       {
         id: '1',
         name: 'Water',
-        categoryId: 'water',
+        categoryId: 'water-beverages',
         quantity: 10,
         unit: 'gallons',
         recommendedQuantity: 28, // 10/28 = 35.7% (between 25% and 50%)
@@ -163,19 +168,20 @@ describe('generateDashboardAlerts', () => {
     ];
 
     const alerts = generateDashboardAlerts(items);
-    const stockAlert = alerts.find((a) => a.id === 'low-stock-1');
+    const stockAlert = alerts.find((a) => a.id.includes('category-low-stock'));
 
     expect(stockAlert).toBeDefined();
     expect(stockAlert?.type).toBe('warning');
-    expect(stockAlert?.message).toBe('Running low on stock');
+    expect(stockAlert?.message).toContain('Running low');
+    expect(stockAlert?.message).toContain('%');
   });
 
-  it('should not generate stock alerts when quantity is adequate', () => {
+  it('should not generate stock alerts when category quantity is adequate', () => {
     const items: InventoryItem[] = [
       {
         id: '1',
         name: 'Water',
-        categoryId: 'water',
+        categoryId: 'water-beverages',
         quantity: 28,
         unit: 'gallons',
         recommendedQuantity: 28,
@@ -188,12 +194,7 @@ describe('generateDashboardAlerts', () => {
     ];
 
     const alerts = generateDashboardAlerts(items);
-    const stockAlerts = alerts.filter(
-      (a) =>
-        a.id.includes('stock') ||
-        a.id.includes('out-of') ||
-        a.id.includes('critically-low'),
-    );
+    const stockAlerts = alerts.filter((a) => a.id.includes('category'));
 
     expect(stockAlerts).toHaveLength(0);
   });
@@ -267,6 +268,47 @@ describe('generateDashboardAlerts', () => {
 
     // Should not generate stock alerts when recommended is 0
     expect(stockAlerts).toHaveLength(0);
+  });
+
+  it('should aggregate multiple items in same category for stock alerts', () => {
+    const items: InventoryItem[] = [
+      {
+        id: '1',
+        name: 'Bottled Water',
+        categoryId: 'water-beverages',
+        quantity: 5,
+        unit: 'liters',
+        recommendedQuantity: 20,
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        location: '',
+        notes: '',
+        tags: [],
+      },
+      {
+        id: '2',
+        name: 'Juice',
+        categoryId: 'water-beverages',
+        quantity: 10,
+        unit: 'liters',
+        recommendedQuantity: 15,
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        location: '',
+        notes: '',
+        tags: [],
+      },
+    ];
+
+    const alerts = generateDashboardAlerts(items);
+    const categoryAlerts = alerts.filter((a) => a.id.includes('category'));
+
+    // Total: 15 liters / 35 liters = 42.8% (between 25% and 50%)
+    // Should generate ONE warning alert for the category, not two separate alerts
+    expect(categoryAlerts).toHaveLength(1);
+    expect(categoryAlerts[0].type).toBe('warning');
+    expect(categoryAlerts[0].message).toContain('Running low');
+    expect(categoryAlerts[0].message).toContain('43%'); // Rounded percentage (15/35 = 42.857 -> 43%)
   });
 });
 

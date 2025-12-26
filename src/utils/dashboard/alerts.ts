@@ -1,6 +1,6 @@
 import type { InventoryItem } from '../../types';
-import { calculateItemStatus } from '../calculations/status';
 import type { Alert } from '../../components/dashboard/AlertBanner';
+import { STANDARD_CATEGORIES } from '../../data/standardCategories';
 
 /**
  * Generate alerts for expired items
@@ -40,65 +40,54 @@ function generateExpirationAlerts(items: InventoryItem[]): Alert[] {
 }
 
 /**
- * Generate alerts for items with low stock
+ * Generate alerts for categories with low stock (aggregated by category)
  */
-function generateLowStockAlerts(items: InventoryItem[]): Alert[] {
+function generateCategoryStockAlerts(items: InventoryItem[]): Alert[] {
   const alerts: Alert[] = [];
 
-  items.forEach((item) => {
-    const percentOfRecommended =
-      item.recommendedQuantity > 0
-        ? (item.quantity / item.recommendedQuantity) * 100
-        : 100;
+  STANDARD_CATEGORIES.forEach((category) => {
+    const categoryItems = items.filter(
+      (item) => item.categoryId === category.id,
+    );
 
-    if (item.quantity === 0) {
+    if (categoryItems.length === 0) {
+      // No items in this category yet
+      return;
+    }
+
+    // Calculate total quantity vs total recommended for the category
+    let totalQuantity = 0;
+    let totalRecommended = 0;
+
+    categoryItems.forEach((item) => {
+      totalQuantity += item.quantity;
+      totalRecommended += item.recommendedQuantity;
+    });
+
+    const percentOfRecommended =
+      totalRecommended > 0 ? (totalQuantity / totalRecommended) * 100 : 100;
+
+    if (totalQuantity === 0) {
       alerts.push({
-        id: `out-of-stock-${item.id}`,
+        id: `category-out-of-stock-${category.id}`,
         type: 'critical',
-        message: 'Out of stock',
-        itemName: item.name,
+        message: 'No items in stock',
+        itemName: category.name,
       });
     } else if (percentOfRecommended < 25) {
       alerts.push({
-        id: `critically-low-${item.id}`,
+        id: `category-critically-low-${category.id}`,
         type: 'critical',
-        message: 'Critically low stock',
-        itemName: item.name,
+        message: `Critically low (${Math.round(percentOfRecommended)}% stocked)`,
+        itemName: category.name,
       });
     } else if (percentOfRecommended < 50) {
       alerts.push({
-        id: `low-stock-${item.id}`,
+        id: `category-low-stock-${category.id}`,
         type: 'warning',
-        message: 'Running low on stock',
-        itemName: item.name,
+        message: `Running low (${Math.round(percentOfRecommended)}% stocked)`,
+        itemName: category.name,
       });
-    }
-  });
-
-  return alerts;
-}
-
-/**
- * Generate alerts for items with critical status
- */
-function generateCriticalItemAlerts(items: InventoryItem[]): Alert[] {
-  const alerts: Alert[] = [];
-
-  items.forEach((item) => {
-    const status = calculateItemStatus(item);
-    if (status === 'critical') {
-      // Check if we already have an expiration or stock alert for this item
-      const hasExpirationIssue = item.expirationDate && !item.neverExpires;
-      const hasStockIssue = item.quantity < item.recommendedQuantity * 0.5;
-
-      if (!hasExpirationIssue && !hasStockIssue) {
-        alerts.push({
-          id: `critical-${item.id}`,
-          type: 'critical',
-          message: 'Needs attention',
-          itemName: item.name,
-        });
-      }
     }
   });
 
@@ -110,11 +99,10 @@ function generateCriticalItemAlerts(items: InventoryItem[]): Alert[] {
  */
 export function generateDashboardAlerts(items: InventoryItem[]): Alert[] {
   const expirationAlerts = generateExpirationAlerts(items);
-  const lowStockAlerts = generateLowStockAlerts(items);
-  const criticalAlerts = generateCriticalItemAlerts(items);
+  const categoryStockAlerts = generateCategoryStockAlerts(items);
 
-  // Combine and deduplicate alerts
-  const allAlerts = [...expirationAlerts, ...lowStockAlerts, ...criticalAlerts];
+  // Combine alerts (removed item-level critical alerts as they're now covered by category alerts)
+  const allAlerts = [...expirationAlerts, ...categoryStockAlerts];
 
   // Sort by priority: critical first, then warning, then info
   const priorityOrder = { critical: 0, warning: 1, info: 2 };
