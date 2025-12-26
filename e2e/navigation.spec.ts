@@ -13,9 +13,7 @@ test.describe('Navigation', () => {
 
     // Navigate to Inventory
     await page.click('text=Inventory');
-    await expect(
-      page.locator('button', { hasText: 'Add from Template' }),
-    ).toBeVisible();
+    await expect(page.locator('button', { hasText: 'Add Item' })).toBeVisible();
 
     // Navigate to Settings
     await page.click('text=Settings');
@@ -51,8 +49,10 @@ test.describe('Navigation', () => {
   test('should persist data across page navigation', async ({ page }) => {
     // Add item on Inventory page
     await page.click('text=Inventory');
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
     await page.fill('input[name="name"]', 'Persistent Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
@@ -80,9 +80,7 @@ test.describe('Navigation', () => {
 
     // Navigate to different pages
     await page.click('text=Inventory');
-    await expect(
-      page.locator('button', { hasText: 'Add from Template' }),
-    ).toBeVisible();
+    await expect(page.locator('button', { hasText: 'Add Item' })).toBeVisible();
 
     await page.click('text=Settings');
     await expect(page.locator('h1:has-text("Settings")')).toBeVisible();

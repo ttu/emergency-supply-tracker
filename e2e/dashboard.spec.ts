@@ -34,9 +34,10 @@ test.describe('Dashboard', () => {
   test('should update dashboard when items are added', async ({ page }) => {
     // Navigate to Inventory and add an item
     await page.click('text=Inventory');
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
     await page.fill('input[name="name"]', 'Test Food Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '10');
@@ -55,9 +56,10 @@ test.describe('Dashboard', () => {
   test('should show alerts when items need attention', async ({ page }) => {
     // Add item with low quantity
     await page.click('text=Inventory');
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
     await page.fill('input[name="name"]', 'Low Stock Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1'); // Low quantity
@@ -85,6 +87,9 @@ test.describe('Dashboard', () => {
 
     // Should be on Inventory page with template selector modal open
     await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+
+    // Close the modal
+    await page.click('button[aria-label="Close modal"]');
 
     // Go back to Dashboard
     await page.click('text=Dashboard');

@@ -12,8 +12,9 @@ test.describe('Inventory Management', () => {
     // Navigate to Inventory
     await page.click('text=Inventory');
 
-    // Click "Add from Template"
-    await page.click('text=Add Item');
+    // Click "Add Item" button
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
 
     // Wait for template selector to appear
     await expect(page.locator('text=Select Item')).toBeVisible();
@@ -45,12 +46,19 @@ test.describe('Inventory Management', () => {
     // Navigate to Inventory
     await page.click('text=Inventory');
 
-    // Click "Add Custom Item"
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
+    // Click "Add Item" to open template selector
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
 
-    // Wait for form to appear
-    await expect(page.locator('text=Add Item')).toBeVisible();
+    // Wait for template selector modal
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+
+    // Click "Custom Item" button in template selector
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+
+    // Wait for Add Item form modal to appear
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
 
     // Fill in the form
     await page.fill('input[name="name"]', 'Custom Flashlight');
@@ -70,8 +78,10 @@ test.describe('Inventory Management', () => {
   test('should edit existing item', async ({ page }) => {
     // Navigate to Inventory and add an item first
     await page.click('text=Inventory');
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
 
     await page.fill('input[name="name"]', 'Test Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -98,8 +108,10 @@ test.describe('Inventory Management', () => {
   test('should delete item', async ({ page }) => {
     // Navigate to Inventory and add an item first
     await page.click('text=Inventory');
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
 
     await page.fill('input[name="name"]', 'Item to Delete');
     await page.selectOption('select[name="category"]', 'food');
@@ -131,8 +143,10 @@ test.describe('Inventory Management', () => {
     await page.click('text=Inventory');
 
     // Add food item
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
     await page.fill('input[name="name"]', 'Food Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
@@ -144,8 +158,10 @@ test.describe('Inventory Management', () => {
     await expect(page.locator('text=Food Item')).toBeVisible();
 
     // Add water item
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
     await page.fill('input[name="name"]', 'Water Item');
     await page.selectOption('select[name="category"]', 'water-beverages');
     await page.fill('input[name="quantity"]', '1');
@@ -174,8 +190,10 @@ test.describe('Inventory Management', () => {
     // Navigate to Inventory and add items
     await page.click('text=Inventory');
 
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
     await page.fill('input[name="name"]', 'Searchable Item A');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
@@ -184,8 +202,10 @@ test.describe('Inventory Management', () => {
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
-    await page.click('text=Add Item');
-    await page.click('text=Custom Item');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
     await page.fill('input[name="name"]', 'Different Item B');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
@@ -213,8 +233,9 @@ test.describe('Inventory Management', () => {
     // Navigate to Inventory
     await page.click('text=Inventory');
 
-    // Click "Add from Template"
-    await page.click('text=Add Item');
+    // Click "Add Item" button
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
 
     // Wait for template selector to appear
     await expect(page.locator('text=Select Item')).toBeVisible();
@@ -272,5 +293,101 @@ test.describe('Inventory Management', () => {
       unitOptions.some((opt) => opt === 'liters' || opt === 'Liters'),
     ).toBe(true);
     expect(unitOptions.some((opt) => opt.startsWith('units.'))).toBe(false);
+  });
+
+  test('should show item type when adding from template', async ({ page }) => {
+    // Navigate to Inventory
+    await page.click('text=Inventory');
+
+    // Open template selector and select a template
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+
+    // Click on Bottled Water template
+    await page.click('button:has-text("Bottled Water")');
+
+    // Wait for form modal to open
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+
+    // Should show item type label
+    await expect(page.locator('label:has-text("Item Type")')).toBeVisible();
+
+    // The form should have the item name pre-filled with "Bottled Water"
+    const nameInput = page.locator('input[name="name"]');
+    await expect(nameInput).toHaveValue('Bottled Water');
+  });
+
+  test('should navigate back to template selector using back button', async ({
+    page,
+  }) => {
+    // Navigate to Inventory
+    await page.click('text=Inventory');
+
+    // Open template selector
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+
+    // Click Custom Item
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+
+    // Click back button (←)
+    await page.click('button[aria-label="Go back"]');
+
+    // Should be back at template selector
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+  });
+
+  test('should show cancel button only when editing existing item', async ({
+    page,
+  }) => {
+    // Navigate to Inventory and add an item first
+    await page.click('text=Inventory');
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.click('button:has-text("Custom Item")');
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+
+    // When adding new item, should only have submit button visible
+    const submitButton = page.locator('button[type="submit"]');
+    await expect(submitButton).toBeVisible();
+
+    // Fill in and save item
+    await page.fill('input[name="name"]', 'Test Edit Item');
+    await page.selectOption('select[name="category"]', 'food');
+    await page.fill('input[name="quantity"]', '5');
+    await page.check('input[type="checkbox"]');
+    await page.click('button[type="submit"]');
+
+    // Wait for item to appear
+    await expect(page.locator('text=Test Edit Item')).toBeVisible();
+
+    // Click to edit the item
+    await page.click('text=Test Edit Item');
+
+    // When editing existing item, should show both Save and Cancel buttons
+    // Verify we have a secondary variant button (Cancel button uses secondary variant)
+    await expect(page.locator('button[type="submit"]')).toBeVisible();
+    // Check for a button with common.cancel text
+    await expect(page.locator('button', { hasText: /cancel/i })).toBeVisible();
+  });
+
+  test('should show custom item option in template selector', async ({
+    page,
+  }) => {
+    // Navigate to Inventory
+    await page.click('text=Inventory');
+
+    // Open template selector
+    await page.click('button:has-text("Add Item")');
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+
+    // Should see Custom Item button with dashed border style
+    const customItemButton = page.locator('button:has-text("Custom Item")');
+    await expect(customItemButton).toBeVisible();
+
+    // Click it to open custom item form
+    await customItemButton.click();
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
   });
 });
