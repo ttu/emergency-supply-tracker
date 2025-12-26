@@ -36,7 +36,7 @@ export const TemplateSelector = ({
   });
 
   const categoryOptions = [
-    { value: '', label: t('allCategories', { ns: 'inventory' }) },
+    { value: '', label: t('inventory.allCategories') },
     ...categories.map((cat) => ({
       value: cat.id,
       label: t(cat.id, { ns: 'categories' }),
