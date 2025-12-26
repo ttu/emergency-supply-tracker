@@ -13,16 +13,21 @@ import './App.css';
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [openInventoryModal, setOpenInventoryModal] = useState(false);
+  const [initialCategoryId, setInitialCategoryId] = useState<
+    string | undefined
+  >(undefined);
 
   const handleNavigate = (
     page: PageType,
-    options?: { openAddModal?: boolean },
+    options?: { openAddModal?: boolean; initialCategoryId?: string },
   ) => {
     setCurrentPage(page);
-    if (page === 'inventory' && options?.openAddModal) {
-      setOpenInventoryModal(true);
+    if (page === 'inventory') {
+      setOpenInventoryModal(options?.openAddModal || false);
+      setInitialCategoryId(options?.initialCategoryId);
     } else {
       setOpenInventoryModal(false);
+      setInitialCategoryId(undefined);
     }
   };
 
@@ -31,7 +36,12 @@ function App() {
       case 'dashboard':
         return <Dashboard onNavigate={handleNavigate} />;
       case 'inventory':
-        return <Inventory openAddModal={openInventoryModal} />;
+        return (
+          <Inventory
+            openAddModal={openInventoryModal}
+            initialCategoryId={initialCategoryId}
+          />
+        );
       case 'settings':
         return <Settings />;
       case 'help':

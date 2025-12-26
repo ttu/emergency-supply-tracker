@@ -23,16 +23,20 @@ type SortBy = 'name' | 'quantity' | 'expiration';
 
 export interface InventoryProps {
   openAddModal?: boolean;
+  initialCategoryId?: string;
 }
 
-export function Inventory({ openAddModal = false }: InventoryProps = {}) {
+export function Inventory({
+  openAddModal = false,
+  initialCategoryId,
+}: InventoryProps = {}) {
   const { t } = useTranslation(['common', 'products']);
   const { items, addItem, updateItem, deleteItem } = useInventory();
   const { household } = useHousehold();
 
   // Filter and sort state
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    null,
+    initialCategoryId || null,
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');

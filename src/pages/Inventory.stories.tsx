@@ -35,3 +35,9 @@ export const WithModalOpen: Story = {
     openAddModal: true,
   },
 };
+
+export const WithCategoryFilter: Story = {
+  args: {
+    initialCategoryId: 'water-beverages',
+  },
+};

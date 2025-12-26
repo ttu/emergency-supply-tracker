@@ -102,20 +102,15 @@ describe('Dashboard', () => {
 
   it('should handle category click', () => {
     const onNavigate = jest.fn();
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
     renderWithProviders(<Dashboard onNavigate={onNavigate} />);
 
     const categoryButton = screen.getByTestId('category-water-beverages');
     fireEvent.click(categoryButton);
 
-    // Should navigate to inventory page
-    expect(onNavigate).toHaveBeenCalledWith('inventory');
-    // Should log category for future filtering implementation
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Navigate to category:',
-      'water-beverages',
-    );
-    consoleSpy.mockRestore();
+    // Should navigate to inventory page with category filter
+    expect(onNavigate).toHaveBeenCalledWith('inventory', {
+      initialCategoryId: 'water-beverages',
+    });
   });
 
   it('should handle quick action clicks', () => {

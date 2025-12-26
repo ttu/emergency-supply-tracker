@@ -23,6 +23,7 @@ export const CategoryNav = ({
         }`}
         onClick={() => onSelectCategory(null)}
         aria-current={selectedCategoryId === null ? 'page' : undefined}
+        data-testid="category-all"
       >
         <span className={styles.icon}>📦</span>
         <span className={styles.label}>{t('inventory.allCategories')}</span>
@@ -36,6 +37,7 @@ export const CategoryNav = ({
           }`}
           onClick={() => onSelectCategory(category.id)}
           aria-current={selectedCategoryId === category.id ? 'page' : undefined}
+          data-testid={`category-${category.id}`}
         >
           <span className={styles.icon}>{category.icon}</span>
           <span className={styles.label}>

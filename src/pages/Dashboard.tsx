@@ -17,7 +17,10 @@ import type { PageType } from '../components/common/Navigation';
 import styles from './Dashboard.module.css';
 
 export interface DashboardProps {
-  onNavigate?: (page: PageType, options?: { openAddModal?: boolean }) => void;
+  onNavigate?: (
+    page: PageType,
+    options?: { openAddModal?: boolean; initialCategoryId?: string },
+  ) => void;
 }
 
 export function Dashboard({ onNavigate }: DashboardProps = {}) {
@@ -77,9 +80,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
 
   const handleCategoryClick = (categoryId: string) => {
     // Navigate to inventory page filtered by category
-    onNavigate?.('inventory');
-    // TODO: Pass category filter to inventory page
-    console.log('Navigate to category:', categoryId);
+    onNavigate?.('inventory', { initialCategoryId: categoryId });
   };
 
   const handleAddItems = () => {

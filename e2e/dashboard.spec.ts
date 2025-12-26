@@ -116,4 +116,22 @@ test.describe('Dashboard', () => {
     // Note: We don't click export as it's a download action
     // The presence of the button validates it's wired up
   });
+
+  test('should navigate to inventory with category filter when clicking category card', async ({
+    page,
+  }) => {
+    // Click on Food category card
+    const foodCategoryCard = page.locator('[data-testid="category-food"]');
+    await expect(foodCategoryCard).toBeVisible();
+    await foodCategoryCard.click();
+
+    // Should navigate to Inventory page
+    await expect(page.locator('h1:has-text("Inventory")')).toBeVisible();
+
+    // Food category should be selected in the category navigation
+    const foodCategoryButton = page.locator(
+      'button[data-testid="category-food"]',
+    );
+    await expect(foodCategoryButton).toHaveClass(/selected|active/);
+  });
 });
