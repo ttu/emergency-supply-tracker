@@ -232,4 +232,26 @@ describe('TemplateSelector', () => {
 
     expect(screen.getByText('Bottled Water')).toBeInTheDocument();
   });
+
+  it('should pre-select category when initialCategoryId is provided', () => {
+    render(
+      <TemplateSelector
+        templates={mockTemplates}
+        categories={STANDARD_CATEGORIES}
+        onSelectTemplate={mockOnSelectTemplate}
+        initialCategoryId="food"
+      />,
+    );
+
+    // Should only show food templates
+    expect(screen.queryByText('Bottled Water')).not.toBeInTheDocument();
+    expect(screen.getByText('Canned Beans')).toBeInTheDocument();
+    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
+
+    // Category select should have food selected
+    const categorySelect = screen.getByLabelText(
+      'templateSelector.categoryLabel',
+    ) as HTMLSelectElement;
+    expect(categorySelect.value).toBe('food');
+  });
 });

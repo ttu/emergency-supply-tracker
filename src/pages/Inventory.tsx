@@ -238,6 +238,7 @@ export function Inventory() {
             templates={RECOMMENDED_ITEMS}
             categories={STANDARD_CATEGORIES}
             onSelectTemplate={handleSelectTemplate}
+            initialCategoryId={selectedCategoryId || ''}
           />
         </Modal>
       )}

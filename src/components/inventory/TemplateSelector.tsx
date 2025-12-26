@@ -9,16 +9,19 @@ export interface TemplateSelectorProps {
   templates: RecommendedItemDefinition[];
   categories: Category[];
   onSelectTemplate: (template: RecommendedItemDefinition) => void;
+  initialCategoryId?: string;
 }
 
 export const TemplateSelector = ({
   templates,
   categories,
   onSelectTemplate,
+  initialCategoryId = '',
 }: TemplateSelectorProps) => {
   const { t } = useTranslation(['common', 'categories', 'products', 'units']);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
+  const [selectedCategoryId, setSelectedCategoryId] =
+    useState<string>(initialCategoryId);
 
   const filteredTemplates = templates.filter((template) => {
     // i18nKey is like 'products.bottled-water', extract the key part
