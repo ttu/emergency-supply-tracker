@@ -108,7 +108,6 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
       {/* Alerts Section */}
       {activeAlerts.length > 0 && (
         <section className={styles.alertsSection}>
-          <h2 className={styles.sectionTitle}>{t('dashboard.alerts')}</h2>
           <AlertBanner alerts={activeAlerts} onDismiss={handleDismissAlert} />
         </section>
       )}

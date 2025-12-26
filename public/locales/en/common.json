@@ -27,7 +27,8 @@
     "cancel": "Cancel",
     "export": "Export",
     "import": "Import",
-    "clear": "Clear"
+    "clear": "Clear",
+    "dismiss": "Dismiss"
   },
   "status": {
     "ok": "OK",
@@ -148,7 +149,9 @@
   "dashboard": {
     "title": "Emergency Supplies Dashboard",
     "subtitle": "Tracking supplies for {{people}} people for {{days}} days",
-    "alerts": "Alerts",
+    "alerts": {
+      "title": "Alerts"
+    },
     "quickActions": "Quick Actions",
     "categoriesOverview": "Categories Overview",
     "addItems": "Add Items",

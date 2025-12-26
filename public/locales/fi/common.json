@@ -27,7 +27,8 @@
     "cancel": "Peruuta",
     "export": "Vie",
     "import": "Tuo",
-    "clear": "Tyhjennä"
+    "clear": "Tyhjennä",
+    "dismiss": "Hylkää"
   },
   "status": {
     "ok": "OK",
@@ -148,7 +149,9 @@
   "dashboard": {
     "title": "Hätävarastojen Hallinta",
     "subtitle": "Seurataan varastoja {{people}} henkilölle {{days}} päiväksi",
-    "alerts": "Hälytykset",
+    "alerts": {
+      "title": "Hälytykset"
+    },
     "quickActions": "Pikatoiminnot",
     "categoriesOverview": "Kategoriat",
     "addItems": "Lisää Tuotteita",
