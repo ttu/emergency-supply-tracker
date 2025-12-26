@@ -25,6 +25,7 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
       />,
     );
 
@@ -32,13 +33,10 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const recommendedQuantityInput = document.querySelector(
-      '#recommendedQuantity',
-    ) as HTMLInputElement;
 
     expect(nameInput).toHaveValue('');
     expect(quantityInput).toHaveValue(null);
-    expect(recommendedQuantityInput).toHaveValue(null);
+    expect(screen.getByText(/10/)).toBeInTheDocument(); // Recommended quantity display
     expect(
       screen.getByRole('button', { name: 'common.add' }),
     ).toBeInTheDocument();
@@ -74,9 +72,6 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const recommendedQuantityInput = document.querySelector(
-      '#recommendedQuantity',
-    ) as HTMLInputElement;
     const locationInput = document.querySelector(
       '#location',
     ) as HTMLInputElement;
@@ -86,7 +81,7 @@ describe('ItemForm', () => {
 
     expect(nameInput).toHaveValue('Water');
     expect(quantityInput).toHaveValue(20);
-    expect(recommendedQuantityInput).toHaveValue(28);
+    expect(screen.getByText(/28/)).toBeInTheDocument(); // Recommended quantity display
     expect(locationInput).toHaveValue('Pantry');
     expect(notesTextarea).toHaveValue('Test notes');
     expect(
@@ -116,6 +111,7 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
       />,
     );
 
@@ -126,14 +122,10 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const recommendedQuantityInput = document.querySelector(
-      '#recommendedQuantity',
-    ) as HTMLInputElement;
 
     fireEvent.change(nameInput, { target: { value: 'Test Item' } });
     fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
     fireEvent.change(quantityInput, { target: { value: '-5' } });
-    fireEvent.change(recommendedQuantityInput, { target: { value: '-10' } });
 
     const submitButton = screen.getByRole('button', { name: 'common.add' });
     fireEvent.click(submitButton);
@@ -148,6 +140,7 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
+        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -158,14 +151,10 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const recommendedQuantityInput = document.querySelector(
-      '#recommendedQuantity',
-    ) as HTMLInputElement;
 
     fireEvent.change(nameInput, { target: { value: 'Test Item' } });
     fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
     fireEvent.change(quantityInput, { target: { value: '10' } });
-    fireEvent.change(recommendedQuantityInput, { target: { value: '20' } });
 
     const submitButton = screen.getByRole('button', { name: 'common.add' });
     fireEvent.click(submitButton);
@@ -180,6 +169,7 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
+        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -189,9 +179,6 @@ describe('ItemForm', () => {
     ) as HTMLSelectElement;
     const quantityInput = document.querySelector(
       '#quantity',
-    ) as HTMLInputElement;
-    const recommendedQuantityInput = document.querySelector(
-      '#recommendedQuantity',
     ) as HTMLInputElement;
     const expirationDateInput = document.querySelector(
       '#expirationDate',
@@ -206,7 +193,6 @@ describe('ItemForm', () => {
     fireEvent.change(nameInput, { target: { value: 'Test Item' } });
     fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
     fireEvent.change(quantityInput, { target: { value: '10' } });
-    fireEvent.change(recommendedQuantityInput, { target: { value: '20' } });
     fireEvent.change(expirationDateInput, { target: { value: '2025-12-31' } });
     fireEvent.change(locationInput, { target: { value: 'Pantry' } });
     fireEvent.change(notesTextarea, { target: { value: 'Test notes' } });
@@ -254,6 +240,7 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
+        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -264,15 +251,11 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const recommendedQuantityInput = document.querySelector(
-      '#recommendedQuantity',
-    ) as HTMLInputElement;
     const neverExpiresCheckbox = screen.getByRole('checkbox');
 
     fireEvent.change(nameInput, { target: { value: 'Test Item' } });
     fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
     fireEvent.change(quantityInput, { target: { value: '10' } });
-    fireEvent.change(recommendedQuantityInput, { target: { value: '20' } });
     fireEvent.click(neverExpiresCheckbox);
 
     fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
@@ -312,6 +295,7 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
+        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -327,9 +311,6 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const recommendedQuantityInput = document.querySelector(
-      '#recommendedQuantity',
-    ) as HTMLInputElement;
     const expirationDateInput = document.querySelector(
       '#expirationDate',
     ) as HTMLInputElement;
@@ -337,7 +318,6 @@ describe('ItemForm', () => {
     fireEvent.change(nameInput, { target: { value: 'Test Item' } });
     fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
     fireEvent.change(quantityInput, { target: { value: '10' } });
-    fireEvent.change(recommendedQuantityInput, { target: { value: '20' } });
     fireEvent.change(expirationDateInput, { target: { value: '2025-12-31' } });
 
     // Submit again

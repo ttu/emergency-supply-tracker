@@ -13,6 +13,7 @@ export interface ItemFormProps {
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
   ) => void;
   onCancel: () => void;
+  defaultRecommendedQuantity?: number;
 }
 
 interface FormData {
@@ -20,7 +21,6 @@ interface FormData {
   categoryId: string;
   quantity: string;
   unit: string;
-  recommendedQuantity: string;
   neverExpires: boolean;
   expirationDate: string;
   location: string;
@@ -31,7 +31,6 @@ interface FormErrors {
   name?: string;
   categoryId?: string;
   quantity?: string;
-  recommendedQuantity?: string;
   expirationDate?: string;
 }
 
@@ -40,15 +39,18 @@ export const ItemForm = ({
   categories,
   onSubmit,
   onCancel,
+  defaultRecommendedQuantity = 1,
 }: ItemFormProps) => {
   const { t } = useTranslation(['common', 'categories', 'units']);
+
+  const recommendedQuantity =
+    item?.recommendedQuantity ?? defaultRecommendedQuantity;
 
   const [formData, setFormData] = useState<FormData>(() => ({
     name: item?.name || '',
     categoryId: item?.categoryId || '',
     quantity: item?.quantity?.toString() || '',
     unit: item?.unit || 'pieces',
-    recommendedQuantity: item?.recommendedQuantity?.toString() || '',
     neverExpires: item?.neverExpires ?? false,
     expirationDate: item?.expirationDate || '',
     location: item?.location || '',
@@ -70,15 +72,6 @@ export const ItemForm = ({
 
     if (!formData.quantity || parseFloat(formData.quantity) < 0) {
       newErrors.quantity = t('itemForm.errors.quantityInvalid');
-    }
-
-    if (
-      !formData.recommendedQuantity ||
-      parseFloat(formData.recommendedQuantity) < 0
-    ) {
-      newErrors.recommendedQuantity = t(
-        'itemForm.errors.recommendedQuantityInvalid',
-      );
     }
 
     if (!formData.neverExpires && !formData.expirationDate) {
@@ -108,7 +101,7 @@ export const ItemForm = ({
         | 'bottles'
         | 'packages'
         | 'boxes',
-      recommendedQuantity: parseFloat(formData.recommendedQuantity),
+      recommendedQuantity: recommendedQuantity,
       neverExpires: formData.neverExpires,
       expirationDate: formData.neverExpires
         ? undefined
@@ -199,18 +192,12 @@ export const ItemForm = ({
       </div>
 
       <div className={styles.formGroup}>
-        <Input
-          id="recommendedQuantity"
-          name="recommendedQuantity"
-          label={t('itemForm.recommendedQuantity')}
-          type="number"
-          value={formData.recommendedQuantity}
-          onChange={(e) => handleChange('recommendedQuantity', e.target.value)}
-          error={errors.recommendedQuantity}
-          min="0"
-          step="0.1"
-          required
-        />
+        <label className={styles.label}>
+          {t('itemForm.recommendedQuantity')}
+        </label>
+        <div className={styles.recommendedInfo}>
+          {recommendedQuantity} {t(formData.unit || 'pieces', { ns: 'units' })}
+        </div>
       </div>
 
       <div className={styles.formGroup}>

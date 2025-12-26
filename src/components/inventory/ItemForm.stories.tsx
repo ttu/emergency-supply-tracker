@@ -43,6 +43,7 @@ export const NewItem: Story = {
     categories: STANDARD_CATEGORIES,
     onSubmit: () => {},
     onCancel: () => {},
+    defaultRecommendedQuantity: 10,
   },
 };
 

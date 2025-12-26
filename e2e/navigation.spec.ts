@@ -56,7 +56,6 @@ test.describe('Navigation', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '1');
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 

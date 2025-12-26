@@ -15,7 +15,6 @@ test.describe('Data Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '10');
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
@@ -113,7 +112,6 @@ test.describe('Data Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '2'); // Less than recommended
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '10');
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
@@ -151,7 +149,6 @@ test.describe('Data Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '1');
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 

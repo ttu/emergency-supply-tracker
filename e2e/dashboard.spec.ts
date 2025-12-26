@@ -41,7 +41,6 @@ test.describe('Dashboard', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '10');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '5');
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
@@ -61,7 +60,6 @@ test.describe('Dashboard', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1'); // Low quantity
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '20'); // High recommended
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 

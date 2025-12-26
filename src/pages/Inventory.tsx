@@ -153,6 +153,14 @@ export function Inventory() {
     setEditingItem(undefined);
   };
 
+  // Calculate default recommended quantity for manual entries
+  const getDefaultRecommendedQuantity = (): number => {
+    // Use a simple household-based calculation as default
+    const peopleMultiplier = household.adults * 1.0 + household.children * 0.75;
+    const daysMultiplier = household.supplyDurationDays / 3;
+    return Math.ceil(peopleMultiplier * daysMultiplier);
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -204,6 +212,7 @@ export function Inventory() {
             categories={STANDARD_CATEGORIES}
             onSubmit={editingItem?.id ? handleUpdateItem : handleAddItem}
             onCancel={handleCancelForm}
+            defaultRecommendedQuantity={getDefaultRecommendedQuantity()}
           />
           {editingItem?.id && (
             <div className={styles.deleteSection}>

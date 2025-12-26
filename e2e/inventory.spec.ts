@@ -56,7 +56,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="category"]', 'tools-supplies');
     await page.fill('input[name="quantity"]', '2');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '3');
+    // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]'); // Never Expires
 
     // Save the item
@@ -75,7 +75,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '10');
+    // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
@@ -102,7 +102,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '1');
+    // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
@@ -133,7 +133,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '1');
+    // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
@@ -145,7 +145,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="category"]', 'water-beverages');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'liters');
-    await page.fill('input[name="recommendedQuantity"]', '1');
+    // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
@@ -174,7 +174,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '1');
+    // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
@@ -183,7 +183,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.fill('input[name="recommendedQuantity"]', '1');
+    // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
