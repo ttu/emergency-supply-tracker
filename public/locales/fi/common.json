@@ -15,6 +15,7 @@
     "delete": "Poista",
     "save": "Tallenna",
     "cancel": "Peruuta",
+    "back": "Takaisin",
     "export": "Vie",
     "import": "Tuo",
     "clear": "Tyhjennä"
@@ -177,11 +178,11 @@
     "expiresIn": "Vanhenee {{days}} päivässä",
     "searchPlaceholder": "Hae tuotteita...",
     "searchLabel": "Hae varastosta",
-    "addFromTemplate": "Lisää Mallista",
+    "addFromTemplate": "Lisää Tuote",
     "addCustomItem": "Lisää Oma Tuote",
     "addItem": "Lisää Tuote",
     "editItem": "Muokkaa Tuotetta",
-    "selectTemplate": "Valitse Malli",
+    "selectTemplate": "Valitse Tuote",
     "confirmDelete": "Haluatko varmasti poistaa tämän tuotteen?",
     "filter": {
       "status": "Suodata tilalla",
@@ -195,9 +196,12 @@
     }
   },
   "itemForm": {
+    "itemType": "Tuotetyyppi",
+    "customItem": "Oma Tuote",
     "name": "Tuotteen Nimi",
+    "namePlaceholder": "esim. Rainbow Tonnikala, tietty merkki tai variantti",
     "category": "Kategoria",
-    "quantity": "Nykyinen Määrä",
+    "quantity": "Määrä",
     "unit": "Yksikkö",
     "recommendedQuantity": "Suositeltu Määrä",
     "neverExpires": "Ei Vanhene",
@@ -217,7 +221,8 @@
     "searchLabel": "Hae tuotemalleja",
     "categoryLabel": "Suodata kategorialla",
     "noTemplates": "Ei malleja",
-    "recommended": "Suositeltu"
+    "recommended": "Suositeltu",
+    "customDescription": "Luo oma tuote"
   },
   "help": {
     "title": "Ohje & UKK",

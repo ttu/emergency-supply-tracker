@@ -11,6 +11,33 @@
   gap: var(--spacing-md);
 }
 
+.customItemButton {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  align-self: flex-start;
+}
+
+.customItemButton:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+}
+
+.customItemButton:active {
+  transform: scale(0.98);
+}
+
 .templateList {
   display: flex;
   flex-direction: column;

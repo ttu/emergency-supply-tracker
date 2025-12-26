@@ -65,6 +65,33 @@
   margin: 0;
 }
 
+.backButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.backButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
 .closeButton {
   background: none;
   border: none;

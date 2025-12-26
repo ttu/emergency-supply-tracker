@@ -15,6 +15,7 @@
     "delete": "Delete",
     "save": "Save",
     "cancel": "Cancel",
+    "back": "Back",
     "export": "Export",
     "import": "Import",
     "clear": "Clear"
@@ -177,11 +178,11 @@
     "expiresIn": "Expires in {{days}} days",
     "searchPlaceholder": "Search items...",
     "searchLabel": "Search inventory items",
-    "addFromTemplate": "Add from Template",
+    "addFromTemplate": "Add Item",
     "addCustomItem": "Add Custom Item",
     "addItem": "Add Item",
     "editItem": "Edit Item",
-    "selectTemplate": "Select Template",
+    "selectTemplate": "Select Item",
     "confirmDelete": "Are you sure you want to delete this item?",
     "filter": {
       "status": "Filter by status",
@@ -195,9 +196,12 @@
     }
   },
   "itemForm": {
+    "itemType": "Item Type",
+    "customItem": "Custom Item",
     "name": "Item Name",
+    "namePlaceholder": "e.g., Rainbow Tonnikala, specific brand, or variant",
     "category": "Category",
-    "quantity": "Current Quantity",
+    "quantity": "Quantity",
     "unit": "Unit",
     "recommendedQuantity": "Recommended Quantity",
     "neverExpires": "Never Expires",
@@ -217,7 +221,8 @@
     "searchLabel": "Search item templates",
     "categoryLabel": "Filter by category",
     "noTemplates": "No templates found",
-    "recommended": "Recommended"
+    "recommended": "Recommended",
+    "customDescription": "Create your own custom item"
   },
   "help": {
     "title": "Help & FAQ",

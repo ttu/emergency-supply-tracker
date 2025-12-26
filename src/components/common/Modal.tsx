@@ -5,6 +5,7 @@ import styles from './Modal.module.css';
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onBack?: () => void;
   title?: string;
   children: ReactNode;
   size?: 'small' | 'medium' | 'large';
@@ -13,6 +14,7 @@ export interface ModalProps {
 export function Modal({
   isOpen,
   onClose,
+  onBack,
   title,
   children,
   size = 'medium',
@@ -91,6 +93,16 @@ export function Modal({
         tabIndex={-1}
       >
         <div className={styles.header}>
+          {onBack && (
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={onBack}
+              aria-label="Go back"
+            >
+              ←
+            </button>
+          )}
           {title && (
             <h2 id="modal-title" className={styles.title}>
               {title}

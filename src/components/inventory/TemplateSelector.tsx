@@ -9,6 +9,7 @@ export interface TemplateSelectorProps {
   templates: RecommendedItemDefinition[];
   categories: Category[];
   onSelectTemplate: (template: RecommendedItemDefinition) => void;
+  onSelectCustom: () => void;
   initialCategoryId?: string;
 }
 
@@ -16,6 +17,7 @@ export const TemplateSelector = ({
   templates,
   categories,
   onSelectTemplate,
+  onSelectCustom,
   initialCategoryId = '',
 }: TemplateSelectorProps) => {
   const { t } = useTranslation(['common', 'categories', 'products', 'units']);
@@ -65,6 +67,14 @@ export const TemplateSelector = ({
           aria-label={t('templateSelector.categoryLabel')}
         />
       </div>
+
+      <button
+        type="button"
+        className={styles.customItemButton}
+        onClick={onSelectCustom}
+      >
+        ➕ {t('itemForm.customItem')}
+      </button>
 
       <div className={styles.templateList}>
         {filteredTemplates.length === 0 ? (

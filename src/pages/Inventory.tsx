@@ -127,9 +127,13 @@ export function Inventory() {
 
   const handleSelectTemplate = (template: RecommendedItemDefinition) => {
     const recommendedQty = calculateRecommendedQuantity(template, household);
+    const templateName = t(template.i18nKey.replace('products.', ''), {
+      ns: 'products',
+    });
 
     const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
-      name: t(template.i18nKey.replace('products.', ''), { ns: 'products' }),
+      name: templateName,
+      itemType: templateName, // Set the template type
       categoryId: template.category,
       quantity: 0,
       unit: template.unit,
@@ -153,6 +157,18 @@ export function Inventory() {
     setEditingItem(undefined);
   };
 
+  const handleBackToTemplateSelector = () => {
+    setShowAddModal(false);
+    setEditingItem(undefined);
+    setShowTemplateModal(true);
+  };
+
+  const handleSelectCustomItem = () => {
+    setShowTemplateModal(false);
+    setShowAddModal(true);
+    setEditingItem(undefined);
+  };
+
   // Calculate default recommended quantity for manual entries
   const getDefaultRecommendedQuantity = (): number => {
     // Use a simple household-based calculation as default
@@ -166,14 +182,8 @@ export function Inventory() {
       <header className={styles.header}>
         <h1>{t('navigation.inventory')}</h1>
         <div className={styles.headerActions}>
-          <Button
-            variant="secondary"
-            onClick={() => setShowTemplateModal(true)}
-          >
+          <Button variant="primary" onClick={() => setShowTemplateModal(true)}>
             {t('inventory.addFromTemplate')}
-          </Button>
-          <Button variant="primary" onClick={() => setShowAddModal(true)}>
-            {t('inventory.addCustomItem')}
           </Button>
         </div>
       </header>
@@ -203,12 +213,13 @@ export function Inventory() {
         <Modal
           isOpen={showAddModal}
           onClose={handleCancelForm}
+          onBack={!editingItem?.id ? handleBackToTemplateSelector : undefined}
           title={
             editingItem?.id ? t('inventory.editItem') : t('inventory.addItem')
           }
         >
           <ItemForm
-            item={editingItem?.id ? editingItem : undefined}
+            item={editingItem}
             categories={STANDARD_CATEGORIES}
             onSubmit={editingItem?.id ? handleUpdateItem : handleAddItem}
             onCancel={handleCancelForm}
@@ -238,6 +249,7 @@ export function Inventory() {
             templates={RECOMMENDED_ITEMS}
             categories={STANDARD_CATEGORIES}
             onSelectTemplate={handleSelectTemplate}
+            onSelectCustom={handleSelectCustomItem}
             initialCategoryId={selectedCategoryId || ''}
           />
         </Modal>

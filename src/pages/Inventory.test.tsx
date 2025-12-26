@@ -36,7 +36,6 @@ describe('Inventory Page', () => {
 
     expect(screen.getByText('navigation.inventory')).toBeInTheDocument();
     expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
-    expect(screen.getByText('inventory.addCustomItem')).toBeInTheDocument();
   });
 
   it('should show category navigation', () => {
@@ -60,11 +59,16 @@ describe('Inventory Page', () => {
     expect(screen.getByText('inventory.noItems')).toBeInTheDocument();
   });
 
-  it('should open add modal when clicking add custom item', () => {
+  it('should open add modal when clicking custom item in template selector', () => {
     renderWithProviders(<Inventory />);
 
-    const addButton = screen.getByText('inventory.addCustomItem');
+    // Open template selector
+    const addButton = screen.getByText('inventory.addFromTemplate');
     fireEvent.click(addButton);
+
+    // Click custom item button
+    const customItemButton = screen.getByText(/itemForm.customItem/);
+    fireEvent.click(customItemButton);
 
     expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
   });
@@ -81,13 +85,20 @@ describe('Inventory Page', () => {
   it('should close modal when clicking cancel', async () => {
     renderWithProviders(<Inventory />);
 
-    // Open modal
-    const addButton = screen.getByText('inventory.addCustomItem');
+    // Open template selector
+    const addButton = screen.getByText('inventory.addFromTemplate');
     fireEvent.click(addButton);
 
-    // Click cancel
-    const cancelButton = screen.getByText('common.cancel');
-    fireEvent.click(cancelButton);
+    // Select custom item to open the form
+    const customItemButton = screen.getByText(/itemForm.customItem/);
+    fireEvent.click(customItemButton);
+
+    // Modal should show add item form
+    expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+
+    // Click close button (X) to close modal
+    const closeButton = screen.getByLabelText('Close modal');
+    fireEvent.click(closeButton);
 
     // Modal should be closed
     await waitFor(() => {

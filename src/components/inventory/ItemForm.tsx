@@ -17,10 +17,12 @@ export interface ItemFormProps {
 }
 
 interface FormData {
+  itemType: string;
   name: string;
   categoryId: string;
   quantity: string;
   unit: string;
+  recommendedQuantity: number;
   neverExpires: boolean;
   expirationDate: string;
   location: string;
@@ -41,16 +43,16 @@ export const ItemForm = ({
   onCancel,
   defaultRecommendedQuantity = 1,
 }: ItemFormProps) => {
-  const { t } = useTranslation(['common', 'categories', 'units']);
-
-  const recommendedQuantity =
-    item?.recommendedQuantity ?? defaultRecommendedQuantity;
+  const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
   const [formData, setFormData] = useState<FormData>(() => ({
+    itemType: item?.itemType || '',
     name: item?.name || '',
     categoryId: item?.categoryId || '',
     quantity: item?.quantity?.toString() || '',
     unit: item?.unit || 'pieces',
+    recommendedQuantity:
+      item?.recommendedQuantity ?? defaultRecommendedQuantity,
     neverExpires: item?.neverExpires ?? false,
     expirationDate: item?.expirationDate || '',
     location: item?.location || '',
@@ -91,6 +93,7 @@ export const ItemForm = ({
 
     onSubmit({
       name: formData.name.trim(),
+      itemType: formData.itemType.trim() || undefined,
       categoryId: formData.categoryId,
       quantity: parseFloat(formData.quantity),
       unit: formData.unit as
@@ -101,7 +104,7 @@ export const ItemForm = ({
         | 'bottles'
         | 'packages'
         | 'boxes',
-      recommendedQuantity: recommendedQuantity,
+      recommendedQuantity: formData.recommendedQuantity,
       neverExpires: formData.neverExpires,
       expirationDate: formData.neverExpires
         ? undefined
@@ -137,6 +140,13 @@ export const ItemForm = ({
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
+      {formData.itemType && (
+        <div className={styles.formGroup}>
+          <label className={styles.label}>{t('itemForm.itemType')}</label>
+          <div className={styles.itemTypeDisplay}>{formData.itemType}</div>
+        </div>
+      )}
+
       <div className={styles.formGroup}>
         <Input
           id="name"
@@ -146,6 +156,9 @@ export const ItemForm = ({
           value={formData.name}
           onChange={(e) => handleChange('name', e.target.value)}
           error={errors.name}
+          placeholder={
+            item?.itemType ? t('itemForm.namePlaceholder') : undefined
+          }
           required
         />
       </div>
@@ -196,7 +209,8 @@ export const ItemForm = ({
           {t('itemForm.recommendedQuantity')}
         </label>
         <div className={styles.recommendedInfo}>
-          {recommendedQuantity} {t(formData.unit || 'pieces', { ns: 'units' })}
+          {formData.recommendedQuantity}{' '}
+          {t(formData.unit || 'pieces', { ns: 'units' })}
         </div>
       </div>
 
@@ -249,12 +263,14 @@ export const ItemForm = ({
       </div>
 
       <div className={styles.actions}>
-        <Button type="button" variant="secondary" onClick={onCancel}>
-          {t('common.cancel')}
-        </Button>
         <Button type="submit" variant="primary">
-          {item ? t('common.save') : t('common.add')}
+          {item?.id ? t('common.save') : t('common.add')}
         </Button>
+        {item?.id && (
+          <Button type="button" variant="secondary" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+        )}
       </div>
     </form>
   );

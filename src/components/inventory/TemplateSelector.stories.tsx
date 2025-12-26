@@ -11,6 +11,7 @@ const meta = {
   },
   argTypes: {
     onSelectTemplate: { action: 'template selected' },
+    onSelectCustom: { action: 'custom item selected' },
   },
 } satisfies Meta<typeof TemplateSelector>;
 
@@ -22,6 +23,7 @@ export const AllTemplates: Story = {
     templates: RECOMMENDED_ITEMS,
     categories: STANDARD_CATEGORIES,
     onSelectTemplate: () => {},
+    onSelectCustom: () => {},
   },
 };
 
@@ -30,6 +32,7 @@ export const FewTemplates: Story = {
     templates: RECOMMENDED_ITEMS.slice(0, 5),
     categories: STANDARD_CATEGORIES,
     onSelectTemplate: () => {},
+    onSelectCustom: () => {},
   },
 };
 
@@ -40,6 +43,7 @@ export const SingleCategory: Story = {
     ),
     categories: STANDARD_CATEGORIES,
     onSelectTemplate: () => {},
+    onSelectCustom: () => {},
   },
 };
 
@@ -48,5 +52,6 @@ export const Empty: Story = {
     templates: [],
     categories: STANDARD_CATEGORIES,
     onSelectTemplate: () => {},
+    onSelectCustom: () => {},
   },
 };

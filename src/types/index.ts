@@ -72,6 +72,7 @@ export interface Category {
 export interface InventoryItem {
   id: string;
   name: string;
+  itemType?: string; // Template type (e.g., "Canned Tuna"), read-only from template
   categoryId: string;
   quantity: number;
   unit: Unit;
