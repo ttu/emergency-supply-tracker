@@ -123,9 +123,11 @@ describe('Dashboard', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
     renderWithProviders(<Dashboard onNavigate={onNavigate} />);
 
-    // Test Add Items button - should navigate to inventory
+    // Test Add Items button - should navigate to inventory with modal open
     fireEvent.click(screen.getByText(/dashboard.addItems/i));
-    expect(onNavigate).toHaveBeenCalledWith('inventory');
+    expect(onNavigate).toHaveBeenCalledWith('inventory', {
+      openAddModal: true,
+    });
 
     // Test View Inventory button - should navigate to inventory
     fireEvent.click(screen.getByText(/dashboard.viewInventory/i));

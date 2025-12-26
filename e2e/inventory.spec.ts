@@ -13,10 +13,10 @@ test.describe('Inventory Management', () => {
     await page.click('text=Inventory');
 
     // Click "Add from Template"
-    await page.click('text=Add from Template');
+    await page.click('text=Add Item');
 
     // Wait for template selector to appear
-    await expect(page.locator('text=Select Template')).toBeVisible();
+    await expect(page.locator('text=Select Item')).toBeVisible();
 
     // Search for water
     await page.fill('input[placeholder*="Search"]', 'water');
@@ -46,7 +46,8 @@ test.describe('Inventory Management', () => {
     await page.click('text=Inventory');
 
     // Click "Add Custom Item"
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
 
     // Wait for form to appear
     await expect(page.locator('text=Add Item')).toBeVisible();
@@ -69,7 +70,8 @@ test.describe('Inventory Management', () => {
   test('should edit existing item', async ({ page }) => {
     // Navigate to Inventory and add an item first
     await page.click('text=Inventory');
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
 
     await page.fill('input[name="name"]', 'Test Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -96,7 +98,8 @@ test.describe('Inventory Management', () => {
   test('should delete item', async ({ page }) => {
     // Navigate to Inventory and add an item first
     await page.click('text=Inventory');
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
 
     await page.fill('input[name="name"]', 'Item to Delete');
     await page.selectOption('select[name="category"]', 'food');
@@ -128,7 +131,8 @@ test.describe('Inventory Management', () => {
     await page.click('text=Inventory');
 
     // Add food item
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Food Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
@@ -140,7 +144,8 @@ test.describe('Inventory Management', () => {
     await expect(page.locator('text=Food Item')).toBeVisible();
 
     // Add water item
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Water Item');
     await page.selectOption('select[name="category"]', 'water-beverages');
     await page.fill('input[name="quantity"]', '1');
@@ -169,7 +174,8 @@ test.describe('Inventory Management', () => {
     // Navigate to Inventory and add items
     await page.click('text=Inventory');
 
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Searchable Item A');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
@@ -178,7 +184,8 @@ test.describe('Inventory Management', () => {
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
 
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Different Item B');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
@@ -207,10 +214,10 @@ test.describe('Inventory Management', () => {
     await page.click('text=Inventory');
 
     // Click "Add from Template"
-    await page.click('text=Add from Template');
+    await page.click('text=Add Item');
 
     // Wait for template selector to appear
-    await expect(page.locator('text=Select Template')).toBeVisible();
+    await expect(page.locator('text=Select Item')).toBeVisible();
 
     // Verify template names are translated (not showing translation keys)
     // Should see "Bottled Water" not "products.bottled-water"

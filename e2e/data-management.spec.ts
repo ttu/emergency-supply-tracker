@@ -10,7 +10,8 @@ test.describe('Data Management', () => {
   test('should export data', async ({ page }) => {
     // Add some test data first
     await page.click('text=Inventory');
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Export Test Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
@@ -107,7 +108,8 @@ test.describe('Data Management', () => {
   test('should export shopping list', async ({ page }) => {
     // Add item that needs restocking
     await page.click('text=Inventory');
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Low Stock Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '2'); // Less than recommended
@@ -144,7 +146,8 @@ test.describe('Data Management', () => {
   test('should clear all data', async ({ page }) => {
     // Add some test data
     await page.click('text=Inventory');
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Item to Clear');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');

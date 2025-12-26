@@ -21,7 +21,11 @@ import styles from './Inventory.module.css';
 
 type SortBy = 'name' | 'quantity' | 'expiration';
 
-export function Inventory() {
+export interface InventoryProps {
+  openAddModal?: boolean;
+}
+
+export function Inventory({ openAddModal = false }: InventoryProps = {}) {
   const { t } = useTranslation(['common', 'products']);
   const { items, addItem, updateItem, deleteItem } = useInventory();
   const { household } = useHousehold();
@@ -36,7 +40,7 @@ export function Inventory() {
 
   // Modal state
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(openAddModal);
   const [editingItem, setEditingItem] = useState<InventoryItem | undefined>(
     undefined,
   );

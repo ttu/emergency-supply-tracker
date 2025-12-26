@@ -12,19 +12,32 @@ import './App.css';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
+  const [openInventoryModal, setOpenInventoryModal] = useState(false);
+
+  const handleNavigate = (
+    page: PageType,
+    options?: { openAddModal?: boolean },
+  ) => {
+    setCurrentPage(page);
+    if (page === 'inventory' && options?.openAddModal) {
+      setOpenInventoryModal(true);
+    } else {
+      setOpenInventoryModal(false);
+    }
+  };
 
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard onNavigate={setCurrentPage} />;
+        return <Dashboard onNavigate={handleNavigate} />;
       case 'inventory':
-        return <Inventory />;
+        return <Inventory openAddModal={openInventoryModal} />;
       case 'settings':
         return <Settings />;
       case 'help':
         return <Help />;
       default:
-        return <Dashboard onNavigate={setCurrentPage} />;
+        return <Dashboard onNavigate={handleNavigate} />;
     }
   };
 

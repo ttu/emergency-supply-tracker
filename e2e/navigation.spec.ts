@@ -51,7 +51,8 @@ test.describe('Navigation', () => {
   test('should persist data across page navigation', async ({ page }) => {
     // Add item on Inventory page
     await page.click('text=Inventory');
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Persistent Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');

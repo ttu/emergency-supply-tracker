@@ -17,7 +17,7 @@ import type { PageType } from '../components/common/Navigation';
 import styles from './Dashboard.module.css';
 
 export interface DashboardProps {
-  onNavigate?: (page: PageType) => void;
+  onNavigate?: (page: PageType, options?: { openAddModal?: boolean }) => void;
 }
 
 export function Dashboard({ onNavigate }: DashboardProps = {}) {
@@ -83,8 +83,8 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   };
 
   const handleAddItems = () => {
-    // Navigate to inventory page
-    onNavigate?.('inventory');
+    // Navigate to inventory page with add modal open
+    onNavigate?.('inventory', { openAddModal: true });
   };
 
   const handleViewInventory = () => {

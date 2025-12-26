@@ -28,15 +28,15 @@ test.describe('Dashboard', () => {
     await page.click('text=Inventory');
 
     // Should be on Inventory page
-    await expect(
-      page.locator('button', { hasText: 'Add from Template' }),
-    ).toBeVisible();
+    await expect(page.locator('button', { hasText: 'Add Item' })).toBeVisible();
   });
 
   test('should update dashboard when items are added', async ({ page }) => {
     // Navigate to Inventory and add an item
     await page.click('text=Inventory');
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Test Food Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '10');
@@ -55,7 +55,9 @@ test.describe('Dashboard', () => {
   test('should show alerts when items need attention', async ({ page }) => {
     // Add item with low quantity
     await page.click('text=Inventory');
-    await page.click('text=Add Custom Item');
+    await page.click('text=Add Item');
+    await page.click('text=Custom Item');
+    await page.click('text=Custom Item');
     await page.fill('input[name="name"]', 'Low Stock Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1'); // Low quantity
@@ -76,15 +78,13 @@ test.describe('Dashboard', () => {
     // Verify Quick Actions section is visible
     await expect(page.locator('text=Quick Actions')).toBeVisible();
 
-    // Test "Add Items" button - should navigate to Inventory
+    // Test "Add Items" button - should navigate to Inventory and open template selector
     const addItemsButton = page.locator('button', { hasText: 'Add Items' });
     await expect(addItemsButton).toBeVisible();
     await addItemsButton.click();
 
-    // Should be on Inventory page - check for unique inventory page element
-    await expect(
-      page.locator('button', { hasText: 'Add from Template' }),
-    ).toBeVisible();
+    // Should be on Inventory page with template selector modal open
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
 
     // Go back to Dashboard
     await page.click('text=Dashboard');
@@ -97,9 +97,7 @@ test.describe('Dashboard', () => {
     await viewInventoryButton.click();
 
     // Should navigate to Inventory page
-    await expect(
-      page.locator('button', { hasText: 'Add from Template' }),
-    ).toBeVisible();
+    await expect(page.locator('button', { hasText: 'Add Item' })).toBeVisible();
 
     // Go back to Dashboard
     await page.click('text=Dashboard');
