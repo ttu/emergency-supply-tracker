@@ -5,7 +5,24 @@ import { STANDARD_CATEGORIES } from '../../data/standardCategories';
 // Mock i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, options?: { ns?: string }) => {
+      const categoryTranslations: Record<string, string> = {
+        'water-beverages': 'Water & Beverages',
+        food: 'Food',
+        'cooking-heat': 'Cooking & Heat',
+        'light-power': 'Light & Power',
+        'communication-info': 'Communication & Info',
+        'medical-health': 'Medical & Health',
+        'hygiene-sanitation': 'Hygiene & Sanitation',
+        'tools-supplies': 'Tools & Supplies',
+        'cash-documents': 'Cash & Documents',
+      };
+
+      if (options?.ns === 'categories') {
+        return categoryTranslations[key] || key;
+      }
+      return key;
+    },
   }),
 }));
 

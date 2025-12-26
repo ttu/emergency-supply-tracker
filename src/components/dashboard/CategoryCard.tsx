@@ -5,7 +5,6 @@ import styles from './CategoryCard.module.css';
 
 export interface CategoryCardProps {
   categoryId: StandardCategoryId;
-  categoryName: string;
   itemCount: number;
   status: ItemStatus;
   completionPercentage: number;
@@ -13,13 +12,13 @@ export interface CategoryCardProps {
 }
 
 export const CategoryCard = ({
-  categoryName,
+  categoryId,
   itemCount,
   status,
   completionPercentage,
   onClick,
 }: CategoryCardProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'categories']);
 
   const getStatusVariant = (
     status: ItemStatus,
@@ -37,6 +36,8 @@ export const CategoryCard = ({
   const getStatusLabel = (status: ItemStatus): string => {
     return t(`status.${status}`);
   };
+
+  const categoryName = t(categoryId, { ns: 'categories' });
 
   return (
     <div

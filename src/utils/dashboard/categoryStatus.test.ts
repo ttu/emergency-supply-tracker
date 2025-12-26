@@ -17,7 +17,6 @@ describe('calculateCategoryStatus', () => {
 
     expect(result).toEqual({
       categoryId: 'water',
-      categoryName: 'Water',
       itemCount: 0,
       status: 'critical',
       completionPercentage: 0,

@@ -13,7 +13,7 @@ export const CategoryNav = ({
   selectedCategoryId,
   onSelectCategory,
 }: CategoryNavProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'categories']);
 
   return (
     <nav className={styles.nav} aria-label={t('inventory.categoryNavigation')}>
@@ -38,7 +38,9 @@ export const CategoryNav = ({
           aria-current={selectedCategoryId === category.id ? 'page' : undefined}
         >
           <span className={styles.icon}>{category.icon}</span>
-          <span className={styles.label}>{category.name}</span>
+          <span className={styles.label}>
+            {t(category.id, { ns: 'categories' })}
+          </span>
         </button>
       ))}
     </nav>

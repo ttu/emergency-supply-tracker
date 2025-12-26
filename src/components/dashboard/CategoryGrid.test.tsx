@@ -5,13 +5,23 @@ import { CategoryGrid } from './CategoryGrid';
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
-      const translations: Record<string, string> = {
+    t: (key: string, options?: { ns?: string }) => {
+      const categoryTranslations: Record<string, string> = {
+        'water-beverages': 'Water & Beverages',
+        food: 'Food',
+        'medical-health': 'Medical',
+      };
+
+      const commonTranslations: Record<string, string> = {
         'status.ok': 'OK',
         'dashboard.category.items': 'Items',
         'dashboard.category.completion': 'Completion',
       };
-      return translations[key] || key;
+
+      if (options?.ns === 'categories') {
+        return categoryTranslations[key] || key;
+      }
+      return commonTranslations[key] || key;
     },
   }),
 }));
@@ -29,14 +39,12 @@ describe('CategoryGrid', () => {
         categories={[
           {
             categoryId: 'water-beverages',
-            categoryName: 'Water & Beverages',
             itemCount: 12,
             status: 'ok',
             completionPercentage: 95,
           },
           {
             categoryId: 'food',
-            categoryName: 'Food',
             itemCount: 18,
             status: 'ok',
             completionPercentage: 85,
@@ -55,21 +63,18 @@ describe('CategoryGrid', () => {
         categories={[
           {
             categoryId: 'water-beverages',
-            categoryName: 'Water',
             itemCount: 5,
             status: 'critical',
             completionPercentage: 20,
           },
           {
             categoryId: 'food',
-            categoryName: 'Food',
             itemCount: 10,
             status: 'warning',
             completionPercentage: 50,
           },
           {
             categoryId: 'medical-health',
-            categoryName: 'Medical',
             itemCount: 15,
             status: 'ok',
             completionPercentage: 95,

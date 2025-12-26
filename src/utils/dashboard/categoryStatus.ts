@@ -3,7 +3,6 @@ import { calculateItemStatus } from '../calculations/status';
 
 export interface CategoryStatusSummary {
   categoryId: string;
-  categoryName: string;
   itemCount: number;
   status: ItemStatus;
   completionPercentage: number;
@@ -46,7 +45,6 @@ export function calculateCategoryStatus(
 
   return {
     categoryId: category.id,
-    categoryName: category.name,
     itemCount: categoryItems.length,
     status: categoryStatus,
     completionPercentage,

@@ -6,15 +6,25 @@ import { CategoryCard } from './CategoryCard';
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
-      const translations: Record<string, string> = {
+    t: (key: string, options?: { ns?: string }) => {
+      const categoryTranslations: Record<string, string> = {
+        'water-beverages': 'Water & Beverages',
+        food: 'Food',
+        'medical-health': 'Medical & Health',
+      };
+
+      const commonTranslations: Record<string, string> = {
         'status.ok': 'OK',
         'status.warning': 'Warning',
         'status.critical': 'Critical',
         'dashboard.category.items': 'Items',
         'dashboard.category.completion': 'Completion',
       };
-      return translations[key] || key;
+
+      if (options?.ns === 'categories') {
+        return categoryTranslations[key] || key;
+      }
+      return commonTranslations[key] || key;
     },
   }),
 }));
@@ -24,7 +34,6 @@ describe('CategoryCard', () => {
     render(
       <CategoryCard
         categoryId="water-beverages"
-        categoryName="Water & Beverages"
         itemCount={12}
         status="ok"
         completionPercentage={95}
@@ -38,7 +47,6 @@ describe('CategoryCard', () => {
     render(
       <CategoryCard
         categoryId="food"
-        categoryName="Food"
         itemCount={18}
         status="ok"
         completionPercentage={85}
@@ -52,7 +60,6 @@ describe('CategoryCard', () => {
     render(
       <CategoryCard
         categoryId="medical-health"
-        categoryName="Medical & Health"
         itemCount={5}
         status="warning"
         completionPercentage={60}
@@ -66,7 +73,6 @@ describe('CategoryCard', () => {
     render(
       <CategoryCard
         categoryId="food"
-        categoryName="Food"
         itemCount={10}
         status="ok"
         completionPercentage={90}
@@ -83,7 +89,6 @@ describe('CategoryCard', () => {
     render(
       <CategoryCard
         categoryId="water-beverages"
-        categoryName="Water & Beverages"
         itemCount={12}
         status="ok"
         completionPercentage={95}
@@ -101,7 +106,6 @@ describe('CategoryCard', () => {
     render(
       <CategoryCard
         categoryId="food"
-        categoryName="Food"
         itemCount={10}
         status="ok"
         completionPercentage={90}
@@ -116,7 +120,6 @@ describe('CategoryCard', () => {
     render(
       <CategoryCard
         categoryId="food"
-        categoryName="Food"
         itemCount={10}
         status="ok"
         completionPercentage={90}
@@ -133,7 +136,6 @@ describe('CategoryCard', () => {
     render(
       <CategoryCard
         categoryId="food"
-        categoryName="Food"
         itemCount={10}
         status="ok"
         completionPercentage={90}
