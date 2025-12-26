@@ -73,4 +73,46 @@ test.describe('Dashboard', () => {
       page.locator('h2', { hasText: 'Alerts' }).first(),
     ).toBeVisible();
   });
+
+  test('should navigate via quick action buttons', async ({ page }) => {
+    // Verify Quick Actions section is visible
+    await expect(page.locator('text=Quick Actions')).toBeVisible();
+
+    // Test "Add Items" button - should navigate to Inventory
+    const addItemsButton = page.locator('button', { hasText: 'Add Items' });
+    await expect(addItemsButton).toBeVisible();
+    await addItemsButton.click();
+
+    // Should be on Inventory page - check for unique inventory page element
+    await expect(
+      page.locator('button', { hasText: 'Add from Template' }),
+    ).toBeVisible();
+
+    // Go back to Dashboard
+    await page.click('text=Dashboard');
+
+    // Test "View Inventory" button
+    const viewInventoryButton = page.locator('button', {
+      hasText: 'View Inventory',
+    });
+    await expect(viewInventoryButton).toBeVisible();
+    await viewInventoryButton.click();
+
+    // Should navigate to Inventory page
+    await expect(
+      page.locator('button', { hasText: 'Add from Template' }),
+    ).toBeVisible();
+
+    // Go back to Dashboard
+    await page.click('text=Dashboard');
+
+    // Test "Export Shopping List" button is visible
+    const exportButton = page.locator('button', {
+      hasText: 'Export Shopping List',
+    });
+    await expect(exportButton).toBeVisible();
+
+    // Note: We don't click export as it's a download action
+    // The presence of the button validates it's wired up
+  });
 });

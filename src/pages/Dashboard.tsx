@@ -13,9 +13,14 @@ import {
 } from '../utils/dashboard/preparedness';
 import { calculateAllCategoryStatuses } from '../utils/dashboard/categoryStatus';
 import { generateDashboardAlerts } from '../utils/dashboard/alerts';
+import type { PageType } from '../components/common/Navigation';
 import styles from './Dashboard.module.css';
 
-export function Dashboard() {
+export interface DashboardProps {
+  onNavigate?: (page: PageType) => void;
+}
+
+export function Dashboard({ onNavigate }: DashboardProps = {}) {
   const { t } = useTranslation();
   const { items } = useInventory();
   const { household } = useHousehold();
@@ -68,18 +73,20 @@ export function Dashboard() {
   };
 
   const handleCategoryClick = (categoryId: string) => {
-    // TODO: Navigate to inventory page filtered by category
+    // Navigate to inventory page filtered by category
+    onNavigate?.('inventory');
+    // TODO: Pass category filter to inventory page
     console.log('Navigate to category:', categoryId);
   };
 
   const handleAddItems = () => {
-    // TODO: Navigate to add item form
-    console.log('Navigate to add items');
+    // Navigate to inventory page
+    onNavigate?.('inventory');
   };
 
   const handleViewInventory = () => {
-    // TODO: Navigate to inventory page
-    console.log('Navigate to inventory');
+    // Navigate to inventory page
+    onNavigate?.('inventory');
   };
 
   const handleExportShoppingList = () => {

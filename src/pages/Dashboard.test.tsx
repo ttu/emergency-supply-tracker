@@ -101,12 +101,16 @@ describe('Dashboard', () => {
   });
 
   it('should handle category click', () => {
+    const onNavigate = jest.fn();
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    renderWithProviders(<Dashboard />);
+    renderWithProviders(<Dashboard onNavigate={onNavigate} />);
 
     const categoryButton = screen.getByTestId('category-water-beverages');
     fireEvent.click(categoryButton);
 
+    // Should navigate to inventory page
+    expect(onNavigate).toHaveBeenCalledWith('inventory');
+    // Should log category for future filtering implementation
     expect(consoleSpy).toHaveBeenCalledWith(
       'Navigate to category:',
       'water-beverages',
@@ -115,15 +119,19 @@ describe('Dashboard', () => {
   });
 
   it('should handle quick action clicks', () => {
+    const onNavigate = jest.fn();
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    renderWithProviders(<Dashboard />);
+    renderWithProviders(<Dashboard onNavigate={onNavigate} />);
 
+    // Test Add Items button - should navigate to inventory
     fireEvent.click(screen.getByText(/dashboard.addItems/i));
-    expect(consoleSpy).toHaveBeenCalledWith('Navigate to add items');
+    expect(onNavigate).toHaveBeenCalledWith('inventory');
 
+    // Test View Inventory button - should navigate to inventory
     fireEvent.click(screen.getByText(/dashboard.viewInventory/i));
-    expect(consoleSpy).toHaveBeenCalledWith('Navigate to inventory');
+    expect(onNavigate).toHaveBeenCalledWith('inventory');
 
+    // Test Export Shopping List button - logs but doesn't navigate (TODO: implement export)
     fireEvent.click(screen.getByText(/dashboard.exportShoppingList/i));
     expect(consoleSpy).toHaveBeenCalledWith('Export shopping list');
 

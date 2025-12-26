@@ -16,7 +16,7 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onNavigate={setCurrentPage} />;
       case 'inventory':
         return <Inventory />;
       case 'settings':
@@ -24,7 +24,7 @@ function App() {
       case 'help':
         return <Help />;
       default:
-        return <Dashboard />;
+        return <Dashboard onNavigate={setCurrentPage} />;
     }
   };
 

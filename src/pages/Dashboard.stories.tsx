@@ -5,7 +5,7 @@ import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
 import type { InventoryItem } from '../types';
 
-const meta = {
+const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',
   component: Dashboard,
   decorators: [
@@ -22,17 +22,22 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof Dashboard>;
+  argTypes: {
+    onNavigate: { action: 'navigate' },
+  },
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof Dashboard>;
 
 export const Default: Story = {
-  name: 'Empty Dashboard',
+  args: {},
+  render: () => <Dashboard />,
 };
 
 export const WithItems: Story = {
-  name: 'With Inventory Items',
+  args: {},
+  render: () => <Dashboard />,
   decorators: [
     (Story) => {
       // Set up some inventory items in localStorage
@@ -96,6 +101,8 @@ export const WithItems: Story = {
 };
 
 export const WithAlerts: Story = {
+  args: {},
+  render: () => <Dashboard />,
   decorators: [
     (Story) => {
       // Set up inventory with items that will trigger alerts
@@ -162,7 +169,8 @@ export const WithAlerts: Story = {
 };
 
 export const WellPrepared: Story = {
-  name: 'Well Prepared (High Score)',
+  args: {},
+  render: () => <Dashboard />,
   decorators: [
     (Story) => {
       // Set up a well-stocked inventory
