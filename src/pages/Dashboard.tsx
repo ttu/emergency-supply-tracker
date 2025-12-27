@@ -58,8 +58,9 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         STANDARD_CATEGORIES,
         items,
         categoryPreparedness,
+        household,
       ),
-    [items, categoryPreparedness],
+    [items, categoryPreparedness, household],
   );
 
   // Generate alerts

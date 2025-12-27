@@ -166,8 +166,11 @@
       "excellent": "Hyvin Valmistautunut"
     },
     "category": {
-      "items": "Tuotteet",
-      "completion": "Valmius"
+      "items": "tuotetta",
+      "stocked": "Varastossa",
+      "completion": "Valmius",
+      "missing": "Tarvitaan {{count}} {{unit}} {{item}}",
+      "missingMultiple": "Tarvitaan {{count}} {{unit}} {{item}} +{{more}} muuta"
     }
   },
   "inventory": {

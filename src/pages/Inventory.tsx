@@ -153,6 +153,7 @@ export function Inventory({
               template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
           ).toISOString()
         : undefined,
+      productTemplateId: template.id,
     };
 
     setEditingItem(newItem as InventoryItem);

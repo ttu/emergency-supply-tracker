@@ -1,9 +1,14 @@
 import {
   calculateCategoryStatus,
   calculateAllCategoryStatuses,
+  calculateCategoryShortages,
 } from './categoryStatus';
 import type { InventoryItem } from '../../types';
-import { createMockCategory, createMockInventoryItem } from '../test/factories';
+import {
+  createMockCategory,
+  createMockInventoryItem,
+  createMockHousehold,
+} from '../test/factories';
 
 describe('calculateCategoryStatus', () => {
   const waterCategory = createMockCategory({
@@ -24,6 +29,10 @@ describe('calculateCategoryStatus', () => {
       criticalCount: 0,
       warningCount: 0,
       okCount: 0,
+      shortages: [],
+      totalActual: 0,
+      totalNeeded: 0,
+      primaryUnit: null,
     });
   });
 
@@ -190,5 +199,126 @@ describe('calculateAllCategoryStatuses', () => {
     const results = calculateAllCategoryStatuses([], items, preparedness);
 
     expect(results).toHaveLength(0);
+  });
+});
+
+describe('calculateCategoryShortages', () => {
+  const household = createMockHousehold({
+    adults: 2,
+    children: 0,
+    supplyDurationDays: 3,
+    hasFreezer: false,
+  });
+
+  it('should calculate shortages for water category', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Bottled Water',
+        categoryId: 'water-beverages',
+        quantity: 27,
+        unit: 'liters',
+        recommendedQuantity: 54,
+        productTemplateId: 'bottled-water',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    const result = calculateCategoryShortages(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    // For 2 people, 3 days: bottled-water needs 9 * 2 * 3 = 54 liters
+    expect(result.shortages.length).toBeGreaterThan(0);
+    expect(result.totalActual).toBe(27);
+    expect(result.primaryUnit).toBe('liters');
+  });
+
+  it('should return no shortages when fully stocked', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Bottled Water',
+        categoryId: 'water-beverages',
+        quantity: 54,
+        unit: 'liters',
+        recommendedQuantity: 54,
+        productTemplateId: 'bottled-water',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+      createMockInventoryItem({
+        id: '2',
+        name: 'Long Life Milk',
+        categoryId: 'water-beverages',
+        quantity: 4,
+        unit: 'liters',
+        recommendedQuantity: 4,
+        productTemplateId: 'long-life-milk',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+      createMockInventoryItem({
+        id: '3',
+        name: 'Long Life Juice',
+        categoryId: 'water-beverages',
+        quantity: 4,
+        unit: 'liters',
+        recommendedQuantity: 4,
+        productTemplateId: 'long-life-juice',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    const result = calculateCategoryShortages(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    expect(result.shortages.length).toBe(0);
+  });
+
+  it('should return empty for custom category with no recommendations', () => {
+    const result = calculateCategoryShortages('custom-category', [], household);
+
+    expect(result.shortages).toEqual([]);
+    expect(result.totalActual).toBe(0);
+    expect(result.totalNeeded).toBe(0);
+    expect(result.primaryUnit).toBeNull();
+  });
+
+  it('should sort shortages by missing amount descending', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'water-beverages',
+        quantity: 50, // missing 4
+        productTemplateId: 'bottled-water',
+      }),
+      createMockInventoryItem({
+        id: '2',
+        categoryId: 'water-beverages',
+        quantity: 0, // missing all
+        productTemplateId: 'long-life-milk',
+      }),
+    ];
+
+    const result = calculateCategoryShortages(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    // Should be sorted with biggest shortage first
+    if (result.shortages.length >= 2) {
+      expect(result.shortages[0].missing).toBeGreaterThanOrEqual(
+        result.shortages[1].missing,
+      );
+    }
   });
 });

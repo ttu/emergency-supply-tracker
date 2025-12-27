@@ -13,16 +13,29 @@ jest.mock('react-i18next', () => ({
         'medical-health': 'Medical & Health',
       };
 
+      const unitTranslations: Record<string, string> = {
+        liters: 'L',
+        pieces: 'pcs',
+        cans: 'cans',
+      };
+
       const commonTranslations: Record<string, string> = {
         'status.ok': 'OK',
         'status.warning': 'Warning',
         'status.critical': 'Critical',
-        'dashboard.category.items': 'Items',
+        'dashboard.category.items': 'items',
+        'dashboard.category.stocked': 'Stocked',
         'dashboard.category.completion': 'Completion',
+        'dashboard.category.missing': 'Need {{count}} {{unit}} {{item}}',
+        'dashboard.category.missingMultiple':
+          'Need {{count}} {{unit}} {{item}} +{{more}} more',
       };
 
       if (options?.ns === 'categories') {
         return categoryTranslations[key] || key;
+      }
+      if (options?.ns === 'units') {
+        return unitTranslations[key] || key;
       }
       return commonTranslations[key] || key;
     },
@@ -43,7 +56,7 @@ describe('CategoryCard', () => {
     expect(screen.getByText('Water & Beverages')).toBeInTheDocument();
   });
 
-  it('renders item count', () => {
+  it('renders item count when no shortage data', () => {
     render(
       <CategoryCard
         categoryId="food"
@@ -53,7 +66,33 @@ describe('CategoryCard', () => {
       />,
     );
 
-    expect(screen.getByText('18')).toBeInTheDocument();
+    expect(screen.getByText('18 items')).toBeInTheDocument();
+  });
+
+  it('renders stocked quantity when shortage data is provided', () => {
+    render(
+      <CategoryCard
+        categoryId="water-beverages"
+        itemCount={3}
+        status="warning"
+        completionPercentage={50}
+        totalActual={54}
+        totalNeeded={108}
+        primaryUnit="liters"
+        shortages={[
+          {
+            itemId: 'bottled-water',
+            itemName: 'products.bottled-water',
+            actual: 54,
+            needed: 108,
+            unit: 'liters',
+            missing: 54,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('54 / 108 L')).toBeInTheDocument();
   });
 
   it('renders completion percentage', () => {

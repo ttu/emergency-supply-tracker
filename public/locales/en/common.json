@@ -166,8 +166,11 @@
       "excellent": "Well Prepared"
     },
     "category": {
-      "items": "Items",
-      "completion": "Completion"
+      "items": "items",
+      "stocked": "Stocked",
+      "completion": "Completion",
+      "missing": "Need {{count}} {{unit}} {{item}}",
+      "missingMultiple": "Need {{count}} {{unit}} {{item}} +{{more}} more"
     }
   },
   "inventory": {

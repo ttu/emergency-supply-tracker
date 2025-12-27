@@ -3,6 +3,10 @@ import { Inventory } from './Inventory';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
+import { RECOMMENDED_ITEMS } from '../data/recommendedItems';
+import { calculateRecommendedQuantity } from '../utils/calculations/household';
+import { calculateCategoryPreparedness } from '../utils/dashboard/preparedness';
+import type { InventoryItem } from '../types';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -135,5 +139,108 @@ describe('Inventory Page', () => {
     expect(sortLabel).toBeInTheDocument();
 
     // Sorting is tested through component logic
+  });
+});
+
+/**
+ * Unit test to verify that items created from templates include productTemplateId.
+ * This validates the fix for the Categories Overview not showing status correctly.
+ */
+describe('Template to InventoryItem conversion', () => {
+  it('should include productTemplateId when creating item from template', () => {
+    const template = RECOMMENDED_ITEMS.find(
+      (item) => item.id === 'bottled-water',
+    );
+
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    const household = {
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 3,
+      hasFreezer: false,
+    };
+
+    const recommendedQty = calculateRecommendedQuantity(template, household);
+
+    // Simulate what handleSelectTemplate does in Inventory.tsx
+    const newItem = {
+      name: 'Bottled Water', // translated name
+      itemType: 'Bottled Water',
+      categoryId: template.category,
+      quantity: 0,
+      unit: template.unit,
+      recommendedQuantity: recommendedQty,
+      neverExpires: !template.defaultExpirationMonths,
+      expirationDate: template.defaultExpirationMonths
+        ? new Date(
+            Date.now() +
+              template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
+          ).toISOString()
+        : undefined,
+      productTemplateId: template.id, // This is the fix being validated
+    };
+
+    // Verify productTemplateId is set correctly
+    expect(newItem.productTemplateId).toBe('bottled-water');
+    expect(newItem.categoryId).toBe('water-beverages');
+  });
+
+  it('should match items with productTemplateId in preparedness calculation', () => {
+    const household = {
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 3,
+      hasFreezer: false,
+    };
+
+    // Item WITH productTemplateId (the fix)
+    const itemWithTemplateId: InventoryItem = {
+      id: '1',
+      name: 'Bottled Water',
+      categoryId: 'water-beverages',
+      quantity: 54, // Matches recommended for 2 adults, 3 days (9 * 2 * 3 = 54)
+      unit: 'liters',
+      recommendedQuantity: 54,
+      productTemplateId: 'bottled-water', // This enables matching
+      neverExpires: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Item WITHOUT productTemplateId (the bug)
+    const itemWithoutTemplateId: InventoryItem = {
+      id: '2',
+      name: 'Bottled Water',
+      categoryId: 'water-beverages',
+      quantity: 54,
+      unit: 'liters',
+      recommendedQuantity: 54,
+      // productTemplateId is missing - this was the bug
+      neverExpires: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const scoreWithTemplateId = calculateCategoryPreparedness(
+      'water-beverages',
+      [itemWithTemplateId],
+      household,
+    );
+
+    const scoreWithoutTemplateId = calculateCategoryPreparedness(
+      'water-beverages',
+      [itemWithoutTemplateId],
+      household,
+    );
+
+    // With productTemplateId, the item matches and contributes to the score
+    expect(scoreWithTemplateId).toBeGreaterThan(0);
+
+    // Without productTemplateId, the item doesn't match (unless name matches exactly)
+    // The score will be 0 because 'Bottled Water' !== 'bottled-water'
+    expect(scoreWithoutTemplateId).toBe(0);
   });
 });

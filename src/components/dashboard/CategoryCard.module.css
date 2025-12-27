@@ -62,6 +62,20 @@
   color: var(--color-text);
 }
 
+.shortage {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-critical-light, rgba(220, 38, 38, 0.1));
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-critical);
+}
+
+.shortageText {
+  font-size: var(--font-size-sm);
+  color: var(--color-critical);
+  font-weight: var(--font-weight-medium);
+}
+
 .progressBar {
   height: 8px;
   background-color: var(--color-background-secondary);
