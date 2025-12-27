@@ -2,7 +2,6 @@ import { useState, useEffect, ReactNode } from 'react';
 import type { UserSettings } from '../types';
 import { getAppData, saveAppData } from '../utils/storage/localStorage';
 import { SettingsContext } from './SettingsContext';
-import { STANDARD_CATEGORIES } from '../data/standardCategories';
 
 const DEFAULT_SETTINGS: UserSettings = {
   language: 'en',
@@ -31,7 +30,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         hasFreezer: false,
       },
       settings: DEFAULT_SETTINGS,
-      categories: STANDARD_CATEGORIES,
+      customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available
       items: [],
       customTemplates: [],
       lastModified: new Date().toISOString(),

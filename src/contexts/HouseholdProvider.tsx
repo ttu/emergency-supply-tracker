@@ -2,7 +2,6 @@ import { useState, useEffect, ReactNode } from 'react';
 import type { HouseholdConfig } from '../types';
 import { getAppData, saveAppData } from '../utils/storage/localStorage';
 import { HouseholdContext } from './HouseholdContext';
-import { STANDARD_CATEGORIES } from '../data/standardCategories';
 
 const DEFAULT_HOUSEHOLD: HouseholdConfig = {
   adults: 2,
@@ -55,7 +54,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
           waterTracking: false,
         },
       },
-      categories: STANDARD_CATEGORIES,
+      customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available
       items: [],
       customTemplates: [],
       lastModified: new Date().toISOString(),

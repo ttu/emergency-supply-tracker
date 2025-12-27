@@ -30,7 +30,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
           waterTracking: false,
         },
       },
-      categories: STANDARD_CATEGORIES,
+      customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available
       items: [],
       customTemplates: [],
       lastModified: new Date().toISOString(),

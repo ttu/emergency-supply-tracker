@@ -118,7 +118,7 @@ export interface AppData {
   version: string;
   household: HouseholdConfig;
   settings: UserSettings;
-  categories: Category[];
+  customCategories: Category[]; // Only user's custom categories, STANDARD_CATEGORIES are always available
   items: InventoryItem[];
   customTemplates: ProductTemplate[];
   lastModified: string;

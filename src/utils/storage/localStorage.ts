@@ -1,5 +1,4 @@
 import type { AppData } from '../../types';
-import { STANDARD_CATEGORIES } from '../../data/standardCategories';
 
 const STORAGE_KEY = 'emergencySupplyTracker';
 
@@ -28,17 +27,16 @@ export function clearAppData(): void {
 }
 
 export function exportToJSON(data: AppData): string {
-  // Remove categories from export as they're always STANDARD_CATEGORIES
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { categories, ...dataWithoutCategories } = data;
-  return JSON.stringify(dataWithoutCategories, null, 2);
+  return JSON.stringify(data, null, 2);
 }
 
 export function importFromJSON(json: string): AppData {
   const data = JSON.parse(json) as Partial<AppData>;
 
-  // Always use standard categories (they're app defaults, not user data)
-  data.categories = STANDARD_CATEGORIES;
+  // Ensure customCategories exists (only user's custom categories)
+  if (!data.customCategories) {
+    data.customCategories = [];
+  }
 
   // Ensure customTemplates exists
   if (!data.customTemplates) {
