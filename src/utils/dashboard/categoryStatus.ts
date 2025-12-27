@@ -100,10 +100,23 @@ export function calculateCategoryShortages(
 
     recommendedQty = Math.ceil(recommendedQty);
 
-    const matchingItems = categoryItems.filter(
-      (item) =>
-        item.productTemplateId === recItem.id || item.name === recItem.id,
-    );
+    // Match items by: productTemplateId, itemType (kebab-case comparison), or name
+    const recItemIdNormalized = recItem.id.toLowerCase();
+    const matchingItems = categoryItems.filter((item) => {
+      // Direct template ID match
+      if (item.productTemplateId === recItem.id) return true;
+      // Match itemType by normalizing to kebab-case (e.g., "Bottled Water" -> "bottled-water")
+      if (item.itemType) {
+        const itemTypeNormalized = item.itemType
+          .toLowerCase()
+          .replace(/\s+/g, '-');
+        if (itemTypeNormalized === recItemIdNormalized) return true;
+      }
+      // Match name by normalizing to kebab-case
+      const nameNormalized = item.name.toLowerCase().replace(/\s+/g, '-');
+      if (nameNormalized === recItemIdNormalized) return true;
+      return false;
+    });
 
     const actualQty = matchingItems.reduce(
       (sum, item) => sum + item.quantity,
