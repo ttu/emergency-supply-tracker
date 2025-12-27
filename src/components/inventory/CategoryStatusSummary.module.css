@@ -62,6 +62,18 @@
   background-color: var(--color-danger);
 }
 
+.missing {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.missingCalories {
+  font-size: var(--font-size-sm);
+  color: var(--color-warning);
+  font-weight: var(--font-weight-medium);
+}
+
 /* Mobile responsiveness */
 @media (max-width: 640px) {
   .summary {

@@ -179,6 +179,7 @@
     "categoryNavigation": "Kategorianavigaatio",
     "allCategories": "Kaikki",
     "noItems": "Ei tuotteita",
+    "missing": "Puuttuu",
     "expired": "Vanhentunut",
     "expiresIn": "Vanhenee {{days}} päivässä",
     "searchPlaceholder": "Hae tuotteita...",

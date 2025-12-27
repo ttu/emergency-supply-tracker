@@ -179,6 +179,7 @@
     "categoryNavigation": "Category Navigation",
     "allCategories": "All",
     "noItems": "No items found",
+    "missing": "Missing",
     "expired": "Expired",
     "expiresIn": "Expires in {{days}} days",
     "searchPlaceholder": "Search items...",

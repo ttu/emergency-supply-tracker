@@ -232,8 +232,10 @@ export function Inventory({
             totalActual={categoryStatus.totalActual}
             totalNeeded={categoryStatus.totalNeeded}
             primaryUnit={categoryStatus.primaryUnit}
+            shortages={categoryStatus.shortages}
             totalActualCalories={categoryStatus.totalActualCalories}
             totalNeededCalories={categoryStatus.totalNeededCalories}
+            missingCalories={categoryStatus.missingCalories}
           />
         )}
         <ItemList items={filteredItems} onItemClick={handleEditItem} />
