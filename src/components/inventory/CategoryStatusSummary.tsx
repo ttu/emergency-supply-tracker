@@ -53,8 +53,13 @@ export const CategoryStatusSummary = ({
       return `${actualKcal} / ${neededKcal} ${t('dashboard.category.kcal')}`;
     }
 
-    if (totalNeeded === 0 || !primaryUnit) {
+    if (totalNeeded === 0) {
       return `${completionPercentage}%`;
+    }
+
+    // When primaryUnit is null, it means mixed units - show item type count
+    if (!primaryUnit) {
+      return `${Math.round(totalActual)} / ${Math.round(totalNeeded)} ${t('dashboard.category.items')}`;
     }
 
     const unitLabel = t(primaryUnit, { ns: 'units' });

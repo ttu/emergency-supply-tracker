@@ -73,6 +73,10 @@ export function calculateCategoryShortages(
   let totalActual = 0;
   let totalNeeded = 0;
 
+  // Track item types fulfilled for mixed-unit categories
+  let itemTypesFulfilled = 0;
+  let totalItemTypes = 0;
+
   // Calorie tracking for food category
   const isFoodCategory = categoryId === 'food';
   let totalActualCalories = 0;
@@ -84,8 +88,9 @@ export function calculateCategoryShortages(
       DAILY_CALORIES_PER_PERSON * totalPeople * household.supplyDurationDays;
   }
 
-  // Track units to find the most common one
+  // Track units to find the most common one and detect mixed units
   const unitCounts = new Map<Unit, number>();
+  const uniqueUnits = new Set<Unit>();
 
   recommendedForCategory.forEach((recItem) => {
     let recommendedQty = recItem.baseQuantity;
@@ -136,13 +141,20 @@ export function calculateCategoryShortages(
 
     const missing = Math.max(0, recommendedQty - actualQty);
 
+    // Track unique units and item types
+    uniqueUnits.add(recItem.unit);
+    totalItemTypes++;
+    if (actualQty >= recommendedQty) {
+      itemTypesFulfilled++;
+    }
+
     // Track unit frequency
     unitCounts.set(
       recItem.unit,
       (unitCounts.get(recItem.unit) || 0) + recommendedQty,
     );
 
-    // Add to totals (only if same unit type for meaningful aggregation)
+    // Add to totals
     totalActual += actualQty;
     totalNeeded += recommendedQty;
 
@@ -167,6 +179,14 @@ export function calculateCategoryShortages(
       primaryUnit = unit;
     }
   });
+
+  // If multiple different units, use item type counts instead
+  const hasMixedUnits = uniqueUnits.size > 1;
+  if (hasMixedUnits) {
+    totalActual = itemTypesFulfilled;
+    totalNeeded = totalItemTypes;
+    primaryUnit = null; // Signal to show "items" instead of a specific unit
+  }
 
   // Sort shortages by missing amount (descending)
   shortages.sort((a, b) => b.missing - a.missing);
