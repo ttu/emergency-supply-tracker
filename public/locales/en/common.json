@@ -170,7 +170,9 @@
       "stocked": "Stocked",
       "completion": "Completion",
       "missing": "Need {{count}} {{unit}} {{item}}",
-      "missingMultiple": "Need {{count}} {{unit}} {{item}} +{{more}} more"
+      "missingMultiple": "Need {{count}} {{unit}} {{item}} +{{more}} more",
+      "kcal": "kcal",
+      "missingCalories": "Need {{count}} kcal more"
     }
   },
   "inventory": {

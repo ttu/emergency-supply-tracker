@@ -29,10 +29,18 @@ export interface CategoryStatusSummary {
   totalActual: number;
   totalNeeded: number;
   primaryUnit: Unit | null;
+  // Calorie-based tracking for food category
+  totalActualCalories?: number;
+  totalNeededCalories?: number;
+  missingCalories?: number;
 }
 
+// Daily calorie requirement per person for emergency situations
+const DAILY_CALORIES_PER_PERSON = 2000;
+
 /**
- * Calculate shortages for a category based on recommended items
+ * Calculate shortages for a category based on recommended items.
+ * For the 'food' category, uses calorie-based calculations instead of quantity-based.
  */
 export function calculateCategoryShortages(
   categoryId: string,
@@ -43,6 +51,9 @@ export function calculateCategoryShortages(
   totalActual: number;
   totalNeeded: number;
   primaryUnit: Unit | null;
+  totalActualCalories?: number;
+  totalNeededCalories?: number;
+  missingCalories?: number;
 } {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
   const recommendedForCategory = RECOMMENDED_ITEMS.filter(
@@ -57,6 +68,17 @@ export function calculateCategoryShortages(
   const shortages: CategoryShortage[] = [];
   let totalActual = 0;
   let totalNeeded = 0;
+
+  // Calorie tracking for food category
+  const isFoodCategory = categoryId === 'food';
+  let totalActualCalories = 0;
+  let totalNeededCalories = 0;
+
+  // For food category, calculate needed calories based on people and days
+  if (isFoodCategory) {
+    totalNeededCalories =
+      DAILY_CALORIES_PER_PERSON * totalPeople * household.supplyDurationDays;
+  }
 
   // Track units to find the most common one
   const unitCounts = new Map<Unit, number>();
@@ -83,6 +105,17 @@ export function calculateCategoryShortages(
       (sum, item) => sum + item.quantity,
       0,
     );
+
+    // Calculate calories for food items
+    if (isFoodCategory && recItem.caloriesPerUnit) {
+      // Get calories from inventory items (use template value as fallback)
+      const itemCalories = matchingItems.reduce((sum, item) => {
+        const calsPerUnit =
+          item.caloriesPerUnit ?? recItem.caloriesPerUnit ?? 0;
+        return sum + item.quantity * calsPerUnit;
+      }, 0);
+      totalActualCalories += itemCalories;
+    }
 
     const missing = Math.max(0, recommendedQty - actualQty);
 
@@ -120,6 +153,23 @@ export function calculateCategoryShortages(
 
   // Sort shortages by missing amount (descending)
   shortages.sort((a, b) => b.missing - a.missing);
+
+  // Return with calorie data for food category
+  if (isFoodCategory) {
+    const missingCalories = Math.max(
+      0,
+      totalNeededCalories - totalActualCalories,
+    );
+    return {
+      shortages,
+      totalActual,
+      totalNeeded,
+      primaryUnit,
+      totalActualCalories,
+      totalNeededCalories,
+      missingCalories,
+    };
+  }
 
   return { shortages, totalActual, totalNeeded, primaryUnit };
 }
@@ -174,6 +224,10 @@ export function calculateCategoryStatus(
     totalActual: shortageInfo.totalActual,
     totalNeeded: shortageInfo.totalNeeded,
     primaryUnit: shortageInfo.primaryUnit,
+    // Calorie data for food category
+    totalActualCalories: shortageInfo.totalActualCalories,
+    totalNeededCalories: shortageInfo.totalNeededCalories,
+    missingCalories: shortageInfo.missingCalories,
   };
 }
 

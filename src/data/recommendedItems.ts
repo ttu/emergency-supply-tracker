@@ -37,6 +37,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
 
   // ===================================================================
   // 2. Food
+  // Calorie values: ~2000 kcal/day/adult recommended for emergency situations
   // ===================================================================
   {
     id: 'canned-soup',
@@ -47,6 +48,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 24,
+    caloriesPerUnit: 200, // ~200 kcal per can (400g can)
   },
   {
     id: 'canned-vegetables',
@@ -57,6 +59,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 24,
+    caloriesPerUnit: 100, // ~100 kcal per can (400g can)
   },
   {
     id: 'canned-fish',
@@ -67,6 +70,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 36,
+    caloriesPerUnit: 200, // ~200 kcal per can (150g drained)
   },
   {
     id: 'canned-meat',
@@ -77,6 +81,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 36,
+    caloriesPerUnit: 300, // ~300 kcal per can (200g can)
   },
   {
     id: 'pasta',
@@ -87,6 +92,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 24,
+    caloriesPerUnit: 3500, // ~350 kcal per 100g dry pasta
   },
   {
     id: 'rice',
@@ -97,6 +103,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 24,
+    caloriesPerUnit: 3600, // ~360 kcal per 100g dry rice
   },
   {
     id: 'oats',
@@ -107,6 +114,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    caloriesPerUnit: 3800, // ~380 kcal per 100g oats
   },
   {
     id: 'crackers',
@@ -117,6 +125,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    caloriesPerUnit: 500, // ~500 kcal per package (200g)
   },
   {
     id: 'energy-bars',
@@ -127,6 +136,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    caloriesPerUnit: 250, // ~250 kcal per bar
   },
   {
     id: 'spreads',
@@ -137,6 +147,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: false,
     defaultExpirationMonths: 18,
+    caloriesPerUnit: 1600, // ~1600 kcal per jar (peanut butter, 400g)
   },
   {
     id: 'dried-fruits',
@@ -147,6 +158,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    caloriesPerUnit: 3000, // ~300 kcal per 100g
   },
   {
     id: 'nuts',
@@ -157,6 +169,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    caloriesPerUnit: 6000, // ~600 kcal per 100g
   },
   {
     id: 'salt-sugar',
@@ -166,6 +179,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     unit: 'kilograms',
     scaleWithPeople: false,
     scaleWithDays: false,
+    // No calories - salt has 0, sugar is condiment
   },
   {
     id: 'coffee-tea',
@@ -176,6 +190,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: false,
     defaultExpirationMonths: 18,
+    // No significant calories
   },
   {
     id: 'frozen-vegetables',
@@ -187,6 +202,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
     defaultExpirationMonths: 12,
     requiresFreezer: true,
+    caloriesPerUnit: 400, // ~40 kcal per 100g
   },
   {
     id: 'frozen-meat',
@@ -198,6 +214,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
     defaultExpirationMonths: 6,
     requiresFreezer: true,
+    caloriesPerUnit: 2500, // ~250 kcal per 100g (average meat)
   },
   {
     id: 'frozen-meals',
@@ -209,6 +226,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
     defaultExpirationMonths: 12,
     requiresFreezer: true,
+    caloriesPerUnit: 450, // ~450 kcal per meal
   },
 
   // ===================================================================

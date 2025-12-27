@@ -170,7 +170,9 @@
       "stocked": "Varastossa",
       "completion": "Valmius",
       "missing": "Tarvitaan {{count}} {{unit}} {{item}}",
-      "missingMultiple": "Tarvitaan {{count}} {{unit}} {{item}} +{{more}} muuta"
+      "missingMultiple": "Tarvitaan {{count}} {{unit}} {{item}} +{{more}} muuta",
+      "kcal": "kcal",
+      "missingCalories": "Tarvitaan {{count}} kcal lisää"
     }
   },
   "inventory": {

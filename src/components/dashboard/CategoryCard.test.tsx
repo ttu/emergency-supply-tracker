@@ -6,7 +6,7 @@ import { CategoryCard } from './CategoryCard';
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, options?: { ns?: string }) => {
+    t: (key: string, options?: Record<string, unknown>) => {
       const categoryTranslations: Record<string, string> = {
         'water-beverages': 'Water & Beverages',
         food: 'Food',
@@ -29,6 +29,8 @@ jest.mock('react-i18next', () => ({
         'dashboard.category.missing': 'Need {{count}} {{unit}} {{item}}',
         'dashboard.category.missingMultiple':
           'Need {{count}} {{unit}} {{item}} +{{more}} more',
+        'dashboard.category.kcal': 'kcal',
+        'dashboard.category.missingCalories': 'Need {{count}} kcal more',
       };
 
       if (options?.ns === 'categories') {
@@ -37,7 +39,22 @@ jest.mock('react-i18next', () => ({
       if (options?.ns === 'units') {
         return unitTranslations[key] || key;
       }
-      return commonTranslations[key] || key;
+
+      let result = commonTranslations[key] || key;
+
+      // Handle interpolation
+      if (options) {
+        Object.entries(options).forEach(([optKey, optValue]) => {
+          if (optKey !== 'ns') {
+            result = result.replace(
+              new RegExp(`\\{\\{${optKey}\\}\\}`, 'g'),
+              String(optValue),
+            );
+          }
+        });
+      }
+
+      return result;
     },
   }),
 }));
@@ -187,5 +204,39 @@ describe('CategoryCard', () => {
     await user.keyboard('{Enter}');
 
     expect(onClick).toHaveBeenCalled();
+  });
+
+  it('renders calories for food category', () => {
+    render(
+      <CategoryCard
+        categoryId="food"
+        itemCount={5}
+        status="warning"
+        completionPercentage={50}
+        totalActualCalories={6000}
+        totalNeededCalories={12000}
+        missingCalories={6000}
+      />,
+    );
+
+    // Should show calories in kcal format (divided by 1000)
+    expect(screen.getByText('6 / 12 kcal')).toBeInTheDocument();
+  });
+
+  it('renders missing calories message for food category', () => {
+    render(
+      <CategoryCard
+        categoryId="food"
+        itemCount={5}
+        status="critical"
+        completionPercentage={25}
+        totalActualCalories={3000}
+        totalNeededCalories={12000}
+        missingCalories={9000}
+      />,
+    );
+
+    // Should show missing calories message
+    expect(screen.getByText('Need 9000 kcal more')).toBeInTheDocument();
   });
 });

@@ -321,4 +321,74 @@ describe('calculateCategoryShortages', () => {
       );
     }
   });
+
+  it('should calculate calories for food category', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'food',
+        quantity: 5, // 5 cans of soup
+        productTemplateId: 'canned-soup',
+        caloriesPerUnit: 200,
+      }),
+      createMockInventoryItem({
+        id: '2',
+        categoryId: 'food',
+        quantity: 2, // 2 kg pasta
+        productTemplateId: 'pasta',
+        caloriesPerUnit: 3500,
+      }),
+    ];
+
+    const result = calculateCategoryShortages('food', items, household);
+
+    // 5 cans * 200 kcal + 2 kg * 3500 kcal = 1000 + 7000 = 8000 kcal
+    expect(result.totalActualCalories).toBe(8000);
+
+    // 2 people * 3 days * 2000 kcal = 12000 kcal
+    expect(result.totalNeededCalories).toBe(12000);
+
+    // Missing = 12000 - 8000 = 4000 kcal
+    expect(result.missingCalories).toBe(4000);
+  });
+
+  it('should return no missing calories when fully stocked', () => {
+    // Create items with enough calories for 2 people * 3 days = 12000 kcal
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'food',
+        quantity: 4, // 4 kg rice = 14400 kcal
+        productTemplateId: 'rice',
+        caloriesPerUnit: 3600,
+      }),
+    ];
+
+    const result = calculateCategoryShortages('food', items, household);
+
+    expect(result.totalActualCalories).toBe(14400);
+    expect(result.totalNeededCalories).toBe(12000);
+    expect(result.missingCalories).toBe(0); // We have more than needed
+  });
+
+  it('should not return calorie data for non-food categories', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'water-beverages',
+        quantity: 54,
+        productTemplateId: 'bottled-water',
+      }),
+    ];
+
+    const result = calculateCategoryShortages(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    expect(result.totalActualCalories).toBeUndefined();
+    expect(result.totalNeededCalories).toBeUndefined();
+    expect(result.missingCalories).toBeUndefined();
+  });
 });

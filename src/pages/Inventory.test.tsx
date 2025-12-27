@@ -180,12 +180,58 @@ describe('Template to InventoryItem conversion', () => {
               template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
           ).toISOString()
         : undefined,
-      productTemplateId: template.id, // This is the fix being validated
+      productTemplateId: template.id,
+      caloriesPerUnit: template.caloriesPerUnit,
     };
 
     // Verify productTemplateId is set correctly
     expect(newItem.productTemplateId).toBe('bottled-water');
     expect(newItem.categoryId).toBe('water-beverages');
+    // Water items don't have calories
+    expect(newItem.caloriesPerUnit).toBeUndefined();
+  });
+
+  it('should include caloriesPerUnit for food items from template', () => {
+    const template = RECOMMENDED_ITEMS.find(
+      (item) => item.id === 'canned-soup',
+    );
+
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    const household = {
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 3,
+      hasFreezer: false,
+    };
+
+    const recommendedQty = calculateRecommendedQuantity(template, household);
+
+    // Simulate what handleSelectTemplate does in Inventory.tsx
+    const newItem = {
+      name: 'Canned Soup',
+      itemType: 'Canned Soup',
+      categoryId: template.category,
+      quantity: 0,
+      unit: template.unit,
+      recommendedQuantity: recommendedQty,
+      neverExpires: !template.defaultExpirationMonths,
+      expirationDate: template.defaultExpirationMonths
+        ? new Date(
+            Date.now() +
+              template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
+          ).toISOString()
+        : undefined,
+      productTemplateId: template.id,
+      caloriesPerUnit: template.caloriesPerUnit,
+    };
+
+    // Verify food item has calories
+    expect(newItem.productTemplateId).toBe('canned-soup');
+    expect(newItem.categoryId).toBe('food');
+    expect(newItem.caloriesPerUnit).toBe(200); // 200 kcal per can
   });
 
   it('should match items with productTemplateId in preparedness calculation', () => {

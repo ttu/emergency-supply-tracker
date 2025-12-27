@@ -82,6 +82,7 @@ export interface InventoryItem {
   location?: string;
   notes?: string;
   productTemplateId?: string;
+  caloriesPerUnit?: number; // Calories per unit for food items
   createdAt: string;
   updatedAt: string;
 }
@@ -111,6 +112,8 @@ export interface RecommendedItemDefinition {
   scaleWithDays: boolean;
   requiresFreezer?: boolean;
   defaultExpirationMonths?: number;
+  // Calorie tracking for food items
+  caloriesPerUnit?: number; // Calories per unit (e.g., per can, per kg)
 }
 
 // App Data (root)

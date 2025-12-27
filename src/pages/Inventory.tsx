@@ -154,6 +154,7 @@ export function Inventory({
           ).toISOString()
         : undefined,
       productTemplateId: template.id,
+      caloriesPerUnit: template.caloriesPerUnit,
     };
 
     setEditingItem(newItem as InventoryItem);
