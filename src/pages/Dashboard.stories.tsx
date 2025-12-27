@@ -3,7 +3,7 @@ import { Dashboard } from './Dashboard';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
-import type { InventoryItem } from '../types';
+import { createMockInventoryItem } from '../utils/test/factories';
 
 const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',
@@ -41,9 +41,8 @@ export const WithItems: Story = {
   decorators: [
     (Story) => {
       // Set up some inventory items in localStorage
-      const now = new Date().toISOString();
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Bottled Water',
           categoryId: 'water-beverages',
@@ -53,11 +52,8 @@ export const WithItems: Story = {
           neverExpires: false,
           expirationDate: '2026-12-31',
           location: 'Pantry',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Canned Beans',
           categoryId: 'food',
@@ -67,11 +63,8 @@ export const WithItems: Story = {
           neverExpires: false,
           expirationDate: '2026-06-30',
           location: 'Pantry',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '3',
           name: 'First Aid Kit',
           categoryId: 'medical-health',
@@ -80,10 +73,7 @@ export const WithItems: Story = {
           recommendedQuantity: 1,
           neverExpires: true,
           location: 'Closet',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
+        }),
       ];
       localStorage.setItem('inventory', JSON.stringify(items));
 
@@ -106,9 +96,8 @@ export const WithAlerts: Story = {
   decorators: [
     (Story) => {
       // Set up inventory with items that will trigger alerts
-      const now = new Date().toISOString();
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Expired Water',
           categoryId: 'water-beverages',
@@ -118,11 +107,8 @@ export const WithAlerts: Story = {
           neverExpires: false,
           expirationDate: '2024-01-01',
           location: 'Pantry',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Low Stock Food',
           categoryId: 'food',
@@ -132,11 +118,8 @@ export const WithAlerts: Story = {
           neverExpires: false,
           expirationDate: '2026-12-31',
           location: 'Pantry',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '3',
           name: 'Expiring Soon Medicine',
           categoryId: 'medical-health',
@@ -148,10 +131,7 @@ export const WithAlerts: Story = {
             Date.now() + 5 * 24 * 60 * 60 * 1000,
           ).toISOString(),
           location: 'Medicine Cabinet',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
+        }),
       ];
       localStorage.setItem('inventory', JSON.stringify(items));
 
@@ -174,9 +154,8 @@ export const WellPrepared: Story = {
   decorators: [
     (Story) => {
       // Set up a well-stocked inventory
-      const now = new Date().toISOString();
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Bottled Water',
           categoryId: 'water-beverages',
@@ -186,11 +165,8 @@ export const WellPrepared: Story = {
           neverExpires: false,
           expirationDate: '2026-12-31',
           location: 'Pantry',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Canned Vegetables',
           categoryId: 'food',
@@ -200,11 +176,8 @@ export const WellPrepared: Story = {
           neverExpires: false,
           expirationDate: '2026-12-31',
           location: 'Pantry',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '3',
           name: 'Flashlight',
           categoryId: 'light-power',
@@ -213,11 +186,8 @@ export const WellPrepared: Story = {
           recommendedQuantity: 2,
           neverExpires: true,
           location: 'Utility Closet',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '4',
           name: 'First Aid Kit',
           categoryId: 'medical-health',
@@ -226,10 +196,7 @@ export const WellPrepared: Story = {
           recommendedQuantity: 1,
           neverExpires: true,
           location: 'Bathroom',
-          notes: '',
-          createdAt: now,
-          updatedAt: now,
-        },
+        }),
       ];
       localStorage.setItem('inventory', JSON.stringify(items));
 

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemForm } from './ItemForm';
 import { STANDARD_CATEGORIES } from '../../data/standardCategories';
-import type { InventoryItem } from '../../types';
+import { createMockInventoryItem } from '../../utils/test/factories';
 
 const meta = {
   title: 'Components/Inventory/ItemForm',
@@ -18,12 +18,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const now = new Date().toISOString();
 const futureDate = new Date(
   Date.now() + 365 * 24 * 60 * 60 * 1000,
 ).toISOString();
 
-const sampleItem: InventoryItem = {
+const sampleItem = createMockInventoryItem({
   id: '1',
   name: 'Bottled Water',
   categoryId: 'water-beverages',
@@ -34,9 +33,7 @@ const sampleItem: InventoryItem = {
   expirationDate: futureDate,
   location: 'Pantry',
   notes: 'Check expiration dates regularly',
-  createdAt: now,
-  updatedAt: now,
-};
+});
 
 export const NewItem: Story = {
   args: {

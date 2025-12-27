@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import { SettingsProvider } from '../../contexts/SettingsProvider';
-import type { HouseholdConfig } from '../../types';
+import { createMockHousehold } from '../../utils/test/factories';
 
 const meta = {
   title: 'Onboarding/QuickSetupScreen',
@@ -22,12 +22,12 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const defaultHousehold: HouseholdConfig = {
+const defaultHousehold = createMockHousehold({
   adults: 2,
   children: 1,
   supplyDurationDays: 3,
   hasFreezer: true,
-};
+});
 
 export const Default: Story = {
   args: {
@@ -43,12 +43,12 @@ export const Default: Story = {
 
 export const SinglePerson: Story = {
   args: {
-    household: {
+    household: createMockHousehold({
       adults: 1,
       children: 0,
       supplyDurationDays: 3,
       hasFreezer: true,
-    },
+    }),
     onAddItems: () => {
       console.log('Add items clicked');
     },
@@ -60,12 +60,12 @@ export const SinglePerson: Story = {
 
 export const LargeFamily: Story = {
   args: {
-    household: {
+    household: createMockHousehold({
       adults: 2,
       children: 3,
       supplyDurationDays: 7,
       hasFreezer: true,
-    },
+    }),
     onAddItems: () => {
       console.log('Add items clicked');
     },

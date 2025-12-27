@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemList } from './ItemList';
-import type { InventoryItem } from '../../types';
+import { createMockInventoryItem } from '../../utils/test/factories';
 
 const meta = {
   title: 'Components/Inventory/ItemList',
@@ -16,13 +16,12 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const now = new Date().toISOString();
 const futureDate = new Date(
   Date.now() + 365 * 24 * 60 * 60 * 1000,
 ).toISOString();
 
-const sampleItems: InventoryItem[] = [
-  {
+const sampleItems = [
+  createMockInventoryItem({
     id: '1',
     name: 'Bottled Water',
     categoryId: 'water-beverages',
@@ -32,11 +31,8 @@ const sampleItems: InventoryItem[] = [
     neverExpires: false,
     expirationDate: futureDate,
     location: 'Pantry',
-    notes: '',
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
+  }),
+  createMockInventoryItem({
     id: '2',
     name: 'Canned Beans',
     categoryId: 'food',
@@ -46,11 +42,8 @@ const sampleItems: InventoryItem[] = [
     neverExpires: false,
     expirationDate: futureDate,
     location: 'Pantry',
-    notes: '',
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
+  }),
+  createMockInventoryItem({
     id: '3',
     name: 'First Aid Kit',
     categoryId: 'medical-health',
@@ -59,10 +52,7 @@ const sampleItems: InventoryItem[] = [
     recommendedQuantity: 1,
     neverExpires: true,
     location: 'Bathroom',
-    notes: '',
-    createdAt: now,
-    updatedAt: now,
-  },
+  }),
 ];
 
 export const WithItems: Story = {
