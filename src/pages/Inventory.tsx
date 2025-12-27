@@ -140,6 +140,14 @@ export function Inventory({
     setShowAddModal(true);
   };
 
+  const handleCopyItem = () => {
+    if (editingItem) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, createdAt, updatedAt, ...itemData } = editingItem;
+      setEditingItem(itemData as InventoryItem);
+    }
+  };
+
   const handleSelectTemplate = (template: RecommendedItemDefinition) => {
     const recommendedQty = calculateRecommendedQuantity(template, household);
     const templateName = t(template.i18nKey.replace('products.', ''), {
@@ -262,6 +270,9 @@ export function Inventory({
           />
           {editingItem?.id && (
             <div className={styles.deleteSection}>
+              <Button variant="secondary" onClick={handleCopyItem}>
+                {t('common.copy')}
+              </Button>
               <Button
                 variant="danger"
                 onClick={() => handleDeleteItem(editingItem.id)}

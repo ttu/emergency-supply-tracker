@@ -18,7 +18,8 @@
     "back": "Takaisin",
     "export": "Vie",
     "import": "Tuo",
-    "clear": "Tyhjennä"
+    "clear": "Tyhjennä",
+    "copy": "Kopioi"
   },
   "actions": {
     "add": "Lisää",
