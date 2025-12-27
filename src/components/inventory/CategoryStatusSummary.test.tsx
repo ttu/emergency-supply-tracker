@@ -141,8 +141,8 @@ describe('CategoryStatusSummary', () => {
       />,
     );
 
-    // Should show 6 / 12 kcal (divided by 1000)
-    expect(screen.getByText('6 / 12 kcal')).toBeInTheDocument();
+    // Values are already in kcal, should show as-is
+    expect(screen.getByText('6000 / 12000 kcal')).toBeInTheDocument();
   });
 
   it('renders food category name', () => {

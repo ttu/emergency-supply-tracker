@@ -46,10 +46,10 @@ export const CategoryStatusSummary = ({
 
   // Format progress text - calories for food, units for others
   const getProgressText = (): string => {
-    // For food category, show calories
+    // For food category, show calories (values are already in kcal)
     if (isFoodCategory && totalNeededCalories && totalNeededCalories > 0) {
-      const actualKcal = Math.round((totalActualCalories ?? 0) / 1000);
-      const neededKcal = Math.round(totalNeededCalories / 1000);
+      const actualKcal = Math.round(totalActualCalories ?? 0);
+      const neededKcal = Math.round(totalNeededCalories);
       return `${actualKcal} / ${neededKcal} ${t('dashboard.category.kcal')}`;
     }
 
