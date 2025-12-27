@@ -12,7 +12,7 @@ export interface ItemCardProps {
 }
 
 export const ItemCard = ({ item, onClick }: ItemCardProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'units']);
 
   const formatExpirationDate = (dateString?: string): string => {
     if (!dateString) return '';
@@ -46,7 +46,7 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
       <div className={styles.body}>
         <div className={styles.quantity}>
           <span className={styles.current}>{item.quantity}</span>
-          <span className={styles.unit}>{t(`units.${item.unit}`)}</span>
+          <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
         </div>
 
         {!item.neverExpires && item.expirationDate && (

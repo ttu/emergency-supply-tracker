@@ -43,7 +43,7 @@ describe('ItemCard', () => {
   it('should render quantity and unit', () => {
     render(<ItemCard item={baseItem} />);
     expect(screen.getByText('20')).toBeInTheDocument();
-    expect(screen.getByText('units.liters')).toBeInTheDocument();
+    expect(screen.getByText('liters')).toBeInTheDocument();
   });
 
   it('should render location if provided', () => {
