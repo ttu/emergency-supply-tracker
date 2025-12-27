@@ -48,6 +48,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 24,
+    weightGramsPerUnit: 400,
+    caloriesPer100g: 50,
     caloriesPerUnit: 200, // ~200 kcal per can (400g can)
   },
   {
@@ -59,6 +61,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 24,
+    weightGramsPerUnit: 400,
+    caloriesPer100g: 25,
     caloriesPerUnit: 100, // ~100 kcal per can (400g can)
   },
   {
@@ -70,6 +74,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 36,
+    weightGramsPerUnit: 150,
+    caloriesPer100g: 130,
     caloriesPerUnit: 200, // ~200 kcal per can (150g drained)
   },
   {
@@ -81,6 +87,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 36,
+    weightGramsPerUnit: 200,
+    caloriesPer100g: 150,
     caloriesPerUnit: 300, // ~300 kcal per can (200g can)
   },
   {
@@ -92,6 +100,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 24,
+    weightGramsPerUnit: 1000,
+    caloriesPer100g: 350,
     caloriesPerUnit: 3500, // ~350 kcal per 100g dry pasta
   },
   {
@@ -103,6 +113,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 24,
+    weightGramsPerUnit: 1000,
+    caloriesPer100g: 360,
     caloriesPerUnit: 3600, // ~360 kcal per 100g dry rice
   },
   {
@@ -114,6 +126,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    weightGramsPerUnit: 1000,
+    caloriesPer100g: 380,
     caloriesPerUnit: 3800, // ~380 kcal per 100g oats
   },
   {
@@ -125,6 +139,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    weightGramsPerUnit: 200,
+    caloriesPer100g: 250,
     caloriesPerUnit: 500, // ~500 kcal per package (200g)
   },
   {
@@ -136,6 +152,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    weightGramsPerUnit: 50,
+    caloriesPer100g: 500,
     caloriesPerUnit: 250, // ~250 kcal per bar
   },
   {
@@ -147,6 +165,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: false,
     defaultExpirationMonths: 18,
+    weightGramsPerUnit: 400,
+    caloriesPer100g: 400,
     caloriesPerUnit: 1600, // ~1600 kcal per jar (peanut butter, 400g)
   },
   {
@@ -158,6 +178,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    weightGramsPerUnit: 1000,
+    caloriesPer100g: 300,
     caloriesPerUnit: 3000, // ~300 kcal per 100g
   },
   {
@@ -169,6 +191,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: true,
     scaleWithDays: true,
     defaultExpirationMonths: 12,
+    weightGramsPerUnit: 1000,
+    caloriesPer100g: 600,
     caloriesPerUnit: 6000, // ~600 kcal per 100g
   },
   {
@@ -202,6 +226,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
     defaultExpirationMonths: 12,
     requiresFreezer: true,
+    weightGramsPerUnit: 1000,
+    caloriesPer100g: 40,
     caloriesPerUnit: 400, // ~40 kcal per 100g
   },
   {
@@ -214,6 +240,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
     defaultExpirationMonths: 6,
     requiresFreezer: true,
+    weightGramsPerUnit: 1000,
+    caloriesPer100g: 250,
     caloriesPerUnit: 2500, // ~250 kcal per 100g (average meat)
   },
   {
@@ -226,6 +254,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
     defaultExpirationMonths: 12,
     requiresFreezer: true,
+    weightGramsPerUnit: 400,
+    caloriesPer100g: 115,
     caloriesPerUnit: 450, // ~450 kcal per meal
   },
 

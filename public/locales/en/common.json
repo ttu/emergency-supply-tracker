@@ -209,6 +209,8 @@
     "quantity": "Quantity",
     "unit": "Unit",
     "recommendedQuantity": "Recommended Quantity",
+    "weightGrams": "Weight (g)",
+    "caloriesPerUnit": "Calories per unit",
     "neverExpires": "Never Expires",
     "expirationDate": "Expiration Date",
     "location": "Location",

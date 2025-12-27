@@ -54,6 +54,9 @@ export function Inventory({
   const [editingItem, setEditingItem] = useState<InventoryItem | undefined>(
     undefined,
   );
+  const [selectedTemplate, setSelectedTemplate] = useState<
+    RecommendedItemDefinition | undefined
+  >(undefined);
 
   // Calculate category status when a category is selected
   const categoryStatus = useMemo(() => {
@@ -158,9 +161,11 @@ export function Inventory({
           ).toISOString()
         : undefined,
       productTemplateId: template.id,
+      weightGrams: template.weightGramsPerUnit,
       caloriesPerUnit: template.caloriesPerUnit,
     };
 
+    setSelectedTemplate(template);
     setEditingItem(newItem as InventoryItem);
     setShowTemplateModal(false);
     setShowAddModal(true);
@@ -169,11 +174,13 @@ export function Inventory({
   const handleCancelForm = () => {
     setShowAddModal(false);
     setEditingItem(undefined);
+    setSelectedTemplate(undefined);
   };
 
   const handleBackToTemplateSelector = () => {
     setShowAddModal(false);
     setEditingItem(undefined);
+    setSelectedTemplate(undefined);
     setShowTemplateModal(true);
   };
 
@@ -181,6 +188,7 @@ export function Inventory({
     setShowTemplateModal(false);
     setShowAddModal(true);
     setEditingItem(undefined);
+    setSelectedTemplate(undefined);
   };
 
   // Calculate default recommended quantity for manual entries
@@ -247,6 +255,8 @@ export function Inventory({
             onSubmit={editingItem?.id ? handleUpdateItem : handleAddItem}
             onCancel={handleCancelForm}
             defaultRecommendedQuantity={getDefaultRecommendedQuantity()}
+            templateWeightGramsPerUnit={selectedTemplate?.weightGramsPerUnit}
+            templateCaloriesPer100g={selectedTemplate?.caloriesPer100g}
           />
           {editingItem?.id && (
             <div className={styles.deleteSection}>

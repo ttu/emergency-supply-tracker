@@ -73,6 +73,12 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
           </div>
         )}
 
+        {item.categoryId === 'food' && item.caloriesPerUnit && (
+          <div className={styles.calories}>
+            🔥 {Math.round(item.quantity * item.caloriesPerUnit)} kcal
+          </div>
+        )}
+
         {item.location && (
           <div className={styles.location}>📍 {item.location}</div>
         )}

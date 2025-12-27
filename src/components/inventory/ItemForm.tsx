@@ -4,6 +4,7 @@ import type { InventoryItem, Category } from '../../types';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Button } from '../common/Button';
+import { calculateCaloriesFromWeight } from '../../utils/calculations/calories';
 import styles from './ItemForm.module.css';
 
 export interface ItemFormProps {
@@ -14,6 +15,8 @@ export interface ItemFormProps {
   ) => void;
   onCancel: () => void;
   defaultRecommendedQuantity?: number;
+  templateWeightGramsPerUnit?: number;
+  templateCaloriesPer100g?: number;
 }
 
 interface FormData {
@@ -27,6 +30,8 @@ interface FormData {
   expirationDate: string;
   location: string;
   notes: string;
+  weightGrams: string;
+  caloriesPerUnit: string;
 }
 
 interface FormErrors {
@@ -42,8 +47,31 @@ export const ItemForm = ({
   onSubmit,
   onCancel,
   defaultRecommendedQuantity = 1,
+  templateWeightGramsPerUnit,
+  templateCaloriesPer100g,
 }: ItemFormProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
+
+  // Calculate default weight and calories from template
+  const getDefaultWeight = (): string => {
+    if (item?.weightGrams !== undefined) return item.weightGrams.toString();
+    if (templateWeightGramsPerUnit !== undefined) {
+      return templateWeightGramsPerUnit.toString();
+    }
+    return '';
+  };
+
+  const getDefaultCalories = (): string => {
+    if (item?.caloriesPerUnit !== undefined)
+      return item.caloriesPerUnit.toString();
+    if (templateWeightGramsPerUnit && templateCaloriesPer100g) {
+      return calculateCaloriesFromWeight(
+        templateWeightGramsPerUnit,
+        templateCaloriesPer100g,
+      ).toString();
+    }
+    return '';
+  };
 
   const [formData, setFormData] = useState<FormData>(() => ({
     itemType: item?.itemType || '',
@@ -57,6 +85,8 @@ export const ItemForm = ({
     expirationDate: item?.expirationDate || '',
     location: item?.location || '',
     notes: item?.notes || '',
+    weightGrams: getDefaultWeight(),
+    caloriesPerUnit: getDefaultCalories(),
   }));
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -111,11 +141,92 @@ export const ItemForm = ({
         : formData.expirationDate,
       location: formData.location.trim() || undefined,
       notes: formData.notes.trim() || undefined,
+      weightGrams: formData.weightGrams
+        ? parseFloat(formData.weightGrams)
+        : undefined,
+      caloriesPerUnit: formData.caloriesPerUnit
+        ? parseFloat(formData.caloriesPerUnit)
+        : undefined,
     });
   };
 
+  // Helper to calculate weight from quantity based on unit
+  const calculateWeightFromQuantity = (
+    quantity: number,
+    unit: string,
+  ): number | null => {
+    if (unit === 'kilograms') {
+      return Math.round(quantity * 1000);
+    }
+    if (unit === 'grams') {
+      return Math.round(quantity);
+    }
+    if (unit === 'liters') {
+      // Approximate: 1 liter of water = 1000g
+      return Math.round(quantity * 1000);
+    }
+    return null; // For other units, use template weight or manual entry
+  };
+
   const handleChange = (field: keyof FormData, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+
+      // Auto-calculate weight when quantity or unit changes for weight-based units
+      if (
+        (field === 'quantity' || field === 'unit') &&
+        updated.categoryId === 'food'
+      ) {
+        const quantity = parseFloat(
+          field === 'quantity' ? (value as string) : updated.quantity,
+        );
+        const unit = field === 'unit' ? (value as string) : updated.unit;
+
+        if (!isNaN(quantity) && quantity > 0) {
+          const autoWeight = calculateWeightFromQuantity(quantity, unit);
+          if (autoWeight !== null) {
+            updated.weightGrams = autoWeight.toString();
+            // Also recalculate calories from the new weight
+            if (templateCaloriesPer100g) {
+              const newCalories = calculateCaloriesFromWeight(
+                autoWeight,
+                templateCaloriesPer100g,
+              );
+              updated.caloriesPerUnit = newCalories.toString();
+            }
+          } else if (templateWeightGramsPerUnit && field === 'quantity') {
+            // For non-weight units, calculate from template weight per unit
+            const totalWeight = Math.round(
+              quantity * templateWeightGramsPerUnit,
+            );
+            updated.weightGrams = totalWeight.toString();
+            if (templateCaloriesPer100g) {
+              const newCalories = calculateCaloriesFromWeight(
+                totalWeight,
+                templateCaloriesPer100g,
+              );
+              updated.caloriesPerUnit = newCalories.toString();
+            }
+          }
+        }
+      }
+
+      // Recalculate calories when weight changes manually (if template has caloriesPer100g)
+      if (
+        field === 'weightGrams' &&
+        templateCaloriesPer100g &&
+        typeof value === 'string' &&
+        parseFloat(value) > 0
+      ) {
+        const newCalories = calculateCaloriesFromWeight(
+          parseFloat(value),
+          templateCaloriesPer100g,
+        );
+        updated.caloriesPerUnit = newCalories.toString();
+      }
+
+      return updated;
+    });
     // Clear error when user starts typing
     if (errors[field as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -203,6 +314,36 @@ export const ItemForm = ({
           />
         </div>
       </div>
+
+      {formData.categoryId === 'food' && (
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <Input
+              id="weightGrams"
+              name="weightGrams"
+              label={t('itemForm.weightGrams')}
+              type="number"
+              value={formData.weightGrams}
+              onChange={(e) => handleChange('weightGrams', e.target.value)}
+              min="0"
+              step="1"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <Input
+              id="caloriesPerUnit"
+              name="caloriesPerUnit"
+              label={t('itemForm.caloriesPerUnit')}
+              type="number"
+              value={formData.caloriesPerUnit}
+              onChange={(e) => handleChange('caloriesPerUnit', e.target.value)}
+              min="0"
+              step="1"
+            />
+          </div>
+        </div>
+      )}
 
       <div className={styles.formGroup}>
         <label className={styles.checkboxLabel}>

@@ -82,7 +82,8 @@ export interface InventoryItem {
   location?: string;
   notes?: string;
   productTemplateId?: string;
-  caloriesPerUnit?: number; // Calories per unit for food items
+  weightGrams?: number; // Total weight in grams (user can override auto-calculated value)
+  caloriesPerUnit?: number; // Calories per unit (user can override auto-calculated value)
   createdAt: string;
   updatedAt: string;
 }
@@ -112,8 +113,10 @@ export interface RecommendedItemDefinition {
   scaleWithDays: boolean;
   requiresFreezer?: boolean;
   defaultExpirationMonths?: number;
-  // Calorie tracking for food items
-  caloriesPerUnit?: number; // Calories per unit (e.g., per can, per kg)
+  // Weight and calorie tracking for food items
+  weightGramsPerUnit?: number; // Weight in grams per unit (e.g., 150g per can)
+  caloriesPer100g?: number; // Calories per 100g of weight
+  caloriesPerUnit?: number; // Calories per unit (calculated or direct value)
 }
 
 // App Data (root)
