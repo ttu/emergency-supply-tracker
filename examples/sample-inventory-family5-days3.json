@@ -1,0 +1,187 @@
+{
+  "version": "1.0.0",
+  "household": {
+    "adults": 2,
+    "children": 3,
+    "supplyDurationDays": 3,
+    "hasFreezer": true
+  },
+  "settings": {
+    "language": "en",
+    "theme": "light",
+    "advancedFeatures": {
+      "calorieTracking": false,
+      "powerManagement": false,
+      "waterTracking": false
+    }
+  },
+  "items": [
+    {
+      "id": "item-1",
+      "name": "Bottled Water",
+      "itemType": "Bottled Water",
+      "categoryId": "water-beverages",
+      "quantity": 135,
+      "unit": "liters",
+      "expirationDate": "2026-06-15",
+      "notes": "Stored in garage",
+      "addedDate": "2024-12-01"
+    },
+    {
+      "id": "item-2",
+      "name": "Long-life Milk",
+      "itemType": "Long-life Milk",
+      "categoryId": "water-beverages",
+      "quantity": 5,
+      "unit": "liters",
+      "expirationDate": "2025-03-20",
+      "notes": "",
+      "addedDate": "2024-11-15"
+    },
+    {
+      "id": "item-3",
+      "name": "Canned Soup",
+      "itemType": "Canned Soup",
+      "categoryId": "food",
+      "quantity": 20,
+      "unit": "cans",
+      "expirationDate": "2026-08-10",
+      "notes": "Variety pack",
+      "addedDate": "2024-10-20"
+    },
+    {
+      "id": "item-4",
+      "name": "Canned Vegetables",
+      "itemType": "Canned Vegetables",
+      "categoryId": "food",
+      "quantity": 8,
+      "unit": "cans",
+      "expirationDate": "2025-02-05",
+      "notes": "Expiring soon!",
+      "addedDate": "2024-09-10"
+    },
+    {
+      "id": "item-5",
+      "name": "Rice",
+      "itemType": "Rice",
+      "categoryId": "food",
+      "quantity": 10,
+      "unit": "kg",
+      "expirationDate": "2027-01-01",
+      "notes": "Long-term storage",
+      "addedDate": "2024-12-10"
+    },
+    {
+      "id": "item-6",
+      "name": "Pasta",
+      "itemType": "Pasta",
+      "categoryId": "food",
+      "quantity": 3,
+      "unit": "kg",
+      "expirationDate": "2026-11-30",
+      "notes": "",
+      "addedDate": "2024-11-25"
+    },
+    {
+      "id": "item-7",
+      "name": "First Aid Kit",
+      "itemType": "First Aid Kit",
+      "categoryId": "medical-health",
+      "quantity": 1,
+      "unit": "pieces",
+      "expirationDate": null,
+      "notes": "Comprehensive kit",
+      "addedDate": "2024-08-15"
+    },
+    {
+      "id": "item-8",
+      "name": "Pain Relievers",
+      "itemType": "Pain Relievers",
+      "categoryId": "medical-health",
+      "quantity": 2,
+      "unit": "boxes",
+      "expirationDate": "2025-01-25",
+      "notes": "Check expiry soon",
+      "addedDate": "2024-06-10"
+    },
+    {
+      "id": "item-9",
+      "name": "Flashlight",
+      "itemType": "Flashlight",
+      "categoryId": "emergency-supplies",
+      "quantity": 3,
+      "unit": "pieces",
+      "expirationDate": null,
+      "notes": "LED, with batteries",
+      "addedDate": "2024-12-05"
+    },
+    {
+      "id": "item-10",
+      "name": "Candles",
+      "itemType": "Candles",
+      "categoryId": "emergency-supplies",
+      "quantity": 12,
+      "unit": "pieces",
+      "expirationDate": null,
+      "notes": "Long-burning",
+      "addedDate": "2024-11-01"
+    },
+    {
+      "id": "item-11",
+      "name": "Battery Radio",
+      "itemType": "Battery Radio",
+      "categoryId": "communication-power",
+      "quantity": 1,
+      "unit": "pieces",
+      "expirationDate": null,
+      "notes": "Hand-crank backup",
+      "addedDate": "2024-10-15"
+    },
+    {
+      "id": "item-12",
+      "name": "AA Batteries",
+      "itemType": "AA Batteries",
+      "categoryId": "communication-power",
+      "quantity": 8,
+      "unit": "pieces",
+      "expirationDate": "2027-12-31",
+      "notes": "",
+      "addedDate": "2024-12-01"
+    },
+    {
+      "id": "item-13",
+      "name": "Toilet Paper",
+      "itemType": "Toilet Paper",
+      "categoryId": "sanitation-hygiene",
+      "quantity": 24,
+      "unit": "rolls",
+      "expirationDate": null,
+      "notes": "2 packs",
+      "addedDate": "2024-11-20"
+    },
+    {
+      "id": "item-14",
+      "name": "Hand Sanitizer",
+      "itemType": "Hand Sanitizer",
+      "categoryId": "sanitation-hygiene",
+      "quantity": 3,
+      "unit": "bottles",
+      "expirationDate": "2026-05-15",
+      "notes": "70% alcohol",
+      "addedDate": "2024-09-25"
+    },
+    {
+      "id": "item-15",
+      "name": "Blankets",
+      "itemType": "Blankets",
+      "categoryId": "shelter-warmth",
+      "quantity": 4,
+      "unit": "pieces",
+      "expirationDate": null,
+      "notes": "Emergency thermal blankets",
+      "addedDate": "2024-10-10"
+    }
+  ],
+  "customTemplates": [],
+  "lastModified": "2024-12-27T00:00:00.000Z"
+}

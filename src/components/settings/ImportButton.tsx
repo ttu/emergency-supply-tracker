@@ -22,8 +22,8 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
       typeof d.household === 'object' &&
       typeof d.settings === 'object' &&
       Array.isArray(d.items) &&
-      Array.isArray(d.categories) &&
       typeof d.lastModified === 'string'
+      // categories is optional - will be populated from STANDARD_CATEGORIES if missing
     );
   };
 
