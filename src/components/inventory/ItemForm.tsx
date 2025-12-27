@@ -91,6 +91,11 @@ export const ItemForm = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
 
+  // Continuous units allow decimal quantities (e.g., 2.5 kg), discrete units require integers
+  const isContinuousUnit = (unit: string): boolean => {
+    return ['kilograms', 'liters', 'grams', 'meters'].includes(unit);
+  };
+
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -298,7 +303,7 @@ export const ItemForm = ({
             onChange={(e) => handleChange('quantity', e.target.value)}
             error={errors.quantity}
             min="0"
-            step="0.1"
+            step={isContinuousUnit(formData.unit) ? '0.1' : '1'}
             required
           />
         </div>
