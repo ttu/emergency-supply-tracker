@@ -6,30 +6,7 @@ import {
   exportToJSON,
   importFromJSON,
 } from './localStorage';
-import type { AppData } from '../../types';
-
-const mockData: AppData = {
-  version: '1.0.0',
-  household: {
-    adults: 2,
-    children: 1,
-    supplyDurationDays: 7,
-    hasFreezer: true,
-  },
-  settings: {
-    language: 'en',
-    theme: 'light',
-    advancedFeatures: {
-      calorieTracking: false,
-      powerManagement: false,
-      waterTracking: false,
-    },
-  },
-  customCategories: [],
-  items: [],
-  customTemplates: [],
-  lastModified: new Date().toISOString(),
-};
+import { createMockAppData, createMockCategory } from '../test/factories';
 
 describe('localStorage utilities', () => {
   beforeEach(() => {
@@ -37,6 +14,7 @@ describe('localStorage utilities', () => {
   });
 
   it('saves and loads data', () => {
+    const mockData = createMockAppData();
     saveAppData(mockData);
     const loaded = getAppData();
     expect(loaded).toEqual(mockData);
@@ -47,6 +25,7 @@ describe('localStorage utilities', () => {
   });
 
   it('clears data', () => {
+    const mockData = createMockAppData();
     saveAppData(mockData);
     clearAppData();
     expect(getAppData()).toBeNull();
@@ -54,20 +33,25 @@ describe('localStorage utilities', () => {
 
   describe('import/export', () => {
     it('exports data to JSON', () => {
+      const mockData = createMockAppData();
       const json = exportToJSON(mockData);
       const parsed = JSON.parse(json);
       expect(parsed).toEqual(mockData);
     });
 
     it('imports data from JSON with customCategories', () => {
+      const mockData = createMockAppData({
+        customCategories: [createMockCategory({ id: 'custom-1' })],
+      });
       const json = JSON.stringify(mockData);
       const imported = importFromJSON(json);
       expect(imported).toEqual(mockData);
     });
 
     it('imports data from JSON without customCategories field', () => {
+      const mockData = createMockAppData();
       const dataWithoutCustomCategories = {
-        version: '1.0.0',
+        version: mockData.version,
         household: mockData.household,
         settings: mockData.settings,
         items: mockData.items,
@@ -83,18 +67,12 @@ describe('localStorage utilities', () => {
     });
 
     it('imports data from legacy format with categories field', () => {
+      const mockData = createMockAppData();
       const legacyData = {
-        version: '1.0.0',
+        version: mockData.version,
         household: mockData.household,
         settings: mockData.settings,
-        categories: [
-          {
-            id: 'custom-1',
-            name: 'Custom Category',
-            icon: '🎯',
-            isCustom: true,
-          },
-        ],
+        categories: [createMockCategory({ id: 'custom-1' })],
         items: mockData.items,
         customTemplates: mockData.customTemplates,
         lastModified: mockData.lastModified,
@@ -107,8 +85,9 @@ describe('localStorage utilities', () => {
     });
 
     it('ensures customTemplates exists when missing', () => {
+      const mockData = createMockAppData();
       const dataWithoutTemplates = {
-        version: '1.0.0',
+        version: mockData.version,
         household: mockData.household,
         settings: mockData.settings,
         customCategories: [],

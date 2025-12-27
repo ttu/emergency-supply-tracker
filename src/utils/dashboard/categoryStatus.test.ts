@@ -2,14 +2,15 @@ import {
   calculateCategoryStatus,
   calculateAllCategoryStatuses,
 } from './categoryStatus';
-import type { Category, InventoryItem } from '../../types';
+import type { InventoryItem } from '../../types';
+import { createMockCategory, createMockInventoryItem } from '../test/factories';
 
 describe('calculateCategoryStatus', () => {
-  const waterCategory: Category = {
+  const waterCategory = createMockCategory({
     id: 'water',
     name: 'Water',
     icon: '💧',
-  };
+  });
 
   it('should calculate status for empty category', () => {
     const items: InventoryItem[] = [];
@@ -52,7 +53,7 @@ describe('calculateCategoryStatus', () => {
 
   it('should count items by status correctly', () => {
     const items: InventoryItem[] = [
-      {
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water',
@@ -61,11 +62,8 @@ describe('calculateCategoryStatus', () => {
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
-      {
+      }),
+      createMockInventoryItem({
         id: '2',
         name: 'Water Bottles',
         categoryId: 'water',
@@ -74,11 +72,8 @@ describe('calculateCategoryStatus', () => {
         recommendedQuantity: 24,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
-      {
+      }),
+      createMockInventoryItem({
         id: '3',
         name: 'Water Purification',
         categoryId: 'water',
@@ -87,10 +82,7 @@ describe('calculateCategoryStatus', () => {
         recommendedQuantity: 5,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const result = calculateCategoryStatus(waterCategory, items, 60);
@@ -104,7 +96,7 @@ describe('calculateCategoryStatus', () => {
 
   it('should override to critical if any items are critical', () => {
     const items: InventoryItem[] = [
-      {
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water',
@@ -112,10 +104,7 @@ describe('calculateCategoryStatus', () => {
         unit: 'gallons',
         recommendedQuantity: 28,
         neverExpires: true,
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const result = calculateCategoryStatus(waterCategory, items, 20);
@@ -125,7 +114,7 @@ describe('calculateCategoryStatus', () => {
 
   it('should only count items from the specified category', () => {
     const items: InventoryItem[] = [
-      {
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water',
@@ -134,11 +123,8 @@ describe('calculateCategoryStatus', () => {
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
-      {
+      }),
+      createMockInventoryItem({
         id: '2',
         name: 'Food',
         categoryId: 'food',
@@ -147,10 +133,7 @@ describe('calculateCategoryStatus', () => {
         recommendedQuantity: 10,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const result = calculateCategoryStatus(waterCategory, items, 100);
@@ -159,10 +142,10 @@ describe('calculateCategoryStatus', () => {
 });
 
 describe('calculateAllCategoryStatuses', () => {
-  const categories: Category[] = [
-    { id: 'water', name: 'Water', icon: '💧' },
-    { id: 'food', name: 'Food', icon: '🥫' },
-    { id: 'medical', name: 'Medical', icon: '⚕️' },
+  const categories = [
+    createMockCategory({ id: 'water', name: 'Water', icon: '💧' }),
+    createMockCategory({ id: 'food', name: 'Food', icon: '🥫' }),
+    createMockCategory({ id: 'medical', name: 'Medical', icon: '⚕️' }),
   ];
 
   it('should calculate status for all categories', () => {

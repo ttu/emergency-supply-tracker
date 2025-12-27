@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ItemForm } from './ItemForm';
 import { STANDARD_CATEGORIES } from '../../data/standardCategories';
-import type { InventoryItem } from '../../types';
+import { createMockInventoryItem } from '../../utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -43,8 +43,7 @@ describe('ItemForm', () => {
   });
 
   it('should render form with item data for editing', () => {
-    const now = new Date().toISOString();
-    const item: InventoryItem = {
+    const item = createMockInventoryItem({
       id: '1',
       name: 'Water',
       categoryId: 'water-beverages',
@@ -55,9 +54,7 @@ describe('ItemForm', () => {
       expirationDate: '2025-12-31',
       location: 'Pantry',
       notes: 'Test notes',
-      createdAt: now,
-      updatedAt: now,
-    };
+    });
 
     render(
       <ItemForm

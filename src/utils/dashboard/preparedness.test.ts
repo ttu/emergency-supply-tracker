@@ -2,26 +2,28 @@ import {
   calculatePreparednessScore,
   calculateCategoryPreparedness,
 } from './preparedness';
-import type { InventoryItem, HouseholdConfig } from '../../types';
+import {
+  createMockHousehold,
+  createMockInventoryItem,
+} from '../test/factories';
 
 describe('calculatePreparednessScore', () => {
-  const baseHousehold: HouseholdConfig = {
+  const baseHousehold = createMockHousehold({
     adults: 2,
     children: 0,
-    hasPets: false,
     hasFreezer: false,
     supplyDurationDays: 14,
-  };
+  });
 
   it('should return 0 when no items exist', () => {
-    const items: InventoryItem[] = [];
+    const items = [];
     const score = calculatePreparednessScore(items, baseHousehold);
     expect(score).toBe(0);
   });
 
   it('should return a score between 0 and 100', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water',
@@ -31,10 +33,7 @@ describe('calculatePreparednessScore', () => {
         neverExpires: false,
         expirationDate: '2025-12-31',
         productTemplateId: 'water',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
     const score = calculatePreparednessScore(items, baseHousehold);
     expect(score).toBeGreaterThanOrEqual(0);
@@ -42,15 +41,14 @@ describe('calculatePreparednessScore', () => {
   });
 
   it('should return valid score for different household sizes', () => {
-    const smallHousehold: HouseholdConfig = { ...baseHousehold, adults: 1 };
-    const largeHousehold: HouseholdConfig = {
-      ...baseHousehold,
+    const smallHousehold = createMockHousehold({ adults: 1 });
+    const largeHousehold = createMockHousehold({
       adults: 2,
       children: 2,
-    };
+    });
 
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water',
@@ -60,10 +58,7 @@ describe('calculatePreparednessScore', () => {
         neverExpires: false,
         expirationDate: '2025-12-31',
         productTemplateId: 'water',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const smallScore = calculatePreparednessScore(items, smallHousehold);

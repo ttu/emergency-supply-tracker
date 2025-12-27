@@ -1,6 +1,7 @@
 import { generateDashboardAlerts, countAlerts } from './alerts';
 import type { InventoryItem } from '../../types';
 import type { Alert } from '../../components/dashboard/AlertBanner';
+import { createMockInventoryItem } from '../test/factories';
 
 // Mock translation function
 const mockT = (key: string, options?: Record<string, string | number>) => {
@@ -35,7 +36,7 @@ describe('generateDashboardAlerts', () => {
 
   it('should generate expired item alerts', () => {
     const items: InventoryItem[] = [
-      {
+      createMockInventoryItem({
         id: '1',
         name: 'Expired Water',
         categoryId: 'water',
@@ -44,10 +45,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2024-12-01',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
