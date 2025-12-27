@@ -4,7 +4,7 @@ test.describe('Settings', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
-    await page.reload();
+    await page.reload({ waitUntil: 'domcontentloaded' });
   });
 
   test('should display settings page', async ({ page }) => {

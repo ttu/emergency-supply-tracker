@@ -5,7 +5,7 @@ test.describe('Inventory Management', () => {
     await page.goto('/');
     // Clear localStorage before each test
     await page.evaluate(() => localStorage.clear());
-    await page.reload();
+    await page.reload({ waitUntil: 'domcontentloaded' });
   });
 
   test('should add item from template', async ({ page }) => {
