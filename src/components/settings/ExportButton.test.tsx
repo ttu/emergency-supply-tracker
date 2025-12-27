@@ -44,7 +44,7 @@ describe('ExportButton', () => {
       household: {
         adults: 2,
         children: 0,
-        supplyDurationDays: 7,
+        supplyDurationDays: 3,
         hasFreezer: false,
       },
       settings: { language: 'en', theme: 'light', advancedFeatures: {} },

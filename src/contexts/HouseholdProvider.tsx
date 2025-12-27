@@ -6,8 +6,8 @@ import { STANDARD_CATEGORIES } from '../data/standardCategories';
 
 const DEFAULT_HOUSEHOLD: HouseholdConfig = {
   adults: 2,
-  children: 0,
-  supplyDurationDays: 7,
+  children: 3,
+  supplyDurationDays: 3,
   hasFreezer: false,
 };
 
@@ -18,19 +18,19 @@ const HOUSEHOLD_PRESETS: Record<
   single: {
     adults: 1,
     children: 0,
-    supplyDurationDays: 7,
+    supplyDurationDays: 3,
     hasFreezer: false,
   },
   couple: {
     adults: 2,
     children: 0,
-    supplyDurationDays: 7,
+    supplyDurationDays: 3,
     hasFreezer: true,
   },
   family: {
     adults: 2,
     children: 2,
-    supplyDurationDays: 7,
+    supplyDurationDays: 3,
     hasFreezer: true,
   },
 };

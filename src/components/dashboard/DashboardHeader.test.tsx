@@ -30,12 +30,12 @@ describe('DashboardHeader', () => {
       <DashboardHeader
         preparednessScore={75}
         householdSize={4}
-        supplyDays={7}
+        supplyDays={3}
       />,
     );
 
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('4 people, 7 days supply')).toBeInTheDocument();
+    expect(screen.getByText('4 people, 3 days supply')).toBeInTheDocument();
   });
 
   it('displays preparedness score', () => {
@@ -43,7 +43,7 @@ describe('DashboardHeader', () => {
       <DashboardHeader
         preparednessScore={85}
         householdSize={2}
-        supplyDays={7}
+        supplyDays={3}
       />,
     );
 
@@ -56,7 +56,7 @@ describe('DashboardHeader', () => {
       <DashboardHeader
         preparednessScore={95}
         householdSize={2}
-        supplyDays={7}
+        supplyDays={3}
       />,
     );
 
@@ -68,7 +68,7 @@ describe('DashboardHeader', () => {
       <DashboardHeader
         preparednessScore={65}
         householdSize={2}
-        supplyDays={7}
+        supplyDays={3}
       />,
     );
 
@@ -80,7 +80,7 @@ describe('DashboardHeader', () => {
       <DashboardHeader
         preparednessScore={30}
         householdSize={2}
-        supplyDays={7}
+        supplyDays={3}
       />,
     );
 

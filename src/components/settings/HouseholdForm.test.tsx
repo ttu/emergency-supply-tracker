@@ -59,8 +59,8 @@ describe('HouseholdForm', () => {
     ) as HTMLInputElement;
 
     expect(adultsInput.value).toBe('2');
-    expect(childrenInput.value).toBe('0');
-    expect(supplyDaysInput.value).toBe('7');
+    expect(childrenInput.value).toBe('3');
+    expect(supplyDaysInput.value).toBe('3');
   });
 
   it('should update adults value', () => {
