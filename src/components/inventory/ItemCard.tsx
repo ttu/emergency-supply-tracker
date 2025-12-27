@@ -1,7 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Badge } from '../common/Badge';
-import type { InventoryItem, ItemStatus } from '../../types';
-import { getItemStatus } from '../../utils/calculations/status';
+import type { InventoryItem } from '../../types';
 import styles from './ItemCard.module.css';
 
 export interface ItemCardProps {
@@ -11,18 +9,6 @@ export interface ItemCardProps {
 
 export const ItemCard = ({ item, onClick }: ItemCardProps) => {
   const { t } = useTranslation();
-
-  const status: ItemStatus = getItemStatus(
-    item.quantity,
-    item.recommendedQuantity,
-    item.expirationDate,
-    item.neverExpires,
-  );
-
-  const percentage =
-    item.recommendedQuantity > 0
-      ? Math.round((item.quantity / item.recommendedQuantity) * 100)
-      : 100;
 
   const formatExpirationDate = (dateString?: string): string => {
     if (!dateString) return '';
@@ -58,39 +44,13 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
     >
       <div className={styles.header}>
         <h3 className={styles.name}>{item.name}</h3>
-        <Badge
-          variant={
-            status === 'ok'
-              ? 'success'
-              : status === 'warning'
-                ? 'warning'
-                : 'danger'
-          }
-          size="small"
-        >
-          {t(`status.${status}`)}
-        </Badge>
       </div>
 
       <div className={styles.body}>
         <div className={styles.quantity}>
           <span className={styles.current}>{item.quantity}</span>
-          <span className={styles.separator}>/</span>
-          <span className={styles.recommended}>{item.recommendedQuantity}</span>
           <span className={styles.unit}>{t(`units.${item.unit}`)}</span>
         </div>
-
-        {item.recommendedQuantity > 0 && (
-          <div className={styles.progressWrapper}>
-            <div className={styles.progressBar}>
-              <div
-                className={`${styles.progressFill} ${styles[status]}`}
-                style={{ width: `${Math.min(percentage, 100)}%` }}
-              />
-            </div>
-            <span className={styles.percentage}>{percentage}%</span>
-          </div>
-        )}
 
         {!item.neverExpires && item.expirationDate && (
           <div className={styles.expiration}>

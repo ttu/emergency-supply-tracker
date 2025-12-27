@@ -40,10 +40,10 @@ describe('ItemCard', () => {
     expect(screen.getByText('Bottled Water')).toBeInTheDocument();
   });
 
-  it('should render quantity information', () => {
+  it('should render quantity and unit', () => {
     render(<ItemCard item={baseItem} />);
     expect(screen.getByText('20')).toBeInTheDocument();
-    expect(screen.getByText('28')).toBeInTheDocument();
+    expect(screen.getByText('units.liters')).toBeInTheDocument();
   });
 
   it('should render location if provided', () => {
@@ -55,25 +55,6 @@ describe('ItemCard', () => {
     const itemWithoutLocation = { ...baseItem, location: '' };
     render(<ItemCard item={itemWithoutLocation} />);
     expect(screen.queryByText(/📍/)).not.toBeInTheDocument();
-  });
-
-  it('should render status badge', () => {
-    render(<ItemCard item={baseItem} />);
-    // Item has 20/28 which is 71% - that's warning status (between 50-100%)
-    // But actual status calculation shows it as OK since quantity is above 50%
-    expect(screen.getByText(/status\./)).toBeInTheDocument();
-  });
-
-  it('should render progress indicator', () => {
-    render(<ItemCard item={baseItem} />);
-    // Check for percentage display instead of class name
-    expect(screen.getByText('71%')).toBeInTheDocument();
-  });
-
-  it('should calculate and display percentage', () => {
-    render(<ItemCard item={baseItem} />);
-    // 20/28 = 71.4% -> rounds to 71%
-    expect(screen.getByText('71%')).toBeInTheDocument();
   });
 
   it('should show expiration warning for items expiring soon', () => {
@@ -102,6 +83,13 @@ describe('ItemCard', () => {
     };
     render(<ItemCard item={neverExpiresItem} />);
     expect(screen.queryByText(/📅/)).not.toBeInTheDocument();
+  });
+
+  it('should show formatted date for items not expiring soon', () => {
+    // Item with expiration more than 30 days away
+    render(<ItemCard item={baseItem} />);
+    // Should show the date rather than "expires in X days"
+    expect(screen.getByText(/📅/)).toBeInTheDocument();
   });
 
   it('should be clickable when onClick is provided', () => {

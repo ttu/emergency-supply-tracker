@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../hooks/useInventory';
 import { useHousehold } from '../hooks/useHousehold';
@@ -9,6 +9,7 @@ import { FilterBar } from '../components/inventory/FilterBar';
 import { ItemList } from '../components/inventory/ItemList';
 import { ItemForm } from '../components/inventory/ItemForm';
 import { TemplateSelector } from '../components/inventory/TemplateSelector';
+import { CategoryStatusSummary } from '../components/inventory/CategoryStatusSummary';
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 import type {
@@ -17,6 +18,8 @@ import type {
   RecommendedItemDefinition,
 } from '../types';
 import { calculateRecommendedQuantity } from '../utils/calculations/household';
+import { calculateCategoryPreparedness } from '../utils/dashboard/preparedness';
+import { calculateCategoryShortages } from '../utils/dashboard/categoryStatus';
 import styles from './Inventory.module.css';
 
 type SortBy = 'name' | 'quantity' | 'expiration';
@@ -56,6 +59,39 @@ export function Inventory({
     if (percentage < 50) return 'warning';
     return 'ok';
   };
+
+  // Calculate category status when a category is selected
+  const categoryStatus = useMemo(() => {
+    if (!selectedCategoryId) return null;
+
+    const completionPercentage = calculateCategoryPreparedness(
+      selectedCategoryId,
+      items,
+      household,
+    );
+
+    const shortageInfo = calculateCategoryShortages(
+      selectedCategoryId,
+      items,
+      household,
+    );
+
+    // Determine status based on completion percentage
+    let status: ItemStatus;
+    if (completionPercentage < 30) {
+      status = 'critical';
+    } else if (completionPercentage < 70) {
+      status = 'warning';
+    } else {
+      status = 'ok';
+    }
+
+    return {
+      status,
+      completionPercentage,
+      ...shortageInfo,
+    };
+  }, [selectedCategoryId, items, household]);
 
   // Filter items
   let filteredItems = items;
@@ -215,6 +251,18 @@ export function Inventory({
       </div>
 
       <div className={styles.content}>
+        {selectedCategoryId && categoryStatus && (
+          <CategoryStatusSummary
+            categoryId={selectedCategoryId}
+            status={categoryStatus.status}
+            completionPercentage={categoryStatus.completionPercentage}
+            totalActual={categoryStatus.totalActual}
+            totalNeeded={categoryStatus.totalNeeded}
+            primaryUnit={categoryStatus.primaryUnit}
+            totalActualCalories={categoryStatus.totalActualCalories}
+            totalNeededCalories={categoryStatus.totalNeededCalories}
+          />
+        )}
         <ItemList items={filteredItems} onItemClick={handleEditItem} />
       </div>
 

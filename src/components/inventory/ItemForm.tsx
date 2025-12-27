@@ -205,16 +205,6 @@ export const ItemForm = ({
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>
-          {t('itemForm.recommendedQuantity')}
-        </label>
-        <div className={styles.recommendedInfo}>
-          {formData.recommendedQuantity}{' '}
-          {t(formData.unit || 'pieces', { ns: 'units' })}
-        </div>
-      </div>
-
-      <div className={styles.formGroup}>
         <label className={styles.checkboxLabel}>
           <input
             type="checkbox"

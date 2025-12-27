@@ -36,7 +36,6 @@ describe('ItemForm', () => {
 
     expect(nameInput).toHaveValue('');
     expect(quantityInput).toHaveValue(null);
-    expect(screen.getByText(/10/)).toBeInTheDocument(); // Recommended quantity display
     expect(
       screen.getByRole('button', { name: 'common.add' }),
     ).toBeInTheDocument();
@@ -78,7 +77,6 @@ describe('ItemForm', () => {
 
     expect(nameInput).toHaveValue('Water');
     expect(quantityInput).toHaveValue(20);
-    expect(screen.getByText(/28/)).toBeInTheDocument(); // Recommended quantity display
     expect(locationInput).toHaveValue('Pantry');
     expect(notesTextarea).toHaveValue('Test notes');
     expect(
