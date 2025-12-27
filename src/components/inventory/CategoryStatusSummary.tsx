@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../common/Badge';
 import type { ItemStatus } from '../../types';
+import { getStatusVariant } from '../../utils/calculations/status';
 import styles from './CategoryStatusSummary.module.css';
 
 export interface CategoryStatusSummaryProps {
@@ -29,19 +30,6 @@ export const CategoryStatusSummary = ({
 
   const categoryName = t(categoryId, { ns: 'categories' });
   const isFoodCategory = categoryId === 'food';
-
-  const getStatusVariant = (
-    status: ItemStatus,
-  ): 'success' | 'warning' | 'danger' => {
-    switch (status) {
-      case 'ok':
-        return 'success';
-      case 'warning':
-        return 'warning';
-      case 'critical':
-        return 'danger';
-    }
-  };
 
   // Format progress text - calories for food, units for others
   const getProgressText = (): string => {

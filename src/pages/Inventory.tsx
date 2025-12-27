@@ -17,9 +17,12 @@ import type {
   ItemStatus,
   RecommendedItemDefinition,
 } from '../types';
-import { calculateRecommendedQuantity } from '../utils/calculations/household';
-import { calculateCategoryPreparedness } from '../utils/dashboard/preparedness';
-import { calculateCategoryShortages } from '../utils/dashboard/categoryStatus';
+import {
+  calculateRecommendedQuantity,
+  calculateHouseholdMultiplier,
+} from '../utils/calculations/household';
+import { calculateItemStatus } from '../utils/calculations/status';
+import { getCategoryDisplayStatus } from '../utils/dashboard/categoryStatus';
 import styles from './Inventory.module.css';
 
 type SortBy = 'name' | 'quantity' | 'expiration';
@@ -52,45 +55,10 @@ export function Inventory({
     undefined,
   );
 
-  // Simple status calculation (inline for now)
-  const getItemStatus = (item: InventoryItem): ItemStatus => {
-    const percentage = (item.quantity / item.recommendedQuantity) * 100;
-    if (percentage === 0) return 'critical';
-    if (percentage < 50) return 'warning';
-    return 'ok';
-  };
-
   // Calculate category status when a category is selected
   const categoryStatus = useMemo(() => {
     if (!selectedCategoryId) return null;
-
-    const completionPercentage = calculateCategoryPreparedness(
-      selectedCategoryId,
-      items,
-      household,
-    );
-
-    const shortageInfo = calculateCategoryShortages(
-      selectedCategoryId,
-      items,
-      household,
-    );
-
-    // Determine status based on completion percentage
-    let status: ItemStatus;
-    if (completionPercentage < 30) {
-      status = 'critical';
-    } else if (completionPercentage < 70) {
-      status = 'warning';
-    } else {
-      status = 'ok';
-    }
-
-    return {
-      status,
-      completionPercentage,
-      ...shortageInfo,
-    };
+    return getCategoryDisplayStatus(selectedCategoryId, items, household);
   }, [selectedCategoryId, items, household]);
 
   // Filter items
@@ -113,7 +81,7 @@ export function Inventory({
   // Filter by status
   if (statusFilter !== 'all') {
     filteredItems = filteredItems.filter((item) => {
-      const status = getItemStatus(item);
+      const status = calculateItemStatus(item);
       return status === statusFilter;
     });
   }
@@ -217,10 +185,7 @@ export function Inventory({
 
   // Calculate default recommended quantity for manual entries
   const getDefaultRecommendedQuantity = (): number => {
-    // Use a simple household-based calculation as default
-    const peopleMultiplier = household.adults * 1.0 + household.children * 0.75;
-    const daysMultiplier = household.supplyDurationDays / 3;
-    return Math.ceil(peopleMultiplier * daysMultiplier);
+    return Math.ceil(calculateHouseholdMultiplier(household));
   };
 
   return (

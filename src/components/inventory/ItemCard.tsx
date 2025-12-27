@@ -1,5 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import type { InventoryItem } from '../../types';
+import {
+  isItemExpired,
+  getDaysUntilExpiration,
+} from '../../utils/calculations/status';
 import styles from './ItemCard.module.css';
 
 export interface ItemCardProps {
@@ -16,18 +20,11 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
     return date.toLocaleDateString();
   };
 
-  const isExpired = (): boolean => {
-    if (item.neverExpires || !item.expirationDate) return false;
-    return new Date(item.expirationDate) < new Date();
-  };
-
-  const daysUntilExpiration = (): number | null => {
-    if (item.neverExpires || !item.expirationDate) return null;
-    const today = new Date();
-    const expiration = new Date(item.expirationDate);
-    const diffTime = expiration.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
+  const expired = isItemExpired(item.expirationDate, item.neverExpires);
+  const daysUntil = getDaysUntilExpiration(
+    item.expirationDate,
+    item.neverExpires,
+  );
 
   return (
     <div
@@ -54,28 +51,23 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
 
         {!item.neverExpires && item.expirationDate && (
           <div className={styles.expiration}>
-            {isExpired() ? (
+            {expired ? (
               <span className={styles.expired}>
                 ⚠️ {t('inventory.expired')}:{' '}
                 {formatExpirationDate(item.expirationDate)}
               </span>
             ) : (
               <>
-                {daysUntilExpiration() !== null &&
-                  daysUntilExpiration()! <= 30 && (
-                    <span className={styles.expiringSoon}>
-                      📅{' '}
-                      {t('inventory.expiresIn', {
-                        days: daysUntilExpiration(),
-                      })}
-                    </span>
-                  )}
-                {daysUntilExpiration() !== null &&
-                  daysUntilExpiration()! > 30 && (
-                    <span className={styles.expirationDate}>
-                      📅 {formatExpirationDate(item.expirationDate)}
-                    </span>
-                  )}
+                {daysUntil !== null && daysUntil <= 30 && (
+                  <span className={styles.expiringSoon}>
+                    📅 {t('inventory.expiresIn', { days: daysUntil })}
+                  </span>
+                )}
+                {daysUntil !== null && daysUntil > 30 && (
+                  <span className={styles.expirationDate}>
+                    📅 {formatExpirationDate(item.expirationDate)}
+                  </span>
+                )}
               </>
             )}
           </div>

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { StandardCategoryId, ItemStatus, Unit } from '../../types';
 import type { CategoryShortage } from '../../utils/dashboard/categoryStatus';
+import { getStatusVariant } from '../../utils/calculations/status';
 import { Badge } from '../common/Badge';
 import styles from './CategoryCard.module.css';
 
@@ -35,23 +36,6 @@ export const CategoryCard = ({
   onClick,
 }: CategoryCardProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
-
-  const getStatusVariant = (
-    status: ItemStatus,
-  ): 'success' | 'warning' | 'danger' => {
-    switch (status) {
-      case 'ok':
-        return 'success';
-      case 'warning':
-        return 'warning';
-      case 'critical':
-        return 'danger';
-    }
-  };
-
-  const getStatusLabel = (status: ItemStatus): string => {
-    return t(`status.${status}`);
-  };
 
   const categoryName = t(categoryId, { ns: 'categories' });
 
@@ -125,7 +109,7 @@ export const CategoryCard = ({
       <div className={styles.header}>
         <h3 className={styles.title}>{categoryName}</h3>
         <Badge variant={getStatusVariant(status)} size="small">
-          {getStatusLabel(status)}
+          {t(`status.${status}`)}
         </Badge>
       </div>
 

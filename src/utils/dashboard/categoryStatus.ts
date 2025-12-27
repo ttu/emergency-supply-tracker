@@ -5,8 +5,12 @@ import type {
   HouseholdConfig,
   Unit,
 } from '../../types';
-import { calculateItemStatus } from '../calculations/status';
+import {
+  calculateItemStatus,
+  getStatusFromPercentage,
+} from '../calculations/status';
 import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
+import { calculateCategoryPreparedness } from './preparedness';
 
 export interface CategoryShortage {
   itemId: string;
@@ -249,4 +253,52 @@ export function calculateAllCategoryStatuses(
       household,
     );
   });
+}
+
+/**
+ * Simplified interface for category status display in UI components
+ */
+export interface CategoryDisplayStatus {
+  status: ItemStatus;
+  completionPercentage: number;
+  totalActual: number;
+  totalNeeded: number;
+  primaryUnit: Unit | null;
+  shortages: CategoryShortage[];
+  // Calorie data for food category
+  totalActualCalories?: number;
+  totalNeededCalories?: number;
+  missingCalories?: number;
+}
+
+/**
+ * Calculate everything needed to display category status in UI.
+ * This is the main function UI components should use.
+ */
+export function getCategoryDisplayStatus(
+  categoryId: string,
+  items: InventoryItem[],
+  household: HouseholdConfig,
+): CategoryDisplayStatus {
+  const completionPercentage = calculateCategoryPreparedness(
+    categoryId,
+    items,
+    household,
+  );
+
+  const shortageInfo = calculateCategoryShortages(categoryId, items, household);
+
+  const status = getStatusFromPercentage(completionPercentage);
+
+  return {
+    status,
+    completionPercentage,
+    totalActual: shortageInfo.totalActual,
+    totalNeeded: shortageInfo.totalNeeded,
+    primaryUnit: shortageInfo.primaryUnit,
+    shortages: shortageInfo.shortages,
+    totalActualCalories: shortageInfo.totalActualCalories,
+    totalNeededCalories: shortageInfo.totalNeededCalories,
+    missingCalories: shortageInfo.missingCalories,
+  };
 }

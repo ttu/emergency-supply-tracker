@@ -2,6 +2,7 @@ import {
   calculateCategoryStatus,
   calculateAllCategoryStatuses,
   calculateCategoryShortages,
+  getCategoryDisplayStatus,
 } from './categoryStatus';
 import type { InventoryItem } from '../../types';
 import {
@@ -382,6 +383,92 @@ describe('calculateCategoryShortages', () => {
     ];
 
     const result = calculateCategoryShortages(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    expect(result.totalActualCalories).toBeUndefined();
+    expect(result.totalNeededCalories).toBeUndefined();
+    expect(result.missingCalories).toBeUndefined();
+  });
+});
+
+describe('getCategoryDisplayStatus', () => {
+  const household = createMockHousehold({
+    adults: 2,
+    children: 0,
+    supplyDurationDays: 3,
+    hasFreezer: false,
+  });
+
+  it('should return all display data for a category', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'water-beverages',
+        quantity: 27,
+        productTemplateId: 'bottled-water',
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    expect(result).toHaveProperty('status');
+    expect(result).toHaveProperty('completionPercentage');
+    expect(result).toHaveProperty('totalActual');
+    expect(result).toHaveProperty('totalNeeded');
+    expect(result).toHaveProperty('primaryUnit');
+    expect(result).toHaveProperty('shortages');
+  });
+
+  it('should calculate correct status from percentage', () => {
+    const items: InventoryItem[] = [];
+
+    // Empty category should be critical (0% completion)
+    const result = getCategoryDisplayStatus(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    expect(result.status).toBe('critical');
+    expect(result.completionPercentage).toBe(0);
+  });
+
+  it('should include calorie data for food category', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'food',
+        quantity: 2,
+        productTemplateId: 'rice',
+        caloriesPerUnit: 3600,
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus('food', items, household);
+
+    expect(result.totalActualCalories).toBeDefined();
+    expect(result.totalNeededCalories).toBeDefined();
+    expect(result.missingCalories).toBeDefined();
+  });
+
+  it('should not include calorie data for non-food categories', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'water-beverages',
+        quantity: 54,
+        productTemplateId: 'bottled-water',
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus(
       'water-beverages',
       items,
       household,
