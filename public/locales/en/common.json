@@ -99,6 +99,14 @@
       "couple": "Couple",
       "family": "Family",
       "custom": "Custom"
+    },
+    "errors": {
+      "adultsMin": "At least {{min}} adult is required",
+      "adultsMax": "Maximum {{max}} adults allowed",
+      "childrenNegative": "Cannot be negative",
+      "childrenMax": "Maximum {{max}} children allowed",
+      "supplyDaysMin": "At least {{min}} day is required",
+      "supplyDaysMax": "Maximum {{max}} days allowed"
     }
   },
   "settings": {

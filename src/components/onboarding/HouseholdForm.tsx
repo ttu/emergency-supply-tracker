@@ -42,24 +42,34 @@ export function HouseholdForm({
     const newErrors: Partial<Record<keyof HouseholdData, string>> = {};
 
     if (formData.adults < HOUSEHOLD_LIMITS.adults.min) {
-      newErrors.adults = `At least ${HOUSEHOLD_LIMITS.adults.min} adult is required`;
+      newErrors.adults = t('household.errors.adultsMin', {
+        min: HOUSEHOLD_LIMITS.adults.min,
+      });
     }
     if (formData.adults > HOUSEHOLD_LIMITS.adults.max) {
-      newErrors.adults = `Maximum ${HOUSEHOLD_LIMITS.adults.max} adults allowed`;
+      newErrors.adults = t('household.errors.adultsMax', {
+        max: HOUSEHOLD_LIMITS.adults.max,
+      });
     }
 
     if (formData.children < HOUSEHOLD_LIMITS.children.min) {
-      newErrors.children = 'Cannot be negative';
+      newErrors.children = t('household.errors.childrenNegative');
     }
     if (formData.children > HOUSEHOLD_LIMITS.children.max) {
-      newErrors.children = `Maximum ${HOUSEHOLD_LIMITS.children.max} children allowed`;
+      newErrors.children = t('household.errors.childrenMax', {
+        max: HOUSEHOLD_LIMITS.children.max,
+      });
     }
 
     if (formData.supplyDays < HOUSEHOLD_LIMITS.supplyDays.min) {
-      newErrors.supplyDays = `At least ${HOUSEHOLD_LIMITS.supplyDays.min} day is required`;
+      newErrors.supplyDays = t('household.errors.supplyDaysMin', {
+        min: HOUSEHOLD_LIMITS.supplyDays.min,
+      });
     }
     if (formData.supplyDays > HOUSEHOLD_LIMITS.supplyDays.max) {
-      newErrors.supplyDays = `Maximum ${HOUSEHOLD_LIMITS.supplyDays.max} days allowed`;
+      newErrors.supplyDays = t('household.errors.supplyDaysMax', {
+        max: HOUSEHOLD_LIMITS.supplyDays.max,
+      });
     }
 
     setErrors(newErrors);

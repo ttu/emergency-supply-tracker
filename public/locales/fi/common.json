@@ -99,6 +99,14 @@
       "couple": "Pariskunta",
       "family": "Perhe",
       "custom": "Mukautettu"
+    },
+    "errors": {
+      "adultsMin": "Vähintään {{min}} aikuinen vaaditaan",
+      "adultsMax": "Enintään {{max}} aikuista sallittu",
+      "childrenNegative": "Ei voi olla negatiivinen",
+      "childrenMax": "Enintään {{max}} lasta sallittu",
+      "supplyDaysMin": "Vähintään {{min}} päivä vaaditaan",
+      "supplyDaysMax": "Enintään {{max}} päivää sallittu"
     }
   },
   "settings": {
