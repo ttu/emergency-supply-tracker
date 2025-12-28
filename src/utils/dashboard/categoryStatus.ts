@@ -68,7 +68,8 @@ export function calculateCategoryShortages(
     return { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
   }
 
-  const totalPeople = household.adults + household.children;
+  // Adults count as 1.0, children as 0.75 (75% of adult requirement)
+  const peopleMultiplier = household.adults * 1.0 + household.children * 0.75;
   const shortages: CategoryShortage[] = [];
   let totalActual = 0;
   let totalNeeded = 0;
@@ -83,9 +84,12 @@ export function calculateCategoryShortages(
   let totalNeededCalories = 0;
 
   // For food category, calculate needed calories based on people and days
+  // Children need ~70-75% of adult calories (1400 vs 2000 kcal/day)
   if (isFoodCategory) {
     totalNeededCalories =
-      DAILY_CALORIES_PER_PERSON * totalPeople * household.supplyDurationDays;
+      DAILY_CALORIES_PER_PERSON *
+      peopleMultiplier *
+      household.supplyDurationDays;
   }
 
   // Track units to find the most common one and detect mixed units
@@ -96,11 +100,13 @@ export function calculateCategoryShortages(
     let recommendedQty = recItem.baseQuantity;
 
     if (recItem.scaleWithPeople) {
-      recommendedQty *= totalPeople;
+      recommendedQty *= peopleMultiplier;
     }
 
     if (recItem.scaleWithDays) {
-      recommendedQty *= household.supplyDurationDays;
+      // Base quantities are calibrated for 3 days, so divide by 3 for daily rate
+      const daysMultiplier = household.supplyDurationDays / 3;
+      recommendedQty *= daysMultiplier;
     }
 
     recommendedQty = Math.ceil(recommendedQty);
