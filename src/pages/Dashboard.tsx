@@ -79,6 +79,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   );
 
   // Generate backup reminder alert if needed
+  // Note: items is included in deps to re-evaluate when inventory changes
   const backupReminderAlert: Alert | null = useMemo(() => {
     if (backupReminderDismissed) return null;
 
@@ -90,6 +91,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
       type: 'info',
       message: t('alerts.backup.reminderMessage'),
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backupReminderDismissed, t, items]);
 
   // Combine all alerts with backup reminder first
