@@ -8,7 +8,7 @@ const DAYS_THRESHOLD = 30;
  * Returns true if:
  * 1. Last backup was more than 30 days ago (or never)
  * 2. Data has been modified since the last backup
- * 3. The reminder hasn't been dismissed for the current month
+ * 3. The dismissal period hasn't expired
  */
 export function shouldShowBackupReminder(appData: AppData | null): boolean {
   if (!appData) return false;
