@@ -4,8 +4,8 @@ export default {
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   testPathIgnorePatterns: ['/node_modules/', '/e2e/'],
   moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '\\.(svg|png|jpg|jpeg|gif)$': 'identity-obj-proxy',
+    '\\.(css|less|scss|sass)$': '<rootDir>/src/test/cssModuleMock.cjs',
+    '\\.(svg|png|jpg|jpeg|gif)$': '<rootDir>/src/test/fileMock.cjs',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

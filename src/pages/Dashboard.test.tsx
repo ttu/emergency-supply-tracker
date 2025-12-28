@@ -5,6 +5,13 @@ import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
 import type { InventoryItem } from '../types';
 
+// Mock i18next
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
 // Mock child components
 jest.mock('../components/dashboard/DashboardHeader', () => ({
   DashboardHeader: ({ preparednessScore }: { preparednessScore: number }) => (
