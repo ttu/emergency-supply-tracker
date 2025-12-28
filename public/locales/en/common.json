@@ -91,7 +91,7 @@
     "adults": "Adults",
     "children": "Children",
     "supplyDays": "Supply Duration (days)",
-    "supplyDaysHelper": "Recommended: 7-14 days",
+    "supplyDaysHelper": "Recommended: 3-7 days",
     "hasFreezer": "Has Freezer",
     "customDescription": "Set your own configuration",
     "presets": {
