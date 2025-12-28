@@ -114,8 +114,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
 
   // Count hidden alerts that still exist (excluding backup reminder)
   const hiddenAlertsCount = useMemo(
-    () =>
-      allAlerts.filter((alert) => dismissedSet.has(alert.id)).length,
+    () => allAlerts.filter((alert) => dismissedSet.has(alert.id)).length,
     [allAlerts, dismissedSet],
   );
 
