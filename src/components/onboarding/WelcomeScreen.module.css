@@ -35,7 +35,57 @@
 }
 
 .languageSection {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.sellingPoints {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.sellingPoint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+}
+
+.sellingPoint strong {
+  display: block;
+  font-size: 0.9375rem;
+  color: #166534;
+  margin-bottom: 0.25rem;
+}
+
+.sellingPoint p {
+  font-size: 0.8125rem;
+  color: #15803d;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.sellingPointIcon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.comingSoon {
+  background-color: #fefce8;
+  border-color: #fef08a;
+}
+
+.comingSoon strong {
+  color: #854d0e;
+}
+
+.comingSoon p {
+  color: #a16207;
 }
 
 .features {
@@ -84,5 +134,9 @@
 
   .tagline {
     font-size: 1rem;
+  }
+
+  .sellingPoints {
+    grid-template-columns: 1fr;
   }
 }

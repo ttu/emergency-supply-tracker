@@ -7,6 +7,7 @@ export interface InventoryContextValue {
   addItem: (
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
   ) => void;
+  addItems: (items: InventoryItem[]) => void;
   updateItem: (id: string, updates: Partial<InventoryItem>) => void;
   deleteItem: (id: string) => void;
 }

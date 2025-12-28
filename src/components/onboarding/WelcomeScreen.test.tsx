@@ -10,7 +10,22 @@ jest.mock('react-i18next', () => ({
       const translations: Record<string, string> = {
         'app.title': 'Emergency Supply Tracker',
         'app.tagline': 'Track your emergency supplies and stay prepared',
-        'settings.language': 'Language',
+        'settings.language.label': 'Language',
+        'landing.getStarted': 'Get Started',
+        'landing.noSignup.title': 'No Signup Required',
+        'landing.noSignup.description': 'Start using immediately',
+        'landing.browserBased.title': '100% Browser-Based',
+        'landing.browserBased.description': 'Your data stays on your device',
+        'landing.free.title': 'Completely Free',
+        'landing.free.description': 'All features included',
+        'landing.cloudSync.title': 'Cloud Sync (Coming Soon)',
+        'landing.cloudSync.description': 'Optional sync to your cloud',
+        'landing.features.track.title': 'Track Supplies',
+        'landing.features.track.description': 'Keep track of your supplies',
+        'landing.features.alerts.title': 'Get Alerts',
+        'landing.features.alerts.description': 'Get notified when low',
+        'landing.features.prepared.title': 'Stay Prepared',
+        'landing.features.prepared.description': 'Be ready for emergencies',
       };
       return translations[key] || key;
     },
@@ -50,9 +65,19 @@ describe('WelcomeScreen', () => {
     const onContinue = jest.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
-    expect(screen.getByText(/📦 Track Supplies/i)).toBeInTheDocument();
-    expect(screen.getByText(/🔔 Get Alerts/i)).toBeInTheDocument();
-    expect(screen.getByText(/📊 Stay Prepared/i)).toBeInTheDocument();
+    expect(screen.getByText('Track Supplies')).toBeInTheDocument();
+    expect(screen.getByText('Get Alerts')).toBeInTheDocument();
+    expect(screen.getByText('Stay Prepared')).toBeInTheDocument();
+  });
+
+  it('renders selling points', () => {
+    const onContinue = jest.fn();
+    render(<WelcomeScreen onContinue={onContinue} />);
+
+    expect(screen.getByText('No Signup Required')).toBeInTheDocument();
+    expect(screen.getByText('100% Browser-Based')).toBeInTheDocument();
+    expect(screen.getByText('Completely Free')).toBeInTheDocument();
+    expect(screen.getByText('Cloud Sync (Coming Soon)')).toBeInTheDocument();
   });
 
   it('calls onContinue when Get Started button is clicked', async () => {

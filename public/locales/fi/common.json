@@ -3,6 +3,39 @@
     "title": "Hätävarastojen Seuranta",
     "tagline": "Seuraa hätävarastojasi ja pysy valmiina"
   },
+  "landing": {
+    "getStarted": "Aloita",
+    "noSignup": {
+      "title": "Ei rekisteröitymistä",
+      "description": "Aloita käyttö heti - tiliä ei tarvita"
+    },
+    "browserBased": {
+      "title": "100% selainpohjainen",
+      "description": "Tietosi pysyvät laitteellasi, täysin yksityisenä"
+    },
+    "free": {
+      "title": "Täysin ilmainen",
+      "description": "Kaikki ominaisuudet mukana, ei maksullisia tasoja"
+    },
+    "cloudSync": {
+      "title": "Pilvisynkronointi (Tulossa)",
+      "description": "Valinnainen synkronointi omaan pilvipalveluun"
+    },
+    "features": {
+      "track": {
+        "title": "Seuraa varastoja",
+        "description": "Pidä kirjaa hätävarastoistasi ja vanhenemispäivistä"
+      },
+      "alerts": {
+        "title": "Saa hälytyksiä",
+        "description": "Saat ilmoituksia kun tuotteet ovat vähissä tai vanhenemassa"
+      },
+      "prepared": {
+        "title": "Pysy valmiina",
+        "description": "Varmista että kotitaloutesi on valmis hätätilanteisiin"
+      }
+    }
+  },
   "navigation": {
     "dashboard": "Näkymä",
     "inventory": "Varasto",
@@ -50,14 +83,19 @@
   },
   "household": {
     "title": "Kotitalouden Asetukset",
+    "description": "Valitse esimääritetty asetus tai mukauta kotitaloutesi asetuksia",
+    "formSubtitle": "Säädä kotitaloutesi tiedot",
     "adults": "Aikuiset",
     "children": "Lapset",
     "supplyDays": "Varastojen Kesto (päivää)",
+    "supplyDaysHelper": "Suositus: 7-14 päivää",
     "hasFreezer": "Pakastin",
+    "customDescription": "Aseta omat asetukset",
     "presets": {
       "single": "Yksin Asuva",
       "couple": "Pariskunta",
-      "family": "Perhe"
+      "family": "Perhe",
+      "custom": "Mukautettu"
     }
   },
   "settings": {
@@ -232,6 +270,19 @@
     "noTemplates": "Ei malleja",
     "recommended": "Suositeltu",
     "customDescription": "Luo oma tuote"
+  },
+  "quickSetup": {
+    "title": "Pika-asennus",
+    "subtitle": "Lisäämme suositellut tuotteet kotitaloutesi määritysten perusteella",
+    "itemsCount": "Tuotetta",
+    "categoriesCount": "Kategoriaa",
+    "days": "Päivää",
+    "showDetails": "Näytä tuotetiedot",
+    "hideDetails": "Piilota tuotetiedot",
+    "info": "Tuotteet lisätään määrällä 0. Voit päivittää määriä kun täydennät varastoa.",
+    "noFreezer": "Pakasteet jätetty pois (pakastinta ei valittu)",
+    "skip": "Ohita toistaiseksi",
+    "addItems": "Lisää suositellut tuotteet"
   },
   "help": {
     "title": "Ohje & UKK",

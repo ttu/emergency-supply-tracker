@@ -33,7 +33,7 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
         <div className={styles.languageSection}>
           <Select
             id="language-select"
-            label={t('settings.language')}
+            label={t('settings.language.label')}
             value={settings.language}
             onChange={handleLanguageChange}
             options={[
@@ -43,24 +43,55 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
           />
         </div>
 
+        <div className={styles.sellingPoints}>
+          <div className={styles.sellingPoint}>
+            <span className={styles.sellingPointIcon}>&#10003;</span>
+            <div>
+              <strong>{t('landing.noSignup.title')}</strong>
+              <p>{t('landing.noSignup.description')}</p>
+            </div>
+          </div>
+          <div className={styles.sellingPoint}>
+            <span className={styles.sellingPointIcon}>&#128274;</span>
+            <div>
+              <strong>{t('landing.browserBased.title')}</strong>
+              <p>{t('landing.browserBased.description')}</p>
+            </div>
+          </div>
+          <div className={styles.sellingPoint}>
+            <span className={styles.sellingPointIcon}>&#127873;</span>
+            <div>
+              <strong>{t('landing.free.title')}</strong>
+              <p>{t('landing.free.description')}</p>
+            </div>
+          </div>
+          <div className={`${styles.sellingPoint} ${styles.comingSoon}`}>
+            <span className={styles.sellingPointIcon}>&#9729;</span>
+            <div>
+              <strong>{t('landing.cloudSync.title')}</strong>
+              <p>{t('landing.cloudSync.description')}</p>
+            </div>
+          </div>
+        </div>
+
         <div className={styles.features}>
           <div className={styles.feature}>
-            <h3>📦 Track Supplies</h3>
-            <p>Keep track of your emergency supplies and expiration dates</p>
+            <h3>{t('landing.features.track.title')}</h3>
+            <p>{t('landing.features.track.description')}</p>
           </div>
           <div className={styles.feature}>
-            <h3>🔔 Get Alerts</h3>
-            <p>Receive notifications when items are running low or expiring</p>
+            <h3>{t('landing.features.alerts.title')}</h3>
+            <p>{t('landing.features.alerts.description')}</p>
           </div>
           <div className={styles.feature}>
-            <h3>📊 Stay Prepared</h3>
-            <p>Ensure your household is ready for any emergency</p>
+            <h3>{t('landing.features.prepared.title')}</h3>
+            <p>{t('landing.features.prepared.description')}</p>
           </div>
         </div>
 
         <div className={styles.actions}>
           <Button onClick={onContinue} size="large" fullWidth>
-            Get Started
+            {t('landing.getStarted')}
           </Button>
         </div>
       </div>

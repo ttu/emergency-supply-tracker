@@ -9,11 +9,14 @@ jest.mock('react-i18next', () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
         'household.title': 'Household Configuration',
+        'household.description': 'Choose a preset or customize',
         'household.adults': 'Adults',
         'household.children': 'Children',
         'household.presets.single': 'Single Person',
         'household.presets.couple': 'Couple',
         'household.presets.family': 'Family',
+        'household.presets.custom': 'Custom',
+        'household.customDescription': 'Set your own configuration',
       };
       return translations[key] || key;
     },

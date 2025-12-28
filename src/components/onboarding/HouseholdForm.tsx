@@ -85,72 +85,77 @@ export function HouseholdForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      <h2 className={styles.title}>{t('household.title')}</h2>
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <h2 className={styles.title}>{t('household.title')}</h2>
+          <p className={styles.subtitle}>{t('household.formSubtitle')}</p>
 
-      <div className={styles.fields}>
-        <Input
-          label={t('household.adults')}
-          type="number"
-          min={1}
-          max={20}
-          value={formData.adults}
-          onChange={(e) =>
-            handleChange('adults', parseInt(e.target.value) || 1)
-          }
-          error={errors.adults}
-          required
-        />
-
-        <Input
-          label={t('household.children')}
-          type="number"
-          min={0}
-          max={20}
-          value={formData.children}
-          onChange={(e) =>
-            handleChange('children', parseInt(e.target.value) || 0)
-          }
-          error={errors.children}
-        />
-
-        <Input
-          label={t('household.supplyDays')}
-          type="number"
-          min={1}
-          max={365}
-          value={formData.supplyDays}
-          onChange={(e) =>
-            handleChange('supplyDays', parseInt(e.target.value) || 7)
-          }
-          error={errors.supplyDays}
-          helperText="Recommended: 7-14 days"
-          required
-        />
-
-        <div className={styles.checkboxField}>
-          <label className={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={formData.hasFreezer}
-              onChange={(e) => handleChange('hasFreezer', e.target.checked)}
-              className={styles.checkbox}
+          <div className={styles.fields}>
+            <Input
+              label={t('household.adults')}
+              type="number"
+              min={1}
+              max={20}
+              value={formData.adults}
+              onChange={(e) =>
+                handleChange('adults', parseInt(e.target.value) || 1)
+              }
+              error={errors.adults}
+              required
             />
-            <span>{t('household.hasFreezer')}</span>
-          </label>
-        </div>
-      </div>
 
-      <div className={styles.actions}>
-        {onCancel && (
-          <Button type="button" variant="secondary" onClick={onCancel}>
-            {t('actions.cancel')}
-          </Button>
-        )}
-        <Button type="submit" variant="primary">
-          {t('actions.save')}
-        </Button>
+            <Input
+              label={t('household.children')}
+              type="number"
+              min={0}
+              max={20}
+              value={formData.children}
+              onChange={(e) =>
+                handleChange('children', parseInt(e.target.value) || 0)
+              }
+              error={errors.children}
+            />
+
+            <Input
+              label={t('household.supplyDays')}
+              type="number"
+              min={1}
+              max={365}
+              value={formData.supplyDays}
+              onChange={(e) =>
+                handleChange('supplyDays', parseInt(e.target.value) || 7)
+              }
+              error={errors.supplyDays}
+              helperText={t('household.supplyDaysHelper')}
+              required
+            />
+
+            <div className={styles.checkboxField}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={formData.hasFreezer}
+                  onChange={(e) => handleChange('hasFreezer', e.target.checked)}
+                  className={styles.checkbox}
+                />
+                <span>{t('household.hasFreezer')}</span>
+              </label>
+            </div>
+          </div>
+
+          <div className={styles.actions}>
+            {onCancel && (
+              <Button type="button" variant="secondary" onClick={onCancel}>
+                {t('actions.cancel')}
+              </Button>
+            )}
+            <Button type="submit" variant="primary">
+              {t('actions.save')}
+            </Button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 }

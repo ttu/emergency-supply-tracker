@@ -1,10 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Data Management', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+  test.beforeEach(async ({ setupApp }) => {
+    await setupApp();
   });
 
   test('should export data', async ({ page }) => {
@@ -74,6 +72,7 @@ test.describe('Data Management', () => {
       settings: {
         language: 'en',
         theme: 'light',
+        onboardingCompleted: true,
       },
       lastModified: new Date().toISOString(),
     };
@@ -108,15 +107,15 @@ test.describe('Data Management', () => {
   });
 
   test('should export shopping list', async ({ page }) => {
-    // Add item that needs restocking
+    // Add item that needs restocking (quantity 0 = definitely needs restocking)
     await page.click('text=Inventory');
     await page.click('button:has-text("Add Item")');
     await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
     await page.click('button:has-text("Custom Item")');
     await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
-    await page.fill('input[name="name"]', 'Low Stock Item');
+    await page.fill('input[name="name"]', 'Out of Stock Item');
     await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '2'); // Less than recommended
+    await page.fill('input[name="quantity"]', '0'); // Zero quantity needs restocking
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
@@ -124,11 +123,12 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.click('text=Settings');
 
-    // Verify Export Shopping List button is visible
+    // Verify Export Shopping List button is visible and enabled
     const exportButton = page.locator('button', {
       hasText: 'Export Shopping List',
     });
     await expect(exportButton).toBeVisible();
+    await expect(exportButton).toBeEnabled();
 
     // Click Export Shopping List button (programmatic download)
     await exportButton.click();

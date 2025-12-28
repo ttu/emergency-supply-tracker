@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import type { HouseholdConfig } from '../../types';
 import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
 import { Button } from '../common/Button';
-import { Card } from '../common/Card';
 import styles from './QuickSetupScreen.module.css';
 
 export interface QuickSetupScreenProps {
@@ -66,7 +65,7 @@ export const QuickSetupScreen = ({
         <h1 className={styles.title}>{t('quickSetup.title')}</h1>
         <p className={styles.subtitle}>{t('quickSetup.subtitle')}</p>
 
-        <Card variant="elevated" className={styles.summaryCard}>
+        <div className={styles.summaryCard}>
           <div className={styles.summary}>
             <div className={styles.summaryItem}>
               <div className={styles.summaryNumber}>{totalItems}</div>
@@ -121,7 +120,7 @@ export const QuickSetupScreen = ({
               ))}
             </div>
           )}
-        </Card>
+        </div>
 
         <div className={styles.info}>
           <p>{t('quickSetup.info')}</p>

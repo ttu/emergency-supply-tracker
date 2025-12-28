@@ -1,10 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Navigation', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+  test.beforeEach(async ({ setupApp }) => {
+    await setupApp();
   });
 
   test('should navigate between pages', async ({ page }) => {

@@ -1,11 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Inventory Management', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    // Clear localStorage before each test
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+  test.beforeEach(async ({ setupApp }) => {
+    await setupApp();
   });
 
   test('should add item from template', async ({ page }) => {

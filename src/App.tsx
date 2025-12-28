@@ -8,14 +8,23 @@ import { Dashboard } from './pages/Dashboard';
 import { Inventory } from './pages/Inventory';
 import { Settings } from './pages/Settings';
 import { Help } from './pages/Help';
+import { Onboarding } from './components/onboarding/Onboarding';
+import { useSettings } from './hooks/useSettings';
+import { useHousehold } from './hooks/useHousehold';
+import { useInventory } from './hooks/useInventory';
+import type { HouseholdConfig, InventoryItem } from './types';
 import './App.css';
 
-function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [openInventoryModal, setOpenInventoryModal] = useState(false);
   const [initialCategoryId, setInitialCategoryId] = useState<
     string | undefined
   >(undefined);
+
+  const { settings, updateSettings } = useSettings();
+  const { updateHousehold } = useHousehold();
+  const { addItems } = useInventory();
 
   const handleNavigate = (
     page: PageType,
@@ -29,6 +38,17 @@ function App() {
       setOpenInventoryModal(false);
       setInitialCategoryId(undefined);
     }
+  };
+
+  const handleOnboardingComplete = (
+    household: HouseholdConfig,
+    items: InventoryItem[],
+  ) => {
+    updateHousehold(household);
+    if (items.length > 0) {
+      addItems(items);
+    }
+    updateSettings({ onboardingCompleted: true });
   };
 
   const renderPage = () => {
@@ -51,18 +71,25 @@ function App() {
     }
   };
 
+  if (!settings.onboardingCompleted) {
+    return <Onboarding onComplete={handleOnboardingComplete} />;
+  }
+
+  return (
+    <div className="app">
+      <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+      <main className="main">{renderPage()}</main>
+    </div>
+  );
+}
+
+function App() {
   return (
     <SettingsProvider>
       <ThemeApplier>
         <HouseholdProvider>
           <InventoryProvider>
-            <div className="app">
-              <Navigation
-                currentPage={currentPage}
-                onNavigate={setCurrentPage}
-              />
-              <main className="main">{renderPage()}</main>
-            </div>
+            <AppContent />
           </InventoryProvider>
         </HouseholdProvider>
       </ThemeApplier>

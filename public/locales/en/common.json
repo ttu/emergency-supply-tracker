@@ -3,6 +3,39 @@
     "title": "Emergency Supply Tracker",
     "tagline": "Track your emergency supplies and stay prepared"
   },
+  "landing": {
+    "getStarted": "Get Started",
+    "noSignup": {
+      "title": "No Signup Required",
+      "description": "Start using immediately - no account needed"
+    },
+    "browserBased": {
+      "title": "100% Browser-Based",
+      "description": "Your data stays on your device, completely private"
+    },
+    "free": {
+      "title": "Completely Free",
+      "description": "All features included, no premium tiers"
+    },
+    "cloudSync": {
+      "title": "Cloud Sync (Coming Soon)",
+      "description": "Optional sync to your own cloud provider"
+    },
+    "features": {
+      "track": {
+        "title": "Track Supplies",
+        "description": "Keep track of your emergency supplies and expiration dates"
+      },
+      "alerts": {
+        "title": "Get Alerts",
+        "description": "Receive notifications when items are running low or expiring"
+      },
+      "prepared": {
+        "title": "Stay Prepared",
+        "description": "Ensure your household is ready for any emergency"
+      }
+    }
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "inventory": "Inventory",
@@ -50,14 +83,19 @@
   },
   "household": {
     "title": "Household Configuration",
+    "description": "Choose a preset or customize your household configuration",
+    "formSubtitle": "Adjust the details for your household",
     "adults": "Adults",
     "children": "Children",
     "supplyDays": "Supply Duration (days)",
+    "supplyDaysHelper": "Recommended: 7-14 days",
     "hasFreezer": "Has Freezer",
+    "customDescription": "Set your own configuration",
     "presets": {
       "single": "Single Person",
       "couple": "Couple",
-      "family": "Family"
+      "family": "Family",
+      "custom": "Custom"
     }
   },
   "settings": {
@@ -232,6 +270,19 @@
     "noTemplates": "No templates found",
     "recommended": "Recommended",
     "customDescription": "Create your own custom item"
+  },
+  "quickSetup": {
+    "title": "Quick Setup",
+    "subtitle": "We'll add recommended items based on your household configuration",
+    "itemsCount": "Items",
+    "categoriesCount": "Categories",
+    "days": "Days",
+    "showDetails": "Show item details",
+    "hideDetails": "Hide item details",
+    "info": "Items will be added with quantity 0. You can update quantities as you stock up.",
+    "noFreezer": "Frozen items excluded (no freezer selected)",
+    "skip": "Skip for now",
+    "addItems": "Add Recommended Items"
   },
   "help": {
     "title": "Help & FAQ",

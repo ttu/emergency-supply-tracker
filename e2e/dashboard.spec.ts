@@ -1,10 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Dashboard', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+  test.beforeEach(async ({ setupApp }) => {
+    await setupApp();
   });
 
   test('should display dashboard page', async ({ page }) => {
@@ -54,15 +52,15 @@ test.describe('Dashboard', () => {
   });
 
   test('should show alerts when items need attention', async ({ page }) => {
-    // Add item with low quantity
+    // Add item with zero quantity to trigger critical alert
     await page.click('text=Inventory');
     await page.click('button:has-text("Add Item")');
     await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
     await page.click('button:has-text("Custom Item")');
     await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
-    await page.fill('input[name="name"]', 'Low Stock Item');
+    await page.fill('input[name="name"]', 'Out of Stock Item');
     await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '1'); // Low quantity
+    await page.fill('input[name="quantity"]', '0'); // Zero quantity triggers alert
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
     await page.click('button[type="submit"]');
@@ -70,10 +68,8 @@ test.describe('Dashboard', () => {
     // Navigate to Dashboard
     await page.click('text=Dashboard');
 
-    // Should show alerts section (use first to avoid strict mode with multiple "Alerts" headings)
-    await expect(
-      page.locator('h2', { hasText: 'Alerts' }).first(),
-    ).toBeVisible();
+    // Should show alerts section with "Alerts" heading
+    await expect(page.locator('h2:has-text("Alerts")')).toBeVisible();
   });
 
   test('should navigate via quick action buttons', async ({ page }) => {

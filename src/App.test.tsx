@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 
@@ -9,7 +9,40 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+// Helper to set up localStorage with onboarding completed
+const setupCompletedOnboarding = () => {
+  const appData = {
+    version: '1.0.0',
+    household: {
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 7,
+      hasFreezer: false,
+    },
+    settings: {
+      language: 'en',
+      theme: 'light',
+      advancedFeatures: {
+        calorieTracking: false,
+        powerManagement: false,
+        waterTracking: false,
+      },
+      onboardingCompleted: true,
+    },
+    customCategories: [],
+    items: [],
+    customTemplates: [],
+    lastModified: new Date().toISOString(),
+  };
+  localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+};
+
 describe('App', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setupCompletedOnboarding();
+  });
+
   it('renders navigation', () => {
     render(<App />);
 
