@@ -33,6 +33,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available
       items: [],
       customTemplates: [],
+      dismissedAlertIds: [],
       lastModified: new Date().toISOString(),
     };
     data.settings = settings;

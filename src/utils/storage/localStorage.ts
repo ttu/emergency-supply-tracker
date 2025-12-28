@@ -43,5 +43,10 @@ export function importFromJSON(json: string): AppData {
     data.customTemplates = [];
   }
 
+  // Ensure dismissedAlertIds exists
+  if (!data.dismissedAlertIds) {
+    data.dismissedAlertIds = [];
+  }
+
   return data as AppData;
 }

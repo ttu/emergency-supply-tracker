@@ -114,9 +114,16 @@
     "sections": {
       "appearance": "Appearance",
       "household": "Household Configuration",
+      "hiddenAlerts": "Hidden Alerts",
       "dataManagement": "Data Management",
       "about": "About",
       "dangerZone": "Danger Zone"
+    },
+    "hiddenAlerts": {
+      "empty": "No hidden alerts",
+      "description": "You have {{count}} hidden alert(s). These will remain hidden until reactivated.",
+      "reactivate": "Show",
+      "reactivateAll": "Show All Alerts"
     },
     "about": {
       "version": "Version",
@@ -210,6 +217,8 @@
     "exportShoppingList": "Export Shopping List",
     "preparednessScore": "Preparedness Score",
     "noAlerts": "No alerts - you're all set!",
+    "hiddenAlerts": "{{count}} hidden alert(s)",
+    "showAllAlerts": "Show all",
     "preparedness": {
       "needsWork": "Needs Work",
       "good": "Good Progress",

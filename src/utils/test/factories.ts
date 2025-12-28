@@ -91,6 +91,7 @@ export function createMockAppData(overrides?: Partial<AppData>): AppData {
     customCategories: [],
     items: [],
     customTemplates: [],
+    dismissedAlertIds: [],
     lastModified: new Date().toISOString(),
     ...overrides,
   };

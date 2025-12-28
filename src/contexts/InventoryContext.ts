@@ -10,6 +10,11 @@ export interface InventoryContextValue {
   addItems: (items: InventoryItem[]) => void;
   updateItem: (id: string, updates: Partial<InventoryItem>) => void;
   deleteItem: (id: string) => void;
+  // Alert dismissal
+  dismissedAlertIds: string[];
+  dismissAlert: (alertId: string) => void;
+  reactivateAlert: (alertId: string) => void;
+  reactivateAllAlerts: () => void;
 }
 
 export const InventoryContext = createContext<

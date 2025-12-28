@@ -33,11 +33,9 @@ const BACKUP_REMINDER_ALERT_ID = 'backup-reminder';
 
 export function Dashboard({ onNavigate }: DashboardProps = {}) {
   const { t } = useTranslation();
-  const { items } = useInventory();
+  const { items, dismissedAlertIds, dismissAlert, reactivateAllAlerts } =
+    useInventory();
   const { household } = useHousehold();
-  const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(
-    new Set(),
-  );
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
 
   // Calculate overall preparedness score
@@ -104,19 +102,38 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   }, [allAlerts, backupReminderAlert]);
 
   // Filter out dismissed alerts
-  const activeAlerts = useMemo(
-    () => combinedAlerts.filter((alert) => !dismissedAlerts.has(alert.id)),
-    [combinedAlerts, dismissedAlerts],
+  const dismissedSet = useMemo(
+    () => new Set(dismissedAlertIds),
+    [dismissedAlertIds],
   );
 
-  const handleDismissAlert = useCallback((alertId: string) => {
-    if (alertId === BACKUP_REMINDER_ALERT_ID) {
-      dismissBackupReminder();
-      setBackupReminderDismissed(true);
-    } else {
-      setDismissedAlerts((prev) => new Set([...prev, alertId]));
-    }
-  }, []);
+  const activeAlerts = useMemo(
+    () => combinedAlerts.filter((alert) => !dismissedSet.has(alert.id)),
+    [combinedAlerts, dismissedSet],
+  );
+
+  // Count hidden alerts that still exist (excluding backup reminder)
+  const hiddenAlertsCount = useMemo(
+    () =>
+      allAlerts.filter((alert) => dismissedSet.has(alert.id)).length,
+    [allAlerts, dismissedSet],
+  );
+
+  const handleDismissAlert = useCallback(
+    (alertId: string) => {
+      if (alertId === BACKUP_REMINDER_ALERT_ID) {
+        dismissBackupReminder();
+        setBackupReminderDismissed(true);
+      } else {
+        dismissAlert(alertId);
+      }
+    },
+    [dismissAlert],
+  );
+
+  const handleShowAllAlerts = () => {
+    reactivateAllAlerts();
+  };
 
   const handleCategoryClick = (categoryId: string) => {
     // Navigate to inventory page filtered by category
@@ -151,6 +168,21 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         <section className={styles.alertsSection}>
           <AlertBanner alerts={activeAlerts} onDismiss={handleDismissAlert} />
         </section>
+      )}
+
+      {/* Hidden Alerts Indicator */}
+      {hiddenAlertsCount > 0 && (
+        <div className={styles.hiddenAlerts}>
+          <span className={styles.hiddenAlertsText}>
+            {t('dashboard.hiddenAlerts', { count: hiddenAlertsCount })}
+          </span>
+          <button
+            className={styles.showAllButton}
+            onClick={handleShowAllAlerts}
+          >
+            {t('dashboard.showAllAlerts')}
+          </button>
+        </div>
       )}
 
       {/* Quick Actions */}
