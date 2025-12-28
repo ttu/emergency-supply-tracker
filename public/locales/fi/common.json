@@ -79,6 +79,9 @@
       "outOfStock": "Ei varastossa",
       "criticallyLow": "Kriittisen vähän ({{percent}}% varastossa)",
       "runningLow": "Vähissä ({{percent}}% varastossa)"
+    },
+    "backup": {
+      "reminderMessage": "Viimeisimmästä varmuuskopiosta on yli kuukausi. Harkitse tietojen vientiä muutosten menettämisen välttämiseksi."
     }
   },
   "household": {

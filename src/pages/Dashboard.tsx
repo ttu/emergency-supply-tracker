@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DashboardHeader } from '../components/dashboard/DashboardHeader';
 import { AlertBanner } from '../components/dashboard/AlertBanner';
+import type { Alert } from '../components/dashboard/AlertBanner';
 import { CategoryGrid } from '../components/dashboard/CategoryGrid';
 import { Button } from '../components/common/Button';
 import { useInventory } from '../hooks/useInventory';
@@ -13,6 +14,11 @@ import {
 } from '../utils/dashboard/preparedness';
 import { calculateAllCategoryStatuses } from '../utils/dashboard/categoryStatus';
 import { generateDashboardAlerts } from '../utils/dashboard/alerts';
+import { getAppData } from '../utils/storage/localStorage';
+import {
+  shouldShowBackupReminder,
+  dismissBackupReminder,
+} from '../utils/dashboard/backupReminder';
 import type { PageType } from '../components/common/Navigation';
 import styles from './Dashboard.module.css';
 
@@ -23,6 +29,8 @@ export interface DashboardProps {
   ) => void;
 }
 
+const BACKUP_REMINDER_ALERT_ID = 'backup-reminder';
+
 export function Dashboard({ onNavigate }: DashboardProps = {}) {
   const { t } = useTranslation();
   const { items } = useInventory();
@@ -30,6 +38,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(
     new Set(),
   );
+  const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
 
   // Calculate overall preparedness score
   const preparednessScore = useMemo(
@@ -69,15 +78,45 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
     [items, t],
   );
 
+  // Generate backup reminder alert if needed
+  // Note: items is included in deps to re-evaluate when inventory changes
+  const backupReminderAlert: Alert | null = useMemo(() => {
+    if (backupReminderDismissed) return null;
+
+    const appData = getAppData();
+    if (!shouldShowBackupReminder(appData)) return null;
+
+    return {
+      id: BACKUP_REMINDER_ALERT_ID,
+      type: 'info',
+      message: t('alerts.backup.reminderMessage'),
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backupReminderDismissed, t, items]);
+
+  // Combine all alerts with backup reminder first
+  const combinedAlerts = useMemo(() => {
+    const alerts = [...allAlerts];
+    if (backupReminderAlert) {
+      alerts.unshift(backupReminderAlert);
+    }
+    return alerts;
+  }, [allAlerts, backupReminderAlert]);
+
   // Filter out dismissed alerts
   const activeAlerts = useMemo(
-    () => allAlerts.filter((alert) => !dismissedAlerts.has(alert.id)),
-    [allAlerts, dismissedAlerts],
+    () => combinedAlerts.filter((alert) => !dismissedAlerts.has(alert.id)),
+    [combinedAlerts, dismissedAlerts],
   );
 
-  const handleDismissAlert = (alertId: string) => {
-    setDismissedAlerts((prev) => new Set([...prev, alertId]));
-  };
+  const handleDismissAlert = useCallback((alertId: string) => {
+    if (alertId === BACKUP_REMINDER_ALERT_ID) {
+      dismissBackupReminder();
+      setBackupReminderDismissed(true);
+    } else {
+      setDismissedAlerts((prev) => new Set([...prev, alertId]));
+    }
+  }, []);
 
   const handleCategoryClick = (categoryId: string) => {
     // Navigate to inventory page filtered by category
