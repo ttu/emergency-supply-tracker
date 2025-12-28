@@ -75,16 +75,16 @@ export function HouseholdForm() {
         <div className={styles.checkboxField}>
           <input
             type="checkbox"
-            id="hasFreezer"
-            checked={household.hasFreezer}
-            onChange={(e) => handleChange('hasFreezer', e.target.checked)}
+            id="useFreezer"
+            checked={household.useFreezer}
+            onChange={(e) => handleChange('useFreezer', e.target.checked)}
           />
-          <label htmlFor="hasFreezer">
-            {t('settings.household.hasFreezer')}
+          <label htmlFor="useFreezer">
+            {t('settings.household.useFreezer')}
           </label>
         </div>
 
-        {household.hasFreezer && (
+        {household.useFreezer && (
           <Input
             id="freezerHoldTimeHours"
             type="number"

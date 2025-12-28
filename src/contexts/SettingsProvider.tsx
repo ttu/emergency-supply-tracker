@@ -27,7 +27,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         adults: 2,
         children: 0,
         supplyDurationDays: 7,
-        hasFreezer: false,
+        useFreezer: false,
       },
       settings: DEFAULT_SETTINGS,
       customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available

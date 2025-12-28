@@ -43,7 +43,7 @@ export interface HouseholdConfig {
   adults: number;
   children: number;
   supplyDurationDays: number;
-  hasFreezer: boolean;
+  useFreezer: boolean;
   freezerHoldTimeHours?: number;
 }
 

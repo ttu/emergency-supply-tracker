@@ -11,7 +11,7 @@ describe('calculateHouseholdMultiplier', () => {
       adults: 2,
       children: 1,
       supplyDurationDays: 7,
-      hasFreezer: false,
+      useFreezer: false,
     };
     // (2 * 1.0 + 1 * 0.75) * (7 / 3) = 2.75 * 2.33 ≈ 6.42
     const result = calculateHouseholdMultiplier(config);
@@ -34,7 +34,7 @@ describe('calculateRecommendedQuantity', () => {
       adults: 2,
       children: 0,
       supplyDurationDays: 7,
-      hasFreezer: false,
+      useFreezer: false,
     };
     // 9 * 2 * (7/3) = 9 * 2 * 2.33 = 42
     const result = calculateRecommendedQuantity(item, household);
@@ -55,7 +55,7 @@ describe('calculateRecommendedQuantity', () => {
       adults: 5,
       children: 3,
       supplyDurationDays: 14,
-      hasFreezer: false,
+      useFreezer: false,
     };
     const result = calculateRecommendedQuantity(item, household);
     expect(result).toBe(1);

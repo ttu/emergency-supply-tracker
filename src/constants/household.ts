@@ -3,7 +3,7 @@ export const HOUSEHOLD_DEFAULTS = {
   adults: 1,
   children: 0,
   supplyDays: 3,
-  hasFreezer: false,
+  useFreezer: false,
 } as const;
 
 // Validation limits for household configuration

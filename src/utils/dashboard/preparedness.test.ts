@@ -11,7 +11,7 @@ describe('calculatePreparednessScore', () => {
   const baseHousehold = createMockHousehold({
     adults: 2,
     children: 0,
-    hasFreezer: false,
+    useFreezer: false,
     supplyDurationDays: 14,
   });
 
@@ -72,10 +72,10 @@ describe('calculatePreparednessScore', () => {
   });
 
   it('should filter out frozen items when no freezer', () => {
-    const withFreezer: HouseholdConfig = { ...baseHousehold, hasFreezer: true };
+    const withFreezer: HouseholdConfig = { ...baseHousehold, useFreezer: true };
     const withoutFreezer: HouseholdConfig = {
       ...baseHousehold,
-      hasFreezer: false,
+      useFreezer: false,
     };
 
     const items: InventoryItem[] = [];
@@ -117,7 +117,7 @@ describe('calculateCategoryPreparedness', () => {
     adults: 2,
     children: 0,
     hasPets: false,
-    hasFreezer: false,
+    useFreezer: false,
     supplyDurationDays: 14,
   };
 

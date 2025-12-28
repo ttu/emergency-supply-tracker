@@ -17,7 +17,7 @@ export interface HouseholdData {
   adults: number;
   children: number;
   supplyDays: number;
-  hasFreezer: boolean;
+  useFreezer: boolean;
 }
 
 export interface HouseholdFormProps {
@@ -36,7 +36,7 @@ export function HouseholdForm({
     adults: initialData?.adults ?? HOUSEHOLD_DEFAULTS.adults,
     children: initialData?.children ?? HOUSEHOLD_DEFAULTS.children,
     supplyDays: initialData?.supplyDays ?? HOUSEHOLD_DEFAULTS.supplyDays,
-    hasFreezer: initialData?.hasFreezer ?? HOUSEHOLD_DEFAULTS.hasFreezer,
+    useFreezer: initialData?.useFreezer ?? HOUSEHOLD_DEFAULTS.useFreezer,
   });
 
   const [errors, setErrors] = useState<
@@ -169,11 +169,11 @@ export function HouseholdForm({
               <label className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={formData.hasFreezer}
-                  onChange={(e) => handleChange('hasFreezer', e.target.checked)}
+                  checked={formData.useFreezer}
+                  onChange={(e) => handleChange('useFreezer', e.target.checked)}
                   className={styles.checkbox}
                 />
-                <span>{t('household.hasFreezer')}</span>
+                <span>{t('household.useFreezer')}</span>
               </label>
             </div>
           </div>

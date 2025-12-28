@@ -208,7 +208,7 @@ describe('calculateCategoryShortages', () => {
     adults: 2,
     children: 0,
     supplyDurationDays: 3,
-    hasFreezer: false,
+    useFreezer: false,
   });
 
   // Water calculation tests - 3 liters per person per day
@@ -218,7 +218,7 @@ describe('calculateCategoryShortages', () => {
         adults: 1,
         children: 0,
         supplyDurationDays: 3,
-        hasFreezer: false,
+        useFreezer: false,
       });
 
       const result = calculateCategoryShortages(
@@ -256,7 +256,7 @@ describe('calculateCategoryShortages', () => {
         adults: 2,
         children: 0,
         supplyDurationDays: 7,
-        hasFreezer: false,
+        useFreezer: false,
       });
 
       const result = calculateCategoryShortages(
@@ -279,7 +279,7 @@ describe('calculateCategoryShortages', () => {
         adults: 2,
         children: 2,
         supplyDurationDays: 3,
-        hasFreezer: false,
+        useFreezer: false,
       });
 
       const result = calculateCategoryShortages(
@@ -302,7 +302,7 @@ describe('calculateCategoryShortages', () => {
         adults: 0,
         children: 1,
         supplyDurationDays: 3,
-        hasFreezer: false,
+        useFreezer: false,
       });
 
       const result = calculateCategoryShortages(
@@ -514,7 +514,7 @@ describe('getCategoryDisplayStatus', () => {
     adults: 2,
     children: 0,
     supplyDurationDays: 3,
-    hasFreezer: false,
+    useFreezer: false,
   });
 
   it('should return all display data for a category', () => {

@@ -18,7 +18,7 @@ export function createMockHousehold(
     adults: 2,
     children: 1,
     supplyDurationDays: 7,
-    hasFreezer: true,
+    useFreezer: true,
     ...overrides,
   };
 }

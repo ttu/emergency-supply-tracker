@@ -18,7 +18,7 @@ export const defaultAppData = {
     adults: 2,
     children: 0,
     supplyDurationDays: 3,
-    hasFreezer: true,
+    useFreezer: true,
     freezerHoldTime: 48,
   },
   items: [],

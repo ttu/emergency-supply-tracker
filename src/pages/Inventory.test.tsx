@@ -160,7 +160,7 @@ describe('Template to InventoryItem conversion', () => {
       adults: 2,
       children: 0,
       supplyDurationDays: 3,
-      hasFreezer: false,
+      useFreezer: false,
     };
 
     const recommendedQty = calculateRecommendedQuantity(template, household);
@@ -204,7 +204,7 @@ describe('Template to InventoryItem conversion', () => {
       adults: 2,
       children: 0,
       supplyDurationDays: 3,
-      hasFreezer: false,
+      useFreezer: false,
     };
 
     const recommendedQty = calculateRecommendedQuantity(template, household);
@@ -239,7 +239,7 @@ describe('Template to InventoryItem conversion', () => {
       adults: 2,
       children: 0,
       supplyDurationDays: 3,
-      hasFreezer: false,
+      useFreezer: false,
     };
 
     // Item WITH productTemplateId (the fix)

@@ -92,7 +92,7 @@
     "children": "Lapset",
     "supplyDays": "Varastojen Kesto (päivää)",
     "supplyDaysHelper": "Suositus: 3-7 päivää",
-    "hasFreezer": "Pakastin",
+    "useFreezer": "Käytä pakastinta",
     "customDescription": "Aseta omat asetukset",
     "presets": {
       "single": "Yksin Asuva",
@@ -136,7 +136,7 @@
       "adults": "Aikuiset",
       "children": "Lapset",
       "supplyDays": "Varastojen Kesto (päivää)",
-      "hasFreezer": "Pakastin",
+      "useFreezer": "Käytä pakastinta",
       "freezerHoldTime": "Pakastimen Säilytysaika (tuntia)",
       "presets": {
         "label": "Pikavalinnat",

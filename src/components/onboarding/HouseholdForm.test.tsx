@@ -12,7 +12,7 @@ jest.mock('react-i18next', () => ({
         'household.adults': 'Adults',
         'household.children': 'Children',
         'household.supplyDays': 'Supply Duration (days)',
-        'household.hasFreezer': 'Has Freezer',
+        'household.useFreezer': 'Use Freezer',
         'household.errors.adultsMin': 'At least {{min}} adult is required',
         'household.errors.adultsMax': 'Maximum {{max}} adults allowed',
         'household.errors.childrenNegative': 'Cannot be negative',
@@ -41,7 +41,7 @@ describe('HouseholdForm', () => {
     expect(screen.getByLabelText(/Adults/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Children/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Supply Duration/i)).toBeInTheDocument();
-    expect(screen.getByLabelText('Has Freezer')).toBeInTheDocument();
+    expect(screen.getByLabelText('Use Freezer')).toBeInTheDocument();
   });
 
   it('displays initial data when provided', () => {
@@ -53,7 +53,7 @@ describe('HouseholdForm', () => {
           adults: 3,
           children: 2,
           supplyDays: 14,
-          hasFreezer: true,
+          useFreezer: true,
         }}
       />,
     );
@@ -61,7 +61,7 @@ describe('HouseholdForm', () => {
     expect(screen.getByLabelText(/Adults/i)).toHaveValue(3);
     expect(screen.getByLabelText(/Children/i)).toHaveValue(2);
     expect(screen.getByLabelText(/Supply Duration/i)).toHaveValue(14);
-    expect(screen.getByLabelText('Has Freezer')).toBeChecked();
+    expect(screen.getByLabelText('Use Freezer')).toBeChecked();
   });
 
   it('calls onSubmit with form data when submitted', async () => {
@@ -72,7 +72,7 @@ describe('HouseholdForm', () => {
     const adultsInput = screen.getByLabelText(/Adults/i);
     const childrenInput = screen.getByLabelText(/Children/i);
     const supplyDaysInput = screen.getByLabelText(/Supply Duration/i);
-    const freezerCheckbox = screen.getByLabelText('Has Freezer');
+    const freezerCheckbox = screen.getByLabelText('Use Freezer');
     const form = container.querySelector('form');
 
     fireEvent.change(adultsInput, { target: { value: '2' } });
@@ -86,7 +86,7 @@ describe('HouseholdForm', () => {
       adults: 2,
       children: 1,
       supplyDays: 10,
-      hasFreezer: true,
+      useFreezer: true,
     });
   });
 
