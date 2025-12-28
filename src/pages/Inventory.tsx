@@ -137,6 +137,15 @@ export function Inventory({
 
   const handleEditItem = (item: InventoryItem) => {
     setEditingItem(item);
+    // If item has a template, set it so weight/calorie calculations work
+    if (item.productTemplateId) {
+      const template = RECOMMENDED_ITEMS.find(
+        (t) => t.id === item.productTemplateId,
+      );
+      setSelectedTemplate(template);
+    } else {
+      setSelectedTemplate(undefined);
+    }
     setShowAddModal(true);
   };
 
