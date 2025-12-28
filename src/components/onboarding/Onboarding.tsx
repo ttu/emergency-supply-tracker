@@ -87,6 +87,8 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
         expirationDate,
         neverExpires: !item.defaultExpirationMonths,
         productTemplateId: item.id,
+        weightGrams: item.weightGramsPerUnit, // Store template weight per unit for calculations
+        caloriesPerUnit: item.caloriesPerUnit, // Store template calories per unit
         createdAt: now,
         updatedAt: now,
       };
