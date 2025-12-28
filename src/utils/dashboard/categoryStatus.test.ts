@@ -211,15 +211,125 @@ describe('calculateCategoryShortages', () => {
     hasFreezer: false,
   });
 
+  // Water calculation tests - 3 liters per person per day
+  describe('water calculation - 3L per person per day', () => {
+    it('should calculate 9 liters for 1 adult, 3 days', () => {
+      const oneAdultHousehold = createMockHousehold({
+        adults: 1,
+        children: 0,
+        supplyDurationDays: 3,
+        hasFreezer: false,
+      });
+
+      const result = calculateCategoryShortages(
+        'water-beverages',
+        [],
+        oneAdultHousehold,
+      );
+
+      // 1 adult × 3 days × 3L/day = 9 liters
+      // Formula: baseQuantity(9) × adults(1) × days(3/3) = 9
+      const waterShortage = result.shortages.find(
+        (s) => s.itemId === 'bottled-water',
+      );
+      expect(waterShortage).toBeDefined();
+      expect(waterShortage!.needed).toBe(9);
+    });
+
+    it('should calculate 18 liters for 2 adults, 3 days', () => {
+      const result = calculateCategoryShortages(
+        'water-beverages',
+        [],
+        household,
+      );
+
+      // 2 adults × 3 days × 3L/day = 18 liters
+      const waterShortage = result.shortages.find(
+        (s) => s.itemId === 'bottled-water',
+      );
+      expect(waterShortage).toBeDefined();
+      expect(waterShortage!.needed).toBe(18);
+    });
+
+    it('should calculate 42 liters for 2 adults, 7 days', () => {
+      const weekHousehold = createMockHousehold({
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        hasFreezer: false,
+      });
+
+      const result = calculateCategoryShortages(
+        'water-beverages',
+        [],
+        weekHousehold,
+      );
+
+      // 2 adults × 7 days × 3L/day = 42 liters
+      // Formula: baseQuantity(9) × adults(2) × days(7/3) = 9 × 2 × 2.33 = 42
+      const waterShortage = result.shortages.find(
+        (s) => s.itemId === 'bottled-water',
+      );
+      expect(waterShortage).toBeDefined();
+      expect(waterShortage!.needed).toBe(42);
+    });
+
+    it('should calculate children at 75% of adult water needs', () => {
+      const familyHousehold = createMockHousehold({
+        adults: 2,
+        children: 2,
+        supplyDurationDays: 3,
+        hasFreezer: false,
+      });
+
+      const result = calculateCategoryShortages(
+        'water-beverages',
+        [],
+        familyHousehold,
+      );
+
+      // (2 adults × 1.0 + 2 children × 0.75) × 3 days × 3L/day
+      // = (2 + 1.5) × 9 = 3.5 × 9 = 31.5, rounded up to 32
+      const waterShortage = result.shortages.find(
+        (s) => s.itemId === 'bottled-water',
+      );
+      expect(waterShortage).toBeDefined();
+      expect(waterShortage!.needed).toBe(32);
+    });
+
+    it('should calculate 1 child at 75% of 1 adult', () => {
+      const childOnlyHousehold = createMockHousehold({
+        adults: 0,
+        children: 1,
+        supplyDurationDays: 3,
+        hasFreezer: false,
+      });
+
+      const result = calculateCategoryShortages(
+        'water-beverages',
+        [],
+        childOnlyHousehold,
+      );
+
+      // 0 adults + 1 child × 0.75 = 0.75 people equivalent
+      // 0.75 × 3 days × 3L/day = 6.75, rounded up to 7
+      const waterShortage = result.shortages.find(
+        (s) => s.itemId === 'bottled-water',
+      );
+      expect(waterShortage).toBeDefined();
+      expect(waterShortage!.needed).toBe(7);
+    });
+  });
+
   it('should calculate shortages for water category', () => {
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
-        quantity: 27,
+        quantity: 9,
         unit: 'liters',
-        recommendedQuantity: 54,
+        recommendedQuantity: 18,
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -232,21 +342,26 @@ describe('calculateCategoryShortages', () => {
       household,
     );
 
-    // For 2 people, 3 days: bottled-water needs 9 * 2 * 3 = 54 liters
+    // For 2 adults, 3 days: bottled-water needs 9 * 2 * (3/3) = 18 liters
+    // (base 9L is calibrated for 1 person for 3 days = 3L/day)
     expect(result.shortages.length).toBeGreaterThan(0);
-    expect(result.totalActual).toBe(27);
+    expect(result.totalActual).toBe(9);
     expect(result.primaryUnit).toBe('liters');
   });
 
   it('should return no shortages when fully stocked', () => {
+    // For 2 adults, 3 days:
+    // - bottled-water: 9 * 2 * (3/3) = 18 liters
+    // - long-life-milk: 2 * 2 = 4 liters (doesn't scale with days)
+    // - long-life-juice: 2 * 2 = 4 liters (doesn't scale with days)
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
-        quantity: 54,
+        quantity: 18,
         unit: 'liters',
-        recommendedQuantity: 54,
+        recommendedQuantity: 18,
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
