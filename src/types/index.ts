@@ -128,4 +128,6 @@ export interface AppData {
   items: InventoryItem[];
   customTemplates: ProductTemplate[];
   lastModified: string;
+  lastBackupDate?: string; // ISO date of last export
+  backupReminderDismissedUntil?: string; // ISO date (first of next month) - reminder hidden until this date
 }

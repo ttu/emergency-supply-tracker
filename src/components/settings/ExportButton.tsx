@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '../common/Button';
 import { getAppData, exportToJSON } from '../../utils/storage/localStorage';
+import { recordBackupDate } from '../../utils/dashboard/backupReminder';
 import styles from './ExportButton.module.css';
 
 export function ExportButton() {
@@ -23,6 +24,9 @@ export function ExportButton() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    // Record the backup date
+    recordBackupDate();
   };
 
   return (
