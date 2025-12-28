@@ -1,0 +1,14 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto # Don't allow coverage to decrease
+        threshold: 1% # Allow 1% fluctuation
+    patch:
+      default:
+        target: 80% # New code must have 80% coverage
+
+comment:
+  layout: "reach,diff,flags,files"
+  behavior: default
+  require_changes: true
