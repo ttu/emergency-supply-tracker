@@ -90,7 +90,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
       type: 'info',
       message: t('alerts.backup.reminderMessage'),
     };
-  }, [backupReminderDismissed, t]);
+  }, [backupReminderDismissed, t, items]);
 
   // Combine all alerts with backup reminder first
   const combinedAlerts = useMemo(() => {
