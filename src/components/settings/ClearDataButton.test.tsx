@@ -12,11 +12,20 @@ jest.mock('react-i18next', () => ({
 // Mock localStorage utilities
 jest.mock('../../utils/storage/localStorage');
 
+// Store original console.error to restore later
+const originalConsoleError = console.error;
+
 describe('ClearDataButton', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     global.alert = jest.fn();
     global.confirm = jest.fn(() => false);
+    // Suppress the "Not implemented: navigation" error from jsdom
+    console.error = jest.fn();
+  });
+
+  afterEach(() => {
+    console.error = originalConsoleError;
   });
 
   it('should render clear data button', () => {
@@ -59,16 +68,12 @@ describe('ClearDataButton', () => {
     render(<ClearDataButton />);
 
     const button = screen.getByText('settings.clearData.button');
-
-    // Note: window.location.reload() will throw in jsdom, so we catch it
-    try {
-      fireEvent.click(button);
-    } catch {
-      // Expected - window.location.reload() not implemented in jsdom
-    }
+    fireEvent.click(button);
 
     expect(global.confirm).toHaveBeenCalledTimes(2);
     expect(localStorage.clearAppData).toHaveBeenCalled();
     expect(global.alert).toHaveBeenCalledWith('settings.clearData.success');
+    // window.location.reload is called but throws in jsdom - we just verify the error was logged
+    expect(console.error).toHaveBeenCalled();
   });
 });
