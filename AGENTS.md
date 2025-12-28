@@ -308,21 +308,35 @@ Pattern: `category.subcategory.key`
 
 ---
 
-## Specifications Reference
+## Documentation Reference
 
-When working on specific features, reference these documents:
+### Current Documentation (USE THESE)
 
-- **[SPECIFICATIONS.md](docs/specifications/SPECIFICATIONS.md)** - Index of all specifications (start here)
-- **[FUNCTIONAL_SPEC.md](docs/specifications/FUNCTIONAL_SPEC.md)** - User features and workflows (what the app does)
-- **[TECHNICAL_SPEC.md](docs/specifications/TECHNICAL_SPEC.md)** - Architecture and tech stack (how it's built)
-- **[DATA_SCHEMA.md](docs/specifications/DATA_SCHEMA.md)** - Data structures and TypeScript types
-- **[RECOMMENDED_ITEMS.md](docs/specifications/RECOMMENDED_ITEMS.md)** - All 70 recommended items
-- **[TESTING_STRATEGY.md](docs/specifications/TESTING_STRATEGY.md)** - Testing approach (Diamond pattern)
-- **[COMPONENT_ARCHITECTURE.md](docs/specifications/COMPONENT_ARCHITECTURE.md)** - Component patterns
-- **[CODE_QUALITY.md](docs/specifications/CODE_QUALITY.md)** - Linting, testing, CI/CD
-- **[TRANSLATION_GUIDE.md](docs/specifications/TRANSLATION_GUIDE.md)** - i18n implementation
-- **[UX_DECISIONS.md](docs/specifications/UX_DECISIONS.md)** - UX decisions and edge cases
-- **[IMPLEMENTATION_PLAN.md](docs/specifications/IMPLEMENTATION_PLAN.md)** - Step-by-step implementation guide
+The `docs/` folder contains up-to-date documentation that reflects the actual implementation:
+
+| Document | Description |
+|----------|-------------|
+| **[docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md)** | TypeScript types and data structures |
+| **[docs/FUNCTIONAL_SPEC.md](docs/FUNCTIONAL_SPEC.md)** | Features, workflows, and UI components |
+| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 70 recommended items with current data |
+| **[docs/COMPONENT_ARCHITECTURE.md](docs/COMPONENT_ARCHITECTURE.md)** | React component structure |
+| **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)** | Technology stack and configuration |
+| **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)** | Testing approach, Jest, Playwright |
+| **[docs/TRANSLATION_GUIDE.md](docs/TRANSLATION_GUIDE.md)** | Internationalization (i18n) |
+| **[docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)** | ESLint, Prettier, CI/CD |
+
+### Keeping Documentation Updated
+
+> **Important:** When implementing new features or making changes, update the corresponding documentation in `docs/` to keep it in sync with the code. This includes updating types in DATA_SCHEMA.md, new components in COMPONENT_ARCHITECTURE.md, etc.
+
+### Original Specifications (DO NOT USE)
+
+> **Important:** Files in `docs/specifications/` contain the original pre-implementation specifications. These are outdated and should NOT be used unless explicitly asked. The implementation has diverged from these original specs.
+
+Only reference `docs/specifications/` files when:
+- Explicitly asked to compare spec vs implementation
+- Asked to review original design decisions
+- Working on implementation progress tracking (`PROGRESS.md`)
 
 ---
 
@@ -396,6 +410,8 @@ type(scope): description
 Refs: #issue-number
 ```
 
+> **Note:** Do NOT add "Co-Authored-By" or "Generated with" footers to commit messages. Keep commits clean and simple.
+
 **Types:**
 - `feat`: New features or functionality
 - `fix`: Bug fixes
@@ -403,13 +419,16 @@ Refs: #issue-number
 - `test`: Adding or updating tests
 - `docs`: Documentation changes
 - `style`: Code style/formatting (Prettier, etc.)
-- `chore`: Build process, dependencies, tooling
+- `chore`: Dependencies, tooling, misc tasks
+- `ci`: CI/CD configuration changes
+- `build`: Build system or external dependencies
+- `perf`: Performance improvements
 
-**Scopes (examples):** app, dashboard, inventory, settings, types, storage, utils, data, ci, deploy, lint
+**Scopes (optional):** dashboard, inventory, settings, types, storage, utils, data, ci, deploy, lint
 
 **Examples:**
 ```
-feat(dashboard): add expiring items alert banner
+feat: add expiring items alert to dashboard
 
 - Create AlertBanner component
 - Add Storybook stories
@@ -420,7 +439,7 @@ Refs: #12
 ```
 
 ```
-test(inventory): add E2E tests for item management
+test: add E2E tests for item management
 
 - Test adding items from recommendations
 - Test editing item quantities

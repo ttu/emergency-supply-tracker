@@ -1,0 +1,32 @@
+# Documentation
+
+This folder contains up-to-date documentation that reflects the current implementation of the Emergency Supply Tracker.
+
+> **Note:** Original specifications are preserved in [specifications/](specifications/) for reference.
+
+## Files
+
+| Document | Description |
+|----------|-------------|
+| [DATA_SCHEMA.md](DATA_SCHEMA.md) | TypeScript types and data structures |
+| [FUNCTIONAL_SPEC.md](FUNCTIONAL_SPEC.md) | Features, user workflows, and UI components |
+| [RECOMMENDED_ITEMS.md](RECOMMENDED_ITEMS.md) | All 70 recommended emergency supply items |
+| [COMPONENT_ARCHITECTURE.md](COMPONENT_ARCHITECTURE.md) | React component structure and patterns |
+| [TECHNICAL_SPEC.md](TECHNICAL_SPEC.md) | Technology stack and project configuration |
+| [TESTING_STRATEGY.md](TESTING_STRATEGY.md) | Testing approach, Jest and Playwright setup |
+| [TRANSLATION_GUIDE.md](TRANSLATION_GUIDE.md) | Internationalization (i18n) implementation |
+| [CODE_QUALITY.md](CODE_QUALITY.md) | ESLint, Prettier, and CI/CD configuration |
+
+## Source of Truth
+
+Each document references the source code files it documents:
+
+- Types: `src/types/index.ts`
+- Categories: `src/data/standardCategories.ts`
+- Items: `src/data/recommendedItems.ts`
+- Components: `src/components/`
+- Dependencies: `package.json`
+
+## Keeping Documentation Updated
+
+When making changes to the codebase, update the corresponding documentation file to keep them in sync.
