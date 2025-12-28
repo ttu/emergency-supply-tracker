@@ -8,6 +8,11 @@ import {
 } from '../../constants/household';
 import styles from './HouseholdForm.module.css';
 
+function parseIntOrDefault(value: string, defaultValue: number): number {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? defaultValue : parsed;
+}
+
 export interface HouseholdData {
   adults: number;
   children: number;
@@ -115,7 +120,7 @@ export function HouseholdForm({
               onChange={(e) =>
                 handleChange(
                   'adults',
-                  parseInt(e.target.value) || HOUSEHOLD_DEFAULTS.adults,
+                  parseIntOrDefault(e.target.value, HOUSEHOLD_DEFAULTS.adults),
                 )
               }
               error={errors.adults}
@@ -131,7 +136,10 @@ export function HouseholdForm({
               onChange={(e) =>
                 handleChange(
                   'children',
-                  parseInt(e.target.value) || HOUSEHOLD_DEFAULTS.children,
+                  parseIntOrDefault(
+                    e.target.value,
+                    HOUSEHOLD_DEFAULTS.children,
+                  ),
                 )
               }
               error={errors.children}
@@ -146,7 +154,10 @@ export function HouseholdForm({
               onChange={(e) =>
                 handleChange(
                   'supplyDays',
-                  parseInt(e.target.value) || HOUSEHOLD_DEFAULTS.supplyDays,
+                  parseIntOrDefault(
+                    e.target.value,
+                    HOUSEHOLD_DEFAULTS.supplyDays,
+                  ),
                 )
               }
               error={errors.supplyDays}
