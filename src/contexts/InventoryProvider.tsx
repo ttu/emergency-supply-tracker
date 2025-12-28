@@ -1,7 +1,11 @@
 import { useState, useEffect, ReactNode, useCallback } from 'react';
 import type { InventoryItem, Category } from '../types';
 import { STANDARD_CATEGORIES } from '../data/standardCategories';
-import { getAppData, saveAppData } from '../utils/storage/localStorage';
+import {
+  getAppData,
+  saveAppData,
+  createDefaultAppData,
+} from '../utils/storage/localStorage';
 import { InventoryContext } from './InventoryContext';
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
@@ -15,45 +19,15 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     return data?.dismissedAlertIds || [];
   });
 
-  // Save items to localStorage on change
+  // Save items and dismissedAlertIds to localStorage on change
+  // Consolidated into single effect to avoid race conditions
   useEffect(() => {
-    const data = getAppData() || {
-      version: '1.0.0',
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      settings: {
-        language: 'en',
-        theme: 'light',
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-      customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available
-      items: [],
-      customTemplates: [],
-      dismissedAlertIds: [],
-      lastModified: new Date().toISOString(),
-    };
+    const data = getAppData() || createDefaultAppData();
     data.items = items;
+    data.dismissedAlertIds = dismissedAlertIds;
     data.lastModified = new Date().toISOString();
     saveAppData(data);
-  }, [items]);
-
-  // Save dismissedAlertIds to localStorage on change
-  useEffect(() => {
-    const data = getAppData();
-    if (data) {
-      data.dismissedAlertIds = dismissedAlertIds;
-      data.lastModified = new Date().toISOString();
-      saveAppData(data);
-    }
-  }, [dismissedAlertIds]);
+  }, [items, dismissedAlertIds]);
 
   const addItem = (
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,

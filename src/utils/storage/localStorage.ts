@@ -2,6 +2,32 @@ import type { AppData } from '../../types';
 
 const STORAGE_KEY = 'emergencySupplyTracker';
 
+export function createDefaultAppData(): AppData {
+  return {
+    version: '1.0.0',
+    household: {
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 7,
+      hasFreezer: false,
+    },
+    settings: {
+      language: 'en',
+      theme: 'light',
+      advancedFeatures: {
+        calorieTracking: false,
+        powerManagement: false,
+        waterTracking: false,
+      },
+    },
+    customCategories: [],
+    items: [],
+    customTemplates: [],
+    dismissedAlertIds: [],
+    lastModified: new Date().toISOString(),
+  };
+}
+
 export function getAppData(): AppData | null {
   try {
     const json = localStorage.getItem(STORAGE_KEY);

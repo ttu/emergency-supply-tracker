@@ -1,6 +1,10 @@
 import { useState, useEffect, ReactNode } from 'react';
 import type { HouseholdConfig } from '../types';
-import { getAppData, saveAppData } from '../utils/storage/localStorage';
+import {
+  getAppData,
+  saveAppData,
+  createDefaultAppData,
+} from '../utils/storage/localStorage';
 import { HouseholdContext } from './HouseholdContext';
 
 const DEFAULT_HOUSEHOLD: HouseholdConfig = {
@@ -42,24 +46,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
 
   // Save to localStorage on change
   useEffect(() => {
-    const data = getAppData() || {
-      version: '1.0.0',
-      household: DEFAULT_HOUSEHOLD,
-      settings: {
-        language: 'en',
-        theme: 'light',
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-      customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available
-      items: [],
-      customTemplates: [],
-      dismissedAlertIds: [],
-      lastModified: new Date().toISOString(),
-    };
+    const data = getAppData() || createDefaultAppData();
     data.household = household;
     data.lastModified = new Date().toISOString();
     saveAppData(data);
