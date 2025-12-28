@@ -7,6 +7,7 @@ import { QuickSetupScreen } from './QuickSetupScreen';
 import type { HouseholdConfig, InventoryItem } from '../../types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
 import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
+import { HOUSEHOLD_DEFAULTS } from '../../constants/household';
 
 export interface OnboardingProps {
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;
@@ -122,8 +123,8 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
               ? {
                   adults: selectedPreset.adults,
                   children: selectedPreset.children,
-                  supplyDays: 7,
-                  hasFreezer: false,
+                  supplyDays: HOUSEHOLD_DEFAULTS.supplyDays,
+                  hasFreezer: HOUSEHOLD_DEFAULTS.hasFreezer,
                 }
               : undefined
           }

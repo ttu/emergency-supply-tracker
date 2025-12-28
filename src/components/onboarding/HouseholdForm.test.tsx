@@ -6,17 +6,29 @@ import { HouseholdForm } from './HouseholdForm';
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
+    t: (key: string, params?: Record<string, unknown>) => {
       const translations: Record<string, string> = {
         'household.title': 'Household Configuration',
         'household.adults': 'Adults',
         'household.children': 'Children',
         'household.supplyDays': 'Supply Duration (days)',
         'household.hasFreezer': 'Has Freezer',
+        'household.errors.adultsMin': 'At least {{min}} adult is required',
+        'household.errors.adultsMax': 'Maximum {{max}} adults allowed',
+        'household.errors.childrenNegative': 'Cannot be negative',
+        'household.errors.childrenMax': 'Maximum {{max}} children allowed',
+        'household.errors.supplyDaysMin': 'At least {{min}} day is required',
+        'household.errors.supplyDaysMax': 'Maximum {{max}} days allowed',
         'actions.save': 'Save',
         'actions.cancel': 'Cancel',
       };
-      return translations[key] || key;
+      let result = translations[key] || key;
+      if (params) {
+        Object.entries(params).forEach(([paramKey, value]) => {
+          result = result.replace(`{{${paramKey}}}`, String(value));
+        });
+      }
+      return result;
     },
   }),
 }));

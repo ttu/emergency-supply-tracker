@@ -2,7 +2,16 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
+import {
+  HOUSEHOLD_DEFAULTS,
+  HOUSEHOLD_LIMITS,
+} from '../../constants/household';
 import styles from './HouseholdForm.module.css';
+
+function parseIntOrDefault(value: string, defaultValue: number): number {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? defaultValue : parsed;
+}
 
 export interface HouseholdData {
   adults: number;
@@ -24,10 +33,10 @@ export function HouseholdForm({
 }: HouseholdFormProps) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<HouseholdData>({
-    adults: initialData?.adults ?? 1,
-    children: initialData?.children ?? 0,
-    supplyDays: initialData?.supplyDays ?? 7,
-    hasFreezer: initialData?.hasFreezer ?? false,
+    adults: initialData?.adults ?? HOUSEHOLD_DEFAULTS.adults,
+    children: initialData?.children ?? HOUSEHOLD_DEFAULTS.children,
+    supplyDays: initialData?.supplyDays ?? HOUSEHOLD_DEFAULTS.supplyDays,
+    hasFreezer: initialData?.hasFreezer ?? HOUSEHOLD_DEFAULTS.hasFreezer,
   });
 
   const [errors, setErrors] = useState<
@@ -37,25 +46,35 @@ export function HouseholdForm({
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof HouseholdData, string>> = {};
 
-    if (formData.adults < 1) {
-      newErrors.adults = 'At least 1 adult is required';
+    if (formData.adults < HOUSEHOLD_LIMITS.adults.min) {
+      newErrors.adults = t('household.errors.adultsMin', {
+        min: HOUSEHOLD_LIMITS.adults.min,
+      });
     }
-    if (formData.adults > 20) {
-      newErrors.adults = 'Maximum 20 adults allowed';
-    }
-
-    if (formData.children < 0) {
-      newErrors.children = 'Cannot be negative';
-    }
-    if (formData.children > 20) {
-      newErrors.children = 'Maximum 20 children allowed';
+    if (formData.adults > HOUSEHOLD_LIMITS.adults.max) {
+      newErrors.adults = t('household.errors.adultsMax', {
+        max: HOUSEHOLD_LIMITS.adults.max,
+      });
     }
 
-    if (formData.supplyDays < 1) {
-      newErrors.supplyDays = 'At least 1 day is required';
+    if (formData.children < HOUSEHOLD_LIMITS.children.min) {
+      newErrors.children = t('household.errors.childrenNegative');
     }
-    if (formData.supplyDays > 365) {
-      newErrors.supplyDays = 'Maximum 365 days allowed';
+    if (formData.children > HOUSEHOLD_LIMITS.children.max) {
+      newErrors.children = t('household.errors.childrenMax', {
+        max: HOUSEHOLD_LIMITS.children.max,
+      });
+    }
+
+    if (formData.supplyDays < HOUSEHOLD_LIMITS.supplyDays.min) {
+      newErrors.supplyDays = t('household.errors.supplyDaysMin', {
+        min: HOUSEHOLD_LIMITS.supplyDays.min,
+      });
+    }
+    if (formData.supplyDays > HOUSEHOLD_LIMITS.supplyDays.max) {
+      newErrors.supplyDays = t('household.errors.supplyDaysMax', {
+        max: HOUSEHOLD_LIMITS.supplyDays.max,
+      });
     }
 
     setErrors(newErrors);
@@ -95,11 +114,14 @@ export function HouseholdForm({
             <Input
               label={t('household.adults')}
               type="number"
-              min={1}
-              max={20}
+              min={HOUSEHOLD_LIMITS.adults.min}
+              max={HOUSEHOLD_LIMITS.adults.max}
               value={formData.adults}
               onChange={(e) =>
-                handleChange('adults', parseInt(e.target.value) || 1)
+                handleChange(
+                  'adults',
+                  parseIntOrDefault(e.target.value, HOUSEHOLD_DEFAULTS.adults),
+                )
               }
               error={errors.adults}
               required
@@ -108,11 +130,17 @@ export function HouseholdForm({
             <Input
               label={t('household.children')}
               type="number"
-              min={0}
-              max={20}
+              min={HOUSEHOLD_LIMITS.children.min}
+              max={HOUSEHOLD_LIMITS.children.max}
               value={formData.children}
               onChange={(e) =>
-                handleChange('children', parseInt(e.target.value) || 0)
+                handleChange(
+                  'children',
+                  parseIntOrDefault(
+                    e.target.value,
+                    HOUSEHOLD_DEFAULTS.children,
+                  ),
+                )
               }
               error={errors.children}
             />
@@ -120,11 +148,17 @@ export function HouseholdForm({
             <Input
               label={t('household.supplyDays')}
               type="number"
-              min={1}
-              max={365}
+              min={HOUSEHOLD_LIMITS.supplyDays.min}
+              max={HOUSEHOLD_LIMITS.supplyDays.max}
               value={formData.supplyDays}
               onChange={(e) =>
-                handleChange('supplyDays', parseInt(e.target.value) || 7)
+                handleChange(
+                  'supplyDays',
+                  parseIntOrDefault(
+                    e.target.value,
+                    HOUSEHOLD_DEFAULTS.supplyDays,
+                  ),
+                )
               }
               error={errors.supplyDays}
               helperText={t('household.supplyDaysHelper')}
