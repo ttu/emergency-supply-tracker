@@ -17,6 +17,10 @@
       "title": "Täysin ilmainen",
       "description": "Kaikki ominaisuudet mukana, ei maksullisia tasoja"
     },
+    "worksOffline": {
+      "title": "Toimii ilman nettiä",
+      "description": "Käytä varastotietojasi milloin tahansa, myös ilman internet-yhteyttä"
+    },
     "cloudSync": {
       "title": "Pilvisynkronointi (Tulossa)",
       "description": "Valinnainen synkronointi omaan pilvipalveluun"

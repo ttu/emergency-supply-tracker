@@ -6,6 +6,7 @@ import App from './App.tsx';
 import { InventoryProvider } from './contexts/InventoryProvider';
 import { HouseholdProvider } from './contexts/HouseholdProvider';
 import { SettingsProvider } from './contexts/SettingsProvider';
+import * as serviceWorker from './utils/serviceWorker';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -24,3 +25,15 @@ createRoot(document.getElementById('root')!).render(
     </Suspense>
   </StrictMode>,
 );
+
+// Register service worker for offline support
+serviceWorker.register({
+  onSuccess: () => {
+    console.log(
+      'Service worker registered successfully. App is available offline.',
+    );
+  },
+  onUpdate: () => {
+    console.log('New version available. Close all tabs to update.');
+  },
+});
