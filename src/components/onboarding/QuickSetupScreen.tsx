@@ -21,8 +21,8 @@ export const QuickSetupScreen = ({
 
   // Calculate which items will be added
   const itemsToAdd = RECOMMENDED_ITEMS.filter((item) => {
-    // Skip frozen items if no freezer
-    if (item.requiresFreezer && !household.hasFreezer) {
+    // Skip frozen items if not using freezer
+    if (item.requiresFreezer && !household.useFreezer) {
       return false;
     }
     return true;
@@ -124,7 +124,7 @@ export const QuickSetupScreen = ({
 
         <div className={styles.info}>
           <p>{t('quickSetup.info')}</p>
-          {!household.hasFreezer && (
+          {!household.useFreezer && (
             <p className={styles.freezerNote}>{t('quickSetup.noFreezer')}</p>
           )}
         </div>

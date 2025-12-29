@@ -27,7 +27,7 @@ describe('HouseholdForm', () => {
       screen.getByLabelText('settings.household.supplyDays'),
     ).toBeInTheDocument();
     expect(
-      screen.getByLabelText('settings.household.hasFreezer'),
+      screen.getByLabelText('settings.household.useFreezer'),
     ).toBeInTheDocument();
   });
 
@@ -79,7 +79,7 @@ describe('HouseholdForm', () => {
     renderWithProviders(<HouseholdForm />);
 
     const freezerCheckbox = screen.getByLabelText(
-      'settings.household.hasFreezer',
+      'settings.household.useFreezer',
     ) as HTMLInputElement;
 
     // Checkbox starts unchecked by default
@@ -100,7 +100,7 @@ describe('HouseholdForm', () => {
     renderWithProviders(<HouseholdForm />);
 
     const freezerCheckbox = screen.getByLabelText(
-      'settings.household.hasFreezer',
+      'settings.household.useFreezer',
     ) as HTMLInputElement;
 
     // Initial state

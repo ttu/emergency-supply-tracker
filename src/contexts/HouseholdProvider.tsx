@@ -7,7 +7,7 @@ const DEFAULT_HOUSEHOLD: HouseholdConfig = {
   adults: 2,
   children: 3,
   supplyDurationDays: 3,
-  hasFreezer: false,
+  useFreezer: false,
 };
 
 const HOUSEHOLD_PRESETS: Record<
@@ -18,19 +18,19 @@ const HOUSEHOLD_PRESETS: Record<
     adults: 1,
     children: 0,
     supplyDurationDays: 3,
-    hasFreezer: false,
+    useFreezer: false,
   },
   couple: {
     adults: 2,
     children: 0,
     supplyDurationDays: 3,
-    hasFreezer: true,
+    useFreezer: true,
   },
   family: {
     adults: 2,
     children: 2,
     supplyDurationDays: 3,
-    hasFreezer: true,
+    useFreezer: true,
   },
 };
 

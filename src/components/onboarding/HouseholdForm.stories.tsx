@@ -38,7 +38,7 @@ export const WithInitialData: Story = {
       adults: 3,
       children: 2,
       supplyDays: 14,
-      hasFreezer: true,
+      useFreezer: true,
     },
     onSubmit: (data) => {
       console.log('Form submitted:', data);
@@ -66,7 +66,7 @@ export const SinglePerson: Story = {
       adults: 1,
       children: 0,
       supplyDays: 7,
-      hasFreezer: false,
+      useFreezer: false,
     },
     onSubmit: (data) => {
       console.log('Form submitted:', data);
@@ -81,7 +81,7 @@ export const LargeFamily: Story = {
       adults: 4,
       children: 5,
       supplyDays: 14,
-      hasFreezer: true,
+      useFreezer: true,
     },
     onSubmit: (data) => {
       console.log('Form submitted:', data);
@@ -96,7 +96,7 @@ export const ExtendedSupplyDuration: Story = {
       adults: 2,
       children: 2,
       supplyDays: 30,
-      hasFreezer: true,
+      useFreezer: true,
     },
     onSubmit: (data) => {
       console.log('Form submitted:', data);

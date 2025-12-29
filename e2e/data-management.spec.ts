@@ -66,7 +66,7 @@ test.describe('Data Management', () => {
         adults: 2,
         children: 1,
         supplyDays: 3,
-        hasFreezer: true,
+        useFreezer: true,
         freezerHoldTime: 48,
       },
       settings: {

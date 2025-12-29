@@ -39,7 +39,7 @@ describe('QuickSetupScreen', () => {
     adults: 2,
     children: 1,
     supplyDurationDays: 3,
-    hasFreezer: true,
+    useFreezer: true,
   };
 
   it('renders title and subtitle', () => {
@@ -158,7 +158,7 @@ describe('QuickSetupScreen', () => {
     const onSkip = jest.fn();
     const householdWithoutFreezer: HouseholdConfig = {
       ...defaultHousehold,
-      hasFreezer: false,
+      useFreezer: false,
     };
 
     render(

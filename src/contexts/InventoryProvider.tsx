@@ -19,7 +19,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         adults: 2,
         children: 0,
         supplyDurationDays: 7,
-        hasFreezer: false,
+        useFreezer: false,
       },
       settings: {
         language: 'en',

@@ -79,8 +79,8 @@ export function useAlerts() {
     );
 
     RECOMMENDED_ITEMS.forEach((recommendedItem) => {
-      // Skip freezer items if household doesn't have a freezer
-      if (recommendedItem.requiresFreezer && !household.hasFreezer) {
+      // Skip freezer items if household doesn't use a freezer
+      if (recommendedItem.requiresFreezer && !household.useFreezer) {
         return;
       }
 

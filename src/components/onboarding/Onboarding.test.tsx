@@ -35,7 +35,7 @@ jest.mock('react-i18next', () => ({
         'household.adults': 'Adults',
         'household.children': 'Children',
         'household.supplyDays': 'Supply Days',
-        'household.hasFreezer': 'I have a freezer',
+        'household.useFreezer': 'I want to use my freezer',
         'actions.save': 'Save',
         'actions.cancel': 'Cancel',
         'quickSetup.addItems': 'Add Items',
@@ -187,7 +187,7 @@ describe('Onboarding', () => {
         adults: expect.any(Number),
         children: expect.any(Number),
         supplyDurationDays: expect.any(Number),
-        hasFreezer: expect.any(Boolean),
+        useFreezer: expect.any(Boolean),
       }),
       [],
     );
@@ -234,7 +234,7 @@ describe('Onboarding', () => {
         adults: expect.any(Number),
         children: expect.any(Number),
         supplyDurationDays: expect.any(Number),
-        hasFreezer: expect.any(Boolean),
+        useFreezer: expect.any(Boolean),
       }),
       expect.arrayContaining([
         expect.objectContaining({

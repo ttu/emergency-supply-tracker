@@ -26,7 +26,7 @@ const defaultHousehold = createMockHousehold({
   adults: 2,
   children: 1,
   supplyDurationDays: 3,
-  hasFreezer: true,
+  useFreezer: true,
 });
 
 export const Default: Story = {
@@ -47,7 +47,7 @@ export const SinglePerson: Story = {
       adults: 1,
       children: 0,
       supplyDurationDays: 3,
-      hasFreezer: true,
+      useFreezer: true,
     }),
     onAddItems: () => {
       console.log('Add items clicked');
@@ -64,7 +64,7 @@ export const LargeFamily: Story = {
       adults: 2,
       children: 3,
       supplyDurationDays: 7,
-      hasFreezer: true,
+      useFreezer: true,
     }),
     onAddItems: () => {
       console.log('Add items clicked');
@@ -81,7 +81,7 @@ export const NoFreezer: Story = {
       adults: 2,
       children: 1,
       supplyDurationDays: 3,
-      hasFreezer: false,
+      useFreezer: false,
     },
     onAddItems: () => {
       console.log('Add items clicked');
@@ -98,7 +98,7 @@ export const ExtendedSupply: Story = {
       adults: 2,
       children: 0,
       supplyDurationDays: 14,
-      hasFreezer: true,
+      useFreezer: true,
     },
     onAddItems: () => {
       console.log('Add items clicked');

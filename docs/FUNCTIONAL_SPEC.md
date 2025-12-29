@@ -23,6 +23,7 @@ Households preparing for emergency situations (power outages, service disruption
 ## User Personas
 
 ### Primary: Emma (Prepared Parent)
+
 - 35 years old, 2 children
 - Wants to be prepared for emergencies
 - Prefers mobile access while shopping
@@ -30,6 +31,7 @@ Households preparing for emergency situations (power outages, service disruption
 - Values privacy (no cloud storage)
 
 ### Secondary: Matti (Safety-Conscious Professional)
+
 - 28 years old, lives alone
 - Follows 72tuntia.fi guidelines
 - Tech-savvy, uses desktop browser
@@ -45,29 +47,34 @@ Households preparing for emergency situations (power outages, service disruption
 Users configure their household to get personalized supply recommendations.
 
 #### Household Size
+
 - **Number of adults** (default: 2)
   - Each adult scales supplies by 1.0x multiplier
 - **Number of children** (default: 0)
   - Each child scales supplies by 0.75x multiplier
 
 #### Supply Duration
+
 - **Days of supplies to maintain** (default: 7 days)
 - User-selectable duration
 - Affects quantity calculations for scalable items
 
 #### Living Situation
-- **Has freezer** (default: false)
+
+- **Use freezer** (default: false)
   - Shows/hides frozen food recommendations
   - Frozen items only shown when enabled
 
 #### Calculation Model
 
 **Base Formula:**
+
 ```
 Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 ```
 
 **Example:**
+
 - 2 adults + 2 children for 7 days
 - = (2.0 + 1.5) × (7 ÷ 3)
 - = 3.5 × 2.33
@@ -81,19 +88,20 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 #### 9 Standard Categories (based on 72tuntia.fi)
 
-| ID | Name | Icon | Description |
-|----|------|------|-------------|
-| `water-beverages` | Water & Beverages | :droplet: | 3L per person per day |
-| `food` | Food | :fork_and_knife: | Non-perishable, canned, dry goods, frozen |
-| `cooking-heat` | Cooking & Heat | :fire: | Camping stove, fuel, matches, candles |
-| `light-power` | Light & Power | :bulb: | Flashlights, batteries, power banks |
-| `communication-info` | Communication & Info | :radio: | Battery/hand-crank radio |
-| `medical-health` | Medical & Health | :hospital: | First aid, medications |
-| `hygiene-sanitation` | Hygiene & Sanitation | :soap: | Toilet paper, soap, wipes |
-| `tools-supplies` | Tools & Supplies | :wrench: | Bucket, containers, duct tape |
-| `cash-documents` | Cash & Documents | :moneybag: | Cash, document copies |
+| ID                   | Name                 | Icon             | Description                               |
+| -------------------- | -------------------- | ---------------- | ----------------------------------------- |
+| `water-beverages`    | Water & Beverages    | :droplet:        | 3L per person per day                     |
+| `food`               | Food                 | :fork_and_knife: | Non-perishable, canned, dry goods, frozen |
+| `cooking-heat`       | Cooking & Heat       | :fire:           | Camping stove, fuel, matches, candles     |
+| `light-power`        | Light & Power        | :bulb:           | Flashlights, batteries, power banks       |
+| `communication-info` | Communication & Info | :radio:          | Battery/hand-crank radio                  |
+| `medical-health`     | Medical & Health     | :hospital:       | First aid, medications                    |
+| `hygiene-sanitation` | Hygiene & Sanitation | :soap:           | Toilet paper, soap, wipes                 |
+| `tools-supplies`     | Tools & Supplies     | :wrench:         | Bucket, containers, duct tape             |
+| `cash-documents`     | Cash & Documents     | :moneybag:       | Cash, document copies                     |
 
 #### Custom Categories
+
 - Users can create additional categories
 - Useful for pets, hobbies, special needs
 
@@ -103,43 +111,46 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 #### Core Item Attributes
 
-| Attribute | Required | Description |
-|-----------|----------|-------------|
-| `name` | Yes | Item name or i18n key reference |
-| `categoryId` | Yes | Category reference |
-| `quantity` | Yes | Current quantity owned |
-| `unit` | Yes | Measurement unit |
-| `recommendedQuantity` | Yes | Calculated recommended amount |
-| `expirationDate` | No | ISO date (YYYY-MM-DD) |
-| `neverExpires` | No | Boolean flag for non-expiring items |
-| `location` | No | Storage location |
-| `notes` | No | User notes |
-| `productTemplateId` | No | Reference to product template |
-| `weightGrams` | No | Total weight (for calorie calc) |
-| `caloriesPerUnit` | No | Calories per unit |
+| Attribute             | Required | Description                         |
+| --------------------- | -------- | ----------------------------------- |
+| `name`                | Yes      | Item name or i18n key reference     |
+| `categoryId`          | Yes      | Category reference                  |
+| `quantity`            | Yes      | Current quantity owned              |
+| `unit`                | Yes      | Measurement unit                    |
+| `recommendedQuantity` | Yes      | Calculated recommended amount       |
+| `expirationDate`      | No       | ISO date (YYYY-MM-DD)               |
+| `neverExpires`        | No       | Boolean flag for non-expiring items |
+| `location`            | No       | Storage location                    |
+| `notes`               | No       | User notes                          |
+| `productTemplateId`   | No       | Reference to product template       |
+| `weightGrams`         | No       | Total weight (for calorie calc)     |
+| `caloriesPerUnit`     | No       | Calories per unit                   |
 
 #### Optional Advanced Features
 
 **Calorie Tracking** (disabled by default):
+
 - Calories per 100g for food items
 - Adults: 2,200 kcal/day target
 - Children: 1,600 kcal/day target
 - Dashboard shows calorie coverage
 
 **Power Management** (disabled by default):
+
 - Track batteries and power banks
 - Dashboard shows power reserve
 
 **Water Tracking** (disabled by default):
+
 - Detailed water consumption tracking
 
 #### Item Status Indicators
 
-| Status | Icon | Meaning |
-|--------|------|---------|
-| OK | :white_check_mark: | Sufficient quantity AND not expiring within 30 days |
-| Warning | :warning: | Low quantity (<50% recommended) OR expiring soon (within 30 days) |
-| Critical | :x: | Missing (quantity = 0) OR already expired |
+| Status   | Icon               | Meaning                                                           |
+| -------- | ------------------ | ----------------------------------------------------------------- |
+| OK       | :white_check_mark: | Sufficient quantity AND not expiring within 30 days               |
+| Warning  | :warning:          | Low quantity (<50% recommended) OR expiring soon (within 30 days) |
+| Critical | :x:                | Missing (quantity = 0) OR already expired                         |
 
 **Important**: Expired items remain in inventory until user removes them.
 
@@ -150,6 +161,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 70 recommended items across 9 categories. See [RECOMMENDED_ITEMS.md](RECOMMENDED_ITEMS.md) for complete list.
 
 **Key examples:**
+
 - Bottled water: 9L per person (3 days)
 - Canned soup: 3 cans per person (scales with days)
 - Flashlight: 2 per household (does not scale)
@@ -165,11 +177,13 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 #### First-Time Onboarding (4 Steps)
 
 **Step 1: Welcome**
+
 - Brief app explanation
 - Language selection (English/Finnish)
 - Continue button
 
 **Step 2: Preset Selection**
+
 - Common household presets:
   - Single person
   - Couple
@@ -178,13 +192,15 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 - Quick selection to pre-fill household form
 
 **Step 3: Household Configuration**
+
 - Number of adults
 - Number of children
 - Supply duration (days)
-- Has freezer toggle
+- Use freezer toggle
 - Back/Continue navigation
 
 **Step 4: Quick Setup**
+
 - Option to add all recommended items
 - Option to skip and start empty
 - Shows summary of what will be added
@@ -192,21 +208,25 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 #### Adding Items
 
 **Method 1: Browse from Recommendations**
+
 1. Navigate to category
 2. See recommended items with status
 3. Quick Add or Full Add
 
 **Method 2: Quick Add from Dashboard**
+
 1. Dashboard shows critical missing items
 2. Single tap adds item with defaults
 
 **Method 3: Add from Product Template**
+
 1. Select template
 2. Auto-fill fields
 3. Override defaults if needed
 4. Save to inventory
 
 **Custom Items**
+
 1. Click "Add Custom Item"
 2. Fill in all fields manually
 3. Optionally save as template
@@ -225,27 +245,32 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 #### Dashboard View
 
 **Components:**
+
 - `DashboardHeader`: Household summary, overall preparedness %
 - `AlertBanner`: Expired/expiring/missing items
 - `CategoryGrid`: 9 category cards with status indicators
 
 **Category Card shows:**
+
 - Category name and icon
 - Status indicator (worst item status)
 - Progress bar (% items sufficient)
 - Item counts
 
 **Quick Actions:**
+
 - Add item button
 - Export/Import (in Settings)
 
 #### Inventory View
 
 **Navigation:**
+
 - `CategoryNav`: Horizontal tabs for categories
 - `FilterBar`: Status filters (All, OK, Warning, Critical)
 
 **Item List:**
+
 - `ItemList`: Scrollable list of items
 - `ItemCard`: Individual item display
   - Name, quantity/recommended
@@ -254,6 +279,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
   - Edit/Delete actions
 
 **Sorting:**
+
 - By name (alphabetical)
 - By expiration (soonest first)
 - By status (critical first)
@@ -261,6 +287,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 #### Add/Edit Item Form
 
 **`ItemForm` Component:**
+
 - Category dropdown
 - Name input (or template selector)
 - Quantity input
@@ -272,26 +299,32 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 - Advanced fields (if enabled)
 
 **Actions:**
+
 - Save / Cancel / Delete
 
 #### Settings View
 
 **Household Configuration:**
+
 - `HouseholdForm`: Adults, children, duration, freezer
 
 **Advanced Features:**
+
 - `AdvancedFeatures`: Toggle switches for:
   - Calorie tracking
   - Power management
   - Water tracking
 
 **Language:**
+
 - `LanguageSelector`: English / Finnish
 
 **Theme:**
+
 - `ThemeSelector`: Light / Dark / Auto
 
 **Data Management:**
+
 - `ExportButton`: Export data as JSON
 - `ImportButton`: Import data from JSON
 - `ShoppingListExport`: Export shopping list (TODO)
@@ -325,6 +358,7 @@ Displayed via `AlertBanner` component on Dashboard:
 #### Export Data (JSON)
 
 **Format:**
+
 ```json
 {
   "version": "1.0.0",
@@ -340,6 +374,7 @@ Displayed via `AlertBanner` component on Dashboard:
 #### Import Data (JSON)
 
 **Process:**
+
 1. Upload JSON file
 2. Validate structure
 3. Preview data
@@ -351,6 +386,7 @@ Displayed via `AlertBanner` component on Dashboard:
 **Status:** TODO (not yet implemented)
 
 Planned features:
+
 - Export missing/low items
 - Format options: Text, Markdown, CSV
 - Grouping by category
@@ -378,11 +414,13 @@ Planned features:
 ### Color Scheme
 
 **Status Colors:**
+
 - Green (#4CAF50): OK / Sufficient
 - Yellow (#FFC107): Warning / Low / Expiring
 - Red (#F44336): Critical / Missing / Expired
 
 **Theme Support:**
+
 - Light mode
 - Dark mode
 - Auto (system preference)

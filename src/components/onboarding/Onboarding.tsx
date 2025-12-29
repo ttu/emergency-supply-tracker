@@ -37,7 +37,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       adults: data.adults,
       children: data.children,
       supplyDurationDays: data.supplyDays,
-      hasFreezer: data.hasFreezer,
+      useFreezer: data.useFreezer,
     };
     setHouseholdConfig(config);
     setCurrentStep('quickSetup');
@@ -48,8 +48,8 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
 
     // Calculate and create inventory items from recommended items
     const items: InventoryItem[] = RECOMMENDED_ITEMS.filter((item) => {
-      // Skip frozen items if no freezer
-      if (item.requiresFreezer && !householdConfig.hasFreezer) {
+      // Skip frozen items if not using freezer
+      if (item.requiresFreezer && !householdConfig.useFreezer) {
         return false;
       }
       return true;
@@ -124,7 +124,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
                   adults: selectedPreset.adults,
                   children: selectedPreset.children,
                   supplyDays: HOUSEHOLD_DEFAULTS.supplyDays,
-                  hasFreezer: HOUSEHOLD_DEFAULTS.hasFreezer,
+                  useFreezer: HOUSEHOLD_DEFAULTS.useFreezer,
                 }
               : undefined
           }

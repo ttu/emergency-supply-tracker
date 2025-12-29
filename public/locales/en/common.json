@@ -92,7 +92,7 @@
     "children": "Children",
     "supplyDays": "Supply Duration (days)",
     "supplyDaysHelper": "Recommended: 3-7 days",
-    "hasFreezer": "Has Freezer",
+    "useFreezer": "Use Freezer",
     "customDescription": "Set your own configuration",
     "presets": {
       "single": "Single Person",
@@ -136,7 +136,7 @@
       "adults": "Adults",
       "children": "Children",
       "supplyDays": "Supply Duration (days)",
-      "hasFreezer": "Has Freezer",
+      "useFreezer": "Use Freezer",
       "freezerHoldTime": "Freezer Hold Time (hours)",
       "presets": {
         "label": "Quick Presets",

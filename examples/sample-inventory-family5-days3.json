@@ -4,7 +4,7 @@
     "adults": 2,
     "children": 3,
     "supplyDurationDays": 3,
-    "hasFreezer": true
+    "useFreezer": true
   },
   "settings": {
     "language": "en",
