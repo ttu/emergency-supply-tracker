@@ -1,18 +1,23 @@
 // Service Worker for Emergency Supply Tracker
 const CACHE_NAME = 'est-cache-v1';
+const OFFLINE_PAGE = 'offline.html';
 
 // Get the base path from the service worker's location
-const SW_SCOPE = self.registration?.scope || self.location.href.replace(/sw\.js$/, '');
+const SW_SCOPE =
+  self.registration?.scope || self.location.href.replace(/sw\.js$/, '');
 const BASE_PATH = new URL(SW_SCOPE).pathname;
 
-// Helper to resolve paths relative to the base
+/**
+ * Resolves a path relative to the service worker's base path
+ * @param {string} path - The path to resolve
+ * @returns {string} The resolved absolute path
+ */
 function resolvePath(path) {
-  // Remove leading slash if base path already ends with one
   const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
   return BASE_PATH + normalizedPath;
 }
 
-const OFFLINE_URL = resolvePath('offline.html');
+const OFFLINE_URL = resolvePath(OFFLINE_PAGE);
 
 // Assets to cache immediately on install (relative to base path)
 const PRECACHE_PATHS = [
