@@ -11,25 +11,34 @@ const ANALYTICS_STORAGE_KEY = 'emergencySupplyTracker_analytics';
  */
 const MAX_EVENTS = 1000;
 
-const DEFAULT_ANALYTICS_DATA: AnalyticsData = {
-  events: [],
-  stats: {
-    totalLaunches: 0,
-    totalItemsAdded: 0,
-    totalItemsDeleted: 0,
-    firstLaunch: null,
-    lastLaunch: null,
-  },
-};
-
 export function getAnalyticsData(): AnalyticsData {
   try {
     const json = localStorage.getItem(ANALYTICS_STORAGE_KEY);
-    if (!json) return { ...DEFAULT_ANALYTICS_DATA };
+    if (!json) {
+      return {
+        events: [],
+        stats: {
+          totalLaunches: 0,
+          totalItemsAdded: 0,
+          totalItemsDeleted: 0,
+          firstLaunch: null,
+          lastLaunch: null,
+        },
+      };
+    }
     return JSON.parse(json) as AnalyticsData;
   } catch (error) {
     console.error('Failed to load analytics data:', error);
-    return { ...DEFAULT_ANALYTICS_DATA };
+    return {
+      events: [],
+      stats: {
+        totalLaunches: 0,
+        totalItemsAdded: 0,
+        totalItemsDeleted: 0,
+        firstLaunch: null,
+        lastLaunch: null,
+      },
+    };
   }
 }
 
