@@ -1,8 +1,15 @@
 import type { HouseholdConfig, RecommendedItemDefinition } from '../../types';
+import {
+  ADULT_REQUIREMENT_MULTIPLIER,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+  BASE_SUPPLY_DURATION_DAYS,
+} from '../constants';
 
 export function calculateHouseholdMultiplier(config: HouseholdConfig): number {
-  const peopleMultiplier = config.adults * 1.0 + config.children * 0.75;
-  const daysMultiplier = config.supplyDurationDays / 3;
+  const peopleMultiplier =
+    config.adults * ADULT_REQUIREMENT_MULTIPLIER +
+    config.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+  const daysMultiplier = config.supplyDurationDays / BASE_SUPPLY_DURATION_DAYS;
   return peopleMultiplier * daysMultiplier;
 }
 
@@ -13,12 +20,15 @@ export function calculateRecommendedQuantity(
   let qty = item.baseQuantity;
 
   if (item.scaleWithPeople) {
-    const peopleMultiplier = household.adults * 1.0 + household.children * 0.75;
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
     qty *= peopleMultiplier;
   }
 
   if (item.scaleWithDays) {
-    const daysMultiplier = household.supplyDurationDays / 3;
+    const daysMultiplier =
+      household.supplyDurationDays / BASE_SUPPLY_DURATION_DAYS;
     qty *= daysMultiplier;
   }
 

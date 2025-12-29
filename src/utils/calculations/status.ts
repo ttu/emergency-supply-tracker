@@ -1,4 +1,13 @@
 import type { ItemStatus, InventoryItem } from '../../types';
+import {
+  MS_PER_DAY,
+  EXPIRING_SOON_DAYS_THRESHOLD,
+  LOW_QUANTITY_WARNING_RATIO,
+  CRITICAL_PERCENTAGE_THRESHOLD,
+  WARNING_PERCENTAGE_THRESHOLD,
+  OK_SCORE_THRESHOLD,
+  WARNING_SCORE_THRESHOLD,
+} from '../constants';
 
 /**
  * Calculate days until expiration for an item
@@ -13,7 +22,7 @@ export function getDaysUntilExpiration(
   const today = new Date();
   const expiration = new Date(expirationDate);
   const diffTime = expiration.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.ceil(diffTime / MS_PER_DAY);
 }
 
 /**
@@ -45,13 +54,14 @@ export function getItemStatus(
 
     if (daysUntilExpiration !== null) {
       if (daysUntilExpiration < 0) return 'critical'; // Expired
-      if (daysUntilExpiration <= 30) return 'warning'; // Expiring soon
+      if (daysUntilExpiration <= EXPIRING_SOON_DAYS_THRESHOLD) return 'warning'; // Expiring soon
     }
   }
 
   // Check quantity
   if (currentQuantity === 0) return 'critical';
-  if (currentQuantity < recommendedQuantity * 0.5) return 'warning';
+  if (currentQuantity < recommendedQuantity * LOW_QUANTITY_WARNING_RATIO)
+    return 'warning';
 
   return 'ok';
 }
@@ -73,8 +83,8 @@ export function calculateItemStatus(item: InventoryItem): ItemStatus {
  * Used for category-level status determination
  */
 export function getStatusFromPercentage(percentage: number): ItemStatus {
-  if (percentage < 30) return 'critical';
-  if (percentage < 70) return 'warning';
+  if (percentage < CRITICAL_PERCENTAGE_THRESHOLD) return 'critical';
+  if (percentage < WARNING_PERCENTAGE_THRESHOLD) return 'warning';
   return 'ok';
 }
 
@@ -83,8 +93,8 @@ export function getStatusFromPercentage(percentage: number): ItemStatus {
  * Used for dashboard/overview status
  */
 export function getStatusFromScore(score: number): ItemStatus {
-  if (score >= 80) return 'ok';
-  if (score >= 50) return 'warning';
+  if (score >= OK_SCORE_THRESHOLD) return 'ok';
+  if (score >= WARNING_SCORE_THRESHOLD) return 'warning';
   return 'critical';
 }
 

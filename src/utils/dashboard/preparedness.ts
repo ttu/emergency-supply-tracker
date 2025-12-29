@@ -1,5 +1,10 @@
 import type { InventoryItem, HouseholdConfig } from '../../types';
 import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
+import {
+  MAX_ITEM_SCORE,
+  DEFAULT_FULL_PREPAREDNESS,
+  DEFAULT_EMPTY_PREPAREDNESS,
+} from '../constants';
 
 /**
  * Calculate overall preparedness score (0-100)
@@ -60,13 +65,16 @@ export function calculatePreparednessScore(
       0,
     );
 
-    // Score is percentage of recommended quantity, capped at 100%
-    const itemScore = Math.min((totalQty / recommendedQty) * 100, 100);
+    // Score is percentage of recommended quantity, capped at MAX_ITEM_SCORE
+    const itemScore = Math.min(
+      (totalQty / recommendedQty) * MAX_ITEM_SCORE,
+      MAX_ITEM_SCORE,
+    );
     totalScore += itemScore;
-    maxPossibleScore += 100;
+    maxPossibleScore += MAX_ITEM_SCORE;
   });
 
-  return Math.round((totalScore / maxPossibleScore) * 100);
+  return Math.round((totalScore / maxPossibleScore) * MAX_ITEM_SCORE);
 }
 
 /**
@@ -83,7 +91,9 @@ export function calculateCategoryPreparedness(
   );
 
   if (recommendedForCategory.length === 0) {
-    return categoryItems.length > 0 ? 100 : 0;
+    return categoryItems.length > 0
+      ? DEFAULT_FULL_PREPAREDNESS
+      : DEFAULT_EMPTY_PREPAREDNESS;
   }
 
   const totalPeople = household.adults + household.children;
@@ -110,11 +120,14 @@ export function calculateCategoryPreparedness(
       (sum, item) => sum + item.quantity,
       0,
     );
-    const score = Math.min((actualQty / recommendedQty) * 100, 100);
+    const score = Math.min(
+      (actualQty / recommendedQty) * MAX_ITEM_SCORE,
+      MAX_ITEM_SCORE,
+    );
 
     totalScore += score;
-    maxScore += 100;
+    maxScore += MAX_ITEM_SCORE;
   });
 
-  return Math.round((totalScore / maxScore) * 100);
+  return Math.round((totalScore / maxScore) * MAX_ITEM_SCORE);
 }

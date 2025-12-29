@@ -11,6 +11,14 @@ import {
 } from '../calculations/status';
 import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
 import { calculateCategoryPreparedness } from './preparedness';
+import {
+  ADULT_REQUIREMENT_MULTIPLIER,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+  BASE_SUPPLY_DURATION_DAYS,
+  DAILY_CALORIES_PER_PERSON,
+  CRITICAL_PERCENTAGE_THRESHOLD,
+  WARNING_PERCENTAGE_THRESHOLD,
+} from '../constants';
 
 export interface CategoryShortage {
   itemId: string;
@@ -39,9 +47,6 @@ export interface CategoryStatusSummary {
   missingCalories?: number;
 }
 
-// Daily calorie requirement per person for emergency situations
-const DAILY_CALORIES_PER_PERSON = 2000;
-
 /**
  * Calculate shortages for a category based on recommended items.
  * For the 'food' category, uses calorie-based calculations instead of quantity-based.
@@ -69,7 +74,9 @@ export function calculateCategoryShortages(
   }
 
   // Adults count as 1.0, children as 0.75 (75% of adult requirement)
-  const peopleMultiplier = household.adults * 1.0 + household.children * 0.75;
+  const peopleMultiplier =
+    household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+    household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
   const shortages: CategoryShortage[] = [];
   let totalActual = 0;
   let totalNeeded = 0;
@@ -104,8 +111,9 @@ export function calculateCategoryShortages(
     }
 
     if (recItem.scaleWithDays) {
-      // Base quantities are calibrated for 3 days, so divide by 3 for daily rate
-      const daysMultiplier = household.supplyDurationDays / 3;
+      // Base quantities are calibrated for BASE_SUPPLY_DURATION_DAYS, so divide for daily rate
+      const daysMultiplier =
+        household.supplyDurationDays / BASE_SUPPLY_DURATION_DAYS;
       recommendedQty *= daysMultiplier;
     }
 
@@ -242,9 +250,15 @@ export function calculateCategoryStatus(
 
   // Determine overall category status
   let categoryStatus: ItemStatus;
-  if (criticalCount > 0 || completionPercentage < 30) {
+  if (
+    criticalCount > 0 ||
+    completionPercentage < CRITICAL_PERCENTAGE_THRESHOLD
+  ) {
     categoryStatus = 'critical';
-  } else if (warningCount > 0 || completionPercentage < 70) {
+  } else if (
+    warningCount > 0 ||
+    completionPercentage < WARNING_PERCENTAGE_THRESHOLD
+  ) {
     categoryStatus = 'warning';
   } else {
     categoryStatus = 'ok';

@@ -1,4 +1,9 @@
 import type { RecommendedItemDefinition } from '../../types';
+import {
+  CALORIE_BASE_WEIGHT_GRAMS,
+  GRAMS_TO_KG_THRESHOLD,
+  CALORIE_DISPLAY_THRESHOLD,
+} from '../constants';
 
 /**
  * Calculate calories per unit from weight and calories per 100g
@@ -7,7 +12,9 @@ export function calculateCaloriesFromWeight(
   weightGrams: number,
   caloriesPer100g: number,
 ): number {
-  return Math.round((weightGrams / 100) * caloriesPer100g);
+  return Math.round(
+    (weightGrams / CALORIE_BASE_WEIGHT_GRAMS) * caloriesPer100g,
+  );
 }
 
 /**
@@ -94,8 +101,8 @@ export function resolveCaloriesPerUnit(
  * Format weight for display (convert large grams to kg)
  */
 export function formatWeight(grams: number): string {
-  if (grams >= 1000) {
-    const kg = grams / 1000;
+  if (grams >= GRAMS_TO_KG_THRESHOLD) {
+    const kg = grams / GRAMS_TO_KG_THRESHOLD;
     return `${kg.toFixed(1)} kg`;
   }
   return `${grams} g`;
@@ -105,8 +112,8 @@ export function formatWeight(grams: number): string {
  * Format calories for display (add kcal suffix)
  */
 export function formatCalories(calories: number): string {
-  if (calories >= 1000) {
-    return `${(calories / 1000).toFixed(1)} kcal`;
+  if (calories >= CALORIE_DISPLAY_THRESHOLD) {
+    return `${(calories / CALORIE_DISPLAY_THRESHOLD).toFixed(1)} kcal`;
   }
   return `${calories} kcal`;
 }
