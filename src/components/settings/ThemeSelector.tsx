@@ -35,8 +35,9 @@ export function ThemeSelector() {
       <p className={styles.description}>{t('settings.theme.description')}</p>
 
       <div className={styles.checkboxContainer}>
-        <label className={styles.checkboxLabel}>
+        <label htmlFor="high-contrast-toggle" className={styles.checkboxLabel}>
           <input
+            id="high-contrast-toggle"
             type="checkbox"
             checked={settings.highContrast ?? false}
             onChange={handleHighContrastChange}
