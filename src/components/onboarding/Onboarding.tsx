@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { WelcomeScreen } from './WelcomeScreen';
 import { HouseholdPresetSelector } from './HouseholdPresetSelector';
 import { HouseholdForm } from './HouseholdForm';
@@ -16,6 +17,7 @@ export interface OnboardingProps {
 type OnboardingStep = 'welcome' | 'preset' | 'household' | 'quickSetup';
 
 export const Onboarding = ({ onComplete }: OnboardingProps) => {
+  const { t } = useTranslation('products');
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [selectedPreset, setSelectedPreset] = useState<HouseholdPreset | null>(
     null,
@@ -78,9 +80,11 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
 
       const now = new Date().toISOString();
 
+      const itemName = t(item.i18nKey.replace('products.', ''));
+
       return {
         id: crypto.randomUUID(),
-        name: item.id, // Will be translated via i18nKey in UI
+        name: itemName,
         categoryId: item.category,
         quantity: 0, // Start with 0, user needs to add them
         unit: item.unit,
