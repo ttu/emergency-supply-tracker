@@ -85,7 +85,7 @@ test.describe('Dashboard', () => {
     await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
 
     // Close the modal
-    await page.click('button[aria-label="Close modal"]');
+    await page.click('button[aria-label="Close dialog"]');
 
     // Go back to Dashboard
     await page.click('text=Dashboard');
