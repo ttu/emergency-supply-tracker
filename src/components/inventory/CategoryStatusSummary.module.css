@@ -68,6 +68,60 @@
   margin-top: var(--spacing-xs);
 }
 
+.missingSection {
+  margin-top: var(--spacing-sm);
+}
+
+.missingLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.missingList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.missingItem {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding-left: var(--spacing-sm);
+  position: relative;
+}
+
+.missingItem::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-text-tertiary);
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.expandButton:hover {
+  background-color: var(--color-background-secondary);
+}
+
+.expandButton:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .missingCalories {
   font-size: var(--font-size-sm);
   color: var(--color-warning);
