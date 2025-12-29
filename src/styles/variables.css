@@ -23,6 +23,12 @@
   --color-error: #f44336;
   --color-info: #2196f3;
 
+  /* Colors - Focus */
+  --color-focus: #2196f3;
+  --color-focus-ring: rgba(33, 150, 243, 0.4);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -103,4 +109,54 @@
   --color-background-secondary: #1e1e1e;
   --color-surface: #1e1e1e;
   --color-border: #333333;
+}
+
+/* High Contrast Mode - Light */
+[data-high-contrast='true'] {
+  --color-text: #000000;
+  --color-text-secondary: #1a1a1a;
+  --color-background: #ffffff;
+  --color-background-secondary: #f0f0f0;
+  --color-surface: #ffffff;
+  --color-border: #000000;
+
+  /* Status colors with enhanced contrast */
+  --color-ok: #006400;
+  --color-warning: #8b4513;
+  --color-critical: #8b0000;
+
+  /* Primary colors with enhanced contrast */
+  --color-primary: #0000cc;
+  --color-primary-dark: #000099;
+  --color-primary-light: #3333ff;
+
+  /* Focus indicators for high contrast */
+  --color-focus: #000000;
+  --color-focus-ring: rgba(0, 0, 0, 0.5);
+  --focus-ring-width: 4px;
+  --focus-ring-offset: 3px;
+}
+
+/* High Contrast Mode - Dark */
+[data-theme='dark'][data-high-contrast='true'] {
+  --color-text: #ffffff;
+  --color-text-secondary: #e0e0e0;
+  --color-background: #000000;
+  --color-background-secondary: #1a1a1a;
+  --color-surface: #0a0a0a;
+  --color-border: #ffffff;
+
+  /* Status colors with enhanced contrast */
+  --color-ok: #00ff00;
+  --color-warning: #ffff00;
+  --color-critical: #ff4444;
+
+  /* Primary colors with enhanced contrast */
+  --color-primary: #66b3ff;
+  --color-primary-dark: #3399ff;
+  --color-primary-light: #99ccff;
+
+  /* Focus indicators for high contrast */
+  --color-focus: #ffff00;
+  --color-focus-ring: rgba(255, 255, 0, 0.5);
 }

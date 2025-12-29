@@ -26,9 +26,9 @@
   background: var(--color-background);
 }
 
-.categoryButton:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+.categoryButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .categoryButton.active {

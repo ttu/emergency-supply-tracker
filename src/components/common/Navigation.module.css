@@ -33,9 +33,9 @@
   border-radius: var(--border-radius-sm);
 }
 
-.navButton:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+.navButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
   border-radius: var(--border-radius-sm);
 }
 

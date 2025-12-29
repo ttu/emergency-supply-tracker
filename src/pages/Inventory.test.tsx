@@ -101,7 +101,7 @@ describe('Inventory Page', () => {
     expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
 
     // Click close button (X) to close modal
-    const closeButton = screen.getByLabelText('Close modal');
+    const closeButton = screen.getByLabelText('accessibility.closeModal');
     fireEvent.click(closeButton);
 
     // Modal should be closed

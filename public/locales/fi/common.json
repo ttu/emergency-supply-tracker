@@ -294,6 +294,15 @@
     "skip": "Ohita toistaiseksi",
     "addItems": "Lisää suositellut tuotteet"
   },
+  "accessibility": {
+    "skipToContent": "Siirry pääsisältöön",
+    "mainNavigation": "Päänavigaatio",
+    "categoryNavigation": "Kategorianavigaatio",
+    "closeModal": "Sulje ikkuna",
+    "goBack": "Takaisin",
+    "highContrast": "Korkea kontrasti",
+    "highContrastDescription": "Lisää visuaalista kontrastia paremman luettavuuden vuoksi"
+  },
   "help": {
     "title": "Ohje & UKK",
     "subtitle": "Löydä vastauksia yleisiin kysymyksiin Hätävarasto-sovelluksen käytöstä",

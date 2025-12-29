@@ -46,7 +46,7 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    const closeButton = screen.getByLabelText('Close modal');
+    const closeButton = screen.getByLabelText('accessibility.closeModal');
     await user.click(closeButton);
     expect(onClose).toHaveBeenCalledTimes(1);
   });

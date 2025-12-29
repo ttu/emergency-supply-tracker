@@ -51,6 +51,12 @@ export interface HouseholdConfig {
 export interface UserSettings {
   language: 'en' | 'fi';
   theme: 'light' | 'dark' | 'auto';
+  highContrast: boolean;
+  advancedFeatures: {
+    calorieTracking: boolean;
+    powerManagement: boolean;
+    waterTracking: boolean;
+  };
   onboardingCompleted?: boolean;
 }
 

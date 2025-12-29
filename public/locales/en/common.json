@@ -294,6 +294,15 @@
     "skip": "Skip for now",
     "addItems": "Add Recommended Items"
   },
+  "accessibility": {
+    "skipToContent": "Skip to main content",
+    "mainNavigation": "Main navigation",
+    "categoryNavigation": "Category navigation",
+    "closeModal": "Close dialog",
+    "goBack": "Go back",
+    "highContrast": "High contrast",
+    "highContrastDescription": "Increase visual contrast for better readability"
+  },
   "help": {
     "title": "Help & FAQ",
     "subtitle": "Find answers to common questions about using the Emergency Supply Tracker",
