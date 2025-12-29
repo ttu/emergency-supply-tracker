@@ -7,6 +7,11 @@ import {
   createDefaultAppData,
 } from '../utils/storage/localStorage';
 import { InventoryContext } from './InventoryContext';
+import {
+  trackItemAdded,
+  trackItemDeleted,
+  trackItemsBulkAdded,
+} from '../utils/analytics';
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<InventoryItem[]>(() => {
@@ -40,6 +45,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       updatedAt: now,
     };
     setItems((prev) => [...prev, newItem]);
+    trackItemAdded(item.name, item.categoryId);
   };
 
   const updateItem = (id: string, updates: Partial<InventoryItem>) => {
@@ -53,11 +59,18 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteItem = (id: string) => {
+    const itemToDelete = items.find((item) => item.id === id);
     setItems((prev) => prev.filter((item) => item.id !== id));
+    if (itemToDelete) {
+      trackItemDeleted(itemToDelete.name, itemToDelete.categoryId);
+    }
   };
 
   const addItems = (newItems: InventoryItem[]) => {
     setItems((prev) => [...prev, ...newItems]);
+    if (newItems.length > 0) {
+      trackItemsBulkAdded(newItems.length);
+    }
   };
 
   const dismissAlert = useCallback((alertId: string) => {
