@@ -15,6 +15,42 @@
   margin-bottom: 2.5rem;
 }
 
+.hiddenAlerts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  margin-bottom: 2.5rem;
+}
+
+.hiddenAlertsText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.showAllButton {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  transition: background-color 0.2s;
+}
+
+.showAllButton:hover {
+  background-color: var(--color-primary-light);
+}
+
+.showAllButton:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .alertsList {
   display: flex;
   flex-direction: column;

@@ -1,6 +1,10 @@
 import { useState, useEffect, ReactNode } from 'react';
 import type { UserSettings } from '../types';
-import { getAppData, saveAppData } from '../utils/storage/localStorage';
+import {
+  getAppData,
+  saveAppData,
+  createDefaultAppData,
+} from '../utils/storage/localStorage';
 import { SettingsContext } from './SettingsContext';
 
 const DEFAULT_SETTINGS: UserSettings = {
@@ -21,20 +25,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   // Save to localStorage on change
   useEffect(() => {
-    const data = getAppData() || {
-      version: '1.0.0',
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      settings: DEFAULT_SETTINGS,
-      customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available
-      items: [],
-      customTemplates: [],
-      lastModified: new Date().toISOString(),
-    };
+    const data = getAppData() || createDefaultAppData();
     data.settings = settings;
     data.lastModified = new Date().toISOString();
     saveAppData(data);

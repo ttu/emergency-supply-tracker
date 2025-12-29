@@ -127,6 +127,7 @@ export interface AppData {
   customCategories: Category[]; // Only user's custom categories, STANDARD_CATEGORIES are always available
   items: InventoryItem[];
   customTemplates: ProductTemplate[];
+  dismissedAlertIds: string[]; // Alert IDs that have been dismissed by the user
   lastModified: string;
   lastBackupDate?: string; // ISO date of last export
   backupReminderDismissedUntil?: string; // ISO date (first of next month) - reminder hidden until this date

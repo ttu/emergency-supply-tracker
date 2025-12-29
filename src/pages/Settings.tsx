@@ -7,6 +7,7 @@ import { ExportButton } from '../components/settings/ExportButton';
 import { ImportButton } from '../components/settings/ImportButton';
 import { ShoppingListExport } from '../components/settings/ShoppingListExport';
 import { ClearDataButton } from '../components/settings/ClearDataButton';
+import { HiddenAlerts } from '../components/settings/HiddenAlerts';
 import styles from './Settings.module.css';
 
 export function Settings() {
@@ -41,6 +42,14 @@ export function Settings() {
         {/* Advanced Features */}
         <section className={styles.section}>
           <AdvancedFeatures />
+        </section>
+
+        {/* Hidden Alerts */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>
+            {t('settings.sections.hiddenAlerts')}
+          </h2>
+          <HiddenAlerts />
         </section>
 
         {/* Data Management */}

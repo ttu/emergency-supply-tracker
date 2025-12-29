@@ -114,9 +114,16 @@
     "sections": {
       "appearance": "Ulkoasu",
       "household": "Kotitalouden Asetukset",
+      "hiddenAlerts": "Piilotetut Hälytykset",
       "dataManagement": "Tietojen Hallinta",
       "about": "Tietoja",
       "dangerZone": "Vaaravyöhyke"
+    },
+    "hiddenAlerts": {
+      "empty": "Ei piilotettuja hälytyksiä",
+      "description": "Sinulla on {{count}} piilotettua hälytystä. Nämä pysyvät piilossa kunnes ne aktivoidaan uudelleen.",
+      "reactivate": "Näytä",
+      "reactivateAll": "Näytä Kaikki Hälytykset"
     },
     "about": {
       "version": "Versio",
@@ -210,6 +217,8 @@
     "exportShoppingList": "Vie Ostoslista",
     "preparednessScore": "Valmiustaso",
     "noAlerts": "Ei hälytyksiä - kaikki kunnossa!",
+    "hiddenAlerts": "{{count}} piilotettua hälytystä",
+    "showAllAlerts": "Näytä kaikki",
     "preparedness": {
       "needsWork": "Vaatii Huomiota",
       "good": "Hyvä Edistys",

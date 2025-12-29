@@ -1,7 +1,11 @@
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactNode, useCallback } from 'react';
 import type { InventoryItem, Category } from '../types';
 import { STANDARD_CATEGORIES } from '../data/standardCategories';
-import { getAppData, saveAppData } from '../utils/storage/localStorage';
+import {
+  getAppData,
+  saveAppData,
+  createDefaultAppData,
+} from '../utils/storage/localStorage';
 import { InventoryContext } from './InventoryContext';
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
@@ -10,35 +14,20 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     return data?.items || [];
   });
   const [categories] = useState<Category[]>(STANDARD_CATEGORIES);
+  const [dismissedAlertIds, setDismissedAlertIds] = useState<string[]>(() => {
+    const data = getAppData();
+    return data?.dismissedAlertIds || [];
+  });
 
-  // Save to localStorage on change
+  // Save items and dismissedAlertIds to localStorage on change
+  // Consolidated into single effect to avoid race conditions
   useEffect(() => {
-    const data = getAppData() || {
-      version: '1.0.0',
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      settings: {
-        language: 'en',
-        theme: 'light',
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-      customCategories: [], // Only custom categories, STANDARD_CATEGORIES are always available
-      items: [],
-      customTemplates: [],
-      lastModified: new Date().toISOString(),
-    };
+    const data = getAppData() || createDefaultAppData();
     data.items = items;
+    data.dismissedAlertIds = dismissedAlertIds;
     data.lastModified = new Date().toISOString();
     saveAppData(data);
-  }, [items]);
+  }, [items, dismissedAlertIds]);
 
   const addItem = (
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
@@ -71,9 +60,34 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     setItems((prev) => [...prev, ...newItems]);
   };
 
+  const dismissAlert = useCallback((alertId: string) => {
+    setDismissedAlertIds((prev) =>
+      prev.includes(alertId) ? prev : [...prev, alertId],
+    );
+  }, []);
+
+  const reactivateAlert = useCallback((alertId: string) => {
+    setDismissedAlertIds((prev) => prev.filter((id) => id !== alertId));
+  }, []);
+
+  const reactivateAllAlerts = useCallback(() => {
+    setDismissedAlertIds([]);
+  }, []);
+
   return (
     <InventoryContext.Provider
-      value={{ items, categories, addItem, addItems, updateItem, deleteItem }}
+      value={{
+        items,
+        categories,
+        addItem,
+        addItems,
+        updateItem,
+        deleteItem,
+        dismissedAlertIds,
+        dismissAlert,
+        reactivateAlert,
+        reactivateAllAlerts,
+      }}
     >
       {children}
     </InventoryContext.Provider>
