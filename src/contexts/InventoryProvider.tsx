@@ -7,7 +7,7 @@ import {
   trackItemAdded,
   trackItemDeleted,
   trackItemsBulkAdded,
-} from '../utils/analytics/localAnalytics';
+} from '../utils/analytics';
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<InventoryItem[]>(() => {

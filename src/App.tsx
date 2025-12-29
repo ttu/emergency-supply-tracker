@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { trackAppLaunch } from './utils/analytics/localAnalytics';
+import { trackAppLaunch } from './utils/analytics';
 import { SettingsProvider } from './contexts/SettingsProvider';
 import { HouseholdProvider } from './contexts/HouseholdProvider';
 import { InventoryProvider } from './contexts/InventoryProvider';
