@@ -20,9 +20,9 @@ function resolvePath(path) {
 const OFFLINE_URL = resolvePath(OFFLINE_PAGE);
 
 // Assets to cache immediately on install (relative to base path)
+// Note: index.html is served by Vite at the root path (''), not as a separate file
 const PRECACHE_PATHS = [
   '',
-  'index.html',
   'offline.html',
   'manifest.json',
   'favicon.svg',
