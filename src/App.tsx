@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { trackAppLaunch } from './utils/analytics/localAnalytics';
 import { SettingsProvider } from './contexts/SettingsProvider';
 import { HouseholdProvider } from './contexts/HouseholdProvider';
 import { InventoryProvider } from './contexts/InventoryProvider';
@@ -84,6 +85,11 @@ function AppContent() {
 }
 
 function App() {
+  // Track app launch on mount
+  useEffect(() => {
+    trackAppLaunch();
+  }, []);
+
   return (
     <SettingsProvider>
       <ThemeApplier>
