@@ -343,7 +343,7 @@
 
 ## Phase 11: PWA & Offline (Days 40)
 
-- [ ] **Step 49:** Create App Manifest
+- [x] **Step 49:** Create App Manifest
   - Create public/manifest.json
   - Create app icons (192x192, 512x512)
   - Link manifest in index.html
