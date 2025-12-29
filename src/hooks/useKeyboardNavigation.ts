@@ -70,9 +70,13 @@ export function useKeyboardNavigation({
         const container = containerRef.current;
         if (container) {
           const items = container.querySelectorAll<HTMLElement>(
-            '[role="tab"], [role="menuitem"], button, [tabindex]',
+            '[role="tab"], [role="menuitem"], button, a[href], input, select, textarea, [tabindex]',
           );
-          items[newIndex]?.focus();
+          // Filter to only include focusable elements (exclude tabindex="-1")
+          const focusableItems = Array.from(items).filter(
+            (el) => el.getAttribute('tabindex') !== '-1' || el.tabIndex >= 0,
+          );
+          focusableItems[newIndex]?.focus();
         }
       }
     },
