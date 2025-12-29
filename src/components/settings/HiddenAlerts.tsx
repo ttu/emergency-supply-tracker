@@ -53,12 +53,14 @@ export function HiddenAlerts() {
                 {alert.message}
               </span>
             </div>
-            <button
+            <Button
+              variant="secondary"
+              size="small"
               className={styles.reactivateButton}
               onClick={() => reactivateAlert(alert.id)}
             >
               {t('settings.hiddenAlerts.reactivate')}
-            </button>
+            </Button>
           </div>
         ))}
       </div>
