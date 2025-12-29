@@ -45,35 +45,45 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
 
         <div className={styles.sellingPoints}>
           <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon}>&#10003;</span>
+            <span className={styles.sellingPointIcon} aria-hidden="true">
+              &#10003;
+            </span>
             <div>
               <strong>{t('landing.noSignup.title')}</strong>
               <p>{t('landing.noSignup.description')}</p>
             </div>
           </div>
           <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon}>&#128274;</span>
+            <span className={styles.sellingPointIcon} aria-hidden="true">
+              &#128274;
+            </span>
             <div>
               <strong>{t('landing.browserBased.title')}</strong>
               <p>{t('landing.browserBased.description')}</p>
             </div>
           </div>
           <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon}>&#127873;</span>
+            <span className={styles.sellingPointIcon} aria-hidden="true">
+              &#127873;
+            </span>
             <div>
               <strong>{t('landing.free.title')}</strong>
               <p>{t('landing.free.description')}</p>
             </div>
           </div>
           <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon}>&#128268;</span>
+            <span className={styles.sellingPointIcon} aria-hidden="true">
+              &#128268;
+            </span>
             <div>
               <strong>{t('landing.worksOffline.title')}</strong>
               <p>{t('landing.worksOffline.description')}</p>
             </div>
           </div>
           <div className={`${styles.sellingPoint} ${styles.comingSoon}`}>
-            <span className={styles.sellingPointIcon}>&#9729;</span>
+            <span className={styles.sellingPointIcon} aria-hidden="true">
+              &#9729;
+            </span>
             <div>
               <strong>{t('landing.cloudSync.title')}</strong>
               <p>{t('landing.cloudSync.description')}</p>

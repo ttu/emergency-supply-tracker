@@ -37,11 +37,11 @@ export function HiddenAlerts() {
       <p className={styles.description}>
         {t('settings.hiddenAlerts.description', { count: hiddenAlerts.length })}
       </p>
-      <div className={styles.alertsList}>
+      <ul className={styles.alertsList} role="list">
         {hiddenAlerts.map((alert) => (
-          <div key={alert.id} className={styles.alertItem}>
+          <li key={alert.id} className={styles.alertItem}>
             <div className={styles.alertContent}>
-              <span className={styles.alertIcon}>
+              <span className={styles.alertIcon} aria-hidden="true">
                 {alert.type === 'critical'
                   ? '⚠️'
                   : alert.type === 'warning'
@@ -58,12 +58,13 @@ export function HiddenAlerts() {
               size="small"
               className={styles.reactivateButton}
               onClick={() => reactivateAlert(alert.id)}
+              aria-label={`${t('settings.hiddenAlerts.reactivate')}: ${alert.itemName || alert.message}`}
             >
               {t('settings.hiddenAlerts.reactivate')}
             </Button>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
       {hiddenAlerts.length > 1 && (
         <div className={styles.reactivateAllContainer}>
           <Button variant="secondary" onClick={reactivateAllAlerts}>
