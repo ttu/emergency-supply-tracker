@@ -17,6 +17,10 @@
       "title": "Completely Free",
       "description": "All features included, no premium tiers"
     },
+    "worksOffline": {
+      "title": "Works Offline",
+      "description": "Access your supplies anytime, even without internet"
+    },
     "cloudSync": {
       "title": "Cloud Sync (Coming Soon)",
       "description": "Optional sync to your own cloud provider"

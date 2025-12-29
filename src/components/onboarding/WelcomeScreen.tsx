@@ -65,6 +65,13 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
               <p>{t('landing.free.description')}</p>
             </div>
           </div>
+          <div className={styles.sellingPoint}>
+            <span className={styles.sellingPointIcon}>&#128268;</span>
+            <div>
+              <strong>{t('landing.worksOffline.title')}</strong>
+              <p>{t('landing.worksOffline.description')}</p>
+            </div>
+          </div>
           <div className={`${styles.sellingPoint} ${styles.comingSoon}`}>
             <span className={styles.sellingPointIcon}>&#9729;</span>
             <div>
