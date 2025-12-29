@@ -7,12 +7,6 @@ export const defaultAppData = {
     onboardingCompleted: true,
     language: 'en',
     theme: 'light',
-    advancedFeatures: {
-      calorieTracking: false,
-      nutritionInfo: false,
-      mealPlanning: false,
-      barcodeScan: false,
-    },
   },
   household: {
     adults: 2,

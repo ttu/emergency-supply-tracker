@@ -156,21 +156,6 @@
         "family": "Family"
       }
     },
-    "advanced": {
-      "title": "Advanced Features",
-      "calorieTracking": {
-        "label": "Calorie Tracking",
-        "description": "Track daily calorie requirements and monitor food supplies based on nutritional needs"
-      },
-      "powerManagement": {
-        "label": "Power Management",
-        "description": "Calculate battery usage and manage backup power sources"
-      },
-      "waterTracking": {
-        "label": "Water Tracking",
-        "description": "Monitor water consumption and storage requirements"
-      }
-    },
     "export": {
       "button": "Export Data",
       "description": "Download all your data as a JSON file for backup or transfer",

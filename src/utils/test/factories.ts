@@ -29,12 +29,6 @@ export function createMockSettings(
   return {
     language: 'en',
     theme: 'light',
-    advancedFeatures: {
-      calorieTracking: false,
-      powerManagement: false,
-      waterTracking: false,
-      ...overrides?.advancedFeatures,
-    },
     ...overrides,
   };
 }

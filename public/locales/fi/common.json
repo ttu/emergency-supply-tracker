@@ -156,21 +156,6 @@
         "family": "Perhe"
       }
     },
-    "advanced": {
-      "title": "Lisäominaisuudet",
-      "calorieTracking": {
-        "label": "Kaloriseuranta",
-        "description": "Seuraa päivittäistä kaloritarvetta ja valvo ruokavaroja ravitsemustarpeiden perusteella"
-      },
-      "powerManagement": {
-        "label": "Sähköhallinta",
-        "description": "Laske pattereiden käyttö ja hallinnoi varavirtavaroja"
-      },
-      "waterTracking": {
-        "label": "Vesiseuranta",
-        "description": "Seuraa vedenkulutusta ja varastointitarpeita"
-      }
-    },
     "export": {
       "button": "Vie Tiedot",
       "description": "Lataa kaikki tietosi JSON-tiedostona varmuuskopiointia tai siirtoa varten",
