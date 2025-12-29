@@ -4,6 +4,7 @@ import {
   isItemExpired,
   getDaysUntilExpiration,
 } from '../../utils/calculations/status';
+import { EXPIRING_SOON_DAYS_THRESHOLD } from '../../utils/constants';
 import styles from './ItemCard.module.css';
 
 export interface ItemCardProps {
@@ -58,16 +59,18 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
               </span>
             ) : (
               <>
-                {daysUntil !== null && daysUntil <= 30 && (
-                  <span className={styles.expiringSoon}>
-                    📅 {t('inventory.expiresIn', { days: daysUntil })}
-                  </span>
-                )}
-                {daysUntil !== null && daysUntil > 30 && (
-                  <span className={styles.expirationDate}>
-                    📅 {formatExpirationDate(item.expirationDate)}
-                  </span>
-                )}
+                {daysUntil !== null &&
+                  daysUntil <= EXPIRING_SOON_DAYS_THRESHOLD && (
+                    <span className={styles.expiringSoon}>
+                      📅 {t('inventory.expiresIn', { days: daysUntil })}
+                    </span>
+                  )}
+                {daysUntil !== null &&
+                  daysUntil > EXPIRING_SOON_DAYS_THRESHOLD && (
+                    <span className={styles.expirationDate}>
+                      📅 {formatExpirationDate(item.expirationDate)}
+                    </span>
+                  )}
               </>
             )}
           </div>

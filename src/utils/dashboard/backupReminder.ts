@@ -1,7 +1,6 @@
 import type { AppData } from '../../types';
 import { getAppData, saveAppData } from '../storage/localStorage';
-
-const DAYS_THRESHOLD = 30;
+import { BACKUP_REMINDER_DAYS_THRESHOLD, MS_PER_DAY } from '../constants';
 
 /**
  * Check if the backup reminder should be shown.
@@ -36,12 +35,12 @@ export function shouldShowBackupReminder(appData: AppData | null): boolean {
     return false;
   }
 
-  // Check if more than 30 days have passed since last backup
+  // Check if more than BACKUP_REMINDER_DAYS_THRESHOLD days have passed since last backup
   const daysSinceBackup = Math.floor(
-    (now.getTime() - lastBackup.getTime()) / (1000 * 60 * 60 * 24),
+    (now.getTime() - lastBackup.getTime()) / MS_PER_DAY,
   );
 
-  return daysSinceBackup >= DAYS_THRESHOLD;
+  return daysSinceBackup >= BACKUP_REMINDER_DAYS_THRESHOLD;
 }
 
 /**

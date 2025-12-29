@@ -1,6 +1,12 @@
 import type { InventoryItem } from '../../types';
 import type { Alert } from '../../components/dashboard/AlertBanner';
 import { STANDARD_CATEGORIES } from '../../data/standardCategories';
+import {
+  MS_PER_DAY,
+  EXPIRING_SOON_ALERT_DAYS,
+  CRITICALLY_LOW_STOCK_PERCENTAGE,
+  LOW_STOCK_PERCENTAGE,
+} from '../constants';
 
 type TranslationFunction = (
   key: string,
@@ -24,7 +30,7 @@ function generateExpirationAlerts(
 
     const expirationDate = new Date(item.expirationDate);
     const daysUntilExpiration = Math.ceil(
-      (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+      (expirationDate.getTime() - now.getTime()) / MS_PER_DAY,
     );
 
     if (daysUntilExpiration < 0) {
@@ -34,7 +40,7 @@ function generateExpirationAlerts(
         message: t('alerts.expiration.expired'),
         itemName: item.name,
       });
-    } else if (daysUntilExpiration <= 7) {
+    } else if (daysUntilExpiration <= EXPIRING_SOON_ALERT_DAYS) {
       alerts.push({
         id: `expiring-soon-${item.id}`,
         type: 'warning',
@@ -87,7 +93,7 @@ function generateCategoryStockAlerts(
         message: t('alerts.stock.outOfStock'),
         itemName: category.name,
       });
-    } else if (percentOfRecommended < 25) {
+    } else if (percentOfRecommended < CRITICALLY_LOW_STOCK_PERCENTAGE) {
       alerts.push({
         id: `category-critically-low-${category.id}`,
         type: 'critical',
@@ -96,7 +102,7 @@ function generateCategoryStockAlerts(
         }),
         itemName: category.name,
       });
-    } else if (percentOfRecommended < 50) {
+    } else if (percentOfRecommended < LOW_STOCK_PERCENTAGE) {
       alerts.push({
         id: `category-low-stock-${category.id}`,
         type: 'warning',
