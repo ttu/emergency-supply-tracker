@@ -1,6 +1,7 @@
 # AI Agents & Workflows
 
 ## Overview
+
 This document describes AI agent workflows and patterns used in the Emergency Supply Tracker project. These workflows help maintain consistency and efficiency when working with AI coding assistants.
 
 ---
@@ -8,9 +9,11 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 ## Project Context
 
 ### Quick Project Summary
+
 **Emergency Supply Tracker** - A web-based application to track emergency preparedness supplies based on 72tuntia.fi guidelines.
 
 **Tech Stack:**
+
 - React 19 + TypeScript 5.9 + Vite 7
 - LocalStorage (no backend)
 - CSS Modules
@@ -20,6 +23,7 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 - react-i18next (English + Finnish)
 
 **Key Features:**
+
 - Track supplies across 9 categories (water, food, cooking, light, communication, medical, hygiene, tools, cash)
 - Household configuration (adults, children, supply duration, freezer)
 - 70 recommended items based on 72tuntia.fi guidelines
@@ -36,6 +40,7 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 ### 1. Adding a New Component
 
 **Prompt Template:**
+
 ```
 Create a new [component name] component following our architecture:
 - Pure/presentational component in src/components/[Name]/
@@ -55,6 +60,7 @@ States to show in Storybook:
 ```
 
 **Example:**
+
 ```
 Create a new StatusBadge component following our architecture:
 - Pure/presentational component in src/components/StatusBadge/
@@ -82,6 +88,7 @@ States to show in Storybook:
 ### 2. Implementing Business Logic
 
 **Prompt Template:**
+
 ```
 Implement [function/feature name] following our patterns:
 - Pure utility function in src/utils/[module].ts
@@ -102,6 +109,7 @@ Reference: See docs/specifications/[relevant-spec].md for requirements
 ```
 
 **Example:**
+
 ```
 Implement calculateRecommendedQuantity following our patterns:
 - Pure utility function in src/utils/calculations.ts
@@ -131,6 +139,7 @@ Reference: See docs/specifications/DATA_SCHEMA.md for calculation formulas
 ### 3. Adding E2E Tests
 
 **Prompt Template:**
+
 ```
 Create Playwright E2E tests for [feature name]:
 - Test file: e2e/[feature].spec.ts
@@ -147,6 +156,7 @@ Reference implementation examples in docs/specifications/TESTING_STRATEGY.md
 ```
 
 **Example:**
+
 ```
 Create Playwright E2E tests for household configuration:
 - Test file: e2e/household-config.spec.ts
@@ -168,6 +178,7 @@ Reference implementation examples in docs/specifications/TESTING_STRATEGY.md
 ### 4. Internationalization (i18n)
 
 **Prompt Template:**
+
 ```
 Add translations for [feature/component]:
 - Update locales/en/[file].json
@@ -183,6 +194,7 @@ Context:
 ```
 
 **Example:**
+
 ```
 Add translations for the AlertBanner component:
 - Update locales/en/common.json (alerts section)
@@ -205,6 +217,7 @@ These appear in dashboard alerts when users have supply issues
 ### 5. Refactoring
 
 **Prompt Template:**
+
 ```
 Refactor [component/module] to:
 [Describe refactoring goal]
@@ -225,6 +238,7 @@ Current issues:
 ### 6. Debugging
 
 **Prompt Template:**
+
 ```
 Debug issue: [Brief description]
 
@@ -274,12 +288,14 @@ Code:
 ## Project-Specific Conventions
 
 ### Component Naming
+
 - **Presentational**: `ItemCard`, `StatusBadge`, `AlertBanner`
 - **Container**: `ItemCardContainer`, `DashboardContainer`
 - **Pages**: `Dashboard`, `Inventory`, `Settings`
 - **Hooks**: `useInventory`, `useHousehold`, `useItemStatus`
 
 ### File Organization
+
 ```
 src/components/[ComponentName]/
   ├── [ComponentName].tsx
@@ -289,12 +305,15 @@ src/components/[ComponentName]/
 ```
 
 ### Test Naming
+
 - Unit tests: `[function].test.ts`
 - Component tests: `[Component].test.tsx`
 - E2E tests: `[feature].spec.ts`
 
 ### Translation Keys
+
 Pattern: `category.subcategory.key`
+
 ```json
 {
   "dashboard": {
@@ -314,16 +333,17 @@ Pattern: `category.subcategory.key`
 
 The `docs/` folder contains up-to-date documentation that reflects the actual implementation:
 
-| Document | Description |
-|----------|-------------|
-| **[docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md)** | TypeScript types and data structures |
-| **[docs/FUNCTIONAL_SPEC.md](docs/FUNCTIONAL_SPEC.md)** | Features, workflows, and UI components |
-| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 70 recommended items with current data |
-| **[docs/COMPONENT_ARCHITECTURE.md](docs/COMPONENT_ARCHITECTURE.md)** | React component structure |
-| **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)** | Technology stack and configuration |
-| **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)** | Testing approach, Jest, Playwright |
-| **[docs/TRANSLATION_GUIDE.md](docs/TRANSLATION_GUIDE.md)** | Internationalization (i18n) |
-| **[docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)** | ESLint, Prettier, CI/CD |
+| Document                                                             | Description                                |
+| -------------------------------------------------------------------- | ------------------------------------------ |
+| **[docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md)**                       | TypeScript types and data structures       |
+| **[docs/FUNCTIONAL_SPEC.md](docs/FUNCTIONAL_SPEC.md)**               | Features, workflows, and UI components     |
+| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)**           | All 70 recommended items with current data |
+| **[docs/COMPONENT_ARCHITECTURE.md](docs/COMPONENT_ARCHITECTURE.md)** | React component structure                  |
+| **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)**                 | Technology stack and configuration         |
+| **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)**             | Testing approach, Jest, Playwright         |
+| **[docs/TRANSLATION_GUIDE.md](docs/TRANSLATION_GUIDE.md)**           | Internationalization (i18n)                |
+| **[docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)**                     | ESLint, Prettier, CI/CD                    |
+| **[docs/BROWSER_TEST_GUIDE.md](docs/BROWSER_TEST_GUIDE.md)**         | Browser automation testing reference       |
 
 ### Keeping Documentation Updated
 
@@ -334,6 +354,7 @@ The `docs/` folder contains up-to-date documentation that reflects the actual im
 > **Important:** Files in `docs/specifications/` contain the original pre-implementation specifications. These are outdated and should NOT be used unless explicitly asked. The implementation has diverged from these original specs.
 
 Only reference `docs/specifications/` files when:
+
 - Explicitly asked to compare spec vs implementation
 - Asked to review original design decisions
 - Working on implementation progress tracking (`PROGRESS.md`)
@@ -343,31 +364,41 @@ Only reference `docs/specifications/` files when:
 ## Tips for Effective AI Collaboration
 
 ### 1. Provide Context
+
 Always mention which part of the project you're working on:
+
 ```
 "I'm working on the Dashboard page, which shows household summary, alerts, and category status..."
 ```
 
 ### 2. Reference Specifications
+
 Point to relevant documentation:
+
 ```
 "According to DATA_SCHEMA.md, the household multiplier formula is..."
 ```
 
 ### 3. Show Examples
+
 Include existing code patterns:
+
 ```
 "Similar to how ItemCard is structured, create..."
 ```
 
 ### 4. Be Specific About Testing
+
 ```
 "Write integration tests that verify the component displays correct data when household changes"
 ```
+
 (Not just "add tests")
 
 ### 5. Iterate Incrementally
+
 Break large features into smaller tasks:
+
 ```
 "First, create the presentational component with Storybook"
 "Then, create the container component that connects to state"
@@ -379,6 +410,7 @@ Break large features into smaller tasks:
 ## Common Pitfalls to Avoid
 
 ### ❌ Don't Ask For:
+
 - "Create the entire app" - Use IMPLEMENTATION_PLAN.md step-by-step instead
 - Backend features - This is a frontend-only app
 - IndexedDB - We use LocalStorage (simpler for our needs)
@@ -387,6 +419,7 @@ Break large features into smaller tasks:
 - Unit tests for every function - We use Testing Diamond (70% integration, 20% E2E, 10% unit)
 
 ### ✅ Do Ask For:
+
 - Step-by-step implementation from IMPLEMENTATION_PLAN.md (e.g., "Implement Step 5")
 - Specific components following our architecture
 - Storybook stories for presentational components
@@ -401,8 +434,9 @@ Break large features into smaller tasks:
 ## Version Control Integration
 
 ### Commit Message Format
+
 ```
-type(scope): description
+type: description
 
 - Detail 1
 - Detail 2
@@ -413,6 +447,7 @@ Refs: #issue-number
 > **Note:** Do NOT add "Co-Authored-By" or "Generated with" footers to commit messages. Keep commits clean and simple.
 
 **Types:**
+
 - `feat`: New features or functionality
 - `fix`: Bug fixes
 - `refactor`: Code refactoring without changing behavior
@@ -424,9 +459,10 @@ Refs: #issue-number
 - `build`: Build system or external dependencies
 - `perf`: Performance improvements
 
-**Scopes (optional):** dashboard, inventory, settings, types, storage, utils, data, ci, deploy, lint
+**Do not** use scopes with types.
 
 **Examples:**
+
 ```
 feat: add expiring items alert to dashboard
 
@@ -434,8 +470,6 @@ feat: add expiring items alert to dashboard
 - Add Storybook stories
 - Integrate with Dashboard
 - Add Finnish translations
-
-Refs: #12
 ```
 
 ```
@@ -445,8 +479,6 @@ test: add E2E tests for item management
 - Test editing item quantities
 - Test deleting items
 - Test multiple instances with different expirations
-
-Refs: #15
 ```
 
 ### Implementation Steps Commits
@@ -454,6 +486,7 @@ Refs: #15
 When following IMPLEMENTATION_PLAN.md, use conventional commits **instead of** "Step X:" format:
 
 ❌ **Don't use:**
+
 ```
 Step 0: Initialize Vite + React + TypeScript project
 Step 4: Configure ESLint
@@ -461,16 +494,18 @@ Step 11: Create TypeScript interfaces
 ```
 
 ✅ **Do use:**
+
 ```
 chore: initialize Vite + React + TypeScript project
-chore(lint): configure ESLint
-feat(types): add TypeScript interfaces for data models
+chore: configure ESLint
+feat: add TypeScript interfaces for data models
 ```
 
 **Type selection guide for implementation steps:**
-- Setup/tooling → `chore` (or `chore(scope)`)
-- New functionality → `feat(scope)`
-- Tests → `test` (or `test(scope)`)
+
+- Setup/tooling → `chore`
+- New functionality → `feat`
+- Tests → `test`
 - Documentation → `docs`
 - Formatting → `style`
 
@@ -479,6 +514,7 @@ feat(types): add TypeScript interfaces for data models
 ## Getting Help
 
 ### When Stuck
+
 1. Check specifications in `docs/specifications/`
 2. Review existing similar components
 3. Run Storybook to see component examples
@@ -486,6 +522,7 @@ feat(types): add TypeScript interfaces for data models
 5. Ask AI with specific context
 
 ### Project-Specific Questions
+
 - "How should I structure a new category component?"
   → Reference COMPONENT_ARCHITECTURE.md
 - "What's the calculation for recommended quantities?"
@@ -534,6 +571,7 @@ For step-by-step implementation, see **[IMPLEMENTATION_PLAN.md](docs/specificati
 ### Using This Plan with AI Agents
 
 **Basic prompt:**
+
 ```
 Implement Step X from IMPLEMENTATION_PLAN.md.
 
@@ -546,6 +584,7 @@ When done, tell me the commit message to use.
 ```
 
 **Quality gates before each commit:**
+
 ```bash
 npm run lint        # Must pass
 npm test           # Must pass
@@ -557,6 +596,6 @@ See the full guide in [IMPLEMENTATION_PLAN.md - How to Use This Plan with AI Age
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2025-12-23
+**Document Version**: 1.2
+**Last Updated**: 2025-12-30
 **Purpose**: Guide AI-assisted development workflows for Emergency Supply Tracker
