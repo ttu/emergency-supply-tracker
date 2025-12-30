@@ -30,19 +30,23 @@ export const CategoryNav = ({
     (item) => item.id === selectedCategoryId,
   );
 
+  // Use effectiveIndex for tabindex and keyboard navigation
+  // Falls back to 0 when selectedCategoryId is not found (-1)
+  const effectiveIndex = currentIndex === -1 ? 0 : currentIndex;
+
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       const itemCount = allItems.length;
-      let newIndex = currentIndex;
+      let newIndex = effectiveIndex;
 
       switch (event.key) {
         case 'ArrowLeft':
           event.preventDefault();
-          newIndex = currentIndex > 0 ? currentIndex - 1 : itemCount - 1;
+          newIndex = effectiveIndex > 0 ? effectiveIndex - 1 : itemCount - 1;
           break;
         case 'ArrowRight':
           event.preventDefault();
-          newIndex = currentIndex < itemCount - 1 ? currentIndex + 1 : 0;
+          newIndex = effectiveIndex < itemCount - 1 ? effectiveIndex + 1 : 0;
           break;
         case 'Home':
           event.preventDefault();
@@ -56,7 +60,7 @@ export const CategoryNav = ({
           return;
       }
 
-      if (newIndex !== currentIndex) {
+      if (newIndex !== effectiveIndex) {
         const newItem = allItems[newIndex];
         onSelectCategory(newItem.id);
         // Focus the new button
@@ -64,10 +68,10 @@ export const CategoryNav = ({
         buttons?.[newIndex]?.focus();
       }
     },
-    [allItems, currentIndex, onSelectCategory],
+    [allItems, effectiveIndex, onSelectCategory],
   );
 
-  const getTabIndex = (index: number) => (index === currentIndex ? 0 : -1);
+  const getTabIndex = (index: number) => (index === effectiveIndex ? 0 : -1);
 
   return (
     <nav
