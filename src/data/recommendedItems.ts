@@ -397,6 +397,25 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: false,
     scaleWithDays: false,
   },
+  {
+    id: 'power-generator',
+    i18nKey: 'products.power-generator',
+    category: 'light-power',
+    baseQuantity: 1,
+    unit: 'pieces',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+  },
+  {
+    id: 'generator-fuel',
+    i18nKey: 'products.generator-fuel',
+    category: 'light-power',
+    baseQuantity: 10,
+    unit: 'liters',
+    scaleWithPeople: false,
+    scaleWithDays: true,
+    defaultExpirationMonths: 12,
+  },
 
   // ===================================================================
   // 5. Communication

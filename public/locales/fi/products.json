@@ -46,6 +46,8 @@
   "power-bank": "Varavirtalähde (Ladattu)",
   "charging-cables": "Latausjohdot (USB-C, Lightning, Micro-USB)",
   "solar-charger": "Aurinkopaneeli tai Kampikäyttöinen Laturi",
+  "power-generator": "Bensiiniaggregaatti",
+  "generator-fuel": "Bensiini Aggregaattiin",
   "battery-radio": "Paristokäyttöinen Radio",
   "hand-crank-radio": "Kampikäyttöinen Hätäradio",
   "first-aid-kit": "Ensiapulaukku",
