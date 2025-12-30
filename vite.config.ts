@@ -15,6 +15,9 @@ const dirname =
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [react()],
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.VITE_APP_VERSION || 'dev'),
+  },
   base:
     process.env.NODE_ENV === 'production'
       ? process.env.VITE_BASE_PATH || '/emergency-supply-tracker/'
