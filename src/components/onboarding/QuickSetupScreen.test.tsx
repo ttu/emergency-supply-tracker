@@ -7,29 +7,83 @@ import type { HouseholdConfig } from '../../types';
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
-      const translations: Record<string, string> = {
-        'quickSetup.title': 'Quick Setup',
-        'quickSetup.subtitle': 'Add recommended items to your inventory',
-        'quickSetup.itemsCount': 'Items',
-        'quickSetup.categoriesCount': 'Categories',
-        'quickSetup.days': 'Days',
-        'quickSetup.showDetails': 'Show Details',
-        'quickSetup.hideDetails': 'Hide Details',
-        'quickSetup.info':
-          'These items are recommended based on your household configuration.',
-        'quickSetup.noFreezer': 'Frozen items have been excluded.',
-        'quickSetup.skip': 'Skip',
-        'quickSetup.addItems': 'Add Items',
-        'categories.water-beverages': 'Water & Beverages',
-        'categories.food': 'Food',
-        'categories.cooking-heat': 'Cooking & Heat',
-        'products.bottled-water': 'Bottled Water',
-        'products.canned-soup': 'Canned Soup',
-        'units.liters': 'L',
-        'units.cans': 'cans',
+    t: (key: string, options?: { ns?: string }) => {
+      // Translations organized by namespace
+      const translations: Record<string, Record<string, string>> = {
+        common: {
+          'quickSetup.title': 'Quick Setup',
+          'quickSetup.subtitle': 'Add recommended items to your inventory',
+          'quickSetup.itemsCount': 'Items',
+          'quickSetup.categoriesCount': 'Categories',
+          'quickSetup.days': 'Days',
+          'quickSetup.showDetails': 'Show Details',
+          'quickSetup.hideDetails': 'Hide Details',
+          'quickSetup.info':
+            'These items are recommended based on your household configuration.',
+          'quickSetup.noFreezer': 'Frozen items have been excluded.',
+          'quickSetup.skip': 'Skip',
+          'quickSetup.addItems': 'Add Items',
+        },
+        categories: {
+          'water-beverages': 'Water & Beverages',
+          food: 'Food',
+          'cooking-heat': 'Cooking & Heat',
+          'light-power': 'Light & Power',
+          'communication-info': 'Communication & Info',
+          'medical-health': 'Medical & Health',
+          'hygiene-sanitation': 'Hygiene & Sanitation',
+          'tools-supplies': 'Tools & Supplies',
+          'cash-documents': 'Cash & Documents',
+        },
+        products: {
+          'bottled-water': 'Bottled Water',
+          'long-life-milk': 'Long-life Milk',
+          'long-life-juice': 'Long-life Juice',
+          'canned-soup': 'Canned Soup',
+          'canned-vegetables': 'Canned Vegetables',
+          'canned-fish': 'Canned Fish',
+          'canned-meat': 'Canned Meat',
+          pasta: 'Pasta',
+          rice: 'Rice',
+          oats: 'Oats',
+          crackers: 'Crackers',
+          'energy-bars': 'Energy Bars',
+          spreads: 'Spreads',
+          'dried-fruits': 'Dried Fruits',
+          nuts: 'Nuts',
+          'salt-sugar': 'Salt and Sugar',
+          'coffee-tea': 'Coffee and Tea',
+          'frozen-vegetables': 'Frozen Vegetables',
+          'frozen-meat': 'Frozen Meat',
+          'frozen-meals': 'Frozen Meals',
+        },
+        units: {
+          liters: 'L',
+          cans: 'cans',
+          kilograms: 'kg',
+          pieces: 'pcs',
+          packages: 'packages',
+          boxes: 'boxes',
+          bottles: 'bottles',
+          rolls: 'rolls',
+          canisters: 'canisters',
+          pairs: 'pairs',
+          meters: 'm',
+          euros: '€',
+          sets: 'sets',
+          days: 'days',
+          tubes: 'tubes',
+          jars: 'jars',
+        },
       };
-      return translations[key] || key;
+
+      // If namespace is specified, look up in that namespace
+      if (options?.ns && translations[options.ns]) {
+        return translations[options.ns][key] || key;
+      }
+
+      // Default: look up in common namespace
+      return translations.common[key] || key;
     },
   }),
 }));
@@ -222,5 +276,37 @@ describe('QuickSetupScreen', () => {
 
     const hideButton = screen.getByText('Hide Details');
     expect(hideButton).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('should display translated item names and units when showing details', async () => {
+    const user = userEvent.setup();
+    const onAddItems = jest.fn();
+    const onSkip = jest.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    // Show the details section
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // Verify translated category names are shown (not raw keys like "categories.water-beverages")
+    expect(screen.getByText('Water & Beverages')).toBeInTheDocument();
+    expect(
+      screen.queryByText('categories.water-beverages'),
+    ).not.toBeInTheDocument();
+
+    // Verify translated product names are shown (not raw keys like "products.bottled-water")
+    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
+    expect(
+      screen.queryByText('products.bottled-water'),
+    ).not.toBeInTheDocument();
+
+    // Verify translated unit names are shown (not raw keys like "units.liters")
+    expect(screen.queryByText('units.liters')).not.toBeInTheDocument();
   });
 });

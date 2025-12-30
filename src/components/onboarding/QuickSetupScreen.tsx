@@ -16,7 +16,7 @@ export const QuickSetupScreen = ({
   onAddItems,
   onSkip,
 }: QuickSetupScreenProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'categories', 'products', 'units']);
   const [showDetails, setShowDetails] = useState(false);
 
   // Calculate which items will be added
@@ -102,19 +102,24 @@ export const QuickSetupScreen = ({
               {Object.entries(itemsByCategory).map(([categoryId, items]) => (
                 <div key={categoryId} className={styles.categoryGroup}>
                   <h3 className={styles.categoryTitle}>
-                    {t(`categories.${categoryId}`)}
+                    {t(categoryId, { ns: 'categories' })}
                   </h3>
                   <ul className={styles.itemList}>
-                    {items.map((item) => (
-                      <li key={item.id} className={styles.item}>
-                        <span className={styles.itemName}>
-                          {t(item.i18nKey)}
-                        </span>
-                        <span className={styles.itemQuantity}>
-                          {calculateQuantity(item)} {t(`units.${item.unit}`)}
-                        </span>
-                      </li>
-                    ))}
+                    {items.map((item) => {
+                      // i18nKey is like 'products.bottled-water', extract the key part
+                      const productKey = item.i18nKey.replace('products.', '');
+                      return (
+                        <li key={item.id} className={styles.item}>
+                          <span className={styles.itemName}>
+                            {t(productKey, { ns: 'products' })}
+                          </span>
+                          <span className={styles.itemQuantity}>
+                            {calculateQuantity(item)}{' '}
+                            {t(item.unit, { ns: 'units' })}
+                          </span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}
