@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../common/Badge';
 import type { ItemStatus, Unit } from '../../types';
@@ -66,28 +67,24 @@ export const CategoryStatusSummary = ({
     return `${Math.round(totalActual)} / ${Math.round(totalNeeded)} ${unitLabel}`;
   };
 
-  // Get missing items text (show top 3 shortages)
-  const getMissingItemsText = (): string | null => {
-    if (shortages.length === 0) return null;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const maxVisibleItems = 3;
+  const hasOverflow = shortages.length > maxVisibleItems;
 
-    const topShortages = shortages.slice(0, 3);
-    const missingItems = topShortages.map((shortage) => {
-      // itemName is 'products.candles', need to strip prefix for namespace lookup
-      const itemName = t(shortage.itemName.replace('products.', ''), {
-        ns: 'products',
-      });
-      const unitLabel = t(shortage.unit, { ns: 'units' });
-      return `${shortage.missing} ${unitLabel} ${itemName}`;
+  const formatShortage = (shortage: CategoryShortage): string => {
+    const itemName = t(shortage.itemName.replace('products.', ''), {
+      ns: 'products',
     });
-
-    const text = missingItems.join(', ');
-    if (shortages.length > 3) {
-      return `${text} (+${shortages.length - 3})`;
-    }
-    return text;
+    const unitLabel = t(shortage.unit, { ns: 'units' });
+    return `${shortage.missing} ${unitLabel} ${itemName}`;
   };
 
-  const missingItemsText = getMissingItemsText();
+  const getVisibleShortages = (): CategoryShortage[] => {
+    if (isExpanded || !hasOverflow) {
+      return shortages;
+    }
+    return shortages.slice(0, maxVisibleItems);
+  };
 
   return (
     <div className={styles.summary}>
@@ -107,9 +104,27 @@ export const CategoryStatusSummary = ({
             style={{ width: `${Math.min(completionPercentage, 100)}%` }}
           />
         </div>
-        {missingItemsText && (
-          <div className={styles.missing}>
-            {t('inventory.missing')}: {missingItemsText}
+        {shortages.length > 0 && (
+          <div className={styles.missingSection}>
+            <div className={styles.missingLabel}>{t('inventory.missing')}:</div>
+            <ul className={styles.missingList}>
+              {getVisibleShortages().map((shortage) => (
+                <li key={shortage.itemId} className={styles.missingItem}>
+                  {formatShortage(shortage)}
+                </li>
+              ))}
+            </ul>
+            {hasOverflow && (
+              <button
+                type="button"
+                className={styles.expandButton}
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded
+                  ? t('inventory.showLess')
+                  : `+${shortages.length - maxVisibleItems}`}
+              </button>
+            )}
           </div>
         )}
         {isFoodCategory && missingCalories && missingCalories > 0 && (

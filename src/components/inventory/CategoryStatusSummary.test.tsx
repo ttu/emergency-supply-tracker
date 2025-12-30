@@ -1,5 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { CategoryStatusSummary } from './CategoryStatusSummary';
+import userEvent from '@testing-library/user-event';
+import {
+  CategoryStatusSummary,
+  CategoryShortage,
+} from './CategoryStatusSummary';
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -22,6 +26,17 @@ jest.mock('react-i18next', () => ({
         'status.warning': 'Warning',
         'status.critical': 'Critical',
         'dashboard.category.kcal': 'kcal',
+        'inventory.missing': 'Missing',
+        'inventory.showLess': 'Show less',
+      };
+
+      const productTranslations: Record<string, string> = {
+        bandages: 'Bandages',
+        'pain-relievers': 'Pain Relievers',
+        antiseptic: 'Antiseptic',
+        'first-aid-kit': 'First Aid Kit',
+        thermometer: 'Thermometer',
+        'prescription-meds': 'Prescription Medications',
       };
 
       if (options?.ns === 'categories') {
@@ -29,6 +44,9 @@ jest.mock('react-i18next', () => ({
       }
       if (options?.ns === 'units') {
         return unitTranslations[key] || key;
+      }
+      if (options?.ns === 'products') {
+        return productTranslations[key] || key;
       }
 
       return commonTranslations[key] || key;
@@ -201,5 +219,187 @@ describe('CategoryStatusSummary', () => {
     );
     expect(progressFill).toBeTruthy();
     expect(progressFill!.getAttribute('style')).toContain('width: 100%');
+  });
+
+  describe('missing items list', () => {
+    const createShortages = (count: number): CategoryShortage[] => {
+      const items = [
+        { id: 'bandages', name: 'bandages', missing: 20 },
+        { id: 'pain-relievers', name: 'pain-relievers', missing: 10 },
+        { id: 'antiseptic', name: 'antiseptic', missing: 5 },
+        { id: 'first-aid-kit', name: 'first-aid-kit', missing: 1 },
+        { id: 'thermometer', name: 'thermometer', missing: 2 },
+        { id: 'prescription-meds', name: 'prescription-meds', missing: 45 },
+      ];
+
+      return items.slice(0, count).map((item) => ({
+        itemId: item.id,
+        itemName: `products.${item.name}`,
+        actual: 0,
+        needed: item.missing,
+        unit: 'pieces' as const,
+        missing: item.missing,
+      }));
+    };
+
+    it('displays missing items when shortages exist', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(2)}
+        />,
+      );
+
+      expect(screen.getByText('Missing:')).toBeInTheDocument();
+      expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
+      expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
+    });
+
+    it('does not show missing section when no shortages', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="ok"
+          completionPercentage={100}
+          totalActual={35}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={[]}
+        />,
+      );
+
+      expect(screen.queryByText('Missing:')).not.toBeInTheDocument();
+    });
+
+    it('shows only first 3 items when more than 3 shortages', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={83}
+          primaryUnit="pieces"
+          shortages={createShortages(6)}
+        />,
+      );
+
+      // First 3 items should be visible
+      expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
+      expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
+      expect(screen.getByText('5 pcs Antiseptic')).toBeInTheDocument();
+
+      // Items 4-6 should not be visible initially
+      expect(screen.queryByText('1 pcs First Aid Kit')).not.toBeInTheDocument();
+      expect(screen.queryByText('2 pcs Thermometer')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('45 pcs Prescription Medications'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows expand button with count when more than 3 shortages', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={83}
+          primaryUnit="pieces"
+          shortages={createShortages(6)}
+        />,
+      );
+
+      // Should show "+3" button (6 items - 3 visible = 3 hidden)
+      expect(screen.getByRole('button', { name: '+3' })).toBeInTheDocument();
+    });
+
+    it('does not show expand button when 3 or fewer shortages', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(3)}
+        />,
+      );
+
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('expands to show all items when expand button is clicked', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={83}
+          primaryUnit="pieces"
+          shortages={createShortages(6)}
+        />,
+      );
+
+      // Click expand button
+      await user.click(screen.getByRole('button', { name: '+3' }));
+
+      // All items should now be visible
+      expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
+      expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
+      expect(screen.getByText('5 pcs Antiseptic')).toBeInTheDocument();
+      expect(screen.getByText('1 pcs First Aid Kit')).toBeInTheDocument();
+      expect(screen.getByText('2 pcs Thermometer')).toBeInTheDocument();
+      expect(
+        screen.getByText('45 pcs Prescription Medications'),
+      ).toBeInTheDocument();
+
+      // Button should now show "Show less"
+      expect(
+        screen.getByRole('button', { name: 'Show less' }),
+      ).toBeInTheDocument();
+    });
+
+    it('collapses back to 3 items when show less is clicked', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={83}
+          primaryUnit="pieces"
+          shortages={createShortages(6)}
+        />,
+      );
+
+      // Expand
+      await user.click(screen.getByRole('button', { name: '+3' }));
+
+      // Collapse
+      await user.click(screen.getByRole('button', { name: 'Show less' }));
+
+      // Only first 3 should be visible again
+      expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
+      expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
+      expect(screen.getByText('5 pcs Antiseptic')).toBeInTheDocument();
+
+      // Items 4-6 should be hidden again
+      expect(screen.queryByText('1 pcs First Aid Kit')).not.toBeInTheDocument();
+
+      // Button should show "+3" again
+      expect(screen.getByRole('button', { name: '+3' })).toBeInTheDocument();
+    });
   });
 });

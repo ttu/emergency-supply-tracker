@@ -228,6 +228,7 @@
     "allCategories": "All",
     "noItems": "No items found",
     "missing": "Missing",
+    "showLess": "Show less",
     "expired": "Expired",
     "expiresIn": "Expires in {{days}} days",
     "searchPlaceholder": "Search items...",

@@ -228,6 +228,7 @@
     "allCategories": "Kaikki",
     "noItems": "Ei tuotteita",
     "missing": "Puuttuu",
+    "showLess": "Näytä vähemmän",
     "expired": "Vanhentunut",
     "expiresIn": "Vanhenee {{days}} päivässä",
     "searchPlaceholder": "Hae tuotteita...",
