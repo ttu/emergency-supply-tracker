@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../components/settings/LanguageSelector';
 import { ThemeSelector } from '../components/settings/ThemeSelector';
 import { HouseholdForm } from '../components/settings/HouseholdForm';
-import { AdvancedFeatures } from '../components/settings/AdvancedFeatures';
 import { ExportButton } from '../components/settings/ExportButton';
 import { ImportButton } from '../components/settings/ImportButton';
 import { ShoppingListExport } from '../components/settings/ShoppingListExport';
@@ -37,11 +36,6 @@ export function Settings() {
             {t('settings.sections.household')}
           </h2>
           <HouseholdForm />
-        </section>
-
-        {/* Advanced Features */}
-        <section className={styles.section}>
-          <AdvancedFeatures />
         </section>
 
         {/* Hidden Alerts */}

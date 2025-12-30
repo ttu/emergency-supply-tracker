@@ -10,11 +10,6 @@ import { SettingsContext } from './SettingsContext';
 const DEFAULT_SETTINGS: UserSettings = {
   language: 'en',
   theme: 'light',
-  advancedFeatures: {
-    calorieTracking: false,
-    powerManagement: false,
-    waterTracking: false,
-  },
 };
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
@@ -35,22 +30,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setSettings((prev) => ({ ...prev, ...updates }));
   };
 
-  const toggleAdvancedFeature = (
-    feature: keyof UserSettings['advancedFeatures'],
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      advancedFeatures: {
-        ...prev.advancedFeatures,
-        [feature]: !prev.advancedFeatures[feature],
-      },
-    }));
-  };
-
   return (
-    <SettingsContext.Provider
-      value={{ settings, updateSettings, toggleAdvancedFeature }}
-    >
+    <SettingsContext.Provider value={{ settings, updateSettings }}>
       {children}
     </SettingsContext.Provider>
   );

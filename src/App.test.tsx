@@ -22,11 +22,6 @@ const setupCompletedOnboarding = () => {
     settings: {
       language: 'en',
       theme: 'light',
-      advancedFeatures: {
-        calorieTracking: false,
-        powerManagement: false,
-        waterTracking: false,
-      },
       onboardingCompleted: true,
     },
     customCategories: [],

@@ -35,7 +35,6 @@ describe('Settings Page', () => {
       screen.getByText('settings.sections.appearance'),
     ).toBeInTheDocument();
     expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
-    expect(screen.getByText('settings.advanced.title')).toBeInTheDocument();
     expect(
       screen.getByText('settings.sections.dataManagement'),
     ).toBeInTheDocument();
@@ -56,20 +55,6 @@ describe('Settings Page', () => {
 
     expect(screen.getByText('settings.household.adults')).toBeInTheDocument();
     expect(screen.getByText('settings.household.children')).toBeInTheDocument();
-  });
-
-  it('should render advanced features', () => {
-    renderWithProviders(<Settings />);
-
-    expect(
-      screen.getByText('settings.advanced.calorieTracking.label'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('settings.advanced.powerManagement.label'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('settings.advanced.waterTracking.label'),
-    ).toBeInTheDocument();
   });
 
   it('should render data management buttons', () => {
