@@ -135,6 +135,19 @@
       "addedDate": "2024-11-01"
     },
     {
+      "id": "item-16",
+      "name": "Anker PowerCore",
+      "itemType": "Power Bank",
+      "categoryId": "light-power",
+      "quantity": 2,
+      "unit": "pieces",
+      "expirationDate": null,
+      "notes": "For charging phones and tablets",
+      "capacityMah": 20000,
+      "capacityWh": 74,
+      "addedDate": "2024-12-15"
+    },
+    {
       "id": "item-11",
       "name": "Battery Radio",
       "itemType": "Battery Radio",
