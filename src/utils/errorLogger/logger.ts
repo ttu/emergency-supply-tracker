@@ -54,7 +54,14 @@ function log(
     metadata: options?.metadata,
   };
 
-  addLogEntry(entry);
+  try {
+    addLogEntry(entry);
+  } catch (storageError) {
+    console.error(
+      `[ErrorLogger] Failed to persist log entry (id: ${entry.id}, context: ${entry.context ?? 'none'}):`,
+      storageError,
+    );
+  }
 
   // Also log to console for development
   const consoleMethod = level === 'debug' ? 'log' : level;
