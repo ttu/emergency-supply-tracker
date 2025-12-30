@@ -1,4 +1,4 @@
-import type { InventoryItem } from '../../types';
+import type { InventoryItem, HouseholdConfig } from '../../types';
 import type { Alert } from '../../components/dashboard/AlertBanner';
 import { STANDARD_CATEGORIES } from '../../data/standardCategories';
 import {
@@ -7,6 +7,7 @@ import {
   CRITICALLY_LOW_STOCK_PERCENTAGE,
   LOW_STOCK_PERCENTAGE,
 } from '../constants';
+import { calculateWaterRequirements } from '../calculations/water';
 
 type TranslationFunction = (
   key: string,
@@ -118,17 +119,56 @@ function generateCategoryStockAlerts(
 }
 
 /**
+ * Generate alerts for water shortage when food requires more water than available
+ */
+function generateWaterShortageAlerts(
+  items: InventoryItem[],
+  household: HouseholdConfig | undefined,
+  t: TranslationFunction,
+): Alert[] {
+  const alerts: Alert[] = [];
+
+  if (!household) {
+    return alerts;
+  }
+
+  const waterRequirements = calculateWaterRequirements(items, household);
+
+  if (
+    !waterRequirements.hasEnoughWater &&
+    waterRequirements.waterShortfall > 0
+  ) {
+    const shortfall = Math.ceil(waterRequirements.waterShortfall * 10) / 10; // Round to 1 decimal
+    alerts.push({
+      id: 'water-shortage-preparation',
+      type: 'warning',
+      message: t('alerts.water.preparationShortage', {
+        liters: shortfall,
+      }),
+    });
+  }
+
+  return alerts;
+}
+
+/**
  * Generate all alerts for dashboard
  */
 export function generateDashboardAlerts(
   items: InventoryItem[],
   t: TranslationFunction,
+  household?: HouseholdConfig,
 ): Alert[] {
   const expirationAlerts = generateExpirationAlerts(items, t);
   const categoryStockAlerts = generateCategoryStockAlerts(items, t);
+  const waterShortageAlerts = generateWaterShortageAlerts(items, household, t);
 
   // Combine alerts (removed item-level critical alerts as they're now covered by category alerts)
-  const allAlerts = [...expirationAlerts, ...categoryStockAlerts];
+  const allAlerts = [
+    ...expirationAlerts,
+    ...categoryStockAlerts,
+    ...waterShortageAlerts,
+  ];
 
   // Sort by priority: critical first, then warning, then info
   const priorityOrder = { critical: 0, warning: 1, info: 2 };

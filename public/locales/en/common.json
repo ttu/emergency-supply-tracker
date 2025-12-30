@@ -84,6 +84,9 @@
       "criticallyLow": "Critically low ({{percent}}% stocked)",
       "runningLow": "Running low ({{percent}}% stocked)"
     },
+    "water": {
+      "preparationShortage": "Need {{liters}}L more water for food preparation"
+    },
     "backup": {
       "reminderMessage": "It's been over a month since your last backup. Consider exporting your data to avoid losing changes."
     }

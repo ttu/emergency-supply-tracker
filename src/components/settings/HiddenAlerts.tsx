@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../../hooks/useInventory';
+import { useHousehold } from '../../hooks/useHousehold';
 import { generateDashboardAlerts } from '../../utils/dashboard/alerts';
 import { Button } from '../common/Button';
 import styles from './HiddenAlerts.module.css';
@@ -9,11 +10,12 @@ export function HiddenAlerts() {
   const { t } = useTranslation();
   const { items, dismissedAlertIds, reactivateAlert, reactivateAllAlerts } =
     useInventory();
+  const { household } = useHousehold();
 
-  // Generate all possible alerts
+  // Generate all possible alerts (including water shortage alerts)
   const allAlerts = useMemo(
-    () => generateDashboardAlerts(items, t),
-    [items, t],
+    () => generateDashboardAlerts(items, t, household),
+    [items, t, household],
   );
 
   // Get only the alerts that are currently hidden AND still relevant

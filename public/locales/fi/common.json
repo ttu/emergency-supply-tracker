@@ -84,6 +84,9 @@
       "criticallyLow": "Kriittisen vähän ({{percent}}% varastossa)",
       "runningLow": "Vähissä ({{percent}}% varastossa)"
     },
+    "water": {
+      "preparationShortage": "Tarvitaan {{liters}}L lisää vettä ruoan valmistukseen"
+    },
     "backup": {
       "reminderMessage": "Viimeisimmästä varmuuskopiosta on yli kuukausi. Harkitse tietojen vientiä muutosten menettämisen välttämiseksi."
     }
