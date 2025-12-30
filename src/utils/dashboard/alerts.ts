@@ -132,7 +132,7 @@ function generateWaterShortageAlerts(
     return alerts;
   }
 
-  const waterRequirements = calculateWaterRequirements(items, household);
+  const waterRequirements = calculateWaterRequirements(items);
 
   if (
     !waterRequirements.hasEnoughWater &&

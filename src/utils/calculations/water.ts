@@ -3,7 +3,8 @@
  * Calculates water needed for food preparation and validates water availability.
  */
 
-import type { InventoryItem, HouseholdConfig } from '../../types';
+import type { InventoryItem } from '../../types';
+import type { HouseholdConfig } from '../../types';
 import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
@@ -144,12 +145,11 @@ export function calculateTotalWaterAvailable(items: InventoryItem[]): number {
 }
 
 /**
- * Calculates the water requirement for food preparation based on household config.
- * This is the amount of water needed to prepare stored food that requires water.
+ * Calculates the water requirement for food preparation based on inventory items.
+ * This compares the total water needed to prepare stored food against available water.
  */
 export function calculateWaterRequirements(
   items: InventoryItem[],
-  _household: HouseholdConfig,
 ): WaterRequirementResult {
   const itemsRequiringWater: WaterRequirementItem[] = [];
 

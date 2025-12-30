@@ -288,13 +288,6 @@ describe('water calculations', () => {
   });
 
   describe('calculateWaterRequirements', () => {
-    const household: HouseholdConfig = {
-      adults: 2,
-      children: 0,
-      supplyDurationDays: 3,
-      useFreezer: false,
-    };
-
     it('returns correct values when no water required', () => {
       const items: InventoryItem[] = [
         {
@@ -308,7 +301,7 @@ describe('water calculations', () => {
           updatedAt: new Date().toISOString(),
         },
       ];
-      const result = calculateWaterRequirements(items, household);
+      const result = calculateWaterRequirements(items);
       expect(result.totalWaterRequired).toBe(0);
       expect(result.hasEnoughWater).toBe(true);
       expect(result.waterShortfall).toBe(0);
@@ -340,7 +333,7 @@ describe('water calculations', () => {
           updatedAt: new Date().toISOString(),
         },
       ];
-      const result = calculateWaterRequirements(items, household);
+      const result = calculateWaterRequirements(items);
       expect(result.totalWaterRequired).toBe(2); // 2kg * 1.0L
       expect(result.totalWaterAvailable).toBe(20);
       expect(result.hasEnoughWater).toBe(true);
@@ -373,7 +366,7 @@ describe('water calculations', () => {
           updatedAt: new Date().toISOString(),
         },
       ];
-      const result = calculateWaterRequirements(items, household);
+      const result = calculateWaterRequirements(items);
       expect(result.totalWaterRequired).toBe(10); // 10kg * 1.0L
       expect(result.totalWaterAvailable).toBe(5);
       expect(result.hasEnoughWater).toBe(false);
@@ -405,7 +398,7 @@ describe('water calculations', () => {
           updatedAt: new Date().toISOString(),
         },
       ];
-      const result = calculateWaterRequirements(items, household);
+      const result = calculateWaterRequirements(items);
       expect(result.itemsRequiringWater).toHaveLength(2);
       expect(result.itemsRequiringWater).toContainEqual({
         itemId: '1',
