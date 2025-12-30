@@ -275,10 +275,13 @@ export function calculateCategoryStatus(
     ? calculateCategoryShortages(category.id, items, household)
     : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
 
+  // Check if inventory meets the minimum requirements
+  const hasEnough = household && hasEnoughInventory(category.id, shortageInfo);
+
   // Determine overall category status
   let categoryStatus: ItemStatus;
 
-  if (household && hasEnoughInventory(category.id, shortageInfo)) {
+  if (hasEnough) {
     categoryStatus = 'ok';
   } else if (
     criticalCount > 0 ||
@@ -294,11 +297,16 @@ export function calculateCategoryStatus(
     categoryStatus = 'ok';
   }
 
+  // If inventory meets minimum needs, ensure progress bar shows at least 100%
+  const finalCompletionPercentage = hasEnough
+    ? Math.max(completionPercentage, 100)
+    : completionPercentage;
+
   return {
     categoryId: category.id,
     itemCount: categoryItems.length,
     status: categoryStatus,
-    completionPercentage,
+    completionPercentage: finalCompletionPercentage,
     criticalCount,
     warningCount,
     okCount,
@@ -358,7 +366,7 @@ export function getCategoryDisplayStatus(
   items: InventoryItem[],
   household: HouseholdConfig,
 ): CategoryDisplayStatus {
-  const completionPercentage = calculateCategoryPreparedness(
+  const calculatedPercentage = calculateCategoryPreparedness(
     categoryId,
     items,
     household,
@@ -366,11 +374,19 @@ export function getCategoryDisplayStatus(
 
   const shortageInfo = calculateCategoryShortages(categoryId, items, household);
 
+  // Check if inventory meets the minimum requirements
+  const hasEnough = hasEnoughInventory(categoryId, shortageInfo);
+
   // Determine status: if we have enough inventory, the status should be OK
   // regardless of optional recommended items
-  const status: ItemStatus = hasEnoughInventory(categoryId, shortageInfo)
+  const status: ItemStatus = hasEnough
     ? 'ok'
-    : getStatusFromPercentage(completionPercentage);
+    : getStatusFromPercentage(calculatedPercentage);
+
+  // If inventory meets minimum needs, ensure progress bar shows at least 100%
+  const completionPercentage = hasEnough
+    ? Math.max(calculatedPercentage, 100)
+    : calculatedPercentage;
 
   return {
     status,
