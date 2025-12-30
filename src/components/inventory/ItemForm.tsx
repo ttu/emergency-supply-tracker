@@ -155,68 +155,12 @@ export const ItemForm = ({
     });
   };
 
-  // Helper to calculate weight from quantity based on unit
-  const calculateWeightFromQuantity = (
-    quantity: number,
-    unit: string,
-  ): number | null => {
-    if (unit === 'kilograms') {
-      return Math.round(quantity * 1000);
-    }
-    if (unit === 'grams') {
-      return Math.round(quantity);
-    }
-    if (unit === 'liters') {
-      // Approximate: 1 liter of water = 1000g
-      return Math.round(quantity * 1000);
-    }
-    return null; // For other units, use template weight or manual entry
-  };
-
   const handleChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
 
-      // Auto-calculate weight when quantity or unit changes for weight-based units
-      if (
-        (field === 'quantity' || field === 'unit') &&
-        updated.categoryId === 'food'
-      ) {
-        const quantity = parseFloat(
-          field === 'quantity' ? (value as string) : updated.quantity,
-        );
-        const unit = field === 'unit' ? (value as string) : updated.unit;
-
-        if (!isNaN(quantity) && quantity > 0) {
-          const autoWeight = calculateWeightFromQuantity(quantity, unit);
-          if (autoWeight !== null) {
-            updated.weightGrams = autoWeight.toString();
-            // Also recalculate calories from the new weight
-            if (templateCaloriesPer100g) {
-              const newCalories = calculateCaloriesFromWeight(
-                autoWeight,
-                templateCaloriesPer100g,
-              );
-              updated.caloriesPerUnit = newCalories.toString();
-            }
-          } else if (templateWeightGramsPerUnit && field === 'quantity') {
-            // For non-weight units, calculate from template weight per unit
-            const totalWeight = Math.round(
-              quantity * templateWeightGramsPerUnit,
-            );
-            updated.weightGrams = totalWeight.toString();
-            if (templateCaloriesPer100g) {
-              const newCalories = calculateCaloriesFromWeight(
-                totalWeight,
-                templateCaloriesPer100g,
-              );
-              updated.caloriesPerUnit = newCalories.toString();
-            }
-          }
-        }
-      }
-
       // Recalculate calories when weight changes manually (if template has caloriesPer100g)
+      // Weight and calories are per-unit values, so they don't change with quantity
       if (
         field === 'weightGrams' &&
         templateCaloriesPer100g &&

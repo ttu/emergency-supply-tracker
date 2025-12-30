@@ -273,7 +273,7 @@
     "quantity": "Määrä",
     "unit": "Yksikkö",
     "recommendedQuantity": "Suositeltu Määrä",
-    "weightGrams": "Paino (g)",
+    "weightGrams": "Paino/yksikkö (g)",
     "caloriesPerUnit": "Kalorit/yksikkö",
     "neverExpires": "Ei Vanhene",
     "expirationDate": "Vanhenemispäivä",

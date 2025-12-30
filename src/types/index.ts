@@ -82,8 +82,8 @@ export interface InventoryItem {
   location?: string;
   notes?: string;
   productTemplateId?: string;
-  weightGrams?: number; // Total weight in grams (user can override auto-calculated value)
-  caloriesPerUnit?: number; // Calories per unit (user can override auto-calculated value)
+  weightGrams?: number; // Weight per unit in grams (e.g., one can weighs 400g)
+  caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal)
   createdAt: string;
   updatedAt: string;
 }

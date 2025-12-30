@@ -336,4 +336,94 @@ describe('ItemForm', () => {
       expect(mockOnSubmit).toHaveBeenCalled();
     });
   });
+
+  it('should not change weight and calories when quantity changes', async () => {
+    // Render form for food category with template values
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
+        templateWeightGramsPerUnit={400}
+        templateCaloriesPer100g={50}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+
+    // Select food category to show weight/calorie fields
+    fireEvent.change(nameInput, { target: { value: 'Test Food' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+
+    const weightInput = document.querySelector(
+      '#weightGrams',
+    ) as HTMLInputElement;
+    const caloriesInput = document.querySelector(
+      '#caloriesPerUnit',
+    ) as HTMLInputElement;
+
+    // Weight and calories should be initialized from template
+    expect(weightInput).toHaveValue(400);
+    expect(caloriesInput).toHaveValue(200); // 400g * 50kcal/100g = 200kcal
+
+    // Change quantity
+    fireEvent.change(quantityInput, { target: { value: '5' } });
+
+    // Weight and calories should NOT change (they are per-unit values)
+    expect(weightInput).toHaveValue(400);
+    expect(caloriesInput).toHaveValue(200);
+
+    // Change quantity again
+    fireEvent.change(quantityInput, { target: { value: '10' } });
+
+    // Still should not change
+    expect(weightInput).toHaveValue(400);
+    expect(caloriesInput).toHaveValue(200);
+  });
+
+  it('should recalculate calories when weight is manually changed', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
+        templateWeightGramsPerUnit={400}
+        templateCaloriesPer100g={50}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+
+    // Select food category to show weight/calorie fields
+    fireEvent.change(nameInput, { target: { value: 'Test Food' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+
+    const weightInput = document.querySelector(
+      '#weightGrams',
+    ) as HTMLInputElement;
+    const caloriesInput = document.querySelector(
+      '#caloriesPerUnit',
+    ) as HTMLInputElement;
+
+    // Initial values
+    expect(weightInput).toHaveValue(400);
+    expect(caloriesInput).toHaveValue(200);
+
+    // Manually change weight to 200g
+    fireEvent.change(weightInput, { target: { value: '200' } });
+
+    // Calories should be recalculated: 200g * 50kcal/100g = 100kcal
+    expect(caloriesInput).toHaveValue(100);
+  });
 });
