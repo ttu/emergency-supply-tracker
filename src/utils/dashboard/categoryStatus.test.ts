@@ -509,6 +509,125 @@ describe('calculateCategoryShortages', () => {
   });
 });
 
+describe('calculateCategoryStatus - inventory-based status', () => {
+  const waterCategory = createMockCategory({
+    id: 'water-beverages',
+    name: 'Water & Beverages',
+    icon: '💧',
+  });
+
+  const foodCategory = createMockCategory({
+    id: 'food',
+    name: 'Food',
+    icon: '🥫',
+  });
+
+  const household = createMockHousehold({
+    adults: 1,
+    children: 0,
+    supplyDurationDays: 3,
+    useFreezer: false,
+  });
+
+  it('should return ok status when totalActual >= totalNeeded even with low completion percentage', () => {
+    // Have enough water (15L) but missing milk and juice (recommended items)
+    // This should still be "ok" because we meet the minimum water requirement
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Bottled Water',
+        categoryId: 'water-beverages',
+        quantity: 15, // More than the 9L needed for 1 adult, 3 days
+        unit: 'liters',
+        recommendedQuantity: 9,
+        productTemplateId: 'bottled-water',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    // Low completion percentage because we're missing milk and juice
+    const result = calculateCategoryStatus(waterCategory, items, 33, household);
+
+    // Should be "ok" because we have enough total inventory (15 >= 13 needed)
+    // even though completion percentage is low
+    expect(result.status).toBe('ok');
+    expect(result.totalActual).toBeGreaterThanOrEqual(result.totalNeeded);
+  });
+
+  it('should return critical status when totalActual < totalNeeded and low completion', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Bottled Water',
+        categoryId: 'water-beverages',
+        quantity: 3, // Less than needed
+        unit: 'liters',
+        recommendedQuantity: 9,
+        productTemplateId: 'bottled-water',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    const result = calculateCategoryStatus(waterCategory, items, 10, household);
+
+    expect(result.status).toBe('critical');
+  });
+
+  it('should return ok for food category when totalActualCalories >= totalNeededCalories', () => {
+    // Have enough calories even if missing some recommended food items
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'food',
+        quantity: 4, // 4 kg rice = 14400 kcal, more than 6000 needed for 1 person 3 days
+        productTemplateId: 'rice',
+        caloriesPerUnit: 3600,
+      }),
+    ];
+
+    // Low completion percentage because we're missing other recommended food items
+    const result = calculateCategoryStatus(foodCategory, items, 25, household);
+
+    // Should be "ok" because we have enough calories
+    expect(result.status).toBe('ok');
+    expect(result.totalActualCalories).toBeGreaterThanOrEqual(
+      result.totalNeededCalories!,
+    );
+  });
+
+  it('should return critical for food category when totalActualCalories < totalNeededCalories', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'food',
+        quantity: 1, // 1 kg rice = 3600 kcal, less than 6000 needed
+        productTemplateId: 'rice',
+        caloriesPerUnit: 3600,
+      }),
+    ];
+
+    const result = calculateCategoryStatus(foodCategory, items, 10, household);
+
+    expect(result.status).toBe('critical');
+  });
+
+  it('should still use completion percentage when household is not provided', () => {
+    const items: InventoryItem[] = [];
+
+    // Without household, we can't calculate shortages, so use completion percentage
+    const resultLow = calculateCategoryStatus(waterCategory, items, 20);
+    expect(resultLow.status).toBe('critical');
+
+    const resultMid = calculateCategoryStatus(waterCategory, items, 50);
+    expect(resultMid.status).toBe('warning');
+
+    const resultHigh = calculateCategoryStatus(waterCategory, items, 80);
+    expect(resultHigh.status).toBe('ok');
+  });
+});
+
 describe('getCategoryDisplayStatus', () => {
   const household = createMockHousehold({
     adults: 2,
@@ -592,5 +711,74 @@ describe('getCategoryDisplayStatus', () => {
     expect(result.totalActualCalories).toBeUndefined();
     expect(result.totalNeededCalories).toBeUndefined();
     expect(result.missingCalories).toBeUndefined();
+  });
+
+  it('should return ok status when totalActual >= totalNeeded even with missing recommended items', () => {
+    // User scenario: have enough water to meet total needs (including milk/juice recommendations)
+    // For 2 adults, 3 days: water=18L, milk=4L, juice=4L = 26L total needed
+    // Status should be "ok" because total quantity meets the needs
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Bottled Water',
+        categoryId: 'water-beverages',
+        quantity: 30, // More than 26L total needed for 2 adults, 3 days
+        unit: 'liters',
+        recommendedQuantity: 18,
+        productTemplateId: 'bottled-water',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    // Should be "ok" because we have enough total quantity (30 >= 26)
+    expect(result.status).toBe('ok');
+    expect(result.totalActual).toBeGreaterThanOrEqual(result.totalNeeded);
+  });
+
+  it('should return ok for food when calories are sufficient despite missing items', () => {
+    // Have enough calories from rice alone
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'food',
+        quantity: 5, // 5 kg rice = 18000 kcal, more than 12000 needed
+        productTemplateId: 'rice',
+        caloriesPerUnit: 3600,
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus('food', items, household);
+
+    expect(result.status).toBe('ok');
+    expect(result.totalActualCalories).toBeGreaterThanOrEqual(
+      result.totalNeededCalories!,
+    );
+  });
+
+  it('should return critical when not enough inventory', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'water-beverages',
+        quantity: 5, // Less than 18L needed
+        productTemplateId: 'bottled-water',
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus(
+      'water-beverages',
+      items,
+      household,
+    );
+
+    expect(result.status).toBe('critical');
+    expect(result.totalActual).toBeLessThan(result.totalNeeded);
   });
 });
