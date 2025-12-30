@@ -32,6 +32,8 @@ interface FormData {
   notes: string;
   weightGrams: string;
   caloriesPerUnit: string;
+  capacityMah: string;
+  capacityWh: string;
 }
 
 interface FormErrors {
@@ -87,6 +89,8 @@ export const ItemForm = ({
     notes: item?.notes || '',
     weightGrams: getDefaultWeight(),
     caloriesPerUnit: getDefaultCalories(),
+    capacityMah: item?.capacityMah?.toString() || '',
+    capacityWh: item?.capacityWh?.toString() || '',
   }));
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -151,6 +155,12 @@ export const ItemForm = ({
         : undefined,
       caloriesPerUnit: formData.caloriesPerUnit
         ? parseFloat(formData.caloriesPerUnit)
+        : undefined,
+      capacityMah: formData.capacityMah
+        ? parseFloat(formData.capacityMah)
+        : undefined,
+      capacityWh: formData.capacityWh
+        ? parseFloat(formData.capacityWh)
         : undefined,
     });
   };
@@ -289,6 +299,36 @@ export const ItemForm = ({
               onChange={(e) => handleChange('caloriesPerUnit', e.target.value)}
               min="0"
               step="1"
+            />
+          </div>
+        </div>
+      )}
+
+      {formData.categoryId === 'light-power' && (
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <Input
+              id="capacityMah"
+              name="capacityMah"
+              label={t('itemForm.capacityMah')}
+              type="number"
+              value={formData.capacityMah}
+              onChange={(e) => handleChange('capacityMah', e.target.value)}
+              min="0"
+              step="1"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <Input
+              id="capacityWh"
+              name="capacityWh"
+              label={t('itemForm.capacityWh')}
+              type="number"
+              value={formData.capacityWh}
+              onChange={(e) => handleChange('capacityWh', e.target.value)}
+              min="0"
+              step="0.1"
             />
           </div>
         </div>

@@ -426,4 +426,173 @@ describe('ItemForm', () => {
     // Calories should be recalculated: 200g * 50kcal/100g = 100kcal
     expect(caloriesInput).toHaveValue(100);
   });
+
+  it('should show capacity fields for light-power category', () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={1}
+      />,
+    );
+
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+
+    // Initially no capacity fields visible
+    expect(document.querySelector('#capacityMah')).not.toBeInTheDocument();
+    expect(document.querySelector('#capacityWh')).not.toBeInTheDocument();
+
+    // Select light-power category
+    fireEvent.change(categorySelect, { target: { value: 'light-power' } });
+
+    // Capacity fields should now be visible
+    expect(document.querySelector('#capacityMah')).toBeInTheDocument();
+    expect(document.querySelector('#capacityWh')).toBeInTheDocument();
+  });
+
+  it('should not show capacity fields for non-power categories', () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={1}
+      />,
+    );
+
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+
+    // Select water category
+    fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
+
+    // Capacity fields should not be visible
+    expect(document.querySelector('#capacityMah')).not.toBeInTheDocument();
+    expect(document.querySelector('#capacityWh')).not.toBeInTheDocument();
+  });
+
+  it('should submit capacity values for power items', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={1}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+    const neverExpiresCheckbox = screen.getByRole('checkbox');
+
+    fireEvent.change(nameInput, { target: { value: 'Power Bank' } });
+    fireEvent.change(categorySelect, { target: { value: 'light-power' } });
+    fireEvent.change(quantityInput, { target: { value: '1' } });
+    fireEvent.click(neverExpiresCheckbox);
+
+    // Fill in capacity fields
+    const capacityMahInput = document.querySelector(
+      '#capacityMah',
+    ) as HTMLInputElement;
+    const capacityWhInput = document.querySelector(
+      '#capacityWh',
+    ) as HTMLInputElement;
+
+    fireEvent.change(capacityMahInput, { target: { value: '10000' } });
+    fireEvent.change(capacityWhInput, { target: { value: '37' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Power Bank',
+          categoryId: 'light-power',
+          capacityMah: 10000,
+          capacityWh: 37,
+        }),
+      );
+    });
+  });
+
+  it('should load existing capacity values when editing', () => {
+    const powerItem = createMockInventoryItem({
+      id: '1',
+      name: 'Power Bank',
+      categoryId: 'light-power',
+      quantity: 1,
+      unit: 'pieces',
+      neverExpires: true,
+      capacityMah: 20000,
+      capacityWh: 74,
+    });
+
+    render(
+      <ItemForm
+        item={powerItem}
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const capacityMahInput = document.querySelector(
+      '#capacityMah',
+    ) as HTMLInputElement;
+    const capacityWhInput = document.querySelector(
+      '#capacityWh',
+    ) as HTMLInputElement;
+
+    expect(capacityMahInput).toHaveValue(20000);
+    expect(capacityWhInput).toHaveValue(74);
+  });
+
+  it('should submit undefined capacity when fields are empty', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={1}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+    const neverExpiresCheckbox = screen.getByRole('checkbox');
+
+    fireEvent.change(nameInput, { target: { value: 'Flashlight' } });
+    fireEvent.change(categorySelect, { target: { value: 'light-power' } });
+    fireEvent.change(quantityInput, { target: { value: '2' } });
+    fireEvent.click(neverExpiresCheckbox);
+
+    // Don't fill in capacity fields
+
+    fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Flashlight',
+          categoryId: 'light-power',
+          capacityMah: undefined,
+          capacityWh: undefined,
+        }),
+      );
+    });
+  });
 });

@@ -282,6 +282,8 @@
     "recommendedQuantity": "Recommended Quantity",
     "weightGrams": "Weight per unit (g)",
     "caloriesPerUnit": "Calories per unit",
+    "capacityMah": "Capacity (mAh)",
+    "capacityWh": "Capacity (Wh)",
     "neverExpires": "Never Expires",
     "expirationDate": "Expiration Date",
     "location": "Location",

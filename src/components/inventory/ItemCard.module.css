@@ -63,7 +63,8 @@
 
 .expiration,
 .location,
-.calories {
+.calories,
+.capacity {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
 }

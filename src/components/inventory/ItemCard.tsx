@@ -82,6 +82,14 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
           </div>
         )}
 
+        {(item.capacityMah || item.capacityWh) && (
+          <div className={styles.capacity}>
+            🔋 {item.capacityMah && <span>{item.capacityMah} mAh</span>}
+            {item.capacityMah && item.capacityWh && ' / '}
+            {item.capacityWh && <span>{item.capacityWh} Wh</span>}
+          </div>
+        )}
+
         {item.location && (
           <div className={styles.location}>📍 {item.location}</div>
         )}

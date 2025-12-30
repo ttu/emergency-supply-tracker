@@ -282,6 +282,8 @@
     "recommendedQuantity": "Suositeltu Määrä",
     "weightGrams": "Paino/yksikkö (g)",
     "caloriesPerUnit": "Kalorit/yksikkö",
+    "capacityMah": "Kapasiteetti (mAh)",
+    "capacityWh": "Kapasiteetti (Wh)",
     "neverExpires": "Ei Vanhene",
     "expirationDate": "Vanhenemispäivä",
     "location": "Sijainti",

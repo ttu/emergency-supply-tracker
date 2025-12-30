@@ -85,6 +85,8 @@ export interface InventoryItem {
   productTemplateId?: string;
   weightGrams?: number; // Weight per unit in grams (e.g., one can weighs 400g)
   caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal)
+  capacityMah?: number; // Capacity in milliamp-hours (for powerbanks)
+  capacityWh?: number; // Capacity in watt-hours (for powerbanks)
   createdAt: string;
   updatedAt: string;
 }
@@ -118,6 +120,9 @@ export interface RecommendedItemDefinition {
   weightGramsPerUnit?: number; // Weight in grams per unit (e.g., 150g per can)
   caloriesPer100g?: number; // Calories per 100g of weight
   caloriesPerUnit?: number; // Calories per unit (calculated or direct value)
+  // Capacity for powerbanks
+  capacityMah?: number; // Capacity in milliamp-hours
+  capacityWh?: number; // Capacity in watt-hours
 }
 
 // App Data (root)

@@ -124,4 +124,52 @@ describe('ItemCard', () => {
     expect(card).not.toHaveAttribute('role', 'button');
     expect(card).not.toHaveAttribute('tabIndex');
   });
+
+  it('should display capacity in mAh when provided', () => {
+    const powerItem: InventoryItem = {
+      ...baseItem,
+      categoryId: 'light-power',
+      name: 'Power Bank',
+      capacityMah: 10000,
+    };
+    render(<ItemCard item={powerItem} />);
+    expect(screen.getByText('10000 mAh')).toBeInTheDocument();
+    expect(screen.getByText(/🔋/)).toBeInTheDocument();
+  });
+
+  it('should display capacity in Wh when provided', () => {
+    const powerItem: InventoryItem = {
+      ...baseItem,
+      categoryId: 'light-power',
+      name: 'Power Bank',
+      capacityWh: 37,
+    };
+    render(<ItemCard item={powerItem} />);
+    expect(screen.getByText('37 Wh')).toBeInTheDocument();
+    expect(screen.getByText(/🔋/)).toBeInTheDocument();
+  });
+
+  it('should display both mAh and Wh when both are provided', () => {
+    const powerItem: InventoryItem = {
+      ...baseItem,
+      categoryId: 'light-power',
+      name: 'Power Bank',
+      capacityMah: 20000,
+      capacityWh: 74,
+    };
+    render(<ItemCard item={powerItem} />);
+    expect(screen.getByText('20000 mAh')).toBeInTheDocument();
+    expect(screen.getByText('74 Wh')).toBeInTheDocument();
+    expect(screen.getByText(/🔋/)).toBeInTheDocument();
+  });
+
+  it('should not display capacity when not provided', () => {
+    const itemWithoutCapacity: InventoryItem = {
+      ...baseItem,
+      categoryId: 'light-power',
+      name: 'Flashlight',
+    };
+    render(<ItemCard item={itemWithoutCapacity} />);
+    expect(screen.queryByText(/🔋/)).not.toBeInTheDocument();
+  });
 });
