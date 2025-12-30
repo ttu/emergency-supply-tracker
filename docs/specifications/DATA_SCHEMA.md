@@ -659,10 +659,10 @@ interface RecommendedItemDefinition {
     "defaultExpirationMonths": null,
     "notes": "One per person"
   },
-  "aa-batteries": {
-    "id": "aa-batteries",
+  "batteries-aa": {
+    "id": "batteries-aa",
     "categoryId": "light-power",
-    "name": "AA Batteries",
+    "name": "Batteries AA",
     "baseQuantity": 20,
     "unit": "pieces",
     "scaleWithPeople": false,
@@ -789,8 +789,8 @@ Product templates for built-in items use this structure for translations.
     "aliases": ["White rice", "Long grain rice"],
     "description": "Dry rice that can be stored long-term"
   },
-  "aa-batteries": {
-    "name": "AA Batteries",
+  "batteries-aa": {
+    "name": "Batteries AA",
     "aliases": ["Double-A batteries", "AA cells"],
     "description": "Standard AA batteries for devices"
   },
@@ -820,9 +820,9 @@ Product templates for built-in items use this structure for translations.
     "aliases": ["Valkoriisi", "Pitkäjyväinen riisi"],
     "description": "Kuivariisi joka säilyy pitkään"
   },
-  "aa-batteries": {
-    "name": "AA-paristot",
-    "aliases": ["Paristot AA", "AA-kennot"],
+  "batteries-aa": {
+    "name": "Paristot AA",
+    "aliases": ["AA-paristot", "AA-kennot"],
     "description": "Tavalliset AA-paristot laitteisiin"
   },
   "first-aid-kit": {

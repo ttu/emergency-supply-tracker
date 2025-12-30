@@ -208,8 +208,8 @@ This document lists all recommended items for the Emergency Supply Tracker, orga
 - **Expiration**: 60 months
 - **Notes**: Gas canisters or liquid fuel
 
-### Waterproof Matches
-- **ID**: `waterproof-matches`
+### Matches
+- **ID**: `matches`
 - **Base Quantity**: 2
 - **Unit**: boxes
 - **Scales with People**: No
@@ -263,24 +263,24 @@ This document lists all recommended items for the Emergency Supply Tracker, orga
 - **Expiration**: null
 - **Notes**: One per person
 
-### AA Batteries
-- **ID**: `aa-batteries`
+### Batteries AA
+- **ID**: `batteries-aa`
 - **Base Quantity**: 20
 - **Unit**: pieces
 - **Scales with People**: No
 - **Scales with Days**: No
 - **Expiration**: 60 months
 
-### AAA Batteries
-- **ID**: `aaa-batteries`
+### Batteries AAA
+- **ID**: `batteries-aaa`
 - **Base Quantity**: 12
 - **Unit**: pieces
 - **Scales with People**: No
 - **Scales with Days**: No
 - **Expiration**: 60 months
 
-### D Batteries
-- **ID**: `d-batteries`
+### Batteries D
+- **ID**: `batteries-d`
 - **Base Quantity**: 8
 - **Unit**: pieces
 - **Scales with People**: No

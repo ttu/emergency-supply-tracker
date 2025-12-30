@@ -71,7 +71,7 @@ Items can scale based on household configuration:
 | -------------------- | ------------------ | -------- | --------- | ----------- | ---------- |
 | `camping-stove`      | Camping Stove      | 1        | pieces    | -           | -          |
 | `stove-fuel`         | Stove Fuel         | 3        | canisters | Days        | 60 months  |
-| `waterproof-matches` | Waterproof Matches | 2        | boxes     | -           | 60 months  |
+| `matches`            | Matches            | 2        | boxes     | -           | 60 months  |
 | `lighter`            | Lighter            | 2        | pieces    | -           | -          |
 | `candles`            | Candles            | 10       | pieces    | -           | -          |
 | `fire-starter`       | Fire Starter       | 1        | pieces    | -           | -          |
@@ -84,9 +84,9 @@ Items can scale based on household configuration:
 | ----------------- | --------------- | -------- | ------ | ----------- | ---------- |
 | `flashlight`      | Flashlight      | 2        | pieces | -           | -          |
 | `headlamp`        | Headlamp        | 1        | pieces | People      | -          |
-| `aa-batteries`    | AA Batteries    | 20       | pieces | -           | 60 months  |
-| `aaa-batteries`   | AAA Batteries   | 12       | pieces | -           | 60 months  |
-| `d-batteries`     | D Batteries     | 8        | pieces | -           | 60 months  |
+| `batteries-aa`    | Batteries AA    | 20       | pieces | -           | 60 months  |
+| `batteries-aaa`   | Batteries AAA   | 12       | pieces | -           | 60 months  |
+| `batteries-d`     | Batteries D     | 8        | pieces | -           | 60 months  |
 | `power-bank`      | Power Bank      | 1        | pieces | -           | -          |
 | `charging-cables` | Charging Cables | 2        | pieces | -           | -          |
 | `solar-charger`   | Solar Charger   | 1        | pieces | -           | -          |

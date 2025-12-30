@@ -128,8 +128,8 @@ const displayName = customTemplate.name;
     "aliases": ["Tinned fish", "Tuna", "Salmon"],
     "description": "Fish preserved in cans"
   },
-  "aa-batteries": {
-    "name": "AA Batteries",
+  "batteries-aa": {
+    "name": "Batteries AA",
     "aliases": ["Double-A batteries", "AA cells"],
     "description": "Standard AA batteries for devices"
   },
@@ -185,9 +185,9 @@ const displayName = customTemplate.name;
     "aliases": ["Kalasäilykkeet", "Tonnikala", "Lohi"],
     "description": "Säilytettyä kalaa tölkeissä"
   },
-  "aa-batteries": {
-    "name": "AA-paristot",
-    "aliases": ["Paristot AA", "AA-kennot"],
+  "batteries-aa": {
+    "name": "Paristot AA",
+    "aliases": ["AA-paristot", "AA-kennot"],
     "description": "Tavalliset AA-paristot laitteisiin"
   },
   "flashlight": {
