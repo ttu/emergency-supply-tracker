@@ -2,7 +2,7 @@
  * Error log localStorage operations.
  */
 
-import type { ErrorLogData, LogEntry } from './types';
+import type { ErrorLogData, LogEntry, LogLevel } from './types';
 
 const ERROR_LOG_STORAGE_KEY = 'emergencySupplyTracker_errorLogs';
 
@@ -10,6 +10,45 @@ const ERROR_LOG_STORAGE_KEY = 'emergencySupplyTracker_errorLogs';
  * Maximum number of log entries to store (to prevent localStorage bloat).
  */
 const MAX_LOG_ENTRIES = 500;
+
+/**
+ * Valid log levels for validation.
+ */
+const VALID_LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error'];
+
+/**
+ * Type guard to validate a LogEntry structure.
+ */
+function isValidLogEntry(entry: unknown): entry is LogEntry {
+  if (!entry || typeof entry !== 'object') return false;
+  const e = entry as Record<string, unknown>;
+  return (
+    typeof e.id === 'string' &&
+    typeof e.level === 'string' &&
+    VALID_LOG_LEVELS.includes(e.level as LogLevel) &&
+    typeof e.message === 'string' &&
+    typeof e.timestamp === 'string'
+  );
+}
+
+/**
+ * Type guard to validate ErrorLogData structure.
+ */
+function isValidErrorLogData(data: unknown): data is ErrorLogData {
+  if (!data || typeof data !== 'object') return false;
+  const d = data as Record<string, unknown>;
+
+  // logs must be an array (entries validated individually)
+  if (!Array.isArray(d.logs)) return false;
+
+  // sessionId and sessionStart are optional (can be populated with current session)
+  if (d.sessionId !== undefined && typeof d.sessionId !== 'string')
+    return false;
+  if (d.sessionStart !== undefined && typeof d.sessionStart !== 'string')
+    return false;
+
+  return true;
+}
 
 /**
  * Generate a unique session ID.
@@ -46,12 +85,32 @@ export function getErrorLogData(): ErrorLogData {
       };
     }
 
-    const data = JSON.parse(json) as ErrorLogData;
+    const parsed: unknown = JSON.parse(json);
+
+    if (!isValidErrorLogData(parsed)) {
+      console.error(
+        'Invalid error log data structure in localStorage, resetting to defaults',
+      );
+      return {
+        logs: [],
+        sessionId: session.id,
+        sessionStart: session.start,
+      };
+    }
+
+    // Filter out any invalid log entries
+    const validLogs = parsed.logs.filter(isValidLogEntry);
+    if (validLogs.length !== parsed.logs.length) {
+      console.warn(
+        `Filtered out ${parsed.logs.length - validLogs.length} invalid log entries`,
+      );
+    }
+
     // Preserve original session info if present, otherwise use current session
     return {
-      ...data,
-      sessionId: data.sessionId || session.id,
-      sessionStart: data.sessionStart || session.start,
+      logs: validLogs,
+      sessionId: parsed.sessionId || session.id,
+      sessionStart: parsed.sessionStart || session.start,
     };
   } catch (error) {
     console.error('Failed to load error log data:', error);
