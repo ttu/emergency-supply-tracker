@@ -7,6 +7,14 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
+  withTranslation: () => (Component: React.ComponentType) => {
+    const WrappedComponent = (props: Record<string, unknown>) => {
+      const t = (key: string) => key;
+      return <Component {...props} t={t} />;
+    };
+    WrappedComponent.displayName = `withTranslation(${Component.displayName || Component.name || 'Component'})`;
+    return WrappedComponent;
+  },
 }));
 
 // Helper to set up localStorage with onboarding completed

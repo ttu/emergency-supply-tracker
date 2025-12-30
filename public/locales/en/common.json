@@ -193,7 +193,19 @@
       "confirmMessage": "Are you sure you want to delete all your data? This cannot be undone.",
       "confirmAgain": "Last chance! This will permanently delete everything. Continue?",
       "success": "All data has been cleared"
+    },
+    "debugExport": {
+      "button": "Export Debug Log",
+      "description": "Download diagnostic data for troubleshooting issues",
+      "logCount": "{{count}} log entries recorded"
     }
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. Please try reloading the page.",
+    "details": "Error details",
+    "reload": "Reload Page",
+    "tryAgain": "Try Again"
   },
   "themes": {
     "light": "Light",
