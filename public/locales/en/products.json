@@ -46,6 +46,8 @@
   "power-bank": "Power Bank (Charged)",
   "charging-cables": "Charging Cables (USB-C, Lightning, Micro-USB)",
   "solar-charger": "Solar Charger or Hand Crank Charger",
+  "power-generator": "Gasoline Power Generator",
+  "generator-fuel": "Gasoline for Generator",
   "battery-radio": "Battery-Powered Radio",
   "hand-crank-radio": "Hand Crank Emergency Radio",
   "first-aid-kit": "First Aid Kit",
