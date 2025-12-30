@@ -47,11 +47,11 @@ export function getErrorLogData(): ErrorLogData {
     }
 
     const data = JSON.parse(json) as ErrorLogData;
-    // Update session info for current session
+    // Preserve original session info if present, otherwise use current session
     return {
       ...data,
-      sessionId: session.id,
-      sessionStart: session.start,
+      sessionId: data.sessionId || session.id,
+      sessionStart: data.sessionStart || session.start,
     };
   } catch (error) {
     console.error('Failed to load error log data:', error);
