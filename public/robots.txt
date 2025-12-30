@@ -1,0 +1,8 @@
+# robots.txt for Emergency Supply Tracker
+# https://www.emergencysupplytracker.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.emergencysupplytracker.com/sitemap.xml

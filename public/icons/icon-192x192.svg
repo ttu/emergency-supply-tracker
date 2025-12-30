@@ -7,5 +7,5 @@
   </defs>
   <rect width="192" height="192" fill="#ffffff"/>
   <path d="M96 20 L32 50 L32 90 C32 138 60 170 96 182 C132 170 160 138 160 90 L160 50 Z" fill="url(#shieldGradient)" stroke="#1e40af" stroke-width="4"/>
-  <path d="M84 116 L64 96 L72 88 L84 100 L120 64 L128 72 Z" fill="white"/>
+  <path d="M84 128 L64 108 L72 100 L84 112 L120 76 L128 84 Z" fill="white"/>
 </svg>
