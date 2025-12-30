@@ -287,6 +287,8 @@
     "caloriesPerUnit": "Kalorit/yksikkö",
     "capacityMah": "Kapasiteetti (mAh)",
     "capacityWh": "Kapasiteetti (Wh)",
+    "requiresWaterLiters": "Vettä valmistukseen (L/yks)",
+    "waterForPreparation": "valmistukseen",
     "neverExpires": "Ei Vanhene",
     "expirationDate": "Vanhenemispäivä",
     "location": "Sijainti",

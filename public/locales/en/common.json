@@ -287,6 +287,8 @@
     "caloriesPerUnit": "Calories per unit",
     "capacityMah": "Capacity (mAh)",
     "capacityWh": "Capacity (Wh)",
+    "requiresWaterLiters": "Water for preparation (L/unit)",
+    "waterForPreparation": "for preparation",
     "neverExpires": "Never Expires",
     "expirationDate": "Expiration Date",
     "location": "Location",

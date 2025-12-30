@@ -312,6 +312,7 @@ export function Inventory({
             defaultRecommendedQuantity={getDefaultRecommendedQuantity()}
             templateWeightGramsPerUnit={selectedTemplate?.weightGramsPerUnit}
             templateCaloriesPer100g={selectedTemplate?.caloriesPer100g}
+            templateRequiresWaterLiters={selectedTemplate?.requiresWaterLiters}
           />
           {editingItem?.id && (
             <div className={styles.deleteSection}>

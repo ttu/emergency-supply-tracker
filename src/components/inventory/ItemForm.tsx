@@ -17,6 +17,7 @@ export interface ItemFormProps {
   defaultRecommendedQuantity?: number;
   templateWeightGramsPerUnit?: number;
   templateCaloriesPer100g?: number;
+  templateRequiresWaterLiters?: number;
 }
 
 interface FormData {
@@ -32,6 +33,7 @@ interface FormData {
   notes: string;
   weightGrams: string;
   caloriesPerUnit: string;
+  requiresWaterLiters: string;
   capacityMah: string;
   capacityWh: string;
 }
@@ -51,6 +53,7 @@ export const ItemForm = ({
   defaultRecommendedQuantity = 1,
   templateWeightGramsPerUnit,
   templateCaloriesPer100g,
+  templateRequiresWaterLiters,
 }: ItemFormProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
@@ -75,6 +78,15 @@ export const ItemForm = ({
     return '';
   };
 
+  const getDefaultRequiresWaterLiters = (): string => {
+    if (item?.requiresWaterLiters !== undefined)
+      return item.requiresWaterLiters.toString();
+    if (templateRequiresWaterLiters !== undefined) {
+      return templateRequiresWaterLiters.toString();
+    }
+    return '';
+  };
+
   const [formData, setFormData] = useState<FormData>(() => ({
     itemType: item?.itemType || '',
     name: item?.name || '',
@@ -89,6 +101,7 @@ export const ItemForm = ({
     notes: item?.notes || '',
     weightGrams: getDefaultWeight(),
     caloriesPerUnit: getDefaultCalories(),
+    requiresWaterLiters: getDefaultRequiresWaterLiters(),
     capacityMah: item?.capacityMah?.toString() || '',
     capacityWh: item?.capacityWh?.toString() || '',
   }));
@@ -155,6 +168,9 @@ export const ItemForm = ({
         : undefined,
       caloriesPerUnit: formData.caloriesPerUnit
         ? parseFloat(formData.caloriesPerUnit)
+        : undefined,
+      requiresWaterLiters: formData.requiresWaterLiters
+        ? parseFloat(formData.requiresWaterLiters)
         : undefined,
       capacityMah: formData.capacityMah
         ? parseFloat(formData.capacityMah)
@@ -275,33 +291,52 @@ export const ItemForm = ({
       </div>
 
       {formData.categoryId === 'food' && (
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <Input
-              id="weightGrams"
-              name="weightGrams"
-              label={t('itemForm.weightGrams')}
-              type="number"
-              value={formData.weightGrams}
-              onChange={(e) => handleChange('weightGrams', e.target.value)}
-              min="0"
-              step="1"
-            />
+        <>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <Input
+                id="weightGrams"
+                name="weightGrams"
+                label={t('itemForm.weightGrams')}
+                type="number"
+                value={formData.weightGrams}
+                onChange={(e) => handleChange('weightGrams', e.target.value)}
+                min="0"
+                step="1"
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <Input
+                id="caloriesPerUnit"
+                name="caloriesPerUnit"
+                label={t('itemForm.caloriesPerUnit')}
+                type="number"
+                value={formData.caloriesPerUnit}
+                onChange={(e) =>
+                  handleChange('caloriesPerUnit', e.target.value)
+                }
+                min="0"
+                step="1"
+              />
+            </div>
           </div>
 
           <div className={styles.formGroup}>
             <Input
-              id="caloriesPerUnit"
-              name="caloriesPerUnit"
-              label={t('itemForm.caloriesPerUnit')}
+              id="requiresWaterLiters"
+              name="requiresWaterLiters"
+              label={t('itemForm.requiresWaterLiters')}
               type="number"
-              value={formData.caloriesPerUnit}
-              onChange={(e) => handleChange('caloriesPerUnit', e.target.value)}
+              value={formData.requiresWaterLiters}
+              onChange={(e) =>
+                handleChange('requiresWaterLiters', e.target.value)
+              }
               min="0"
-              step="1"
+              step="0.1"
             />
           </div>
-        </div>
+        </>
       )}
 
       {formData.categoryId === 'light-power' && (
