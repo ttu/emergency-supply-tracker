@@ -10,6 +10,7 @@ import {
   createMockInventoryItem,
   createMockHousehold,
 } from '../test/factories';
+import { DAILY_WATER_PER_PERSON } from '../constants';
 
 describe('calculateCategoryStatus', () => {
   const waterCategory = createMockCategory({
@@ -211,8 +212,8 @@ describe('calculateCategoryShortages', () => {
     useFreezer: false,
   });
 
-  // Water calculation tests - 3 liters per person per day
-  describe('water calculation - 3L per person per day', () => {
+  // Water calculation tests - DAILY_WATER_PER_PERSON liters per person per day
+  describe(`water calculation - ${DAILY_WATER_PER_PERSON}L per person per day`, () => {
     it('should calculate 9 liters for 1 adult, 3 days', () => {
       const oneAdultHousehold = createMockHousehold({
         adults: 1,
@@ -227,7 +228,7 @@ describe('calculateCategoryShortages', () => {
         oneAdultHousehold,
       );
 
-      // 1 adult × 3 days × 3L/day = 9 liters
+      // 1 adult × 3 days × DAILY_WATER_PER_PERSON = 9 liters
       // Formula: baseQuantity(9) × adults(1) × days(3/3) = 9
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
@@ -243,7 +244,7 @@ describe('calculateCategoryShortages', () => {
         household,
       );
 
-      // 2 adults × 3 days × 3L/day = 18 liters
+      // 2 adults × 3 days × DAILY_WATER_PER_PERSON = 18 liters
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );
@@ -265,7 +266,7 @@ describe('calculateCategoryShortages', () => {
         weekHousehold,
       );
 
-      // 2 adults × 7 days × 3L/day = 42 liters
+      // 2 adults × 7 days × DAILY_WATER_PER_PERSON = 42 liters
       // Formula: baseQuantity(9) × adults(2) × days(7/3) = 9 × 2 × 2.33 = 42
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
@@ -288,7 +289,7 @@ describe('calculateCategoryShortages', () => {
         familyHousehold,
       );
 
-      // (2 adults × 1.0 + 2 children × 0.75) × 3 days × 3L/day
+      // (2 adults × 1.0 + 2 children × 0.75) × 3 days × DAILY_WATER_PER_PERSON
       // = (2 + 1.5) × 9 = 3.5 × 9 = 31.5, rounded up to 32
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
@@ -312,7 +313,7 @@ describe('calculateCategoryShortages', () => {
       );
 
       // 0 adults + 1 child × 0.75 = 0.75 people equivalent
-      // 0.75 × 3 days × 3L/day = 6.75, rounded up to 7
+      // 0.75 × 3 days × DAILY_WATER_PER_PERSON = 6.75, rounded up to 7
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );

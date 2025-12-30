@@ -19,10 +19,10 @@ export const CHILDREN_REQUIREMENT_MULTIPLIER = 0.75;
 export const ADULT_REQUIREMENT_MULTIPLIER = 1.0;
 
 /**
- * Base supply duration in days that recommended quantities are calibrated for.
- * All base quantities assume this number of days, and scale proportionally.
+ * Daily water requirement per person in liters.
+ * Standard emergency preparedness recommendation: 3 liters per person per day.
  */
-export const BASE_SUPPLY_DURATION_DAYS = 3;
+export const DAILY_WATER_PER_PERSON = 3;
 
 // =============================================================================
 // CALORIE CONSTANTS

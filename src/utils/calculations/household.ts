@@ -2,15 +2,13 @@ import type { HouseholdConfig, RecommendedItemDefinition } from '../../types';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
-  BASE_SUPPLY_DURATION_DAYS,
 } from '../constants';
 
 export function calculateHouseholdMultiplier(config: HouseholdConfig): number {
   const peopleMultiplier =
     config.adults * ADULT_REQUIREMENT_MULTIPLIER +
     config.children * CHILDREN_REQUIREMENT_MULTIPLIER;
-  const daysMultiplier = config.supplyDurationDays / BASE_SUPPLY_DURATION_DAYS;
-  return peopleMultiplier * daysMultiplier;
+  return peopleMultiplier * config.supplyDurationDays;
 }
 
 export function calculateRecommendedQuantity(
@@ -27,9 +25,7 @@ export function calculateRecommendedQuantity(
   }
 
   if (item.scaleWithDays) {
-    const daysMultiplier =
-      household.supplyDurationDays / BASE_SUPPLY_DURATION_DAYS;
-    qty *= daysMultiplier;
+    qty *= household.supplyDurationDays;
   }
 
   return Math.ceil(qty);

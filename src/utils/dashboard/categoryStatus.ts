@@ -14,7 +14,6 @@ import { calculateCategoryPreparedness } from './preparedness';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
-  BASE_SUPPLY_DURATION_DAYS,
   DAILY_CALORIES_PER_PERSON,
   CRITICAL_PERCENTAGE_THRESHOLD,
   WARNING_PERCENTAGE_THRESHOLD,
@@ -136,10 +135,7 @@ export function calculateCategoryShortages(
     }
 
     if (recItem.scaleWithDays) {
-      // Base quantities are calibrated for BASE_SUPPLY_DURATION_DAYS, so divide for daily rate
-      const daysMultiplier =
-        household.supplyDurationDays / BASE_SUPPLY_DURATION_DAYS;
-      recommendedQty *= daysMultiplier;
+      recommendedQty *= household.supplyDurationDays;
     }
 
     recommendedQty = Math.ceil(recommendedQty);

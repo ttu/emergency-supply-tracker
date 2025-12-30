@@ -13,9 +13,9 @@ describe('calculateHouseholdMultiplier', () => {
       supplyDurationDays: 7,
       useFreezer: false,
     };
-    // (2 * 1.0 + 1 * 0.75) * (7 / 3) = 2.75 * 2.33 ≈ 6.42
+    // (2 * 1.0 + 1 * 0.75) * 7 = 2.75 * 7 = 19.25
     const result = calculateHouseholdMultiplier(config);
-    expect(result).toBeCloseTo(6.42, 1);
+    expect(result).toBeCloseTo(19.25, 1);
   });
 });
 
@@ -25,7 +25,7 @@ describe('calculateRecommendedQuantity', () => {
       id: 'water',
       i18nKey: 'products.water',
       category: 'water-beverages',
-      baseQuantity: 9,
+      baseQuantity: 3, // 3 liters per person per day
       unit: 'liters',
       scaleWithPeople: true,
       scaleWithDays: true,
@@ -36,7 +36,7 @@ describe('calculateRecommendedQuantity', () => {
       supplyDurationDays: 7,
       useFreezer: false,
     };
-    // 9 * 2 * (7/3) = 9 * 2 * 2.33 = 42
+    // 3 * 2 * 7 = 42 liters
     const result = calculateRecommendedQuantity(item, household);
     expect(result).toBe(42);
   });
