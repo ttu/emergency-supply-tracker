@@ -297,8 +297,10 @@ export function calculateCategoryStatus(
     categoryStatus = 'ok';
   }
 
-  // If inventory meets minimum needs, set progress to exactly 100%
-  const finalCompletionPercentage = hasEnough ? 100 : completionPercentage;
+  // Cap percentage at 100: exact 100 when enough, otherwise capped
+  const finalCompletionPercentage = hasEnough
+    ? 100
+    : Math.min(completionPercentage, 100);
 
   return {
     categoryId: category.id,
@@ -381,8 +383,10 @@ export function getCategoryDisplayStatus(
     ? 'ok'
     : getStatusFromPercentage(calculatedPercentage);
 
-  // If inventory meets minimum needs, set progress to exactly 100%
-  const completionPercentage = hasEnough ? 100 : calculatedPercentage;
+  // Cap percentage at 100: exact 100 when enough, otherwise capped
+  const completionPercentage = hasEnough
+    ? 100
+    : Math.min(calculatedPercentage, 100);
 
   return {
     status,
