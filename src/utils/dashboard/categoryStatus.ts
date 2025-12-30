@@ -48,6 +48,28 @@ export interface CategoryStatusSummary {
 }
 
 /**
+ * Check if a category has enough inventory based on actual vs needed quantities.
+ * For food category, uses calorie-based comparison; for others, uses quantity-based.
+ */
+function hasEnoughInventory(
+  categoryId: string,
+  shortageInfo: {
+    totalActual: number;
+    totalNeeded: number;
+    totalActualCalories?: number;
+    totalNeededCalories?: number;
+  },
+): boolean {
+  if (categoryId === 'food') {
+    return (
+      (shortageInfo.totalActualCalories ?? 0) >=
+      (shortageInfo.totalNeededCalories ?? 0)
+    );
+  }
+  return shortageInfo.totalActual >= shortageInfo.totalNeeded;
+}
+
+/**
  * Calculate shortages for a category based on recommended items.
  * For the 'food' category, uses calorie-based calculations instead of quantity-based.
  */
@@ -248,9 +270,17 @@ export function calculateCategoryStatus(
     else okCount++;
   });
 
+  // Calculate shortages if household config is provided
+  const shortageInfo = household
+    ? calculateCategoryShortages(category.id, items, household)
+    : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
+
   // Determine overall category status
   let categoryStatus: ItemStatus;
-  if (
+
+  if (household && hasEnoughInventory(category.id, shortageInfo)) {
+    categoryStatus = 'ok';
+  } else if (
     criticalCount > 0 ||
     completionPercentage < CRITICAL_PERCENTAGE_THRESHOLD
   ) {
@@ -263,11 +293,6 @@ export function calculateCategoryStatus(
   } else {
     categoryStatus = 'ok';
   }
-
-  // Calculate shortages if household config is provided
-  const shortageInfo = household
-    ? calculateCategoryShortages(category.id, items, household)
-    : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
 
   return {
     categoryId: category.id,
@@ -341,7 +366,11 @@ export function getCategoryDisplayStatus(
 
   const shortageInfo = calculateCategoryShortages(categoryId, items, household);
 
-  const status = getStatusFromPercentage(completionPercentage);
+  // Determine status: if we have enough inventory, the status should be OK
+  // regardless of optional recommended items
+  const status: ItemStatus = hasEnoughInventory(categoryId, shortageInfo)
+    ? 'ok'
+    : getStatusFromPercentage(completionPercentage);
 
   return {
     status,
