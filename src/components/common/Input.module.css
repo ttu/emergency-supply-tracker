@@ -31,10 +31,10 @@
   border-color: var(--color-primary-light);
 }
 
-.input:focus {
+.input:focus-visible {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
 }
 
 .input:disabled {
@@ -47,8 +47,8 @@
   border-color: var(--color-error);
 }
 
-.error:focus {
-  box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+.error:focus-visible {
+  box-shadow: 0 0 0 var(--focus-ring-width) rgba(244, 67, 54, 0.3);
 }
 
 .errorMessage {

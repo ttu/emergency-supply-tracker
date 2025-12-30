@@ -72,10 +72,10 @@
   min-height: 4rem;
 }
 
-.textarea:focus {
+.textarea:focus-visible {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
 }
 
 .actions {

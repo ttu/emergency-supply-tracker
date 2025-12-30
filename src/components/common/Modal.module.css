@@ -49,7 +49,7 @@
   }
 }
 
-.modal:focus {
+.modal:focus-visible {
   outline: none;
 }
 
@@ -90,9 +90,9 @@
   color: var(--color-text);
 }
 
-.backButton:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+.backButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .closeButton {
@@ -117,9 +117,9 @@
   color: var(--color-text);
 }
 
-.closeButton:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+.closeButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .content {

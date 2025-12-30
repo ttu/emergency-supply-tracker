@@ -1,3 +1,4 @@
+import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Category } from '../../types';
 import styles from './CategoryNav.module.css';
@@ -14,22 +15,85 @@ export const CategoryNav = ({
   onSelectCategory,
 }: CategoryNavProps) => {
   const { t } = useTranslation(['common', 'categories']);
+  const navRef = useRef<HTMLElement>(null);
+
+  // Create array with "All" as first item followed by categories
+  const allItems = useMemo(
+    () => [
+      { id: null as string | null, icon: '📦', isAll: true },
+      ...categories,
+    ],
+    [categories],
+  );
+
+  const currentIndex = allItems.findIndex(
+    (item) => item.id === selectedCategoryId,
+  );
+
+  // Use effectiveIndex for tabindex and keyboard navigation
+  // Falls back to 0 when selectedCategoryId is not found (-1)
+  const effectiveIndex = currentIndex === -1 ? 0 : currentIndex;
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      const itemCount = allItems.length;
+      let newIndex = effectiveIndex;
+
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault();
+          newIndex = effectiveIndex > 0 ? effectiveIndex - 1 : itemCount - 1;
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          newIndex = effectiveIndex < itemCount - 1 ? effectiveIndex + 1 : 0;
+          break;
+        case 'Home':
+          event.preventDefault();
+          newIndex = 0;
+          break;
+        case 'End':
+          event.preventDefault();
+          newIndex = itemCount - 1;
+          break;
+        default:
+          return;
+      }
+
+      if (newIndex !== effectiveIndex) {
+        const newItem = allItems[newIndex];
+        onSelectCategory(newItem.id);
+        // Focus the new button
+        const buttons = navRef.current?.querySelectorAll('button');
+        buttons?.[newIndex]?.focus();
+      }
+    },
+    [allItems, effectiveIndex, onSelectCategory],
+  );
+
+  const getTabIndex = (index: number) => (index === effectiveIndex ? 0 : -1);
 
   return (
-    <nav className={styles.nav} aria-label={t('inventory.categoryNavigation')}>
+    <nav
+      ref={navRef}
+      className={styles.nav}
+      aria-label={t('accessibility.categoryNavigation')}
+      onKeyDown={handleKeyDown}
+    >
       <button
         className={`${styles.categoryButton} ${
           selectedCategoryId === null ? styles.active : ''
         }`}
         onClick={() => onSelectCategory(null)}
         aria-current={selectedCategoryId === null ? 'page' : undefined}
+        tabIndex={getTabIndex(0)}
         data-testid="category-all"
       >
         <span className={styles.icon}>📦</span>
         <span className={styles.label}>{t('inventory.allCategories')}</span>
       </button>
 
-      {categories.map((category) => (
+      {categories.map((category, index) => (
         <button
           key={category.id}
           className={`${styles.categoryButton} ${
@@ -37,6 +101,7 @@ export const CategoryNav = ({
           }`}
           onClick={() => onSelectCategory(category.id)}
           aria-current={selectedCategoryId === category.id ? 'page' : undefined}
+          tabIndex={getTabIndex(index + 1)}
           data-testid={`category-${category.id}`}
         >
           <span className={styles.icon}>{category.icon}</span>

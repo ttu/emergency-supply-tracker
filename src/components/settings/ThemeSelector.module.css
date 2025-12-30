@@ -25,14 +25,45 @@
   border-color: var(--color-primary);
 }
 
-.select:focus {
+.select:focus-visible {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
 }
 
 .description {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   margin: 0;
+}
+
+.checkboxContainer {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+}
+
+.checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.checkbox:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.checkboxText {
+  color: var(--color-text);
+  font-size: var(--font-size-md);
 }

@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './Modal.module.css';
 
 export interface ModalProps {
@@ -19,6 +20,7 @@ export function Modal({
   children,
   size = 'medium',
 }: ModalProps) {
+  const { t } = useTranslation();
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -98,7 +100,7 @@ export function Modal({
               type="button"
               className={styles.backButton}
               onClick={onBack}
-              aria-label="Go back"
+              aria-label={t('accessibility.goBack')}
             >
               ←
             </button>
@@ -112,7 +114,7 @@ export function Modal({
             type="button"
             className={styles.closeButton}
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label={t('accessibility.closeModal')}
           >
             ×
           </button>

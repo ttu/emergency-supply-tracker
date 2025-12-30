@@ -2,6 +2,12 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Modal } from './Modal';
 
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
 describe('Modal', () => {
   const onClose = jest.fn();
 
@@ -46,7 +52,7 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    const closeButton = screen.getByLabelText('Close modal');
+    const closeButton = screen.getByLabelText('accessibility.closeModal');
     await user.click(closeButton);
     expect(onClose).toHaveBeenCalledTimes(1);
   });

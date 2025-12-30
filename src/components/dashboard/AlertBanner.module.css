@@ -79,9 +79,9 @@
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.dismissButton:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+.dismissButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 @media (max-width: 768px) {

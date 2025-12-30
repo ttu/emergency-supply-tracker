@@ -47,9 +47,9 @@
   transform: translateY(-2px);
 }
 
-.presetCard:focus {
-  outline: 2px solid #667eea;
-  outline-offset: 2px;
+.presetCard:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .presetCard.selected {

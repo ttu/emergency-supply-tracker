@@ -10,6 +10,12 @@ import { SettingsContext } from './SettingsContext';
 const DEFAULT_SETTINGS: UserSettings = {
   language: 'en',
   theme: 'light',
+  highContrast: false,
+  advancedFeatures: {
+    calorieTracking: false,
+    powerManagement: false,
+    waterTracking: false,
+  },
 };
 
 export function SettingsProvider({ children }: { children: ReactNode }) {

@@ -14,6 +14,12 @@ export function createDefaultAppData(): AppData {
     settings: {
       language: 'en',
       theme: 'light',
+      highContrast: false,
+      advancedFeatures: {
+        calorieTracking: false,
+        powerManagement: false,
+        waterTracking: false,
+      },
     },
     customCategories: [],
     items: [],

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { trackAppLaunch } from './utils/analytics';
 import { SettingsProvider } from './contexts/SettingsProvider';
 import { HouseholdProvider } from './contexts/HouseholdProvider';
@@ -17,6 +18,7 @@ import type { HouseholdConfig, InventoryItem } from './types';
 import './App.css';
 
 function AppContent() {
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [openInventoryModal, setOpenInventoryModal] = useState(false);
   const [initialCategoryId, setInitialCategoryId] = useState<
@@ -78,8 +80,13 @@ function AppContent() {
 
   return (
     <div className="app">
+      <a href="#main-content" className="skip-link">
+        {t('accessibility.skipToContent')}
+      </a>
       <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
-      <main className="main">{renderPage()}</main>
+      <main id="main-content" className="main">
+        {renderPage()}
+      </main>
     </div>
   );
 }
