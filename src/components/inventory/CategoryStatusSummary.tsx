@@ -106,7 +106,9 @@ export const CategoryStatusSummary = ({
         </div>
         {shortages.length > 0 && (
           <div className={styles.missingSection}>
-            <div className={styles.missingLabel}>{t('inventory.missing')}:</div>
+            <div className={styles.missingLabel}>
+              {t('inventory.recommended')}:
+            </div>
             <ul className={styles.missingList}>
               {getVisibleShortages().map((shortage) => (
                 <li key={shortage.itemId} className={styles.missingItem}>
@@ -129,7 +131,7 @@ export const CategoryStatusSummary = ({
         )}
         {isFoodCategory && missingCalories && missingCalories > 0 && (
           <div className={styles.missingCalories}>
-            {t('dashboard.category.missingCalories', {
+            {t('dashboard.category.recommendedCalories', {
               count: Math.round(missingCalories),
             })}
           </div>

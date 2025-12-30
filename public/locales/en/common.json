@@ -220,14 +220,14 @@
       "missing": "Need {{count}} {{unit}} {{item}}",
       "missingMultiple": "Need {{count}} {{unit}} {{item}} +{{more}} more",
       "kcal": "kcal",
-      "missingCalories": "Need {{count}} kcal more"
+      "recommendedCalories": "Recommended {{count}} kcal more"
     }
   },
   "inventory": {
     "categoryNavigation": "Category Navigation",
     "allCategories": "All",
     "noItems": "No items found",
-    "missing": "Missing",
+    "recommended": "Recommended",
     "showLess": "Show less",
     "expired": "Expired",
     "expiresIn": "Expires in {{days}} days",
