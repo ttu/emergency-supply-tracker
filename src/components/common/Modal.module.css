@@ -10,6 +10,7 @@
   justify-content: center;
   z-index: 1000;
   padding: var(--spacing-md);
+  overflow: hidden;
 }
 
 .modal {
@@ -20,19 +21,21 @@
   flex-direction: column;
   max-height: 90vh;
   width: 100%;
+  max-width: calc(100vw - var(--spacing-md) * 2);
   animation: modalFadeIn 0.2s ease-out;
+  overflow: hidden;
 }
 
 .modal.small {
-  max-width: 400px;
+  max-width: min(400px, calc(100vw - var(--spacing-md) * 2));
 }
 
 .modal.medium {
-  max-width: 600px;
+  max-width: min(600px, calc(100vw - var(--spacing-md) * 2));
 }
 
 .modal.large {
-  max-width: 800px;
+  max-width: min(800px, calc(100vw - var(--spacing-md) * 2));
 }
 
 @keyframes modalFadeIn {
@@ -121,6 +124,7 @@
 
 .content {
   padding: var(--spacing-lg);
+  overflow-x: hidden;
   overflow-y: auto;
   flex: 1;
 }
