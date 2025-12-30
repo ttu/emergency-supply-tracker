@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../hooks/useInventory';
 import { useHousehold } from '../hooks/useHousehold';
@@ -37,7 +37,14 @@ export function Inventory({
   initialCategoryId,
 }: InventoryProps = {}) {
   const { t } = useTranslation(['common', 'products']);
-  const { items, addItem, updateItem, deleteItem } = useInventory();
+  const {
+    items,
+    addItem,
+    updateItem,
+    deleteItem,
+    disableRecommendedItem,
+    disabledRecommendedItems,
+  } = useInventory();
   const { household } = useHousehold();
 
   // Filter and sort state
@@ -61,8 +68,13 @@ export function Inventory({
   // Calculate category status when a category is selected
   const categoryStatus = useMemo(() => {
     if (!selectedCategoryId) return null;
-    return getCategoryDisplayStatus(selectedCategoryId, items, household);
-  }, [selectedCategoryId, items, household]);
+    return getCategoryDisplayStatus(
+      selectedCategoryId,
+      items,
+      household,
+      disabledRecommendedItems,
+    );
+  }, [selectedCategoryId, items, household, disabledRecommendedItems]);
 
   // Filter items
   let filteredItems = items;
@@ -157,36 +169,39 @@ export function Inventory({
     }
   };
 
-  const handleSelectTemplate = (template: RecommendedItemDefinition) => {
-    const recommendedQty = calculateRecommendedQuantity(template, household);
-    const templateName = t(template.i18nKey.replace('products.', ''), {
-      ns: 'products',
-    });
+  const handleSelectTemplate = useCallback(
+    (template: RecommendedItemDefinition) => {
+      const recommendedQty = calculateRecommendedQuantity(template, household);
+      const templateName = t(template.i18nKey.replace('products.', ''), {
+        ns: 'products',
+      });
 
-    const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
-      name: templateName,
-      itemType: templateName, // Set the template type
-      categoryId: template.category,
-      quantity: 0,
-      unit: template.unit,
-      recommendedQuantity: recommendedQty,
-      neverExpires: !template.defaultExpirationMonths,
-      expirationDate: template.defaultExpirationMonths
-        ? new Date(
-            Date.now() +
-              template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
-          ).toISOString()
-        : undefined,
-      productTemplateId: template.id,
-      weightGrams: template.weightGramsPerUnit,
-      caloriesPerUnit: template.caloriesPerUnit,
-    };
+      const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
+        name: templateName,
+        itemType: templateName, // Set the template type
+        categoryId: template.category,
+        quantity: 0,
+        unit: template.unit,
+        recommendedQuantity: recommendedQty,
+        neverExpires: !template.defaultExpirationMonths,
+        expirationDate: template.defaultExpirationMonths
+          ? new Date(
+              Date.now() +
+                template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
+            ).toISOString()
+          : undefined,
+        productTemplateId: template.id,
+        weightGrams: template.weightGramsPerUnit,
+        caloriesPerUnit: template.caloriesPerUnit,
+      };
 
-    setSelectedTemplate(template);
-    setEditingItem(newItem as InventoryItem);
-    setShowTemplateModal(false);
-    setShowAddModal(true);
-  };
+      setSelectedTemplate(template);
+      setEditingItem(newItem as InventoryItem);
+      setShowTemplateModal(false);
+      setShowAddModal(true);
+    },
+    [household, t],
+  );
 
   const handleCancelForm = () => {
     setShowAddModal(false);
@@ -212,6 +227,25 @@ export function Inventory({
   const getDefaultRecommendedQuantity = (): number => {
     return Math.ceil(calculateHouseholdMultiplier(household));
   };
+
+  // Handler for adding a recommended item to inventory from status summary
+  const handleAddRecommendedToInventory = useCallback(
+    (itemId: string) => {
+      const template = RECOMMENDED_ITEMS.find((rec) => rec.id === itemId);
+      if (template) {
+        handleSelectTemplate(template);
+      }
+    },
+    [handleSelectTemplate],
+  );
+
+  // Handler for disabling a recommended item
+  const handleDisableRecommendedItem = useCallback(
+    (itemId: string) => {
+      disableRecommendedItem(itemId);
+    },
+    [disableRecommendedItem],
+  );
 
   return (
     <div className={styles.container}>
@@ -253,6 +287,8 @@ export function Inventory({
             totalActualCalories={categoryStatus.totalActualCalories}
             totalNeededCalories={categoryStatus.totalNeededCalories}
             missingCalories={categoryStatus.missingCalories}
+            onAddToInventory={handleAddRecommendedToInventory}
+            onDisableRecommended={handleDisableRecommendedItem}
           />
         )}
         <ItemList items={filteredItems} onItemClick={handleEditItem} />

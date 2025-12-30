@@ -25,6 +25,7 @@ export function createDefaultAppData(): AppData {
     items: [],
     customTemplates: [],
     dismissedAlertIds: [],
+    disabledRecommendedItems: [],
     lastModified: new Date().toISOString(),
   };
 }
@@ -73,6 +74,11 @@ export function importFromJSON(json: string): AppData {
   // Ensure dismissedAlertIds exists
   if (!data.dismissedAlertIds) {
     data.dismissedAlertIds = [];
+  }
+
+  // Ensure disabledRecommendedItems exists
+  if (!data.disabledRecommendedItems) {
+    data.disabledRecommendedItems = [];
   }
 
   return data as AppData;

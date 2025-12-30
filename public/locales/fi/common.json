@@ -119,6 +119,7 @@
       "appearance": "Ulkoasu",
       "household": "Kotitalouden Asetukset",
       "hiddenAlerts": "Piilotetut Hälytykset",
+      "disabledRecommendations": "Poistetut Suositukset",
       "dataManagement": "Tietojen Hallinta",
       "about": "Tietoja",
       "dangerZone": "Vaaravyöhyke"
@@ -128,6 +129,12 @@
       "description": "Sinulla on {{count}} piilotettua hälytystä. Nämä pysyvät piilossa kunnes ne aktivoidaan uudelleen.",
       "reactivate": "Näytä",
       "reactivateAll": "Näytä Kaikki Hälytykset"
+    },
+    "disabledRecommendations": {
+      "empty": "Ei poistettuja suosituksia",
+      "description": "Sinulla on {{count}} poistettua suositusta. Näitä tuotteita ei huomioida tilalaskelmissa.",
+      "reactivate": "Palauta",
+      "reactivateAll": "Palauta Kaikki Suositukset"
     },
     "about": {
       "version": "Versio",
@@ -239,6 +246,8 @@
     "editItem": "Muokkaa Tuotetta",
     "selectTemplate": "Valitse Tuote",
     "confirmDelete": "Haluatko varmasti poistaa tämän tuotteen?",
+    "addToInventory": "Lisää varastoon",
+    "disableRecommended": "Älä suosittele tätä tuotetta",
     "filter": {
       "status": "Suodata tilalla",
       "allStatuses": "Kaikki Tilat"

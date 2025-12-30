@@ -387,4 +387,76 @@ test.describe('Inventory Management', () => {
     await customItemButton.click();
     await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
   });
+
+  test('should show recommended items with action buttons when viewing a category', async ({
+    page,
+  }) => {
+    // Navigate to Inventory
+    await page.click('text=Inventory');
+
+    // Click on Water category to see category status
+    await page.click('button:has-text("Water")');
+
+    // Wait for category status summary to appear
+    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Should see action buttons (+ for add, × for disable) next to recommended items
+    const addButtons = page.locator('button:has-text("+")');
+    await expect(addButtons.first()).toBeVisible();
+  });
+
+  test('should add recommended item to inventory when clicking + button', async ({
+    page,
+  }) => {
+    // Navigate to Inventory
+    await page.click('text=Inventory');
+
+    // Click on Water category
+    await page.click('button:has-text("Water")');
+
+    // Wait for recommended items to appear
+    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Click the + button on the first recommended item
+    const addButton = page.locator('button:has-text("+")').first();
+    await addButton.click();
+
+    // Should open the item form modal
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+
+    // The form should have quantity 0 and item data pre-filled
+    const quantityInput = page.locator('input[name="quantity"]');
+    await expect(quantityInput).toHaveValue('0');
+  });
+
+  test('should disable recommended item when clicking × button', async ({
+    page,
+  }) => {
+    // Navigate to Inventory
+    await page.click('text=Inventory');
+
+    // Click on Water category
+    await page.click('button:has-text("Water")');
+
+    // Wait for recommended items to appear
+    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Count initial recommended items
+    const initialShortages = await page
+      .locator('[class*="missingItemText"]')
+      .count();
+
+    // Click the × button on the first recommended item
+    const disableButton = page.locator('button:has-text("×")').first();
+    await disableButton.click();
+
+    // Wait for the list to update
+    await page.waitForTimeout(300);
+
+    // The disabled item should no longer appear in the list
+    const finalShortages = await page
+      .locator('[class*="missingItemText"]')
+      .count();
+    expect(finalShortages).toBe(initialShortages - 1);
+  });
 });

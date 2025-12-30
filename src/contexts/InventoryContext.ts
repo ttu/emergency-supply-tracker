@@ -15,6 +15,11 @@ export interface InventoryContextValue {
   dismissAlert: (alertId: string) => void;
   reactivateAlert: (alertId: string) => void;
   reactivateAllAlerts: () => void;
+  // Disabled recommended items
+  disabledRecommendedItems: string[];
+  disableRecommendedItem: (itemId: string) => void;
+  enableRecommendedItem: (itemId: string) => void;
+  enableAllRecommendedItems: () => void;
 }
 
 export const InventoryContext = createContext<
