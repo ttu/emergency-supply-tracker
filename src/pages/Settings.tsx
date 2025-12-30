@@ -7,6 +7,7 @@ import { ImportButton } from '../components/settings/ImportButton';
 import { ShoppingListExport } from '../components/settings/ShoppingListExport';
 import { ClearDataButton } from '../components/settings/ClearDataButton';
 import { HiddenAlerts } from '../components/settings/HiddenAlerts';
+import { DisabledRecommendations } from '../components/settings/DisabledRecommendations';
 import styles from './Settings.module.css';
 
 export function Settings() {
@@ -44,6 +45,14 @@ export function Settings() {
             {t('settings.sections.hiddenAlerts')}
           </h2>
           <HiddenAlerts />
+        </section>
+
+        {/* Disabled Recommendations */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>
+            {t('settings.sections.disabledRecommendations')}
+          </h2>
+          <DisabledRecommendations />
         </section>
 
         {/* Data Management */}

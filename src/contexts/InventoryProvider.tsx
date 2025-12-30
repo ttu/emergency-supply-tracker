@@ -23,16 +23,23 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     const data = getAppData();
     return data?.dismissedAlertIds || [];
   });
+  const [disabledRecommendedItems, setDisabledRecommendedItems] = useState<
+    string[]
+  >(() => {
+    const data = getAppData();
+    return data?.disabledRecommendedItems || [];
+  });
 
-  // Save items and dismissedAlertIds to localStorage on change
+  // Save items, dismissedAlertIds, and disabledRecommendedItems to localStorage on change
   // Consolidated into single effect to avoid race conditions
   useEffect(() => {
     const data = getAppData() || createDefaultAppData();
     data.items = items;
     data.dismissedAlertIds = dismissedAlertIds;
+    data.disabledRecommendedItems = disabledRecommendedItems;
     data.lastModified = new Date().toISOString();
     saveAppData(data);
-  }, [items, dismissedAlertIds]);
+  }, [items, dismissedAlertIds, disabledRecommendedItems]);
 
   const addItem = (
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
@@ -87,6 +94,20 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     setDismissedAlertIds([]);
   }, []);
 
+  const disableRecommendedItem = useCallback((itemId: string) => {
+    setDisabledRecommendedItems((prev) =>
+      prev.includes(itemId) ? prev : [...prev, itemId],
+    );
+  }, []);
+
+  const enableRecommendedItem = useCallback((itemId: string) => {
+    setDisabledRecommendedItems((prev) => prev.filter((id) => id !== itemId));
+  }, []);
+
+  const enableAllRecommendedItems = useCallback(() => {
+    setDisabledRecommendedItems([]);
+  }, []);
+
   return (
     <InventoryContext.Provider
       value={{
@@ -100,6 +121,10 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         dismissAlert,
         reactivateAlert,
         reactivateAllAlerts,
+        disabledRecommendedItems,
+        disableRecommendedItem,
+        enableRecommendedItem,
+        enableAllRecommendedItems,
       }}
     >
       {children}

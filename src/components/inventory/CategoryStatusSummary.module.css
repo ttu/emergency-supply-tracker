@@ -92,6 +92,10 @@
   color: var(--color-text-secondary);
   padding-left: var(--spacing-sm);
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .missingItem::before {
@@ -99,6 +103,55 @@
   position: absolute;
   left: 0;
   color: var(--color-text-tertiary);
+}
+
+.missingItemText {
+  flex: 1;
+}
+
+.missingItemActions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.actionButton:hover {
+  opacity: 0.9;
+}
+
+.actionButton:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.actionButtonSecondary {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+.actionButtonSecondary:hover {
+  background-color: var(--color-background-secondary);
+  color: var(--color-text);
 }
 
 .expandButton {

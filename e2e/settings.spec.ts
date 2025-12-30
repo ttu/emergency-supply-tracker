@@ -93,4 +93,136 @@ test.describe('Settings', () => {
     await expect(githubLink).toHaveAttribute('target', '_blank');
     await expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
+
+  test('should display disabled recommendations section', async ({ page }) => {
+    await page.click('text=Settings');
+
+    // Verify disabled recommendations section exists
+    await expect(
+      page.locator('h2:has-text("Disabled Recommendations")'),
+    ).toBeVisible();
+
+    // Should show empty message when no items are disabled
+    await expect(
+      page.locator('text=No disabled recommendations'),
+    ).toBeVisible();
+  });
+
+  test('should show disabled item in settings after disabling from inventory', async ({
+    page,
+  }) => {
+    // First, disable an item from inventory
+    await page.click('text=Inventory');
+    await page.click('button:has-text("Water")');
+
+    // Wait for recommended items to appear
+    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Click the × button to disable the first recommended item
+    const disableButton = page.locator('button:has-text("×")').first();
+    await disableButton.click();
+
+    // Navigate to Settings
+    await page.click('text=Settings');
+
+    // Should see the Disabled Recommendations section with the item
+    await expect(
+      page.locator('h2:has-text("Disabled Recommendations")'),
+    ).toBeVisible();
+
+    // The disabled item should appear in the list
+    await expect(
+      page.locator('text=No disabled recommendations'),
+    ).not.toBeVisible();
+
+    // Should have an Enable button
+    await expect(page.locator('button:has-text("Enable")')).toBeVisible();
+  });
+
+  test('should re-enable disabled recommendation from settings', async ({
+    page,
+  }) => {
+    // First, disable an item from inventory
+    await page.click('text=Inventory');
+    await page.click('button:has-text("Water")');
+    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Count initial recommended items
+    const initialCount = await page
+      .locator('[class*="missingItemText"]')
+      .count();
+
+    // Disable the first item
+    await page.locator('button:has-text("×")').first().click();
+    await page.waitForTimeout(300);
+
+    // Verify item is disabled
+    const afterDisableCount = await page
+      .locator('[class*="missingItemText"]')
+      .count();
+    expect(afterDisableCount).toBe(initialCount - 1);
+
+    // Navigate to Settings and re-enable the item
+    await page.click('text=Settings');
+
+    // Click Enable button (not Enable All)
+    const enableButton = page
+      .locator('button', { hasText: /^Enable$/ })
+      .first();
+    await enableButton.click();
+
+    // Navigate back to inventory
+    await page.click('text=Inventory');
+    await page.click('button:has-text("Water")');
+
+    // Wait for list to update
+    await page.waitForTimeout(300);
+
+    // The item should be back in the recommended list
+    const finalCount = await page.locator('[class*="missingItemText"]').count();
+    expect(finalCount).toBe(initialCount);
+  });
+
+  test('should enable all disabled recommendations at once', async ({
+    page,
+  }) => {
+    // First, disable multiple items from inventory
+    await page.click('text=Inventory');
+    await page.click('button:has-text("Water")');
+    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Count initial recommended items
+    const initialCount = await page
+      .locator('[class*="missingItemText"]')
+      .count();
+
+    // Disable two items
+    await page.locator('button:has-text("×")').first().click();
+    await page.waitForTimeout(200);
+    await page.locator('button:has-text("×")').first().click();
+    await page.waitForTimeout(200);
+
+    // Navigate to Settings
+    await page.click('text=Settings');
+
+    // Should see Enable All button
+    const enableAllButton = page.locator(
+      'button:has-text("Enable All Recommendations")',
+    );
+    await expect(enableAllButton).toBeVisible();
+
+    // Click Enable All
+    await enableAllButton.click();
+
+    // Navigate back to inventory
+    await page.click('text=Inventory');
+    await page.click('button:has-text("Water")');
+
+    // Wait for list to update
+    await page.waitForTimeout(300);
+
+    // All items should be back
+    const finalCount = await page.locator('[class*="missingItemText"]').count();
+    expect(finalCount).toBe(initialCount);
+  });
 });

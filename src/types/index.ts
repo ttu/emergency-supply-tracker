@@ -129,6 +129,7 @@ export interface AppData {
   items: InventoryItem[];
   customTemplates: ProductTemplate[];
   dismissedAlertIds: string[]; // Alert IDs that have been dismissed by the user
+  disabledRecommendedItems: string[]; // Recommended item IDs that have been disabled by the user
   lastModified: string;
   lastBackupDate?: string; // ISO date of last export
   backupReminderDismissedUntil?: string; // ISO date (first of next month) - reminder hidden until this date

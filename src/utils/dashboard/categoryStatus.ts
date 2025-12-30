@@ -77,6 +77,7 @@ export function calculateCategoryShortages(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
+  disabledRecommendedItems: string[] = [],
 ): {
   shortages: CategoryShortage[];
   totalActual: number;
@@ -88,7 +89,9 @@ export function calculateCategoryShortages(
 } {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
   const recommendedForCategory = RECOMMENDED_ITEMS.filter(
-    (item) => item.category === categoryId,
+    (item) =>
+      item.category === categoryId &&
+      !disabledRecommendedItems.includes(item.id),
   );
 
   if (recommendedForCategory.length === 0) {
@@ -255,6 +258,7 @@ export function calculateCategoryStatus(
   items: InventoryItem[],
   completionPercentage: number,
   household?: HouseholdConfig,
+  disabledRecommendedItems: string[] = [],
 ): CategoryStatusSummary {
   const categoryItems = items.filter((item) => item.categoryId === category.id);
 
@@ -272,7 +276,12 @@ export function calculateCategoryStatus(
 
   // Calculate shortages if household config is provided
   const shortageInfo = household
-    ? calculateCategoryShortages(category.id, items, household)
+    ? calculateCategoryShortages(
+        category.id,
+        items,
+        household,
+        disabledRecommendedItems,
+      )
     : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
 
   // Determine overall category status
@@ -321,6 +330,7 @@ export function calculateAllCategoryStatuses(
   items: InventoryItem[],
   categoryPreparedness: Map<string, number>,
   household?: HouseholdConfig,
+  disabledRecommendedItems: string[] = [],
 ): CategoryStatusSummary[] {
   return categories.map((category) => {
     const completionPercentage = categoryPreparedness.get(category.id) || 0;
@@ -329,6 +339,7 @@ export function calculateAllCategoryStatuses(
       items,
       completionPercentage,
       household,
+      disabledRecommendedItems,
     );
   });
 }
@@ -357,14 +368,21 @@ export function getCategoryDisplayStatus(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
+  disabledRecommendedItems: string[] = [],
 ): CategoryDisplayStatus {
   const completionPercentage = calculateCategoryPreparedness(
     categoryId,
     items,
     household,
+    disabledRecommendedItems,
   );
 
-  const shortageInfo = calculateCategoryShortages(categoryId, items, household);
+  const shortageInfo = calculateCategoryShortages(
+    categoryId,
+    items,
+    household,
+    disabledRecommendedItems,
+  );
 
   // Determine status: if we have enough inventory, the status should be OK
   // regardless of optional recommended items

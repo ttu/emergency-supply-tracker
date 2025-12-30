@@ -84,10 +84,13 @@ export function calculateCategoryPreparedness(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
+  disabledRecommendedItems: string[] = [],
 ): number {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
   const recommendedForCategory = RECOMMENDED_ITEMS.filter(
-    (item) => item.category === categoryId,
+    (item) =>
+      item.category === categoryId &&
+      !disabledRecommendedItems.includes(item.id),
   );
 
   if (recommendedForCategory.length === 0) {

@@ -628,6 +628,158 @@ describe('calculateCategoryStatus - inventory-based status', () => {
   });
 });
 
+describe('calculateCategoryShortages with disabledRecommendedItems', () => {
+  const household = createMockHousehold({
+    adults: 2,
+    children: 0,
+    supplyDurationDays: 3,
+    useFreezer: false,
+  });
+
+  it('should exclude disabled recommended items from calculations', () => {
+    // Calculate shortages without any disabled items
+    const resultWithAll = calculateCategoryShortages(
+      'water-beverages',
+      [],
+      household,
+      [],
+    );
+
+    // bottled-water, long-life-milk, long-life-juice should all be in shortages
+    expect(resultWithAll.shortages.length).toBe(3);
+    expect(resultWithAll.shortages.map((s) => s.itemId)).toContain(
+      'bottled-water',
+    );
+    expect(resultWithAll.shortages.map((s) => s.itemId)).toContain(
+      'long-life-milk',
+    );
+    expect(resultWithAll.shortages.map((s) => s.itemId)).toContain(
+      'long-life-juice',
+    );
+
+    // Calculate shortages with bottled-water disabled
+    const resultWithDisabled = calculateCategoryShortages(
+      'water-beverages',
+      [],
+      household,
+      ['bottled-water'],
+    );
+
+    // Only long-life-milk and long-life-juice should be in shortages
+    expect(resultWithDisabled.shortages.length).toBe(2);
+    expect(resultWithDisabled.shortages.map((s) => s.itemId)).not.toContain(
+      'bottled-water',
+    );
+    expect(resultWithDisabled.shortages.map((s) => s.itemId)).toContain(
+      'long-life-milk',
+    );
+    expect(resultWithDisabled.shortages.map((s) => s.itemId)).toContain(
+      'long-life-juice',
+    );
+  });
+
+  it('should reduce totalNeeded when items are disabled', () => {
+    const resultWithAll = calculateCategoryShortages(
+      'water-beverages',
+      [],
+      household,
+      [],
+    );
+
+    const resultWithDisabled = calculateCategoryShortages(
+      'water-beverages',
+      [],
+      household,
+      ['bottled-water'],
+    );
+
+    // Total needed should be lower when bottled-water is disabled
+    expect(resultWithDisabled.totalNeeded).toBeLessThan(
+      resultWithAll.totalNeeded,
+    );
+  });
+
+  it('should return empty shortages when all recommended items are disabled', () => {
+    const result = calculateCategoryShortages(
+      'water-beverages',
+      [],
+      household,
+      ['bottled-water', 'long-life-milk', 'long-life-juice'],
+    );
+
+    expect(result.shortages).toEqual([]);
+    expect(result.totalNeeded).toBe(0);
+    expect(result.totalActual).toBe(0);
+    expect(result.primaryUnit).toBeNull();
+  });
+
+  it('should not affect items that are not in the disabled list', () => {
+    const result = calculateCategoryShortages(
+      'water-beverages',
+      [],
+      household,
+      ['non-existent-item'],
+    );
+
+    // All 3 water-beverages items should still be there
+    expect(result.shortages.length).toBe(3);
+  });
+});
+
+describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
+  const household = createMockHousehold({
+    adults: 2,
+    children: 0,
+    supplyDurationDays: 3,
+    useFreezer: false,
+  });
+
+  it('should exclude disabled items from status calculation', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'water-beverages',
+        quantity: 18, // Enough for bottled-water requirement
+        productTemplateId: 'bottled-water',
+      }),
+    ];
+
+    // With milk and juice disabled, we should have enough
+    const resultWithDisabled = getCategoryDisplayStatus(
+      'water-beverages',
+      items,
+      household,
+      ['long-life-milk', 'long-life-juice'],
+    );
+
+    // When milk and juice are disabled, only water matters, and we have enough
+    expect(resultWithDisabled.shortages.length).toBe(0);
+    expect(resultWithDisabled.status).toBe('ok');
+  });
+
+  it('should show ok status when all recommended items are disabled and there is inventory', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'water-beverages',
+        quantity: 10,
+        productTemplateId: 'bottled-water',
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus(
+      'water-beverages',
+      items,
+      household,
+      ['bottled-water', 'long-life-milk', 'long-life-juice'],
+    );
+
+    // When all items are disabled, status should be ok
+    expect(result.shortages.length).toBe(0);
+    expect(result.status).toBe('ok');
+  });
+});
+
 describe('getCategoryDisplayStatus', () => {
   const household = createMockHousehold({
     adults: 2,

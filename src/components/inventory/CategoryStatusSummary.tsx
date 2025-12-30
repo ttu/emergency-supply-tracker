@@ -26,6 +26,9 @@ export interface CategoryStatusSummaryProps {
   totalActualCalories?: number;
   totalNeededCalories?: number;
   missingCalories?: number;
+  // Action handlers for recommended items
+  onAddToInventory?: (itemId: string) => void;
+  onDisableRecommended?: (itemId: string) => void;
 }
 
 export const CategoryStatusSummary = ({
@@ -39,6 +42,8 @@ export const CategoryStatusSummary = ({
   totalActualCalories,
   totalNeededCalories,
   missingCalories,
+  onAddToInventory,
+  onDisableRecommended,
 }: CategoryStatusSummaryProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
@@ -112,7 +117,35 @@ export const CategoryStatusSummary = ({
             <ul className={styles.missingList}>
               {getVisibleShortages().map((shortage) => (
                 <li key={shortage.itemId} className={styles.missingItem}>
-                  {formatShortage(shortage)}
+                  <span className={styles.missingItemText}>
+                    {formatShortage(shortage)}
+                  </span>
+                  {(onAddToInventory || onDisableRecommended) && (
+                    <span className={styles.missingItemActions}>
+                      {onAddToInventory && (
+                        <button
+                          type="button"
+                          className={styles.actionButton}
+                          onClick={() => onAddToInventory(shortage.itemId)}
+                          title={t('inventory.addToInventory')}
+                          aria-label={t('inventory.addToInventory')}
+                        >
+                          +
+                        </button>
+                      )}
+                      {onDisableRecommended && (
+                        <button
+                          type="button"
+                          className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                          onClick={() => onDisableRecommended(shortage.itemId)}
+                          title={t('inventory.disableRecommended')}
+                          aria-label={t('inventory.disableRecommended')}
+                        >
+                          ×
+                        </button>
+                      )}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

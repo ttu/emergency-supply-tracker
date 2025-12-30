@@ -119,6 +119,7 @@
       "appearance": "Appearance",
       "household": "Household Configuration",
       "hiddenAlerts": "Hidden Alerts",
+      "disabledRecommendations": "Disabled Recommendations",
       "dataManagement": "Data Management",
       "about": "About",
       "dangerZone": "Danger Zone"
@@ -128,6 +129,12 @@
       "description": "You have {{count}} hidden alert(s). These will remain hidden until reactivated.",
       "reactivate": "Show",
       "reactivateAll": "Show All Alerts"
+    },
+    "disabledRecommendations": {
+      "empty": "No disabled recommendations",
+      "description": "You have {{count}} disabled recommendation(s). These items won't be included in status calculations.",
+      "reactivate": "Enable",
+      "reactivateAll": "Enable All Recommendations"
     },
     "about": {
       "version": "Version",
@@ -239,6 +246,8 @@
     "editItem": "Edit Item",
     "selectTemplate": "Select Item",
     "confirmDelete": "Are you sure you want to delete this item?",
+    "addToInventory": "Add to inventory",
+    "disableRecommended": "Don't recommend this item",
     "filter": {
       "status": "Filter by status",
       "allStatuses": "All Statuses"
