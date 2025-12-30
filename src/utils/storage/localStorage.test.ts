@@ -45,7 +45,11 @@ describe('localStorage utilities', () => {
       });
       const json = JSON.stringify(mockData);
       const imported = importFromJSON(json);
-      expect(imported).toEqual(mockData);
+      // onboardingCompleted is always set to true on import
+      expect(imported).toEqual({
+        ...mockData,
+        settings: { ...mockData.settings, onboardingCompleted: true },
+      });
     });
 
     it('imports data from JSON without customCategories field', () => {
@@ -98,6 +102,55 @@ describe('localStorage utilities', () => {
       const imported = importFromJSON(json);
 
       expect(imported.customTemplates).toEqual([]);
+    });
+
+    it('sets onboardingCompleted to true when settings exist', () => {
+      const mockData = createMockAppData({
+        settings: {
+          language: 'en',
+          theme: 'light',
+          highContrast: false,
+          advancedFeatures: {
+            calorieTracking: false,
+            powerManagement: false,
+            waterTracking: false,
+          },
+          onboardingCompleted: false,
+        },
+      });
+      const json = JSON.stringify(mockData);
+      const imported = importFromJSON(json);
+
+      expect(imported.settings.onboardingCompleted).toBe(true);
+    });
+
+    it('sets onboardingCompleted to true even when not present in imported data', () => {
+      const mockData = createMockAppData();
+      const dataWithoutOnboarding = {
+        version: mockData.version,
+        household: mockData.household,
+        settings: {
+          language: 'en',
+          theme: 'light',
+          highContrast: false,
+          advancedFeatures: {
+            calorieTracking: false,
+            powerManagement: false,
+            waterTracking: false,
+          },
+        },
+        items: mockData.items,
+        lastModified: mockData.lastModified,
+      };
+      const json = JSON.stringify(dataWithoutOnboarding);
+      const imported = importFromJSON(json);
+
+      expect(imported.settings.onboardingCompleted).toBe(true);
+    });
+
+    it('throws error for invalid JSON', () => {
+      const invalidJson = '{ invalid json }';
+      expect(() => importFromJSON(invalidJson)).toThrow();
     });
   });
 });
