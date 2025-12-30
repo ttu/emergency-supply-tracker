@@ -139,7 +139,7 @@ export const CategoryCard = ({
       <div className={styles.progressBar}>
         <div
           className={`${styles.progressFill} ${styles[`progress${status.charAt(0).toUpperCase()}${status.slice(1)}`]}`}
-          style={{ width: `${completionPercentage}%` }}
+          style={{ width: `${Math.min(completionPercentage, 100)}%` }}
         />
       </div>
     </div>
