@@ -147,8 +147,8 @@
     },
     {
       "id": "item-12",
-      "name": "AA Batteries",
-      "itemType": "AA Batteries",
+      "name": "Batteries AA",
+      "itemType": "Batteries AA",
       "categoryId": "communication-info",
       "quantity": 8,
       "unit": "pieces",

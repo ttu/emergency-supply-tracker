@@ -282,8 +282,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'waterproof-matches',
-    i18nKey: 'products.waterproof-matches',
+    id: 'matches',
+    i18nKey: 'products.matches',
     category: 'cooking-heat',
     baseQuantity: 2,
     unit: 'boxes',
@@ -341,8 +341,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'aa-batteries',
-    i18nKey: 'products.aa-batteries',
+    id: 'batteries-aa',
+    i18nKey: 'products.batteries-aa',
     category: 'light-power',
     baseQuantity: 20,
     unit: 'pieces',
@@ -351,8 +351,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'aaa-batteries',
-    i18nKey: 'products.aaa-batteries',
+    id: 'batteries-aaa',
+    i18nKey: 'products.batteries-aaa',
     category: 'light-power',
     baseQuantity: 12,
     unit: 'pieces',
@@ -361,8 +361,8 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'd-batteries',
-    i18nKey: 'products.d-batteries',
+    id: 'batteries-d',
+    i18nKey: 'products.batteries-d',
     category: 'light-power',
     baseQuantity: 8,
     unit: 'pieces',
