@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../hooks/useSettings';
+import { setLanguageInUrl } from '../../utils/urlLanguage';
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
@@ -10,6 +11,7 @@ export function LanguageSwitcher() {
   ) => {
     const newLanguage = event.target.value as 'en' | 'fi';
     updateSettings({ language: newLanguage });
+    setLanguageInUrl(newLanguage);
     i18n.changeLanguage(newLanguage).catch((error) => {
       console.error('Failed to change language:', error);
     });

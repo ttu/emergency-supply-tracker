@@ -6,6 +6,7 @@ import {
   createDefaultAppData,
 } from '../utils/storage/localStorage';
 import { SettingsContext } from './SettingsContext';
+import { getLanguageFromUrl, setLanguageInUrl } from '../utils/urlLanguage';
 
 const DEFAULT_SETTINGS: UserSettings = {
   language: 'en',
@@ -21,8 +22,23 @@ const DEFAULT_SETTINGS: UserSettings = {
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<UserSettings>(() => {
     const data = getAppData();
-    return data?.settings || DEFAULT_SETTINGS;
+    const storedSettings = data?.settings || DEFAULT_SETTINGS;
+
+    // If URL has a lang parameter, use it to override stored language
+    const urlLanguage = getLanguageFromUrl();
+    if (urlLanguage) {
+      return { ...storedSettings, language: urlLanguage };
+    }
+
+    return storedSettings;
   });
+
+  // Sync URL with language on initial load
+  useEffect(() => {
+    setLanguageInUrl(settings.language);
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Save to localStorage on change
   useEffect(() => {

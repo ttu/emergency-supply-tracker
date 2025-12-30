@@ -1,15 +1,22 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import HttpBackend from 'i18next-http-backend';
+import { getInitialLanguage } from '../utils/urlLanguage';
+import { getAppData } from '../utils/storage/localStorage';
 
 // Get base path from Vite's import.meta.env.BASE_URL
 const basePath = import.meta.env.BASE_URL || '/';
+
+// Determine initial language: URL param > localStorage > default ('en')
+const storedData = getAppData();
+const storedLanguage = storedData?.settings?.language;
+const initialLanguage = getInitialLanguage(storedLanguage);
 
 i18n
   .use(HttpBackend)
   .use(initReactI18next)
   .init({
-    lng: 'en', // default language
+    lng: initialLanguage, // language from URL param, localStorage, or default
     fallbackLng: 'en',
     ns: ['common', 'categories', 'products', 'units'],
     defaultNS: 'common',
