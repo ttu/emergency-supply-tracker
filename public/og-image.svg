@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a5f"/>
+      <stop offset="100%" style="stop-color:#0f172a"/>
+    </linearGradient>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="530" r="200" fill="#3b82f6" opacity="0.1"/>
+  <circle cx="1100" cy="100" r="150" fill="#3b82f6" opacity="0.1"/>
+
+  <!-- Shield Icon (scaled from favicon) -->
+  <g transform="translate(150, 240) scale(6.25)">
+    <path d="M16 2 L4 7 L4 14 C4 22 9 28 16 30 C23 28 28 22 28 14 L28 7 Z" fill="url(#shieldGradient)" stroke="#1e40af" stroke-width="1"/>
+    <path d="M14 20 L11 17 L12.5 15.5 L14 17 L19.5 11.5 L21 13 Z" fill="white"/>
+  </g>
+
+  <!-- Main Title -->
+  <text x="400" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="bold" fill="white">
+    Emergency Supply
+  </text>
+  <text x="400" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="bold" fill="white">
+    Tracker
+  </text>
+
+  <!-- Subtitle -->
+  <text x="400" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#94a3b8">
+    72-Hour Preparedness Planning
+  </text>
+
+  <!-- Feature pills -->
+  <g transform="translate(400, 480)">
+    <rect x="0" y="0" width="120" height="40" rx="20" fill="#3b82f6" opacity="0.3"/>
+    <text x="60" y="27" font-family="system-ui, sans-serif" font-size="18" fill="#93c5fd" text-anchor="middle">Free Tool</text>
+
+    <rect x="135" y="0" width="130" height="40" rx="20" fill="#3b82f6" opacity="0.3"/>
+    <text x="200" y="27" font-family="system-ui, sans-serif" font-size="18" fill="#93c5fd" text-anchor="middle">No Signup</text>
+
+    <rect x="280" y="0" width="160" height="40" rx="20" fill="#3b82f6" opacity="0.3"/>
+    <text x="360" y="27" font-family="system-ui, sans-serif" font-size="18" fill="#93c5fd" text-anchor="middle">Works Offline</text>
+  </g>
+
+  <!-- URL at bottom -->
+  <text x="600" y="590" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#64748b" text-anchor="middle">
+    www.emergencysupplytracker.com
+  </text>
+</svg>
