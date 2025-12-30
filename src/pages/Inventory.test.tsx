@@ -168,7 +168,7 @@ describe('Template to InventoryItem conversion', () => {
     // Simulate what handleSelectTemplate does in Inventory.tsx
     const newItem = {
       name: 'Bottled Water', // translated name
-      itemType: 'Bottled Water',
+      itemType: template.id, // Store template ID, not translated name
       categoryId: template.category,
       quantity: 0,
       unit: template.unit,
@@ -212,7 +212,7 @@ describe('Template to InventoryItem conversion', () => {
     // Simulate what handleSelectTemplate does in Inventory.tsx
     const newItem = {
       name: 'Canned Soup',
-      itemType: 'Canned Soup',
+      itemType: template.id, // Store template ID, not translated name
       categoryId: template.category,
       quantity: 0,
       unit: template.unit,

@@ -140,19 +140,15 @@ export function calculateCategoryShortages(
 
     recommendedQty = Math.ceil(recommendedQty);
 
-    // Match items by: productTemplateId, itemType (kebab-case comparison), or name
-    const recItemIdNormalized = recItem.id.toLowerCase();
+    // Match items by: productTemplateId, itemType (direct ID match), or name (normalized)
+    const recItemId = recItem.id;
+    const recItemIdNormalized = recItemId.toLowerCase();
     const matchingItems = categoryItems.filter((item) => {
       // Direct template ID match
-      if (item.productTemplateId === recItem.id) return true;
-      // Match itemType by normalizing to kebab-case (e.g., "Bottled Water" -> "bottled-water")
-      if (item.itemType) {
-        const itemTypeNormalized = item.itemType
-          .toLowerCase()
-          .replace(/\s+/g, '-');
-        if (itemTypeNormalized === recItemIdNormalized) return true;
-      }
-      // Match name by normalizing to kebab-case
+      if (item.productTemplateId === recItemId) return true;
+      // itemType is now stored as template ID directly
+      if (item.itemType === recItemId) return true;
+      // Match name by normalizing to kebab-case (for legacy/manual items)
       const nameNormalized = item.name.toLowerCase().replace(/\s+/g, '-');
       if (nameNormalized === recItemIdNormalized) return true;
       return false;
