@@ -220,14 +220,14 @@
       "missing": "Tarvitaan {{count}} {{unit}} {{item}}",
       "missingMultiple": "Tarvitaan {{count}} {{unit}} {{item}} +{{more}} muuta",
       "kcal": "kcal",
-      "missingCalories": "Tarvitaan {{count}} kcal lisää"
+      "recommendedCalories": "Suositeltu {{count}} kcal lisää"
     }
   },
   "inventory": {
     "categoryNavigation": "Kategorianavigaatio",
     "allCategories": "Kaikki",
     "noItems": "Ei tuotteita",
-    "missing": "Puuttuu",
+    "recommended": "Suositeltu",
     "showLess": "Näytä vähemmän",
     "expired": "Vanhentunut",
     "expiresIn": "Vanhenee {{days}} päivässä",

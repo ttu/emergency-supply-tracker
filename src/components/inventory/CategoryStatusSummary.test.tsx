@@ -26,7 +26,7 @@ jest.mock('react-i18next', () => ({
         'status.warning': 'Warning',
         'status.critical': 'Critical',
         'dashboard.category.kcal': 'kcal',
-        'inventory.missing': 'Missing',
+        'inventory.recommended': 'Recommended',
         'inventory.showLess': 'Show less',
       };
 
@@ -255,7 +255,7 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
-      expect(screen.getByText('Missing:')).toBeInTheDocument();
+      expect(screen.getByText('Recommended:')).toBeInTheDocument();
       expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
       expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
     });
@@ -273,7 +273,7 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
-      expect(screen.queryByText('Missing:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Recommended:')).not.toBeInTheDocument();
     });
 
     it('shows only first 3 items when more than 3 shortages', () => {
