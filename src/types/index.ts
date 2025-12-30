@@ -73,7 +73,7 @@ export interface Category {
 export interface InventoryItem {
   id: string;
   name: string;
-  itemType?: string; // Template type (e.g., "Canned Tuna"), read-only from template
+  itemType?: string; // Template ID (e.g., "canned-fish"), used for i18n lookup, read-only from template
   categoryId: string;
   quantity: number;
   unit: Unit;

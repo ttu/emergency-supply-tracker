@@ -185,7 +185,7 @@ Individual items tracked in the user's inventory:
 interface InventoryItem {
   id: string; // Unique identifier (UUID)
   name: string; // Item name (or i18n key reference)
-  itemType?: string; // Template type (e.g., "Canned Tuna")
+  itemType?: string; // Template ID (e.g., "canned-fish") for i18n lookup
   categoryId: string; // Category reference
   quantity: number; // Current quantity owned
   unit: Unit; // Measurement unit

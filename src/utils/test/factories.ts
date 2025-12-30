@@ -57,7 +57,7 @@ export function createMockInventoryItem(
   return {
     id: 'test-item-1',
     name: 'Test Item',
-    itemType: 'Test Item',
+    itemType: 'test-item', // Template ID (kebab-case)
     categoryId: 'food',
     quantity: 10,
     unit: 'pieces',

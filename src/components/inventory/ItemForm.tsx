@@ -213,7 +213,9 @@ export const ItemForm = ({
       {formData.itemType && (
         <div className={styles.formGroup}>
           <label className={styles.label}>{t('itemForm.itemType')}</label>
-          <div className={styles.itemTypeDisplay}>{formData.itemType}</div>
+          <div className={styles.itemTypeDisplay}>
+            {t(formData.itemType, { ns: 'products' })}
+          </div>
         </div>
       )}
 

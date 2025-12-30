@@ -178,7 +178,7 @@ export function Inventory({
 
       const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
         name: templateName,
-        itemType: templateName, // Set the template type
+        itemType: template.id, // Store template ID for i18n lookup
         categoryId: template.category,
         quantity: 0,
         unit: template.unit,

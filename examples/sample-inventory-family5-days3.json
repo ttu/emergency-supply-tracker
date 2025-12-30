@@ -19,7 +19,7 @@
     {
       "id": "item-1",
       "name": "Water container (red)",
-      "itemType": "Bottled Water",
+      "itemType": "bottled-water",
       "categoryId": "water-beverages",
       "quantity": 40,
       "unit": "liters",
@@ -30,7 +30,7 @@
     {
       "id": "item-2",
       "name": "Valio UHT Milk 1L",
-      "itemType": "Long-life Milk",
+      "itemType": "long-life-milk",
       "categoryId": "water-beverages",
       "quantity": 5,
       "unit": "liters",
@@ -41,7 +41,7 @@
     {
       "id": "item-3",
       "name": "Heinz Tomato Soup",
-      "itemType": "Canned Soup",
+      "itemType": "canned-soup",
       "categoryId": "food",
       "quantity": 20,
       "unit": "cans",
@@ -54,7 +54,7 @@
     {
       "id": "item-4",
       "name": "Del Monte Mixed Vegetables",
-      "itemType": "Canned Vegetables",
+      "itemType": "canned-vegetables",
       "categoryId": "food",
       "quantity": 8,
       "unit": "cans",
@@ -67,7 +67,7 @@
     {
       "id": "item-5",
       "name": "Uncle Ben's Long Grain Rice",
-      "itemType": "Rice",
+      "itemType": "rice",
       "categoryId": "food",
       "quantity": 10,
       "unit": "kilograms",
@@ -80,7 +80,7 @@
     {
       "id": "item-6",
       "name": "Barilla Spaghetti No. 5",
-      "itemType": "Pasta",
+      "itemType": "pasta",
       "categoryId": "food",
       "quantity": 3,
       "unit": "kilograms",
@@ -93,7 +93,7 @@
     {
       "id": "item-7",
       "name": "Johnson & Johnson Travel Kit",
-      "itemType": "First Aid Kit",
+      "itemType": "first-aid-kit",
       "categoryId": "medical-health",
       "quantity": 1,
       "unit": "pieces",
@@ -105,7 +105,7 @@
     {
       "id": "item-8",
       "name": "Ibuprofen 400mg",
-      "itemType": "Pain Relievers",
+      "itemType": "pain-relievers",
       "categoryId": "medical-health",
       "quantity": 2,
       "unit": "boxes",
@@ -116,7 +116,7 @@
     {
       "id": "item-9",
       "name": "Maglite LED Pro",
-      "itemType": "Flashlight",
+      "itemType": "flashlight",
       "categoryId": "light-power",
       "quantity": 3,
       "unit": "pieces",
@@ -128,7 +128,7 @@
     {
       "id": "item-10",
       "name": "IKEA FENOMEN Pillar Candles",
-      "itemType": "Candles",
+      "itemType": "candles",
       "categoryId": "light-power",
       "quantity": 12,
       "unit": "pieces",
@@ -140,7 +140,7 @@
     {
       "id": "item-16",
       "name": "Anker PowerCore",
-      "itemType": "Power Bank",
+      "itemType": "power-bank",
       "categoryId": "light-power",
       "quantity": 2,
       "unit": "pieces",
@@ -154,7 +154,7 @@
     {
       "id": "item-11",
       "name": "Sangean MMR-88 Emergency Radio",
-      "itemType": "Battery Radio",
+      "itemType": "battery-radio",
       "categoryId": "communication-info",
       "quantity": 1,
       "unit": "pieces",
@@ -166,7 +166,7 @@
     {
       "id": "item-12",
       "name": "Duracell Optimum AA",
-      "itemType": "Batteries AA",
+      "itemType": "batteries-aa",
       "categoryId": "communication-info",
       "quantity": 8,
       "unit": "pieces",
@@ -177,7 +177,7 @@
     {
       "id": "item-13",
       "name": "Lambi Classic 12-pack",
-      "itemType": "Toilet Paper",
+      "itemType": "toilet-paper",
       "categoryId": "hygiene-sanitation",
       "quantity": 24,
       "unit": "rolls",
@@ -189,7 +189,7 @@
     {
       "id": "item-14",
       "name": "Purell Advanced 500ml",
-      "itemType": "Hand Sanitizer",
+      "itemType": "hand-sanitizer",
       "categoryId": "hygiene-sanitation",
       "quantity": 3,
       "unit": "bottles",
@@ -200,7 +200,7 @@
     {
       "id": "item-15",
       "name": "SOL Emergency Bivvy",
-      "itemType": "Blankets",
+      "itemType": "emergency-blanket",
       "categoryId": "tools-supplies",
       "quantity": 4,
       "unit": "pieces",
