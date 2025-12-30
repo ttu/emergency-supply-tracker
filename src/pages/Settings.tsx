@@ -5,6 +5,7 @@ import { HouseholdForm } from '../components/settings/HouseholdForm';
 import { ExportButton } from '../components/settings/ExportButton';
 import { ImportButton } from '../components/settings/ImportButton';
 import { ShoppingListExport } from '../components/settings/ShoppingListExport';
+import { DebugExport } from '../components/settings/DebugExport';
 import { ClearDataButton } from '../components/settings/ClearDataButton';
 import { HiddenAlerts } from '../components/settings/HiddenAlerts';
 import styles from './Settings.module.css';
@@ -55,6 +56,7 @@ export function Settings() {
             <ExportButton />
             <ImportButton />
             <ShoppingListExport />
+            <DebugExport />
           </div>
         </section>
 

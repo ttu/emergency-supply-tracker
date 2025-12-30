@@ -186,7 +186,19 @@
       "confirmMessage": "Haluatko varmasti poistaa kaikki tietosi? Tätä ei voi perua.",
       "confirmAgain": "Viimeinen mahdollisuus! Tämä poistaa kaiken pysyvästi. Jatketaanko?",
       "success": "Kaikki tiedot on tyhjennetty"
+    },
+    "debugExport": {
+      "button": "Vie Virheloki",
+      "description": "Lataa diagnostiikkatiedot vianmääritystä varten",
+      "logCount": "{{count}} lokimerkintää tallennettu"
     }
+  },
+  "errorBoundary": {
+    "title": "Jotain meni pieleen",
+    "message": "Odottamaton virhe tapahtui. Yritä ladata sivu uudelleen.",
+    "details": "Virhetiedot",
+    "reload": "Lataa Sivu Uudelleen",
+    "tryAgain": "Yritä Uudelleen"
   },
   "themes": {
     "light": "Vaalea",
