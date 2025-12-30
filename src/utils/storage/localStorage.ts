@@ -58,8 +58,24 @@ export function exportToJSON(data: AppData): string {
   return JSON.stringify(data, null, 2);
 }
 
+/**
+ * Parses and normalizes imported JSON data into AppData format.
+ * Ensures required fields exist and sets onboardingCompleted to true
+ * since imported data represents an already-configured setup.
+ *
+ * @param json - JSON string containing app data to import
+ * @returns Parsed and normalized AppData object
+ * @throws Error if JSON parsing fails (invalid JSON format)
+ */
 export function importFromJSON(json: string): AppData {
-  const data = JSON.parse(json) as Partial<AppData>;
+  let data: Partial<AppData>;
+
+  try {
+    data = JSON.parse(json) as Partial<AppData>;
+  } catch (error) {
+    console.error('Failed to parse import JSON:', error);
+    throw error;
+  }
 
   // Ensure customCategories exists (only user's custom categories)
   if (!data.customCategories) {
@@ -79,6 +95,11 @@ export function importFromJSON(json: string): AppData {
   // Ensure disabledRecommendedItems exists
   if (!data.disabledRecommendedItems) {
     data.disabledRecommendedItems = [];
+  }
+
+  // When importing data, always skip onboarding since user has configured data
+  if (data.settings) {
+    data.settings.onboardingCompleted = true;
   }
 
   return data as AppData;
