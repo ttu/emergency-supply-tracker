@@ -81,5 +81,10 @@ export function importFromJSON(json: string): AppData {
     data.disabledRecommendedItems = [];
   }
 
+  // When importing data, always skip onboarding since user has configured data
+  if (data.settings) {
+    data.settings.onboardingCompleted = true;
+  }
+
   return data as AppData;
 }
