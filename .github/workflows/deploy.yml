@@ -18,6 +18,8 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+      - name: Generate version
+        run: echo "VITE_APP_VERSION=$(date +'%Y.%m.%d')-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - run: npm ci
       - run: npm run build
       - uses: actions/upload-pages-artifact@v4

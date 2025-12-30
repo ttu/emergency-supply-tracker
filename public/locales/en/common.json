@@ -138,7 +138,6 @@
     },
     "about": {
       "version": "Version",
-      "versionNumber": "0.0.0",
       "viewOnGitHub": "View on GitHub"
     },
     "language": {

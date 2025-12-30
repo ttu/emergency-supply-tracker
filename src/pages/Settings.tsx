@@ -9,6 +9,7 @@ import { DebugExport } from '../components/settings/DebugExport';
 import { ClearDataButton } from '../components/settings/ClearDataButton';
 import { HiddenAlerts } from '../components/settings/HiddenAlerts';
 import { DisabledRecommendations } from '../components/settings/DisabledRecommendations';
+import { APP_VERSION } from '../utils/version';
 import styles from './Settings.module.css';
 
 export function Settings() {
@@ -77,7 +78,7 @@ export function Settings() {
           <div className={styles.about}>
             <p className={styles.appName}>{t('app.title')}</p>
             <p className={styles.version}>
-              {t('settings.about.version')}: {t('settings.about.versionNumber')}
+              {t('settings.about.version')}: {APP_VERSION}
             </p>
             <p className={styles.description}>{t('app.tagline')}</p>
             <a
