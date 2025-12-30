@@ -284,10 +284,13 @@ export function calculateCategoryStatus(
       )
     : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
 
+  // Check if inventory meets the minimum requirements
+  const hasEnough = household && hasEnoughInventory(category.id, shortageInfo);
+
   // Determine overall category status
   let categoryStatus: ItemStatus;
 
-  if (household && hasEnoughInventory(category.id, shortageInfo)) {
+  if (hasEnough) {
     categoryStatus = 'ok';
   } else if (
     criticalCount > 0 ||
@@ -303,11 +306,16 @@ export function calculateCategoryStatus(
     categoryStatus = 'ok';
   }
 
+  // Cap percentage at 100: exact 100 when enough, otherwise capped
+  const finalCompletionPercentage = hasEnough
+    ? 100
+    : Math.min(completionPercentage, 100);
+
   return {
     categoryId: category.id,
     itemCount: categoryItems.length,
     status: categoryStatus,
-    completionPercentage,
+    completionPercentage: finalCompletionPercentage,
     criticalCount,
     warningCount,
     okCount,
@@ -370,7 +378,7 @@ export function getCategoryDisplayStatus(
   household: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
 ): CategoryDisplayStatus {
-  const completionPercentage = calculateCategoryPreparedness(
+  const calculatedPercentage = calculateCategoryPreparedness(
     categoryId,
     items,
     household,
@@ -384,11 +392,19 @@ export function getCategoryDisplayStatus(
     disabledRecommendedItems,
   );
 
+  // Check if inventory meets the minimum requirements
+  const hasEnough = hasEnoughInventory(categoryId, shortageInfo);
+
   // Determine status: if we have enough inventory, the status should be OK
   // regardless of optional recommended items
-  const status: ItemStatus = hasEnoughInventory(categoryId, shortageInfo)
+  const status: ItemStatus = hasEnough
     ? 'ok'
-    : getStatusFromPercentage(completionPercentage);
+    : getStatusFromPercentage(calculatedPercentage);
+
+  // Cap percentage at 100: exact 100 when enough, otherwise capped
+  const completionPercentage = hasEnough
+    ? 100
+    : Math.min(calculatedPercentage, 100);
 
   return {
     status,
