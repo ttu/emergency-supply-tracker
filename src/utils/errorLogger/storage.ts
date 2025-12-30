@@ -125,11 +125,15 @@ export function getErrorLogData(): ErrorLogData {
 
 export function saveErrorLogData(data: ErrorLogData): void {
   try {
-    // Trim logs if exceeding max
-    if (data.logs.length > MAX_LOG_ENTRIES) {
-      data.logs = data.logs.slice(-MAX_LOG_ENTRIES);
-    }
-    const json = JSON.stringify(data);
+    // Create sanitized copy, trimming logs if exceeding max
+    const sanitized: ErrorLogData = {
+      ...data,
+      logs:
+        data.logs.length > MAX_LOG_ENTRIES
+          ? data.logs.slice(-MAX_LOG_ENTRIES)
+          : data.logs,
+    };
+    const json = JSON.stringify(sanitized);
     localStorage.setItem(ERROR_LOG_STORAGE_KEY, json);
   } catch (error) {
     console.error('Failed to save error log data:', error);
