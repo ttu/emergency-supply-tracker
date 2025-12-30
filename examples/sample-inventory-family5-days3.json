@@ -18,10 +18,10 @@
   "items": [
     {
       "id": "item-1",
-      "name": "Bottled Water",
+      "name": "Water container (red)",
       "itemType": "Bottled Water",
       "categoryId": "water-beverages",
-      "quantity": 135,
+      "quantity": 40,
       "unit": "liters",
       "expirationDate": "2026-06-15",
       "notes": "Stored in garage",
@@ -29,7 +29,7 @@
     },
     {
       "id": "item-2",
-      "name": "Long-life Milk",
+      "name": "Valio UHT Milk 1L",
       "itemType": "Long-life Milk",
       "categoryId": "water-beverages",
       "quantity": 5,
@@ -40,7 +40,7 @@
     },
     {
       "id": "item-3",
-      "name": "Canned Soup",
+      "name": "Heinz Tomato Soup",
       "itemType": "Canned Soup",
       "categoryId": "food",
       "quantity": 20,
@@ -53,7 +53,7 @@
     },
     {
       "id": "item-4",
-      "name": "Canned Vegetables",
+      "name": "Del Monte Mixed Vegetables",
       "itemType": "Canned Vegetables",
       "categoryId": "food",
       "quantity": 8,
@@ -66,7 +66,7 @@
     },
     {
       "id": "item-5",
-      "name": "Rice",
+      "name": "Uncle Ben's Long Grain Rice",
       "itemType": "Rice",
       "categoryId": "food",
       "quantity": 10,
@@ -79,7 +79,7 @@
     },
     {
       "id": "item-6",
-      "name": "Pasta",
+      "name": "Barilla Spaghetti No. 5",
       "itemType": "Pasta",
       "categoryId": "food",
       "quantity": 3,
@@ -92,18 +92,19 @@
     },
     {
       "id": "item-7",
-      "name": "First Aid Kit",
+      "name": "Johnson & Johnson Travel Kit",
       "itemType": "First Aid Kit",
       "categoryId": "medical-health",
       "quantity": 1,
       "unit": "pieces",
       "expirationDate": null,
+      "neverExpires": true,
       "notes": "Comprehensive kit",
       "addedDate": "2024-08-15"
     },
     {
       "id": "item-8",
-      "name": "Pain Relievers",
+      "name": "Ibuprofen 400mg",
       "itemType": "Pain Relievers",
       "categoryId": "medical-health",
       "quantity": 2,
@@ -114,23 +115,25 @@
     },
     {
       "id": "item-9",
-      "name": "Flashlight",
+      "name": "Maglite LED Pro",
       "itemType": "Flashlight",
       "categoryId": "light-power",
       "quantity": 3,
       "unit": "pieces",
       "expirationDate": null,
+      "neverExpires": true,
       "notes": "LED, with batteries",
       "addedDate": "2024-12-05"
     },
     {
       "id": "item-10",
-      "name": "Candles",
+      "name": "IKEA FENOMEN Pillar Candles",
       "itemType": "Candles",
       "categoryId": "light-power",
       "quantity": 12,
       "unit": "pieces",
       "expirationDate": null,
+      "neverExpires": true,
       "notes": "Long-burning",
       "addedDate": "2024-11-01"
     },
@@ -142,6 +145,7 @@
       "quantity": 2,
       "unit": "pieces",
       "expirationDate": null,
+      "neverExpires": true,
       "notes": "For charging phones and tablets",
       "capacityMah": 20000,
       "capacityWh": 74,
@@ -149,18 +153,19 @@
     },
     {
       "id": "item-11",
-      "name": "Battery Radio",
+      "name": "Sangean MMR-88 Emergency Radio",
       "itemType": "Battery Radio",
       "categoryId": "communication-info",
       "quantity": 1,
       "unit": "pieces",
       "expirationDate": null,
+      "neverExpires": true,
       "notes": "Hand-crank backup",
       "addedDate": "2024-10-15"
     },
     {
       "id": "item-12",
-      "name": "Batteries AA",
+      "name": "Duracell Optimum AA",
       "itemType": "Batteries AA",
       "categoryId": "communication-info",
       "quantity": 8,
@@ -171,18 +176,19 @@
     },
     {
       "id": "item-13",
-      "name": "Toilet Paper",
+      "name": "Lambi Classic 12-pack",
       "itemType": "Toilet Paper",
       "categoryId": "hygiene-sanitation",
       "quantity": 24,
       "unit": "rolls",
       "expirationDate": null,
+      "neverExpires": true,
       "notes": "2 packs",
       "addedDate": "2024-11-20"
     },
     {
       "id": "item-14",
-      "name": "Hand Sanitizer",
+      "name": "Purell Advanced 500ml",
       "itemType": "Hand Sanitizer",
       "categoryId": "hygiene-sanitation",
       "quantity": 3,
@@ -193,12 +199,13 @@
     },
     {
       "id": "item-15",
-      "name": "Blankets",
+      "name": "SOL Emergency Bivvy",
       "itemType": "Blankets",
       "categoryId": "tools-supplies",
       "quantity": 4,
       "unit": "pieces",
       "expirationDate": null,
+      "neverExpires": true,
       "notes": "Emergency thermal blankets",
       "addedDate": "2024-10-10"
     }

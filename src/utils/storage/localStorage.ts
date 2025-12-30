@@ -97,6 +97,14 @@ export function importFromJSON(json: string): AppData {
     data.disabledRecommendedItems = [];
   }
 
+  // Normalize items: set neverExpires=true when expirationDate is null
+  if (data.items) {
+    data.items = data.items.map((item) => ({
+      ...item,
+      neverExpires: item.expirationDate === null ? true : item.neverExpires,
+    }));
+  }
+
   // When importing data, always skip onboarding since user has configured data
   if (data.settings) {
     data.settings.onboardingCompleted = true;

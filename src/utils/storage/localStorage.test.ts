@@ -152,5 +152,41 @@ describe('localStorage utilities', () => {
       const invalidJson = '{ invalid json }';
       expect(() => importFromJSON(invalidJson)).toThrow();
     });
+
+    it('sets neverExpires to true when expirationDate is null', () => {
+      const dataWithNullExpiration = {
+        version: '1.0.0',
+        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        settings: { language: 'en', theme: 'light', highContrast: false },
+        items: [
+          {
+            id: 'item-1',
+            name: 'Test Item',
+            categoryId: 'water',
+            quantity: 5,
+            unit: 'liters',
+            expirationDate: null,
+            neverExpires: false,
+          },
+          {
+            id: 'item-2',
+            name: 'Test Item 2',
+            categoryId: 'food',
+            quantity: 3,
+            unit: 'pieces',
+            expirationDate: '2025-12-31',
+            neverExpires: false,
+          },
+        ],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(dataWithNullExpiration);
+      const imported = importFromJSON(json);
+
+      // Item with null expirationDate should have neverExpires set to true
+      expect(imported.items[0].neverExpires).toBe(true);
+      // Item with valid expirationDate should keep original neverExpires value
+      expect(imported.items[1].neverExpires).toBe(false);
+    });
   });
 });
