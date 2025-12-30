@@ -1,7 +1,32 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { I18nextProvider } from 'react-i18next';
+import i18n from 'i18next';
 import { ErrorBoundary } from './ErrorBoundary';
+
+// Initialize i18n for tests
+i18n.init({
+  lng: 'en',
+  resources: {
+    en: {
+      common: {
+        errorBoundary: {
+          title: 'Something went wrong',
+          message:
+            'An unexpected error occurred. Please try reloading the page.',
+          details: 'Error details',
+          reload: 'Reload Page',
+          tryAgain: 'Try Again',
+        },
+      },
+    },
+  },
+  defaultNS: 'common',
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 // Component that throws an error
 function ThrowError({ shouldThrow }: { shouldThrow: boolean }) {
@@ -9,6 +34,11 @@ function ThrowError({ shouldThrow }: { shouldThrow: boolean }) {
     throw new Error('Test error');
   }
   return <div>No error</div>;
+}
+
+// Helper to wrap components with i18n provider
+function renderWithI18n(ui: React.ReactElement) {
+  return render(<I18nextProvider i18n={i18n}>{ui}</I18nextProvider>);
 }
 
 describe('ErrorBoundary', () => {
@@ -23,7 +53,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders children when there is no error', () => {
-    render(
+    renderWithI18n(
       <ErrorBoundary>
         <div>Child content</div>
       </ErrorBoundary>,
@@ -33,7 +63,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders error UI when a child throws', () => {
-    render(
+    renderWithI18n(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>,
@@ -44,7 +74,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('shows error message in error UI', () => {
-    render(
+    renderWithI18n(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>,
@@ -56,7 +86,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders error details section', () => {
-    render(
+    renderWithI18n(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>,
@@ -67,7 +97,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders reload and try again buttons', () => {
-    render(
+    renderWithI18n(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>,
@@ -84,7 +114,7 @@ describe('ErrorBoundary', () => {
   it('calls onError callback when error occurs', () => {
     const handleError = jest.fn();
 
-    render(
+    renderWithI18n(
       <ErrorBoundary onError={handleError}>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>,
@@ -97,7 +127,7 @@ describe('ErrorBoundary', () => {
   it('renders custom fallback when provided', () => {
     const customFallback = <div>Custom error UI</div>;
 
-    render(
+    renderWithI18n(
       <ErrorBoundary fallback={customFallback}>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>,
@@ -119,9 +149,11 @@ describe('ErrorBoundary', () => {
     };
 
     const { rerender } = render(
-      <ErrorBoundary>
-        <TestComponent />
-      </ErrorBoundary>,
+      <I18nextProvider i18n={i18n}>
+        <ErrorBoundary>
+          <TestComponent />
+        </ErrorBoundary>
+      </I18nextProvider>,
     );
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
@@ -133,9 +165,11 @@ describe('ErrorBoundary', () => {
 
     // Rerender to show recovered state
     rerender(
-      <ErrorBoundary>
-        <TestComponent />
-      </ErrorBoundary>,
+      <I18nextProvider i18n={i18n}>
+        <ErrorBoundary>
+          <TestComponent />
+        </ErrorBoundary>
+      </I18nextProvider>,
     );
 
     // After reset, should try to render children again

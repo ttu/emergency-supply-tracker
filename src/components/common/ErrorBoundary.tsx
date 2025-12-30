@@ -1,8 +1,9 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { logErrorBoundary } from '../../utils/errorLogger';
 import styles from './ErrorBoundary.module.css';
 
-export interface ErrorBoundaryProps {
+export interface ErrorBoundaryProps extends WithTranslation {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
@@ -13,7 +14,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-export class ErrorBoundary extends Component<
+class ErrorBoundaryComponent extends Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
 > {
@@ -43,6 +44,8 @@ export class ErrorBoundary extends Component<
   };
 
   render(): ReactNode {
+    const { t } = this.props;
+
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
@@ -54,13 +57,13 @@ export class ErrorBoundary extends Component<
             <div className={styles.icon} aria-hidden="true">
               ⚠️
             </div>
-            <h1 className={styles.title}>Something went wrong</h1>
-            <p className={styles.message}>
-              An unexpected error occurred. Please try reloading the page.
-            </p>
+            <h1 className={styles.title}>{t('errorBoundary.title')}</h1>
+            <p className={styles.message}>{t('errorBoundary.message')}</p>
             {this.state.error && (
               <details className={styles.details}>
-                <summary className={styles.summary}>Error details</summary>
+                <summary className={styles.summary}>
+                  {t('errorBoundary.details')}
+                </summary>
                 <pre className={styles.errorText}>
                   {this.state.error.message}
                 </pre>
@@ -72,14 +75,14 @@ export class ErrorBoundary extends Component<
                 className={styles.primaryButton}
                 onClick={this.handleReload}
               >
-                Reload Page
+                {t('errorBoundary.reload')}
               </button>
               <button
                 type="button"
                 className={styles.secondaryButton}
                 onClick={this.handleReset}
               >
-                Try Again
+                {t('errorBoundary.tryAgain')}
               </button>
             </div>
           </div>
@@ -90,3 +93,5 @@ export class ErrorBoundary extends Component<
     return this.props.children;
   }
 }
+
+export const ErrorBoundary = withTranslation()(ErrorBoundaryComponent);
