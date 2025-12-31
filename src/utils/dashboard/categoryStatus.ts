@@ -16,6 +16,7 @@ import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
   DAILY_CALORIES_PER_PERSON,
+  DAILY_WATER_PER_PERSON,
   CRITICAL_PERCENTAGE_THRESHOLD,
   WARNING_PERCENTAGE_THRESHOLD,
 } from '../constants';
@@ -28,6 +29,8 @@ export interface CategoryCalculationOptions {
   childrenMultiplier?: number;
   /** Daily calories per person (default: 2000) */
   dailyCaloriesPerPerson?: number;
+  /** Daily water per person in liters (default: 3) */
+  dailyWaterPerPerson?: number;
 }
 
 export interface CategoryShortage {
@@ -106,6 +109,7 @@ export function calculateCategoryShortages(
     options.childrenMultiplier ?? CHILDREN_REQUIREMENT_MULTIPLIER;
   const dailyCalories =
     options.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON;
+  const dailyWater = options.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON;
 
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
   const recommendedForCategory = RECOMMENDED_ITEMS.filter(
@@ -153,7 +157,10 @@ export function calculateCategoryShortages(
   const uniqueUnits = new Set<Unit>();
 
   recommendedForCategory.forEach((recItem) => {
-    let recommendedQty = recItem.baseQuantity;
+    // For bottled-water, use the user's daily water setting instead of the
+    // hardcoded baseQuantity from recommendedItems
+    let recommendedQty =
+      recItem.id === 'bottled-water' ? dailyWater : recItem.baseQuantity;
 
     if (recItem.scaleWithPeople) {
       recommendedQty *= peopleMultiplier;

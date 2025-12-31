@@ -29,6 +29,7 @@ import {
 } from '../utils/dashboard/categoryStatus';
 import {
   DAILY_CALORIES_PER_PERSON,
+  DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '../utils/constants';
 import styles from './Inventory.module.css';
@@ -64,8 +65,14 @@ export function Inventory({
           CHILDREN_REQUIREMENT_MULTIPLIER * 100) / 100,
       dailyCaloriesPerPerson:
         settings.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON,
+      dailyWaterPerPerson:
+        settings.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON,
     }),
-    [settings.childrenRequirementPercentage, settings.dailyCaloriesPerPerson],
+    [
+      settings.childrenRequirementPercentage,
+      settings.dailyCaloriesPerPerson,
+      settings.dailyWaterPerPerson,
+    ],
   );
 
   // Filter and sort state

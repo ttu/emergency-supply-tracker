@@ -25,6 +25,7 @@ import {
 } from '../utils/dashboard/backupReminder';
 import {
   DAILY_CALORIES_PER_PERSON,
+  DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '../utils/constants';
 import type { PageType } from '../components/common/Navigation';
@@ -55,8 +56,14 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
           CHILDREN_REQUIREMENT_MULTIPLIER * 100) / 100,
       dailyCaloriesPerPerson:
         settings.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON,
+      dailyWaterPerPerson:
+        settings.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON,
     }),
-    [settings.childrenRequirementPercentage, settings.dailyCaloriesPerPerson],
+    [
+      settings.childrenRequirementPercentage,
+      settings.dailyCaloriesPerPerson,
+      settings.dailyWaterPerPerson,
+    ],
   );
 
   // Calculate overall preparedness score
