@@ -11,6 +11,9 @@ import { ClearDataButton } from '../components/settings/ClearDataButton';
 import { HiddenAlerts } from '../components/settings/HiddenAlerts';
 import { DisabledRecommendations } from '../components/settings/DisabledRecommendations';
 import { OverriddenRecommendations } from '../components/settings/OverriddenRecommendations';
+import { RecommendationsStatus } from '../components/settings/RecommendationsStatus';
+import { ImportRecommendationsButton } from '../components/settings/ImportRecommendationsButton';
+import { ExportRecommendationsButton } from '../components/settings/ExportRecommendationsButton';
 import { APP_VERSION } from '../utils/version';
 import styles from './Settings.module.css';
 
@@ -73,6 +76,18 @@ export function Settings() {
             {t('settings.sections.overriddenRecommendations')}
           </h2>
           <OverriddenRecommendations />
+        </section>
+
+        {/* Recommended Items */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>
+            {t('settings.sections.recommendedItems')}
+          </h2>
+          <RecommendationsStatus />
+          <div className={styles.dataButtons}>
+            <ImportRecommendationsButton />
+            <ExportRecommendationsButton />
+          </div>
         </section>
 
         {/* Data Management */}

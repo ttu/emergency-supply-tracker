@@ -1,4 +1,8 @@
-import type { InventoryItem, HouseholdConfig } from '../../types';
+import type {
+  InventoryItem,
+  HouseholdConfig,
+  RecommendedItemDefinition,
+} from '../../types';
 import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
 import {
   MAX_ITEM_SCORE,
@@ -13,9 +17,10 @@ import {
 export function calculatePreparednessScore(
   items: InventoryItem[],
   household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
 ): number {
   // Get recommended items for this household
-  const recommendedForHousehold = RECOMMENDED_ITEMS.filter((item) => {
+  const recommendedForHousehold = recommendedItems.filter((item) => {
     // Skip frozen items if not using freezer
     if (item.requiresFreezer && !household.useFreezer) {
       return false;
@@ -85,9 +90,10 @@ export function calculateCategoryPreparedness(
   items: InventoryItem[],
   household: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
 ): number {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
-  const recommendedForCategory = RECOMMENDED_ITEMS.filter(
+  const recommendedForCategory = recommendedItems.filter(
     (item) =>
       item.category === categoryId &&
       !disabledRecommendedItems.includes(item.id),

@@ -397,6 +397,8 @@ export function importFromJSON(json: string): AppData {
     data.disabledRecommendedItems = [];
   }
 
+  // customRecommendedItems is optional - preserve if present, otherwise leave undefined
+
   // Normalize items: migrate legacy itemType values and set neverExpires flag
   if (data.items) {
     // First normalize itemType values (migrate legacy translated names to template IDs)

@@ -142,6 +142,45 @@ export interface RecommendedItemDefinition {
   requiresWaterLiters?: number; // Liters of water required per unit for preparation (must be > 0 if set)
 }
 
+// Localized names object for imported items (keyed by language code)
+export type LocalizedNames = Record<string, string>; // e.g., { en: "Water", fi: "Vesi", sv: "Vatten" }
+
+// Imported Recommended Item (supports inline translations for custom items)
+export interface ImportedRecommendedItem {
+  id: string;
+  i18nKey?: string; // Use built-in translation key (e.g., "products.bottled-water")
+  names?: LocalizedNames; // OR inline localized names: { en: "Water", fi: "Vesi" }
+  category: StandardCategoryId;
+  baseQuantity: number;
+  unit: Unit;
+  scaleWithPeople: boolean;
+  scaleWithDays: boolean;
+  requiresFreezer?: boolean;
+  defaultExpirationMonths?: number;
+  weightGramsPerUnit?: number;
+  caloriesPer100g?: number;
+  caloriesPerUnit?: number;
+  capacityMah?: number;
+  capacityWh?: number;
+  requiresWaterLiters?: number;
+}
+
+// Recommended Items File Metadata
+export interface RecommendedItemsFileMeta {
+  name: string; // e.g., "Finnish Family Kit"
+  version: string; // e.g., "1.0.0"
+  description?: string;
+  source?: string; // e.g., "72tuntia.fi", URL
+  createdAt: string; // ISO timestamp
+  language?: 'en' | 'fi'; // Primary language of inline names
+}
+
+// Recommended Items File (for import/export)
+export interface RecommendedItemsFile {
+  meta: RecommendedItemsFileMeta;
+  items: ImportedRecommendedItem[];
+}
+
 // App Data (root)
 export interface AppData {
   version: string;
@@ -152,6 +191,7 @@ export interface AppData {
   customTemplates: ProductTemplate[];
   dismissedAlertIds: string[]; // Alert IDs that have been dismissed by the user
   disabledRecommendedItems: string[]; // Recommended item IDs that have been disabled by the user
+  customRecommendedItems?: RecommendedItemsFile | null; // Custom imported recommendations (null = use built-in)
   lastModified: string;
   lastBackupDate?: string; // ISO date of last export
   backupReminderDismissedUntil?: string; // ISO date (first of next month) - reminder hidden until this date

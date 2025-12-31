@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "name": "My Custom Recommendations",
+    "version": "1.0.0",
+    "description": "A template for creating custom emergency supply recommendations",
+    "source": "https://example.com",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "language": "en"
+  },
+  "items": [
+    {
+      "id": "water-example",
+      "names": {
+        "en": "Drinking Water",
+        "fi": "Juomavesi",
+        "sv": "Dricksvatten"
+      },
+      "category": "water-beverages",
+      "baseQuantity": 3,
+      "unit": "liters",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "canned-food-example",
+      "names": {
+        "en": "Canned Food",
+        "fi": "Säilykkeet",
+        "sv": "Konservmat"
+      },
+      "category": "food",
+      "baseQuantity": 2,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 400,
+      "caloriesPer100g": 100,
+      "caloriesPerUnit": 400
+    },
+    {
+      "id": "flashlight-example",
+      "names": {
+        "en": "Flashlight",
+        "fi": "Taskulamppu",
+        "sv": "Ficklampa"
+      },
+      "category": "light-power",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "first-aid-kit-example",
+      "names": {
+        "en": "First Aid Kit",
+        "fi": "Ensiapupakkaus",
+        "sv": "Förstahjälpenkit"
+      },
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    }
+  ]
+}

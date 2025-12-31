@@ -4,6 +4,7 @@ import type {
   Category,
   HouseholdConfig,
   Unit,
+  RecommendedItemDefinition,
 } from '../../types';
 import {
   calculateItemStatus,
@@ -95,6 +96,7 @@ export function calculateCategoryShortages(
   items: InventoryItem[],
   household: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   options: CategoryCalculationOptions = {},
 ): {
   shortages: CategoryShortage[];
@@ -114,7 +116,7 @@ export function calculateCategoryShortages(
   const dailyWater = options.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON;
 
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
-  const recommendedForCategory = RECOMMENDED_ITEMS.filter(
+  const recommendedForCategory = recommendedItems.filter(
     (item) =>
       item.category === categoryId &&
       !disabledRecommendedItems.includes(item.id),
@@ -319,6 +321,7 @@ export function calculateCategoryStatus(
   completionPercentage: number,
   household?: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   options: CategoryCalculationOptions = {},
 ): CategoryStatusSummary {
   const categoryItems = items.filter((item) => item.categoryId === category.id);
@@ -342,6 +345,7 @@ export function calculateCategoryStatus(
         items,
         household,
         disabledRecommendedItems,
+        recommendedItems,
         options,
       )
     : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
@@ -404,6 +408,7 @@ export function calculateAllCategoryStatuses(
   categoryPreparedness: Map<string, number>,
   household?: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   options: CategoryCalculationOptions = {},
 ): CategoryStatusSummary[] {
   return categories.map((category) => {
@@ -414,6 +419,7 @@ export function calculateAllCategoryStatuses(
       completionPercentage,
       household,
       disabledRecommendedItems,
+      recommendedItems,
       options,
     );
   });
@@ -447,6 +453,7 @@ export function getCategoryDisplayStatus(
   items: InventoryItem[],
   household: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   options: CategoryCalculationOptions = {},
 ): CategoryDisplayStatus {
   const calculatedPercentage = calculateCategoryPreparedness(
@@ -454,6 +461,7 @@ export function getCategoryDisplayStatus(
     items,
     household,
     disabledRecommendedItems,
+    recommendedItems,
   );
 
   const shortageInfo = calculateCategoryShortages(
@@ -461,6 +469,7 @@ export function getCategoryDisplayStatus(
     items,
     household,
     disabledRecommendedItems,
+    recommendedItems,
     options,
   );
 

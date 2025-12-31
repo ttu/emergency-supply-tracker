@@ -8,6 +8,7 @@ import { Button } from '../components/common/Button';
 import { useInventory } from '../hooks/useInventory';
 import { useHousehold } from '../hooks/useHousehold';
 import { useSettings } from '../hooks/useSettings';
+import { useRecommendedItems } from '../hooks/useRecommendedItems';
 import { STANDARD_CATEGORIES } from '../data/standardCategories';
 import {
   calculatePreparednessScore,
@@ -46,6 +47,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
     useInventory();
   const { household } = useHousehold();
   const { settings } = useSettings();
+  const { recommendedItems } = useRecommendedItems();
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
 
   // Build calculation options from user settings
@@ -68,8 +70,8 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
 
   // Calculate overall preparedness score
   const preparednessScore = useMemo(
-    () => calculatePreparednessScore(items, household),
-    [items, household],
+    () => calculatePreparednessScore(items, household, recommendedItems),
+    [items, household, recommendedItems],
   );
 
   // Calculate per-category preparedness
@@ -80,11 +82,13 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         category.id,
         items,
         household,
+        [],
+        recommendedItems,
       );
       map.set(category.id, score);
     });
     return map;
-  }, [items, household]);
+  }, [items, household, recommendedItems]);
 
   // Calculate category statuses
   const categoryStatuses = useMemo(
@@ -95,9 +99,10 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         categoryPreparedness,
         household,
         [], // disabledRecommendedItems
+        recommendedItems,
         calculationOptions,
       ),
-    [items, categoryPreparedness, household, calculationOptions],
+    [items, categoryPreparedness, household, recommendedItems, calculationOptions],
   );
 
   // Generate alerts (including water shortage alerts)
