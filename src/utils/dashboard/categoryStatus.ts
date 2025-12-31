@@ -9,6 +9,7 @@ import {
   calculateItemStatus,
   getStatusFromPercentage,
 } from '../calculations/status';
+import { calculateTotalWaterRequired } from '../calculations/water';
 import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
 import { calculateCategoryPreparedness } from './preparedness';
 import {
@@ -44,6 +45,8 @@ export interface CategoryStatusSummary {
   totalActualCalories?: number;
   totalNeededCalories?: number;
   missingCalories?: number;
+  // Water for food preparation (for water-beverages category)
+  preparationWaterNeeded?: number;
 }
 
 /**
@@ -71,6 +74,7 @@ function hasEnoughInventory(
 /**
  * Calculate shortages for a category based on recommended items.
  * For the 'food' category, uses calorie-based calculations instead of quantity-based.
+ * For the 'water-beverages' category, includes water needed for food preparation.
  */
 export function calculateCategoryShortages(
   categoryId: string,
@@ -85,6 +89,7 @@ export function calculateCategoryShortages(
   totalActualCalories?: number;
   totalNeededCalories?: number;
   missingCalories?: number;
+  preparationWaterNeeded?: number;
 } {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
   const recommendedForCategory = RECOMMENDED_ITEMS.filter(
@@ -92,6 +97,12 @@ export function calculateCategoryShortages(
       item.category === categoryId &&
       !disabledRecommendedItems.includes(item.id),
   );
+
+  // Calculate water needed for food preparation (for water-beverages category)
+  const isWaterCategory = categoryId === 'water-beverages';
+  const preparationWaterNeeded = isWaterCategory
+    ? calculateTotalWaterRequired(items)
+    : 0;
 
   if (recommendedForCategory.length === 0) {
     return { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
@@ -136,6 +147,11 @@ export function calculateCategoryShortages(
 
     if (recItem.scaleWithDays) {
       recommendedQty *= household.supplyDurationDays;
+    }
+
+    // Add water needed for food preparation to bottled-water recommendation
+    if (isWaterCategory && recItem.id === 'bottled-water') {
+      recommendedQty += preparationWaterNeeded;
     }
 
     recommendedQty = Math.ceil(recommendedQty);
@@ -243,6 +259,17 @@ export function calculateCategoryShortages(
     };
   }
 
+  // Return with preparation water data for water-beverages category
+  if (isWaterCategory && preparationWaterNeeded > 0) {
+    return {
+      shortages,
+      totalActual,
+      totalNeeded,
+      primaryUnit,
+      preparationWaterNeeded,
+    };
+  }
+
   return { shortages, totalActual, totalNeeded, primaryUnit };
 }
 
@@ -323,6 +350,8 @@ export function calculateCategoryStatus(
     totalActualCalories: shortageInfo.totalActualCalories,
     totalNeededCalories: shortageInfo.totalNeededCalories,
     missingCalories: shortageInfo.missingCalories,
+    // Preparation water for water-beverages category
+    preparationWaterNeeded: shortageInfo.preparationWaterNeeded,
   };
 }
 
@@ -362,6 +391,8 @@ export interface CategoryDisplayStatus {
   totalActualCalories?: number;
   totalNeededCalories?: number;
   missingCalories?: number;
+  // Water for food preparation (for water-beverages category)
+  preparationWaterNeeded?: number;
 }
 
 /**
@@ -412,5 +443,6 @@ export function getCategoryDisplayStatus(
     totalActualCalories: shortageInfo.totalActualCalories,
     totalNeededCalories: shortageInfo.totalNeededCalories,
     missingCalories: shortageInfo.missingCalories,
+    preparationWaterNeeded: shortageInfo.preparationWaterNeeded,
   };
 }
