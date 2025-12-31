@@ -7,18 +7,26 @@ import { CategoryGrid } from '../components/dashboard/CategoryGrid';
 import { Button } from '../components/common/Button';
 import { useInventory } from '../hooks/useInventory';
 import { useHousehold } from '../hooks/useHousehold';
+import { useSettings } from '../hooks/useSettings';
 import { STANDARD_CATEGORIES } from '../data/standardCategories';
 import {
   calculatePreparednessScore,
   calculateCategoryPreparedness,
 } from '../utils/dashboard/preparedness';
-import { calculateAllCategoryStatuses } from '../utils/dashboard/categoryStatus';
+import {
+  calculateAllCategoryStatuses,
+  type CategoryCalculationOptions,
+} from '../utils/dashboard/categoryStatus';
 import { generateDashboardAlerts } from '../utils/dashboard/alerts';
 import { getAppData } from '../utils/storage/localStorage';
 import {
   shouldShowBackupReminder,
   dismissBackupReminder,
 } from '../utils/dashboard/backupReminder';
+import {
+  DAILY_CALORIES_PER_PERSON,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+} from '../utils/constants';
 import type { PageType } from '../components/common/Navigation';
 import styles from './Dashboard.module.css';
 
@@ -36,7 +44,20 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   const { items, dismissedAlertIds, dismissAlert, reactivateAllAlerts } =
     useInventory();
   const { household } = useHousehold();
+  const { settings } = useSettings();
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
+
+  // Build calculation options from user settings
+  const calculationOptions: CategoryCalculationOptions = useMemo(
+    () => ({
+      childrenMultiplier:
+        (settings.childrenRequirementPercentage ??
+          CHILDREN_REQUIREMENT_MULTIPLIER * 100) / 100,
+      dailyCaloriesPerPerson:
+        settings.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON,
+    }),
+    [settings.childrenRequirementPercentage, settings.dailyCaloriesPerPerson],
+  );
 
   // Calculate overall preparedness score
   const preparednessScore = useMemo(
@@ -66,8 +87,10 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         items,
         categoryPreparedness,
         household,
+        [], // disabledRecommendedItems
+        calculationOptions,
       ),
-    [items, categoryPreparedness, household],
+    [items, categoryPreparedness, household, calculationOptions],
   );
 
   // Generate alerts (including water shortage alerts)

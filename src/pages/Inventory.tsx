@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../hooks/useInventory';
 import { useHousehold } from '../hooks/useHousehold';
+import { useSettings } from '../hooks/useSettings';
 import { STANDARD_CATEGORIES } from '../data/standardCategories';
 import { RECOMMENDED_ITEMS } from '../data/recommendedItems';
 import { CategoryNav } from '../components/inventory/CategoryNav';
@@ -22,7 +23,14 @@ import {
   calculateHouseholdMultiplier,
 } from '../utils/calculations/household';
 import { calculateItemStatus } from '../utils/calculations/status';
-import { getCategoryDisplayStatus } from '../utils/dashboard/categoryStatus';
+import {
+  getCategoryDisplayStatus,
+  type CategoryCalculationOptions,
+} from '../utils/dashboard/categoryStatus';
+import {
+  DAILY_CALORIES_PER_PERSON,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+} from '../utils/constants';
 import styles from './Inventory.module.css';
 
 type SortBy = 'name' | 'quantity' | 'expiration';
@@ -46,6 +54,19 @@ export function Inventory({
     disabledRecommendedItems,
   } = useInventory();
   const { household } = useHousehold();
+  const { settings } = useSettings();
+
+  // Build calculation options from user settings
+  const calculationOptions: CategoryCalculationOptions = useMemo(
+    () => ({
+      childrenMultiplier:
+        (settings.childrenRequirementPercentage ??
+          CHILDREN_REQUIREMENT_MULTIPLIER * 100) / 100,
+      dailyCaloriesPerPerson:
+        settings.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON,
+    }),
+    [settings.childrenRequirementPercentage, settings.dailyCaloriesPerPerson],
+  );
 
   // Filter and sort state
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
@@ -73,8 +94,15 @@ export function Inventory({
       items,
       household,
       disabledRecommendedItems,
+      calculationOptions,
     );
-  }, [selectedCategoryId, items, household, disabledRecommendedItems]);
+  }, [
+    selectedCategoryId,
+    items,
+    household,
+    disabledRecommendedItems,
+    calculationOptions,
+  ]);
 
   // Filter items
   let filteredItems = items;
