@@ -246,6 +246,7 @@ describe('Template to InventoryItem conversion', () => {
     const itemWithTemplateId: InventoryItem = {
       id: '1',
       name: 'Bottled Water',
+      itemType: 'bottled-water',
       categoryId: 'water-beverages',
       quantity: 54, // Matches recommended for 2 adults, 3 days (9 * 2 * 3 = 54)
       unit: 'liters',
@@ -260,6 +261,7 @@ describe('Template to InventoryItem conversion', () => {
     const itemWithoutTemplateId: InventoryItem = {
       id: '2',
       name: 'Bottled Water',
+      itemType: 'custom',
       categoryId: 'water-beverages',
       quantity: 54,
       unit: 'liters',

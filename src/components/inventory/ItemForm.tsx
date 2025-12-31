@@ -5,6 +5,7 @@ import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Button } from '../common/Button';
 import { calculateCaloriesFromWeight } from '../../utils/calculations/calories';
+import { CUSTOM_ITEM_TYPE } from '../../utils/constants';
 import styles from './ItemForm.module.css';
 
 export interface ItemFormProps {
@@ -145,7 +146,7 @@ export const ItemForm = ({
 
     onSubmit({
       name: formData.name.trim(),
-      itemType: formData.itemType.trim() || undefined,
+      itemType: formData.itemType.trim() || CUSTOM_ITEM_TYPE,
       categoryId: formData.categoryId,
       quantity: parseFloat(formData.quantity),
       unit: formData.unit as

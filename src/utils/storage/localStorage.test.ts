@@ -188,5 +188,125 @@ describe('localStorage utilities', () => {
       // Item with valid expirationDate should keep original neverExpires value
       expect(imported.items[1].neverExpires).toBe(false);
     });
+
+    it('migrates legacy English translated itemType to template ID', () => {
+      const dataWithLegacyItemType = {
+        version: '1.0.0',
+        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        settings: { language: 'en', theme: 'light', highContrast: false },
+        items: [
+          {
+            id: 'item-1',
+            name: 'My Water',
+            itemType: 'Bottled Water', // Legacy translated name
+            categoryId: 'water-beverages',
+            quantity: 5,
+            unit: 'liters',
+            neverExpires: true,
+          },
+        ],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(dataWithLegacyItemType);
+      const imported = importFromJSON(json);
+
+      expect(imported.items[0].itemType).toBe('bottled-water');
+    });
+
+    it('migrates legacy Finnish translated itemType to template ID', () => {
+      const dataWithLegacyItemType = {
+        version: '1.0.0',
+        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        settings: { language: 'fi', theme: 'light', highContrast: false },
+        items: [
+          {
+            id: 'item-1',
+            name: 'Vesi',
+            itemType: 'Pullovesi', // Legacy Finnish translated name
+            categoryId: 'water-beverages',
+            quantity: 5,
+            unit: 'liters',
+            neverExpires: true,
+          },
+        ],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(dataWithLegacyItemType);
+      const imported = importFromJSON(json);
+
+      expect(imported.items[0].itemType).toBe('bottled-water');
+    });
+
+    it('preserves valid template ID in itemType', () => {
+      const dataWithTemplateId = {
+        version: '1.0.0',
+        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        settings: { language: 'en', theme: 'light', highContrast: false },
+        items: [
+          {
+            id: 'item-1',
+            name: 'Water',
+            itemType: 'bottled-water', // Already a valid template ID
+            categoryId: 'water-beverages',
+            quantity: 5,
+            unit: 'liters',
+            neverExpires: true,
+          },
+        ],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(dataWithTemplateId);
+      const imported = importFromJSON(json);
+
+      expect(imported.items[0].itemType).toBe('bottled-water');
+    });
+
+    it('sets itemType to custom when no match found', () => {
+      const dataWithUnknownItemType = {
+        version: '1.0.0',
+        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        settings: { language: 'en', theme: 'light', highContrast: false },
+        items: [
+          {
+            id: 'item-1',
+            name: 'My Custom Thing',
+            itemType: 'Unknown Item Type',
+            categoryId: 'food',
+            quantity: 3,
+            unit: 'pieces',
+            neverExpires: true,
+          },
+        ],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(dataWithUnknownItemType);
+      const imported = importFromJSON(json);
+
+      expect(imported.items[0].itemType).toBe('custom');
+    });
+
+    it('uses item name to find template ID when itemType is missing', () => {
+      const dataWithNoItemType = {
+        version: '1.0.0',
+        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        settings: { language: 'en', theme: 'light', highContrast: false },
+        items: [
+          {
+            id: 'item-1',
+            name: 'Canned Soup', // Name matches a known product
+            categoryId: 'food',
+            quantity: 3,
+            unit: 'cans',
+            neverExpires: false,
+            expirationDate: '2025-12-31',
+          },
+        ],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(dataWithNoItemType);
+      const imported = importFromJSON(json);
+
+      expect(imported.items[0].itemType).toBe('canned-soup');
+    });
   });
 });

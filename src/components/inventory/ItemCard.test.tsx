@@ -23,6 +23,7 @@ describe('ItemCard', () => {
   const baseItem: InventoryItem = {
     id: '1',
     name: 'Bottled Water',
+    itemType: 'bottled-water',
     categoryId: 'water-beverages',
     quantity: 20,
     unit: 'liters',

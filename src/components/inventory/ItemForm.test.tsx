@@ -197,6 +197,7 @@ describe('ItemForm', () => {
     await waitFor(() => {
       expect(mockOnSubmit).toHaveBeenCalledWith({
         name: 'Test Item',
+        itemType: 'custom',
         categoryId: 'water-beverages',
         quantity: 10,
         unit: 'pieces',
@@ -205,6 +206,10 @@ describe('ItemForm', () => {
         expirationDate: '2025-12-31',
         location: 'Pantry',
         notes: 'Test notes',
+        weightGrams: undefined,
+        caloriesPerUnit: undefined,
+        capacityMah: undefined,
+        capacityWh: undefined,
       });
     });
   });
@@ -258,6 +263,7 @@ describe('ItemForm', () => {
     await waitFor(() => {
       expect(mockOnSubmit).toHaveBeenCalledWith({
         name: 'Test Item',
+        itemType: 'custom',
         categoryId: 'water-beverages',
         quantity: 10,
         unit: 'pieces',
@@ -266,6 +272,10 @@ describe('ItemForm', () => {
         expirationDate: undefined,
         location: undefined,
         notes: undefined,
+        weightGrams: undefined,
+        caloriesPerUnit: undefined,
+        capacityMah: undefined,
+        capacityWh: undefined,
       });
     });
   });
@@ -274,6 +284,7 @@ describe('ItemForm', () => {
     const existingItem: InventoryItem = {
       id: '1',
       name: 'Test Item',
+      itemType: 'custom',
       categoryId: 'food',
       quantity: 5,
       unit: 'pieces',
