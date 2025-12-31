@@ -24,6 +24,13 @@ if [ -f "${REPO_DIR}/AGENTS.local.md" ]; then
   cp "${REPO_DIR}/AGENTS.local.md" "${WORKTREE_DIR}/AGENTS.local.md"
 fi
 
+# Copy .claude/settings.local.json if it exists
+if [ -f "${REPO_DIR}/.claude/settings.local.json" ]; then
+  echo "Copying .claude/settings.local.json to worktree..."
+  mkdir -p "${WORKTREE_DIR}/.claude"
+  cp "${REPO_DIR}/.claude/settings.local.json" "${WORKTREE_DIR}/.claude/settings.local.json"
+fi
+
 echo ""
 echo "Done! Worktree created at: ${WORKTREE_DIR}"
 echo "To switch to it: cd ${WORKTREE_DIR}"
