@@ -185,7 +185,7 @@ Individual items tracked in the user's inventory:
 interface InventoryItem {
   id: string; // Unique identifier (UUID)
   name: string; // Item name (or i18n key reference)
-  itemType?: string; // Template ID (e.g., "canned-fish") for i18n lookup
+  itemType: string; // Template ID (e.g., "canned-fish") or "custom" for user-created items
   categoryId: string; // Category reference
   quantity: number; // Current quantity owned
   unit: Unit; // Measurement unit
@@ -204,6 +204,7 @@ interface InventoryItem {
 
 ### Notes
 
+- `itemType` is required: use template ID (e.g., "canned-fish") for items from templates, or "custom" for user-created items
 - `recommendedQuantity` is calculated based on household configuration and scaling rules
 - Items with `neverExpires: true` don't show expiration warnings
 - `weightGrams` and `caloriesPerUnit` are used when calorie tracking is enabled

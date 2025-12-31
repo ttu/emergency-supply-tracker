@@ -85,6 +85,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       return {
         id: crypto.randomUUID(),
         name: itemName,
+        itemType: item.id, // Store template ID for i18n lookup
         categoryId: item.category,
         quantity: 0, // Start with 0, user needs to add them
         unit: item.unit,

@@ -164,3 +164,13 @@ export const DEFAULT_EMPTY_PREPAREDNESS = 0;
  * Days threshold for showing backup reminder.
  */
 export const BACKUP_REMINDER_DAYS_THRESHOLD = 30;
+
+// =============================================================================
+// ITEM TYPE CONSTANTS
+// =============================================================================
+
+/**
+ * Item type identifier for custom items (not from a template).
+ * Used when user creates an item manually without selecting a product template.
+ */
+export const CUSTOM_ITEM_TYPE = 'custom';

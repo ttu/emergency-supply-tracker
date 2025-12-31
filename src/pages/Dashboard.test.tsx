@@ -153,6 +153,7 @@ describe('Dashboard', () => {
     const outOfStockItem: InventoryItem = {
       id: '1',
       name: 'Out of Stock Water',
+      itemType: 'custom',
       categoryId: 'water-beverages',
       quantity: 0,
       unit: 'gallons',
@@ -160,7 +161,8 @@ describe('Dashboard', () => {
       neverExpires: true,
       location: '',
       notes: '',
-      tags: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     localStorage.setItem('inventory', JSON.stringify([outOfStockItem]));
@@ -178,6 +180,7 @@ describe('Dashboard', () => {
     const outOfStockItem: InventoryItem = {
       id: '1',
       name: 'Out of Stock Item',
+      itemType: 'custom',
       categoryId: 'water-beverages',
       quantity: 0,
       unit: 'gallons',
@@ -185,7 +188,8 @@ describe('Dashboard', () => {
       neverExpires: true,
       location: '',
       notes: '',
-      tags: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     localStorage.setItem('inventory', JSON.stringify([outOfStockItem]));
@@ -222,6 +226,7 @@ describe('Dashboard', () => {
     const item: InventoryItem = {
       id: '1',
       name: 'Water',
+      itemType: 'custom',
       categoryId: 'water-beverages',
       quantity: 28,
       unit: 'gallons',
@@ -230,7 +235,8 @@ describe('Dashboard', () => {
       expirationDate: '2025-12-31',
       location: '',
       notes: '',
-      tags: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     localStorage.setItem('inventory', JSON.stringify([item]));

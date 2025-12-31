@@ -1,4 +1,5 @@
 import type { AppData } from '../../types';
+import { CUSTOM_ITEM_TYPE } from '../constants';
 
 const STORAGE_KEY = 'emergencySupplyTracker';
 
@@ -34,7 +35,17 @@ export function getAppData(): AppData | null {
   try {
     const json = localStorage.getItem(STORAGE_KEY);
     if (!json) return null;
-    return JSON.parse(json) as AppData;
+    const data = JSON.parse(json) as AppData;
+
+    // Normalize items: ensure itemType has a value (for legacy data without it)
+    if (data.items) {
+      data.items = data.items.map((item) => ({
+        ...item,
+        itemType: item.itemType || CUSTOM_ITEM_TYPE,
+      }));
+    }
+
+    return data;
   } catch (error) {
     console.error('Failed to load data from localStorage:', error);
     return null;
@@ -97,10 +108,12 @@ export function importFromJSON(json: string): AppData {
     data.disabledRecommendedItems = [];
   }
 
-  // Normalize items: set neverExpires=true when expirationDate is null
+  // Normalize items: set neverExpires=true when expirationDate is null,
+  // and ensure itemType has a value (use CUSTOM_ITEM_TYPE for legacy items without it)
   if (data.items) {
     data.items = data.items.map((item) => ({
       ...item,
+      itemType: item.itemType || CUSTOM_ITEM_TYPE,
       neverExpires: item.expirationDate === null ? true : item.neverExpires,
     }));
   }
