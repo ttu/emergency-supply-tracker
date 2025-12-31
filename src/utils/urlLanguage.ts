@@ -40,14 +40,15 @@ export function getLanguageFromUrl(): SupportedLanguage | null {
 }
 
 /**
- * Updates the URL with the specified language parameter.
+ * Removes the lang parameter from the URL.
  * Uses replaceState to avoid adding to browser history.
- * @param language The language code to set in the URL.
  */
-export function setLanguageInUrl(language: SupportedLanguage): void {
+export function clearLanguageFromUrl(): void {
   const url = new URL(window.location.href);
-  url.searchParams.set('lang', language);
-  window.history.replaceState({}, '', url.toString());
+  if (url.searchParams.has('lang')) {
+    url.searchParams.delete('lang');
+    window.history.replaceState({}, '', url.toString());
+  }
 }
 
 /**

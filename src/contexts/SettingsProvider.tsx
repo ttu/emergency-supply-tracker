@@ -6,7 +6,7 @@ import {
   createDefaultAppData,
 } from '../utils/storage/localStorage';
 import { SettingsContext } from './SettingsContext';
-import { getLanguageFromUrl, setLanguageInUrl } from '../utils/urlLanguage';
+import { getLanguageFromUrl, clearLanguageFromUrl } from '../utils/urlLanguage';
 
 const DEFAULT_SETTINGS: UserSettings = {
   language: 'en',
@@ -33,11 +33,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return storedSettings;
   });
 
-  // Sync URL with language on initial load
+  // Clear lang param from URL after reading it on initial load
   useEffect(() => {
-    setLanguageInUrl(settings.language);
+    clearLanguageFromUrl();
     // Only run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Save to localStorage on change
