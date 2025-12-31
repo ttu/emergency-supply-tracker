@@ -88,8 +88,8 @@ test.describe('Data Management', () => {
       });
     });
 
-    // Set file input
-    const fileInput = page.locator('input[type="file"]');
+    // Set file input (use aria-label to distinguish from Import Recommendations)
+    const fileInput = page.getByLabel('Import Data');
     await fileInput.setInputFiles({
       name: 'test-import.json',
       mimeType: 'application/json',
