@@ -320,6 +320,68 @@ describe('calculateCategoryShortages', () => {
       expect(waterShortage).toBeDefined();
       expect(waterShortage!.needed).toBe(7);
     });
+
+    it('should include water for food preparation in bottled-water recommendation', () => {
+      // Items include pasta which requires 1.0L per kg for preparation
+      const items: InventoryItem[] = [
+        createMockInventoryItem({
+          id: '1',
+          name: 'Pasta',
+          categoryId: 'food',
+          quantity: 5, // 5 kg of pasta
+          unit: 'kilograms',
+          recommendedQuantity: 1,
+          productTemplateId: 'pasta', // 1.0 L/kg water requirement
+          neverExpires: false,
+          expirationDate: '2025-12-31',
+        }),
+      ];
+
+      const result = calculateCategoryShortages(
+        'water-beverages',
+        items,
+        household,
+      );
+
+      // For 2 adults, 3 days: bottled-water base = 9 * 2 = 18 liters
+      // Plus 5kg pasta * 1.0L/kg = 5L for preparation
+      // Total = 23 liters
+      const waterShortage = result.shortages.find(
+        (s) => s.itemId === 'bottled-water',
+      );
+      expect(waterShortage).toBeDefined();
+      expect(waterShortage!.needed).toBe(23);
+      expect(result.preparationWaterNeeded).toBe(5);
+    });
+
+    it('should not add preparation water when no food requires water', () => {
+      const items: InventoryItem[] = [
+        createMockInventoryItem({
+          id: '1',
+          name: 'Crackers',
+          categoryId: 'food',
+          quantity: 5,
+          unit: 'packages',
+          recommendedQuantity: 5,
+          neverExpires: false,
+          expirationDate: '2025-12-31',
+        }),
+      ];
+
+      const result = calculateCategoryShortages(
+        'water-beverages',
+        items,
+        household,
+      );
+
+      // No preparation water needed
+      const waterShortage = result.shortages.find(
+        (s) => s.itemId === 'bottled-water',
+      );
+      expect(waterShortage).toBeDefined();
+      expect(waterShortage!.needed).toBe(18); // Just base water requirement
+      expect(result.preparationWaterNeeded).toBeUndefined();
+    });
   });
 
   it('should calculate shortages for water category', () => {

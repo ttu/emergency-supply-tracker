@@ -1,5 +1,5 @@
 import { generateDashboardAlerts, countAlerts } from './alerts';
-import type { InventoryItem } from '../../types';
+import type { InventoryItem, HouseholdConfig } from '../../types';
 import type { Alert } from '../../components/dashboard/AlertBanner';
 import { createMockInventoryItem } from '../test/factories';
 
@@ -14,7 +14,16 @@ const mockT = (key: string, options?: Record<string, string | number>) => {
     return `Critically low (${options?.percent}% stocked)`;
   if (key === 'alerts.stock.runningLow')
     return `Running low (${options?.percent}% stocked)`;
+  if (key === 'alerts.water.preparationShortage')
+    return `Need ${options?.liters}L more water for food preparation`;
   return key;
+};
+
+const mockHousehold: HouseholdConfig = {
+  adults: 2,
+  children: 0,
+  supplyDurationDays: 3,
+  useFreezer: false,
 };
 
 describe('generateDashboardAlerts', () => {
@@ -370,5 +379,144 @@ describe('countAlerts', () => {
       info: 0,
       total: 3,
     });
+  });
+});
+
+describe('water shortage alerts', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2025-01-01'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('should generate water shortage alert when food requires more water than available', () => {
+    const items: InventoryItem[] = [
+      {
+        id: '1',
+        name: 'Bottled Water',
+        categoryId: 'water-beverages',
+        quantity: 5,
+        unit: 'liters',
+        recommendedQuantity: 18,
+        productTemplateId: 'bottled-water',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        name: 'Pasta',
+        categoryId: 'food',
+        quantity: 10,
+        unit: 'kilograms',
+        recommendedQuantity: 1,
+        productTemplateId: 'pasta', // 1.0 L/kg water requirement
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
+    const waterAlert = alerts.find(
+      (a) => a.id === 'water-shortage-preparation',
+    );
+
+    expect(waterAlert).toBeDefined();
+    expect(waterAlert?.type).toBe('warning');
+    expect(waterAlert?.message).toContain('Need');
+    expect(waterAlert?.message).toContain('L more water');
+  });
+
+  it('should not generate water shortage alert when enough water available', () => {
+    const items: InventoryItem[] = [
+      {
+        id: '1',
+        name: 'Bottled Water',
+        categoryId: 'water-beverages',
+        quantity: 50,
+        unit: 'liters',
+        recommendedQuantity: 18,
+        productTemplateId: 'bottled-water',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        name: 'Pasta',
+        categoryId: 'food',
+        quantity: 5,
+        unit: 'kilograms',
+        recommendedQuantity: 1,
+        productTemplateId: 'pasta', // 1.0 L/kg water requirement = 5L needed
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
+    const waterAlert = alerts.find(
+      (a) => a.id === 'water-shortage-preparation',
+    );
+
+    expect(waterAlert).toBeUndefined();
+  });
+
+  it('should not generate water shortage alert when no food requires water', () => {
+    const items: InventoryItem[] = [
+      {
+        id: '1',
+        name: 'Crackers',
+        categoryId: 'food',
+        quantity: 5,
+        unit: 'packages',
+        recommendedQuantity: 5,
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
+    const waterAlert = alerts.find(
+      (a) => a.id === 'water-shortage-preparation',
+    );
+
+    expect(waterAlert).toBeUndefined();
+  });
+
+  it('should not generate water shortage alert when household is not provided', () => {
+    const items: InventoryItem[] = [
+      {
+        id: '1',
+        name: 'Pasta',
+        categoryId: 'food',
+        quantity: 10,
+        unit: 'kilograms',
+        recommendedQuantity: 1,
+        productTemplateId: 'pasta',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    const alerts = generateDashboardAlerts(items, mockT); // No household
+    const waterAlert = alerts.find(
+      (a) => a.id === 'water-shortage-preparation',
+    );
+
+    expect(waterAlert).toBeUndefined();
   });
 });

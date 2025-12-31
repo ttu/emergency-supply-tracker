@@ -4,6 +4,7 @@ import {
   isItemExpired,
   getDaysUntilExpiration,
 } from '../../utils/calculations/status';
+import { getWaterRequirementPerUnit } from '../../utils/calculations/water';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '../../utils/constants';
 import styles from './ItemCard.module.css';
 
@@ -79,6 +80,13 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
         {item.categoryId === 'food' && item.caloriesPerUnit && (
           <div className={styles.calories}>
             🔥 {Math.round(item.quantity * item.caloriesPerUnit)} kcal
+          </div>
+        )}
+
+        {item.categoryId === 'food' && getWaterRequirementPerUnit(item) > 0 && (
+          <div className={styles.waterRequirement}>
+            💧 {(item.quantity * getWaterRequirementPerUnit(item)).toFixed(1)}L{' '}
+            {t('itemForm.waterForPreparation')}
           </div>
         )}
 

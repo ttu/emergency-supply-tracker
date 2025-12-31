@@ -87,6 +87,7 @@ export interface InventoryItem {
   caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal)
   capacityMah?: number; // Capacity in milliamp-hours (for powerbanks)
   capacityWh?: number; // Capacity in watt-hours (for powerbanks)
+  requiresWaterLiters?: number; // Liters of water required per unit for preparation
   createdAt: string;
   updatedAt: string;
 }
@@ -123,6 +124,8 @@ export interface RecommendedItemDefinition {
   // Capacity for powerbanks
   capacityMah?: number; // Capacity in milliamp-hours
   capacityWh?: number; // Capacity in watt-hours
+  // Water requirement for preparation
+  requiresWaterLiters?: number; // Liters of water required per unit for preparation (must be > 0 if set)
 }
 
 // App Data (root)

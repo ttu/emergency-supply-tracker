@@ -84,6 +84,9 @@
       "criticallyLow": "Kriittisen vähän ({{percent}}% varastossa)",
       "runningLow": "Vähissä ({{percent}}% varastossa)"
     },
+    "water": {
+      "preparationShortage": "Tarvitaan {{liters}}L lisää vettä ruoan valmistukseen"
+    },
     "backup": {
       "reminderMessage": "Viimeisimmästä varmuuskopiosta on yli kuukausi. Harkitse tietojen vientiä muutosten menettämisen välttämiseksi."
     }
@@ -283,6 +286,8 @@
     "caloriesPerUnit": "Kalorit/yksikkö",
     "capacityMah": "Kapasiteetti (mAh)",
     "capacityWh": "Kapasiteetti (Wh)",
+    "requiresWaterLiters": "Vettä valmistukseen (L/yks)",
+    "waterForPreparation": "valmistukseen",
     "neverExpires": "Ei Vanhene",
     "expirationDate": "Vanhenemispäivä",
     "location": "Sijainti",

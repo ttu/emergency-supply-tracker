@@ -104,6 +104,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     weightGramsPerUnit: 1000,
     caloriesPer100g: 350,
     caloriesPerUnit: 3500, // ~350 kcal per 100g dry pasta
+    requiresWaterLiters: 1.0, // ~1 liter per kg of pasta for cooking
   },
   {
     id: 'rice',
@@ -117,6 +118,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     weightGramsPerUnit: 1000,
     caloriesPer100g: 360,
     caloriesPerUnit: 3600, // ~360 kcal per 100g dry rice
+    requiresWaterLiters: 1.5, // ~1.5 liters per kg of rice for cooking (rice absorbs more)
   },
   {
     id: 'oats',
@@ -130,6 +132,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     weightGramsPerUnit: 1000,
     caloriesPer100g: 380,
     caloriesPerUnit: 3800, // ~380 kcal per 100g oats
+    requiresWaterLiters: 2.0, // ~2 liters per kg of oats for porridge
   },
   {
     id: 'crackers',
@@ -216,6 +219,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
     defaultExpirationMonths: 18,
     // No significant calories
+    requiresWaterLiters: 10, // ~10 liters per kg for brewing (about 50 cups per kg)
   },
   {
     id: 'frozen-vegetables',
