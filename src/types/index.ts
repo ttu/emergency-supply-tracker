@@ -58,6 +58,10 @@ export interface UserSettings {
     waterTracking: boolean;
   };
   onboardingCompleted?: boolean;
+  // Customizable nutrition and requirement settings
+  dailyCaloriesPerPerson?: number; // Default: 2000 kcal
+  dailyWaterPerPerson?: number; // Default: 3 liters
+  childrenRequirementPercentage?: number; // Default: 75 (children need 75% of adult requirements)
 }
 
 // Category

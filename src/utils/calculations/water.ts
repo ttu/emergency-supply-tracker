@@ -186,25 +186,34 @@ export function calculateWaterRequirements(
 /**
  * Calculates the recommended water storage based on household configuration.
  * This is the base water requirement for drinking (not including food preparation).
+ * @param household - Household configuration
+ * @param dailyWaterPerPerson - Liters of water per person per day
+ * @param childrenMultiplier - Optional multiplier for children (default: 0.75)
  */
 export function calculateRecommendedWaterStorage(
   household: HouseholdConfig,
   dailyWaterPerPerson: number,
+  childrenMultiplier: number = CHILDREN_REQUIREMENT_MULTIPLIER,
 ): number {
   const peopleMultiplier =
     household.adults * ADULT_REQUIREMENT_MULTIPLIER +
-    household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    household.children * childrenMultiplier;
 
   return dailyWaterPerPerson * peopleMultiplier * household.supplyDurationDays;
 }
 
 /**
  * Calculates total water needs including both drinking water and preparation water.
+ * @param items - Inventory items
+ * @param household - Household configuration
+ * @param dailyWaterPerPerson - Liters of water per person per day
+ * @param childrenMultiplier - Optional multiplier for children (default: 0.75)
  */
 export function calculateTotalWaterNeeds(
   items: InventoryItem[],
   household: HouseholdConfig,
   dailyWaterPerPerson: number,
+  childrenMultiplier: number = CHILDREN_REQUIREMENT_MULTIPLIER,
 ): {
   drinkingWater: number;
   preparationWater: number;
@@ -213,6 +222,7 @@ export function calculateTotalWaterNeeds(
   const drinkingWater = calculateRecommendedWaterStorage(
     household,
     dailyWaterPerPerson,
+    childrenMultiplier,
   );
   const preparationWater = calculateTotalWaterRequired(items);
 

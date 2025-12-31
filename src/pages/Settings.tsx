@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../components/settings/LanguageSelector';
 import { ThemeSelector } from '../components/settings/ThemeSelector';
 import { HouseholdForm } from '../components/settings/HouseholdForm';
+import { NutritionSettings } from '../components/settings/NutritionSettings';
 import { ExportButton } from '../components/settings/ExportButton';
 import { ImportButton } from '../components/settings/ImportButton';
 import { ShoppingListExport } from '../components/settings/ShoppingListExport';
@@ -39,6 +40,14 @@ export function Settings() {
             {t('settings.sections.household')}
           </h2>
           <HouseholdForm />
+        </section>
+
+        {/* Nutrition & Requirements */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>
+            {t('settings.sections.nutrition')}
+          </h2>
+          <NutritionSettings />
         </section>
 
         {/* Hidden Alerts */}

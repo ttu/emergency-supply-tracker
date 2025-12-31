@@ -121,11 +121,23 @@
     "sections": {
       "appearance": "Appearance",
       "household": "Household Configuration",
+      "nutrition": "Nutrition & Requirements",
       "hiddenAlerts": "Hidden Alerts",
       "disabledRecommendations": "Disabled Recommendations",
       "dataManagement": "Data Management",
       "about": "About",
       "dangerZone": "Danger Zone"
+    },
+    "nutrition": {
+      "description": "Customize daily requirements for calorie and water calculations. These values affect how recommended quantities are calculated for your household.",
+      "dailyCalories": "Daily Calories per Person",
+      "dailyCaloriesHint": "Default: {{default}} kcal. Recommended range: 1000-5000 kcal.",
+      "dailyWater": "Daily Water per Person",
+      "dailyWaterHint": "Default: {{default}} liters. Recommended range: 1-10 liters.",
+      "litersPerDay": "liters/day",
+      "childrenPercentage": "Children's Requirements",
+      "childrenPercentageHint": "Default: {{default}}%. How much children need compared to adults.",
+      "resetToDefaults": "Reset to Defaults"
     },
     "hiddenAlerts": {
       "empty": "No hidden alerts",
