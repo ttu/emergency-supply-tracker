@@ -43,8 +43,13 @@ const BACKUP_REMINDER_ALERT_ID = 'backup-reminder';
 
 export function Dashboard({ onNavigate }: DashboardProps = {}) {
   const { t } = useTranslation();
-  const { items, dismissedAlertIds, dismissAlert, reactivateAllAlerts } =
-    useInventory();
+  const {
+    items,
+    dismissedAlertIds,
+    dismissAlert,
+    reactivateAllAlerts,
+    disabledRecommendedItems,
+  } = useInventory();
   const { household } = useHousehold();
   const { settings } = useSettings();
   const { recommendedItems } = useRecommendedItems();
@@ -82,13 +87,13 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         category.id,
         items,
         household,
-        [],
+        disabledRecommendedItems,
         recommendedItems,
       );
       map.set(category.id, score);
     });
     return map;
-  }, [items, household, recommendedItems]);
+  }, [items, household, disabledRecommendedItems, recommendedItems]);
 
   // Calculate category statuses
   const categoryStatuses = useMemo(
@@ -98,11 +103,18 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         items,
         categoryPreparedness,
         household,
-        [], // disabledRecommendedItems
+        disabledRecommendedItems,
         recommendedItems,
         calculationOptions,
       ),
-    [items, categoryPreparedness, household, recommendedItems, calculationOptions],
+    [
+      items,
+      categoryPreparedness,
+      household,
+      disabledRecommendedItems,
+      recommendedItems,
+      calculationOptions,
+    ],
   );
 
   // Generate alerts (including water shortage alerts)
