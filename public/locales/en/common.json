@@ -257,7 +257,10 @@
       "missing": "Need {{count}} {{unit}} {{item}}",
       "missingMultiple": "Need {{count}} {{unit}} {{item}} +{{more}} more",
       "kcal": "kcal",
-      "recommendedCalories": "Recommended {{count}} kcal more"
+      "recommendedCalories": "Recommended {{count}} kcal more",
+      "waterForPeople": "Water for people",
+      "waterForPreparation": "Water for preparation",
+      "totalWater": "Total required"
     }
   },
   "inventory": {

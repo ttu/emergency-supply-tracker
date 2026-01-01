@@ -380,7 +380,7 @@ describe('calculateCategoryShortages', () => {
       );
       expect(waterShortage).toBeDefined();
       expect(waterShortage!.needed).toBe(18); // Just base water requirement
-      expect(result.preparationWaterNeeded).toBeUndefined();
+      expect(result.preparationWaterNeeded).toBe(0); // Now always defined for water-beverages category
     });
   });
 

@@ -181,6 +181,32 @@
   font-weight: var(--font-weight-medium);
 }
 
+.waterBreakdown {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--color-background-secondary);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.waterBreakdownItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+}
+
+.waterBreakdownLabel {
+  color: var(--color-text-secondary);
+}
+
+.waterBreakdownValue {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
 /* Mobile responsiveness */
 @media (max-width: 640px) {
   .summary {
