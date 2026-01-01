@@ -1,5 +1,10 @@
 import type { AppData, InventoryItem } from '../../types';
-import { CUSTOM_ITEM_TYPE } from '../constants';
+import {
+  CUSTOM_ITEM_TYPE,
+  DAILY_CALORIES_PER_PERSON,
+  DAILY_WATER_PER_PERSON,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+} from '../constants';
 
 const STORAGE_KEY = 'emergencySupplyTracker';
 
@@ -275,6 +280,9 @@ export function createDefaultAppData(): AppData {
         powerManagement: false,
         waterTracking: false,
       },
+      dailyCaloriesPerPerson: DAILY_CALORIES_PER_PERSON,
+      dailyWaterPerPerson: DAILY_WATER_PER_PERSON,
+      childrenRequirementPercentage: CHILDREN_REQUIREMENT_MULTIPLIER * 100,
     },
     customCategories: [],
     items: [],

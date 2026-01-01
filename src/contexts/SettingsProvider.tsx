@@ -7,6 +7,11 @@ import {
 } from '../utils/storage/localStorage';
 import { SettingsContext } from './SettingsContext';
 import { getLanguageFromUrl, clearLanguageFromUrl } from '../utils/urlLanguage';
+import {
+  DAILY_CALORIES_PER_PERSON,
+  DAILY_WATER_PER_PERSON,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+} from '../utils/constants';
 
 const DEFAULT_SETTINGS: UserSettings = {
   language: 'en',
@@ -17,12 +22,16 @@ const DEFAULT_SETTINGS: UserSettings = {
     powerManagement: false,
     waterTracking: false,
   },
+  dailyCaloriesPerPerson: DAILY_CALORIES_PER_PERSON,
+  dailyWaterPerPerson: DAILY_WATER_PER_PERSON,
+  childrenRequirementPercentage: CHILDREN_REQUIREMENT_MULTIPLIER * 100,
 };
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<UserSettings>(() => {
     const data = getAppData();
-    const storedSettings = data?.settings || DEFAULT_SETTINGS;
+    // Merge stored settings with defaults to handle new fields (migration)
+    const storedSettings = { ...DEFAULT_SETTINGS, ...data?.settings };
 
     // If URL has a lang parameter, use it to override stored language
     const urlLanguage = getLanguageFromUrl();

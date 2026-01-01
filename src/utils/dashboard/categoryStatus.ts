@@ -16,9 +16,22 @@ import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
   DAILY_CALORIES_PER_PERSON,
+  DAILY_WATER_PER_PERSON,
   CRITICAL_PERCENTAGE_THRESHOLD,
   WARNING_PERCENTAGE_THRESHOLD,
 } from '../constants';
+
+/**
+ * Options for category calculations that can be customized by user settings.
+ */
+export interface CategoryCalculationOptions {
+  /** Multiplier for children's requirements (default: 0.75) */
+  childrenMultiplier?: number;
+  /** Daily calories per person (default: 2000) */
+  dailyCaloriesPerPerson?: number;
+  /** Daily water per person in liters (default: 3) */
+  dailyWaterPerPerson?: number;
+}
 
 export interface CategoryShortage {
   itemId: string;
@@ -81,6 +94,7 @@ export function calculateCategoryShortages(
   items: InventoryItem[],
   household: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  options: CategoryCalculationOptions = {},
 ): {
   shortages: CategoryShortage[];
   totalActual: number;
@@ -91,6 +105,12 @@ export function calculateCategoryShortages(
   missingCalories?: number;
   preparationWaterNeeded?: number;
 } {
+  const childrenMultiplier =
+    options.childrenMultiplier ?? CHILDREN_REQUIREMENT_MULTIPLIER;
+  const dailyCalories =
+    options.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON;
+  const dailyWater = options.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON;
+
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
   const recommendedForCategory = RECOMMENDED_ITEMS.filter(
     (item) =>
@@ -108,10 +128,10 @@ export function calculateCategoryShortages(
     return { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
   }
 
-  // Adults count as 1.0, children as 0.75 (75% of adult requirement)
+  // Adults count as 1.0, children use the configurable multiplier
   const peopleMultiplier =
     household.adults * ADULT_REQUIREMENT_MULTIPLIER +
-    household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    household.children * childrenMultiplier;
   const shortages: CategoryShortage[] = [];
   let totalActual = 0;
   let totalNeeded = 0;
@@ -126,12 +146,10 @@ export function calculateCategoryShortages(
   let totalNeededCalories = 0;
 
   // For food category, calculate needed calories based on people and days
-  // Children need ~70-75% of adult calories (1400 vs 2000 kcal/day)
+  // Children use the configurable multiplier for calorie requirements
   if (isFoodCategory) {
     totalNeededCalories =
-      DAILY_CALORIES_PER_PERSON *
-      peopleMultiplier *
-      household.supplyDurationDays;
+      dailyCalories * peopleMultiplier * household.supplyDurationDays;
   }
 
   // Track units to find the most common one and detect mixed units
@@ -139,7 +157,10 @@ export function calculateCategoryShortages(
   const uniqueUnits = new Set<Unit>();
 
   recommendedForCategory.forEach((recItem) => {
-    let recommendedQty = recItem.baseQuantity;
+    // For bottled-water, use the user's daily water setting instead of the
+    // hardcoded baseQuantity from recommendedItems
+    let recommendedQty =
+      recItem.id === 'bottled-water' ? dailyWater : recItem.baseQuantity;
 
     if (recItem.scaleWithPeople) {
       recommendedQty *= peopleMultiplier;
@@ -278,6 +299,7 @@ export function calculateCategoryStatus(
   completionPercentage: number,
   household?: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  options: CategoryCalculationOptions = {},
 ): CategoryStatusSummary {
   const categoryItems = items.filter((item) => item.categoryId === category.id);
 
@@ -300,6 +322,7 @@ export function calculateCategoryStatus(
         items,
         household,
         disabledRecommendedItems,
+        options,
       )
     : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
 
@@ -360,6 +383,7 @@ export function calculateAllCategoryStatuses(
   categoryPreparedness: Map<string, number>,
   household?: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  options: CategoryCalculationOptions = {},
 ): CategoryStatusSummary[] {
   return categories.map((category) => {
     const completionPercentage = categoryPreparedness.get(category.id) || 0;
@@ -369,6 +393,7 @@ export function calculateAllCategoryStatuses(
       completionPercentage,
       household,
       disabledRecommendedItems,
+      options,
     );
   });
 }
@@ -400,6 +425,7 @@ export function getCategoryDisplayStatus(
   items: InventoryItem[],
   household: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
+  options: CategoryCalculationOptions = {},
 ): CategoryDisplayStatus {
   const calculatedPercentage = calculateCategoryPreparedness(
     categoryId,
@@ -413,6 +439,7 @@ export function getCategoryDisplayStatus(
     items,
     household,
     disabledRecommendedItems,
+    options,
   );
 
   // Check if inventory meets the minimum requirements

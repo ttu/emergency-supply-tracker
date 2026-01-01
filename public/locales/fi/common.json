@@ -125,11 +125,23 @@
     "sections": {
       "appearance": "Ulkoasu",
       "household": "Kotitalouden Asetukset",
+      "nutrition": "Ravitsemus & Vaatimukset",
       "hiddenAlerts": "Piilotetut Hälytykset",
       "disabledRecommendations": "Poistetut Suositukset",
       "dataManagement": "Tietojen Hallinta",
       "about": "Tietoja",
       "dangerZone": "Vaaravyöhyke"
+    },
+    "nutrition": {
+      "description": "Mukauta päivittäiset vaatimukset kalorien ja veden laskelmiin. Nämä arvot vaikuttavat siihen, miten suositellut määrät lasketaan kotitaloudellesi.",
+      "dailyCalories": "Päivittäiset Kalorit Henkeä Kohti",
+      "dailyCaloriesHint": "Oletus: {{default}} kcal. Suositeltu alue: 1000-5000 kcal.",
+      "dailyWater": "Päivittäinen Vesi Henkeä Kohti",
+      "dailyWaterHint": "Oletus: {{default}} litraa. Suositeltu alue: 1-10 litraa.",
+      "litersPerDay": "litraa/pv",
+      "childrenPercentage": "Lasten Vaatimukset",
+      "childrenPercentageHint": "Oletus: {{default}}%. Kuinka paljon lapset tarvitsevat aikuisiin verrattuna.",
+      "resetToDefaults": "Palauta Oletukset"
     },
     "hiddenAlerts": {
       "empty": "Ei piilotettuja hälytyksiä",
