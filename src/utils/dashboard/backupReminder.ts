@@ -5,8 +5,9 @@ import { BACKUP_REMINDER_DAYS_THRESHOLD, MS_PER_DAY } from '../constants';
 /**
  * Check if the backup reminder should be shown.
  * Returns true if:
- * 1. Last backup was more than 30 days ago (or never)
- * 2. Data has been modified since the last backup
+ * 1. Never backed up and there are items, OR
+ * 2. Data has been modified since the last backup AND
+ *    30 days have passed since the last modification
  * 3. The dismissal period hasn't expired
  */
 export function shouldShowBackupReminder(appData: AppData | null): boolean {
@@ -35,12 +36,12 @@ export function shouldShowBackupReminder(appData: AppData | null): boolean {
     return false;
   }
 
-  // Check if more than BACKUP_REMINDER_DAYS_THRESHOLD days have passed since last backup
-  const daysSinceBackup = Math.floor(
-    (now.getTime() - lastBackup.getTime()) / MS_PER_DAY,
+  // Check if more than BACKUP_REMINDER_DAYS_THRESHOLD days have passed since last modification
+  const daysSinceModification = Math.floor(
+    (now.getTime() - lastModified.getTime()) / MS_PER_DAY,
   );
 
-  return daysSinceBackup >= BACKUP_REMINDER_DAYS_THRESHOLD;
+  return daysSinceModification >= BACKUP_REMINDER_DAYS_THRESHOLD;
 }
 
 /**

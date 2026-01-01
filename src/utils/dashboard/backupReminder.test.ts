@@ -35,20 +35,20 @@ describe('shouldShowBackupReminder', () => {
     expect(shouldShowBackupReminder(appData)).toBe(true);
   });
 
-  it('should return false when backup was less than 30 days ago', () => {
+  it('should return false when changes were made less than 30 days ago', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
       lastBackupDate: '2025-02-01T12:00:00.000Z', // 14 days ago
-      lastModified: '2025-02-10T12:00:00.000Z', // Modified after backup
+      lastModified: '2025-02-10T12:00:00.000Z', // Modified 5 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
   });
 
-  it('should return true when backup was more than 30 days ago and data was modified', () => {
+  it('should return true when changes were made more than 30 days ago', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
       lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
-      lastModified: '2025-02-10T12:00:00.000Z', // Modified after backup
+      lastModified: '2025-01-10T12:00:00.000Z', // Modified 36 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(true);
   });
@@ -62,11 +62,20 @@ describe('shouldShowBackupReminder', () => {
     expect(shouldShowBackupReminder(appData)).toBe(false);
   });
 
+  it('should return false when changes were made but less than 30 days ago', () => {
+    const appData = createMockAppData({
+      items: [createMockInventoryItem()],
+      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastModified: '2025-02-10T12:00:00.000Z', // Modified 5 days ago (after backup)
+    });
+    expect(shouldShowBackupReminder(appData)).toBe(false);
+  });
+
   it('should return false when reminder was dismissed for current month', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
       lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
-      lastModified: '2025-02-10T12:00:00.000Z', // Modified after backup
+      lastModified: '2025-01-10T12:00:00.000Z', // Modified 36 days ago (after backup)
       backupReminderDismissedUntil: '2025-03-01T00:00:00.000Z', // Dismissed until next month
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
@@ -76,26 +85,26 @@ describe('shouldShowBackupReminder', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
       lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
-      lastModified: '2025-02-10T12:00:00.000Z', // Modified after backup
+      lastModified: '2025-01-10T12:00:00.000Z', // Modified 36 days ago (after backup)
       backupReminderDismissedUntil: '2025-02-01T00:00:00.000Z', // Dismissed until Feb 1, now is Feb 15
     });
     expect(shouldShowBackupReminder(appData)).toBe(true);
   });
 
-  it('should return true at exactly 30 days since backup', () => {
+  it('should return true at exactly 30 days since last modification', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-16T12:00:00.000Z', // Exactly 30 days ago
-      lastModified: '2025-02-10T12:00:00.000Z', // Modified after backup
+      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastModified: '2025-01-16T12:00:00.000Z', // Modified exactly 30 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(true);
   });
 
-  it('should return false at 29 days since backup', () => {
+  it('should return false at 29 days since last modification', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-17T12:00:00.000Z', // 29 days ago
-      lastModified: '2025-02-10T12:00:00.000Z', // Modified after backup
+      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastModified: '2025-01-17T12:00:00.000Z', // Modified 29 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
   });
