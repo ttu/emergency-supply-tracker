@@ -18,7 +18,7 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
-  width: 140px;
+  width: 170px;
   flex-shrink: 0;
 }
 
@@ -60,7 +60,7 @@
   }
 
   .categoryButton {
-    width: 110px;
+    width: 130px;
     padding: 0.625rem 0.75rem;
   }
 
