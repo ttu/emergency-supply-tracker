@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, expandRecommendedItems } from './fixtures';
 
 test.describe('Inventory Management', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -397,22 +397,8 @@ test.describe('Inventory Management', () => {
     // Click on Water category to see category status
     await page.click('button:has-text("Water")');
 
-    // Wait for category status summary to appear
-    await expect(page.locator('text=Recommended:')).toBeVisible();
-
-    // Click expand button to show recommended items (they are hidden by default)
-    // The button should appear right after the "Recommended:" label
-    // Wait for the button to be rendered
-    await page.waitForTimeout(500);
-
-    // Find the expand button - it's in the same container as "Recommended:"
-    // Look for button that comes after the recommended label in the DOM
-    const expandButton = page
-      .locator('text=Recommended:')
-      .locator('xpath=following::button[1]');
-
-    await expect(expandButton).toBeVisible({ timeout: 5000 });
-    await expandButton.click();
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Should see action buttons (+ for add, × for disable) next to recommended items
     const addButtons = page.locator('button:has-text("+")');
@@ -428,16 +414,8 @@ test.describe('Inventory Management', () => {
     // Click on Water category
     await page.click('button:has-text("Water")');
 
-    // Wait for recommended items section to appear
-    await expect(page.locator('text=Recommended:')).toBeVisible();
-
-    // Click expand button to show recommended items (they are hidden by default)
-    await page.waitForTimeout(500);
-    const expandButton = page
-      .locator('text=Recommended:')
-      .locator('xpath=following::button[1]');
-    await expect(expandButton).toBeVisible({ timeout: 5000 });
-    await expandButton.click();
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Click the + button on the first recommended item
     const addButton = page.locator('button:has-text("+")').first();
@@ -460,16 +438,8 @@ test.describe('Inventory Management', () => {
     // Click on Water category
     await page.click('button:has-text("Water")');
 
-    // Wait for recommended items section to appear
-    await expect(page.locator('text=Recommended:')).toBeVisible();
-
-    // Click expand button to show recommended items (they are hidden by default)
-    await page.waitForTimeout(500);
-    const expandButton = page
-      .locator('text=Recommended:')
-      .locator('xpath=following::button[1]');
-    await expect(expandButton).toBeVisible({ timeout: 5000 });
-    await expandButton.click();
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Count initial recommended items
     const initialShortages = await page
