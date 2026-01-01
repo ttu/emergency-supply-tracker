@@ -6,6 +6,7 @@ import {
   EXPIRING_SOON_ALERT_DAYS,
   CRITICALLY_LOW_STOCK_PERCENTAGE,
   LOW_STOCK_PERCENTAGE,
+  CUSTOM_ITEM_TYPE,
 } from '../constants';
 import { calculateWaterRequirements } from '../calculations/water';
 
@@ -13,6 +14,35 @@ type TranslationFunction = (
   key: string,
   options?: Record<string, string | number>,
 ) => string;
+
+/**
+ * Get the translated item name for an inventory item.
+ * For built-in products, translates using itemType/productTemplateId.
+ * For custom items, returns the stored name as-is.
+ */
+function getTranslatedItemName(
+  item: InventoryItem,
+  t: TranslationFunction,
+): string {
+  // Try productTemplateId first (most reliable)
+  const templateId = item.productTemplateId || item.itemType;
+
+  // If we have a valid template ID (not custom), translate it
+  if (templateId && templateId !== CUSTOM_ITEM_TYPE) {
+    try {
+      const translated = t(templateId, { ns: 'products' });
+      // If translation returns the key itself, it means translation is missing, use original name
+      if (translated !== templateId) {
+        return translated;
+      }
+    } catch {
+      // Translation failed, fall through to use item.name
+    }
+  }
+
+  // For custom items or when translation fails, use the stored name
+  return item.name;
+}
 
 /**
  * Generate alerts for expired items
@@ -39,7 +69,7 @@ function generateExpirationAlerts(
         id: `expired-${item.id}`,
         type: 'critical',
         message: t('alerts.expiration.expired'),
-        itemName: item.name,
+        itemName: getTranslatedItemName(item, t),
       });
     } else if (daysUntilExpiration <= EXPIRING_SOON_ALERT_DAYS) {
       alerts.push({
@@ -48,7 +78,7 @@ function generateExpirationAlerts(
         message: t('alerts.expiration.expiringSoon', {
           days: daysUntilExpiration,
         }),
-        itemName: item.name,
+        itemName: getTranslatedItemName(item, t),
       });
     }
   });
@@ -87,12 +117,15 @@ function generateCategoryStockAlerts(
     const percentOfRecommended =
       totalRecommended > 0 ? (totalQuantity / totalRecommended) * 100 : 100;
 
+    // Translate category name
+    const categoryName = t(category.id, { ns: 'categories' });
+
     if (totalQuantity === 0) {
       alerts.push({
         id: `category-out-of-stock-${category.id}`,
         type: 'critical',
         message: t('alerts.stock.outOfStock'),
-        itemName: category.name,
+        itemName: categoryName,
       });
     } else if (percentOfRecommended < CRITICALLY_LOW_STOCK_PERCENTAGE) {
       alerts.push({
@@ -101,7 +134,7 @@ function generateCategoryStockAlerts(
         message: t('alerts.stock.criticallyLow', {
           percent: Math.round(percentOfRecommended),
         }),
-        itemName: category.name,
+        itemName: categoryName,
       });
     } else if (percentOfRecommended < LOW_STOCK_PERCENTAGE) {
       alerts.push({
@@ -110,7 +143,7 @@ function generateCategoryStockAlerts(
         message: t('alerts.stock.runningLow', {
           percent: Math.round(percentOfRecommended),
         }),
-        itemName: category.name,
+        itemName: categoryName,
       });
     }
   });

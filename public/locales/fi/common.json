@@ -257,6 +257,7 @@
       "missing": "Tarvitaan {{count}} {{unit}} {{item}}",
       "missingMultiple": "Tarvitaan {{count}} {{unit}} {{item}} +{{more}} muuta",
       "kcal": "kcal",
+      "missingCalories": "Tarvitaan {{count}} kcal lisää",
       "recommendedCalories": "Suositeltu {{count}} kcal lisää",
       "waterForPeople": "Vesi ihmisille",
       "waterForPreparation": "Vesi valmistukseen",
