@@ -26,6 +26,9 @@ export interface CategoryStatusSummaryProps {
   totalActualCalories?: number;
   totalNeededCalories?: number;
   missingCalories?: number;
+  // Water breakdown for water-beverages category
+  drinkingWaterNeeded?: number;
+  preparationWaterNeeded?: number;
   // Action handlers for recommended items
   onAddToInventory?: (itemId: string) => void;
   onDisableRecommended?: (itemId: string) => void;
@@ -42,6 +45,8 @@ export const CategoryStatusSummary = ({
   totalActualCalories,
   totalNeededCalories,
   missingCalories,
+  drinkingWaterNeeded,
+  preparationWaterNeeded,
   onAddToInventory,
   onDisableRecommended,
 }: CategoryStatusSummaryProps) => {
@@ -49,6 +54,7 @@ export const CategoryStatusSummary = ({
 
   const categoryName = t(categoryId, { ns: 'categories' });
   const isFoodCategory = categoryId === 'food';
+  const isWaterCategory = categoryId === 'water-beverages';
 
   // Format progress text - calories for food, units for others
   const getProgressText = (): string => {
@@ -167,6 +173,38 @@ export const CategoryStatusSummary = ({
             {t('dashboard.category.recommendedCalories', {
               count: Math.round(missingCalories),
             })}
+          </div>
+        )}
+        {isWaterCategory && drinkingWaterNeeded !== undefined && (
+          <div className={styles.waterBreakdown}>
+            <div className={styles.waterBreakdownItem}>
+              <span className={styles.waterBreakdownLabel}>
+                {t('dashboard.category.waterForPeople')}:
+              </span>
+              <span className={styles.waterBreakdownValue}>
+                {Math.round(drinkingWaterNeeded)} {t('liters', { ns: 'units' })}
+              </span>
+            </div>
+            {preparationWaterNeeded !== undefined &&
+              preparationWaterNeeded > 0 && (
+                <div className={styles.waterBreakdownItem}>
+                  <span className={styles.waterBreakdownLabel}>
+                    {t('dashboard.category.waterForPreparation')}:
+                  </span>
+                  <span className={styles.waterBreakdownValue}>
+                    {Math.round(preparationWaterNeeded)}{' '}
+                    {t('liters', { ns: 'units' })}
+                  </span>
+                </div>
+              )}
+            <div className={styles.waterBreakdownItem}>
+              <span className={styles.waterBreakdownLabel}>
+                {t('dashboard.category.totalWater')}:
+              </span>
+              <span className={styles.waterBreakdownValue}>
+                {Math.round(totalNeeded)} {t('liters', { ns: 'units' })}
+              </span>
+            </div>
           </div>
         )}
       </div>

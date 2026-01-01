@@ -322,6 +322,8 @@ export function Inventory({
             totalActualCalories={categoryStatus.totalActualCalories}
             totalNeededCalories={categoryStatus.totalNeededCalories}
             missingCalories={categoryStatus.missingCalories}
+            drinkingWaterNeeded={categoryStatus.drinkingWaterNeeded}
+            preparationWaterNeeded={categoryStatus.preparationWaterNeeded}
             onAddToInventory={handleAddRecommendedToInventory}
             onDisableRecommended={handleDisableRecommendedItem}
           />
