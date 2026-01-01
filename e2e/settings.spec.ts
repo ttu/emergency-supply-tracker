@@ -115,8 +115,16 @@ test.describe('Settings', () => {
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
 
-    // Wait for recommended items to appear
+    // Wait for recommended items section to appear
     await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Click expand button to show recommended items (they are hidden by default)
+    await page.waitForTimeout(500);
+    const expandButton = page
+      .locator('text=Recommended:')
+      .locator('xpath=following::button[1]');
+    await expect(expandButton).toBeVisible({ timeout: 5000 });
+    await expandButton.click();
 
     // Click the × button to disable the first recommended item
     const disableButton = page.locator('button:has-text("×")').first();
@@ -147,6 +155,15 @@ test.describe('Settings', () => {
     await page.click('button:has-text("Water")');
     await expect(page.locator('text=Recommended:')).toBeVisible();
 
+    // Click expand button to show recommended items (they are hidden by default)
+    // The button text is "Show X recommended items" where X is the count
+    // Wait for the expand button to be visible
+    const expandButton = page
+      .locator('button')
+      .filter({ hasText: /Show.*recommended/i });
+    await expect(expandButton).toBeVisible({ timeout: 5000 });
+    await expandButton.click();
+
     // Count initial recommended items
     const initialCount = await page
       .locator('[class*="missingItemText"]')
@@ -175,6 +192,15 @@ test.describe('Settings', () => {
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
 
+    // Wait for recommended items section to appear
+    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Click expand button again to show recommended items
+    const expandButton2 = page.locator('button', {
+      hasText: /Show \d+ recommended items/,
+    });
+    await expandButton2.click();
+
     // Wait for list to update
     await page.waitForTimeout(300);
 
@@ -190,6 +216,15 @@ test.describe('Settings', () => {
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
     await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Click expand button to show recommended items (they are hidden by default)
+    // The button text is "Show X recommended items" where X is the count
+    // Wait for the expand button to be visible
+    const expandButton = page
+      .locator('button')
+      .filter({ hasText: /Show.*recommended/i });
+    await expect(expandButton).toBeVisible({ timeout: 5000 });
+    await expandButton.click();
 
     // Count initial recommended items
     const initialCount = await page
@@ -217,6 +252,15 @@ test.describe('Settings', () => {
     // Navigate back to inventory
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
+
+    // Wait for recommended items section to appear
+    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Click expand button again to show recommended items
+    const expandButton2 = page.locator('button', {
+      hasText: /Show \d+ recommended items/,
+    });
+    await expandButton2.click();
 
     // Wait for list to update
     await page.waitForTimeout(300);
