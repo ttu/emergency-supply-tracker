@@ -729,12 +729,13 @@ describe('Inventory Page - Mark as Enough', () => {
     id: 'test-item-mark',
     name: 'Test Candles',
     itemType: 'candles',
-    categoryId: 'light-power',
+    categoryId: 'cooking-heat', // Candles are in cooking-heat category
     quantity: 4,
     unit: 'pieces',
     recommendedQuantity: 10,
     neverExpires: true,
     markedAsEnough: false,
+    productTemplateId: 'candles', // Match the recommended item
   });
 
   beforeEach(() => {
@@ -756,45 +757,31 @@ describe('Inventory Page - Mark as Enough', () => {
     jest.restoreAllMocks();
   });
 
-  it('should show clickable badge for item with low quantity', () => {
-    renderWithProviders(<Inventory />);
-    const badge = screen.getByTitle('inventory.markAsEnough');
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveTextContent('○');
-    expect(badge).toHaveAttribute('role', 'button');
+  it('should show mark as enough button in recommended list for item with low quantity', () => {
+    renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+    // The recommended list should show the mark as enough button
+    // Note: translation mock returns key as-is, so use the key
+    const markButton = screen.getByRole('button', {
+      name: 'inventory.markAsEnough',
+    });
+    expect(markButton).toBeInTheDocument();
+    expect(markButton).toHaveTextContent('✓');
   });
 
-  it('should call handleMarkAsEnough when clickable badge is clicked', async () => {
-    renderWithProviders(<Inventory />);
+  it('should call handleMarkAsEnough when mark button in recommended list is clicked', async () => {
+    renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
 
-    const badge = screen.getByTitle('inventory.markAsEnough');
-    fireEvent.click(badge);
+    const markButton = screen.getByRole('button', {
+      name: 'inventory.markAsEnough',
+    });
+    fireEvent.click(markButton);
 
     // Wait for the update to complete
     await waitFor(() => {
-      // The badge should change from ○ to ✓ after marking as enough
-      const updatedBadge = screen.getByTitle('inventory.markedAsEnough');
-      expect(updatedBadge).toBeInTheDocument();
-      expect(updatedBadge).toHaveTextContent('✓');
-    });
-
-    // The marked as enough notice should appear
-    expect(
-      screen.getByText('inventory.markedAsEnoughNotice'),
-    ).toBeInTheDocument();
-  });
-
-  it('should show marked as enough badge after marking item', async () => {
-    renderWithProviders(<Inventory />);
-
-    const badge = screen.getByTitle('inventory.markAsEnough');
-    fireEvent.click(badge);
-
-    await waitFor(() => {
-      const updatedBadge = screen.getByTitle('inventory.markedAsEnough');
-      expect(updatedBadge).toBeInTheDocument();
-      expect(updatedBadge).toHaveTextContent('✓');
-      expect(updatedBadge).not.toHaveAttribute('role', 'button');
+      // The button should disappear after marking as enough
+      expect(
+        screen.queryByRole('button', { name: 'inventory.markAsEnough' }),
+      ).not.toBeInTheDocument();
     });
   });
 });

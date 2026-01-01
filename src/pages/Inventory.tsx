@@ -333,13 +333,11 @@ export function Inventory({
             preparationWaterNeeded={categoryStatus.preparationWaterNeeded}
             onAddToInventory={handleAddRecommendedToInventory}
             onDisableRecommended={handleDisableRecommendedItem}
+            onMarkAsEnough={handleMarkAsEnough}
+            items={items}
           />
         )}
-        <ItemList
-          items={filteredItems}
-          onItemClick={handleEditItem}
-          onMarkAsEnough={handleMarkAsEnough}
-        />
+        <ItemList items={filteredItems} onItemClick={handleEditItem} />
       </div>
 
       {/* Add/Edit Item Modal */}

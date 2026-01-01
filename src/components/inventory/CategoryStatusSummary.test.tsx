@@ -4,6 +4,7 @@ import {
   CategoryStatusSummary,
   CategoryShortage,
 } from './CategoryStatusSummary';
+import { createMockInventoryItem } from '../../utils/test/factories';
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -35,6 +36,7 @@ jest.mock('react-i18next', () => ({
         'inventory.recommended': 'Recommended',
         'inventory.showLess': 'Show less',
         'inventory.showRecommended': 'Show {{count}} recommended items',
+        'inventory.markAsEnough': 'Mark as enough',
         'inventory.addToInventory': 'Add to inventory',
         'inventory.disableRecommended': "Don't recommend this item",
         liters: 'L',
@@ -461,6 +463,7 @@ describe('CategoryStatusSummary', () => {
           primaryUnit="pieces"
           shortages={createShortages(2)}
           onAddToInventory={onAddToInventory}
+          items={[]}
         />,
       );
 
@@ -493,6 +496,7 @@ describe('CategoryStatusSummary', () => {
           primaryUnit="pieces"
           shortages={createShortages(2)}
           onDisableRecommended={onDisableRecommended}
+          items={[]}
         />,
       );
 
@@ -824,6 +828,216 @@ describe('CategoryStatusSummary', () => {
       );
 
       expect(screen.queryByText('Water for people')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('mark as enough functionality', () => {
+    const createShortage = (
+      itemId: string,
+      actual: number,
+      needed: number,
+    ): CategoryShortage => ({
+      itemId,
+      itemName: `products.${itemId}`,
+      actual,
+      needed,
+      unit: 'pieces',
+      missing: needed - actual,
+    });
+
+    it('shows mark as enough button when matching item can be marked', () => {
+      const shortage = createShortage('candles', 4, 10);
+      const matchingItem = createMockInventoryItem({
+        id: 'item-1',
+        name: 'Candles',
+        itemType: 'candles',
+        categoryId: 'light-power',
+        quantity: 4,
+        recommendedQuantity: 10,
+        markedAsEnough: false,
+      });
+
+      render(
+        <CategoryStatusSummary
+          categoryId="light-power"
+          status="warning"
+          completionPercentage={40}
+          totalActual={4}
+          totalNeeded={10}
+          primaryUnit="pieces"
+          shortages={[shortage]}
+          onMarkAsEnough={jest.fn()}
+          items={[matchingItem]}
+        />,
+      );
+
+      const markButton = screen.getByRole('button', {
+        name: 'Mark as enough',
+      });
+      expect(markButton).toBeInTheDocument();
+      expect(markButton).toHaveTextContent('✓');
+    });
+
+    it('does not show mark as enough button when item is already marked', () => {
+      const shortage = createShortage('candles', 4, 10);
+      const markedItem = createMockInventoryItem({
+        id: 'item-1',
+        name: 'Candles',
+        itemType: 'candles',
+        categoryId: 'light-power',
+        quantity: 4,
+        recommendedQuantity: 10,
+        markedAsEnough: true,
+      });
+
+      render(
+        <CategoryStatusSummary
+          categoryId="light-power"
+          status="warning"
+          completionPercentage={40}
+          totalActual={4}
+          totalNeeded={10}
+          primaryUnit="pieces"
+          shortages={[shortage]}
+          onMarkAsEnough={jest.fn()}
+          items={[markedItem]}
+        />,
+      );
+
+      expect(
+        screen.queryByRole('button', { name: 'Mark as enough' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('does not show mark as enough button when quantity is zero', () => {
+      const shortage = createShortage('candles', 0, 10);
+      const zeroQuantityItem = createMockInventoryItem({
+        id: 'item-1',
+        name: 'Candles',
+        itemType: 'candles',
+        categoryId: 'light-power',
+        quantity: 0,
+        recommendedQuantity: 10,
+        markedAsEnough: false,
+      });
+
+      render(
+        <CategoryStatusSummary
+          categoryId="light-power"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={10}
+          primaryUnit="pieces"
+          shortages={[shortage]}
+          onMarkAsEnough={jest.fn()}
+          items={[zeroQuantityItem]}
+        />,
+      );
+
+      expect(
+        screen.queryByRole('button', { name: 'Mark as enough' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('calls onMarkAsEnough when mark button is clicked', async () => {
+      const user = userEvent.setup();
+      const onMarkAsEnough = jest.fn();
+      const shortage = createShortage('candles', 4, 10);
+      const matchingItem = createMockInventoryItem({
+        id: 'item-1',
+        name: 'Candles',
+        itemType: 'candles',
+        categoryId: 'light-power',
+        quantity: 4,
+        recommendedQuantity: 10,
+        markedAsEnough: false,
+      });
+
+      render(
+        <CategoryStatusSummary
+          categoryId="light-power"
+          status="warning"
+          completionPercentage={40}
+          totalActual={4}
+          totalNeeded={10}
+          primaryUnit="pieces"
+          shortages={[shortage]}
+          onMarkAsEnough={onMarkAsEnough}
+          items={[matchingItem]}
+        />,
+      );
+
+      const markButton = screen.getByRole('button', {
+        name: 'Mark as enough',
+      });
+      await user.click(markButton);
+
+      expect(onMarkAsEnough).toHaveBeenCalledTimes(1);
+      expect(onMarkAsEnough).toHaveBeenCalledWith('item-1');
+    });
+
+    it('matches items by productTemplateId', () => {
+      const shortage = createShortage('candles', 4, 10);
+      const matchingItem = createMockInventoryItem({
+        id: 'item-1',
+        name: 'Candles',
+        itemType: 'custom',
+        productTemplateId: 'candles',
+        categoryId: 'light-power',
+        quantity: 4,
+        recommendedQuantity: 10,
+        markedAsEnough: false,
+      });
+
+      render(
+        <CategoryStatusSummary
+          categoryId="light-power"
+          status="warning"
+          completionPercentage={40}
+          totalActual={4}
+          totalNeeded={10}
+          primaryUnit="pieces"
+          shortages={[shortage]}
+          onMarkAsEnough={jest.fn()}
+          items={[matchingItem]}
+        />,
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Mark as enough' }),
+      ).toBeInTheDocument();
+    });
+
+    it('matches items by normalized name', () => {
+      const shortage = createShortage('candles', 4, 10);
+      const matchingItem = createMockInventoryItem({
+        id: 'item-1',
+        name: 'Candles',
+        itemType: 'custom',
+        categoryId: 'light-power',
+        quantity: 4,
+        recommendedQuantity: 10,
+        markedAsEnough: false,
+      });
+
+      render(
+        <CategoryStatusSummary
+          categoryId="light-power"
+          status="warning"
+          completionPercentage={40}
+          totalActual={4}
+          totalNeeded={10}
+          primaryUnit="pieces"
+          shortages={[shortage]}
+          onMarkAsEnough={jest.fn()}
+          items={[matchingItem]}
+        />,
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Mark as enough' }),
+      ).toBeInTheDocument();
     });
   });
 });

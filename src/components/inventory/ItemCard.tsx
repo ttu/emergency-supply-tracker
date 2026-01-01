@@ -11,10 +11,9 @@ import styles from './ItemCard.module.css';
 export interface ItemCardProps {
   item: InventoryItem;
   onClick?: () => void;
-  onMarkAsEnough?: (itemId: string) => void;
 }
 
-export const ItemCard = ({ item, onClick, onMarkAsEnough }: ItemCardProps) => {
+export const ItemCard = ({ item, onClick }: ItemCardProps) => {
   const { t } = useTranslation(['common', 'units']);
 
   const formatExpirationDate = (dateString?: string): string => {
@@ -28,19 +27,6 @@ export const ItemCard = ({ item, onClick, onMarkAsEnough }: ItemCardProps) => {
     item.expirationDate,
     item.neverExpires,
   );
-
-  const canMarkAsEnough =
-    onMarkAsEnough &&
-    !item.markedAsEnough &&
-    item.quantity < item.recommendedQuantity &&
-    item.quantity > 0;
-
-  const handleMarkAsEnough = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onMarkAsEnough) {
-      onMarkAsEnough(item.id);
-    }
-  };
 
   return (
     <div
@@ -57,33 +43,6 @@ export const ItemCard = ({ item, onClick, onMarkAsEnough }: ItemCardProps) => {
     >
       <div className={styles.header}>
         <h3 className={styles.name}>{item.name}</h3>
-        {(item.markedAsEnough || canMarkAsEnough) && (
-          <span
-            className={`${styles.markedBadge} ${
-              canMarkAsEnough ? styles.clickable : ''
-            }`}
-            title={
-              item.markedAsEnough
-                ? t('inventory.markedAsEnough')
-                : t('inventory.markAsEnough')
-            }
-            onClick={canMarkAsEnough ? handleMarkAsEnough : undefined}
-            role={canMarkAsEnough ? 'button' : undefined}
-            tabIndex={canMarkAsEnough ? 0 : undefined}
-            onKeyDown={
-              canMarkAsEnough
-                ? (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleMarkAsEnough(e as unknown as React.MouseEvent);
-                    }
-                  }
-                : undefined
-            }
-          >
-            {item.markedAsEnough ? '✓' : '○'}
-          </span>
-        )}
       </div>
 
       <div className={styles.body}>
@@ -146,12 +105,6 @@ export const ItemCard = ({ item, onClick, onMarkAsEnough }: ItemCardProps) => {
 
         {item.location && (
           <div className={styles.location}>📍 {item.location}</div>
-        )}
-
-        {item.markedAsEnough && (
-          <div className={styles.markedNotice}>
-            {t('inventory.markedAsEnoughNotice')}
-          </div>
         )}
       </div>
     </div>

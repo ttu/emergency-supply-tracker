@@ -101,24 +101,6 @@
   color: var(--color-on-success, #ffffff);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-sm);
-  transition: all 0.2s ease;
-}
-
-.markedBadge.clickable {
-  background: var(--color-border);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-}
-
-.markedBadge.clickable:hover {
-  background: var(--color-success);
-  color: var(--color-on-success, #ffffff);
-  transform: scale(1.1);
-}
-
-.markedBadge.clickable:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }
 
 .markedNotice {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../common/Badge';
-import type { ItemStatus, Unit } from '../../types';
+import type { ItemStatus, Unit, InventoryItem } from '../../types';
 import { getStatusVariant } from '../../utils/calculations/status';
 import styles from './CategoryStatusSummary.module.css';
 
@@ -32,6 +32,9 @@ export interface CategoryStatusSummaryProps {
   // Action handlers for recommended items
   onAddToInventory?: (itemId: string) => void;
   onDisableRecommended?: (itemId: string) => void;
+  onMarkAsEnough?: (itemId: string) => void;
+  // Items to check if they can be marked as enough
+  items?: InventoryItem[];
 }
 
 export const CategoryStatusSummary = ({
@@ -49,6 +52,8 @@ export const CategoryStatusSummary = ({
   preparationWaterNeeded,
   onAddToInventory,
   onDisableRecommended,
+  onMarkAsEnough,
+  items = [],
 }: CategoryStatusSummaryProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
@@ -95,6 +100,33 @@ export const CategoryStatusSummary = ({
     return [];
   };
 
+  // Find matching inventory items for a shortage that can be marked as enough
+  const findMarkableItems = (shortage: CategoryShortage): InventoryItem[] => {
+    if (!onMarkAsEnough || !items.length) return [];
+
+    const shortageItemId = shortage.itemId.toLowerCase();
+    return items.filter((item) => {
+      // Match by productTemplateId, itemType, or normalized name
+      const itemTemplateId = item.productTemplateId?.toLowerCase() || '';
+      const itemType = item.itemType?.toLowerCase() || '';
+      const itemName = item.name.toLowerCase().replace(/\s+/g, '-');
+
+      const matches =
+        itemTemplateId === shortageItemId ||
+        itemType === shortageItemId ||
+        itemName === shortageItemId;
+
+      if (!matches) return false;
+
+      // Can be marked as enough if: not already marked, has quantity > 0, quantity < recommendedQuantity
+      return (
+        !item.markedAsEnough &&
+        item.quantity > 0 &&
+        item.quantity < item.recommendedQuantity
+      );
+    });
+  };
+
   return (
     <div className={styles.summary}>
       <div className={styles.header}>
@@ -119,39 +151,64 @@ export const CategoryStatusSummary = ({
               {t('inventory.recommended')}:
             </div>
             <ul className={styles.missingList}>
-              {getVisibleShortages().map((shortage) => (
-                <li key={shortage.itemId} className={styles.missingItem}>
-                  <span className={styles.missingItemText}>
-                    {formatShortage(shortage)}
-                  </span>
-                  {(onAddToInventory || onDisableRecommended) && (
-                    <span className={styles.missingItemActions}>
-                      {onAddToInventory && (
-                        <button
-                          type="button"
-                          className={styles.actionButton}
-                          onClick={() => onAddToInventory(shortage.itemId)}
-                          title={t('inventory.addToInventory')}
-                          aria-label={t('inventory.addToInventory')}
-                        >
-                          +
-                        </button>
-                      )}
-                      {onDisableRecommended && (
-                        <button
-                          type="button"
-                          className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
-                          onClick={() => onDisableRecommended(shortage.itemId)}
-                          title={t('inventory.disableRecommended')}
-                          aria-label={t('inventory.disableRecommended')}
-                        >
-                          ×
-                        </button>
-                      )}
+              {getVisibleShortages().map((shortage) => {
+                const markableItems = findMarkableItems(shortage);
+                const hasMarkableItems = markableItems.length > 0;
+
+                return (
+                  <li key={shortage.itemId} className={styles.missingItem}>
+                    <span className={styles.missingItemText}>
+                      {formatShortage(shortage)}
                     </span>
-                  )}
-                </li>
-              ))}
+                    {(onAddToInventory ||
+                      onDisableRecommended ||
+                      hasMarkableItems) && (
+                      <span className={styles.missingItemActions}>
+                        {hasMarkableItems && onMarkAsEnough && (
+                          <button
+                            type="button"
+                            className={`${styles.actionButton} ${styles.actionButtonMark}`}
+                            onClick={() => {
+                              // Mark the first matching item as enough
+                              if (markableItems[0]) {
+                                onMarkAsEnough(markableItems[0].id);
+                              }
+                            }}
+                            title={t('inventory.markAsEnough')}
+                            aria-label={t('inventory.markAsEnough')}
+                          >
+                            ✓
+                          </button>
+                        )}
+                        {onAddToInventory && (
+                          <button
+                            type="button"
+                            className={styles.actionButton}
+                            onClick={() => onAddToInventory(shortage.itemId)}
+                            title={t('inventory.addToInventory')}
+                            aria-label={t('inventory.addToInventory')}
+                          >
+                            +
+                          </button>
+                        )}
+                        {onDisableRecommended && (
+                          <button
+                            type="button"
+                            className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                            onClick={() =>
+                              onDisableRecommended(shortage.itemId)
+                            }
+                            title={t('inventory.disableRecommended')}
+                            aria-label={t('inventory.disableRecommended')}
+                          >
+                            ×
+                          </button>
+                        )}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
             {shortages.length > 0 && (
               <button
