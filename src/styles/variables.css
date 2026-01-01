@@ -1,78 +1,61 @@
 :root {
-  /* Colors - Status */
-  --color-ok: #4caf50;
-  --color-warning: #ffc107;
-  --color-critical: #f44336;
-
-  /* Colors - Primary */
-  --color-primary: #2196f3;
-  --color-primary-dark: #1976d2;
-  --color-primary-light: #64b5f6;
-  --color-primary-alpha: rgba(33, 150, 243, 0.1);
-
-  /* Colors - Neutral */
-  --color-text: #212121;
-  --color-text-secondary: #757575;
-  --color-background: #ffffff;
-  --color-background-secondary: #f5f5f5;
-  --color-surface: #ffffff;
-  --color-border: #e0e0e0;
-
-  /* Colors - Semantic */
-  --color-success: #4caf50;
-  --color-error: #f44336;
-  --color-info: #2196f3;
-
-  /* Colors - Focus */
-  --color-focus: #2196f3;
-  --color-focus-ring: rgba(33, 150, 243, 0.4);
-  --focus-ring-width: 3px;
-  --focus-ring-offset: 2px;
-
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-
-  /* Typography */
+  /* Typography - Inter font family */
   --font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-md: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+
+  /* Typography Scale - Linear-inspired */
+  --font-size-xs: 0.75rem; /* 12px - Caption */
+  --font-size-sm: 0.875rem; /* 14px - Small body */
+  --font-size-md: 1rem; /* 16px - Body */
+  --font-size-lg: 1.125rem; /* 18px - Title */
+  --font-size-xl: 1.25rem; /* 20px - Headline */
+  --font-size-2xl: 1.5rem; /* 24px - Large headline */
+  --font-size-3xl: 1.875rem; /* 30px - Display */
+  --font-size-4xl: 2.25rem; /* 36px - Large display */
+
+  --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
 
-  /* Border Radius */
-  --border-radius: 0.5rem;
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* Spacing - Refined scale */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-3xl: 4rem; /* 64px */
+
+  /* Border Radius - More refined */
+  --radius-xs: 0.25rem; /* 4px */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem; /* 16px */
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  /* Shadows - Subtle and modern */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
   --shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
   --shadow-lg:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   /* Transitions */
-  --transition-fast: 150ms ease-in-out;
-  --transition-base: 200ms ease-in-out;
-  --transition-slow: 300ms ease-in-out;
+  --transition-fast: 100ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Z-index */
   --z-dropdown: 1000;
@@ -80,35 +63,118 @@
   --z-tooltip: 1100;
 }
 
-/* Dark theme - Disabled automatic detection, use explicit theme class instead */
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --color-text: #ffffff;
-    --color-text-secondary: #b0b0b0;
-    --color-background: #121212;
-    --color-background-secondary: #1e1e1e;
-    --color-surface: #1e1e1e;
-    --color-border: #333333;
-  }
-} */
-
-/* Theme override classes */
+/* Light Theme - Linear-inspired clean design */
 [data-theme='light'] {
-  --color-text: #212121;
-  --color-text-secondary: #757575;
+  /* Base colors - Clean whites and subtle grays */
   --color-background: #ffffff;
-  --color-background-secondary: #f5f5f5;
+  --color-background-secondary: #fafafa;
+  --color-background-tertiary: #f5f5f5;
   --color-surface: #ffffff;
-  --color-border: #e0e0e0;
+  --color-surface-hover: #fafafa;
+  --color-surface-active: #f5f5f5;
+
+  /* Text colors - High contrast, readable */
+  --color-text: #0d0d0d;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-disabled: #d1d5db;
+
+  /* Border colors - Subtle and refined */
+  --color-border: #e5e7eb;
+  --color-border-hover: #d1d5db;
+  --color-border-focus: #6366f1;
+
+  /* Primary colors - Modern blue (Linear-inspired) */
+  --color-primary: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-primary-active: #4338ca;
+  --color-primary-light: #818cf8;
+  --color-primary-alpha: rgba(99, 102, 241, 0.1);
+  --color-primary-alpha-hover: rgba(99, 102, 241, 0.15);
+
+  /* Status colors - Refined palette */
+  --color-success: #10b981;
+  --color-success-light: #34d399;
+  --color-success-alpha: rgba(16, 185, 129, 0.1);
+
+  --color-warning: #f59e0b;
+  --color-warning-light: #fbbf24;
+  --color-warning-alpha: rgba(245, 158, 11, 0.1);
+
+  --color-error: #ef4444;
+  --color-error-light: #f87171;
+  --color-error-alpha: rgba(239, 68, 68, 0.1);
+
+  --color-info: #3b82f6;
+  --color-info-light: #60a5fa;
+  --color-info-alpha: rgba(59, 130, 246, 0.1);
+
+  /* Legacy status colors for compatibility */
+  --color-ok: var(--color-success);
+  --color-critical: var(--color-error);
+
+  /* Focus colors */
+  --color-focus: var(--color-primary);
+  --color-focus-ring: rgba(99, 102, 241, 0.3);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
 }
 
+/* Dark Theme - Linear-inspired deep design */
 [data-theme='dark'] {
-  --color-text: #ffffff;
-  --color-text-secondary: #b0b0b0;
-  --color-background: #121212;
-  --color-background-secondary: #1e1e1e;
-  --color-surface: #1e1e1e;
-  --color-border: #333333;
+  /* Base colors - Deep blacks and subtle grays */
+  --color-background: #0a0a0a;
+  --color-background-secondary: #111111;
+  --color-background-tertiary: #1a1a1a;
+  --color-surface: #111111;
+  --color-surface-hover: #1a1a1a;
+  --color-surface-active: #262626;
+
+  /* Text colors - High contrast for readability */
+  --color-text: #fafafa;
+  --color-text-secondary: #a3a3a3;
+  --color-text-tertiary: #737373;
+  --color-text-disabled: #525252;
+
+  /* Border colors - Subtle and refined */
+  --color-border: #262626;
+  --color-border-hover: #404040;
+  --color-border-focus: #818cf8;
+
+  /* Primary colors - Lighter blue for dark theme */
+  --color-primary: #818cf8;
+  --color-primary-hover: #6366f1;
+  --color-primary-active: #4f46e5;
+  --color-primary-light: #a5b4fc;
+  --color-primary-alpha: rgba(129, 140, 248, 0.15);
+  --color-primary-alpha-hover: rgba(129, 140, 248, 0.2);
+
+  /* Status colors - Adjusted for dark theme */
+  --color-success: #34d399;
+  --color-success-light: #6ee7b7;
+  --color-success-alpha: rgba(52, 211, 153, 0.15);
+
+  --color-warning: #fbbf24;
+  --color-warning-light: #fcd34d;
+  --color-warning-alpha: rgba(251, 191, 36, 0.15);
+
+  --color-error: #f87171;
+  --color-error-light: #fca5a5;
+  --color-error-alpha: rgba(248, 113, 113, 0.15);
+
+  --color-info: #60a5fa;
+  --color-info-light: #93c5fd;
+  --color-info-alpha: rgba(96, 165, 250, 0.15);
+
+  /* Legacy status colors for compatibility */
+  --color-ok: var(--color-success);
+  --color-critical: var(--color-error);
+
+  /* Focus colors */
+  --color-focus: var(--color-primary);
+  --color-focus-ring: rgba(129, 140, 248, 0.4);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
 }
 
 /* High Contrast Mode - Light */
@@ -127,7 +193,7 @@
 
   /* Primary colors with enhanced contrast */
   --color-primary: #0000cc;
-  --color-primary-dark: #000099;
+  --color-primary-hover: #000099;
   --color-primary-light: #3333ff;
 
   /* Focus indicators for high contrast */
@@ -153,7 +219,7 @@
 
   /* Primary colors with enhanced contrast */
   --color-primary: #66b3ff;
-  --color-primary-dark: #3399ff;
+  --color-primary-hover: #3399ff;
   --color-primary-light: #99ccff;
 
   /* Focus indicators for high contrast */

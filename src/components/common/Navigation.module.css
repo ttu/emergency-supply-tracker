@@ -30,13 +30,13 @@
 .navButton:hover {
   color: var(--color-text);
   background-color: var(--color-background-hover);
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--radius-sm);
 }
 
 .navButton:focus-visible {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--radius-sm);
 }
 
 .navButton.active {

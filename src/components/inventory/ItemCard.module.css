@@ -71,7 +71,7 @@
 }
 
 .expired {
-  color: var(--color-danger);
+  color: var(--color-error);
   font-weight: var(--font-weight-medium);
 }
 

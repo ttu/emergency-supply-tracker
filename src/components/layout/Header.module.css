@@ -1,45 +1,57 @@
 .header {
   width: 100%;
-  background-color: var(--color-background);
+  background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+[data-theme='light'] .header {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='dark'] .header {
+  background-color: rgba(17, 17, 17, 0.85);
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 1.5rem;
+  padding: var(--spacing-md) var(--spacing-lg);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  gap: var(--spacing-xl);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
+  letter-spacing: -0.01em;
 }
 
 .navigation {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--spacing-lg);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
 @media (max-width: 768px) {
   .container {
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: var(--spacing-md);
   }
 
   .navigation {

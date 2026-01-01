@@ -10,12 +10,12 @@
 
 .label {
   font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text);
 }
 
 .required {
-  color: var(--color-critical);
+  color: var(--color-error);
   margin-left: var(--spacing-xs);
 }
 
@@ -25,46 +25,55 @@
   border-radius: var(--radius-md);
   font-family: var(--font-family);
   font-size: var(--font-size-md);
-  color: #212121 !important;
-  background-color: #ffffff !important;
-  transition: all 0.2s;
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  transition: all var(--transition-base);
   cursor: pointer;
-  -webkit-text-fill-color: #212121;
-}
-
-.select option {
-  color: #212121 !important;
-  background-color: #ffffff;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-md) center;
+  padding-right: calc(var(--spacing-xl) + var(--spacing-sm));
 }
 
 .select:hover:not(:disabled) {
-  border-color: var(--color-primary);
+  border-color: var(--color-border-hover);
+  background-color: var(--color-surface-hover);
 }
 
 .select:focus-visible {
   outline: none;
   border-color: var(--color-focus);
-  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+  box-shadow:
+    0 0 0 var(--focus-ring-width) var(--color-focus-ring),
+    var(--shadow-xs);
+  background-color: var(--color-surface);
 }
 
+.select:disabled,
 .select.disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background-color: var(--color-background);
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-disabled);
 }
 
 .select.error {
-  border-color: var(--color-critical);
+  border-color: var(--color-error);
 }
 
 .select.error:focus-visible {
-  border-color: var(--color-critical);
-  box-shadow: 0 0 0 var(--focus-ring-width) rgba(244, 67, 54, 0.3);
+  border-color: var(--color-error);
+  box-shadow:
+    0 0 0 var(--focus-ring-width) var(--color-error-alpha),
+    var(--shadow-xs);
 }
 
 .errorMessage {
   font-size: var(--font-size-sm);
-  color: var(--color-critical);
+  color: var(--color-error);
+  font-weight: var(--font-weight-medium);
 }
 
 .helperText {
