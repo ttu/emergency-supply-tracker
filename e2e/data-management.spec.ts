@@ -178,4 +178,245 @@ test.describe('Data Management', () => {
     // Test passes if the button is present and visible
     expect(await clearButton.isVisible()).toBe(true);
   });
+
+  test('should import custom recommendations', async ({ page }) => {
+    // Navigate to Settings
+    await page.click('text=Settings');
+
+    // Verify default recommendations status shows "Built-in"
+    await expect(page.locator('text=Built-in')).toBeVisible();
+
+    // Create custom recommendations file
+    const customRecommendations = {
+      meta: {
+        name: 'Test Custom Kit',
+        version: '1.0.0',
+        createdAt: new Date().toISOString(),
+      },
+      items: [
+        {
+          id: 'custom-water',
+          names: { en: 'Custom Water', fi: 'Mukautettu vesi' },
+          category: 'water-beverages',
+          baseQuantity: 5,
+          unit: 'liters',
+          scaleWithPeople: true,
+          scaleWithDays: true,
+        },
+        {
+          id: 'custom-food',
+          names: { en: 'Custom Food', fi: 'Mukautettu ruoka' },
+          category: 'food',
+          baseQuantity: 2,
+          unit: 'cans',
+          scaleWithPeople: true,
+          scaleWithDays: false,
+        },
+      ],
+    };
+
+    // Set up dialog handler for confirmation
+    page.once('dialog', async (dialog) => {
+      expect(dialog.message()).toContain('Test Custom Kit');
+      expect(dialog.message()).toContain('2 items');
+      await dialog.accept();
+    });
+
+    // Import the custom recommendations
+    const fileInput = page.getByLabel('Import Recommendations');
+    await fileInput.setInputFiles({
+      name: 'custom-recommendations.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(customRecommendations)),
+    });
+
+    // Wait for import to complete
+    await page.waitForTimeout(500);
+
+    // Verify status now shows custom recommendations
+    await expect(page.locator('text=Test Custom Kit')).toBeVisible();
+    await expect(page.locator('text=2 items')).toBeVisible();
+
+    // Verify Reset to Default button appears
+    await expect(
+      page.locator('button', { hasText: 'Reset to Default' }),
+    ).toBeVisible();
+  });
+
+  test('should export recommendations', async ({ page }) => {
+    // Navigate to Settings
+    await page.click('text=Settings');
+
+    // Verify Export Recommendations button is visible
+    const exportButton = page.locator('button', {
+      hasText: 'Export Recommendations',
+    });
+    await expect(exportButton).toBeVisible();
+
+    // Click Export Recommendations button
+    await exportButton.click();
+
+    // Wait for download to trigger
+    await page.waitForTimeout(500);
+
+    // No error should occur - test passes if button is clickable
+    // (Actual download verification would require additional Playwright setup)
+  });
+
+  test('should reset to default recommendations', async ({ page }) => {
+    // Navigate to Settings
+    await page.click('text=Settings');
+
+    // First import custom recommendations to enable reset
+    const customRecommendations = {
+      meta: {
+        name: 'Temporary Kit',
+        version: '1.0.0',
+        createdAt: new Date().toISOString(),
+      },
+      items: [
+        {
+          id: 'temp-item',
+          names: { en: 'Temp Item' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+
+    // Import custom recommendations
+    page.once('dialog', async (dialog) => {
+      await dialog.accept();
+    });
+
+    const fileInput = page.getByLabel('Import Recommendations');
+    await fileInput.setInputFiles({
+      name: 'temp-recommendations.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(customRecommendations)),
+    });
+
+    await page.waitForTimeout(500);
+
+    // Verify custom recommendations are active
+    await expect(page.locator('text=Temporary Kit')).toBeVisible();
+
+    // Set up dialog handler for reset confirmation
+    page.once('dialog', async (dialog) => {
+      expect(dialog.message()).toContain('Reset to built-in');
+      await dialog.accept();
+    });
+
+    // Click Reset to Default button
+    const resetButton = page.locator('button', { hasText: 'Reset to Default' });
+    await expect(resetButton).toBeVisible();
+    await resetButton.click();
+
+    // Wait for reset to complete
+    await page.waitForTimeout(500);
+
+    // Verify status shows Built-in again
+    await expect(page.locator('text=Built-in')).toBeVisible();
+
+    // Reset button should no longer be visible
+    await expect(resetButton).not.toBeVisible();
+  });
+
+  test('should display custom recommendation names in inventory', async ({
+    page,
+  }) => {
+    // Navigate to Settings
+    await page.click('text=Settings');
+
+    // Import custom recommendations with multi-language names
+    const customRecommendations = {
+      meta: {
+        name: 'Multi-lang Kit',
+        version: '1.0.0',
+        createdAt: new Date().toISOString(),
+      },
+      items: [
+        {
+          id: 'multilang-water',
+          names: {
+            en: 'Emergency Water Supply',
+            fi: 'Hätävesivarasto',
+          },
+          category: 'water-beverages',
+          baseQuantity: 3,
+          unit: 'liters',
+          scaleWithPeople: true,
+          scaleWithDays: true,
+        },
+      ],
+    };
+
+    page.once('dialog', async (dialog) => {
+      await dialog.accept();
+    });
+
+    const fileInput = page.getByLabel('Import Recommendations');
+    await fileInput.setInputFiles({
+      name: 'multilang-recommendations.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(customRecommendations)),
+    });
+
+    await page.waitForTimeout(500);
+
+    // Navigate to Inventory and select Water & Beverages category
+    await page.click('text=Inventory');
+
+    // Click on Water & Beverages category tab
+    await page.click('button:has-text("Water")');
+
+    // Verify the custom recommendation name is displayed (English)
+    await expect(page.locator('text=Emergency Water Supply')).toBeVisible();
+
+    // Switch to Finnish
+    await page.click('text=Settings');
+    await page.selectOption('#language-select', 'fi');
+
+    // Navigate back to Inventory
+    await page.click('text=Varasto'); // Finnish for Inventory
+    await page.click('button:has-text("Vesi")'); // Finnish for Water
+
+    // Verify Finnish name is displayed
+    await expect(page.locator('text=Hätävesivarasto')).toBeVisible();
+  });
+
+  test('should reject invalid recommendations file', async ({ page }) => {
+    // Navigate to Settings
+    await page.click('text=Settings');
+
+    // Create invalid recommendations file (missing required fields)
+    const invalidRecommendations = {
+      meta: {
+        name: 'Invalid Kit',
+        // missing version and createdAt
+      },
+      items: [],
+    };
+
+    // Set up dialog handler for error
+    page.once('dialog', async (dialog) => {
+      expect(dialog.message()).toContain('Failed');
+      await dialog.accept();
+    });
+
+    const fileInput = page.getByLabel('Import Recommendations');
+    await fileInput.setInputFiles({
+      name: 'invalid-recommendations.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(invalidRecommendations)),
+    });
+
+    await page.waitForTimeout(500);
+
+    // Should still show Built-in (import failed)
+    await expect(page.locator('text=Built-in')).toBeVisible();
+  });
 });
