@@ -143,6 +143,9 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 **Water Tracking** (disabled by default):
 
 - Detailed water consumption tracking
+- Tracks water needed for food preparation (e.g., pasta, rice)
+- Calculates total water needs (drinking + preparation)
+- Shows water shortfall alerts if preparation water exceeds available water
 
 #### Item Status Indicators
 
@@ -240,7 +243,27 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 ---
 
-### 6. Application Views
+### 6. Help Page
+
+A comprehensive help page with frequently asked questions and guidance.
+
+**Location:** `/help` (accessible from navigation)
+
+**Features:**
+
+- Expandable FAQ sections:
+  - Getting started
+  - Household size configuration
+  - Recommended items
+  - Expiration dates
+  - Categories
+  - Status colors
+  - Export/Import
+  - And more...
+- Fully translated (English/Finnish)
+- Accessible keyboard navigation
+
+### 7. Application Views
 
 #### Dashboard View
 
@@ -308,6 +331,13 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 - `HouseholdForm`: Adults, children, duration, freezer
 
+**Nutrition & Requirements:**
+
+- `NutritionSettings`: Customizable nutrition and requirement settings:
+  - Daily calories per person (default: 2000 kcal)
+  - Daily water per person (default: 3 liters)
+  - Children requirement percentage (default: 75%)
+
 **Advanced Features:**
 
 - `AdvancedFeatures`: Toggle switches for:
@@ -322,13 +352,39 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 **Theme:**
 
 - `ThemeSelector`: Light / Dark / Auto
+- High contrast mode toggle (separate from theme)
+
+**Hidden Alerts:**
+
+- `HiddenAlerts`: Manage dismissed alerts:
+  - View all currently hidden alerts
+  - Reactivate individual alerts
+  - Reactivate all alerts at once
+
+**Disabled Recommendations:**
+
+- `DisabledRecommendations`: Manage disabled recommended items:
+  - View all disabled items
+  - Re-enable individual items
+  - Re-enable all items at once
 
 **Data Management:**
 
 - `ExportButton`: Export data as JSON
 - `ImportButton`: Import data from JSON
-- `ShoppingListExport`: Export shopping list (TODO)
+- `ShoppingListExport`: Export shopping list (TXT/Markdown/CSV)
+- `DebugExport`: Export error logs and debug information
 - `ClearDataButton`: Clear all data with confirmation
+
+**About:**
+
+- App version display
+- Link to GitHub repository
+- App description
+
+**Danger Zone:**
+
+- `ClearDataButton`: Clear all data with confirmation (placed in separate "Danger Zone" section)
 
 ---
 
@@ -342,6 +398,13 @@ Displayed via `AlertBanner` component on Dashboard:
 - :warning: Items expiring within 30 days (count)
 - :white_circle: Missing critical items (count)
 - :yellow_circle: Low quantity items (count)
+- :information_source: Backup reminder (if no backup in 30+ days)
+
+#### Alert Management
+
+- **Dismiss alerts**: Users can dismiss individual alerts
+- **Hidden alerts**: Dismissed alerts can be reactivated from Settings
+- **Backup reminder**: Monthly reminder to export data (can be dismissed until next month)
 
 #### Visual Indicators
 
@@ -353,7 +416,25 @@ Displayed via `AlertBanner` component on Dashboard:
 
 ---
 
-### 8. Data Management
+### 8. Backup Reminder System
+
+Automatic reminder to export/backup data:
+
+- **Trigger**: Shows if no backup in 30+ days AND data has been modified
+- **Display**: Info alert on Dashboard
+- **Dismissal**: Can be dismissed until first day of next month
+- **Tracking**: `lastBackupDate` recorded on export, `backupReminderDismissedUntil` tracks dismissal
+
+### 9. Disabled Recommendations
+
+Users can disable recommended items they don't need:
+
+- **Purpose**: Hide items that don't apply to user's situation
+- **Storage**: `disabledRecommendedItems` array in AppData
+- **Effect**: Disabled items don't appear in recommendations or shortage calculations
+- **Management**: Settings page allows re-enabling disabled items
+
+### 10. Data Management
 
 #### Export Data (JSON)
 
@@ -383,17 +464,36 @@ Displayed via `AlertBanner` component on Dashboard:
 
 #### Export Shopping List
 
-**Status:** TODO (not yet implemented)
+**Status:** ✅ Implemented
 
-Planned features:
+Features:
 
-- Export missing/low items
-- Format options: Text, Markdown, CSV
+- Export items needing restock (quantity < recommended)
+- Format options: Plain Text, Markdown, CSV
 - Grouping by category
+- Shows category icons and names
+- Includes quantity needed (recommended - current)
+- Generated timestamp included
 
 ---
 
-### 9. Internationalization (i18n)
+### 11. Debug & Error Logging
+
+**Debug Export:**
+
+- Export error logs and debug information
+- Useful for troubleshooting issues
+- Includes error boundary catches, analytics events
+- All data stays local (no external tracking)
+
+**Error Logging:**
+
+- Automatic error boundary logging
+- Local storage of error events
+- No external services used
+- Privacy-focused
+
+### 12. Internationalization (i18n)
 
 #### Supported Languages
 
@@ -406,6 +506,21 @@ Planned features:
 - Translation files in `public/locales/{lang}/`
 - All UI text translatable
 - Recommended items have i18n keys
+
+#### URL Language Parameter
+
+The app supports URL query parameters for language selection (hreflang support):
+
+- `?lang=en` - Switch to English
+- `?lang=fi` - Switch to Finnish
+
+**Language Priority:**
+
+1. URL query parameter (`?lang=xx`)
+2. Stored settings (from localStorage)
+3. Default language (`en`)
+
+The URL parameter is automatically removed after reading to keep URLs clean.
 
 ---
 

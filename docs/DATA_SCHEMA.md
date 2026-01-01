@@ -139,12 +139,17 @@ Application preferences and feature flags:
 interface UserSettings {
   language: 'en' | 'fi'; // UI language
   theme: 'light' | 'dark' | 'auto'; // Color theme
+  highContrast: boolean; // High contrast mode for accessibility
   advancedFeatures: {
     calorieTracking: boolean; // Enable calorie calculations
     powerManagement: boolean; // Enable power/battery tracking
     waterTracking: boolean; // Enable detailed water tracking
   };
   onboardingCompleted?: boolean; // Has completed initial setup
+  // Customizable nutrition and requirement settings
+  dailyCaloriesPerPerson?: number; // Default: 2000 kcal
+  dailyWaterPerPerson?: number; // Default: 3 liters
+  childrenRequirementPercentage?: number; // Default: 75 (children need 75% of adult requirements)
 }
 ```
 
@@ -154,10 +159,14 @@ interface UserSettings {
 | ---------------------------------- | -------- |
 | `language`                         | `'en'`   |
 | `theme`                            | `'auto'` |
+| `highContrast`                     | `false`  |
 | `advancedFeatures.calorieTracking` | `false`  |
 | `advancedFeatures.powerManagement` | `false`  |
 | `advancedFeatures.waterTracking`   | `false`  |
 | `onboardingCompleted`              | `false`  |
+| `dailyCaloriesPerPerson`           | `2000`   |
+| `dailyWaterPerPerson`              | `3`      |
+| `childrenRequirementPercentage`    | `75`     |
 
 ---
 
@@ -185,7 +194,7 @@ Individual items tracked in the user's inventory:
 interface InventoryItem {
   id: string; // Unique identifier (UUID)
   name: string; // Item name (or i18n key reference)
-  itemType: string; // Template ID (e.g., "canned-fish") or "custom" for user-created items
+  itemType: string; // Template ID (e.g., "canned-fish") or "custom" for user-created items, used for i18n lookup
   categoryId: string; // Category reference
   quantity: number; // Current quantity owned
   unit: Unit; // Measurement unit
@@ -195,8 +204,11 @@ interface InventoryItem {
   location?: string; // Storage location
   notes?: string; // User notes
   productTemplateId?: string; // Reference to product template
-  weightGrams?: number; // Total weight (user can override)
-  caloriesPerUnit?: number; // Calories per unit (user can override)
+  weightGrams?: number; // Weight per unit in grams (e.g., one can weighs 400g)
+  caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal)
+  capacityMah?: number; // Capacity in milliamp-hours (for powerbanks)
+  capacityWh?: number; // Capacity in watt-hours (for powerbanks)
+  requiresWaterLiters?: number; // Liters of water required per unit for preparation
   createdAt: string; // ISO timestamp
   updatedAt: string; // ISO timestamp
 }
@@ -208,6 +220,8 @@ interface InventoryItem {
 - `recommendedQuantity` is calculated based on household configuration and scaling rules
 - Items with `neverExpires: true` don't show expiration warnings
 - `weightGrams` and `caloriesPerUnit` are used when calorie tracking is enabled
+- `capacityMah` and `capacityWh` are used for power bank tracking when power management is enabled
+- `requiresWaterLiters` tracks water needed for preparation (e.g., pasta, rice)
 
 ---
 
@@ -247,9 +261,15 @@ interface RecommendedItemDefinition {
   scaleWithDays: boolean; // Multiply by duration
   requiresFreezer?: boolean; // Only applicable if useFreezer
   defaultExpirationMonths?: number; // Default shelf life
-  weightGramsPerUnit?: number; // Weight per unit for calorie calc
-  caloriesPer100g?: number; // Calories per 100g
-  caloriesPerUnit?: number; // Calories per unit (direct value)
+  // Weight and calorie tracking for food items
+  weightGramsPerUnit?: number; // Weight in grams per unit (e.g., 150g per can)
+  caloriesPer100g?: number; // Calories per 100g of weight
+  caloriesPerUnit?: number; // Calories per unit (calculated or direct value)
+  // Capacity for powerbanks
+  capacityMah?: number; // Capacity in milliamp-hours
+  capacityWh?: number; // Capacity in watt-hours
+  // Water requirement for preparation
+  requiresWaterLiters?: number; // Liters of water required per unit for preparation (must be > 0 if set)
 }
 ```
 
@@ -274,7 +294,11 @@ interface AppData {
   customCategories: Category[]; // User's custom categories only
   items: InventoryItem[]; // All inventory items
   customTemplates: ProductTemplate[]; // User's custom templates
+  dismissedAlertIds: string[]; // Alert IDs that have been dismissed by the user
+  disabledRecommendedItems: string[]; // Recommended item IDs that have been disabled by the user
   lastModified: string; // ISO timestamp
+  lastBackupDate?: string; // ISO date of last export
+  backupReminderDismissedUntil?: string; // ISO date (first of next month) - reminder hidden until this date
 }
 ```
 
@@ -311,14 +335,16 @@ Standard categories are always available and not stored in `customCategories`. O
 ### Household Multiplier
 
 ```
-Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
+Total Multiplier = (adults × 1.0 + children × 0.75) × days
 ```
 
 **Example:** 2 adults + 2 children for 7 days:
 
 ```
-(2.0 + 1.5) × (7 ÷ 3) = 3.5 × 2.33 = 8.16×
+(2.0 + 1.5) × 7 = 3.5 × 7 = 24.5×
 ```
+
+**Note:** The multiplier is used for items that scale with both people and days. The base quantities in recommended items are typically for 1 person for a specific duration (often 3 days), so the final calculation depends on the item's `baseQuantity` value.
 
 ### Recommended Quantity
 
@@ -328,15 +354,21 @@ For each recommended item:
 let quantity = baseQuantity;
 
 if (scaleWithPeople) {
-  quantity *= adults + children; // Note: simplified scaling
+  // Adults count as 1.0, children as 0.75 (configurable via childrenRequirementPercentage)
+  const peopleMultiplier =
+    adults * ADULT_REQUIREMENT_MULTIPLIER + children * childrenMultiplier;
+  quantity *= peopleMultiplier;
 }
 
 if (scaleWithDays) {
+  // Multiply by supply duration in days
   quantity *= supplyDurationDays;
 }
 
 recommendedQuantity = Math.ceil(quantity);
 ```
+
+**Note:** The `baseQuantity` in recommended items is typically calculated for 1 person for a specific duration (often 3 days). When `scaleWithDays` is true, the quantity is multiplied directly by `supplyDurationDays`. The exact base duration varies by item - see `RECOMMENDED_ITEMS.md` for specific base quantities.
 
 ### Calorie Tracking
 

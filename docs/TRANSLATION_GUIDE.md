@@ -11,6 +11,7 @@ This document describes how internationalization (i18n) works in the Emergency S
 ## Overview
 
 The app supports two languages:
+
 - **English** (default)
 - **Finnish** (Suomi)
 
@@ -20,11 +21,11 @@ All UI text is translatable. User-created content (custom items, notes) is not t
 
 ## Technology Stack
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| i18next | 25.7.3 | Core i18n framework |
-| react-i18next | 16.5.0 | React bindings |
-| i18next-http-backend | 3.0.2 | Load translation files |
+| Package              | Version | Purpose                |
+| -------------------- | ------- | ---------------------- |
+| i18next              | 25.7.3  | Core i18n framework    |
+| react-i18next        | 16.5.0  | React bindings         |
+| i18next-http-backend | 3.0.2   | Load translation files |
 
 ---
 
@@ -79,12 +80,12 @@ public/locales/
 
 ### Namespaces
 
-| Namespace | Content | Example Keys |
-|-----------|---------|--------------|
-| `common` | UI elements | `dashboard.title`, `buttons.save` |
-| `categories` | Category names | `water-beverages`, `food` |
-| `products` | Product names | `bottled-water`, `canned-soup` |
-| `units` | Units | `liters`, `pieces`, `kilograms` |
+| Namespace    | Content        | Example Keys                      |
+| ------------ | -------------- | --------------------------------- |
+| `common`     | UI elements    | `dashboard.title`, `buttons.save` |
+| `categories` | Category names | `water-beverages`, `food`         |
+| `products`   | Product names  | `bottled-water`, `canned-soup`    |
+| `units`      | Units          | `liters`, `pieces`, `kilograms`   |
 
 ---
 
@@ -161,9 +162,7 @@ import { useTranslation } from 'react-i18next';
 function Dashboard() {
   const { t } = useTranslation();
 
-  return (
-    <h1>{t('dashboard.title')}</h1>
-  );
+  return <h1>{t('dashboard.title')}</h1>;
 }
 ```
 
@@ -233,6 +232,24 @@ function LanguageSwitcher() {
 
 Language preference is stored in `UserSettings.language` and persisted to LocalStorage.
 
+### URL Parameter Support
+
+The app supports URL query parameters for language selection (useful for hreflang tags and deep linking):
+
+```typescript
+// Example URLs:
+https://example.com/?lang=en  // English
+https://example.com/?lang=fi  // Finnish
+```
+
+**Language Priority:**
+
+1. URL query parameter (`?lang=xx`) - highest priority
+2. Stored settings (from localStorage)
+3. Default language (`en`)
+
+The URL parameter is automatically removed after the app reads it, keeping URLs clean.
+
 ---
 
 ## Built-in vs Custom Items
@@ -252,6 +269,7 @@ Recommended items use `i18nKey` for translation:
 ```
 
 Display:
+
 ```tsx
 const { t } = useTranslation('products');
 const name = t(item.i18nKey); // "Bottled Water" or "Pullotettu vesi"
@@ -303,7 +321,7 @@ Custom items display the same name regardless of language.
 
 ```tsx
 const { t } = useTranslation();
-<h2>{t('newFeature.title')}</h2>
+<h2>{t('newFeature.title')}</h2>;
 ```
 
 ---

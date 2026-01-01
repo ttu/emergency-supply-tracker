@@ -28,15 +28,18 @@ src/components/
 
 Reusable building blocks used throughout the application.
 
-| Component | Description                      | Props                                    |
-| --------- | -------------------------------- | ---------------------------------------- |
-| `Badge`   | Status badge with color variants | `variant`, `children`                    |
-| `Button`  | Primary action button            | `variant`, `onClick`, `disabled`         |
-| `Card`    | Container with optional header   | `title`, `children`                      |
-| `Input`   | Text input field                 | `label`, `value`, `onChange`, `error`    |
-| `Modal`   | Dialog overlay                   | `isOpen`, `onClose`, `title`, `children` |
-| `Select`  | Dropdown select                  | `options`, `value`, `onChange`           |
-| `Tooltip` | Hover tooltip                    | `content`, `children`                    |
+| Component          | Description                      | Props                                    |
+| ------------------ | -------------------------------- | ---------------------------------------- |
+| `Badge`            | Status badge with color variants | `variant`, `children`                    |
+| `Button`           | Primary action button            | `variant`, `onClick`, `disabled`         |
+| `Card`             | Container with optional header   | `title`, `children`                      |
+| `ErrorBoundary`    | React error boundary wrapper     | `children`, `fallback?`, `onError?`      |
+| `Input`            | Text input field                 | `label`, `value`, `onChange`, `error`    |
+| `LanguageSwitcher` | Language toggle (EN/FI)          | -                                        |
+| `Modal`            | Dialog overlay                   | `isOpen`, `onClose`, `title`, `children` |
+| `Navigation`       | Bottom/side navigation tabs      | `currentPath`, `onNavigate`              |
+| `Select`           | Dropdown select                  | `options`, `value`, `onChange`           |
+| `Tooltip`          | Hover tooltip                    | `content`, `children`                    |
 
 ### 2. Dashboard Components
 
@@ -92,16 +95,20 @@ First-time user setup flow.
 
 Settings and data management.
 
-| Component            | Description                        | Section     |
-| -------------------- | ---------------------------------- | ----------- |
-| `AdvancedFeatures`   | Toggle advanced feature flags      | Features    |
-| `ClearDataButton`    | Delete all data with confirmation  | Data        |
-| `ExportButton`       | Export data as JSON                | Data        |
-| `HouseholdForm`      | Edit household configuration       | Household   |
-| `ImportButton`       | Import data from JSON              | Data        |
-| `LanguageSelector`   | Language preference                | Preferences |
-| `ShoppingListExport` | Export shopping list (TODO)        | Data        |
-| `ThemeSelector`      | Theme preference (light/dark/auto) | Preferences |
+| Component                 | Description                                  | Section         |
+| ------------------------- | -------------------------------------------- | --------------- |
+| `AdvancedFeatures`        | Toggle advanced feature flags                | Features        |
+| `ClearDataButton`         | Delete all data with confirmation            | Data            |
+| `DebugExport`             | Export error logs and debug information      | Data            |
+| `DisabledRecommendations` | Manage disabled recommended items            | Recommendations |
+| `ExportButton`            | Export data as JSON                          | Data            |
+| `HiddenAlerts`            | Manage dismissed alerts                      | Alerts          |
+| `HouseholdForm`           | Edit household configuration                 | Household       |
+| `ImportButton`            | Import data from JSON                        | Data            |
+| `LanguageSelector`        | Language preference                          | Preferences     |
+| `NutritionSettings`       | Customize nutrition and requirement settings | Nutrition       |
+| `ShoppingListExport`      | Export shopping list (TXT/Markdown/CSV)      | Data            |
+| `ThemeSelector`           | Theme preference (light/dark/auto)           | Preferences     |
 
 ---
 
@@ -109,6 +116,7 @@ Settings and data management.
 
 ```
 App
+├── ErrorBoundary
 ├── ThemeApplier
 └── Layout
     ├── Header
@@ -131,13 +139,20 @@ App
         │
         ├── Settings (/settings)
         │   ├── HouseholdForm
+        │   ├── NutritionSettings
         │   ├── AdvancedFeatures
         │   ├── LanguageSelector
         │   ├── ThemeSelector
+        │   ├── HiddenAlerts
+        │   ├── DisabledRecommendations
         │   ├── ExportButton
         │   ├── ImportButton
         │   ├── ShoppingListExport
+        │   ├── DebugExport
         │   └── ClearDataButton
+        │
+        ├── Help (/help)
+        │   └── Help (FAQ page with expandable topics)
         │
         └── Onboarding (first visit)
             ├── WelcomeScreen
