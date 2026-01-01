@@ -1,0 +1,10 @@
+{
+  "setup-worktree-unix": [
+    "npm install",
+    "if [ -f \"$ROOT_WORKTREE_PATH/AGENTS.local.md\" ]; then cp \"$ROOT_WORKTREE_PATH/AGENTS.local.md\" \"./AGENTS.local.md\"; fi"
+  ],
+  "setup-worktree-windows": [
+    "npm install",
+    "if exist \"%ROOT_WORKTREE_PATH%\\AGENTS.local.md\" copy \"%ROOT_WORKTREE_PATH%\\AGENTS.local.md\" \".\\AGENTS.local.md\""
+  ]
+}
