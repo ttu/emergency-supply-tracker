@@ -463,6 +463,78 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({ code: 'DUPLICATE_ID' }),
       );
     });
+
+    it('rejects non-object item in array', () => {
+      const file = createValidFile();
+      (file as Record<string, unknown>).items = [
+        'not-an-object',
+        createValidItem(),
+      ];
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ code: 'INVALID_ITEM' }),
+      );
+    });
+
+    it('rejects empty i18nKey', () => {
+      const file = createValidFile({
+        items: [
+          {
+            id: 'empty-i18n',
+            i18nKey: '   ', // empty after trim
+            category: 'food',
+            baseQuantity: 1,
+            unit: 'pieces',
+            scaleWithPeople: true,
+            scaleWithDays: false,
+          },
+        ],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ code: 'INVALID_I18N_KEY' }),
+      );
+    });
+
+    it('rejects zero baseQuantity', () => {
+      const file = createValidFile({
+        items: [createValidItem({ baseQuantity: 0 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ code: 'INVALID_QUANTITY' }),
+      );
+    });
+
+    it('rejects non-finite baseQuantity (Infinity)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ baseQuantity: Infinity })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ code: 'INVALID_QUANTITY' }),
+      );
+    });
+
+    it('rejects non-finite baseQuantity (NaN)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ baseQuantity: NaN })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ code: 'INVALID_QUANTITY' }),
+      );
+    });
   });
 
   describe('warnings', () => {
@@ -487,6 +559,81 @@ describe('validateRecommendedItemsFile', () => {
       expect(result.valid).toBe(true);
       expect(result.warnings).toContainEqual(
         expect.objectContaining({ code: 'INVALID_OPTIONAL' }),
+      );
+    });
+
+    it('warns about invalid requiresFreezer (non-boolean)', () => {
+      const item = createValidItem();
+      (item as Record<string, unknown>).requiresFreezer = 'yes';
+      const file = createValidFile({ items: [item] });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].requiresFreezer',
+        }),
+      );
+    });
+
+    it('warns about invalid caloriesPerUnit (negative)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ caloriesPerUnit: -100 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].caloriesPerUnit',
+        }),
+      );
+    });
+
+    it('warns about invalid caloriesPer100g (negative)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ caloriesPer100g: -200 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].caloriesPer100g',
+        }),
+      );
+    });
+
+    it('warns about invalid weightGramsPerUnit (negative)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ weightGramsPerUnit: -500 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].weightGramsPerUnit',
+        }),
+      );
+    });
+
+    it('warns about invalid weightGramsPerUnit (zero)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ weightGramsPerUnit: 0 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].weightGramsPerUnit',
+        }),
       );
     });
 
