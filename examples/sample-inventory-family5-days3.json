@@ -211,5 +211,11 @@
     }
   ],
   "customTemplates": [],
-  "lastModified": "2024-12-27T00:00:00.000Z"
+  "lastModified": "2024-12-27T00:00:00.000Z",
+  "exportMetadata": {
+    "exportedAt": "2024-12-27T10:30:00.000Z",
+    "appVersion": "2024.12.27-abc1234",
+    "itemCount": 16,
+    "categoryCount": 9
+  }
 }

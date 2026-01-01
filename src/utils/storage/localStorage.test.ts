@@ -32,11 +32,29 @@ describe('localStorage utilities', () => {
   });
 
   describe('import/export', () => {
-    it('exports data to JSON', () => {
+    it('exports data to JSON with export metadata', () => {
       const mockData = createMockAppData();
       const json = exportToJSON(mockData);
       const parsed = JSON.parse(json);
-      expect(parsed).toEqual(mockData);
+
+      // Verify all original data is present
+      expect(parsed.version).toBe(mockData.version);
+      expect(parsed.household).toEqual(mockData.household);
+      expect(parsed.settings).toEqual(mockData.settings);
+      expect(parsed.items).toEqual(mockData.items);
+
+      // Verify export metadata is included
+      expect(parsed.exportMetadata).toBeDefined();
+      expect(parsed.exportMetadata.exportedAt).toBeDefined();
+      expect(typeof parsed.exportMetadata.exportedAt).toBe('string');
+      expect(parsed.exportMetadata.appVersion).toBeDefined();
+      expect(typeof parsed.exportMetadata.appVersion).toBe('string');
+      expect(parsed.exportMetadata.itemCount).toBe(mockData.items?.length ?? 0);
+      expect(parsed.exportMetadata.categoryCount).toBeGreaterThanOrEqual(9); // At least standard categories
+
+      // Verify exportedAt is a valid ISO date
+      const exportedDate = new Date(parsed.exportMetadata.exportedAt);
+      expect(exportedDate.toISOString()).toBe(parsed.exportMetadata.exportedAt);
     });
 
     it('imports data from JSON with customCategories', () => {
@@ -50,6 +68,23 @@ describe('localStorage utilities', () => {
         ...mockData,
         settings: { ...mockData.settings, onboardingCompleted: true },
       });
+    });
+
+    it('imports data from exported JSON with exportMetadata', () => {
+      const mockData = createMockAppData({
+        customCategories: [createMockCategory({ id: 'custom-1' })],
+      });
+      // Export the data (which adds exportMetadata)
+      const exportedJson = exportToJSON(mockData);
+      // Import should work and ignore exportMetadata
+      const imported = importFromJSON(exportedJson);
+
+      // Verify data is imported correctly (exportMetadata should be ignored)
+      expect(imported.version).toBe(mockData.version);
+      expect(imported.household).toEqual(mockData.household);
+      expect(imported.settings.onboardingCompleted).toBe(true);
+      expect(imported.customCategories).toEqual(mockData.customCategories);
+      expect(imported.items).toEqual(mockData.items);
     });
 
     it('imports data from JSON without customCategories field', () => {
