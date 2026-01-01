@@ -49,11 +49,11 @@ We use the **Testing Diamond** approach instead of the traditional pyramid:
 
 ## Test Distribution
 
-| Type | Coverage | Tools | Location |
-|------|----------|-------|----------|
-| Integration | ~70% | Jest + React Testing Library | `src/**/*.test.tsx` |
-| E2E | ~20% | Playwright | `e2e/*.spec.ts` |
-| Unit | ~10% | Jest | `src/**/*.test.ts` |
+| Type        | Coverage | Tools                        | Location            |
+| ----------- | -------- | ---------------------------- | ------------------- |
+| Integration | ~70%     | Jest + React Testing Library | `src/**/*.test.tsx` |
+| E2E         | ~20%     | Playwright                   | `e2e/*.spec.ts`     |
+| Unit        | ~10%     | Jest                         | `src/**/*.test.ts`  |
 
 ---
 
@@ -90,12 +90,12 @@ export default {
 
 ### Coverage Thresholds
 
-| Metric | Minimum |
-|--------|---------|
-| Branches | 70% |
-| Functions | 70% |
-| Lines | 70% |
-| Statements | 70% |
+| Metric     | Minimum |
+| ---------- | ------- |
+| Branches   | 70%     |
+| Functions  | 70%     |
+| Lines      | 70%     |
+| Statements | 70%     |
 
 ---
 
@@ -121,13 +121,13 @@ export default defineConfig({
 
 ### Browser Coverage
 
-| Browser | Device |
-|---------|--------|
-| Chromium | Desktop Chrome |
-| Firefox | Desktop Firefox |
-| WebKit | Desktop Safari |
-| Mobile Chrome | Pixel 5 |
-| Mobile Safari | iPhone 12 |
+| Browser       | Device          |
+| ------------- | --------------- |
+| Chromium      | Desktop Chrome  |
+| Firefox       | Desktop Firefox |
+| WebKit        | Desktop Safari  |
+| Mobile Chrome | Pixel 5         |
+| Mobile Safari | iPhone 12       |
 
 ---
 
@@ -231,12 +231,12 @@ test('completes onboarding flow', async ({ page }) => {
 const mockStorage: Record<string, string> = {};
 
 beforeEach(() => {
-  jest.spyOn(Storage.prototype, 'getItem').mockImplementation(
-    (key) => mockStorage[key] || null
-  );
-  jest.spyOn(Storage.prototype, 'setItem').mockImplementation(
-    (key, value) => { mockStorage[key] = value; }
-  );
+  jest
+    .spyOn(Storage.prototype, 'getItem')
+    .mockImplementation((key) => mockStorage[key] || null);
+  jest.spyOn(Storage.prototype, 'setItem').mockImplementation((key, value) => {
+    mockStorage[key] = value;
+  });
 });
 
 afterEach(() => {
@@ -273,15 +273,73 @@ const renderWithProviders = (component: React.ReactElement) => {
 };
 ```
 
+### Test Data Factories
+
+**Always use test factories** from `src/utils/test/factories.ts` instead of creating inline test data objects. This ensures:
+
+- Consistent test data across all tests
+- Type-safe mock objects
+- Easy maintenance when types change
+- Reduced boilerplate in tests
+
+Available factories:
+
+```typescript
+import {
+  createMockInventoryItem,
+  createMockAppData,
+  createMockHousehold,
+  createMockSettings,
+  createMockCategory,
+  createMockProductTemplate,
+} from '../utils/test/factories';
+
+// Usage examples:
+const item = createMockInventoryItem({
+  name: 'Test Water',
+  quantity: 10,
+  categoryId: 'water-beverages',
+});
+
+const appData = createMockAppData({
+  items: [item],
+  settings: { onboardingCompleted: true },
+});
+```
+
+**Do NOT** create inline objects like this:
+
+```typescript
+// ❌ Don't do this
+const item: InventoryItem = {
+  id: '1',
+  name: 'Test',
+  itemType: 'custom',
+  categoryId: 'food',
+  quantity: 5,
+  unit: 'pieces',
+  // ... many more required fields
+};
+
+// ✅ Do this instead
+const item = createMockInventoryItem({
+  name: 'Test',
+  categoryId: 'food',
+  quantity: 5,
+});
+```
+
 ---
 
 ## Quality Gates
 
 ### Pre-commit
+
 - ESLint passes
 - Prettier formatting
 
 ### CI Pipeline
+
 - All Jest tests pass
 - Coverage thresholds met (70%)
 - E2E tests pass

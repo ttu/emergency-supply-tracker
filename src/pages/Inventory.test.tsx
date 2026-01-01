@@ -6,7 +6,10 @@ import { SettingsProvider } from '../contexts/SettingsProvider';
 import { RECOMMENDED_ITEMS } from '../data/recommendedItems';
 import { calculateRecommendedQuantity } from '../utils/calculations/household';
 import { calculateCategoryPreparedness } from '../utils/dashboard/preparedness';
-import type { InventoryItem } from '../types';
+import {
+  createMockInventoryItem,
+  createMockAppData,
+} from '../utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -327,7 +330,7 @@ describe('Inventory Page', () => {
  * This validates the fix for the Categories Overview not showing status correctly.
  */
 describe('Inventory Page with items', () => {
-  const mockItem: InventoryItem = {
+  const mockItem = createMockInventoryItem({
     id: 'test-item-1',
     name: 'Test Water',
     itemType: 'bottled-water',
@@ -340,11 +343,9 @@ describe('Inventory Page with items', () => {
       Date.now() + 30 * 24 * 60 * 60 * 1000,
     ).toISOString(),
     productTemplateId: 'bottled-water',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+  });
 
-  const expiredItem: InventoryItem = {
+  const expiredItem = createMockInventoryItem({
     id: 'test-item-2',
     name: 'Expired Food',
     itemType: 'canned-soup',
@@ -357,11 +358,9 @@ describe('Inventory Page with items', () => {
       Date.now() - 30 * 24 * 60 * 60 * 1000,
     ).toISOString(),
     productTemplateId: 'canned-soup',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+  });
 
-  const neverExpiresItem: InventoryItem = {
+  const neverExpiresItem = createMockInventoryItem({
     id: 'test-item-3',
     name: 'Batteries',
     itemType: 'batteries',
@@ -370,34 +369,20 @@ describe('Inventory Page with items', () => {
     unit: 'pieces',
     recommendedQuantity: 10,
     neverExpires: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+  });
 
   beforeEach(() => {
     global.confirm = jest.fn(() => true);
     // Store items in localStorage
-    const appData = {
-      version: '1.0.0',
+    const appData = createMockAppData({
       household: {
         adults: 2,
         children: 0,
         supplyDurationDays: 3,
         useFreezer: false,
       },
-      settings: {
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {},
-      },
-      customCategories: [],
       items: [mockItem, expiredItem, neverExpiresItem],
-      customTemplates: [],
-      dismissedAlertIds: [],
-      disabledRecommendedItems: [],
-      lastModified: new Date().toISOString(),
-    };
+    });
     localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
   });
 
@@ -693,7 +678,7 @@ describe('Template to InventoryItem conversion', () => {
     };
 
     // Item WITH productTemplateId (the fix)
-    const itemWithTemplateId: InventoryItem = {
+    const itemWithTemplateId = createMockInventoryItem({
       id: '1',
       name: 'Bottled Water',
       itemType: 'bottled-water',
@@ -703,12 +688,10 @@ describe('Template to InventoryItem conversion', () => {
       recommendedQuantity: 54,
       productTemplateId: 'bottled-water', // This enables matching
       neverExpires: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
     // Item WITHOUT productTemplateId (the bug)
-    const itemWithoutTemplateId: InventoryItem = {
+    const itemWithoutTemplateId = createMockInventoryItem({
       id: '2',
       name: 'Bottled Water',
       itemType: 'custom',
@@ -718,9 +701,7 @@ describe('Template to InventoryItem conversion', () => {
       recommendedQuantity: 54,
       // productTemplateId is missing - this was the bug
       neverExpires: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
     const scoreWithTemplateId = calculateCategoryPreparedness(
       'water-beverages',

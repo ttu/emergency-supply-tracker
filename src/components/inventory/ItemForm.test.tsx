@@ -281,19 +281,16 @@ describe('ItemForm', () => {
   });
 
   it('should call onCancel when cancel button is clicked (editing existing item)', () => {
-    const existingItem: InventoryItem = {
+    const existingItem = createMockInventoryItem({
       id: '1',
       name: 'Test Item',
-      itemType: 'custom',
       categoryId: 'food',
       quantity: 5,
       unit: 'pieces',
       recommendedQuantity: 10,
       neverExpires: false,
       expirationDate: '2025-12-31',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
     render(
       <ItemForm
