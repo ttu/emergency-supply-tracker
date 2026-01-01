@@ -128,6 +128,7 @@
       "nutrition": "Ravitsemus & vaatimukset",
       "hiddenAlerts": "Piilotetut hälytykset",
       "disabledRecommendations": "Poistetut suositukset",
+      "overriddenRecommendations": "Ohitetut suositukset",
       "dataManagement": "Tietojen hallinta",
       "about": "Tietoja",
       "dangerZone": "Vaaravyöhyke"
@@ -154,6 +155,12 @@
       "description": "Sinulla on {{count}} poistettua suositusta. Näitä tuotteita ei huomioida tilalaskelmissa.",
       "reactivate": "Palauta",
       "reactivateAll": "Palauta kaikki suositukset"
+    },
+    "overriddenRecommendations": {
+      "empty": "Ei ohitettuja suosituksia",
+      "description": "Sinulla on {{count}} ohitettua suositusta. Nämä tuotteet on merkitty riittäviksi, vaikka niiden määrä on alle suositellun määrän.",
+      "unmark": "Poista merkintä",
+      "unmarkAll": "Poista kaikki merkinnät"
     },
     "about": {
       "version": "Versio",
