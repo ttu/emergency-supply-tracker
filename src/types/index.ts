@@ -101,6 +101,7 @@ export interface InventoryItem {
   capacityMah?: number; // Capacity in milliamp-hours (for powerbanks)
   capacityWh?: number; // Capacity in watt-hours (for powerbanks)
   requiresWaterLiters?: number; // Liters of water required per unit for preparation
+  markedAsEnough?: boolean; // If true, item is considered complete regardless of quantity vs recommendedQuantity
   createdAt: string;
   updatedAt: string;
 }

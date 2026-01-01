@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Inventory } from './Inventory';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
@@ -721,5 +722,82 @@ describe('Template to InventoryItem conversion', () => {
     // Without productTemplateId, the item doesn't match (unless name matches exactly)
     // The score will be 0 because 'Bottled Water' !== 'bottled-water'
     expect(scoreWithoutTemplateId).toBe(0);
+  });
+});
+
+describe('Inventory Page - Mark as Enough', () => {
+  const itemWithLowQuantity = createMockInventoryItem({
+    id: 'test-item-mark',
+    name: 'Test Candles',
+    itemType: 'candles',
+    categoryId: 'cooking-heat', // Candles are in cooking-heat category
+    quantity: 4,
+    unit: 'pieces',
+    recommendedQuantity: 10,
+    neverExpires: true,
+    markedAsEnough: false,
+    productTemplateId: 'candles', // Match the recommended item
+  });
+
+  beforeEach(() => {
+    global.confirm = jest.fn(() => true);
+    const appData = createMockAppData({
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 3,
+        useFreezer: false,
+      },
+      items: [itemWithLowQuantity],
+    });
+    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    jest.restoreAllMocks();
+  });
+
+  it('should show mark as enough button in recommended list for item with low quantity', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+
+    // First expand the recommended items (they are hidden by default)
+    const expandButton = screen.getByRole('button', {
+      name: /Show.*recommended/i,
+    });
+    await user.click(expandButton);
+
+    // The recommended list should show the mark as enough button
+    // Note: translation mock returns key as-is, so use the key
+    const markButton = screen.getByRole('button', {
+      name: 'inventory.markAsEnough',
+    });
+    expect(markButton).toBeInTheDocument();
+    expect(markButton).toHaveTextContent('✓');
+  });
+
+  it('should call handleMarkAsEnough when mark button in recommended list is clicked', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+
+    // First expand the recommended items (they are hidden by default)
+    const expandButton = screen.getByRole('button', {
+      name: /Show.*recommended/i,
+    });
+    await user.click(expandButton);
+
+    const markButton = screen.getByRole('button', {
+      name: 'inventory.markAsEnough',
+    });
+    await user.click(markButton);
+
+    // Wait for the update to complete
+    await waitFor(() => {
+      // The button should disappear after marking as enough
+      expect(
+        screen.queryByRole('button', { name: 'inventory.markAsEnough' }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

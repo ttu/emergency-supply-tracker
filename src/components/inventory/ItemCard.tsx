@@ -49,6 +49,11 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
         <div className={styles.quantity}>
           <span className={styles.current}>{item.quantity}</span>
           <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
+          {item.recommendedQuantity > 0 && (
+            <span className={styles.recommended}>
+              / {item.recommendedQuantity}
+            </span>
+          )}
         </div>
 
         {!item.neverExpires && item.expirationDate && (

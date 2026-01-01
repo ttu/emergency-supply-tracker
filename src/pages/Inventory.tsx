@@ -182,6 +182,13 @@ export function Inventory({
     }
   };
 
+  const handleMarkAsEnough = useCallback(
+    (itemId: string) => {
+      updateItem(itemId, { markedAsEnough: true });
+    },
+    [updateItem],
+  );
+
   const handleEditItem = (item: InventoryItem) => {
     setEditingItem(item);
     // If item has a template, set it so weight/calorie calculations work
@@ -326,6 +333,8 @@ export function Inventory({
             preparationWaterNeeded={categoryStatus.preparationWaterNeeded}
             onAddToInventory={handleAddRecommendedToInventory}
             onDisableRecommended={handleDisableRecommendedItem}
+            onMarkAsEnough={handleMarkAsEnough}
+            items={items}
           />
         )}
         <ItemList items={filteredItems} onItemClick={handleEditItem} />

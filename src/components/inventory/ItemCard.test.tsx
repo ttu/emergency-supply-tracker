@@ -170,4 +170,18 @@ describe('ItemCard', () => {
     render(<ItemCard item={itemWithoutCapacity} />);
     expect(screen.queryByText(/🔋/)).not.toBeInTheDocument();
   });
+
+  it('should display recommended quantity when provided', () => {
+    render(<ItemCard item={baseItem} />);
+    expect(screen.getByText(/\/ 28/)).toBeInTheDocument();
+  });
+
+  it('should not display recommended quantity when zero', () => {
+    const itemWithoutRecommended = {
+      ...baseItem,
+      recommendedQuantity: 0,
+    };
+    render(<ItemCard item={itemWithoutRecommended} />);
+    expect(screen.queryByText(/\/ 0/)).not.toBeInTheDocument();
+  });
 });

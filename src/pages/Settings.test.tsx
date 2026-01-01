@@ -35,6 +35,16 @@ describe('Settings Page', () => {
       screen.getByText('settings.sections.appearance'),
     ).toBeInTheDocument();
     expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
+    expect(screen.getByText('settings.sections.nutrition')).toBeInTheDocument();
+    expect(
+      screen.getByText('settings.sections.hiddenAlerts'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('settings.sections.disabledRecommendations'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('settings.sections.overriddenRecommendations'),
+    ).toBeInTheDocument();
     expect(
       screen.getByText('settings.sections.dataManagement'),
     ).toBeInTheDocument();
@@ -55,6 +65,42 @@ describe('Settings Page', () => {
 
     expect(screen.getByText('settings.household.adults')).toBeInTheDocument();
     expect(screen.getByText('settings.household.children')).toBeInTheDocument();
+  });
+
+  it('should render nutrition settings', () => {
+    renderWithProviders(<Settings />);
+
+    expect(
+      screen.getByText('settings.nutrition.dailyCalories'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('settings.nutrition.dailyWater'),
+    ).toBeInTheDocument();
+  });
+
+  it('should render hidden alerts section', () => {
+    renderWithProviders(<Settings />);
+
+    // HiddenAlerts component shows empty message when no alerts are hidden
+    expect(screen.getByText('settings.hiddenAlerts.empty')).toBeInTheDocument();
+  });
+
+  it('should render disabled recommendations section', () => {
+    renderWithProviders(<Settings />);
+
+    // DisabledRecommendations component shows empty message when no items are disabled
+    expect(
+      screen.getByText('settings.disabledRecommendations.empty'),
+    ).toBeInTheDocument();
+  });
+
+  it('should render overridden recommendations section', () => {
+    renderWithProviders(<Settings />);
+
+    // OverriddenRecommendations component shows empty message when no items are overridden
+    expect(
+      screen.getByText('settings.overriddenRecommendations.empty'),
+    ).toBeInTheDocument();
   });
 
   it('should render data management buttons', () => {

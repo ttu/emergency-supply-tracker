@@ -128,6 +128,7 @@
       "nutrition": "Nutrition & Requirements",
       "hiddenAlerts": "Hidden Alerts",
       "disabledRecommendations": "Disabled Recommendations",
+      "overriddenRecommendations": "Overridden Recommendations",
       "dataManagement": "Data Management",
       "about": "About",
       "dangerZone": "Danger Zone"
@@ -154,6 +155,12 @@
       "description": "You have {{count}} disabled recommendation(s). These items won't be included in status calculations.",
       "reactivate": "Enable",
       "reactivateAll": "Enable All Recommendations"
+    },
+    "overriddenRecommendations": {
+      "empty": "No overridden recommendations",
+      "description": "You have {{count}} overridden recommendation(s). These items are marked as sufficient even though their quantity is below the recommended amount.",
+      "unmark": "Unmark",
+      "unmarkAll": "Unmark All"
     },
     "about": {
       "version": "Version",
@@ -289,6 +296,9 @@
     "confirmDelete": "Are you sure you want to delete this item?",
     "addToInventory": "Add to inventory",
     "disableRecommended": "Don't recommend this item",
+    "markAsEnough": "Mark as enough",
+    "markedAsEnough": "Marked as enough",
+    "markedAsEnoughNotice": "This item is marked as sufficient",
     "filter": {
       "status": "Filter by status",
       "allStatuses": "All Statuses"

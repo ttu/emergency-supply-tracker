@@ -10,6 +10,7 @@ import { DebugExport } from '../components/settings/DebugExport';
 import { ClearDataButton } from '../components/settings/ClearDataButton';
 import { HiddenAlerts } from '../components/settings/HiddenAlerts';
 import { DisabledRecommendations } from '../components/settings/DisabledRecommendations';
+import { OverriddenRecommendations } from '../components/settings/OverriddenRecommendations';
 import { APP_VERSION } from '../utils/version';
 import styles from './Settings.module.css';
 
@@ -64,6 +65,14 @@ export function Settings() {
             {t('settings.sections.disabledRecommendations')}
           </h2>
           <DisabledRecommendations />
+        </section>
+
+        {/* Overridden Recommendations */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>
+            {t('settings.sections.overriddenRecommendations')}
+          </h2>
+          <OverriddenRecommendations />
         </section>
 
         {/* Data Management */}
