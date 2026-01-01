@@ -17,6 +17,7 @@ jest.mock('react-i18next', () => ({
 
       const unitTranslations: Record<string, string> = {
         liters: 'L',
+        liters: 'L',
         pieces: 'pcs',
         cans: 'cans',
       };
@@ -26,9 +27,18 @@ jest.mock('react-i18next', () => ({
         'status.warning': 'Warning',
         'status.critical': 'Critical',
         'dashboard.category.kcal': 'kcal',
+        'dashboard.category.items': 'items',
+        'dashboard.category.waterForPeople': 'Water for people',
+        'dashboard.category.waterForPreparation': 'Water for preparation',
+        'dashboard.category.totalWater': 'Total required',
+        'dashboard.category.recommendedCalories':
+          'Recommended {{count}} kcal more',
         'inventory.recommended': 'Recommended',
         'inventory.showLess': 'Show less',
         'inventory.showRecommended': 'Show {{count}} recommended items',
+        'inventory.addToInventory': 'Add to inventory',
+        'inventory.disableRecommended': "Don't recommend this item",
+        liters: 'L',
       };
 
       const productTranslations: Record<string, string> = {
@@ -50,9 +60,17 @@ jest.mock('react-i18next', () => ({
         return productTranslations[key] || key;
       }
 
+      // Handle "liters" key when called without namespace (used in water breakdown)
+      if (key === 'liters' && !options?.ns) {
+        return 'L';
+      }
+
       // Handle interpolation for translations with {{count}}
       if (key === 'inventory.showRecommended' && options?.count) {
         return `Show ${options.count} recommended items`;
+      }
+      if (key === 'dashboard.category.recommendedCalories' && options?.count) {
+        return `Recommended ${options.count} kcal more`;
       }
 
       return commonTranslations[key] || key;
@@ -455,7 +473,7 @@ describe('CategoryStatusSummary', () => {
 
       // Click the first add button (+)
       const addButtons = screen.getAllByRole('button', {
-        name: 'inventory.addToInventory',
+        name: 'Add to inventory',
       });
       await user.click(addButtons[0]);
 
@@ -487,7 +505,7 @@ describe('CategoryStatusSummary', () => {
 
       // Click the first disable button (×)
       const disableButtons = screen.getAllByRole('button', {
-        name: 'inventory.disableRecommended',
+        name: "Don't recommend this item",
       });
       await user.click(disableButtons[0]);
 
@@ -506,9 +524,151 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
-      expect(
-        screen.getByText('5 / 10 dashboard.category.items'),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/5 \/ 10 items/)).toBeInTheDocument();
+    });
+
+    it('shows percentage when totalNeeded is 0', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="ok"
+          completionPercentage={100}
+          totalActual={0}
+          totalNeeded={0}
+          primaryUnit="liters"
+        />,
+      );
+
+      expect(screen.getByText('100%')).toBeInTheDocument();
+    });
+
+    it('formats shortage correctly with item name and unit', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(1)}
+        />,
+      );
+
+      // Expand to see the formatted shortage
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Check that the shortage is formatted correctly
+      expect(screen.getByText(/20 pcs Bandages/)).toBeInTheDocument();
+    });
+
+    it('shows only add button when onAddToInventory is provided', async () => {
+      const user = userEvent.setup();
+      const onAddToInventory = jest.fn();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(1)}
+          onAddToInventory={onAddToInventory}
+        />,
+      );
+
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Should have add button but not disable button
+      const addButtons = screen.getAllByRole('button', {
+        name: 'Add to inventory',
+      });
+      expect(addButtons.length).toBeGreaterThan(0);
+
+      const disableButtons = screen.queryAllByRole('button', {
+        name: "Don't recommend this item",
+      });
+      expect(disableButtons.length).toBe(0);
+    });
+
+    it('shows only disable button when onDisableRecommended is provided', async () => {
+      const user = userEvent.setup();
+      const onDisableRecommended = jest.fn();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(1)}
+          onDisableRecommended={onDisableRecommended}
+        />,
+      );
+
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Should have disable button but not add button
+      const disableButtons = screen.getAllByRole('button', {
+        name: "Don't recommend this item",
+      });
+      expect(disableButtons.length).toBeGreaterThan(0);
+
+      const addButtons = screen.queryAllByRole('button', {
+        name: 'Add to inventory',
+      });
+      expect(addButtons.length).toBe(0);
+    });
+
+    it('shows both buttons when both handlers are provided', async () => {
+      const user = userEvent.setup();
+      const onAddToInventory = jest.fn();
+      const onDisableRecommended = jest.fn();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(1)}
+          onAddToInventory={onAddToInventory}
+          onDisableRecommended={onDisableRecommended}
+        />,
+      );
+
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Should have both buttons
+      const addButtons = screen.getAllByRole('button', {
+        name: 'Add to inventory',
+      });
+      expect(addButtons.length).toBeGreaterThan(0);
+
+      const disableButtons = screen.getAllByRole('button', {
+        name: "Don't recommend this item",
+      });
+      expect(disableButtons.length).toBeGreaterThan(0);
     });
   });
 
@@ -529,7 +689,7 @@ describe('CategoryStatusSummary', () => {
       );
 
       expect(
-        screen.getByText('dashboard.category.recommendedCalories'),
+        screen.getByText(/Recommended.*6000.*kcal more/),
       ).toBeInTheDocument();
     });
 
@@ -549,6 +709,122 @@ describe('CategoryStatusSummary', () => {
       );
 
       expect(screen.queryByText(/recommendedCalories/)).not.toBeInTheDocument();
+    });
+
+    it('does not display missing calories when missingCalories is undefined', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="food"
+          status="ok"
+          completionPercentage={100}
+          totalActual={10}
+          totalNeeded={10}
+          primaryUnit="cans"
+          totalActualCalories={12000}
+          totalNeededCalories={12000}
+        />,
+      );
+
+      expect(screen.queryByText(/recommendedCalories/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('water breakdown display', () => {
+    it('displays water breakdown for water-beverages category', () => {
+      const { container } = render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={27}
+          totalNeeded={54}
+          primaryUnit="liters"
+          drinkingWaterNeeded={36}
+          preparationWaterNeeded={18}
+        />,
+      );
+
+      expect(screen.getByText(/Water for people/)).toBeInTheDocument();
+      expect(screen.getByText(/Water for preparation/)).toBeInTheDocument();
+      expect(screen.getByText(/Total required/)).toBeInTheDocument();
+      // Check that water breakdown section contains the values
+      const breakdownText = container.textContent || '';
+      expect(breakdownText).toContain('36');
+      expect(breakdownText).toContain('18');
+      expect(breakdownText).toContain('54');
+    });
+
+    it('displays water breakdown without preparation water when it is 0', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={27}
+          totalNeeded={36}
+          primaryUnit="liters"
+          drinkingWaterNeeded={36}
+          preparationWaterNeeded={0}
+        />,
+      );
+
+      expect(screen.getByText(/Water for people/)).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Water for preparation/),
+      ).not.toBeInTheDocument();
+      expect(screen.getByText(/Total required/)).toBeInTheDocument();
+    });
+
+    it('displays water breakdown without preparation water when it is undefined', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={27}
+          totalNeeded={36}
+          primaryUnit="liters"
+          drinkingWaterNeeded={36}
+        />,
+      );
+
+      expect(screen.getByText(/Water for people/)).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Water for preparation/),
+      ).not.toBeInTheDocument();
+      expect(screen.getByText(/Total required/)).toBeInTheDocument();
+    });
+
+    it('does not display water breakdown for non-water category', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="food"
+          status="ok"
+          completionPercentage={100}
+          totalActual={10}
+          totalNeeded={10}
+          primaryUnit="cans"
+          drinkingWaterNeeded={36}
+          preparationWaterNeeded={18}
+        />,
+      );
+
+      expect(screen.queryByText('Water for people')).not.toBeInTheDocument();
+    });
+
+    it('does not display water breakdown when drinkingWaterNeeded is undefined', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={27}
+          totalNeeded={54}
+          primaryUnit="liters"
+        />,
+      );
+
+      expect(screen.queryByText('Water for people')).not.toBeInTheDocument();
     });
   });
 });
