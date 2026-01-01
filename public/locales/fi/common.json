@@ -96,17 +96,17 @@
     }
   },
   "household": {
-    "title": "Kotitalouden Asetukset",
+    "title": "Kotitalouden asetukset",
     "description": "Valitse esimääritetty asetus tai mukauta kotitaloutesi asetuksia",
     "formSubtitle": "Säädä kotitaloutesi tiedot",
     "adults": "Aikuiset",
     "children": "Lapset",
-    "supplyDays": "Varastojen Kesto (päivää)",
+    "supplyDays": "Varastojen kesto (päivää)",
     "supplyDaysHelper": "Suositus: 3-7 päivää",
     "useFreezer": "Käytä pakastinta",
     "customDescription": "Aseta omat asetukset",
     "presets": {
-      "single": "Yksin Asuva",
+      "single": "Yksin asuva",
       "couple": "Pariskunta",
       "family": "Perhe",
       "custom": "Mukautettu"
@@ -124,36 +124,36 @@
     "title": "Asetukset",
     "sections": {
       "appearance": "Ulkoasu",
-      "household": "Kotitalouden Asetukset",
-      "nutrition": "Ravitsemus & Vaatimukset",
-      "hiddenAlerts": "Piilotetut Hälytykset",
-      "disabledRecommendations": "Poistetut Suositukset",
-      "dataManagement": "Tietojen Hallinta",
+      "household": "Kotitalouden asetukset",
+      "nutrition": "Ravitsemus & vaatimukset",
+      "hiddenAlerts": "Piilotetut hälytykset",
+      "disabledRecommendations": "Poistetut suositukset",
+      "dataManagement": "Tietojen hallinta",
       "about": "Tietoja",
       "dangerZone": "Vaaravyöhyke"
     },
     "nutrition": {
       "description": "Mukauta päivittäiset vaatimukset kalorien ja veden laskelmiin. Nämä arvot vaikuttavat siihen, miten suositellut määrät lasketaan kotitaloudellesi.",
-      "dailyCalories": "Päivittäiset Kalorit Henkeä Kohti",
+      "dailyCalories": "Päivittäiset kalorit henkeä kohti",
       "dailyCaloriesHint": "Oletus: {{default}} kcal. Suositeltu alue: 1000-5000 kcal.",
-      "dailyWater": "Päivittäinen Vesi Henkeä Kohti",
+      "dailyWater": "Päivittäinen vesi henkeä kohti",
       "dailyWaterHint": "Oletus: {{default}} litraa. Suositeltu alue: 1-10 litraa.",
       "litersPerDay": "litraa/pv",
-      "childrenPercentage": "Lasten Vaatimukset",
+      "childrenPercentage": "Lasten vaatimukset",
       "childrenPercentageHint": "Oletus: {{default}}%. Kuinka paljon lapset tarvitsevat aikuisiin verrattuna.",
-      "resetToDefaults": "Palauta Oletukset"
+      "resetToDefaults": "Palauta oletukset"
     },
     "hiddenAlerts": {
       "empty": "Ei piilotettuja hälytyksiä",
       "description": "Sinulla on {{count}} piilotettua hälytystä. Nämä pysyvät piilossa kunnes ne aktivoidaan uudelleen.",
       "reactivate": "Näytä",
-      "reactivateAll": "Näytä Kaikki Hälytykset"
+      "reactivateAll": "Näytä kaikki hälytykset"
     },
     "disabledRecommendations": {
       "empty": "Ei poistettuja suosituksia",
       "description": "Sinulla on {{count}} poistettua suositusta. Näitä tuotteita ei huomioida tilalaskelmissa.",
       "reactivate": "Palauta",
-      "reactivateAll": "Palauta Kaikki Suositukset"
+      "reactivateAll": "Palauta kaikki suositukset"
     },
     "about": {
       "version": "Versio",
@@ -171,23 +171,23 @@
     "household": {
       "adults": "Aikuiset",
       "children": "Lapset",
-      "supplyDays": "Varastojen Kesto (päivää)",
+      "supplyDays": "Varastojen kesto (päivää)",
       "useFreezer": "Käytä pakastinta",
-      "freezerHoldTime": "Pakastimen Säilytysaika (tuntia)",
+      "freezerHoldTime": "Pakastimen säilytysaika (tuntia)",
       "presets": {
         "label": "Pikavalinnat",
-        "single": "Yksin Asuva",
+        "single": "Yksin asuva",
         "couple": "Pariskunta",
         "family": "Perhe"
       }
     },
     "export": {
-      "button": "Vie Tiedot",
+      "button": "Vie tiedot",
       "description": "Lataa kaikki tietosi JSON-tiedostona varmuuskopiointia tai siirtoa varten",
       "noData": "Ei vietäviä tietoja"
     },
     "import": {
-      "button": "Tuo Tiedot",
+      "button": "Tuo tiedot",
       "description": "Tuo tiedot aiemmin viedystä JSON-tiedostosta",
       "confirmOverwrite": "Tämä korvaa kaikki nykyiset tietosi. Oletko varma?",
       "success": "Tiedot tuotu onnistuneesti",
@@ -195,7 +195,7 @@
       "invalidFormat": "Virheellinen tiedostomuoto. Valitse kelvollinen varmuuskopiotiedosto."
     },
     "shoppingList": {
-      "button": "Vie Ostoslista",
+      "button": "Vie ostoslista",
       "description": "Luo ostoslista tuotteista, jotka tarvitsevat täydennystä",
       "title": "Ostoslista - Hätävarat",
       "generated": "Luotu",
@@ -206,14 +206,14 @@
       "noItemsAlert": "Mikään tuote ei tarvitse täydennystä. Kaikki varat ovat riittävät!"
     },
     "clearData": {
-      "button": "Tyhjennä Kaikki Tiedot",
+      "button": "Tyhjennä kaikki tiedot",
       "warning": "⚠️ Tätä toimintoa ei voi perua!",
       "confirmMessage": "Haluatko varmasti poistaa kaikki tietosi? Tätä ei voi perua.",
       "confirmAgain": "Viimeinen mahdollisuus! Tämä poistaa kaiken pysyvästi. Jatketaanko?",
       "success": "Kaikki tiedot on tyhjennetty"
     },
     "debugExport": {
-      "button": "Vie Virheloki",
+      "button": "Vie virheloki",
       "description": "Lataa diagnostiikkatiedot vianmääritystä varten",
       "logCount": "{{count}} lokimerkintää tallennettu"
     }
@@ -222,8 +222,8 @@
     "title": "Jotain meni pieleen",
     "message": "Odottamaton virhe tapahtui. Yritä ladata sivu uudelleen.",
     "details": "Virhetiedot",
-    "reload": "Lataa Sivu Uudelleen",
-    "tryAgain": "Yritä Uudelleen"
+    "reload": "Lataa sivu uudelleen",
+    "tryAgain": "Yritä uudelleen"
   },
   "themes": {
     "light": "Vaalea",
@@ -231,24 +231,24 @@
     "auto": "Automaattinen"
   },
   "dashboard": {
-    "title": "Hätävarastojen Hallinta",
+    "title": "Hätävarastojen hallinta",
     "subtitle": "Seurataan varastoja {{people}} henkilölle {{days}} päiväksi",
     "alerts": {
       "title": "Hälytykset"
     },
     "quickActions": "Pikatoiminnot",
     "categoriesOverview": "Kategoriat",
-    "addItems": "Lisää Tuotteita",
-    "viewInventory": "Näytä Varasto",
-    "exportShoppingList": "Vie Ostoslista",
+    "addItems": "Lisää tuotteita",
+    "viewInventory": "Näytä varasto",
+    "exportShoppingList": "Vie ostoslista",
     "preparednessScore": "Valmiustaso",
     "noAlerts": "Ei hälytyksiä - kaikki kunnossa!",
     "hiddenAlerts": "{{count}} piilotettua hälytystä",
     "showAllAlerts": "Näytä kaikki",
     "preparedness": {
-      "needsWork": "Vaatii Huomiota",
-      "good": "Hyvä Edistys",
-      "excellent": "Hyvin Valmistautunut"
+      "needsWork": "Vaatii huomiota",
+      "good": "Hyvä edistys",
+      "excellent": "Hyvin valmistautunut"
     },
     "category": {
       "items": "tuotetta",
@@ -273,17 +273,17 @@
     "expiresIn": "Vanhenee {{days}} päivässä",
     "searchPlaceholder": "Hae tuotteita...",
     "searchLabel": "Hae varastosta",
-    "addFromTemplate": "Lisää Tuote",
-    "addCustomItem": "Lisää Oma Tuote",
-    "addItem": "Lisää Tuote",
-    "editItem": "Muokkaa Tuotetta",
-    "selectTemplate": "Valitse Tuote",
+    "addFromTemplate": "Lisää tuote",
+    "addCustomItem": "Lisää oma tuote",
+    "addItem": "Lisää tuote",
+    "editItem": "Muokkaa tuotetta",
+    "selectTemplate": "Valitse tuote",
     "confirmDelete": "Haluatko varmasti poistaa tämän tuotteen?",
     "addToInventory": "Lisää varastoon",
     "disableRecommended": "Älä suosittele tätä tuotetta",
     "filter": {
       "status": "Suodata tilalla",
-      "allStatuses": "Kaikki Tilat"
+      "allStatuses": "Kaikki tilat"
     },
     "sort": {
       "label": "Järjestä",
@@ -294,20 +294,20 @@
   },
   "itemForm": {
     "itemType": "Tuotetyyppi",
-    "customItem": "Oma Tuote",
-    "name": "Tuotteen Nimi",
+    "customItem": "Oma tuote",
+    "name": "Tuotteen nimi",
     "namePlaceholder": "esim. Rainbow Tonnikala, tietty merkki tai variantti",
     "category": "Kategoria",
     "quantity": "Määrä",
     "unit": "Yksikkö",
-    "recommendedQuantity": "Suositeltu Määrä",
+    "recommendedQuantity": "Suositeltu määrä",
     "weightGrams": "Paino/yksikkö (g)",
     "caloriesPerUnit": "Kalorit/yksikkö",
     "capacityMah": "Kapasiteetti (mAh)",
     "capacityWh": "Kapasiteetti (Wh)",
     "requiresWaterLiters": "Vettä valmistukseen (L/yks)",
     "waterForPreparation": "valmistukseen",
-    "neverExpires": "Ei Vanhene",
+    "neverExpires": "Ei vanhene",
     "expirationDate": "Vanhenemispäivä",
     "location": "Sijainti",
     "notes": "Muistiinpanot",
@@ -316,7 +316,7 @@
       "categoryRequired": "Kategoria vaaditaan",
       "quantityInvalid": "Määrän täytyy olla 0 tai suurempi",
       "recommendedQuantityInvalid": "Suositellun määrän täytyy olla 0 tai suurempi",
-      "expirationRequired": "Vanhenemispäivä vaaditaan (tai valitse 'Ei Vanhene')"
+      "expirationRequired": "Vanhenemispäivä vaaditaan (tai valitse 'Ei vanhene')"
     }
   },
   "templateSelector": {
@@ -352,9 +352,9 @@
   "help": {
     "title": "Ohje & UKK",
     "subtitle": "Löydä vastauksia yleisiin kysymyksiin Hätävarasto-sovelluksen käytöstä",
-    "faqTitle": "Usein Kysytyt Kysymykset",
+    "faqTitle": "Usein kysytyt kysymykset",
     "quickTipsTitle": "Pikavinkki",
-    "contactTitle": "Tarvitsetko Lisää Apua?",
+    "contactTitle": "Tarvitsetko lisää apua?",
     "contactText": "Jos sinulla on kysymyksiä, löysit bugin tai sinulla on idea uudesta ominaisuudesta, käy GitHub-sivustollamme.",
     "githubLink": "Käy GitHub-sivustolla",
     "gettingStarted": {
@@ -371,7 +371,7 @@
     },
     "expirationDates": {
       "question": "Miten viimeinen käyttöpäivä toimii?",
-      "answer": "Tuotteilla voi olla viimeinen käyttöpäivä tai ne voidaan merkitä 'Ei Vanhene' -tilaan. Sovellus hälyttää, kun tuotteet ovat vanhentumassa pian (30 päivän sisällä) tai ovat jo vanhentuneet. Jotkut tuotteet kuten paristot ja lääkkeet tulisi vaihtaa säännöllisesti."
+      "answer": "Tuotteilla voi olla viimeinen käyttöpäivä tai ne voidaan merkitä 'Ei vanhene' -tilaan. Sovellus hälyttää, kun tuotteet ovat vanhentumassa pian (30 päivän sisällä) tai ovat jo vanhentuneet. Jotkut tuotteet kuten paristot ja lääkkeet tulisi vaihtaa säännöllisesti."
     },
     "categories": {
       "question": "Mitkä ovat eri kategoriat?",
@@ -383,7 +383,7 @@
     },
     "exportImport": {
       "question": "Miten varmuuskopioin tietoni?",
-      "answer": "Mene Asetukset → Tietojen Hallinta ja napsauta 'Vie Tiedot'. Tämä lataa JSON-tiedoston kaikilla tiedoillasi. Voit tuoda tämän tiedoston myöhemmin palauttaaksesi tietosi tai siirtääksesi ne toiseen laitteeseen."
+      "answer": "Mene Asetukset → Tietojen hallinta ja napsauta 'Vie tiedot'. Tämä lataa JSON-tiedoston kaikilla tiedoillasi. Voit tuoda tämän tiedoston myöhemmin palauttaaksesi tietosi tai siirtääksesi ne toiseen laitteeseen."
     },
     "dataStorage": {
       "question": "Mihin tietoni tallennetaan?",
@@ -391,7 +391,7 @@
     },
     "shoppingList": {
       "question": "Miten luon ostoslistan?",
-      "answer": "Mene Asetukset → Tietojen Hallinta ja napsauta 'Vie Ostoslista'. Tämä luo tekstitiedoston, jossa luetellaan kaikki täydennystä vaativat tuotteet kategoriaan ryhmiteltynä nykyisillä ja suositelluilla määrillä."
+      "answer": "Mene Asetukset → Tietojen hallinta ja napsauta 'Vie ostoslista'. Tämä luo tekstitiedoston, jossa luetellaan kaikki täydennystä vaativat tuotteet kategoriaan ryhmiteltynä nykyisillä ja suositelluilla määrillä."
     },
     "preparednessScore": {
       "question": "Miten valmiuspisteet lasketaan?",
