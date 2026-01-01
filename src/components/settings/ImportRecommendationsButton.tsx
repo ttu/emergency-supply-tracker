@@ -18,7 +18,23 @@ export function ImportRecommendationsButton() {
     setError(null);
 
     const reader = new FileReader();
+
+    reader.onerror = () => {
+      console.error('FileReader error:', reader.error);
+      const message =
+        reader.error?.message || t('settings.recommendations.import.error');
+      setError(message);
+    };
+
+    reader.onabort = () => {
+      console.warn('FileReader aborted');
+      setError(t('settings.recommendations.import.error'));
+    };
+
     reader.onload = (event) => {
+      // Don't process if there was an error or abort
+      if (reader.error) return;
+
       try {
         const json = event.target?.result as string;
         const recommendedItemsFile = parseRecommendedItemsFile(json);

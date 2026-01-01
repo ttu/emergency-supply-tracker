@@ -66,6 +66,23 @@ function isValidUnit(value: unknown): value is Unit {
   return typeof value === 'string' && VALID_UNITS.includes(value as Unit);
 }
 
+/**
+ * Validates the meta object of a recommended items file.
+ *
+ * Records any validation problems by pushing ValidationError entries onto the provided errors array.
+ *
+ * Required fields:
+ * - meta.name: non-empty string (the name of the recommendations set)
+ * - meta.version: non-empty string (version identifier)
+ * - meta.createdAt: string (ISO timestamp)
+ *
+ * Optional fields:
+ * - meta.language: if present, must be 'en' or 'fi'
+ *
+ * @param meta - The meta object to validate (unknown type, validated at runtime)
+ * @param errors - Array to push validation errors onto (mutated as side effect)
+ * @returns void
+ */
 function validateMeta(meta: unknown, errors: ValidationError[]): void {
   if (!meta || typeof meta !== 'object') {
     errors.push({
@@ -111,6 +128,32 @@ function validateMeta(meta: unknown, errors: ValidationError[]): void {
   }
 }
 
+/**
+ * Validates a single item in the recommended items array.
+ *
+ * Records validation problems by pushing entries onto the provided errors and warnings arrays.
+ *
+ * Validation rules:
+ * - Required fields: id (non-empty string), category (valid StandardCategoryId),
+ *   unit (valid Unit), baseQuantity (positive finite number > 0),
+ *   scaleWithPeople (boolean), scaleWithDays (boolean)
+ * - Name requirement: must have either i18nKey (non-empty string) or names.en (non-empty string)
+ * - Optional fields (generate warnings if invalid):
+ *   - requiresFreezer: boolean
+ *   - defaultExpirationMonths: positive finite number
+ *   - requiresWaterLiters: positive finite number
+ *   - caloriesPerUnit: non-negative finite number
+ *   - caloriesPer100g: non-negative finite number
+ *   - weightGramsPerUnit: positive finite number
+ *   - capacityMah: positive finite number
+ *   - capacityWh: positive finite number
+ *
+ * @param item - The item object to validate (unknown type, validated at runtime)
+ * @param index - The index of the item in the items array (used for error paths)
+ * @param errors - Array to push validation errors onto (mutated as side effect)
+ * @param warnings - Array to push validation warnings onto (mutated as side effect)
+ * @returns void
+ */
 function validateItem(
   item: unknown,
   index: number,
@@ -209,15 +252,15 @@ function validateItem(
     });
   }
 
-  // Required: baseQuantity
+  // Required: baseQuantity (must be a positive finite number)
   if (
     typeof i.baseQuantity !== 'number' ||
-    i.baseQuantity < 0 ||
-    !Number.isFinite(i.baseQuantity)
+    !Number.isFinite(i.baseQuantity) ||
+    i.baseQuantity <= 0
   ) {
     errors.push({
       path: `${path}.baseQuantity`,
-      message: 'baseQuantity must be a non-negative number',
+      message: 'baseQuantity must be a positive finite number',
       code: 'INVALID_QUANTITY',
     });
   }
@@ -252,93 +295,132 @@ function validateItem(
     });
   }
 
-  // Optional: defaultExpirationMonths
+  // Optional: defaultExpirationMonths (positive finite number)
   if (i.defaultExpirationMonths !== undefined) {
     if (
       typeof i.defaultExpirationMonths !== 'number' ||
+      !Number.isFinite(i.defaultExpirationMonths) ||
       i.defaultExpirationMonths <= 0
     ) {
       warnings.push({
         path: `${path}.defaultExpirationMonths`,
-        message: 'defaultExpirationMonths should be a positive number',
+        message: 'defaultExpirationMonths should be a positive finite number',
         code: 'INVALID_OPTIONAL',
       });
     }
   }
 
-  // Optional: requiresWaterLiters
+  // Optional: requiresWaterLiters (positive finite number)
   if (i.requiresWaterLiters !== undefined) {
     if (
       typeof i.requiresWaterLiters !== 'number' ||
+      !Number.isFinite(i.requiresWaterLiters) ||
       i.requiresWaterLiters <= 0
     ) {
       warnings.push({
         path: `${path}.requiresWaterLiters`,
-        message: 'requiresWaterLiters should be a positive number',
+        message: 'requiresWaterLiters should be a positive finite number',
         code: 'INVALID_OPTIONAL',
       });
     }
   }
 
-  // Optional: calorie fields
+  // Optional: caloriesPerUnit (non-negative finite number)
   if (
     i.caloriesPerUnit !== undefined &&
-    (typeof i.caloriesPerUnit !== 'number' || i.caloriesPerUnit < 0)
+    (typeof i.caloriesPerUnit !== 'number' ||
+      !Number.isFinite(i.caloriesPerUnit) ||
+      i.caloriesPerUnit < 0)
   ) {
     warnings.push({
       path: `${path}.caloriesPerUnit`,
-      message: 'caloriesPerUnit should be a non-negative number',
+      message: 'caloriesPerUnit should be a non-negative finite number',
       code: 'INVALID_OPTIONAL',
     });
   }
 
+  // Optional: caloriesPer100g (non-negative finite number)
   if (
     i.caloriesPer100g !== undefined &&
-    (typeof i.caloriesPer100g !== 'number' || i.caloriesPer100g < 0)
+    (typeof i.caloriesPer100g !== 'number' ||
+      !Number.isFinite(i.caloriesPer100g) ||
+      i.caloriesPer100g < 0)
   ) {
     warnings.push({
       path: `${path}.caloriesPer100g`,
-      message: 'caloriesPer100g should be a non-negative number',
+      message: 'caloriesPer100g should be a non-negative finite number',
       code: 'INVALID_OPTIONAL',
     });
   }
 
+  // Optional: weightGramsPerUnit (positive finite number)
   if (
     i.weightGramsPerUnit !== undefined &&
-    (typeof i.weightGramsPerUnit !== 'number' || i.weightGramsPerUnit <= 0)
+    (typeof i.weightGramsPerUnit !== 'number' ||
+      !Number.isFinite(i.weightGramsPerUnit) ||
+      i.weightGramsPerUnit <= 0)
   ) {
     warnings.push({
       path: `${path}.weightGramsPerUnit`,
-      message: 'weightGramsPerUnit should be a positive number',
+      message: 'weightGramsPerUnit should be a positive finite number',
       code: 'INVALID_OPTIONAL',
     });
   }
 
-  // Optional: capacityMah (battery capacity in milliamp-hours)
+  // Optional: capacityMah (positive finite number, battery capacity in milliamp-hours)
   if (
     i.capacityMah !== undefined &&
-    (typeof i.capacityMah !== 'number' || i.capacityMah <= 0)
+    (typeof i.capacityMah !== 'number' ||
+      !Number.isFinite(i.capacityMah) ||
+      i.capacityMah <= 0)
   ) {
     warnings.push({
       path: `${path}.capacityMah`,
-      message: 'capacityMah should be a positive number',
+      message: 'capacityMah should be a positive finite number',
       code: 'INVALID_OPTIONAL',
     });
   }
 
-  // Optional: capacityWh (battery capacity in watt-hours)
+  // Optional: capacityWh (positive finite number, battery capacity in watt-hours)
   if (
     i.capacityWh !== undefined &&
-    (typeof i.capacityWh !== 'number' || i.capacityWh <= 0)
+    (typeof i.capacityWh !== 'number' ||
+      !Number.isFinite(i.capacityWh) ||
+      i.capacityWh <= 0)
   ) {
     warnings.push({
       path: `${path}.capacityWh`,
-      message: 'capacityWh should be a positive number',
+      message: 'capacityWh should be a positive finite number',
       code: 'INVALID_OPTIONAL',
     });
   }
 }
 
+/**
+ * Validates a recommended items JSON structure.
+ *
+ * Checks that the provided data conforms to the expected RecommendedItemsFile schema,
+ * including a valid meta object and an array of valid items.
+ *
+ * Expected input shape:
+ * - meta: object with name, version, createdAt (required), and language (optional)
+ * - items: non-empty array of item objects with required fields (id, category, unit,
+ *   baseQuantity, scaleWithPeople, scaleWithDays) and optional fields
+ *
+ * Validation outcomes:
+ * - errors: Critical issues that make the file invalid (missing required fields,
+ *   invalid types, duplicate IDs, empty items array)
+ * - warnings: Non-critical issues (invalid optional fields) that don't prevent import
+ *
+ * @param data - The parsed JSON data to validate (unknown type, validated at runtime)
+ * @returns ValidationResult with valid boolean, errors array, and warnings array
+ *
+ * @example
+ * const result = validateRecommendedItemsFile(parsedJson);
+ * if (!result.valid) {
+ *   console.error('Validation errors:', result.errors);
+ * }
+ */
 export function validateRecommendedItemsFile(data: unknown): ValidationResult {
   const errors: ValidationError[] = [];
   const warnings: ValidationWarning[] = [];
@@ -395,8 +477,35 @@ export function validateRecommendedItemsFile(data: unknown): ValidationResult {
   return { valid: errors.length === 0, errors, warnings };
 }
 
+/**
+ * Parses and validates a recommended items JSON string.
+ *
+ * Parses the JSON string and validates it against the RecommendedItemsFile schema.
+ * Throws an error if parsing fails or validation fails.
+ *
+ * @param json - The JSON string to parse
+ * @returns The parsed and validated RecommendedItemsFile object
+ * @throws Error if JSON parsing fails with message "Failed to parse recommended items JSON: ..."
+ * @throws Error if validation fails with message "Invalid recommended items file: ..."
+ *
+ * @example
+ * try {
+ *   const file = parseRecommendedItemsFile(jsonString);
+ *   console.log('Loaded', file.items.length, 'items');
+ * } catch (err) {
+ *   console.error('Failed to load:', err.message);
+ * }
+ */
 export function parseRecommendedItemsFile(json: string): RecommendedItemsFile {
-  const data = JSON.parse(json);
+  let data: unknown;
+
+  try {
+    data = JSON.parse(json);
+  } catch (err) {
+    const message = err instanceof SyntaxError ? err.message : String(err);
+    throw new Error(`Failed to parse recommended items JSON: ${message}`);
+  }
+
   const result = validateRecommendedItemsFile(data);
 
   if (!result.valid) {
