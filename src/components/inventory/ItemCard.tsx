@@ -6,7 +6,6 @@ import {
 } from '../../utils/calculations/status';
 import { getWaterRequirementPerUnit } from '../../utils/calculations/water';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '../../utils/constants';
-import { Button } from '../common/Button';
 import styles from './ItemCard.module.css';
 
 export interface ItemCardProps {
@@ -30,7 +29,7 @@ export const ItemCard = ({ item, onClick, onMarkAsEnough }: ItemCardProps) => {
     item.neverExpires,
   );
 
-  const showMarkAsEnough =
+  const canMarkAsEnough =
     onMarkAsEnough &&
     !item.markedAsEnough &&
     item.quantity < item.recommendedQuantity &&
@@ -58,12 +57,31 @@ export const ItemCard = ({ item, onClick, onMarkAsEnough }: ItemCardProps) => {
     >
       <div className={styles.header}>
         <h3 className={styles.name}>{item.name}</h3>
-        {item.markedAsEnough && (
+        {(item.markedAsEnough || canMarkAsEnough) && (
           <span
-            className={styles.markedBadge}
-            title={t('inventory.markedAsEnough')}
+            className={`${styles.markedBadge} ${
+              canMarkAsEnough ? styles.clickable : ''
+            }`}
+            title={
+              item.markedAsEnough
+                ? t('inventory.markedAsEnough')
+                : t('inventory.markAsEnough')
+            }
+            onClick={canMarkAsEnough ? handleMarkAsEnough : undefined}
+            role={canMarkAsEnough ? 'button' : undefined}
+            tabIndex={canMarkAsEnough ? 0 : undefined}
+            onKeyDown={
+              canMarkAsEnough
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleMarkAsEnough(e as unknown as React.MouseEvent);
+                    }
+                  }
+                : undefined
+            }
           >
-            ✓
+            {item.markedAsEnough ? '✓' : '○'}
           </span>
         )}
       </div>
@@ -128,19 +146,6 @@ export const ItemCard = ({ item, onClick, onMarkAsEnough }: ItemCardProps) => {
 
         {item.location && (
           <div className={styles.location}>📍 {item.location}</div>
-        )}
-
-        {showMarkAsEnough && (
-          <div className={styles.actions}>
-            <Button
-              variant="secondary"
-              size="small"
-              onClick={handleMarkAsEnough}
-              className={styles.markButton}
-            >
-              {t('inventory.markAsEnough')}
-            </Button>
-          </div>
         )}
 
         {item.markedAsEnough && (

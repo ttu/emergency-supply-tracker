@@ -185,7 +185,7 @@ describe('ItemCard', () => {
     expect(screen.queryByText(/\/ 0/)).not.toBeInTheDocument();
   });
 
-  it('should show mark as enough button when quantity is less than recommended', () => {
+  it('should show clickable badge when quantity is less than recommended', () => {
     const onMarkAsEnough = jest.fn();
     const itemWithLowQuantity = {
       ...baseItem,
@@ -196,10 +196,13 @@ describe('ItemCard', () => {
     render(
       <ItemCard item={itemWithLowQuantity} onMarkAsEnough={onMarkAsEnough} />,
     );
-    expect(screen.getByText('inventory.markAsEnough')).toBeInTheDocument();
+    const badge = screen.getByTitle('inventory.markAsEnough');
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent('○');
+    expect(badge).toHaveAttribute('role', 'button');
   });
 
-  it('should not show mark as enough button when quantity meets recommended', () => {
+  it('should not show badge when quantity meets recommended', () => {
     const onMarkAsEnough = jest.fn();
     const itemWithEnoughQuantity = {
       ...baseItem,
@@ -214,11 +217,11 @@ describe('ItemCard', () => {
       />,
     );
     expect(
-      screen.queryByText('inventory.markAsEnough'),
+      screen.queryByTitle('inventory.markAsEnough'),
     ).not.toBeInTheDocument();
   });
 
-  it('should not show mark as enough button when quantity is zero', () => {
+  it('should not show badge when quantity is zero', () => {
     const onMarkAsEnough = jest.fn();
     const itemWithZeroQuantity = {
       ...baseItem,
@@ -230,27 +233,11 @@ describe('ItemCard', () => {
       <ItemCard item={itemWithZeroQuantity} onMarkAsEnough={onMarkAsEnough} />,
     );
     expect(
-      screen.queryByText('inventory.markAsEnough'),
+      screen.queryByTitle('inventory.markAsEnough'),
     ).not.toBeInTheDocument();
   });
 
-  it('should not show mark as enough button when already marked as enough', () => {
-    const onMarkAsEnough = jest.fn();
-    const itemMarkedAsEnough = {
-      ...baseItem,
-      quantity: 10,
-      recommendedQuantity: 20,
-      markedAsEnough: true,
-    };
-    render(
-      <ItemCard item={itemMarkedAsEnough} onMarkAsEnough={onMarkAsEnough} />,
-    );
-    expect(
-      screen.queryByText('inventory.markAsEnough'),
-    ).not.toBeInTheDocument();
-  });
-
-  it('should call onMarkAsEnough when mark as enough button is clicked', () => {
+  it('should call onMarkAsEnough when clickable badge is clicked', () => {
     const onMarkAsEnough = jest.fn();
     const itemWithLowQuantity = {
       ...baseItem,
@@ -262,14 +249,34 @@ describe('ItemCard', () => {
       <ItemCard item={itemWithLowQuantity} onMarkAsEnough={onMarkAsEnough} />,
     );
 
-    const markButton = screen.getByText('inventory.markAsEnough');
-    fireEvent.click(markButton);
+    const badge = screen.getByTitle('inventory.markAsEnough');
+    fireEvent.click(badge);
 
     expect(onMarkAsEnough).toHaveBeenCalledTimes(1);
     expect(onMarkAsEnough).toHaveBeenCalledWith(baseItem.id);
   });
 
-  it('should not call onClick when mark as enough button is clicked', () => {
+  it('should handle keyboard events on clickable badge', () => {
+    const onMarkAsEnough = jest.fn();
+    const itemWithLowQuantity = {
+      ...baseItem,
+      quantity: 10,
+      recommendedQuantity: 20,
+      markedAsEnough: false,
+    };
+    render(
+      <ItemCard item={itemWithLowQuantity} onMarkAsEnough={onMarkAsEnough} />,
+    );
+
+    const badge = screen.getByTitle('inventory.markAsEnough');
+    fireEvent.keyDown(badge, { key: 'Enter' });
+    expect(onMarkAsEnough).toHaveBeenCalledTimes(1);
+
+    fireEvent.keyDown(badge, { key: ' ' });
+    expect(onMarkAsEnough).toHaveBeenCalledTimes(2);
+  });
+
+  it('should not call onClick when clickable badge is clicked', () => {
     const onClick = jest.fn();
     const onMarkAsEnough = jest.fn();
     const itemWithLowQuantity = {
@@ -286,8 +293,8 @@ describe('ItemCard', () => {
       />,
     );
 
-    const markButton = screen.getByText('inventory.markAsEnough');
-    fireEvent.click(markButton);
+    const badge = screen.getByTitle('inventory.markAsEnough');
+    fireEvent.click(badge);
 
     expect(onMarkAsEnough).toHaveBeenCalledTimes(1);
     expect(onClick).not.toHaveBeenCalled();
@@ -302,6 +309,7 @@ describe('ItemCard', () => {
     const badge = screen.getByTitle('inventory.markedAsEnough');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveTextContent('✓');
+    expect(badge).not.toHaveAttribute('role', 'button');
   });
 
   it('should display marked as enough notice when item is marked', () => {

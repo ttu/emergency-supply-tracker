@@ -756,23 +756,26 @@ describe('Inventory Page - Mark as Enough', () => {
     jest.restoreAllMocks();
   });
 
-  it('should show mark as enough button for item with low quantity', () => {
+  it('should show clickable badge for item with low quantity', () => {
     renderWithProviders(<Inventory />);
-    expect(screen.getByText('inventory.markAsEnough')).toBeInTheDocument();
+    const badge = screen.getByTitle('inventory.markAsEnough');
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent('○');
+    expect(badge).toHaveAttribute('role', 'button');
   });
 
-  it('should call handleMarkAsEnough when mark as enough button is clicked', async () => {
+  it('should call handleMarkAsEnough when clickable badge is clicked', async () => {
     renderWithProviders(<Inventory />);
 
-    const markButton = screen.getByText('inventory.markAsEnough');
-    fireEvent.click(markButton);
+    const badge = screen.getByTitle('inventory.markAsEnough');
+    fireEvent.click(badge);
 
     // Wait for the update to complete
     await waitFor(() => {
-      // The button should disappear after marking as enough
-      expect(
-        screen.queryByText('inventory.markAsEnough'),
-      ).not.toBeInTheDocument();
+      // The badge should change from ○ to ✓ after marking as enough
+      const updatedBadge = screen.getByTitle('inventory.markedAsEnough');
+      expect(updatedBadge).toBeInTheDocument();
+      expect(updatedBadge).toHaveTextContent('✓');
     });
 
     // The marked as enough notice should appear
@@ -784,13 +787,14 @@ describe('Inventory Page - Mark as Enough', () => {
   it('should show marked as enough badge after marking item', async () => {
     renderWithProviders(<Inventory />);
 
-    const markButton = screen.getByText('inventory.markAsEnough');
-    fireEvent.click(markButton);
+    const badge = screen.getByTitle('inventory.markAsEnough');
+    fireEvent.click(badge);
 
     await waitFor(() => {
-      const badge = screen.getByTitle('inventory.markedAsEnough');
-      expect(badge).toBeInTheDocument();
-      expect(badge).toHaveTextContent('✓');
+      const updatedBadge = screen.getByTitle('inventory.markedAsEnough');
+      expect(updatedBadge).toBeInTheDocument();
+      expect(updatedBadge).toHaveTextContent('✓');
+      expect(updatedBadge).not.toHaveAttribute('role', 'button');
     });
   });
 });
