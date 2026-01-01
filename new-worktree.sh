@@ -31,6 +31,10 @@ if [ -f "${REPO_DIR}/.claude/settings.local.json" ]; then
   cp "${REPO_DIR}/.claude/settings.local.json" "${WORKTREE_DIR}/.claude/settings.local.json"
 fi
 
+# Install dependencies
+echo "Installing dependencies..."
+cd "${WORKTREE_DIR}" && npm install
+
 echo ""
 echo "Done! Worktree created at: ${WORKTREE_DIR}"
 echo "To switch to it: cd ${WORKTREE_DIR}"
