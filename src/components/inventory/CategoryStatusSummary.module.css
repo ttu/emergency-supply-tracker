@@ -59,7 +59,7 @@
 }
 
 .progressCritical {
-  background-color: var(--color-danger);
+  background-color: var(--color-error);
 }
 
 .missing {

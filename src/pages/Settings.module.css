@@ -30,7 +30,7 @@
   padding: var(--spacing-lg);
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
+  border-radius: var(--radius-lg);
 }
 
 .sectionTitle {
@@ -44,7 +44,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-danger);
+  color: var(--color-error);
 }
 
 .appearanceSettings {
@@ -92,7 +92,7 @@
 }
 
 .link:hover {
-  color: var(--color-primary-dark);
+  color: var(--color-primary-hover);
   text-decoration: underline;
 }
 

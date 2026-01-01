@@ -1,9 +1,46 @@
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   padding: var(--spacing-xl);
   border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-xl);
   box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gradient overlay for light theme */
+[data-theme='light'] .header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(91, 95, 246, 0.08) 0%,
+    rgba(123, 127, 248, 0.05) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Very subtle gradient for dark theme */
+[data-theme='dark'] .header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(123, 127, 248, 0.06) 0%,
+    rgba(91, 95, 246, 0.04) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .content {
@@ -11,6 +48,8 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--spacing-xl);
+  position: relative;
+  z-index: 1;
 }
 
 .titleSection {
@@ -18,14 +57,15 @@
 }
 
 .title {
-  color: white;
+  color: var(--color-text);
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   margin: 0 0 var(--spacing-sm) 0;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-lg);
   margin: 0;
 }
@@ -35,6 +75,8 @@
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-md);
+  position: relative;
+  z-index: 1;
 }
 
 .scoreCircle {
@@ -51,7 +93,7 @@
 
 .scoreBackground {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.2);
+  stroke: var(--color-border);
   stroke-width: 8;
 }
 
@@ -63,15 +105,15 @@
 }
 
 .scoreProgress.scoreGood {
-  stroke: #4caf50;
+  stroke: var(--color-success);
 }
 
 .scoreProgress.scoreWarning {
-  stroke: #ffc107;
+  stroke: var(--color-warning);
 }
 
 .scoreProgress.scoreCritical {
-  stroke: #f44336;
+  stroke: var(--color-error);
 }
 
 .scoreValue {
@@ -85,16 +127,16 @@
 .scoreNumber {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: white;
+  color: var(--color-text);
 }
 
 .scorePercent {
   font-size: var(--font-size-lg);
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text-secondary);
 }
 
 .scoreLabel {
-  color: white;
+  color: var(--color-text);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-medium);
   text-align: center;
