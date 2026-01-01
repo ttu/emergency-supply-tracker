@@ -447,6 +447,12 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
       // Click the first add button (+)
       const addButtons = screen.getAllByRole('button', {
         name: 'inventory.addToInventory',
@@ -472,6 +478,12 @@ describe('CategoryStatusSummary', () => {
           onDisableRecommended={onDisableRecommended}
         />,
       );
+
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
 
       // Click the first disable button (×)
       const disableButtons = screen.getAllByRole('button', {
