@@ -96,6 +96,7 @@
   --color-success: #10b981;
   --color-success-light: #34d399;
   --color-success-alpha: rgba(16, 185, 129, 0.1);
+  --color-on-success: #ffffff; /* Text color on success background - WCAG AA compliant */
 
   --color-warning: #f59e0b;
   --color-warning-light: #fbbf24;
@@ -153,6 +154,7 @@
   --color-success: #34d399;
   --color-success-light: #6ee7b7;
   --color-success-alpha: rgba(52, 211, 153, 0.08);
+  --color-on-success: #ffffff; /* Text color on success background - WCAG AA compliant */
 
   --color-warning: #fbbf24;
   --color-warning-light: #fcd34d;

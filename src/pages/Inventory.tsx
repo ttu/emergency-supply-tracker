@@ -182,9 +182,12 @@ export function Inventory({
     }
   };
 
-  const handleMarkAsEnough = (itemId: string) => {
-    updateItem(itemId, { markedAsEnough: true });
-  };
+  const handleMarkAsEnough = useCallback(
+    (itemId: string) => {
+      updateItem(itemId, { markedAsEnough: true });
+    },
+    [updateItem],
+  );
 
   const handleEditItem = (item: InventoryItem) => {
     setEditingItem(item);
