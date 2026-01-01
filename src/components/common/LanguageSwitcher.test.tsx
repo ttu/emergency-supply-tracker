@@ -26,8 +26,6 @@ const createMockSettingsContext = (
     advancedFeatures: {},
   },
   updateSettings: jest.fn(),
-  toggleHighContrast: jest.fn(),
-  toggleTheme: jest.fn(),
   ...overrides,
 });
 

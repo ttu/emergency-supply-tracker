@@ -21,19 +21,26 @@ jest.mock('../components/dashboard/DashboardHeader', () => ({
 
 jest.mock('../components/dashboard/AlertBanner', () => ({
   AlertBanner: ({
-    alert,
+    alerts,
     onDismiss,
   }: {
-    alert: { id: string; message: string };
-    onDismiss?: () => void;
+    alerts: Array<{ id: string; message: string }>;
+    onDismiss?: (alertId: string) => void;
   }) => (
-    <div data-testid={`alert-${alert.id}`}>
-      {alert.message}
-      {onDismiss && (
-        <button onClick={onDismiss} data-testid={`dismiss-${alert.id}`}>
-          Dismiss
-        </button>
-      )}
+    <div data-testid="alert-banner">
+      {alerts.map((alert) => (
+        <div key={alert.id} data-testid={`alert-${alert.id}`}>
+          {alert.message}
+          {onDismiss && (
+            <button
+              onClick={() => onDismiss(alert.id)}
+              data-testid={`dismiss-${alert.id}`}
+            >
+              Dismiss
+            </button>
+          )}
+        </div>
+      ))}
     </div>
   ),
 }));
@@ -304,7 +311,8 @@ describe('Dashboard', () => {
   });
 
   it('should handle backup reminder alert dismissal', () => {
-    // Set up app data with a lastModified date far in the past to trigger backup reminder
+    // Set up app data with items but no backup date to trigger backup reminder
+    // Backup reminder shows when: no backup date AND items.length > 0
     const appData = {
       version: '1.0.0',
       household: {
@@ -320,31 +328,57 @@ describe('Dashboard', () => {
         advancedFeatures: {},
       },
       customCategories: [],
-      items: [],
+      items: [
+        {
+          id: '1',
+          name: 'Water',
+          itemType: 'custom',
+          categoryId: 'water-beverages',
+          quantity: 10,
+          unit: 'gallons',
+          recommendedQuantity: 28,
+          neverExpires: true,
+          location: '',
+          notes: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ],
       customTemplates: [],
       dismissedAlertIds: [],
       disabledRecommendedItems: [],
-      lastModified: new Date(
-        Date.now() - 31 * 24 * 60 * 60 * 1000,
-      ).toISOString(), // 31 days ago
+      lastModified: new Date().toISOString(),
+      // No lastBackupDate - this triggers the reminder when items exist
     };
     localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
 
     const { container } = renderWithProviders(<Dashboard />);
 
-    // Check if backup reminder alert exists
+    // Backup reminder alert must be present
     const backupAlert = container.querySelector(
       '[data-testid="alert-backup-reminder"]',
     );
-    if (backupAlert) {
-      const dismissButton = container.querySelector(
-        '[data-testid="dismiss-backup-reminder"]',
-      );
-      if (dismissButton) {
-        fireEvent.click(dismissButton);
-        // Backup reminder should be dismissed
-      }
-    }
+    expect(backupAlert).toBeInTheDocument();
+
+    // Dismiss button must be present
+    const dismissButton = container.querySelector(
+      '[data-testid="dismiss-backup-reminder"]',
+    );
+    expect(dismissButton).toBeInTheDocument();
+
+    // Click dismiss button
+    fireEvent.click(dismissButton!);
+
+    // Alert should be removed from DOM
+    expect(
+      container.querySelector('[data-testid="alert-backup-reminder"]'),
+    ).not.toBeInTheDocument();
+
+    // Verify backupReminderDismissedUntil is set in localStorage
+    const updatedData = JSON.parse(
+      localStorage.getItem('emergencySupplyTracker') || '{}',
+    );
+    expect(updatedData.backupReminderDismissedUntil).toBeDefined();
   });
 
   it('should render dashboard without navigation handler', () => {

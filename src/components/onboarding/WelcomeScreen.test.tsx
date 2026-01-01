@@ -26,6 +26,7 @@ jest.mock('react-i18next', () => ({
         'landing.features.alerts.description': 'Get notified when low',
         'landing.features.prepared.title': 'Stay Prepared',
         'landing.features.prepared.description': 'Be ready for emergencies',
+        'landing.worksOffline.title': 'Works Offline',
       };
       return translations[key] || key;
     },
@@ -105,7 +106,7 @@ describe('WelcomeScreen', () => {
     const onContinue = jest.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
-    expect(screen.getByText('landing.worksOffline.title')).toBeInTheDocument();
+    expect(screen.getByText('Works Offline')).toBeInTheDocument();
   });
 
   it('calls updateSettings when language selector is changed', async () => {
