@@ -15,11 +15,7 @@ export interface ItemCardProps {
   onMarkAsEnough?: (itemId: string) => void;
 }
 
-export const ItemCard = ({
-  item,
-  onClick,
-  onMarkAsEnough,
-}: ItemCardProps) => {
+export const ItemCard = ({ item, onClick, onMarkAsEnough }: ItemCardProps) => {
   const { t } = useTranslation(['common', 'units']);
 
   const formatExpirationDate = (dateString?: string): string => {
@@ -63,7 +59,10 @@ export const ItemCard = ({
       <div className={styles.header}>
         <h3 className={styles.name}>{item.name}</h3>
         {item.markedAsEnough && (
-          <span className={styles.markedBadge} title={t('inventory.markedAsEnough')}>
+          <span
+            className={styles.markedBadge}
+            title={t('inventory.markedAsEnough')}
+          >
             ✓
           </span>
         )}
