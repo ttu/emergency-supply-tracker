@@ -17,7 +17,6 @@ jest.mock('react-i18next', () => ({
 
       const unitTranslations: Record<string, string> = {
         liters: 'L',
-        liters: 'L',
         pieces: 'pcs',
         cans: 'cans',
       };
