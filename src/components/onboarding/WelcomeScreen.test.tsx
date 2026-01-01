@@ -26,6 +26,7 @@ jest.mock('react-i18next', () => ({
         'landing.features.alerts.description': 'Get notified when low',
         'landing.features.prepared.title': 'Stay Prepared',
         'landing.features.prepared.description': 'Be ready for emergencies',
+        'landing.worksOffline.title': 'Works Offline',
       };
       return translations[key] || key;
     },
@@ -35,10 +36,12 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+const mockUpdateSettings = jest.fn();
+
 jest.mock('../../hooks/useSettings', () => ({
   useSettings: () => ({
     settings: { language: 'en' },
-    updateSettings: jest.fn(),
+    updateSettings: mockUpdateSettings,
   }),
 }));
 
@@ -97,5 +100,25 @@ describe('WelcomeScreen', () => {
 
     expect(screen.getByText('English')).toBeInTheDocument();
     expect(screen.getByText('Suomi')).toBeInTheDocument();
+  });
+
+  it('renders works offline selling point', () => {
+    const onContinue = jest.fn();
+    render(<WelcomeScreen onContinue={onContinue} />);
+
+    expect(screen.getByText('Works Offline')).toBeInTheDocument();
+  });
+
+  it('calls updateSettings when language selector is changed', async () => {
+    mockUpdateSettings.mockClear();
+    const user = userEvent.setup();
+    const onContinue = jest.fn();
+    render(<WelcomeScreen onContinue={onContinue} />);
+
+    const languageSelect = screen.getByRole('combobox');
+    await user.selectOptions(languageSelect, 'fi');
+
+    // The handleLanguageChange function should call updateSettings
+    expect(mockUpdateSettings).toHaveBeenCalledWith({ language: 'fi' });
   });
 });

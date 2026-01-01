@@ -281,19 +281,16 @@ describe('ItemForm', () => {
   });
 
   it('should call onCancel when cancel button is clicked (editing existing item)', () => {
-    const existingItem: InventoryItem = {
+    const existingItem = createMockInventoryItem({
       id: '1',
       name: 'Test Item',
-      itemType: 'custom',
       categoryId: 'food',
       quantity: 5,
       unit: 'pieces',
       recommendedQuantity: 10,
       neverExpires: false,
       expirationDate: '2025-12-31',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
     render(
       <ItemForm
@@ -602,6 +599,170 @@ describe('ItemForm', () => {
           categoryId: 'light-power',
           capacityMah: undefined,
           capacityWh: undefined,
+        }),
+      );
+    });
+  });
+
+  it('should show water requirement field for food category', () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
+        templateRequiresWaterLiters={0.5}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+
+    // Select food category to show water requirement field
+    fireEvent.change(nameInput, { target: { value: 'Instant Noodles' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+
+    const waterRequirementInput = document.querySelector(
+      '#requiresWaterLiters',
+    ) as HTMLInputElement;
+    expect(waterRequirementInput).toBeInTheDocument();
+    expect(waterRequirementInput).toHaveValue(0.5);
+  });
+
+  it('should update caloriesPerUnit field manually', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+
+    fireEvent.change(nameInput, { target: { value: 'Test Food' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+
+    const caloriesInput = document.querySelector(
+      '#caloriesPerUnit',
+    ) as HTMLInputElement;
+    fireEvent.change(caloriesInput, { target: { value: '250' } });
+    expect(caloriesInput).toHaveValue(250);
+  });
+
+  it('should update requiresWaterLiters field manually', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+
+    fireEvent.change(nameInput, { target: { value: 'Test Food' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+
+    const waterRequirementInput = document.querySelector(
+      '#requiresWaterLiters',
+    ) as HTMLInputElement;
+    fireEvent.change(waterRequirementInput, { target: { value: '0.75' } });
+    expect(waterRequirementInput).toHaveValue(0.75);
+  });
+
+  it('should use continuous unit step for decimal quantities', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
+      />,
+    );
+
+    const unitSelect = document.querySelector('#unit') as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+
+    // Change to liters (continuous unit)
+    fireEvent.change(unitSelect, { target: { value: 'liters' } });
+
+    // Quantity input should allow decimal step (0.1)
+    expect(quantityInput).toHaveAttribute('step', '0.1');
+  });
+
+  it('should use discrete unit step for integer quantities', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
+      />,
+    );
+
+    const unitSelect = document.querySelector('#unit') as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+
+    // Default is pieces (discrete unit)
+    expect(quantityInput).toHaveAttribute('step', '1');
+
+    // Change to cans (also discrete)
+    fireEvent.change(unitSelect, { target: { value: 'cans' } });
+    expect(quantityInput).toHaveAttribute('step', '1');
+  });
+
+  it('should submit food item with water requirement', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={10}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+    const neverExpiresCheckbox = screen.getByRole('checkbox');
+
+    fireEvent.change(nameInput, { target: { value: 'Instant Noodles' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+    fireEvent.change(quantityInput, { target: { value: '5' } });
+    fireEvent.click(neverExpiresCheckbox);
+
+    const waterRequirementInput = document.querySelector(
+      '#requiresWaterLiters',
+    ) as HTMLInputElement;
+    fireEvent.change(waterRequirementInput, { target: { value: '0.5' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Instant Noodles',
+          categoryId: 'food',
+          requiresWaterLiters: 0.5,
         }),
       );
     });

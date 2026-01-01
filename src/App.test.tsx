@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
+import { createMockAppData } from './utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -19,24 +20,15 @@ jest.mock('react-i18next', () => ({
 
 // Helper to set up localStorage with onboarding completed
 const setupCompletedOnboarding = () => {
-  const appData = {
-    version: '1.0.0',
-    household: {
-      adults: 2,
-      children: 0,
-      supplyDurationDays: 7,
-      useFreezer: false,
-    },
+  const appData = createMockAppData({
     settings: {
       language: 'en',
       theme: 'light',
+      highContrast: false,
+      advancedFeatures: {},
       onboardingCompleted: true,
     },
-    customCategories: [],
-    items: [],
-    customTemplates: [],
-    lastModified: new Date().toISOString(),
-  };
+  });
   localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
 };
 
@@ -106,5 +98,43 @@ describe('App', () => {
     // Go back to dashboard
     fireEvent.click(screen.getByText('navigation.dashboard'));
     expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+  });
+
+  it('navigates to help page', () => {
+    render(<App />);
+
+    const helpButton = screen.getByText('navigation.help');
+    fireEvent.click(helpButton);
+
+    // Should show help page content
+    expect(screen.getByText('help.title')).toBeInTheDocument();
+  });
+
+  it('shows onboarding when not completed', () => {
+    // Clear localStorage to show onboarding
+    localStorage.clear();
+    const appData = createMockAppData({
+      settings: {
+        language: 'en',
+        theme: 'light',
+        highContrast: false,
+        advancedFeatures: {},
+        onboardingCompleted: false,
+      },
+    });
+    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+
+    render(<App />);
+
+    // Should show onboarding content (welcome screen or first step)
+    expect(screen.getByText('app.title')).toBeInTheDocument();
+  });
+
+  it('has skip link for accessibility', () => {
+    render(<App />);
+
+    const skipLink = screen.getByText('accessibility.skipToContent');
+    expect(skipLink).toBeInTheDocument();
+    expect(skipLink).toHaveAttribute('href', '#main-content');
   });
 });

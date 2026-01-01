@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ItemCard } from './ItemCard';
-import type { InventoryItem } from '../../types';
+import { createMockInventoryItem } from '../../utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -15,12 +15,11 @@ jest.mock('react-i18next', () => ({
 }));
 
 describe('ItemCard', () => {
-  const now = new Date().toISOString();
   const futureDate = new Date(
     Date.now() + 365 * 24 * 60 * 60 * 1000,
   ).toISOString();
 
-  const baseItem: InventoryItem = {
+  const baseItem = createMockInventoryItem({
     id: '1',
     name: 'Bottled Water',
     itemType: 'bottled-water',
@@ -32,9 +31,7 @@ describe('ItemCard', () => {
     expirationDate: futureDate,
     location: 'Pantry',
     notes: '',
-    createdAt: now,
-    updatedAt: now,
-  };
+  });
 
   it('should render item name', () => {
     render(<ItemCard item={baseItem} />);
@@ -127,37 +124,37 @@ describe('ItemCard', () => {
   });
 
   it('should display capacity in mAh when provided', () => {
-    const powerItem: InventoryItem = {
+    const powerItem = createMockInventoryItem({
       ...baseItem,
       categoryId: 'light-power',
       name: 'Power Bank',
       capacityMah: 10000,
-    };
+    });
     render(<ItemCard item={powerItem} />);
     expect(screen.getByText('10000 mAh')).toBeInTheDocument();
     expect(screen.getByText(/🔋/)).toBeInTheDocument();
   });
 
   it('should display capacity in Wh when provided', () => {
-    const powerItem: InventoryItem = {
+    const powerItem = createMockInventoryItem({
       ...baseItem,
       categoryId: 'light-power',
       name: 'Power Bank',
       capacityWh: 37,
-    };
+    });
     render(<ItemCard item={powerItem} />);
     expect(screen.getByText('37 Wh')).toBeInTheDocument();
     expect(screen.getByText(/🔋/)).toBeInTheDocument();
   });
 
   it('should display both mAh and Wh when both are provided', () => {
-    const powerItem: InventoryItem = {
+    const powerItem = createMockInventoryItem({
       ...baseItem,
       categoryId: 'light-power',
       name: 'Power Bank',
       capacityMah: 20000,
       capacityWh: 74,
-    };
+    });
     render(<ItemCard item={powerItem} />);
     expect(screen.getByText('20000 mAh')).toBeInTheDocument();
     expect(screen.getByText('74 Wh')).toBeInTheDocument();
@@ -165,11 +162,11 @@ describe('ItemCard', () => {
   });
 
   it('should not display capacity when not provided', () => {
-    const itemWithoutCapacity: InventoryItem = {
+    const itemWithoutCapacity = createMockInventoryItem({
       ...baseItem,
       categoryId: 'light-power',
       name: 'Flashlight',
-    };
+    });
     render(<ItemCard item={itemWithoutCapacity} />);
     expect(screen.queryByText(/🔋/)).not.toBeInTheDocument();
   });

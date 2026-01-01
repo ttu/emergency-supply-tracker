@@ -170,4 +170,127 @@ describe('CategoryNav', () => {
     expect(waterButton).toHaveAttribute('title', 'Water & Beverages');
     expect(waterButton).toHaveAttribute('aria-label', 'Water & Beverages');
   });
+
+  it('should navigate to next category with ArrowRight', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId={null}
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    const nav = screen.getByRole('navigation');
+    fireEvent.keyDown(nav, { key: 'ArrowRight' });
+
+    expect(onSelectCategory).toHaveBeenCalledWith('water-beverages');
+  });
+
+  it('should navigate to previous category with ArrowLeft', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId="food"
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    const nav = screen.getByRole('navigation');
+    fireEvent.keyDown(nav, { key: 'ArrowLeft' });
+
+    expect(onSelectCategory).toHaveBeenCalledWith('water-beverages');
+  });
+
+  it('should wrap around to last category when pressing ArrowLeft at start', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId={null}
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    const nav = screen.getByRole('navigation');
+    fireEvent.keyDown(nav, { key: 'ArrowLeft' });
+
+    // Should wrap to last category
+    expect(onSelectCategory).toHaveBeenCalledWith('cash-documents');
+  });
+
+  it('should wrap around to first category when pressing ArrowRight at end', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId="cash-documents"
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    const nav = screen.getByRole('navigation');
+    fireEvent.keyDown(nav, { key: 'ArrowRight' });
+
+    // Should wrap to "All" (null)
+    expect(onSelectCategory).toHaveBeenCalledWith(null);
+  });
+
+  it('should navigate to first category with Home key', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId="food"
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    const nav = screen.getByRole('navigation');
+    fireEvent.keyDown(nav, { key: 'Home' });
+
+    expect(onSelectCategory).toHaveBeenCalledWith(null);
+  });
+
+  it('should navigate to last category with End key', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId={null}
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    const nav = screen.getByRole('navigation');
+    fireEvent.keyDown(nav, { key: 'End' });
+
+    expect(onSelectCategory).toHaveBeenCalledWith('cash-documents');
+  });
+
+  it('should not navigate with other keys', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId={null}
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    const nav = screen.getByRole('navigation');
+    fireEvent.keyDown(nav, { key: 'Tab' });
+
+    expect(onSelectCategory).not.toHaveBeenCalled();
+  });
+
+  it('should have correct tabIndex for selected item', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId="food"
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    const foodButton = screen.getByTestId('category-food');
+    expect(foodButton).toHaveAttribute('tabIndex', '0');
+
+    const waterButton = screen.getByTestId('category-water-beverages');
+    expect(waterButton).toHaveAttribute('tabIndex', '-1');
+  });
 });

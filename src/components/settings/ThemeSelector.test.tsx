@@ -54,4 +54,30 @@ describe('ThemeSelector', () => {
     renderWithProviders(<ThemeSelector />);
     expect(screen.getByText('settings.theme.description')).toBeInTheDocument();
   });
+
+  it('should render high contrast toggle', () => {
+    renderWithProviders(<ThemeSelector />);
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).toBeInTheDocument();
+    expect(screen.getByText('accessibility.highContrast')).toBeInTheDocument();
+  });
+
+  it('should toggle high contrast when checkbox is clicked', () => {
+    renderWithProviders(<ThemeSelector />);
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+
+    // Initially unchecked
+    expect(checkbox.checked).toBe(false);
+
+    // Click to enable high contrast
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+  });
+
+  it('should display high contrast description', () => {
+    renderWithProviders(<ThemeSelector />);
+    expect(
+      screen.getByText('accessibility.highContrastDescription'),
+    ).toBeInTheDocument();
+  });
 });

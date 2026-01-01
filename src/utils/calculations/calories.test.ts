@@ -3,6 +3,7 @@ import {
   calculateCaloriesFromWeight,
   calculateTotalWeight,
   calculateTotalCalories,
+  getTemplateWeightPerUnit,
   getTemplateCaloriesPerUnit,
   resolveCaloriesPerUnit,
   formatWeight,
@@ -46,6 +47,35 @@ describe('calculateTotalCalories', () => {
 
   it('handles fractional quantities', () => {
     expect(calculateTotalCalories(0.5, 3600)).toBe(1800);
+  });
+});
+
+describe('getTemplateWeightPerUnit', () => {
+  it('returns weightGramsPerUnit when present', () => {
+    const template: RecommendedItemDefinition = {
+      id: 'test',
+      i18nKey: 'test',
+      category: 'food',
+      baseQuantity: 1,
+      unit: 'cans',
+      scaleWithPeople: true,
+      scaleWithDays: true,
+      weightGramsPerUnit: 150,
+    };
+    expect(getTemplateWeightPerUnit(template)).toBe(150);
+  });
+
+  it('returns undefined when no weight data', () => {
+    const template: RecommendedItemDefinition = {
+      id: 'test',
+      i18nKey: 'test',
+      category: 'tools-supplies',
+      baseQuantity: 1,
+      unit: 'pieces',
+      scaleWithPeople: false,
+      scaleWithDays: false,
+    };
+    expect(getTemplateWeightPerUnit(template)).toBeUndefined();
   });
 });
 

@@ -3,7 +3,10 @@ import { Dashboard } from './Dashboard';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
-import type { InventoryItem } from '../types';
+import {
+  createMockInventoryItem,
+  createMockAppData,
+} from '../utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -21,19 +24,26 @@ jest.mock('../components/dashboard/DashboardHeader', () => ({
 
 jest.mock('../components/dashboard/AlertBanner', () => ({
   AlertBanner: ({
-    alert,
+    alerts,
     onDismiss,
   }: {
-    alert: { id: string; message: string };
-    onDismiss?: () => void;
+    alerts: Array<{ id: string; message: string }>;
+    onDismiss?: (alertId: string) => void;
   }) => (
-    <div data-testid={`alert-${alert.id}`}>
-      {alert.message}
-      {onDismiss && (
-        <button onClick={onDismiss} data-testid={`dismiss-${alert.id}`}>
-          Dismiss
-        </button>
-      )}
+    <div data-testid="alert-banner">
+      {alerts.map((alert) => (
+        <div key={alert.id} data-testid={`alert-${alert.id}`}>
+          {alert.message}
+          {onDismiss && (
+            <button
+              onClick={() => onDismiss(alert.id)}
+              data-testid={`dismiss-${alert.id}`}
+            >
+              Dismiss
+            </button>
+          )}
+        </div>
+      ))}
     </div>
   ),
 }));
@@ -150,20 +160,15 @@ describe('Dashboard', () => {
   it('should show alerts section when alerts exist', () => {
     // Test that alerts section appears when there are alerts
     // We need to test with an out-of-stock item (quantity = 0) which definitely triggers an alert
-    const outOfStockItem: InventoryItem = {
+    const outOfStockItem = createMockInventoryItem({
       id: '1',
       name: 'Out of Stock Water',
-      itemType: 'custom',
       categoryId: 'water-beverages',
       quantity: 0,
       unit: 'gallons',
       recommendedQuantity: 28,
       neverExpires: true,
-      location: '',
-      notes: '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
     localStorage.setItem('inventory', JSON.stringify([outOfStockItem]));
 
@@ -177,20 +182,15 @@ describe('Dashboard', () => {
 
   it('should allow dismissing alerts', () => {
     // Test the dismiss functionality with a simple check
-    const outOfStockItem: InventoryItem = {
+    const outOfStockItem = createMockInventoryItem({
       id: '1',
       name: 'Out of Stock Item',
-      itemType: 'custom',
       categoryId: 'water-beverages',
       quantity: 0,
       unit: 'gallons',
       recommendedQuantity: 28,
       neverExpires: true,
-      location: '',
-      notes: '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
     localStorage.setItem('inventory', JSON.stringify([outOfStockItem]));
 
@@ -223,21 +223,16 @@ describe('Dashboard', () => {
     const { rerender } = renderWithProviders(<Dashboard />);
 
     // Add an item to inventory
-    const item: InventoryItem = {
+    const item = createMockInventoryItem({
       id: '1',
       name: 'Water',
-      itemType: 'custom',
       categoryId: 'water-beverages',
       quantity: 28,
       unit: 'gallons',
       recommendedQuantity: 28,
       neverExpires: false,
       expirationDate: '2025-12-31',
-      location: '',
-      notes: '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
     localStorage.setItem('inventory', JSON.stringify([item]));
 
@@ -263,5 +258,94 @@ describe('Dashboard', () => {
     expect(
       screen.getByText(/dashboard.categoriesOverview/i),
     ).toBeInTheDocument();
+  });
+
+  it('should show hidden alerts indicator when alerts are dismissed', () => {
+    // Set up app data with an out-of-stock item and dismissed alert
+    const outOfStockItem = createMockInventoryItem({
+      id: '1',
+      name: 'Out of Stock Item',
+      categoryId: 'water-beverages',
+      quantity: 0,
+      unit: 'gallons',
+      recommendedQuantity: 28,
+      neverExpires: true,
+    });
+
+    const appData = createMockAppData({
+      items: [outOfStockItem],
+      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+    });
+    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+
+    renderWithProviders(<Dashboard />);
+
+    // Should show hidden alerts indicator
+    expect(screen.getByText(/dashboard.hiddenAlerts/i)).toBeInTheDocument();
+
+    // Test show all alerts button
+    const showAllButton = screen.getByText(/dashboard.showAllAlerts/i);
+    expect(showAllButton).toBeInTheDocument();
+    fireEvent.click(showAllButton);
+  });
+
+  it('should handle backup reminder alert dismissal', () => {
+    // Set up app data with items but no backup date to trigger backup reminder
+    // Backup reminder shows when: no backup date AND items.length > 0
+    const appData = createMockAppData({
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      },
+      items: [
+        createMockInventoryItem({
+          id: '1',
+          name: 'Water',
+          categoryId: 'water-beverages',
+          quantity: 10,
+          unit: 'gallons',
+          recommendedQuantity: 28,
+          neverExpires: true,
+        }),
+      ],
+      // No lastBackupDate - this triggers the reminder when items exist
+    });
+    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+
+    const { container } = renderWithProviders(<Dashboard />);
+
+    // Backup reminder alert must be present
+    const backupAlert = container.querySelector(
+      '[data-testid="alert-backup-reminder"]',
+    );
+    expect(backupAlert).toBeInTheDocument();
+
+    // Dismiss button must be present
+    const dismissButton = container.querySelector(
+      '[data-testid="dismiss-backup-reminder"]',
+    );
+    expect(dismissButton).toBeInTheDocument();
+
+    // Click dismiss button
+    fireEvent.click(dismissButton!);
+
+    // Alert should be removed from DOM
+    expect(
+      container.querySelector('[data-testid="alert-backup-reminder"]'),
+    ).not.toBeInTheDocument();
+
+    // Verify backupReminderDismissedUntil is set in localStorage
+    const updatedData = JSON.parse(
+      localStorage.getItem('emergencySupplyTracker') || '{}',
+    );
+    expect(updatedData.backupReminderDismissedUntil).toBeDefined();
+  });
+
+  it('should render dashboard without navigation handler', () => {
+    // Test Dashboard without onNavigate prop (for when navigation is not needed)
+    renderWithProviders(<Dashboard />);
+    expect(screen.getByTestId('dashboard-header')).toBeInTheDocument();
   });
 });

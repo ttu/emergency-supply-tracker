@@ -401,5 +401,114 @@ describe('CategoryStatusSummary', () => {
       // Button should show "+3" again
       expect(screen.getByRole('button', { name: '+3' })).toBeInTheDocument();
     });
+
+    it('calls onAddToInventory when add button is clicked', async () => {
+      const user = userEvent.setup();
+      const onAddToInventory = jest.fn();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(2)}
+          onAddToInventory={onAddToInventory}
+        />,
+      );
+
+      // Click the first add button (+)
+      const addButtons = screen.getAllByRole('button', {
+        name: 'inventory.addToInventory',
+      });
+      await user.click(addButtons[0]);
+
+      expect(onAddToInventory).toHaveBeenCalledWith('bandages');
+    });
+
+    it('calls onDisableRecommended when disable button is clicked', async () => {
+      const user = userEvent.setup();
+      const onDisableRecommended = jest.fn();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(2)}
+          onDisableRecommended={onDisableRecommended}
+        />,
+      );
+
+      // Click the first disable button (×)
+      const disableButtons = screen.getAllByRole('button', {
+        name: 'inventory.disableRecommended',
+      });
+      await user.click(disableButtons[0]);
+
+      expect(onDisableRecommended).toHaveBeenCalledWith('bandages');
+    });
+
+    it('shows item count text when primaryUnit is null and totalNeeded > 0', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={5}
+          totalNeeded={10}
+          primaryUnit={null}
+        />,
+      );
+
+      expect(
+        screen.getByText('5 / 10 dashboard.category.items'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('missing calories display', () => {
+    it('displays missing calories message for food category', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="food"
+          status="warning"
+          completionPercentage={50}
+          totalActual={5}
+          totalNeeded={10}
+          primaryUnit="cans"
+          totalActualCalories={6000}
+          totalNeededCalories={12000}
+          missingCalories={6000}
+        />,
+      );
+
+      expect(
+        screen.getByText('dashboard.category.recommendedCalories'),
+      ).toBeInTheDocument();
+    });
+
+    it('does not display missing calories when missingCalories is 0', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="food"
+          status="ok"
+          completionPercentage={100}
+          totalActual={10}
+          totalNeeded={10}
+          primaryUnit="cans"
+          totalActualCalories={12000}
+          totalNeededCalories={12000}
+          missingCalories={0}
+        />,
+      );
+
+      expect(screen.queryByText(/recommendedCalories/)).not.toBeInTheDocument();
+    });
   });
 });

@@ -122,4 +122,36 @@ describe('HouseholdPresetSelector', () => {
       children: 0,
     });
   });
+
+  it('supports keyboard navigation on custom preset with Enter key', async () => {
+    const user = userEvent.setup();
+    const onSelectPreset = jest.fn();
+    render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
+
+    const customPreset = screen.getByText('Custom').closest('[role="button"]');
+    customPreset?.focus();
+    await user.keyboard('{Enter}');
+
+    expect(onSelectPreset).toHaveBeenCalledWith({
+      id: 'custom',
+      adults: 1,
+      children: 0,
+    });
+  });
+
+  it('supports keyboard navigation on custom preset with Space key', async () => {
+    const user = userEvent.setup();
+    const onSelectPreset = jest.fn();
+    render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
+
+    const customPreset = screen.getByText('Custom').closest('[role="button"]');
+    customPreset?.focus();
+    await user.keyboard(' ');
+
+    expect(onSelectPreset).toHaveBeenCalledWith({
+      id: 'custom',
+      adults: 1,
+      children: 0,
+    });
+  });
 });
