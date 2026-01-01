@@ -19,8 +19,8 @@
   bottom: 0;
   background: linear-gradient(
     135deg,
-    rgba(99, 102, 241, 0.08) 0%,
-    rgba(129, 140, 248, 0.05) 100%
+    rgba(91, 95, 246, 0.08) 0%,
+    rgba(123, 127, 248, 0.05) 100%
   );
   pointer-events: none;
   z-index: 0;
@@ -36,8 +36,8 @@
   bottom: 0;
   background: linear-gradient(
     135deg,
-    rgba(129, 140, 248, 0.06) 0%,
-    rgba(99, 102, 241, 0.04) 100%
+    rgba(123, 127, 248, 0.06) 0%,
+    rgba(91, 95, 246, 0.04) 100%
   );
   pointer-events: none;
   z-index: 0;

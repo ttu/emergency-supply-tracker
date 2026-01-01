@@ -19,8 +19,8 @@
   bottom: 0;
   background: linear-gradient(
     135deg,
-    rgba(99, 102, 241, 0.05) 0%,
-    rgba(129, 140, 248, 0.03) 100%
+    rgba(91, 95, 246, 0.05) 0%,
+    rgba(123, 127, 248, 0.03) 100%
   );
   pointer-events: none;
   z-index: 0;
@@ -29,8 +29,8 @@
 [data-theme='dark'] .container::before {
   background: linear-gradient(
     135deg,
-    rgba(129, 140, 248, 0.03) 0%,
-    rgba(99, 102, 241, 0.02) 100%
+    rgba(123, 127, 248, 0.03) 0%,
+    rgba(91, 95, 246, 0.02) 100%
   );
 }
 

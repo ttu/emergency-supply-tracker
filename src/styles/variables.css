@@ -82,15 +82,15 @@
   /* Border colors - Subtle and refined */
   --color-border: #e5e7eb;
   --color-border-hover: #d1d5db;
-  --color-border-focus: #6366f1;
+  --color-border-focus: #5b5ff6;
 
-  /* Primary colors - Modern blue (Linear-inspired) */
-  --color-primary: #6366f1;
-  --color-primary-hover: #4f46e5;
-  --color-primary-active: #4338ca;
-  --color-primary-light: #818cf8;
-  --color-primary-alpha: rgba(99, 102, 241, 0.1);
-  --color-primary-alpha-hover: rgba(99, 102, 241, 0.15);
+  /* Primary colors - Refined blue (Linear-inspired) */
+  --color-primary: #5b5ff6;
+  --color-primary-hover: #4a4ef0;
+  --color-primary-active: #3d41e8;
+  --color-primary-light: #7b7ff8;
+  --color-primary-alpha: rgba(91, 95, 246, 0.1);
+  --color-primary-alpha-hover: rgba(91, 95, 246, 0.15);
 
   /* Status colors - Refined palette */
   --color-success: #10b981;
@@ -115,7 +115,7 @@
 
   /* Focus colors */
   --color-focus: var(--color-primary);
-  --color-focus-ring: rgba(99, 102, 241, 0.3);
+  --color-focus-ring: rgba(91, 95, 246, 0.3);
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
 }
@@ -139,15 +139,15 @@
   /* Border colors - Subtle and refined */
   --color-border: #262626;
   --color-border-hover: #404040;
-  --color-border-focus: #818cf8;
+  --color-border-focus: #7b7ff8;
 
   /* Primary colors - Lighter blue for dark theme */
-  --color-primary: #818cf8;
-  --color-primary-hover: #6366f1;
-  --color-primary-active: #4f46e5;
-  --color-primary-light: #a5b4fc;
-  --color-primary-alpha: rgba(129, 140, 248, 0.08);
-  --color-primary-alpha-hover: rgba(129, 140, 248, 0.12);
+  --color-primary: #7b7ff8;
+  --color-primary-hover: #5b5ff6;
+  --color-primary-active: #4a4ef0;
+  --color-primary-light: #9b9ffa;
+  --color-primary-alpha: rgba(123, 127, 248, 0.08);
+  --color-primary-alpha-hover: rgba(123, 127, 248, 0.12);
 
   /* Status colors - Adjusted for dark theme (more subdued) */
   --color-success: #34d399;
@@ -172,7 +172,7 @@
 
   /* Focus colors */
   --color-focus: var(--color-primary);
-  --color-focus-ring: rgba(129, 140, 248, 0.4);
+  --color-focus-ring: rgba(123, 127, 248, 0.4);
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
 }
