@@ -18,7 +18,8 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 80px;
+  width: 170px;
+  flex-shrink: 0;
 }
 
 .categoryButton:hover {
@@ -47,6 +48,9 @@
   font-weight: var(--font-weight-medium);
   text-align: center;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 /* Mobile responsiveness */
@@ -56,7 +60,7 @@
   }
 
   .categoryButton {
-    min-width: 70px;
+    width: 130px;
     padding: 0.625rem 0.75rem;
   }
 

@@ -148,4 +148,26 @@ describe('CategoryNav', () => {
     allButton?.focus();
     expect(allButton).toHaveFocus();
   });
+
+  it('should have title and aria-label attributes for accessibility', () => {
+    render(
+      <CategoryNav
+        categories={STANDARD_CATEGORIES}
+        selectedCategoryId={null}
+        onSelectCategory={onSelectCategory}
+      />,
+    );
+
+    // Check "All" button
+    const allButton = screen
+      .getByText('inventory.allCategories')
+      .closest('button');
+    expect(allButton).toHaveAttribute('title', 'inventory.allCategories');
+    expect(allButton).toHaveAttribute('aria-label', 'inventory.allCategories');
+
+    // Check category buttons
+    const waterButton = screen.getByText('Water & Beverages').closest('button');
+    expect(waterButton).toHaveAttribute('title', 'Water & Beverages');
+    expect(waterButton).toHaveAttribute('aria-label', 'Water & Beverages');
+  });
 });

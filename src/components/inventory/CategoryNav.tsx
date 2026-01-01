@@ -73,6 +73,9 @@ export const CategoryNav = ({
 
   const getTabIndex = (index: number) => (index === effectiveIndex ? 0 : -1);
 
+  // Get translated category name for "All" button
+  const allCategoriesLabel = t('inventory.allCategories');
+
   return (
     <nav
       ref={navRef}
@@ -86,30 +89,37 @@ export const CategoryNav = ({
         }`}
         onClick={() => onSelectCategory(null)}
         aria-current={selectedCategoryId === null ? 'page' : undefined}
+        aria-label={allCategoriesLabel}
+        title={allCategoriesLabel}
         tabIndex={getTabIndex(0)}
         data-testid="category-all"
       >
         <span className={styles.icon}>📦</span>
-        <span className={styles.label}>{t('inventory.allCategories')}</span>
+        <span className={styles.label}>{allCategoriesLabel}</span>
       </button>
 
-      {categories.map((category, index) => (
-        <button
-          key={category.id}
-          className={`${styles.categoryButton} ${
-            selectedCategoryId === category.id ? styles.active : ''
-          }`}
-          onClick={() => onSelectCategory(category.id)}
-          aria-current={selectedCategoryId === category.id ? 'page' : undefined}
-          tabIndex={getTabIndex(index + 1)}
-          data-testid={`category-${category.id}`}
-        >
-          <span className={styles.icon}>{category.icon}</span>
-          <span className={styles.label}>
-            {t(category.id, { ns: 'categories' })}
-          </span>
-        </button>
-      ))}
+      {categories.map((category, index) => {
+        const categoryName = t(category.id, { ns: 'categories' });
+        return (
+          <button
+            key={category.id}
+            className={`${styles.categoryButton} ${
+              selectedCategoryId === category.id ? styles.active : ''
+            }`}
+            onClick={() => onSelectCategory(category.id)}
+            aria-current={
+              selectedCategoryId === category.id ? 'page' : undefined
+            }
+            aria-label={categoryName}
+            title={categoryName}
+            tabIndex={getTabIndex(index + 1)}
+            data-testid={`category-${category.id}`}
+          >
+            <span className={styles.icon}>{category.icon}</span>
+            <span className={styles.label}>{categoryName}</span>
+          </button>
+        );
+      })}
     </nav>
   );
 };
