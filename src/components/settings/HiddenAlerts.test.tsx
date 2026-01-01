@@ -17,7 +17,23 @@ import {
 // Mock i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, options?: { count?: number }) => {
+    t: (key: string, options?: { count?: number; ns?: string }) => {
+      // Category translations
+      const categoryTranslations: Record<string, string> = {
+        'water-beverages': 'Water & Beverages',
+        food: 'Food',
+        'cooking-heat': 'Cooking & Heat',
+        'light-power': 'Light & Power',
+        'communication-info': 'Communication & Info',
+        'medical-health': 'Medical & Health',
+        'hygiene-sanitation': 'Hygiene & Sanitation',
+        'tools-supplies': 'Tools & Supplies',
+        'cash-documents': 'Cash & Documents',
+      };
+
+      if (options?.ns === 'categories') {
+        return categoryTranslations[key] || key;
+      }
       if (options?.count !== undefined) {
         return `${key} (${options.count})`;
       }
