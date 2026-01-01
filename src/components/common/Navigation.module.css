@@ -29,7 +29,7 @@
 
 .navButton:hover {
   color: var(--color-text);
-  background-color: var(--color-background-hover);
+  background-color: var(--color-surface-hover);
   border-radius: var(--radius-sm);
 }
 
