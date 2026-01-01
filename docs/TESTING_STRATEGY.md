@@ -79,10 +79,10 @@ export default {
   ],
   coverageThreshold: {
     global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70,
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
   },
 };
@@ -92,10 +92,10 @@ export default {
 
 | Metric     | Minimum |
 | ---------- | ------- |
-| Branches   | 70%     |
-| Functions  | 70%     |
-| Lines      | 70%     |
-| Statements | 70%     |
+| Branches   | 80%     |
+| Functions  | 80%     |
+| Lines      | 80%     |
+| Statements | 80%     |
 
 ---
 
@@ -341,7 +341,7 @@ const item = createMockInventoryItem({
 ### CI Pipeline
 
 - All Jest tests pass
-- Coverage thresholds met (70%)
+- Coverage thresholds met (80%)
 - E2E tests pass
 - Build succeeds
 
