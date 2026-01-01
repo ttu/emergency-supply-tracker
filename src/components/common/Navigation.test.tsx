@@ -61,4 +61,26 @@ describe('Navigation', () => {
     expect(inventoryButton).not.toHaveAttribute('aria-current');
     expect(settingsButton).not.toHaveAttribute('aria-current');
   });
+
+  it('should render help navigation item', () => {
+    render(<Navigation currentPage="dashboard" onNavigate={mockOnNavigate} />);
+
+    expect(screen.getByText('navigation.help')).toBeInTheDocument();
+  });
+
+  it('should navigate to help page when clicked', () => {
+    render(<Navigation currentPage="dashboard" onNavigate={mockOnNavigate} />);
+
+    fireEvent.click(screen.getByText('navigation.help'));
+    expect(mockOnNavigate).toHaveBeenCalledWith('help');
+  });
+
+  it('should use keyboard navigation via ArrowRight', () => {
+    render(<Navigation currentPage="dashboard" onNavigate={mockOnNavigate} />);
+
+    const nav = screen.getByRole('tablist');
+    fireEvent.keyDown(nav, { key: 'ArrowRight' });
+
+    expect(mockOnNavigate).toHaveBeenCalledWith('inventory');
+  });
 });

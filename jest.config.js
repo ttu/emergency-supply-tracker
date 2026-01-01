@@ -10,15 +10,18 @@ export default {
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
+    '!src/**/*.stories.tsx',
     '!src/main.tsx',
     '!src/test/**',
+    '!src/i18n/config.ts',
+    '!src/serviceWorker.ts',
   ],
   coverageThreshold: {
     global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70,
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
   },
 };

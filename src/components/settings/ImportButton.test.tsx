@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ImportButton } from './ImportButton';
+import * as localStorage from '../../utils/storage/localStorage';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -8,7 +9,16 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+// Mock localStorage utilities
+jest.mock('../../utils/storage/localStorage', () => ({
+  importFromJSON: jest.fn(),
+  saveAppData: jest.fn(),
+}));
+
 describe('ImportButton', () => {
+  const mockImportFromJSON = localStorage.importFromJSON as jest.Mock;
+  const mockSaveAppData = localStorage.saveAppData as jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
     global.alert = jest.fn();
@@ -43,5 +53,244 @@ describe('ImportButton', () => {
     fireEvent.click(button);
 
     expect(clickSpy).toHaveBeenCalled();
+  });
+
+  it('should handle valid JSON import', async () => {
+    const validData = {
+      version: '1.0.0',
+      household: { adults: 2, children: 0 },
+      settings: { language: 'en' },
+      items: [],
+      lastModified: '2024-01-01T00:00:00.000Z',
+    };
+
+    mockImportFromJSON.mockReturnValue(validData);
+    const onImportSuccess = jest.fn();
+
+    render(<ImportButton onImportSuccess={onImportSuccess} />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File([JSON.stringify(validData)], 'data.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(mockImportFromJSON).toHaveBeenCalled();
+      expect(global.confirm).toHaveBeenCalledWith(
+        'settings.import.confirmOverwrite',
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockSaveAppData).toHaveBeenCalledWith(validData);
+      expect(global.alert).toHaveBeenCalledWith('settings.import.success');
+      expect(onImportSuccess).toHaveBeenCalled();
+      // Note: window.location.reload is called but difficult to mock in jsdom
+    });
+  });
+
+  it('should show error for invalid JSON format', async () => {
+    const invalidData = {
+      foo: 'bar', // missing required fields
+    };
+
+    mockImportFromJSON.mockReturnValue(invalidData);
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File([JSON.stringify(invalidData)], 'data.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(global.alert).toHaveBeenCalledWith(
+        'settings.import.invalidFormat',
+      );
+    });
+
+    expect(mockSaveAppData).not.toHaveBeenCalled();
+  });
+
+  it('should not import when user cancels confirmation', async () => {
+    const validData = {
+      version: '1.0.0',
+      household: { adults: 2, children: 0 },
+      settings: { language: 'en' },
+      items: [],
+      lastModified: '2024-01-01T00:00:00.000Z',
+    };
+
+    mockImportFromJSON.mockReturnValue(validData);
+    (global.confirm as jest.Mock).mockReturnValue(false);
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File([JSON.stringify(validData)], 'data.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(global.confirm).toHaveBeenCalled();
+    });
+
+    expect(mockSaveAppData).not.toHaveBeenCalled();
+  });
+
+  it('should handle file read error', async () => {
+    mockImportFromJSON.mockImplementation(() => {
+      throw new Error('Parse error');
+    });
+
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File(['invalid json'], 'data.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(global.alert).toHaveBeenCalledWith('settings.import.error');
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it('should do nothing when no file selected', () => {
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+
+    fireEvent.change(fileInput, { target: { files: [] } });
+
+    expect(mockImportFromJSON).not.toHaveBeenCalled();
+  });
+
+  it('should reset file input after import', async () => {
+    const validData = {
+      version: '1.0.0',
+      household: { adults: 2, children: 0 },
+      settings: { language: 'en' },
+      items: [],
+      lastModified: '2024-01-01T00:00:00.000Z',
+    };
+
+    mockImportFromJSON.mockReturnValue(validData);
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File([JSON.stringify(validData)], 'data.json', {
+      type: 'application/json',
+    });
+
+    // We can't easily test the value reset, but we can verify the change event works
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(mockImportFromJSON).toHaveBeenCalled();
+    });
+  });
+
+  it('should validate data has required fields', async () => {
+    // Missing version
+    const missingVersion = {
+      household: { adults: 2 },
+      settings: { language: 'en' },
+      items: [],
+      lastModified: '2024-01-01T00:00:00.000Z',
+    };
+
+    mockImportFromJSON.mockReturnValue(missingVersion);
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File([JSON.stringify(missingVersion)], 'data.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(global.alert).toHaveBeenCalledWith(
+        'settings.import.invalidFormat',
+      );
+    });
+  });
+
+  it('should validate data is an object', async () => {
+    mockImportFromJSON.mockReturnValue(null);
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File(['null'], 'data.json', { type: 'application/json' });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(global.alert).toHaveBeenCalledWith(
+        'settings.import.invalidFormat',
+      );
+    });
+  });
+
+  it('should validate items is an array', async () => {
+    const invalidItems = {
+      version: '1.0.0',
+      household: { adults: 2 },
+      settings: { language: 'en' },
+      items: 'not an array',
+      lastModified: '2024-01-01T00:00:00.000Z',
+    };
+
+    mockImportFromJSON.mockReturnValue(invalidItems);
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File([JSON.stringify(invalidItems)], 'data.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(global.alert).toHaveBeenCalledWith(
+        'settings.import.invalidFormat',
+      );
+    });
   });
 });

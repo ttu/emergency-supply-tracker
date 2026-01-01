@@ -114,4 +114,99 @@ describe('HouseholdForm', () => {
     fireEvent.click(freezerCheckbox);
     expect(freezerCheckbox.checked).toBe(initialState);
   });
+
+  it('should apply single preset', () => {
+    renderWithProviders(<HouseholdForm />);
+
+    const singleButton = screen.getByText('settings.household.presets.single');
+    fireEvent.click(singleButton);
+
+    const adultsInput = screen.getByLabelText(
+      'settings.household.adults',
+    ) as HTMLInputElement;
+    expect(adultsInput.value).toBe('1');
+  });
+
+  it('should apply couple preset', () => {
+    renderWithProviders(<HouseholdForm />);
+
+    const coupleButton = screen.getByText('settings.household.presets.couple');
+    fireEvent.click(coupleButton);
+
+    const adultsInput = screen.getByLabelText(
+      'settings.household.adults',
+    ) as HTMLInputElement;
+    expect(adultsInput.value).toBe('2');
+  });
+
+  it('should apply family preset', () => {
+    renderWithProviders(<HouseholdForm />);
+
+    const familyButton = screen.getByText('settings.household.presets.family');
+    fireEvent.click(familyButton);
+
+    const adultsInput = screen.getByLabelText(
+      'settings.household.adults',
+    ) as HTMLInputElement;
+    const childrenInput = screen.getByLabelText(
+      'settings.household.children',
+    ) as HTMLInputElement;
+    expect(adultsInput.value).toBe('2');
+    expect(childrenInput.value).toBe('2');
+  });
+
+  it('should update children value', () => {
+    renderWithProviders(<HouseholdForm />);
+
+    const childrenInput = screen.getByLabelText(
+      'settings.household.children',
+    ) as HTMLInputElement;
+    fireEvent.change(childrenInput, { target: { value: '4' } });
+
+    expect(childrenInput.value).toBe('4');
+  });
+
+  it('should update supply days value', () => {
+    renderWithProviders(<HouseholdForm />);
+
+    const supplyDaysInput = screen.getByLabelText(
+      'settings.household.supplyDays',
+    ) as HTMLInputElement;
+    fireEvent.change(supplyDaysInput, { target: { value: '7' } });
+
+    expect(supplyDaysInput.value).toBe('7');
+  });
+
+  it('should handle empty adults value as 0', () => {
+    renderWithProviders(<HouseholdForm />);
+
+    const adultsInput = screen.getByLabelText(
+      'settings.household.adults',
+    ) as HTMLInputElement;
+    fireEvent.change(adultsInput, { target: { value: '' } });
+
+    expect(adultsInput.value).toBe('0');
+  });
+
+  it('should handle empty children value as 0', () => {
+    renderWithProviders(<HouseholdForm />);
+
+    const childrenInput = screen.getByLabelText(
+      'settings.household.children',
+    ) as HTMLInputElement;
+    fireEvent.change(childrenInput, { target: { value: '' } });
+
+    expect(childrenInput.value).toBe('0');
+  });
+
+  it('should handle empty supply days value as 1', () => {
+    renderWithProviders(<HouseholdForm />);
+
+    const supplyDaysInput = screen.getByLabelText(
+      'settings.household.supplyDays',
+    ) as HTMLInputElement;
+    fireEvent.change(supplyDaysInput, { target: { value: '' } });
+
+    expect(supplyDaysInput.value).toBe('1');
+  });
 });

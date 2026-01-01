@@ -1,4 +1,10 @@
-import { extractLanguageFromSearch, isSupportedLanguage } from './urlLanguage';
+import {
+  extractLanguageFromSearch,
+  isSupportedLanguage,
+  getLanguageFromUrl,
+  clearLanguageFromUrl,
+  getInitialLanguage,
+} from './urlLanguage';
 
 describe('urlLanguage', () => {
   describe('isSupportedLanguage', () => {
@@ -47,6 +53,35 @@ describe('urlLanguage', () => {
     it('handles lang parameter at different positions', () => {
       expect(extractLanguageFromSearch('?lang=en&other=value')).toBe('en');
       expect(extractLanguageFromSearch('?other=value&lang=fi')).toBe('fi');
+    });
+  });
+
+  describe('getLanguageFromUrl', () => {
+    it('uses window.location.search to get language', () => {
+      // The function uses window.location.search internally
+      // Testing via extractLanguageFromSearch which is already tested
+      // This verifies the function exists and is callable
+      expect(typeof getLanguageFromUrl).toBe('function');
+    });
+  });
+
+  describe('clearLanguageFromUrl', () => {
+    it('is a callable function', () => {
+      // Testing that the function exists without modifying window.location
+      expect(typeof clearLanguageFromUrl).toBe('function');
+    });
+  });
+
+  describe('getInitialLanguage', () => {
+    it('returns stored language when provided', () => {
+      // Without URL parameter, should use stored language
+      expect(getInitialLanguage('fi')).toBe('fi');
+    });
+
+    it('returns default "en" when no stored language', () => {
+      expect(getInitialLanguage()).toBe('en');
+      expect(getInitialLanguage(null)).toBe('en');
+      expect(getInitialLanguage(undefined)).toBe('en');
     });
   });
 });

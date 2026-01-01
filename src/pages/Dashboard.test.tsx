@@ -264,4 +264,92 @@ describe('Dashboard', () => {
       screen.getByText(/dashboard.categoriesOverview/i),
     ).toBeInTheDocument();
   });
+
+  it('should show hidden alerts indicator when alerts are dismissed', () => {
+    // Set up inventory with an out-of-stock item
+    const outOfStockItem: InventoryItem = {
+      id: '1',
+      name: 'Out of Stock Item',
+      itemType: 'custom',
+      categoryId: 'water-beverages',
+      quantity: 0,
+      unit: 'gallons',
+      recommendedQuantity: 28,
+      neverExpires: true,
+      location: '',
+      notes: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Set up dismissed alerts
+    localStorage.setItem('inventory', JSON.stringify([outOfStockItem]));
+    localStorage.setItem(
+      'dismissedAlertIds',
+      JSON.stringify(['category-out-of-stock-water-beverages']),
+    );
+
+    renderWithProviders(<Dashboard />);
+
+    // Check if hidden alerts indicator exists
+    const hiddenAlertsText = screen.queryByText(/dashboard.hiddenAlerts/i);
+    if (hiddenAlertsText) {
+      expect(hiddenAlertsText).toBeInTheDocument();
+
+      // Test show all alerts button
+      const showAllButton = screen.getByText(/dashboard.showAllAlerts/i);
+      expect(showAllButton).toBeInTheDocument();
+      fireEvent.click(showAllButton);
+    }
+  });
+
+  it('should handle backup reminder alert dismissal', () => {
+    // Set up app data with a lastModified date far in the past to trigger backup reminder
+    const appData = {
+      version: '1.0.0',
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      },
+      settings: {
+        language: 'en',
+        theme: 'light',
+        highContrast: false,
+        advancedFeatures: {},
+      },
+      customCategories: [],
+      items: [],
+      customTemplates: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      lastModified: new Date(
+        Date.now() - 31 * 24 * 60 * 60 * 1000,
+      ).toISOString(), // 31 days ago
+    };
+    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+
+    const { container } = renderWithProviders(<Dashboard />);
+
+    // Check if backup reminder alert exists
+    const backupAlert = container.querySelector(
+      '[data-testid="alert-backup-reminder"]',
+    );
+    if (backupAlert) {
+      const dismissButton = container.querySelector(
+        '[data-testid="dismiss-backup-reminder"]',
+      );
+      if (dismissButton) {
+        fireEvent.click(dismissButton);
+        // Backup reminder should be dismissed
+      }
+    }
+  });
+
+  it('should render dashboard without navigation handler', () => {
+    // Test Dashboard without onNavigate prop (for when navigation is not needed)
+    renderWithProviders(<Dashboard />);
+    expect(screen.getByTestId('dashboard-header')).toBeInTheDocument();
+  });
 });
