@@ -6,14 +6,20 @@ import {
 } from '../../utils/calculations/status';
 import { getWaterRequirementPerUnit } from '../../utils/calculations/water';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '../../utils/constants';
+import { Button } from '../common/Button';
 import styles from './ItemCard.module.css';
 
 export interface ItemCardProps {
   item: InventoryItem;
   onClick?: () => void;
+  onMarkAsEnough?: (itemId: string) => void;
 }
 
-export const ItemCard = ({ item, onClick }: ItemCardProps) => {
+export const ItemCard = ({
+  item,
+  onClick,
+  onMarkAsEnough,
+}: ItemCardProps) => {
   const { t } = useTranslation(['common', 'units']);
 
   const formatExpirationDate = (dateString?: string): string => {
@@ -27,6 +33,19 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
     item.expirationDate,
     item.neverExpires,
   );
+
+  const showMarkAsEnough =
+    onMarkAsEnough &&
+    !item.markedAsEnough &&
+    item.quantity < item.recommendedQuantity &&
+    item.quantity > 0;
+
+  const handleMarkAsEnough = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onMarkAsEnough) {
+      onMarkAsEnough(item.id);
+    }
+  };
 
   return (
     <div
@@ -43,12 +62,22 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
     >
       <div className={styles.header}>
         <h3 className={styles.name}>{item.name}</h3>
+        {item.markedAsEnough && (
+          <span className={styles.markedBadge} title={t('inventory.markedAsEnough')}>
+            ✓
+          </span>
+        )}
       </div>
 
       <div className={styles.body}>
         <div className={styles.quantity}>
           <span className={styles.current}>{item.quantity}</span>
           <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
+          {item.recommendedQuantity > 0 && (
+            <span className={styles.recommended}>
+              / {item.recommendedQuantity}
+            </span>
+          )}
         </div>
 
         {!item.neverExpires && item.expirationDate && (
@@ -100,6 +129,25 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
 
         {item.location && (
           <div className={styles.location}>📍 {item.location}</div>
+        )}
+
+        {showMarkAsEnough && (
+          <div className={styles.actions}>
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={handleMarkAsEnough}
+              className={styles.markButton}
+            >
+              {t('inventory.markAsEnough')}
+            </Button>
+          </div>
+        )}
+
+        {item.markedAsEnough && (
+          <div className={styles.markedNotice}>
+            {t('inventory.markedAsEnoughNotice')}
+          </div>
         )}
       </div>
     </div>

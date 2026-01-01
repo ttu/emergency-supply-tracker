@@ -44,8 +44,9 @@ export function getItemStatus(
   recommendedQuantity: number,
   expirationDate?: string,
   neverExpires?: boolean,
+  markedAsEnough?: boolean,
 ): ItemStatus {
-  // Check expiration first
+  // Check expiration first (expiration always takes precedence)
   if (!neverExpires && expirationDate) {
     const daysUntilExpiration = getDaysUntilExpiration(
       expirationDate,
@@ -57,6 +58,9 @@ export function getItemStatus(
       if (daysUntilExpiration <= EXPIRING_SOON_DAYS_THRESHOLD) return 'warning'; // Expiring soon
     }
   }
+
+  // If marked as enough, treat as ok (unless expired)
+  if (markedAsEnough) return 'ok';
 
   // Check quantity
   if (currentQuantity === 0) return 'critical';
@@ -75,6 +79,7 @@ export function calculateItemStatus(item: InventoryItem): ItemStatus {
     item.recommendedQuantity,
     item.expirationDate,
     item.neverExpires,
+    item.markedAsEnough,
   );
 }
 

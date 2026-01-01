@@ -182,6 +182,10 @@ export function Inventory({
     }
   };
 
+  const handleMarkAsEnough = (itemId: string) => {
+    updateItem(itemId, { markedAsEnough: true });
+  };
+
   const handleEditItem = (item: InventoryItem) => {
     setEditingItem(item);
     // If item has a template, set it so weight/calorie calculations work
@@ -328,7 +332,11 @@ export function Inventory({
             onDisableRecommended={handleDisableRecommendedItem}
           />
         )}
-        <ItemList items={filteredItems} onItemClick={handleEditItem} />
+        <ItemList
+          items={filteredItems}
+          onItemClick={handleEditItem}
+          onMarkAsEnough={handleMarkAsEnough}
+        />
       </div>
 
       {/* Add/Edit Item Modal */}

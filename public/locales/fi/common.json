@@ -283,6 +283,9 @@
     "confirmDelete": "Haluatko varmasti poistaa tämän tuotteen?",
     "addToInventory": "Lisää varastoon",
     "disableRecommended": "Älä suosittele tätä tuotetta",
+    "markAsEnough": "Merkitse riittäväksi",
+    "markedAsEnough": "Merkitty riittäväksi",
+    "markedAsEnoughNotice": "Tämä tuote on merkitty riittäväksi",
     "filter": {
       "status": "Suodata tilalla",
       "allStatuses": "Kaikki tilat"

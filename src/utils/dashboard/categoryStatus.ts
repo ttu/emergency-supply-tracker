@@ -201,6 +201,9 @@ export function calculateCategoryShortages(
       return false;
     });
 
+    // If any matching item is marked as enough, treat as having met the requirement
+    const hasMarkedAsEnough = matchingItems.some((item) => item.markedAsEnough);
+
     const actualQty = matchingItems.reduce(
       (sum, item) => sum + item.quantity,
       0,
@@ -209,11 +212,13 @@ export function calculateCategoryShortages(
     // Calculate calories for food items
     if (isFoodCategory && recItem.caloriesPerUnit) {
       // Get calories from inventory items (use template value as fallback)
+      // Always use actual quantities, not inflated to recommended
       const itemCalories = matchingItems.reduce((sum, item) => {
         const calsPerUnit =
           item.caloriesPerUnit ?? recItem.caloriesPerUnit ?? 0;
         return sum + item.quantity * calsPerUnit;
       }, 0);
+
       totalActualCalories += itemCalories;
     }
 
@@ -222,7 +227,9 @@ export function calculateCategoryShortages(
     // Track unique units and item types
     uniqueUnits.add(recItem.unit);
     totalItemTypes++;
-    if (actualQty >= recommendedQty) {
+    // Item is fulfilled if quantity is enough OR if marked as enough
+    // (markedAsEnough means user considers their actual quantity sufficient)
+    if (actualQty >= recommendedQty || hasMarkedAsEnough) {
       itemTypesFulfilled++;
     }
 
@@ -233,10 +240,12 @@ export function calculateCategoryShortages(
     );
 
     // Add to totals
+    // Always use actual quantities - markedAsEnough only affects requirement satisfaction, not totals
     totalActual += actualQty;
     totalNeeded += recommendedQty;
 
-    if (missing > 0) {
+    // Only add to shortages if not marked as enough
+    if (missing > 0 && !hasMarkedAsEnough) {
       shortages.push({
         itemId: recItem.id,
         itemName: recItem.i18nKey,

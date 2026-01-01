@@ -283,6 +283,9 @@
     "confirmDelete": "Are you sure you want to delete this item?",
     "addToInventory": "Add to inventory",
     "disableRecommended": "Don't recommend this item",
+    "markAsEnough": "Mark as enough",
+    "markedAsEnough": "Marked as enough",
+    "markedAsEnoughNotice": "This item is marked as sufficient",
     "filter": {
       "status": "Filter by status",
       "allStatuses": "All Statuses"

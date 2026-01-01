@@ -6,12 +6,14 @@ import styles from './ItemList.module.css';
 export interface ItemListProps {
   items: InventoryItem[];
   onItemClick?: (item: InventoryItem) => void;
+  onMarkAsEnough?: (itemId: string) => void;
   emptyMessage?: string;
 }
 
 export const ItemList = ({
   items,
   onItemClick,
+  onMarkAsEnough,
   emptyMessage,
 }: ItemListProps) => {
   const { t } = useTranslation();
@@ -34,6 +36,7 @@ export const ItemList = ({
           key={item.id}
           item={item}
           onClick={onItemClick ? () => onItemClick(item) : undefined}
+          onMarkAsEnough={onMarkAsEnough}
         />
       ))}
     </div>
