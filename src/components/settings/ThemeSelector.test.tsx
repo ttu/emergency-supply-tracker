@@ -24,15 +24,21 @@ describe('ThemeSelector', () => {
     expect(screen.getByLabelText('settings.theme.label')).toBeInTheDocument();
   });
 
-  it('should display light and dark options', () => {
+  it('should display all theme options', () => {
     renderWithProviders(<ThemeSelector />);
     const select = screen.getByRole('combobox');
     expect(select).toBeInTheDocument();
 
     const options = screen.getAllByRole('option');
-    expect(options).toHaveLength(2);
+    expect(options).toHaveLength(8);
     expect(screen.getByText('settings.theme.light')).toBeInTheDocument();
     expect(screen.getByText('settings.theme.dark')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.midnight')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.ocean')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.sunset')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.forest')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.lavender')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.minimal')).toBeInTheDocument();
   });
 
   it('should change theme when option is selected', () => {

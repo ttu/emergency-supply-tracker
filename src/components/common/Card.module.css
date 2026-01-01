@@ -29,11 +29,15 @@
   border: none;
   box-shadow: var(--shadow-md);
   background-color: var(--color-surface);
+  transition:
+    box-shadow var(--transition-base),
+    transform var(--transition-fast),
+    border-color var(--transition-base);
 }
 
 .elevated:hover {
   box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 .padding-none {
