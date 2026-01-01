@@ -65,14 +65,14 @@
 .shortage {
   margin-bottom: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--color-critical-light, rgba(220, 38, 38, 0.1));
+  background-color: var(--color-error-alpha);
   border-radius: var(--radius-md);
-  border-left: 3px solid var(--color-critical);
+  border-left: 3px solid var(--color-error);
 }
 
 .shortageText {
   font-size: var(--font-size-sm);
-  color: var(--color-critical);
+  color: var(--color-error);
   font-weight: var(--font-weight-medium);
 }
 
@@ -98,7 +98,7 @@
 }
 
 .progressCritical {
-  background-color: var(--color-critical);
+  background-color: var(--color-error);
 }
 
 @media (max-width: 768px) {

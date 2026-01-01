@@ -23,21 +23,27 @@
   border-radius: var(--radius-md);
   border-left: 4px solid;
   box-shadow: var(--shadow-sm);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid;
 }
 
 .alertCritical {
-  background-color: #ffebee;
-  border-left-color: var(--color-critical);
+  background-color: var(--color-error-alpha);
+  border-left-color: var(--color-error);
+  border-color: var(--color-error-alpha);
 }
 
 .alertWarning {
-  background-color: #fff8e1;
+  background-color: var(--color-warning-alpha);
   border-left-color: var(--color-warning);
+  border-color: var(--color-warning-alpha);
 }
 
 .alertInfo {
-  background-color: #e3f2fd;
+  background-color: var(--color-info-alpha);
   border-left-color: var(--color-info);
+  border-color: var(--color-info-alpha);
 }
 
 .content {
@@ -70,13 +76,18 @@
   cursor: pointer;
   padding: var(--spacing-xs);
   line-height: 1;
-  transition: color var(--transition-fast);
+  transition: all var(--transition-base);
   border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
 }
 
 .dismissButton:hover {
   color: var(--color-text);
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-surface-hover);
 }
 
 .dismissButton:focus-visible {
