@@ -80,6 +80,15 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
               <p>{t('landing.worksOffline.description')}</p>
             </div>
           </div>
+          <div className={styles.sellingPoint}>
+            <span className={styles.sellingPointIcon} aria-hidden="true">
+              &#128187;
+            </span>
+            <div>
+              <strong>{t('landing.openSource.title')}</strong>
+              <p>{t('landing.openSource.description')}</p>
+            </div>
+          </div>
           <div className={`${styles.sellingPoint} ${styles.comingSoon}`}>
             <span className={styles.sellingPointIcon} aria-hidden="true">
               &#9729;

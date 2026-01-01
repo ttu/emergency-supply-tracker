@@ -25,6 +25,10 @@
       "title": "Cloud Sync (Coming Soon)",
       "description": "Optional sync to your own cloud provider"
     },
+    "openSource": {
+      "title": "Open Source",
+      "description": "Transparent code you can inspect and contribute to"
+    },
     "features": {
       "track": {
         "title": "Track Supplies",
