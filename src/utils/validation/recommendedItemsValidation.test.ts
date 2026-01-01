@@ -511,6 +511,76 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({ code: 'INVALID_NAME_VALUE' }),
       );
     });
+
+    it('warns about invalid capacityMah (negative)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ capacityMah: -1000 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].capacityMah',
+        }),
+      );
+    });
+
+    it('warns about invalid capacityMah (zero)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ capacityMah: 0 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].capacityMah',
+        }),
+      );
+    });
+
+    it('warns about invalid capacityWh (negative)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ capacityWh: -50 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].capacityWh',
+        }),
+      );
+    });
+
+    it('warns about invalid capacityWh (zero)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ capacityWh: 0 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].capacityWh',
+        }),
+      );
+    });
+
+    it('accepts valid capacityMah and capacityWh values', () => {
+      const file = createValidFile({
+        items: [createValidItem({ capacityMah: 10000, capacityWh: 37 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
+    });
   });
 });
 
@@ -588,6 +658,8 @@ describe('convertToRecommendedItemDefinitions', () => {
         caloriesPer100g: 200,
         caloriesPerUnit: 1000,
         requiresWaterLiters: 0.5,
+        capacityMah: 10000,
+        capacityWh: 37,
       },
     ];
     const result = convertToRecommendedItemDefinitions(items);
@@ -598,5 +670,7 @@ describe('convertToRecommendedItemDefinitions', () => {
     expect(result[0].caloriesPer100g).toBe(200);
     expect(result[0].caloriesPerUnit).toBe(1000);
     expect(result[0].requiresWaterLiters).toBe(0.5);
+    expect(result[0].capacityMah).toBe(10000);
+    expect(result[0].capacityWh).toBe(37);
   });
 });

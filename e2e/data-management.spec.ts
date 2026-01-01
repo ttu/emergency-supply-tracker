@@ -237,9 +237,9 @@ test.describe('Data Management', () => {
     await expect(page.locator('text=Test Custom Kit')).toBeVisible();
     await expect(page.locator('text=2 items')).toBeVisible();
 
-    // Verify Reset to Default button appears
+    // Verify Reset to Default button appears (use data-testid to avoid matching NutritionSettings reset)
     await expect(
-      page.locator('button', { hasText: 'Reset to Default' }),
+      page.getByTestId('reset-recommendations-button'),
     ).toBeVisible();
   });
 
@@ -310,8 +310,8 @@ test.describe('Data Management', () => {
       await dialog.accept();
     });
 
-    // Click Reset to Default button
-    const resetButton = page.locator('button', { hasText: 'Reset to Default' });
+    // Click Reset to Default button (use data-testid to avoid matching NutritionSettings reset)
+    const resetButton = page.getByTestId('reset-recommendations-button');
     await expect(resetButton).toBeVisible();
     await resetButton.click();
 

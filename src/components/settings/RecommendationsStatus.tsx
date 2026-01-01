@@ -41,7 +41,11 @@ export function RecommendationsStatus() {
       </div>
 
       {isUsingCustomRecommendations && (
-        <Button variant="secondary" onClick={handleReset}>
+        <Button
+          variant="secondary"
+          onClick={handleReset}
+          data-testid="reset-recommendations-button"
+        >
           {t('settings.recommendations.reset.button')}
         </Button>
       )}

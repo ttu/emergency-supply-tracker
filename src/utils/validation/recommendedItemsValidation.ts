@@ -313,6 +313,30 @@ function validateItem(
       code: 'INVALID_OPTIONAL',
     });
   }
+
+  // Optional: capacityMah (battery capacity in milliamp-hours)
+  if (
+    i.capacityMah !== undefined &&
+    (typeof i.capacityMah !== 'number' || i.capacityMah <= 0)
+  ) {
+    warnings.push({
+      path: `${path}.capacityMah`,
+      message: 'capacityMah should be a positive number',
+      code: 'INVALID_OPTIONAL',
+    });
+  }
+
+  // Optional: capacityWh (battery capacity in watt-hours)
+  if (
+    i.capacityWh !== undefined &&
+    (typeof i.capacityWh !== 'number' || i.capacityWh <= 0)
+  ) {
+    warnings.push({
+      path: `${path}.capacityWh`,
+      message: 'capacityWh should be a positive number',
+      code: 'INVALID_OPTIONAL',
+    });
+  }
 }
 
 export function validateRecommendedItemsFile(data: unknown): ValidationResult {

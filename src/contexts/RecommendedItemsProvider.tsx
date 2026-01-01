@@ -74,9 +74,7 @@ export function RecommendedItemsProvider({
     const data = getAppData() || createDefaultAppData();
     data.customRecommendedItems = customRecommendedItems;
     // Clear disabled items when recommendations change (IDs may no longer exist)
-    if (customRecommendedItems !== null) {
-      data.disabledRecommendedItems = [];
-    }
+    data.disabledRecommendedItems = [];
     data.lastModified = new Date().toISOString();
     saveAppData(data);
   }, [customRecommendedItems]);

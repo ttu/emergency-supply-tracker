@@ -3,6 +3,7 @@ import { Inventory, InventoryProps } from './Inventory';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
+import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
 
 const meta: Meta<InventoryProps> = {
   title: 'Pages/Inventory',
@@ -14,9 +15,11 @@ const meta: Meta<InventoryProps> = {
     (Story) => (
       <SettingsProvider>
         <HouseholdProvider>
-          <InventoryProvider>
-            <Story />
-          </InventoryProvider>
+          <RecommendedItemsProvider>
+            <InventoryProvider>
+              <Story />
+            </InventoryProvider>
+          </RecommendedItemsProvider>
         </HouseholdProvider>
       </SettingsProvider>
     ),

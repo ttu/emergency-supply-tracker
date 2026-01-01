@@ -3,6 +3,7 @@ import { Settings } from './Settings';
 import { SettingsProvider } from '../contexts/SettingsProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { InventoryProvider } from '../contexts/InventoryProvider';
+import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
 
 const meta = {
   title: 'Pages/Settings',
@@ -14,9 +15,11 @@ const meta = {
     (Story) => (
       <SettingsProvider>
         <HouseholdProvider>
-          <InventoryProvider>
-            <Story />
-          </InventoryProvider>
+          <RecommendedItemsProvider>
+            <InventoryProvider>
+              <Story />
+            </InventoryProvider>
+          </RecommendedItemsProvider>
         </HouseholdProvider>
       </SettingsProvider>
     ),
