@@ -7,7 +7,15 @@ export function ThemeSelector() {
   const { settings, updateSettings } = useSettings();
 
   const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const theme = e.target.value as 'light' | 'dark';
+    const theme = e.target.value as
+      | 'light'
+      | 'dark'
+      | 'midnight'
+      | 'ocean'
+      | 'sunset'
+      | 'forest'
+      | 'lavender'
+      | 'minimal';
     updateSettings({ theme });
 
     // Apply theme to document
@@ -31,6 +39,12 @@ export function ThemeSelector() {
       >
         <option value="light">{t('settings.theme.light')}</option>
         <option value="dark">{t('settings.theme.dark')}</option>
+        <option value="midnight">{t('settings.theme.midnight')}</option>
+        <option value="ocean">{t('settings.theme.ocean')}</option>
+        <option value="sunset">{t('settings.theme.sunset')}</option>
+        <option value="forest">{t('settings.theme.forest')}</option>
+        <option value="lavender">{t('settings.theme.lavender')}</option>
+        <option value="minimal">{t('settings.theme.minimal')}</option>
       </select>
       <p className={styles.description}>{t('settings.theme.description')}</p>
 

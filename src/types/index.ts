@@ -50,7 +50,16 @@ export interface HouseholdConfig {
 // User Settings
 export interface UserSettings {
   language: 'en' | 'fi';
-  theme: 'light' | 'dark' | 'auto';
+  theme:
+    | 'light'
+    | 'dark'
+    | 'auto'
+    | 'midnight'
+    | 'ocean'
+    | 'sunset'
+    | 'forest'
+    | 'lavender'
+    | 'minimal';
   highContrast: boolean;
   advancedFeatures: {
     calorieTracking: boolean;

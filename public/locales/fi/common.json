@@ -166,7 +166,13 @@
       "label": "Teema",
       "description": "Valitse värimaailma",
       "light": "Vaalea",
-      "dark": "Tumma"
+      "dark": "Tumma",
+      "midnight": "Keskiyö",
+      "ocean": "Valtameri",
+      "sunset": "Auringonlasku",
+      "forest": "Metsä",
+      "lavender": "Laventeli",
+      "minimal": "Minimaalinen"
     },
     "household": {
       "adults": "Aikuiset",

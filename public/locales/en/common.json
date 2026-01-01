@@ -166,7 +166,13 @@
       "label": "Theme",
       "description": "Choose your preferred color scheme",
       "light": "Light",
-      "dark": "Dark"
+      "dark": "Dark",
+      "midnight": "Midnight",
+      "ocean": "Ocean",
+      "sunset": "Sunset",
+      "forest": "Forest",
+      "lavender": "Lavender",
+      "minimal": "Minimal"
     },
     "household": {
       "adults": "Adults",
