@@ -270,6 +270,7 @@
     "noItems": "Ei tuotteita",
     "recommended": "Suositeltu",
     "showLess": "Näytä vähemmän",
+    "showRecommended": "Näytä {{count}} suositeltua tuotetta",
     "expired": "Vanhentunut",
     "expiresIn": "Vanhenee {{days}} päivässä",
     "searchPlaceholder": "Hae tuotteita...",

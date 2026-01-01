@@ -79,8 +79,6 @@ export const CategoryStatusSummary = ({
   };
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const maxVisibleItems = 3;
-  const hasOverflow = shortages.length > maxVisibleItems;
 
   const formatShortage = (shortage: CategoryShortage): string => {
     const itemName = t(shortage.itemName.replace('products.', ''), {
@@ -91,10 +89,10 @@ export const CategoryStatusSummary = ({
   };
 
   const getVisibleShortages = (): CategoryShortage[] => {
-    if (isExpanded || !hasOverflow) {
+    if (isExpanded) {
       return shortages;
     }
-    return shortages.slice(0, maxVisibleItems);
+    return [];
   };
 
   return (
@@ -155,7 +153,7 @@ export const CategoryStatusSummary = ({
                 </li>
               ))}
             </ul>
-            {hasOverflow && (
+            {shortages.length > 0 && (
               <button
                 type="button"
                 className={styles.expandButton}
@@ -163,7 +161,7 @@ export const CategoryStatusSummary = ({
               >
                 {isExpanded
                   ? t('inventory.showLess')
-                  : `+${shortages.length - maxVisibleItems}`}
+                  : t('inventory.showRecommended', { count: shortages.length })}
               </button>
             )}
           </div>
