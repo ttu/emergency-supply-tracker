@@ -10,10 +10,10 @@ The following thresholds are enforced locally via Jest configuration:
 
 | Metric     | Threshold |
 | ---------- | --------- |
-| Branches   | 70%       |
-| Functions  | 70%       |
-| Lines      | 70%       |
-| Statements | 70%       |
+| Branches   | 80%       |
+| Functions  | 80%       |
+| Lines      | 80%       |
+| Statements | 80%       |
 
 ### PR-Level Requirements (Codecov)
 

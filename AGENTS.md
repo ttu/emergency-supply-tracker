@@ -513,6 +513,58 @@ feat(types): add TypeScript interfaces for data models
 - Documentation → `docs`
 - Formatting → `style`
 
+### Creating PR from Cursor Worktree
+
+**Note:** This section applies specifically to Cursor worktrees. Worktrees created with the `new-worktree.sh` script work fine with standard git/gh commands.
+
+When working in a Cursor worktree, follow these steps to create a PR:
+
+1. **Ensure you're on a branch** (not detached HEAD):
+
+   ```bash
+   git checkout -b your-branch-name
+   ```
+
+2. **Stage, commit, and push your changes**:
+
+   ```bash
+   git add .
+   git commit -m "type: description"
+   git push -u origin your-branch-name
+   ```
+
+3. **Verify the remote branch has your commits**:
+
+   ```bash
+   git log --oneline origin/your-branch-name -1
+   # Should show your commit, not the base commit
+   ```
+
+4. **If the remote branch doesn't have your commit, push again**:
+
+   ```bash
+   git push origin your-branch-name --force-with-lease
+   ```
+
+5. **Create the PR using GitHub CLI with explicit flags**:
+
+   ```bash
+   gh pr create \
+     --repo owner/repo-name \
+     --title "type: description" \
+     --body "PR description" \
+     --base main \
+     --head your-branch-name
+   ```
+
+   **Important:** Always specify `--repo`, `--base`, and `--head` flags when working from a worktree, as the GitHub CLI may not correctly detect the branch relationship otherwise.
+
+**Alternative:** If the CLI fails, use the web interface:
+
+```
+https://github.com/owner/repo/pull/new/your-branch-name
+```
+
 ---
 
 ## Getting Help
