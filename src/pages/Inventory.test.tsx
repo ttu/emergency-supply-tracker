@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Inventory } from './Inventory';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
@@ -757,8 +758,16 @@ describe('Inventory Page - Mark as Enough', () => {
     jest.restoreAllMocks();
   });
 
-  it('should show mark as enough button in recommended list for item with low quantity', () => {
+  it('should show mark as enough button in recommended list for item with low quantity', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+
+    // First expand the recommended items (they are hidden by default)
+    const expandButton = screen.getByRole('button', {
+      name: /Show.*recommended/i,
+    });
+    await user.click(expandButton);
+
     // The recommended list should show the mark as enough button
     // Note: translation mock returns key as-is, so use the key
     const markButton = screen.getByRole('button', {
@@ -769,12 +778,19 @@ describe('Inventory Page - Mark as Enough', () => {
   });
 
   it('should call handleMarkAsEnough when mark button in recommended list is clicked', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+
+    // First expand the recommended items (they are hidden by default)
+    const expandButton = screen.getByRole('button', {
+      name: /Show.*recommended/i,
+    });
+    await user.click(expandButton);
 
     const markButton = screen.getByRole('button', {
       name: 'inventory.markAsEnough',
     });
-    fireEvent.click(markButton);
+    await user.click(markButton);
 
     // Wait for the update to complete
     await waitFor(() => {

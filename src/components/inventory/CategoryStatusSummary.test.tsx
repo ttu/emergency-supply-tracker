@@ -845,7 +845,8 @@ describe('CategoryStatusSummary', () => {
       missing: needed - actual,
     });
 
-    it('shows mark as enough button when matching item can be marked', () => {
+    it('shows mark as enough button when matching item can be marked', async () => {
+      const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
         id: 'item-1',
@@ -870,6 +871,12 @@ describe('CategoryStatusSummary', () => {
           items={[matchingItem]}
         />,
       );
+
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
 
       const markButton = screen.getByRole('button', {
         name: 'Mark as enough',
@@ -968,6 +975,12 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
       const markButton = screen.getByRole('button', {
         name: 'Mark as enough',
       });
@@ -977,7 +990,8 @@ describe('CategoryStatusSummary', () => {
       expect(onMarkAsEnough).toHaveBeenCalledWith('item-1');
     });
 
-    it('matches items by productTemplateId', () => {
+    it('matches items by productTemplateId', async () => {
+      const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
         id: 'item-1',
@@ -1004,12 +1018,19 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
       expect(
         screen.getByRole('button', { name: 'Mark as enough' }),
       ).toBeInTheDocument();
     });
 
-    it('matches items by normalized name', () => {
+    it('matches items by normalized name', async () => {
+      const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
         id: 'item-1',
@@ -1034,6 +1055,12 @@ describe('CategoryStatusSummary', () => {
           items={[matchingItem]}
         />,
       );
+
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
 
       expect(
         screen.getByRole('button', { name: 'Mark as enough' }),
