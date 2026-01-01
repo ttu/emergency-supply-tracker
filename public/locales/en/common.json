@@ -270,6 +270,7 @@
     "noItems": "No items found",
     "recommended": "Recommended",
     "showLess": "Show less",
+    "showRecommended": "Show {{count}} recommended items",
     "expired": "Expired",
     "expiresIn": "Expires in {{days}} days",
     "searchPlaceholder": "Search items...",

@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, expandRecommendedItems } from './fixtures';
 
 test.describe('Inventory Management', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -397,8 +397,8 @@ test.describe('Inventory Management', () => {
     // Click on Water category to see category status
     await page.click('button:has-text("Water")');
 
-    // Wait for category status summary to appear
-    await expect(page.locator('text=Recommended:')).toBeVisible();
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Should see action buttons (+ for add, × for disable) next to recommended items
     const addButtons = page.locator('button:has-text("+")');
@@ -414,8 +414,8 @@ test.describe('Inventory Management', () => {
     // Click on Water category
     await page.click('button:has-text("Water")');
 
-    // Wait for recommended items to appear
-    await expect(page.locator('text=Recommended:')).toBeVisible();
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Click the + button on the first recommended item
     const addButton = page.locator('button:has-text("+")').first();
@@ -438,8 +438,8 @@ test.describe('Inventory Management', () => {
     // Click on Water category
     await page.click('button:has-text("Water")');
 
-    // Wait for recommended items to appear
-    await expect(page.locator('text=Recommended:')).toBeVisible();
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Count initial recommended items
     const initialShortages = await page

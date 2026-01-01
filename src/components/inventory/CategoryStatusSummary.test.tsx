@@ -26,8 +26,18 @@ jest.mock('react-i18next', () => ({
         'status.warning': 'Warning',
         'status.critical': 'Critical',
         'dashboard.category.kcal': 'kcal',
+        'dashboard.category.items': 'items',
+        'dashboard.category.waterForPeople': 'Water for people',
+        'dashboard.category.waterForPreparation': 'Water for preparation',
+        'dashboard.category.totalWater': 'Total required',
+        'dashboard.category.recommendedCalories':
+          'Recommended {{count}} kcal more',
         'inventory.recommended': 'Recommended',
         'inventory.showLess': 'Show less',
+        'inventory.showRecommended': 'Show {{count}} recommended items',
+        'inventory.addToInventory': 'Add to inventory',
+        'inventory.disableRecommended': "Don't recommend this item",
+        liters: 'L',
       };
 
       const productTranslations: Record<string, string> = {
@@ -47,6 +57,19 @@ jest.mock('react-i18next', () => ({
       }
       if (options?.ns === 'products') {
         return productTranslations[key] || key;
+      }
+
+      // Handle "liters" key when called without namespace (used in water breakdown)
+      if (key === 'liters' && !options?.ns) {
+        return 'L';
+      }
+
+      // Handle interpolation for translations with {{count}}
+      if (key === 'inventory.showRecommended' && options?.count) {
+        return `Show ${options.count} recommended items`;
+      }
+      if (key === 'dashboard.category.recommendedCalories' && options?.count) {
+        return `Recommended ${options.count} kcal more`;
       }
 
       return commonTranslations[key] || key;
@@ -242,7 +265,7 @@ describe('CategoryStatusSummary', () => {
       }));
     };
 
-    it('displays missing items when shortages exist', () => {
+    it('hides missing items by default and shows expand button', () => {
       render(
         <CategoryStatusSummary
           categoryId="medical-health"
@@ -256,8 +279,15 @@ describe('CategoryStatusSummary', () => {
       );
 
       expect(screen.getByText('Recommended:')).toBeInTheDocument();
-      expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
-      expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
+      // Items should be hidden by default
+      expect(screen.queryByText('20 pcs Bandages')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('10 pcs Pain Relievers'),
+      ).not.toBeInTheDocument();
+      // Expand button should be visible
+      expect(
+        screen.getByRole('button', { name: 'Show 2 recommended items' }),
+      ).toBeInTheDocument();
     });
 
     it('does not show missing section when no shortages', () => {
@@ -276,7 +306,7 @@ describe('CategoryStatusSummary', () => {
       expect(screen.queryByText('Recommended:')).not.toBeInTheDocument();
     });
 
-    it('shows only first 3 items when more than 3 shortages', () => {
+    it('hides all items by default when shortages exist', () => {
       render(
         <CategoryStatusSummary
           categoryId="medical-health"
@@ -289,12 +319,12 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
-      // First 3 items should be visible
-      expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
-      expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
-      expect(screen.getByText('5 pcs Antiseptic')).toBeInTheDocument();
-
-      // Items 4-6 should not be visible initially
+      // All items should be hidden by default
+      expect(screen.queryByText('20 pcs Bandages')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('10 pcs Pain Relievers'),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText('5 pcs Antiseptic')).not.toBeInTheDocument();
       expect(screen.queryByText('1 pcs First Aid Kit')).not.toBeInTheDocument();
       expect(screen.queryByText('2 pcs Thermometer')).not.toBeInTheDocument();
       expect(
@@ -302,7 +332,7 @@ describe('CategoryStatusSummary', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('shows expand button with count when more than 3 shortages', () => {
+    it('shows expand button with count when shortages exist', () => {
       render(
         <CategoryStatusSummary
           categoryId="medical-health"
@@ -315,11 +345,13 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
-      // Should show "+3" button (6 items - 3 visible = 3 hidden)
-      expect(screen.getByRole('button', { name: '+3' })).toBeInTheDocument();
+      // Should show "Show 6 recommended items" button
+      expect(
+        screen.getByRole('button', { name: 'Show 6 recommended items' }),
+      ).toBeInTheDocument();
     });
 
-    it('does not show expand button when 3 or fewer shortages', () => {
+    it('shows expand button when any shortages exist', () => {
       render(
         <CategoryStatusSummary
           categoryId="medical-health"
@@ -332,7 +364,10 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
-      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+      // Should show expand button even with 3 or fewer items
+      expect(
+        screen.getByRole('button', { name: 'Show 3 recommended items' }),
+      ).toBeInTheDocument();
     });
 
     it('expands to show all items when expand button is clicked', async () => {
@@ -351,7 +386,9 @@ describe('CategoryStatusSummary', () => {
       );
 
       // Click expand button
-      await user.click(screen.getByRole('button', { name: '+3' }));
+      await user.click(
+        screen.getByRole('button', { name: 'Show 6 recommended items' }),
+      );
 
       // All items should now be visible
       expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
@@ -369,7 +406,7 @@ describe('CategoryStatusSummary', () => {
       ).toBeInTheDocument();
     });
 
-    it('collapses back to 3 items when show less is clicked', async () => {
+    it('collapses back to hiding all items when show less is clicked', async () => {
       const user = userEvent.setup();
 
       render(
@@ -385,21 +422,29 @@ describe('CategoryStatusSummary', () => {
       );
 
       // Expand
-      await user.click(screen.getByRole('button', { name: '+3' }));
+      await user.click(
+        screen.getByRole('button', { name: 'Show 6 recommended items' }),
+      );
 
       // Collapse
       await user.click(screen.getByRole('button', { name: 'Show less' }));
 
-      // Only first 3 should be visible again
-      expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
-      expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
-      expect(screen.getByText('5 pcs Antiseptic')).toBeInTheDocument();
-
-      // Items 4-6 should be hidden again
+      // All items should be hidden again
+      expect(screen.queryByText('20 pcs Bandages')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('10 pcs Pain Relievers'),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText('5 pcs Antiseptic')).not.toBeInTheDocument();
       expect(screen.queryByText('1 pcs First Aid Kit')).not.toBeInTheDocument();
+      expect(screen.queryByText('2 pcs Thermometer')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('45 pcs Prescription Medications'),
+      ).not.toBeInTheDocument();
 
-      // Button should show "+3" again
-      expect(screen.getByRole('button', { name: '+3' })).toBeInTheDocument();
+      // Button should show "Show 6 recommended items" again
+      expect(
+        screen.getByRole('button', { name: 'Show 6 recommended items' }),
+      ).toBeInTheDocument();
     });
 
     it('calls onAddToInventory when add button is clicked', async () => {
@@ -419,9 +464,15 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
       // Click the first add button (+)
       const addButtons = screen.getAllByRole('button', {
-        name: 'inventory.addToInventory',
+        name: 'Add to inventory',
       });
       await user.click(addButtons[0]);
 
@@ -445,9 +496,15 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
       // Click the first disable button (×)
       const disableButtons = screen.getAllByRole('button', {
-        name: 'inventory.disableRecommended',
+        name: "Don't recommend this item",
       });
       await user.click(disableButtons[0]);
 
@@ -466,9 +523,151 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
-      expect(
-        screen.getByText('5 / 10 dashboard.category.items'),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/5 \/ 10 items/)).toBeInTheDocument();
+    });
+
+    it('shows percentage when totalNeeded is 0', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="ok"
+          completionPercentage={100}
+          totalActual={0}
+          totalNeeded={0}
+          primaryUnit="liters"
+        />,
+      );
+
+      expect(screen.getByText('100%')).toBeInTheDocument();
+    });
+
+    it('formats shortage correctly with item name and unit', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(1)}
+        />,
+      );
+
+      // Expand to see the formatted shortage
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Check that the shortage is formatted correctly
+      expect(screen.getByText(/20 pcs Bandages/)).toBeInTheDocument();
+    });
+
+    it('shows only add button when onAddToInventory is provided', async () => {
+      const user = userEvent.setup();
+      const onAddToInventory = jest.fn();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(1)}
+          onAddToInventory={onAddToInventory}
+        />,
+      );
+
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Should have add button but not disable button
+      const addButtons = screen.getAllByRole('button', {
+        name: 'Add to inventory',
+      });
+      expect(addButtons.length).toBeGreaterThan(0);
+
+      const disableButtons = screen.queryAllByRole('button', {
+        name: "Don't recommend this item",
+      });
+      expect(disableButtons.length).toBe(0);
+    });
+
+    it('shows only disable button when onDisableRecommended is provided', async () => {
+      const user = userEvent.setup();
+      const onDisableRecommended = jest.fn();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(1)}
+          onDisableRecommended={onDisableRecommended}
+        />,
+      );
+
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Should have disable button but not add button
+      const disableButtons = screen.getAllByRole('button', {
+        name: "Don't recommend this item",
+      });
+      expect(disableButtons.length).toBeGreaterThan(0);
+
+      const addButtons = screen.queryAllByRole('button', {
+        name: 'Add to inventory',
+      });
+      expect(addButtons.length).toBe(0);
+    });
+
+    it('shows both buttons when both handlers are provided', async () => {
+      const user = userEvent.setup();
+      const onAddToInventory = jest.fn();
+      const onDisableRecommended = jest.fn();
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="critical"
+          completionPercentage={0}
+          totalActual={0}
+          totalNeeded={35}
+          primaryUnit="pieces"
+          shortages={createShortages(1)}
+          onAddToInventory={onAddToInventory}
+          onDisableRecommended={onDisableRecommended}
+        />,
+      );
+
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Should have both buttons
+      const addButtons = screen.getAllByRole('button', {
+        name: 'Add to inventory',
+      });
+      expect(addButtons.length).toBeGreaterThan(0);
+
+      const disableButtons = screen.getAllByRole('button', {
+        name: "Don't recommend this item",
+      });
+      expect(disableButtons.length).toBeGreaterThan(0);
     });
   });
 
@@ -489,7 +688,7 @@ describe('CategoryStatusSummary', () => {
       );
 
       expect(
-        screen.getByText('dashboard.category.recommendedCalories'),
+        screen.getByText(/Recommended.*6000.*kcal more/),
       ).toBeInTheDocument();
     });
 
@@ -509,6 +708,122 @@ describe('CategoryStatusSummary', () => {
       );
 
       expect(screen.queryByText(/recommendedCalories/)).not.toBeInTheDocument();
+    });
+
+    it('does not display missing calories when missingCalories is undefined', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="food"
+          status="ok"
+          completionPercentage={100}
+          totalActual={10}
+          totalNeeded={10}
+          primaryUnit="cans"
+          totalActualCalories={12000}
+          totalNeededCalories={12000}
+        />,
+      );
+
+      expect(screen.queryByText(/recommendedCalories/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('water breakdown display', () => {
+    it('displays water breakdown for water-beverages category', () => {
+      const { container } = render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={27}
+          totalNeeded={54}
+          primaryUnit="liters"
+          drinkingWaterNeeded={36}
+          preparationWaterNeeded={18}
+        />,
+      );
+
+      expect(screen.getByText(/Water for people/)).toBeInTheDocument();
+      expect(screen.getByText(/Water for preparation/)).toBeInTheDocument();
+      expect(screen.getByText(/Total required/)).toBeInTheDocument();
+      // Check that water breakdown section contains the values
+      const breakdownText = container.textContent || '';
+      expect(breakdownText).toContain('36');
+      expect(breakdownText).toContain('18');
+      expect(breakdownText).toContain('54');
+    });
+
+    it('displays water breakdown without preparation water when it is 0', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={27}
+          totalNeeded={36}
+          primaryUnit="liters"
+          drinkingWaterNeeded={36}
+          preparationWaterNeeded={0}
+        />,
+      );
+
+      expect(screen.getByText(/Water for people/)).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Water for preparation/),
+      ).not.toBeInTheDocument();
+      expect(screen.getByText(/Total required/)).toBeInTheDocument();
+    });
+
+    it('displays water breakdown without preparation water when it is undefined', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={27}
+          totalNeeded={36}
+          primaryUnit="liters"
+          drinkingWaterNeeded={36}
+        />,
+      );
+
+      expect(screen.getByText(/Water for people/)).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Water for preparation/),
+      ).not.toBeInTheDocument();
+      expect(screen.getByText(/Total required/)).toBeInTheDocument();
+    });
+
+    it('does not display water breakdown for non-water category', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="food"
+          status="ok"
+          completionPercentage={100}
+          totalActual={10}
+          totalNeeded={10}
+          primaryUnit="cans"
+          drinkingWaterNeeded={36}
+          preparationWaterNeeded={18}
+        />,
+      );
+
+      expect(screen.queryByText('Water for people')).not.toBeInTheDocument();
+    });
+
+    it('does not display water breakdown when drinkingWaterNeeded is undefined', () => {
+      render(
+        <CategoryStatusSummary
+          categoryId="water-beverages"
+          status="warning"
+          completionPercentage={50}
+          totalActual={27}
+          totalNeeded={54}
+          primaryUnit="liters"
+        />,
+      );
+
+      expect(screen.queryByText('Water for people')).not.toBeInTheDocument();
     });
   });
 });

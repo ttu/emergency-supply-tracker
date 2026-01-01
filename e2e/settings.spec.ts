@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, expandRecommendedItems } from './fixtures';
 
 test.describe('Settings', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -115,8 +115,8 @@ test.describe('Settings', () => {
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
 
-    // Wait for recommended items to appear
-    await expect(page.locator('text=Recommended:')).toBeVisible();
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Click the × button to disable the first recommended item
     const disableButton = page.locator('button:has-text("×")').first();
@@ -145,7 +145,9 @@ test.describe('Settings', () => {
     // First, disable an item from inventory
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
-    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Count initial recommended items
     const initialCount = await page
@@ -175,6 +177,9 @@ test.describe('Settings', () => {
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
 
+    // Expand recommended items again
+    await expandRecommendedItems(page);
+
     // Wait for list to update
     await page.waitForTimeout(300);
 
@@ -189,7 +194,9 @@ test.describe('Settings', () => {
     // First, disable multiple items from inventory
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
-    await expect(page.locator('text=Recommended:')).toBeVisible();
+
+    // Expand recommended items (they are hidden by default)
+    await expandRecommendedItems(page);
 
     // Count initial recommended items
     const initialCount = await page
@@ -217,6 +224,9 @@ test.describe('Settings', () => {
     // Navigate back to inventory
     await page.click('text=Inventory');
     await page.click('button:has-text("Water")');
+
+    // Expand recommended items again
+    await expandRecommendedItems(page);
 
     // Wait for list to update
     await page.waitForTimeout(300);
