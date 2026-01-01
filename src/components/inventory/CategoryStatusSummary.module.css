@@ -89,7 +89,7 @@
 
 .missingItem {
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-text);
   padding-left: var(--spacing-sm);
   position: relative;
   display: flex;
@@ -102,7 +102,7 @@
   content: '•';
   position: absolute;
   left: 0;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
 }
 
 .missingItemText {
