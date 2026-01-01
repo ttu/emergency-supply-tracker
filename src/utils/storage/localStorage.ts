@@ -5,6 +5,7 @@ import {
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '../constants';
+import { APP_VERSION } from '../version';
 
 const STORAGE_KEY = 'emergencySupplyTracker';
 
@@ -322,8 +323,39 @@ export function clearAppData(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
 
+/**
+ * Export data structure that extends AppData with export metadata.
+ */
+export interface ExportData extends AppData {
+  exportMetadata: {
+    exportedAt: string; // ISO 8601 timestamp
+    appVersion: string; // App version that created export
+    itemCount: number;
+    categoryCount: number;
+  };
+}
+
+/**
+ * Exports app data to JSON format with export metadata.
+ * Includes version information and export timestamp for tracking.
+ *
+ * @param data - AppData to export
+ * @returns JSON string with app data and export metadata
+ */
 export function exportToJSON(data: AppData): string {
-  return JSON.stringify(data, null, 2);
+  const exportData: ExportData = {
+    ...data,
+    exportMetadata: {
+      exportedAt: new Date().toISOString(),
+      appVersion: APP_VERSION,
+      itemCount: data.items?.length ?? 0,
+      categoryCount:
+        (data.customCategories?.length ?? 0) +
+        // Standard categories are always available (9 standard categories)
+        9,
+    },
+  };
+  return JSON.stringify(exportData, null, 2);
 }
 
 /**
