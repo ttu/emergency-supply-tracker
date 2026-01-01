@@ -170,4 +170,162 @@ describe('ItemCard', () => {
     render(<ItemCard item={itemWithoutCapacity} />);
     expect(screen.queryByText(/🔋/)).not.toBeInTheDocument();
   });
+
+  it('should display recommended quantity when provided', () => {
+    render(<ItemCard item={baseItem} />);
+    expect(screen.getByText(/\/ 28/)).toBeInTheDocument();
+  });
+
+  it('should not display recommended quantity when zero', () => {
+    const itemWithoutRecommended = {
+      ...baseItem,
+      recommendedQuantity: 0,
+    };
+    render(<ItemCard item={itemWithoutRecommended} />);
+    expect(screen.queryByText(/\/ 0/)).not.toBeInTheDocument();
+  });
+
+  it('should show mark as enough button when quantity is less than recommended', () => {
+    const onMarkAsEnough = jest.fn();
+    const itemWithLowQuantity = {
+      ...baseItem,
+      quantity: 10,
+      recommendedQuantity: 20,
+      markedAsEnough: false,
+    };
+    render(
+      <ItemCard item={itemWithLowQuantity} onMarkAsEnough={onMarkAsEnough} />,
+    );
+    expect(screen.getByText('inventory.markAsEnough')).toBeInTheDocument();
+  });
+
+  it('should not show mark as enough button when quantity meets recommended', () => {
+    const onMarkAsEnough = jest.fn();
+    const itemWithEnoughQuantity = {
+      ...baseItem,
+      quantity: 20,
+      recommendedQuantity: 20,
+      markedAsEnough: false,
+    };
+    render(
+      <ItemCard
+        item={itemWithEnoughQuantity}
+        onMarkAsEnough={onMarkAsEnough}
+      />,
+    );
+    expect(
+      screen.queryByText('inventory.markAsEnough'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should not show mark as enough button when quantity is zero', () => {
+    const onMarkAsEnough = jest.fn();
+    const itemWithZeroQuantity = {
+      ...baseItem,
+      quantity: 0,
+      recommendedQuantity: 20,
+      markedAsEnough: false,
+    };
+    render(
+      <ItemCard item={itemWithZeroQuantity} onMarkAsEnough={onMarkAsEnough} />,
+    );
+    expect(
+      screen.queryByText('inventory.markAsEnough'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should not show mark as enough button when already marked as enough', () => {
+    const onMarkAsEnough = jest.fn();
+    const itemMarkedAsEnough = {
+      ...baseItem,
+      quantity: 10,
+      recommendedQuantity: 20,
+      markedAsEnough: true,
+    };
+    render(
+      <ItemCard item={itemMarkedAsEnough} onMarkAsEnough={onMarkAsEnough} />,
+    );
+    expect(
+      screen.queryByText('inventory.markAsEnough'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should call onMarkAsEnough when mark as enough button is clicked', () => {
+    const onMarkAsEnough = jest.fn();
+    const itemWithLowQuantity = {
+      ...baseItem,
+      quantity: 10,
+      recommendedQuantity: 20,
+      markedAsEnough: false,
+    };
+    render(
+      <ItemCard item={itemWithLowQuantity} onMarkAsEnough={onMarkAsEnough} />,
+    );
+
+    const markButton = screen.getByText('inventory.markAsEnough');
+    fireEvent.click(markButton);
+
+    expect(onMarkAsEnough).toHaveBeenCalledTimes(1);
+    expect(onMarkAsEnough).toHaveBeenCalledWith(baseItem.id);
+  });
+
+  it('should not call onClick when mark as enough button is clicked', () => {
+    const onClick = jest.fn();
+    const onMarkAsEnough = jest.fn();
+    const itemWithLowQuantity = {
+      ...baseItem,
+      quantity: 10,
+      recommendedQuantity: 20,
+      markedAsEnough: false,
+    };
+    render(
+      <ItemCard
+        item={itemWithLowQuantity}
+        onClick={onClick}
+        onMarkAsEnough={onMarkAsEnough}
+      />,
+    );
+
+    const markButton = screen.getByText('inventory.markAsEnough');
+    fireEvent.click(markButton);
+
+    expect(onMarkAsEnough).toHaveBeenCalledTimes(1);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('should display marked as enough badge when item is marked', () => {
+    const itemMarkedAsEnough = {
+      ...baseItem,
+      markedAsEnough: true,
+    };
+    render(<ItemCard item={itemMarkedAsEnough} />);
+    const badge = screen.getByTitle('inventory.markedAsEnough');
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent('✓');
+  });
+
+  it('should display marked as enough notice when item is marked', () => {
+    const itemMarkedAsEnough = {
+      ...baseItem,
+      markedAsEnough: true,
+    };
+    render(<ItemCard item={itemMarkedAsEnough} />);
+    expect(
+      screen.getByText('inventory.markedAsEnoughNotice'),
+    ).toBeInTheDocument();
+  });
+
+  it('should not display marked as enough badge when item is not marked', () => {
+    render(<ItemCard item={baseItem} />);
+    expect(
+      screen.queryByTitle('inventory.markedAsEnough'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should not display marked as enough notice when item is not marked', () => {
+    render(<ItemCard item={baseItem} />);
+    expect(
+      screen.queryByText('inventory.markedAsEnoughNotice'),
+    ).not.toBeInTheDocument();
+  });
 });
