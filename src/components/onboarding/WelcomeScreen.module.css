@@ -3,137 +3,184 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
+  background-color: var(--color-background);
+  padding: var(--spacing-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gradient overlay */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.05) 0%,
+    rgba(129, 140, 248, 0.03) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme='dark'] .container::before {
+  background: linear-gradient(
+    135deg,
+    rgba(129, 140, 248, 0.03) 0%,
+    rgba(99, 102, 241, 0.02) 100%
+  );
 }
 
 .content {
   max-width: 600px;
   width: 100%;
-  background-color: white;
-  border-radius: 12px;
-  padding: 3rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-xl);
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  color: #1f2937;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
 }
 
 .tagline {
-  font-size: 1.125rem;
-  color: #6b7280;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
 .languageSection {
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-xl);
 }
 
 .sellingPoints {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
 }
 
 .sellingPoint {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem;
-  background-color: #f0fdf4;
-  border-radius: 8px;
-  border: 1px solid #bbf7d0;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-success-alpha);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-base);
+}
+
+.sellingPoint:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
 }
 
 .sellingPoint strong {
   display: block;
-  font-size: 0.9375rem;
-  color: #166534;
-  margin-bottom: 0.25rem;
+  font-size: var(--font-size-md);
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-xs);
 }
 
 .sellingPoint p {
-  font-size: 0.8125rem;
-  color: #15803d;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
   margin: 0;
-  line-height: 1.4;
+  line-height: var(--line-height-relaxed);
 }
 
 .sellingPointIcon {
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   flex-shrink: 0;
-  margin-top: 0.125rem;
+  margin-top: var(--spacing-xs);
+  color: var(--color-success);
 }
 
 .comingSoon {
-  background-color: #fefce8;
-  border-color: #fef08a;
+  background-color: var(--color-warning-alpha);
+  border-color: var(--color-border);
 }
 
 .comingSoon strong {
-  color: #854d0e;
+  color: var(--color-warning);
 }
 
 .comingSoon p {
-  color: #a16207;
+  color: var(--color-text-secondary);
 }
 
 .features {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .feature {
-  padding: 1.5rem;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
+  padding: var(--spacing-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--color-primary);
+  transition: all var(--transition-base);
+}
+
+.feature:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
 }
 
 .feature h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-  color: #1f2937;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text);
 }
 
 .feature p {
-  font-size: 0.9375rem;
-  color: #6b7280;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
   margin: 0;
+  line-height: var(--line-height-normal);
 }
 
 .actions {
-  margin-top: 2rem;
+  margin-top: var(--spacing-xl);
 }
 
 @media (max-width: 640px) {
   .container {
-    padding: 1rem;
+    padding: var(--spacing-md);
   }
 
   .content {
-    padding: 2rem 1.5rem;
+    padding: var(--spacing-xl) var(--spacing-lg);
   }
 
   .title {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
   }
 
   .tagline {
-    font-size: 1rem;
+    font-size: var(--font-size-md);
   }
 
   .sellingPoints {

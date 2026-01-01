@@ -3,46 +3,78 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
+  background-color: var(--color-background);
+  padding: var(--spacing-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gradient overlay */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.05) 0%,
+    rgba(129, 140, 248, 0.03) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme='dark'] .container::before {
+  background: linear-gradient(
+    135deg,
+    rgba(129, 140, 248, 0.03) 0%,
+    rgba(99, 102, 241, 0.02) 100%
+  );
 }
 
 .content {
   max-width: 700px;
   width: 100%;
-  background-color: white;
-  border-radius: 12px;
-  padding: 3rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1;
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 0.5rem 0;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-sm) 0;
   text-align: center;
+  letter-spacing: -0.01em;
 }
 
 .subtitle {
-  font-size: 1rem;
-  color: #6b7280;
-  margin: 0 0 2rem 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-xl) 0;
   text-align: center;
 }
 
 .summaryCard {
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
-  background-color: #f9fafb;
-  border-radius: 8px;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
 .summaryItem {
@@ -50,33 +82,36 @@
 }
 
 .summaryNumber {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #667eea;
-  margin-bottom: 0.25rem;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
 }
 
 .summaryLabel {
-  font-size: 0.75rem;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  font-weight: var(--font-weight-medium);
 }
 
 .toggleButton {
   width: 100%;
-  padding: 0.75rem 1rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 1rem;
-  color: #667eea;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  color: var(--color-primary);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all var(--transition-base);
+  font-weight: var(--font-weight-medium);
 }
 
 .toggleButton:hover {
-  background-color: #f3f4f6;
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
 }
 
 .toggleButton:focus-visible {
@@ -85,13 +120,13 @@
 }
 
 .details {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
 }
 
 .categoryGroup {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 .categoryGroup:last-child {
@@ -99,10 +134,10 @@
 }
 
 .categoryTitle {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 0.5rem 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-sm) 0;
 }
 
 .itemList {
@@ -115,8 +150,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #e5e7eb;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .item:last-child {
@@ -124,44 +159,44 @@
 }
 
 .itemName {
-  font-size: 0.9375rem;
-  color: #1f2937;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
 }
 
 .itemQuantity {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #6b7280;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
   white-space: nowrap;
-  margin-left: 1rem;
+  margin-left: var(--spacing-md);
 }
 
 .info {
-  background-color: #f0f4ff;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
-  padding: 1rem;
-  margin-bottom: 2rem;
+  background-color: var(--color-info-alpha);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--color-info);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
 }
 
 .info p {
   margin: 0;
-  font-size: 0.9375rem;
-  color: #374151;
-  line-height: 1.5;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  line-height: var(--line-height-normal);
 }
 
 .freezerNote {
-  margin-top: 0.5rem !important;
-  padding-top: 0.5rem;
-  border-top: 1px solid #e5e7eb;
+  margin-top: var(--spacing-sm) !important;
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border);
   font-style: italic;
-  color: #6b7280 !important;
+  color: var(--color-text-secondary) !important;
 }
 
 .actions {
   display: flex;
-  gap: 1rem;
+  gap: var(--spacing-md);
   justify-content: center;
 }
 
@@ -171,24 +206,24 @@
 
 @media (max-width: 640px) {
   .container {
-    padding: 1rem;
+    padding: var(--spacing-md);
   }
 
   .content {
-    padding: 2rem 1.5rem;
+    padding: var(--spacing-xl) var(--spacing-lg);
   }
 
   .title {
-    font-size: 1.75rem;
+    font-size: var(--font-size-2xl);
   }
 
   .summary {
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+    gap: var(--spacing-md);
   }
 
   .summaryNumber {
-    font-size: 1.75rem;
+    font-size: var(--font-size-2xl);
   }
 
   .actions {
