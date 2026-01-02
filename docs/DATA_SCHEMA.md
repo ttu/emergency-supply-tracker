@@ -1,7 +1,7 @@
 # Data Schema
 
-> **Version:** 1.0.0
-> **Last Updated:** 2025-12-28
+> **Version:** 1.1.0
+> **Last Updated:** 2025-12-31
 > **Source of Truth:** `src/types/index.ts`
 
 This document describes the data structures used in the Emergency Supply Tracker application. All types are defined in TypeScript and stored in the browser's LocalStorage.
@@ -17,9 +17,10 @@ This document describes the data structures used in the Emergency Supply Tracker
 5. [Inventory Items](#inventory-items)
 6. [Product Templates](#product-templates)
 7. [Recommended Item Definitions](#recommended-item-definitions)
-8. [App Data (Root)](#app-data-root)
-9. [Standard Categories](#standard-categories)
-10. [Calculation Formulas](#calculation-formulas)
+8. [Custom Recommendations File](#custom-recommendations-file)
+9. [App Data (Root)](#app-data-root)
+10. [Standard Categories](#standard-categories)
+11. [Calculation Formulas](#calculation-formulas)
 
 ---
 
@@ -282,6 +283,85 @@ Items can scale based on:
 
 ---
 
+## Custom Recommendations File
+
+Users can import custom recommendations from JSON files to replace the built-in 70-item list. This enables country-specific or organization-specific recommendation sets.
+
+### LocalizedNames
+
+Multi-language name support for imported items:
+
+```typescript
+type LocalizedNames = Record<string, string>;
+// e.g., { en: "Drinking Water", fi: "Juomavesi", sv: "Dricksvatten" }
+```
+
+### ImportedRecommendedItem
+
+Structure for items in a custom recommendations file:
+
+```typescript
+interface ImportedRecommendedItem {
+  id: string; // Unique identifier
+  i18nKey?: string; // Built-in translation key (e.g., "products.bottled-water")
+  names?: LocalizedNames; // OR inline localized names
+  category: StandardCategoryId; // Category reference
+  baseQuantity: number; // Base amount for 1 person, 3 days
+  unit: Unit; // Measurement unit
+  scaleWithPeople: boolean; // Multiply by household size
+  scaleWithDays: boolean; // Multiply by duration
+  requiresFreezer?: boolean; // Only applicable if useFreezer
+  defaultExpirationMonths?: number; // Default shelf life
+  weightGramsPerUnit?: number; // Weight per unit for calorie calc
+  caloriesPer100g?: number; // Calories per 100g
+  caloriesPerUnit?: number; // Calories per unit (direct value)
+  capacityMah?: number; // Battery capacity in mAh
+  capacityWh?: number; // Battery capacity in Wh
+  requiresWaterLiters?: number; // Water needed for preparation
+}
+```
+
+### Notes
+
+- Items must have either `i18nKey` (for built-in translations) OR `names.en` (for inline names)
+- The `en` key in `names` is required as a fallback when using inline names
+- Language fallback chain: requested language → `en` → first available → item ID
+
+### RecommendedItemsFileMeta
+
+Metadata for a custom recommendations file:
+
+```typescript
+interface RecommendedItemsFileMeta {
+  name: string; // e.g., "Finnish Family Kit"
+  version: string; // e.g., "1.0.0"
+  description?: string; // Description of the recommendation set
+  source?: string; // e.g., "72tuntia.fi", URL
+  createdAt: string; // ISO timestamp
+  language?: 'en' | 'fi'; // Primary language of inline names
+}
+```
+
+### RecommendedItemsFile
+
+Complete structure for import/export:
+
+```typescript
+interface RecommendedItemsFile {
+  meta: RecommendedItemsFileMeta;
+  items: ImportedRecommendedItem[];
+}
+```
+
+### Sample Files
+
+Sample recommendation files are available in `public/samples/`:
+
+- `recommendations-template.json` - Minimal template with 4 example items
+- `recommendations-default.json` - Full 70 built-in items exported as JSON
+
+---
+
 ## App Data (Root)
 
 Root structure for all persisted application data:
@@ -296,11 +376,17 @@ interface AppData {
   customTemplates: ProductTemplate[]; // User's custom templates
   dismissedAlertIds: string[]; // Alert IDs that have been dismissed by the user
   disabledRecommendedItems: string[]; // Recommended item IDs that have been disabled by the user
+  customRecommendedItems?: RecommendedItemsFile | null; // Custom imported recommendations
   lastModified: string; // ISO timestamp
   lastBackupDate?: string; // ISO date of last export
   backupReminderDismissedUntil?: string; // ISO date (first of next month) - reminder hidden until this date
 }
 ```
+
+### Notes
+
+- `customRecommendedItems`: When `null` or `undefined`, the app uses the built-in 70-item recommendation list
+- `disabledRecommendedItems`: Cleared when custom recommendations are imported (IDs may no longer exist)
 
 ### Storage
 

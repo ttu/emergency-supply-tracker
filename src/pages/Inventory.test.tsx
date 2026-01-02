@@ -4,6 +4,7 @@ import { Inventory } from './Inventory';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
+import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
 import { RECOMMENDED_ITEMS } from '../data/recommendedItems';
 import { calculateRecommendedQuantity } from '../utils/calculations/household';
 import { calculateCategoryPreparedness } from '../utils/dashboard/preparedness';
@@ -16,6 +17,10 @@ import {
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
+    i18n: {
+      language: 'en',
+      changeLanguage: jest.fn(),
+    },
   }),
 }));
 
@@ -23,7 +28,9 @@ const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <SettingsProvider>
       <HouseholdProvider>
-        <InventoryProvider>{component}</InventoryProvider>
+        <RecommendedItemsProvider>
+          <InventoryProvider>{component}</InventoryProvider>
+        </RecommendedItemsProvider>
       </HouseholdProvider>
     </SettingsProvider>,
   );

@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useInventory } from '../hooks/useInventory';
 import { useHousehold } from '../hooks/useHousehold';
 import { useSettings } from '../hooks/useSettings';
+import { useRecommendedItems } from '../hooks/useRecommendedItems';
 import { STANDARD_CATEGORIES } from '../data/standardCategories';
-import { RECOMMENDED_ITEMS } from '../data/recommendedItems';
 import { CategoryNav } from '../components/inventory/CategoryNav';
 import { FilterBar } from '../components/inventory/FilterBar';
 import { ItemList } from '../components/inventory/ItemList';
@@ -45,7 +45,7 @@ export function Inventory({
   openAddModal = false,
   initialCategoryId,
 }: InventoryProps = {}) {
-  const { t } = useTranslation(['common', 'products']);
+  const { t, i18n } = useTranslation(['common', 'products']);
   const {
     items,
     addItem,
@@ -56,6 +56,7 @@ export function Inventory({
   } = useInventory();
   const { household } = useHousehold();
   const { settings } = useSettings();
+  const { recommendedItems, getItemName } = useRecommendedItems();
 
   // Build calculation options from user settings
   const calculationOptions: CategoryCalculationOptions = useMemo(
@@ -101,6 +102,7 @@ export function Inventory({
       items,
       household,
       disabledRecommendedItems,
+      recommendedItems,
       calculationOptions,
     );
   }, [
@@ -108,6 +110,7 @@ export function Inventory({
     items,
     household,
     disabledRecommendedItems,
+    recommendedItems,
     calculationOptions,
   ]);
 
@@ -193,7 +196,7 @@ export function Inventory({
     setEditingItem(item);
     // If item has a template, set it so weight/calorie calculations work
     if (item.productTemplateId) {
-      const template = RECOMMENDED_ITEMS.find(
+      const template = recommendedItems.find(
         (t) => t.id === item.productTemplateId,
       );
       setSelectedTemplate(template);
@@ -214,9 +217,10 @@ export function Inventory({
   const handleSelectTemplate = useCallback(
     (template: RecommendedItemDefinition) => {
       const recommendedQty = calculateRecommendedQuantity(template, household);
-      const templateName = t(template.i18nKey.replace('products.', ''), {
-        ns: 'products',
-      });
+      // For custom items (i18nKey starts with 'custom.'), use getItemName; otherwise translate
+      const templateName = template.i18nKey.startsWith('custom.')
+        ? getItemName(template, i18n.language)
+        : t(template.i18nKey.replace('products.', ''), { ns: 'products' });
 
       const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
         name: templateName,
@@ -242,7 +246,7 @@ export function Inventory({
       setShowTemplateModal(false);
       setShowAddModal(true);
     },
-    [household, t],
+    [household, t, getItemName, i18n.language],
   );
 
   const handleCancelForm = () => {
@@ -273,12 +277,12 @@ export function Inventory({
   // Handler for adding a recommended item to inventory from status summary
   const handleAddRecommendedToInventory = useCallback(
     (itemId: string) => {
-      const template = RECOMMENDED_ITEMS.find((rec) => rec.id === itemId);
+      const template = recommendedItems.find((rec) => rec.id === itemId);
       if (template) {
         handleSelectTemplate(template);
       }
     },
-    [handleSelectTemplate],
+    [handleSelectTemplate, recommendedItems],
   );
 
   // Handler for disabling a recommended item
@@ -287,6 +291,22 @@ export function Inventory({
       disableRecommendedItem(itemId);
     },
     [disableRecommendedItem],
+  );
+
+  // Resolver for custom item names in CategoryStatusSummary
+  const resolveItemName = useCallback(
+    (itemId: string, i18nKey: string): string | null => {
+      // Only resolve custom items (i18nKey starts with 'custom.')
+      if (!i18nKey.startsWith('custom.')) {
+        return null; // Let the component use translation
+      }
+      const item = recommendedItems.find((rec) => rec.id === itemId);
+      if (item) {
+        return getItemName(item, i18n.language);
+      }
+      return null;
+    },
+    [recommendedItems, getItemName, i18n.language],
   );
 
   return (
@@ -335,6 +355,7 @@ export function Inventory({
             onDisableRecommended={handleDisableRecommendedItem}
             onMarkAsEnough={handleMarkAsEnough}
             items={items}
+            resolveItemName={resolveItemName}
           />
         )}
         <ItemList items={filteredItems} onItemClick={handleEditItem} />
@@ -384,7 +405,7 @@ export function Inventory({
           title={t('inventory.selectTemplate')}
         >
           <TemplateSelector
-            templates={RECOMMENDED_ITEMS}
+            templates={recommendedItems}
             categories={STANDARD_CATEGORIES}
             onSelectTemplate={handleSelectTemplate}
             onSelectCustom={handleSelectCustomItem}

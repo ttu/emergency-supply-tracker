@@ -35,6 +35,8 @@ export interface CategoryStatusSummaryProps {
   onMarkAsEnough?: (itemId: string) => void;
   // Items to check if they can be marked as enough
   items?: InventoryItem[];
+  // Optional custom item name resolver for custom recommendations
+  resolveItemName?: (itemId: string, i18nKey: string) => string | null;
 }
 
 export const CategoryStatusSummary = ({
@@ -54,6 +56,7 @@ export const CategoryStatusSummary = ({
   onDisableRecommended,
   onMarkAsEnough,
   items = [],
+  resolveItemName,
 }: CategoryStatusSummaryProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
@@ -86,9 +89,14 @@ export const CategoryStatusSummary = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatShortage = (shortage: CategoryShortage): string => {
-    const itemName = t(shortage.itemName.replace('products.', ''), {
-      ns: 'products',
-    });
+    // Try custom resolver first (for custom recommendations with inline names)
+    let itemName = resolveItemName?.(shortage.itemId, shortage.itemName);
+    if (!itemName) {
+      // Fall back to translation lookup
+      itemName = t(shortage.itemName.replace('products.', ''), {
+        ns: 'products',
+      });
+    }
     const unitLabel = t(shortage.unit, { ns: 'units' });
     return `${shortage.missing} ${unitLabel} ${itemName}`;
   };

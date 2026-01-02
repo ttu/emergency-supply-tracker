@@ -3,6 +3,7 @@ import { Settings } from './Settings';
 import { SettingsProvider } from '../contexts/SettingsProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { InventoryProvider } from '../contexts/InventoryProvider';
+import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -15,7 +16,9 @@ const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <SettingsProvider>
       <HouseholdProvider>
-        <InventoryProvider>{component}</InventoryProvider>
+        <RecommendedItemsProvider>
+          <InventoryProvider>{component}</InventoryProvider>
+        </RecommendedItemsProvider>
       </HouseholdProvider>
     </SettingsProvider>,
   );

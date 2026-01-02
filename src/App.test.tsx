@@ -12,6 +12,10 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
+    i18n: {
+      language: 'en',
+      changeLanguage: jest.fn(),
+    },
   }),
   withTranslation: () => (Component: React.ComponentType) => {
     const WrappedComponent = (props: Record<string, unknown>) => {

@@ -3,6 +3,7 @@ import { Dashboard } from './Dashboard';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
+import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
 import { createMockInventoryItem } from '../utils/test/factories';
 
 const meta: Meta<typeof Dashboard> = {
@@ -12,9 +13,11 @@ const meta: Meta<typeof Dashboard> = {
     (Story) => (
       <SettingsProvider>
         <HouseholdProvider>
-          <InventoryProvider>
-            <Story />
-          </InventoryProvider>
+          <RecommendedItemsProvider>
+            <InventoryProvider>
+              <Story />
+            </InventoryProvider>
+          </RecommendedItemsProvider>
         </HouseholdProvider>
       </SettingsProvider>
     ),
@@ -80,9 +83,11 @@ export const WithItems: Story = {
       return (
         <SettingsProvider>
           <HouseholdProvider>
-            <InventoryProvider>
-              <Story />
-            </InventoryProvider>
+            <RecommendedItemsProvider>
+              <InventoryProvider>
+                <Story />
+              </InventoryProvider>
+            </RecommendedItemsProvider>
           </HouseholdProvider>
         </SettingsProvider>
       );
@@ -138,9 +143,11 @@ export const WithAlerts: Story = {
       return (
         <SettingsProvider>
           <HouseholdProvider>
-            <InventoryProvider>
-              <Story />
-            </InventoryProvider>
+            <RecommendedItemsProvider>
+              <InventoryProvider>
+                <Story />
+              </InventoryProvider>
+            </RecommendedItemsProvider>
           </HouseholdProvider>
         </SettingsProvider>
       );
@@ -203,9 +210,11 @@ export const WellPrepared: Story = {
       return (
         <SettingsProvider>
           <HouseholdProvider>
-            <InventoryProvider>
-              <Story />
-            </InventoryProvider>
+            <RecommendedItemsProvider>
+              <InventoryProvider>
+                <Story />
+              </InventoryProvider>
+            </RecommendedItemsProvider>
           </HouseholdProvider>
         </SettingsProvider>
       );

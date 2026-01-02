@@ -3,6 +3,7 @@ import { Dashboard } from './Dashboard';
 import { InventoryProvider } from '../contexts/InventoryProvider';
 import { HouseholdProvider } from '../contexts/HouseholdProvider';
 import { SettingsProvider } from '../contexts/SettingsProvider';
+import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
 import {
   createMockInventoryItem,
   createMockAppData,
@@ -76,7 +77,9 @@ const renderWithProviders = (ui: React.ReactElement) => {
   return render(
     <SettingsProvider>
       <HouseholdProvider>
-        <InventoryProvider>{ui}</InventoryProvider>
+        <RecommendedItemsProvider>
+          <InventoryProvider>{ui}</InventoryProvider>
+        </RecommendedItemsProvider>
       </HouseholdProvider>
     </SettingsProvider>,
   );
@@ -240,9 +243,11 @@ describe('Dashboard', () => {
     rerender(
       <SettingsProvider>
         <HouseholdProvider>
-          <InventoryProvider>
-            <Dashboard />
-          </InventoryProvider>
+          <RecommendedItemsProvider>
+            <InventoryProvider>
+              <Dashboard />
+            </InventoryProvider>
+          </RecommendedItemsProvider>
         </HouseholdProvider>
       </SettingsProvider>,
     );

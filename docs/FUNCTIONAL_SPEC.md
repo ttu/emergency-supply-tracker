@@ -1,7 +1,7 @@
 # Functional Specification - Emergency Supply Tracker
 
-> **Version:** 1.0.0
-> **Last Updated:** 2025-12-28
+> **Version:** 1.1.0
+> **Last Updated:** 2025-12-31
 > **Status:** Implementation In Progress
 
 ## Project Overview
@@ -172,6 +172,68 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 - AA batteries: 20 pieces per household
 - First aid kit: 1 per household
 - Toilet paper: 3 rolls per person (scales with days)
+
+#### Custom Recommendations
+
+Users can import custom recommendation sets from JSON files to replace the built-in 70-item list. This enables:
+
+- **Country-specific recommendations**: Different countries have different preparedness guidelines
+- **Organization recommendations**: Companies, municipalities, or groups can share standardized kits
+- **Personal customization**: Create and share custom recommendation sets
+
+**Import Behavior:**
+
+- Importing custom recommendations **replaces** all built-in items (not merge)
+- User's inventory items are preserved
+- Disabled recommendations list is cleared (IDs may no longer exist)
+
+**Export Behavior:**
+
+- Export current recommendations (built-in or custom) as JSON
+- Includes all item definitions with scaling rules and metadata
+
+**JSON Format:**
+
+```json
+{
+  "meta": {
+    "name": "Finnish Family Kit",
+    "version": "1.0.0",
+    "description": "Optional description",
+    "source": "https://example.com",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "language": "en"
+  },
+  "items": [
+    {
+      "id": "water-example",
+      "names": {
+        "en": "Drinking Water",
+        "fi": "Juomavesi",
+        "sv": "Dricksvatten"
+      },
+      "category": "water-beverages",
+      "baseQuantity": 3,
+      "unit": "liters",
+      "scaleWithPeople": true,
+      "scaleWithDays": true
+    }
+  ]
+}
+```
+
+**Multi-language Support:**
+
+- Items use `names` object with language codes as keys (e.g., `en`, `fi`, `sv`)
+- English (`en`) is required as fallback
+- Alternatively, items can use `i18nKey` to reference built-in translation keys
+
+**Sample Files:**
+
+Sample recommendation files are available in `public/samples/`:
+
+- `recommendations-template.json` - Minimal template with 4 example items
+- `recommendations-default.json` - Full 70 built-in items exported as JSON
 
 ---
 
@@ -368,6 +430,18 @@ A comprehensive help page with frequently asked questions and guidance.
   - Re-enable individual items
   - Re-enable all items at once
 
+**Recommended Items:**
+
+- `RecommendationsStatus`: Shows current recommendations source
+  - "Built-in (70 items)" or "Custom: {name} ({count} items)"
+  - Reset to default button (when using custom)
+- `ImportRecommendationsButton`: Import custom recommendations from JSON
+  - File upload
+  - Validation with error/warning display
+  - Preview before import
+- `ExportRecommendationsButton`: Export current recommendations as JSON
+- `DisabledRecommendations`: Toggle individual recommendations on/off
+
 **Data Management:**
 
 - `ExportButton`: Export data as JSON
@@ -448,6 +522,8 @@ Users can disable recommended items they don't need:
   "customCategories": [ ... ],
   "items": [ ... ],
   "customTemplates": [ ... ],
+  "customRecommendedItems": { ... } | null,
+  "disabledRecommendedItems": [ ... ],
   "lastModified": "2025-12-28T12:00:00Z"
 }
 ```
@@ -461,6 +537,31 @@ Users can disable recommended items they don't need:
 3. Preview data
 4. Replace existing data
 5. Reload application
+
+#### Export/Import Recommendations (JSON)
+
+Separate from full data export, users can export/import just the recommendation definitions.
+
+**Export:**
+
+- Downloads current recommendations (built-in or custom) as JSON
+- Includes metadata and all item definitions
+- Can be shared with others
+
+**Import:**
+
+1. Upload recommendations JSON file
+2. Validate structure and items
+3. Show validation errors/warnings
+4. Preview item count and metadata
+5. Confirm to replace current recommendations
+
+**Validation:**
+
+- Required fields: `meta.name`, `meta.version`, `meta.createdAt`, `items` array
+- Each item requires: `id`, `category`, `baseQuantity`, `unit`, `scaleWithPeople`, `scaleWithDays`
+- Each item requires either `i18nKey` or `names.en`
+- Warnings for empty name values, missing optional fields
 
 #### Export Shopping List
 
