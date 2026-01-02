@@ -331,6 +331,121 @@ const item = createMockInventoryItem({
 
 ---
 
+## Mutation Testing
+
+We use **Stryker** for mutation testing to validate that our tests actually catch bugs. Mutation testing helps identify weak tests by introducing small bugs (mutations) and checking if tests fail.
+
+### What is Mutation Testing?
+
+Mutation testing works by:
+
+1. **Mutating** the source code (changing operators, conditions, values)
+2. **Running tests** against each mutation
+3. **Measuring** how many mutations are "killed" (caught by tests)
+4. **Reporting** a mutation score (killed / total mutations)
+
+If tests pass on mutated code, it means the mutation wasn't caught - indicating a weak test.
+
+### Running Mutation Tests
+
+```bash
+# Full mutation test run (can take 10-30 minutes)
+npm run test:mutation
+
+# Incremental run (only tests changed files, faster)
+npm run test:mutation:incremental
+```
+
+### Configuration
+
+**File:** `stryker.config.js`
+
+- **Focus area**: Business logic in `src/utils/` (calculations, dashboard logic)
+- **Test runner**: Jest
+- **Thresholds**:
+  - High: 80% (excellent)
+  - Low: 70% (good)
+  - Break: 60% (minimum acceptable)
+
+### Interpreting Results
+
+After running mutation tests, Stryker generates:
+
+- **HTML report**: `reports/mutation/html/index.html` - Visual report showing all mutations
+- **Console output**: Summary with mutation score
+
+**Mutation Score Meaning:**
+
+- **80%+**: Excellent - tests are very effective
+- **70-79%**: Good - tests catch most bugs
+- **60-69%**: Acceptable - some gaps in test coverage
+- **<60%**: Poor - tests need improvement
+
+### What Gets Mutated
+
+Currently focused on critical business logic:
+
+- `src/utils/calculations/` - All calculation functions
+- `src/utils/dashboard/` - Dashboard calculation logic
+
+**Not mutated:**
+
+- Test files
+- Component files (can be added later)
+- Type definitions
+- Configuration files
+
+### Improving Mutation Scores
+
+When mutation score is low:
+
+1. **Review the HTML report** to see which mutations survived
+2. **Identify patterns** - Are certain operators/conditions not tested?
+3. **Add test cases** for edge cases and boundary conditions
+4. **Test error paths** - Mutations often survive in error handling code
+5. **Test all branches** - Ensure both true/false paths are covered
+
+### Example: Improving a Weak Test
+
+**Before (mutation score: 50%):**
+
+```typescript
+it('calculates multiplier', () => {
+  expect(calculateHouseholdMultiplier({ adults: 2, children: 1 })).toBe(2.75);
+});
+```
+
+**After (mutation score: 90%):**
+
+```typescript
+it('calculates multiplier for adults and children', () => {
+  expect(calculateHouseholdMultiplier({ adults: 2, children: 1 })).toBe(2.75);
+});
+
+it('handles zero children', () => {
+  expect(calculateHouseholdMultiplier({ adults: 2, children: 0 })).toBe(2.0);
+});
+
+it('handles zero adults', () => {
+  expect(calculateHouseholdMultiplier({ adults: 0, children: 1 })).toBe(0.75);
+});
+
+it('handles large household sizes', () => {
+  expect(calculateHouseholdMultiplier({ adults: 10, children: 5 })).toBe(13.75);
+});
+```
+
+### When to Run Mutation Tests
+
+- **Before major releases**: Ensure test quality
+- **After refactoring**: Verify tests still catch bugs
+- **When adding new business logic**: Validate new tests are effective
+- **Periodically**: Run incremental tests during development
+
+**Note:** Full mutation tests are slower (10-30 min) than regular tests. Use incremental mode during development.
+
+---
+
 ## Quality Gates
 
 ### Pre-commit
@@ -352,3 +467,4 @@ const item = createMockInventoryItem({
 - [Jest Documentation](https://jestjs.io/)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [Playwright Documentation](https://playwright.dev/)
+- [Stryker Mutation Testing](https://stryker-mutator.io/)
