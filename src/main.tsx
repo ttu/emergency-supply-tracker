@@ -6,6 +6,8 @@ import App from './App.tsx';
 import { InventoryProvider } from './contexts/InventoryProvider';
 import { HouseholdProvider } from './contexts/HouseholdProvider';
 import { SettingsProvider } from './contexts/SettingsProvider';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ThemeApplier } from './components/ThemeApplier';
 import * as serviceWorker from './utils/serviceWorker';
 
 createRoot(document.getElementById('root')!).render(
@@ -15,13 +17,17 @@ createRoot(document.getElementById('root')!).render(
         <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>
       }
     >
-      <SettingsProvider>
-        <HouseholdProvider>
-          <InventoryProvider>
-            <App />
-          </InventoryProvider>
-        </HouseholdProvider>
-      </SettingsProvider>
+      <ErrorBoundary>
+        <SettingsProvider>
+          <ThemeApplier>
+            <HouseholdProvider>
+              <InventoryProvider>
+                <App />
+              </InventoryProvider>
+            </HouseholdProvider>
+          </ThemeApplier>
+        </SettingsProvider>
+      </ErrorBoundary>
     </Suspense>
   </StrictMode>,
 );

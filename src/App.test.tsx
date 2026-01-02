@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 import { createMockAppData } from './utils/test/factories';
+import { SettingsProvider } from './contexts/SettingsProvider';
+import { HouseholdProvider } from './contexts/HouseholdProvider';
+import { InventoryProvider } from './contexts/InventoryProvider';
+import { ThemeApplier } from './components/ThemeApplier';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -32,6 +37,23 @@ const setupCompletedOnboarding = () => {
   localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
 };
 
+// Helper to render App with all required providers
+const renderApp = () => {
+  return render(
+    <ErrorBoundary>
+      <SettingsProvider>
+        <ThemeApplier>
+          <HouseholdProvider>
+            <InventoryProvider>
+              <App />
+            </InventoryProvider>
+          </HouseholdProvider>
+        </ThemeApplier>
+      </SettingsProvider>
+    </ErrorBoundary>,
+  );
+};
+
 describe('App', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -39,7 +61,7 @@ describe('App', () => {
   });
 
   it('renders navigation', () => {
-    render(<App />);
+    renderApp();
 
     expect(screen.getByText('navigation.dashboard')).toBeInTheDocument();
     expect(screen.getByText('navigation.inventory')).toBeInTheDocument();
@@ -47,14 +69,14 @@ describe('App', () => {
   });
 
   it('renders dashboard by default', () => {
-    render(<App />);
+    renderApp();
 
     // Dashboard should show quick actions
     expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
   });
 
   it('navigates to inventory when clicking inventory button', () => {
-    render(<App />);
+    renderApp();
 
     const inventoryButton = screen.getByText('navigation.inventory');
     fireEvent.click(inventoryButton);
@@ -68,7 +90,7 @@ describe('App', () => {
   });
 
   it('navigates to settings when clicking settings button', () => {
-    render(<App />);
+    renderApp();
 
     const settingsButton = screen.getByText('navigation.settings');
     fireEvent.click(settingsButton);
@@ -82,7 +104,7 @@ describe('App', () => {
   });
 
   it('navigates between pages', () => {
-    render(<App />);
+    renderApp();
 
     // Start on dashboard
     expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
@@ -101,7 +123,7 @@ describe('App', () => {
   });
 
   it('navigates to help page', () => {
-    render(<App />);
+    renderApp();
 
     const helpButton = screen.getByText('navigation.help');
     fireEvent.click(helpButton);
@@ -124,14 +146,14 @@ describe('App', () => {
     });
     localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
 
-    render(<App />);
+    renderApp();
 
     // Should show onboarding content (welcome screen or first step)
     expect(screen.getByText('app.title')).toBeInTheDocument();
   });
 
   it('has skip link for accessibility', () => {
-    render(<App />);
+    renderApp();
 
     const skipLink = screen.getByText('accessibility.skipToContent');
     expect(skipLink).toBeInTheDocument();
