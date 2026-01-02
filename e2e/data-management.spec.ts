@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, expandRecommendedItems } from './fixtures';
 
 test.describe('Data Management', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -183,8 +183,22 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.click('text=Settings');
 
-    // Verify default recommendations status shows "Built-in"
-    await expect(page.locator('text=Built-in')).toBeVisible();
+    // Wait for settings page to fully load - verify the main heading appears
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+
+    // Scroll to ensure all sections are visible
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(300);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(300);
+
+    // Look for the Recommended Items section
+    await expect(
+      page.getByRole('heading', { name: 'Recommended Items' }),
+    ).toBeVisible({ timeout: 5000 });
+
+    // Verify default status shows Built-in (X items)
+    await expect(page.getByText(/Built-in.*items/i)).toBeVisible();
 
     // Create custom recommendations file
     const customRecommendations = {
@@ -319,7 +333,7 @@ test.describe('Data Management', () => {
     await page.waitForTimeout(500);
 
     // Verify status shows Built-in again
-    await expect(page.locator('text=Built-in')).toBeVisible();
+    await expect(page.locator('text=/Built-in/')).toBeVisible();
 
     // Reset button should no longer be visible
     await expect(resetButton).not.toBeVisible();
@@ -367,14 +381,28 @@ test.describe('Data Management', () => {
 
     await page.waitForTimeout(500);
 
+    // Verify import was successful - status should show custom kit name
+    await expect(page.getByText('Multi-lang Kit')).toBeVisible();
+    await expect(page.getByText('1 items')).toBeVisible();
+
     // Navigate to Inventory and select Water & Beverages category
     await page.click('text=Inventory');
+
+    // Wait for inventory page to load
+    await expect(
+      page.getByRole('heading', { name: 'Inventory' }),
+    ).toBeVisible();
 
     // Click on Water & Beverages category tab
     await page.click('button:has-text("Water")');
 
+    // Expand recommended items to see the custom recommendation
+    await expandRecommendedItems(page);
+
     // Verify the custom recommendation name is displayed (English)
-    await expect(page.locator('text=Emergency Water Supply')).toBeVisible();
+    await expect(page.locator('text=Emergency Water Supply')).toBeVisible({
+      timeout: 5000,
+    });
 
     // Switch to Finnish
     await page.click('text=Settings');
@@ -383,6 +411,14 @@ test.describe('Data Management', () => {
     // Navigate back to Inventory
     await page.click('text=Varasto'); // Finnish for Inventory
     await page.click('button:has-text("Vesi")'); // Finnish for Water
+
+    // Expand recommended items again (in Finnish, use "Suositeltu:" instead of "Recommended:")
+    await expect(page.locator('text=Suositeltu:')).toBeVisible();
+    await page.waitForTimeout(500);
+    const expandButtonFi = page
+      .locator('text=Suositeltu:')
+      .locator('xpath=following::button[1]');
+    await expandButtonFi.click();
 
     // Verify Finnish name is displayed
     await expect(page.locator('text=Hätävesivarasto')).toBeVisible();
@@ -417,6 +453,6 @@ test.describe('Data Management', () => {
     await page.waitForTimeout(500);
 
     // Should still show Built-in (import failed)
-    await expect(page.locator('text=Built-in')).toBeVisible();
+    await expect(page.locator('text=/Built-in/')).toBeVisible();
   });
 });
