@@ -1,4 +1,11 @@
-import { useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+  useCallback,
+  useMemo,
+} from 'react';
 import type {
   RecommendedItemDefinition,
   RecommendedItemsFile,
@@ -69,8 +76,16 @@ export function RecommendedItemsProvider({
 
   const isUsingCustomRecommendations = customRecommendedItems !== null;
 
-  // Save to localStorage when customRecommendedItems changes
+  // Track whether this is the initial mount to prevent unnecessary localStorage writes
+  const isInitialMount = useRef(true);
+
+  // Save to localStorage when customRecommendedItems changes (skip initial mount)
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     const data = getAppData() || createDefaultAppData();
     data.customRecommendedItems = customRecommendedItems;
     // Clear disabled items when recommendations change (IDs may no longer exist)

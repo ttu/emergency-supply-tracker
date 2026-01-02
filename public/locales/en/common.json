@@ -250,7 +250,9 @@
       },
       "reset": {
         "button": "Reset to Default",
-        "confirm": "Reset to built-in recommendations? This will remove your custom recommendations."
+        "confirm": "Reset to built-in recommendations? This will remove your custom recommendations.",
+        "success": "Recommendations reset to default.",
+        "error": "Failed to reset recommendations. Please try again."
       }
     }
   },

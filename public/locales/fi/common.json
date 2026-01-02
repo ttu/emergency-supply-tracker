@@ -250,7 +250,9 @@
       },
       "reset": {
         "button": "Palauta Oletukset",
-        "confirm": "Palautetaanko sisäänrakennetut suositukset? Tämä poistaa mukautetut suosituksesi."
+        "confirm": "Palautetaanko sisäänrakennetut suositukset? Tämä poistaa mukautetut suosituksesi.",
+        "success": "Suositukset palautettu oletuksiin.",
+        "error": "Suositusten palautus epäonnistui. Yritä uudelleen."
       }
     }
   },

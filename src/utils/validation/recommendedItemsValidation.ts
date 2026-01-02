@@ -518,6 +518,32 @@ export function parseRecommendedItemsFile(json: string): RecommendedItemsFile {
   return data as RecommendedItemsFile;
 }
 
+/**
+ * Transforms ImportedRecommendedItem entries into the internal RecommendedItemDefinition shape.
+ *
+ * When an item lacks an i18nKey, a synthetic key is generated using the pattern `custom.${item.id}`.
+ * These synthetic keys are intended for lookup fallback only and may require special localization
+ * handling by callers (e.g., using inline names from the item instead of translation lookups).
+ *
+ * @param items - Array of ImportedRecommendedItem objects containing id, category, baseQuantity,
+ *   unit, scaling flags, and optional properties like names, i18nKey, and nutrition data.
+ * @returns Array of objects matching RecommendedItemDefinition shape with:
+ *   - id: Unique identifier for the item
+ *   - i18nKey: Translation key (provided or synthetic `custom.${id}`)
+ *   - category: StandardCategoryId for the item's category
+ *   - baseQuantity: Base quantity for calculations
+ *   - unit: Unit of measurement
+ *   - scaleWithPeople: Whether quantity scales with household size
+ *   - scaleWithDays: Whether quantity scales with supply duration
+ *   - requiresFreezer?: Whether item requires freezer storage
+ *   - defaultExpirationMonths?: Default shelf life in months
+ *   - weightGramsPerUnit?: Weight per unit for calculations
+ *   - caloriesPer100g?: Caloric density for nutrition calculations
+ *   - caloriesPerUnit?: Calories per unit for nutrition calculations
+ *   - capacityMah?: Battery capacity in mAh (for power banks)
+ *   - capacityWh?: Battery capacity in Wh (for power banks)
+ *   - requiresWaterLiters?: Water required for preparation
+ */
 export function convertToRecommendedItemDefinitions(
   items: ImportedRecommendedItem[],
 ): {
