@@ -274,7 +274,7 @@ export function createDefaultAppData(): AppData {
     },
     settings: {
       language: 'en',
-      theme: 'light',
+      theme: 'ocean',
       highContrast: false,
       advancedFeatures: {
         calorieTracking: false,
