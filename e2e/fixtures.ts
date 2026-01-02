@@ -45,6 +45,31 @@ export async function expandRecommendedItems(page: Page) {
   await expandButton.click();
 }
 
+// Helper to close any open modals
+// This ensures tests start with a clean state
+async function closeAnyOpenModals(page: Page) {
+  // Check if there's a modal open
+  const dialog = page.locator('[role="dialog"]').first();
+  const isOpen = await dialog.isVisible().catch(() => false);
+
+  if (isOpen) {
+    // Try pressing Escape to close
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+
+    // If still open, try clicking the close button
+    const stillOpen = await dialog.isVisible().catch(() => false);
+    if (stillOpen) {
+      const closeButton = page.locator('button[aria-label*="close" i]').first();
+      const closeVisible = await closeButton.isVisible().catch(() => false);
+      if (closeVisible) {
+        await closeButton.click({ timeout: 1000 }).catch(() => {});
+        await page.waitForTimeout(200);
+      }
+    }
+  }
+}
+
 // Extended test with setup helper
 export const test = base.extend<{
   setupApp: () => Promise<void>;
@@ -52,10 +77,14 @@ export const test = base.extend<{
   setupApp: async ({ page }, use) => {
     const setup = async () => {
       await page.goto('/');
+      // Close any modals that might be open
+      await closeAnyOpenModals(page);
       await page.evaluate((data) => {
         localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
       }, defaultAppData);
       await page.reload({ waitUntil: 'domcontentloaded' });
+      // Close any modals after reload
+      await closeAnyOpenModals(page);
     };
     // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(setup);

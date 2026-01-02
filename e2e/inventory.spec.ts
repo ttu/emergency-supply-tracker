@@ -411,11 +411,26 @@ test.describe('Inventory Management', () => {
     // Navigate to Inventory
     await page.click('text=Inventory');
 
+    // Ensure no modals are open
+    const dialog = page.locator('[role="dialog"]').first();
+    const hasModal = await dialog.isVisible().catch(() => false);
+    if (hasModal) {
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(200);
+    }
+
     // Click on Water category
     await page.click('button:has-text("Water")');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
+
+    // Ensure no modals are blocking before clicking
+    const hasModalBeforeClick = await dialog.isVisible().catch(() => false);
+    if (hasModalBeforeClick) {
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(200);
+    }
 
     // Click the + button on the first recommended item
     const addButton = page.locator('button:has-text("+")').first();
@@ -435,11 +450,26 @@ test.describe('Inventory Management', () => {
     // Navigate to Inventory
     await page.click('text=Inventory');
 
+    // Ensure no modals are open
+    const dialog = page.locator('[role="dialog"]').first();
+    const hasModal = await dialog.isVisible().catch(() => false);
+    if (hasModal) {
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(200);
+    }
+
     // Click on Water category
     await page.click('button:has-text("Water")');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
+
+    // Ensure no modals are blocking before clicking
+    const hasModalBeforeClick = await dialog.isVisible().catch(() => false);
+    if (hasModalBeforeClick) {
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(200);
+    }
 
     // Count initial recommended items
     const initialShortages = await page
