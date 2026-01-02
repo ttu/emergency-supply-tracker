@@ -1,15 +1,24 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../common/Button';
+import { ConfirmDialog } from '../common/ConfirmDialog';
+import { Toast } from '../common/Toast';
 import { useRecommendedItems } from '../../hooks/useRecommendedItems';
 import { parseRecommendedItemsFile } from '../../utils/validation/recommendedItemsValidation';
+import type { RecommendedItemsFile } from '../../types';
 import styles from './ImportRecommendationsButton.module.css';
 
 export function ImportRecommendationsButton() {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { importRecommendedItems } = useRecommendedItems();
+
   const [error, setError] = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingFile, setPendingFile] = useState<RecommendedItemsFile | null>(
+    null,
+  );
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,26 +48,9 @@ export function ImportRecommendationsButton() {
         const json = event.target?.result as string;
         const recommendedItemsFile = parseRecommendedItemsFile(json);
 
-        const itemCount = recommendedItemsFile.items.length;
-        const confirmMessage = t(
-          'settings.recommendations.import.confirmOverwrite',
-          {
-            name: recommendedItemsFile.meta.name,
-            count: itemCount,
-          },
-        );
-
-        if (window.confirm(confirmMessage)) {
-          const result = importRecommendedItems(recommendedItemsFile);
-          if (result.valid) {
-            alert(t('settings.recommendations.import.success'));
-          } else {
-            const errorMessages = result.errors
-              .map((e) => e.message)
-              .join('\n');
-            setError(errorMessages);
-          }
-        }
+        // Store the parsed file and show confirmation dialog
+        setPendingFile(recommendedItemsFile);
+        setShowConfirm(true);
       } catch (err) {
         console.error('Import recommendations error:', err);
         const message =
@@ -77,9 +69,50 @@ export function ImportRecommendationsButton() {
     }
   };
 
+  const handleConfirmImport = useCallback(() => {
+    if (!pendingFile) return;
+
+    try {
+      const result = importRecommendedItems(pendingFile);
+      if (result.valid) {
+        setShowSuccessToast(true);
+        setError(null);
+      } else {
+        const errorMessages = result.errors.map((e) => e.message).join('\n');
+        setError(errorMessages);
+      }
+    } catch (err) {
+      console.error('Import recommendations error:', err);
+      const message =
+        err instanceof Error
+          ? err.message
+          : t('settings.recommendations.import.error');
+      setError(message);
+    } finally {
+      setShowConfirm(false);
+      setPendingFile(null);
+    }
+  }, [pendingFile, importRecommendedItems, t]);
+
+  const handleCancelImport = useCallback(() => {
+    setShowConfirm(false);
+    setPendingFile(null);
+  }, []);
+
+  const handleCloseToast = useCallback(() => {
+    setShowSuccessToast(false);
+  }, []);
+
   const handleClick = () => {
     fileInputRef.current?.click();
   };
+
+  const confirmMessage = pendingFile
+    ? t('settings.recommendations.import.confirmOverwrite', {
+        name: pendingFile.meta.name,
+        count: pendingFile.items.length,
+      })
+    : '';
 
   return (
     <div className={styles.container}>
@@ -102,6 +135,22 @@ export function ImportRecommendationsButton() {
           {error}
         </p>
       )}
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title={t('settings.recommendations.import.button')}
+        message={confirmMessage}
+        confirmLabel={t('buttons.import')}
+        onConfirm={handleConfirmImport}
+        onCancel={handleCancelImport}
+      />
+
+      <Toast
+        isVisible={showSuccessToast}
+        message={t('settings.recommendations.import.success')}
+        variant="success"
+        onClose={handleCloseToast}
+      />
     </div>
   );
 }

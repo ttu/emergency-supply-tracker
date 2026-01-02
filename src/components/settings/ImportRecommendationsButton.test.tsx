@@ -43,8 +43,6 @@ describe('ImportRecommendationsButton', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    global.alert = jest.fn();
-    global.confirm = jest.fn(() => true);
     mockImportRecommendedItems.mockReturnValue({
       valid: true,
       errors: [],
@@ -89,7 +87,7 @@ describe('ImportRecommendationsButton', () => {
     expect(clickSpy).toHaveBeenCalled();
   });
 
-  it('should import valid file and show success alert', async () => {
+  it('should show confirmation dialog when valid file is selected', async () => {
     render(<ImportRecommendationsButton />);
 
     const fileInput = screen.getByLabelText(
@@ -103,17 +101,15 @@ describe('ImportRecommendationsButton', () => {
 
     await waitFor(() => {
       expect(mockParseRecommendedItemsFile).toHaveBeenCalled();
-      expect(global.confirm).toHaveBeenCalled();
-      expect(mockImportRecommendedItems).toHaveBeenCalledWith(validFile);
-      expect(global.alert).toHaveBeenCalledWith(
-        'settings.recommendations.import.success',
-      );
+      // Confirm dialog should be visible
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+      expect(
+        screen.getByText('settings.recommendations.import.confirmOverwrite'),
+      ).toBeInTheDocument();
     });
   });
 
-  it('should not import if user cancels confirmation', async () => {
-    (global.confirm as jest.Mock).mockReturnValue(false);
-
+  it('should import valid file and show success toast when confirmed', async () => {
     render(<ImportRecommendationsButton />);
 
     const fileInput = screen.getByLabelText(
@@ -126,9 +122,47 @@ describe('ImportRecommendationsButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(global.confirm).toHaveBeenCalled();
-      expect(mockImportRecommendedItems).not.toHaveBeenCalled();
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
     });
+
+    // Click the confirm button (Import)
+    const confirmButton = screen.getByText('buttons.import');
+    fireEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(mockImportRecommendedItems).toHaveBeenCalledWith(validFile);
+      // Success toast should be visible
+      expect(
+        screen.getByText('settings.recommendations.import.success'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should not import if user cancels confirmation', async () => {
+    render(<ImportRecommendationsButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.recommendations.import.button',
+    );
+    const file = new File([JSON.stringify(validFile)], 'test.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+
+    // Click the cancel button
+    const cancelButton = screen.getByText('buttons.cancel');
+    fireEvent.click(cancelButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    });
+
+    expect(mockImportRecommendedItems).not.toHaveBeenCalled();
   });
 
   it('should display error when import returns validation errors', async () => {
@@ -148,6 +182,14 @@ describe('ImportRecommendationsButton', () => {
     });
 
     fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+
+    // Click the confirm button
+    const confirmButton = screen.getByText('buttons.import');
+    fireEvent.click(confirmButton);
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
@@ -236,5 +278,31 @@ describe('ImportRecommendationsButton', () => {
     await waitFor(() => {
       expect(fileInput.value).toBe('');
     });
+  });
+
+  it('should close confirmation dialog with Escape key', async () => {
+    render(<ImportRecommendationsButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.recommendations.import.button',
+    );
+    const file = new File([JSON.stringify(validFile)], 'test.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+
+    // Press Escape to close the dialog
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    });
+
+    expect(mockImportRecommendedItems).not.toHaveBeenCalled();
   });
 });

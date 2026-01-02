@@ -229,13 +229,6 @@ test.describe('Data Management', () => {
       ],
     };
 
-    // Set up dialog handler for confirmation
-    page.once('dialog', async (dialog) => {
-      expect(dialog.message()).toContain('Test Custom Kit');
-      expect(dialog.message()).toContain('2 items');
-      await dialog.accept();
-    });
-
     // Import the custom recommendations
     const fileInput = page.getByLabel('Import Recommendations');
     await fileInput.setInputFiles({
@@ -243,6 +236,18 @@ test.describe('Data Management', () => {
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(customRecommendations)),
     });
+
+    // Wait for the confirmation dialog to appear
+    const confirmDialog = page.getByRole('alertdialog');
+    await expect(confirmDialog).toBeVisible();
+
+    // Verify dialog message contains expected info
+    await expect(
+      confirmDialog.getByText(/Test Custom Kit.*2 items/),
+    ).toBeVisible();
+
+    // Click the Import button to confirm
+    await confirmDialog.getByRole('button', { name: 'Import' }).click();
 
     // Wait for import to complete
     await page.waitForTimeout(500);
@@ -302,10 +307,6 @@ test.describe('Data Management', () => {
     };
 
     // Import custom recommendations
-    page.once('dialog', async (dialog) => {
-      await dialog.accept();
-    });
-
     const fileInput = page.getByLabel('Import Recommendations');
     await fileInput.setInputFiles({
       name: 'temp-recommendations.json',
@@ -313,21 +314,27 @@ test.describe('Data Management', () => {
       buffer: Buffer.from(JSON.stringify(customRecommendations)),
     });
 
+    // Wait for and confirm the import dialog
+    const importDialog = page.getByRole('alertdialog');
+    await expect(importDialog).toBeVisible();
+    await importDialog.getByRole('button', { name: 'Import' }).click();
+
     await page.waitForTimeout(500);
 
     // Verify custom recommendations are active
     await expect(page.locator('text=Temporary Kit')).toBeVisible();
 
-    // Set up dialog handler for reset confirmation
-    page.once('dialog', async (dialog) => {
-      expect(dialog.message()).toContain('Reset to built-in');
-      await dialog.accept();
-    });
-
     // Click Reset to Default button (use data-testid to avoid matching NutritionSettings reset)
     const resetButton = page.getByTestId('reset-recommendations-button');
     await expect(resetButton).toBeVisible();
     await resetButton.click();
+
+    // Wait for and confirm the reset dialog
+    const resetDialog = page.getByRole('alertdialog');
+    await expect(resetDialog).toBeVisible();
+
+    // Find the confirm button in the reset dialog (it uses the same label as the button)
+    await resetDialog.getByRole('button', { name: /reset/i }).click();
 
     // Wait for reset to complete
     await page.waitForTimeout(500);
@@ -368,10 +375,6 @@ test.describe('Data Management', () => {
       ],
     };
 
-    page.once('dialog', async (dialog) => {
-      await dialog.accept();
-    });
-
     const fileInput = page.getByLabel('Import Recommendations');
     await fileInput.setInputFiles({
       name: 'multilang-recommendations.json',
@@ -379,11 +382,16 @@ test.describe('Data Management', () => {
       buffer: Buffer.from(JSON.stringify(customRecommendations)),
     });
 
+    // Wait for and confirm the import dialog
+    const confirmDialog = page.getByRole('alertdialog');
+    await expect(confirmDialog).toBeVisible();
+    await confirmDialog.getByRole('button', { name: 'Import' }).click();
+
     await page.waitForTimeout(500);
 
     // Verify import was successful - status should show custom kit name
     await expect(page.getByText('Multi-lang Kit')).toBeVisible();
-    await expect(page.getByText('1 items')).toBeVisible();
+    await expect(page.getByText('1 item')).toBeVisible();
 
     // Navigate to Inventory and select Water & Beverages category
     await page.click('text=Inventory');
@@ -437,12 +445,6 @@ test.describe('Data Management', () => {
       items: [],
     };
 
-    // Set up dialog handler for error
-    page.once('dialog', async (dialog) => {
-      expect(dialog.message()).toContain('Failed');
-      await dialog.accept();
-    });
-
     const fileInput = page.getByLabel('Import Recommendations');
     await fileInput.setInputFiles({
       name: 'invalid-recommendations.json',
@@ -451,6 +453,10 @@ test.describe('Data Management', () => {
     });
 
     await page.waitForTimeout(500);
+
+    // Should show error message (no confirm dialog appears for invalid files)
+    // The error is displayed inline in the component
+    await expect(page.locator('text=/version.*required/i')).toBeVisible();
 
     // Should still show Built-in (import failed)
     await expect(page.locator('text=/Built-in/')).toBeVisible();

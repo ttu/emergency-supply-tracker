@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { RecommendationsStatus } from './RecommendationsStatus';
 
 // Mock i18next
@@ -23,7 +24,6 @@ jest.mock('../../hooks/useRecommendedItems', () => ({
 describe('RecommendationsStatus', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.confirm = jest.fn(() => true);
   });
 
   it('should show default status when using built-in recommendations', () => {
@@ -43,7 +43,7 @@ describe('RecommendationsStatus', () => {
       screen.getByText(/settings.recommendations.status.default.*"count":70/),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText('settings.recommendations.reset.button'),
+      screen.queryByTestId('reset-recommendations-button'),
     ).not.toBeInTheDocument();
   });
 
@@ -67,11 +67,11 @@ describe('RecommendationsStatus', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText('settings.recommendations.reset.button'),
+      screen.getByTestId('reset-recommendations-button'),
     ).toBeInTheDocument();
   });
 
-  it('should call resetToDefaultRecommendations when reset button is clicked and confirmed', () => {
+  it('should show confirmation dialog when reset button is clicked', async () => {
     mockUseRecommendedItems.mockReturnValue({
       recommendedItems: new Array(25).fill({}),
       customRecommendationsInfo: {
@@ -85,19 +85,161 @@ describe('RecommendationsStatus', () => {
 
     render(<RecommendationsStatus />);
 
-    const resetButton = screen.getByText(
-      'settings.recommendations.reset.button',
-    );
+    const resetButton = screen.getByTestId('reset-recommendations-button');
     fireEvent.click(resetButton);
 
-    expect(global.confirm).toHaveBeenCalledWith(
-      'settings.recommendations.reset.confirm',
-    );
-    expect(mockResetToDefaultRecommendations).toHaveBeenCalled();
+    // Dialog should now be open
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+    expect(
+      screen.getByText('settings.recommendations.reset.confirm'),
+    ).toBeInTheDocument();
   });
 
-  it('should not call resetToDefaultRecommendations when reset is cancelled', () => {
-    global.confirm = jest.fn(() => false);
+  it('should call resetToDefaultRecommendations when reset is confirmed', async () => {
+    mockUseRecommendedItems.mockReturnValue({
+      recommendedItems: new Array(25).fill({}),
+      customRecommendationsInfo: {
+        name: 'My Custom Kit',
+        version: '1.0.0',
+        itemCount: 25,
+      },
+      isUsingCustomRecommendations: true,
+      resetToDefaultRecommendations: mockResetToDefaultRecommendations,
+    });
+
+    render(<RecommendationsStatus />);
+
+    // Click reset button to open dialog
+    const resetButton = screen.getByTestId('reset-recommendations-button');
+    fireEvent.click(resetButton);
+
+    // Wait for dialog to open
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+
+    // Click confirm button in dialog (danger variant button with confirmLabel)
+    // The confirm button is the one inside the dialog (not the original reset button)
+    const dialogButtons = screen.getAllByRole('button', {
+      name: 'settings.recommendations.reset.button',
+    });
+    // Click the last one (the one in the dialog)
+    fireEvent.click(dialogButtons[dialogButtons.length - 1]);
+
+    await waitFor(() => {
+      expect(mockResetToDefaultRecommendations).toHaveBeenCalled();
+    });
+  });
+
+  it('should not call resetToDefaultRecommendations when reset is cancelled', async () => {
+    mockUseRecommendedItems.mockReturnValue({
+      recommendedItems: new Array(25).fill({}),
+      customRecommendationsInfo: {
+        name: 'My Custom Kit',
+        version: '1.0.0',
+        itemCount: 25,
+      },
+      isUsingCustomRecommendations: true,
+      resetToDefaultRecommendations: mockResetToDefaultRecommendations,
+    });
+
+    render(<RecommendationsStatus />);
+
+    // Click reset button to open dialog
+    const resetButton = screen.getByTestId('reset-recommendations-button');
+    fireEvent.click(resetButton);
+
+    // Wait for dialog to open
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+
+    // Click cancel button
+    const cancelButton = screen.getByRole('button', { name: 'buttons.cancel' });
+    fireEvent.click(cancelButton);
+
+    // Dialog should close
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    });
+    expect(mockResetToDefaultRecommendations).not.toHaveBeenCalled();
+  });
+
+  it('should close dialog when Escape key is pressed', async () => {
+    const user = userEvent.setup();
+    mockUseRecommendedItems.mockReturnValue({
+      recommendedItems: new Array(25).fill({}),
+      customRecommendationsInfo: {
+        name: 'My Custom Kit',
+        version: '1.0.0',
+        itemCount: 25,
+      },
+      isUsingCustomRecommendations: true,
+      resetToDefaultRecommendations: mockResetToDefaultRecommendations,
+    });
+
+    render(<RecommendationsStatus />);
+
+    // Click reset button to open dialog
+    const resetButton = screen.getByTestId('reset-recommendations-button');
+    fireEvent.click(resetButton);
+
+    // Wait for dialog to open
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+
+    // Press Escape key
+    await user.keyboard('{Escape}');
+
+    // Dialog should close
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    });
+    expect(mockResetToDefaultRecommendations).not.toHaveBeenCalled();
+  });
+
+  it('should show success toast after successful reset', async () => {
+    mockUseRecommendedItems.mockReturnValue({
+      recommendedItems: new Array(25).fill({}),
+      customRecommendationsInfo: {
+        name: 'My Custom Kit',
+        version: '1.0.0',
+        itemCount: 25,
+      },
+      isUsingCustomRecommendations: true,
+      resetToDefaultRecommendations: mockResetToDefaultRecommendations,
+    });
+
+    render(<RecommendationsStatus />);
+
+    // Click reset button to open dialog
+    const resetButton = screen.getByTestId('reset-recommendations-button');
+    fireEvent.click(resetButton);
+
+    // Wait for dialog to open
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+
+    // Click confirm button
+    const dialogButtons = screen.getAllByRole('button', {
+      name: 'settings.recommendations.reset.button',
+    });
+    fireEvent.click(dialogButtons[dialogButtons.length - 1]);
+
+    // Success toast should appear
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toBeInTheDocument();
+    });
+  });
+
+  it('should show error toast when reset fails', async () => {
+    mockResetToDefaultRecommendations.mockImplementation(() => {
+      throw new Error('Reset failed');
+    });
 
     mockUseRecommendedItems.mockReturnValue({
       recommendedItems: new Array(25).fill({}),
@@ -112,12 +254,24 @@ describe('RecommendationsStatus', () => {
 
     render(<RecommendationsStatus />);
 
-    const resetButton = screen.getByText(
-      'settings.recommendations.reset.button',
-    );
+    // Click reset button to open dialog
+    const resetButton = screen.getByTestId('reset-recommendations-button');
     fireEvent.click(resetButton);
 
-    expect(global.confirm).toHaveBeenCalled();
-    expect(mockResetToDefaultRecommendations).not.toHaveBeenCalled();
+    // Wait for dialog to open
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    });
+
+    // Click confirm button
+    const dialogButtons = screen.getAllByRole('button', {
+      name: 'settings.recommendations.reset.button',
+    });
+    fireEvent.click(dialogButtons[dialogButtons.length - 1]);
+
+    // Error toast should appear with the error message
+    await waitFor(() => {
+      expect(screen.getByText('Reset failed')).toBeInTheDocument();
+    });
   });
 });

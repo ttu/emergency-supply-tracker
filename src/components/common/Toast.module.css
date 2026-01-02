@@ -1,0 +1,77 @@
+.toast {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1200;
+  animation: toastSlideIn 0.3s ease-out;
+  max-width: min(400px, calc(100vw - var(--spacing-md) * 2));
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.success {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.error {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.info {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.icon {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.message {
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  flex: 1;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  margin-left: var(--spacing-sm);
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  opacity: 1;
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
