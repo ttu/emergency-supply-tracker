@@ -28,7 +28,7 @@ describe('factories', () => {
     it('creates default settings', () => {
       const settings = createMockSettings();
       expect(settings.language).toBe('en');
-      expect(settings.theme).toBe('light');
+      expect(settings.theme).toBe('ocean');
       expect(settings.highContrast).toBe(false);
     });
 

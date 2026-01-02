@@ -28,7 +28,7 @@ export function createMockSettings(
 ): UserSettings {
   return {
     language: 'en',
-    theme: 'light',
+    theme: 'ocean',
     highContrast: false,
     advancedFeatures: {
       calorieTracking: false,

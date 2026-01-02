@@ -15,7 +15,7 @@ import {
 
 const DEFAULT_SETTINGS: UserSettings = {
   language: 'en',
-  theme: 'light',
+  theme: 'ocean',
   highContrast: false,
   advancedFeatures: {
     calorieTracking: false,
