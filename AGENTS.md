@@ -565,6 +565,42 @@ When working in a Cursor worktree, follow these steps to create a PR:
 https://github.com/owner/repo/pull/new/your-branch-name
 ```
 
+### Checking PR Review Comments and Status
+
+To check open issues and review comments on a pull request (e.g., from CodeRabbit or human reviewers):
+
+1. **Check all CI/CD status checks:**
+
+   ```bash
+   gh pr checks <PR_NUMBER> --repo ttu/emergency-supply-tracker
+   ```
+
+   This shows the status of all automated checks (build, tests, linting, etc.).
+
+2. **Get PR review comments (inline code comments):**
+
+   ```bash
+   gh api repos/ttu/emergency-supply-tracker/pulls/<PR_NUMBER>/comments
+   ```
+
+   This returns JSON with all review comments. Look for `body` field to see comment content and check if issues are marked as resolved (e.g., "✅ Addressed").
+
+3. **Get PR summary with reviews:**
+
+   ```bash
+   gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --json comments,reviews
+   ```
+
+   This provides a summary of PR comments and review status.
+
+4. **View PR in browser:**
+
+   ```bash
+   gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --web
+   ```
+
+**Tip:** When using CodeRabbit, resolved issues are typically marked with "✅ Addressed" in the comment thread. Check that all actionable feedback has been addressed before requesting re-review.
+
 ---
 
 ## Getting Help
