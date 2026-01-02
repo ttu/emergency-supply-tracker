@@ -148,6 +148,10 @@ npm run test:e2e:chromium # Chromium only
 # Storybook tests
 npm run test:storybook    # Vitest Storybook tests
 
+# Mutation testing
+npm run test:mutation     # Run mutation testing (interactive)
+npm run test:mutation:ci  # Run mutation testing (CI mode)
+
 # All tests
 npm run test:all          # Jest + Storybook (not E2E)
 npm run validate:all      # Full validation including E2E
@@ -331,6 +335,79 @@ const item = createMockInventoryItem({
 
 ---
 
+## Mutation Testing
+
+We use **StrykerJS** to perform mutation testing, which helps identify weak spots in our test suite by introducing small changes (mutations) to the code and checking if tests catch them.
+
+**Note:** Mutation testing is run locally only (not in CI) due to long execution times. Run `npm run test:mutation` periodically to check test quality.
+
+### Configuration
+
+**File:** `stryker.config.json`
+
+Mutation testing runs on all source files except:
+
+- Test files (`*.test.{ts,tsx}`)
+- Type definition files (`*.d.ts`)
+- Storybook files (`*.stories.tsx`)
+- Entry points (`main.tsx`, `serviceWorker.ts`)
+- Test utilities (`src/test/**`)
+- i18n configuration
+
+### Mutation Score Thresholds
+
+| Threshold | Score | Meaning               |
+| --------- | ----- | --------------------- |
+| High      | 80%   | Target mutation score |
+| Low       | 70%   | Warning threshold     |
+| Break     | 70%   | Minimum acceptable    |
+
+### Understanding Mutation Scores
+
+- **Mutation Score = (Killed Mutants / Total Mutants) × 100%**
+- **Killed mutants**: Tests failed when code was mutated (good!)
+- **Survived mutants**: Tests passed despite mutations (needs better tests)
+- **No coverage**: Mutant wasn't covered by any test
+- **Timeout**: Tests took too long to run
+- **Compile error**: Mutant caused a TypeScript error (filtered out)
+
+### Running Mutation Tests
+
+```bash
+# Interactive mode (shows HTML report)
+npm run test:mutation
+
+# CI mode (JSON report for artifacts)
+npm run test:mutation:ci
+```
+
+### Reports
+
+After running mutation tests, you'll find:
+
+- **HTML report**: `reports/mutation/mutation.html` - Interactive dashboard
+- **JSON report**: `reports/mutation/mutation.json` - Machine-readable results
+- **Clear text**: Console output with summary
+
+### Improving Mutation Scores
+
+If mutants survive (tests pass on mutated code):
+
+1. **Add more assertions** - Test edge cases and boundary conditions
+2. **Test error paths** - Ensure error handling is tested
+3. **Test return values** - Verify functions return expected results
+4. **Test side effects** - Check that mutations to state/behavior are caught
+
+### Example
+
+If a mutant changes `a + b` to `a - b` and tests still pass, it means:
+
+- Tests don't verify the calculation result
+- Tests only check that the function runs without error
+- Need to add assertions that verify the actual output
+
+---
+
 ## Quality Gates
 
 ### Pre-commit
@@ -345,6 +422,8 @@ const item = createMockInventoryItem({
 - E2E tests pass
 - Build succeeds
 
+**Note:** Mutation testing is not part of CI due to long execution time. Run `npm run test:mutation` locally to check mutation scores.
+
 ---
 
 ## References
@@ -352,3 +431,4 @@ const item = createMockInventoryItem({
 - [Jest Documentation](https://jestjs.io/)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [Playwright Documentation](https://playwright.dev/)
+- [StrykerJS Documentation](https://stryker-mutator.io/docs/stryker-js/introduction)

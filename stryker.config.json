@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "npm",
+  "reporters": ["html", "clear-text", "progress", "json"],
+  "testRunner": "jest",
+  "testRunnerNodeArgs": ["--experimental-vm-modules"],
+  "checkers": ["typescript"],
+  "tsconfigFile": "tsconfig.json",
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.test.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/*.stories.tsx",
+    "!src/main.tsx",
+    "!src/test/**",
+    "!src/i18n/config.ts",
+    "!src/serviceWorker.ts"
+  ],
+  "mutator": {
+    "plugins": ["typescript"]
+  },
+  "jest": {
+    "configFile": "jest.config.js",
+    "enableFindRelatedTests": true
+  },
+  "thresholds": {
+    "high": 80,
+    "low": 70,
+    "break": 70
+  },
+  "timeoutMS": 10000,
+  "maxConcurrentTestRunners": 8,
+  "logLevel": "info"
+}
