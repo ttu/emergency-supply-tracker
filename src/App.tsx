@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trackAppLaunch } from './utils/analytics';
-import { SettingsProvider } from './contexts/SettingsProvider';
-import { HouseholdProvider } from './contexts/HouseholdProvider';
-import { InventoryProvider } from './contexts/InventoryProvider';
-import { ThemeApplier } from './components/ThemeApplier';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Navigation, PageType } from './components/common/Navigation';
 import { Dashboard } from './pages/Dashboard';
 import { Inventory } from './pages/Inventory';
@@ -98,19 +93,7 @@ function App() {
     trackAppLaunch();
   }, []);
 
-  return (
-    <ErrorBoundary>
-      <SettingsProvider>
-        <ThemeApplier>
-          <HouseholdProvider>
-            <InventoryProvider>
-              <AppContent />
-            </InventoryProvider>
-          </HouseholdProvider>
-        </ThemeApplier>
-      </SettingsProvider>
-    </ErrorBoundary>
-  );
+  return <AppContent />;
 }
 
 export default App;
