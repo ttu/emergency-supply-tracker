@@ -22,6 +22,8 @@ coverage
 test-results
 playwright-report
 playwright/.cache
+reports/mutation
+.stryker-tmp
 
 # Editor directories and files
 .vscode/*
