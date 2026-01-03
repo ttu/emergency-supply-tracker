@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import type { InventoryItem } from '../../types';
+import type { InventoryItem } from '@/shared/types';
 import {
   isItemExpired,
   getDaysUntilExpiration,
-} from '../../utils/calculations/status';
-import { getWaterRequirementPerUnit } from '../../utils/calculations/water';
-import { EXPIRING_SOON_DAYS_THRESHOLD } from '../../utils/constants';
+} from '@/shared/utils/calculations/status';
+import { getWaterRequirementPerUnit } from '@/shared/utils/calculations/water';
+import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 import styles from './ItemCard.module.css';
 
 export interface ItemCardProps {

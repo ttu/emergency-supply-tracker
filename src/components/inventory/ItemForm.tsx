@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { InventoryItem, Category } from '../../types';
-import { Input } from '../common/Input';
-import { Select } from '../common/Select';
-import { Button } from '../common/Button';
-import { calculateCaloriesFromWeight } from '../../utils/calculations/calories';
-import { CUSTOM_ITEM_TYPE } from '../../utils/constants';
+import type { InventoryItem, Category } from '@/shared/types';
+import { Input } from '@/shared/components/Input';
+import { Select } from '@/shared/components/Select';
+import { Button } from '@/shared/components/Button';
+import { calculateCaloriesFromWeight } from '@/shared/utils/calculations/calories';
+import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import styles from './ItemForm.module.css';
 
 export interface ItemFormProps {

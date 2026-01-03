@@ -14,7 +14,7 @@ import { OverriddenRecommendations } from '../components/settings/OverriddenReco
 import { RecommendationsStatus } from '../components/settings/RecommendationsStatus';
 import { ImportRecommendationsButton } from '../components/settings/ImportRecommendationsButton';
 import { ExportRecommendationsButton } from '../components/settings/ExportRecommendationsButton';
-import { APP_VERSION } from '../utils/version';
+import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
 
 export function Settings() {

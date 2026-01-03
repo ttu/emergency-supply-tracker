@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '../../hooks/useInventory';
-import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
-import { Button } from '../common/Button';
+import { useInventory } from '@/shared/hooks/useInventory';
+import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { Button } from '@/shared/components/Button';
 import styles from './HiddenAlerts.module.css';
 
 export function OverriddenRecommendations() {

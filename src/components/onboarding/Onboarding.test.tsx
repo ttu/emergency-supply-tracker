@@ -2,7 +2,7 @@ import { describe, it, expect, jest } from '@jest/globals';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Onboarding } from './Onboarding';
-import { SettingsProvider } from '../../contexts/SettingsProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 
 // Mock react-i18next
 const mockChangeLanguage = jest.fn();

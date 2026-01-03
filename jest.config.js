@@ -4,6 +4,11 @@ export default {
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   testPathIgnorePatterns: ['/node_modules/', '/e2e/'],
   moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/shared/(.*)$': '<rootDir>/src/shared/$1',
+    '^@/features/(.*)$': '<rootDir>/src/features/$1',
+    '^@/pages/(.*)$': '<rootDir>/src/pages/$1',
+    '^@/data/(.*)$': '<rootDir>/src/data/$1',
     '\\.(css|less|scss|sass)$': '<rootDir>/src/test/cssModuleMock.cjs',
     '\\.(svg|png|jpg|jpeg|gif)$': '<rootDir>/src/test/fileMock.cjs',
   },

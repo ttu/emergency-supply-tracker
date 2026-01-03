@@ -1,0 +1,119 @@
+import type { RecommendedItemDefinition } from '@/shared/types';
+import {
+  CALORIE_BASE_WEIGHT_GRAMS,
+  GRAMS_TO_KG_THRESHOLD,
+  CALORIE_DISPLAY_THRESHOLD,
+} from '@/shared/utils/constants';
+
+/**
+ * Calculate calories per unit from weight and calories per 100g
+ */
+export function calculateCaloriesFromWeight(
+  weightGrams: number,
+  caloriesPer100g: number,
+): number {
+  return Math.round(
+    (weightGrams / CALORIE_BASE_WEIGHT_GRAMS) * caloriesPer100g,
+  );
+}
+
+/**
+ * Calculate total weight in grams from quantity and weight per unit
+ */
+export function calculateTotalWeight(
+  quantity: number,
+  weightGramsPerUnit: number,
+): number {
+  return Math.round(quantity * weightGramsPerUnit);
+}
+
+/**
+ * Calculate total calories from quantity and calories per unit
+ */
+export function calculateTotalCalories(
+  quantity: number,
+  caloriesPerUnit: number,
+): number {
+  return Math.round(quantity * caloriesPerUnit);
+}
+
+/**
+ * Get default weight per unit from a template
+ * Returns undefined if template has no weight data
+ */
+export function getTemplateWeightPerUnit(
+  template: RecommendedItemDefinition,
+): number | undefined {
+  return template.weightGramsPerUnit;
+}
+
+/**
+ * Get default calories per unit from a template
+ * If template has caloriesPer100g and weightGramsPerUnit, calculates from those
+ * Otherwise returns the direct caloriesPerUnit value
+ */
+export function getTemplateCaloriesPerUnit(
+  template: RecommendedItemDefinition,
+): number | undefined {
+  // If both weight and caloriesPer100g are available, calculate
+  if (template.weightGramsPerUnit && template.caloriesPer100g) {
+    return calculateCaloriesFromWeight(
+      template.weightGramsPerUnit,
+      template.caloriesPer100g,
+    );
+  }
+  // Otherwise return direct value
+  return template.caloriesPerUnit;
+}
+
+/**
+ * Calculate calories per unit based on user-provided or template values
+ * Priority: user-provided caloriesPerUnit > calculated from weight > template default
+ */
+export function resolveCaloriesPerUnit(
+  userCaloriesPerUnit: number | undefined,
+  userWeightGrams: number | undefined,
+  templateCaloriesPer100g: number | undefined,
+  templateCaloriesPerUnit: number | undefined,
+): number | undefined {
+  // User explicitly set calories
+  if (userCaloriesPerUnit !== undefined && userCaloriesPerUnit > 0) {
+    return userCaloriesPerUnit;
+  }
+
+  // Calculate from user weight and template caloriesPer100g
+  if (
+    userWeightGrams !== undefined &&
+    userWeightGrams > 0 &&
+    templateCaloriesPer100g !== undefined
+  ) {
+    return calculateCaloriesFromWeight(
+      userWeightGrams,
+      templateCaloriesPer100g,
+    );
+  }
+
+  // Fall back to template default
+  return templateCaloriesPerUnit;
+}
+
+/**
+ * Format weight for display (convert large grams to kg)
+ */
+export function formatWeight(grams: number): string {
+  if (grams >= GRAMS_TO_KG_THRESHOLD) {
+    const kg = grams / GRAMS_TO_KG_THRESHOLD;
+    return `${kg.toFixed(1)} kg`;
+  }
+  return `${grams} g`;
+}
+
+/**
+ * Format calories for display (add kcal suffix)
+ */
+export function formatCalories(calories: number): string {
+  if (calories >= CALORIE_DISPLAY_THRESHOLD) {
+    return `${(calories / CALORIE_DISPLAY_THRESHOLD).toFixed(1)} kcal`;
+  }
+  return `${calories} kcal`;
+}

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { HouseholdConfig } from '../../types';
-import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
-import { Button } from '../common/Button';
+import type { HouseholdConfig } from '@/shared/types';
+import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { Button } from '@/shared/components/Button';
 import styles from './QuickSetupScreen.module.css';
 
 export interface QuickSetupScreenProps {

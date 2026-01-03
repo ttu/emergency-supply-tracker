@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Layout } from './Layout';
-import { Button } from '../common/Button';
+import { Button } from '@/shared/components/Button';
 
 const meta = {
   title: 'Layout/Layout',

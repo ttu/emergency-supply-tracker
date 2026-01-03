@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeSelector } from './ThemeSelector';
-import { SettingsProvider } from '../../contexts/SettingsProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

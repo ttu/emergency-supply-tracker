@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Button } from '../common/Button';
-import { clearAppData } from '../../utils/storage/localStorage';
+import { Button } from '@/shared/components/Button';
+import { clearAppData } from '@/shared/utils/storage/localStorage';
 import styles from './ClearDataButton.module.css';
 
 export function ClearDataButton() {

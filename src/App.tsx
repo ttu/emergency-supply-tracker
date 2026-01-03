@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { trackAppLaunch } from './utils/analytics';
-import { SettingsProvider } from './contexts/SettingsProvider';
-import { HouseholdProvider } from './contexts/HouseholdProvider';
-import { InventoryProvider } from './contexts/InventoryProvider';
-import { RecommendedItemsProvider } from './contexts/RecommendedItemsProvider';
+import { trackAppLaunch } from '@/shared/utils/analytics';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
+import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
 import { ThemeApplier } from './components/ThemeApplier';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
-import { Navigation, PageType } from './components/common/Navigation';
+import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
+import { Navigation, PageType } from '@/shared/components/Navigation';
 import { Dashboard } from './pages/Dashboard';
 import { Inventory } from './pages/Inventory';
 import { Settings } from './pages/Settings';
 import { Help } from './pages/Help';
 import { Onboarding } from './components/onboarding/Onboarding';
-import { useSettings } from './hooks/useSettings';
-import { useHousehold } from './hooks/useHousehold';
-import { useInventory } from './hooks/useInventory';
-import type { HouseholdConfig, InventoryItem } from './types';
+import { useSettings } from '@/shared/hooks/useSettings';
+import { useHousehold } from '@/shared/hooks/useHousehold';
+import { useInventory } from '@/shared/hooks/useInventory';
+import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import './App.css';
 
 function AppContent() {

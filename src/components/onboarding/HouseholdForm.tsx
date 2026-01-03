@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input } from '../common/Input';
-import { Button } from '../common/Button';
+import { Input } from '@/shared/components/Input';
+import { Button } from '@/shared/components/Button';
 import {
   HOUSEHOLD_DEFAULTS,
   HOUSEHOLD_LIMITS,
-} from '../../constants/household';
+} from '@/shared/constants/household';
 import styles from './HouseholdForm.module.css';
 
 function parseIntOrDefault(value: string, defaultValue: number): number {

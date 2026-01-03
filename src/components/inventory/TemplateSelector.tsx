@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { RecommendedItemDefinition, Category } from '../../types';
-import { Input } from '../common/Input';
-import { Select } from '../common/Select';
+import type { RecommendedItemDefinition, Category } from '@/shared/types';
+import { Input } from '@/shared/components/Input';
+import { Select } from '@/shared/components/Select';
 import styles from './TemplateSelector.module.css';
 
 export interface TemplateSelectorProps {

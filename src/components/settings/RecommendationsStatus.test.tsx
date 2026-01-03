@@ -17,7 +17,7 @@ jest.mock('react-i18next', () => ({
 // Mock useRecommendedItems hook
 const mockResetToDefaultRecommendations = jest.fn();
 const mockUseRecommendedItems = jest.fn();
-jest.mock('../../hooks/useRecommendedItems', () => ({
+jest.mock('@/shared/hooks/useRecommendedItems', () => ({
   useRecommendedItems: () => mockUseRecommendedItems(),
 }));
 

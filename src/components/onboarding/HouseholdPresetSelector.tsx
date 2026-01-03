@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card } from '../common/Card';
+import { Card } from '@/shared/components/Card';
 import styles from './HouseholdPresetSelector.module.css';
 
 export interface HouseholdPreset {

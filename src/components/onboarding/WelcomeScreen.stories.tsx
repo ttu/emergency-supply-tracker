@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { WelcomeScreen } from './WelcomeScreen';
-import { SettingsProvider } from '../../contexts/SettingsProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 
 const meta = {
   title: 'Onboarding/WelcomeScreen',

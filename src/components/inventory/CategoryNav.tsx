@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Category } from '../../types';
+import type { Category } from '@/shared/types';
 import styles from './CategoryNav.module.css';
 
 export interface CategoryNavProps {

@@ -4,15 +4,15 @@ import { HiddenAlerts } from './HiddenAlerts';
 import {
   InventoryContext,
   InventoryContextValue,
-} from '../../contexts/InventoryContext';
+} from '@/shared/contexts/InventoryContext';
 import {
   HouseholdContext,
   HouseholdContextValue,
-} from '../../contexts/HouseholdContext';
+} from '@/shared/contexts/HouseholdContext';
 import {
   createMockInventoryItem,
   createMockHousehold,
-} from '../../utils/test/factories';
+} from '@/shared/utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

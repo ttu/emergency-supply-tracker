@@ -4,7 +4,7 @@ import {
   CategoryStatusSummary,
   CategoryShortage,
 } from './CategoryStatusSummary';
-import { createMockInventoryItem } from '../../utils/test/factories';
+import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { useHousehold } from '../../hooks/useHousehold';
-import { Input } from '../common/Input';
-import { Button } from '../common/Button';
+import { useHousehold } from '@/shared/hooks/useHousehold';
+import { Input } from '@/shared/components/Input';
+import { Button } from '@/shared/components/Button';
 import styles from './HouseholdForm.module.css';
 
 export function HouseholdForm() {

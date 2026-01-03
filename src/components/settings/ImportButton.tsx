@@ -1,8 +1,11 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../common/Button';
-import { importFromJSON, saveAppData } from '../../utils/storage/localStorage';
-import type { AppData } from '../../types';
+import { Button } from '@/shared/components/Button';
+import {
+  importFromJSON,
+  saveAppData,
+} from '@/shared/utils/storage/localStorage';
+import type { AppData } from '@/shared/types';
 import styles from './ImportButton.module.css';
 
 interface ImportButtonProps {

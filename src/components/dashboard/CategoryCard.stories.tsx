@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CategoryCard } from './CategoryCard';
-import { SettingsProvider } from '../../contexts/SettingsProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 
 const meta = {
   title: 'Dashboard/CategoryCard',

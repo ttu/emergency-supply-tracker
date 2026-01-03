@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ShoppingListExport } from './ShoppingListExport';
-import { InventoryProvider } from '../../contexts/InventoryProvider';
+import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
 
 const meta = {
   title: 'Settings/ShoppingListExport',

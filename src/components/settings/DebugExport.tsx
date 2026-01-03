@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../common/Button';
-import { downloadDebugExport, getLogCount } from '../../utils/errorLogger';
+import { Button } from '@/shared/components/Button';
+import { downloadDebugExport, getLogCount } from '@/shared/utils/errorLogger';
 import styles from './DebugExport.module.css';
 
 export function DebugExport() {

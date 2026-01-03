@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import type { StandardCategoryId, ItemStatus, Unit } from '../../types';
-import type { CategoryShortage } from '../../utils/dashboard/categoryStatus';
-import { getStatusVariant } from '../../utils/calculations/status';
-import { Badge } from '../common/Badge';
+import type { StandardCategoryId, ItemStatus, Unit } from '@/shared/types';
+import type { CategoryShortage } from '@/shared/utils/dashboard/categoryStatus';
+import { getStatusVariant } from '@/shared/utils/calculations/status';
+import { Badge } from '@/shared/components/Badge';
 import styles from './CategoryCard.module.css';
 
 export interface CategoryCardProps {

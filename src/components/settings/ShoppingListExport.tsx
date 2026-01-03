@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '../../hooks/useInventory';
-import { Button } from '../common/Button';
-import type { InventoryItem } from '../../types';
-import { STANDARD_CATEGORIES } from '../../data/standardCategories';
+import { useInventory } from '@/shared/hooks/useInventory';
+import { Button } from '@/shared/components/Button';
+import type { InventoryItem } from '@/shared/types';
+import { STANDARD_CATEGORIES } from '@/data/standardCategories';
 import styles from './ShoppingListExport.module.css';
 
 export function ShoppingListExport() {

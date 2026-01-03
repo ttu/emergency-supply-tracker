@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CategoryGrid } from './CategoryGrid';
-import { SettingsProvider } from '../../contexts/SettingsProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 
 const meta = {
   title: 'Dashboard/CategoryGrid',

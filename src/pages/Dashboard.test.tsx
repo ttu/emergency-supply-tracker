@@ -1,13 +1,13 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
-import { InventoryProvider } from '../contexts/InventoryProvider';
-import { HouseholdProvider } from '../contexts/HouseholdProvider';
-import { SettingsProvider } from '../contexts/SettingsProvider';
-import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
+import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
+import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
 import {
   createMockInventoryItem,
   createMockAppData,
-} from '../utils/test/factories';
+} from '@/shared/utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

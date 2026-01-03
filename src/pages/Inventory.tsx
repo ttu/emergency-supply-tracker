@@ -1,37 +1,37 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '../hooks/useInventory';
-import { useHousehold } from '../hooks/useHousehold';
-import { useSettings } from '../hooks/useSettings';
-import { useRecommendedItems } from '../hooks/useRecommendedItems';
-import { STANDARD_CATEGORIES } from '../data/standardCategories';
+import { useInventory } from '@/shared/hooks/useInventory';
+import { useHousehold } from '@/shared/hooks/useHousehold';
+import { useSettings } from '@/shared/hooks/useSettings';
+import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
+import { STANDARD_CATEGORIES } from '@/data/standardCategories';
 import { CategoryNav } from '../components/inventory/CategoryNav';
 import { FilterBar } from '../components/inventory/FilterBar';
 import { ItemList } from '../components/inventory/ItemList';
 import { ItemForm } from '../components/inventory/ItemForm';
 import { TemplateSelector } from '../components/inventory/TemplateSelector';
 import { CategoryStatusSummary } from '../components/inventory/CategoryStatusSummary';
-import { Modal } from '../components/common/Modal';
-import { Button } from '../components/common/Button';
+import { Modal } from '@/shared/components/Modal';
+import { Button } from '@/shared/components/Button';
 import type {
   InventoryItem,
   ItemStatus,
   RecommendedItemDefinition,
-} from '../types';
+} from '@/shared/types';
 import {
   calculateRecommendedQuantity,
   calculateHouseholdMultiplier,
-} from '../utils/calculations/household';
-import { calculateItemStatus } from '../utils/calculations/status';
+} from '@/shared/utils/calculations/household';
+import { calculateItemStatus } from '@/shared/utils/calculations/status';
 import {
   getCategoryDisplayStatus,
   type CategoryCalculationOptions,
-} from '../utils/dashboard/categoryStatus';
+} from '@/shared/utils/dashboard/categoryStatus';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '../utils/constants';
+} from '@/shared/utils/constants';
 import styles from './Inventory.module.css';
 
 type SortBy = 'name' | 'quantity' | 'expiration';

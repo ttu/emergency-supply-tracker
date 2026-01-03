@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TemplateSelector } from './TemplateSelector';
-import { STANDARD_CATEGORIES } from '../../data/standardCategories';
-import type { RecommendedItemDefinition } from '../../types';
+import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import type { RecommendedItemDefinition } from '@/shared/types';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

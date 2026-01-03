@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemList } from './ItemList';
-import { createMockInventoryItem } from '../../utils/test/factories';
+import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 const meta = {
   title: 'Components/Inventory/ItemList',

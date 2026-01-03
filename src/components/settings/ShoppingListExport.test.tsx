@@ -4,9 +4,9 @@ import { ShoppingListExport } from './ShoppingListExport';
 import {
   InventoryContext,
   InventoryContextValue,
-} from '../../contexts/InventoryContext';
-import { createMockInventoryItem } from '../../utils/test/factories';
-import type { InventoryItem } from '../../types';
+} from '@/shared/contexts/InventoryContext';
+import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import type { InventoryItem } from '@/shared/types';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

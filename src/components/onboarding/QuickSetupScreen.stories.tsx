@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { QuickSetupScreen } from './QuickSetupScreen';
-import { SettingsProvider } from '../../contexts/SettingsProvider';
-import { createMockHousehold } from '../../utils/test/factories';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { createMockHousehold } from '@/shared/utils/test/factories';
 
 const meta = {
   title: 'Onboarding/QuickSetupScreen',
