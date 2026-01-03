@@ -26,7 +26,7 @@ describe('TemplateSelector (backward compatibility)', () => {
   const mockTemplates: RecommendedItemDefinition[] = [
     {
       id: 'water-1',
-      i18nKey: 'Bottled Water',
+      i18nKey: 'products.bottled-water',
       category: 'water-beverages',
       baseQuantity: 14,
       unit: 'liters',
@@ -45,6 +45,6 @@ describe('TemplateSelector (backward compatibility)', () => {
       />,
     );
 
-    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
+    expect(screen.getByText('bottled-water')).toBeInTheDocument();
   });
 });

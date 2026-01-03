@@ -19,7 +19,7 @@ describe('TemplateSelector', () => {
   const mockTemplates: RecommendedItemDefinition[] = [
     {
       id: 'water-1',
-      i18nKey: 'Bottled Water',
+      i18nKey: 'products.bottled-water',
       category: 'water-beverages',
       baseQuantity: 14,
       unit: 'liters',
@@ -28,7 +28,7 @@ describe('TemplateSelector', () => {
     },
     {
       id: 'food-1',
-      i18nKey: 'Canned Beans',
+      i18nKey: 'products.canned-beans',
       category: 'food',
       baseQuantity: 5,
       unit: 'cans',
@@ -37,7 +37,7 @@ describe('TemplateSelector', () => {
     },
     {
       id: 'first-aid-1',
-      i18nKey: 'First Aid Kit',
+      i18nKey: 'products.first-aid-kit',
       category: 'medical-health',
       baseQuantity: 1,
       unit: 'pieces',
@@ -62,9 +62,9 @@ describe('TemplateSelector', () => {
       />,
     );
 
-    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
-    expect(screen.getByText('Canned Beans')).toBeInTheDocument();
-    expect(screen.getByText('First Aid Kit')).toBeInTheDocument();
+    expect(screen.getByText('bottled-water')).toBeInTheDocument();
+    expect(screen.getByText('canned-beans')).toBeInTheDocument();
+    expect(screen.getByText('first-aid-kit')).toBeInTheDocument();
   });
 
   it('should display category for each template', () => {
@@ -111,9 +111,9 @@ describe('TemplateSelector', () => {
     const searchInput = screen.getByLabelText('templateSelector.searchLabel');
     fireEvent.change(searchInput, { target: { value: 'water' } });
 
-    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
-    expect(screen.queryByText('Canned Beans')).not.toBeInTheDocument();
-    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
+    expect(screen.getByText('bottled-water')).toBeInTheDocument();
+    expect(screen.queryByText('canned-beans')).not.toBeInTheDocument();
+    expect(screen.queryByText('first-aid-kit')).not.toBeInTheDocument();
   });
 
   it('should filter templates by category', () => {
@@ -131,9 +131,9 @@ describe('TemplateSelector', () => {
     );
     fireEvent.change(categorySelect, { target: { value: 'food' } });
 
-    expect(screen.queryByText('Bottled Water')).not.toBeInTheDocument();
-    expect(screen.getByText('Canned Beans')).toBeInTheDocument();
-    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
+    expect(screen.queryByText('bottled-water')).not.toBeInTheDocument();
+    expect(screen.getByText('canned-beans')).toBeInTheDocument();
+    expect(screen.queryByText('first-aid-kit')).not.toBeInTheDocument();
   });
 
   it('should filter by both search and category', () => {
@@ -154,9 +154,9 @@ describe('TemplateSelector', () => {
     fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
     fireEvent.change(searchInput, { target: { value: 'water' } });
 
-    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
-    expect(screen.queryByText('Canned Beans')).not.toBeInTheDocument();
-    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
+    expect(screen.getByText('bottled-water')).toBeInTheDocument();
+    expect(screen.queryByText('canned-beans')).not.toBeInTheDocument();
+    expect(screen.queryByText('first-aid-kit')).not.toBeInTheDocument();
   });
 
   it('should show empty state when no templates match', () => {
@@ -202,7 +202,7 @@ describe('TemplateSelector', () => {
       />,
     );
 
-    const waterTemplate = screen.getByText('Bottled Water').closest('button');
+    const waterTemplate = screen.getByText('bottled-water').closest('button');
     fireEvent.click(waterTemplate!);
 
     expect(mockOnSelectTemplate).toHaveBeenCalledWith(mockTemplates[0]);
@@ -219,9 +219,9 @@ describe('TemplateSelector', () => {
     );
 
     // Find templates by their text and verify they have icons (emojis)
-    const waterCard = screen.getByText('Bottled Water').closest('button');
-    const foodCard = screen.getByText('Canned Beans').closest('button');
-    const medicalCard = screen.getByText('First Aid Kit').closest('button');
+    const waterCard = screen.getByText('bottled-water').closest('button');
+    const foodCard = screen.getByText('canned-beans').closest('button');
+    const medicalCard = screen.getByText('first-aid-kit').closest('button');
 
     expect(waterCard).toHaveTextContent('💧');
     expect(foodCard).toHaveTextContent('🍽️'); // Food category uses fork/knife icon
@@ -241,7 +241,7 @@ describe('TemplateSelector', () => {
     const searchInput = screen.getByLabelText('templateSelector.searchLabel');
     fireEvent.change(searchInput, { target: { value: 'WATER' } });
 
-    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
+    expect(screen.getByText('bottled-water')).toBeInTheDocument();
   });
 
   it('should pre-select category when initialCategoryId is provided', () => {
@@ -256,9 +256,9 @@ describe('TemplateSelector', () => {
     );
 
     // Should only show food templates
-    expect(screen.queryByText('Bottled Water')).not.toBeInTheDocument();
-    expect(screen.getByText('Canned Beans')).toBeInTheDocument();
-    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
+    expect(screen.queryByText('bottled-water')).not.toBeInTheDocument();
+    expect(screen.getByText('canned-beans')).toBeInTheDocument();
+    expect(screen.queryByText('first-aid-kit')).not.toBeInTheDocument();
 
     // Category select should have food selected
     const categorySelect = screen.getByLabelText(

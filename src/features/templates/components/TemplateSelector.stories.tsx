@@ -8,6 +8,12 @@ const meta = {
   component: TemplateSelector,
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'Displays a searchable, filterable list of recommended item templates for adding to inventory.',
+      },
+    },
   },
   argTypes: {
     onSelectTemplate: { action: 'template selected' },
@@ -25,6 +31,14 @@ export const AllTemplates: Story = {
     onSelectTemplate: () => {},
     onSelectCustom: () => {},
   },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows full list of all 70 recommended templates with search and category filtering.',
+      },
+    },
+  },
 };
 
 export const FewTemplates: Story = {
@@ -33,6 +47,13 @@ export const FewTemplates: Story = {
     categories: STANDARD_CATEGORIES,
     onSelectTemplate: () => {},
     onSelectCustom: () => {},
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows a small subset of templates for compact display testing.',
+      },
+    },
   },
 };
 
@@ -45,6 +66,14 @@ export const SingleCategory: Story = {
     onSelectTemplate: () => {},
     onSelectCustom: () => {},
   },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows templates filtered to a single category (water & beverages).',
+      },
+    },
+  },
 };
 
 export const Empty: Story = {
@@ -53,5 +82,12 @@ export const Empty: Story = {
     categories: STANDARD_CATEGORIES,
     onSelectTemplate: () => {},
     onSelectCustom: () => {},
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows empty state when no templates match the filter criteria.',
+      },
+    },
   },
 };
