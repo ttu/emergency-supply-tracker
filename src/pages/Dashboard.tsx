@@ -9,7 +9,7 @@ import { useInventory } from '@/shared/hooks/useInventory';
 import { useHousehold } from '@/features/household';
 import { useSettings } from '@/shared/hooks/useSettings';
 import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
-import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   calculatePreparednessScore,
   calculateCategoryPreparedness,

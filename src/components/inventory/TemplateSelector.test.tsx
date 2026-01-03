@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TemplateSelector } from './TemplateSelector';
-import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 import type { RecommendedItemDefinition } from '@/shared/types';
 
 // Mock i18next

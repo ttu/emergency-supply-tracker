@@ -8,7 +8,7 @@ import {
 } from '@/features/household';
 import { useSettings } from '@/shared/hooks/useSettings';
 import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
-import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 import { CategoryNav } from '../components/inventory/CategoryNav';
 import { FilterBar } from '../components/inventory/FilterBar';
 import { ItemList } from '../components/inventory/ItemList';

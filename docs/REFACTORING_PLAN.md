@@ -7,6 +7,41 @@
 
 ## Progress Summary
 
+### ✅ Phase 3.2: Categories Feature Migration - COMPLETED (2026-01-03)
+
+The Categories feature has been migrated to `src/features/categories/`. All 890 tests pass.
+
+**Completed Tasks:**
+
+1. **Created feature directory structure** at `src/features/categories/`:
+   - `data.ts` - STANDARD_CATEGORIES array and getCategoryById function
+   - `data.test.ts` - Unit tests for categories data
+   - `index.ts` - Public API (barrel exports)
+
+2. **Updated all imports** across the codebase to use `@/features/categories`:
+   - `src/pages/Dashboard.tsx`
+   - `src/pages/Inventory.tsx`
+   - `src/shared/contexts/InventoryProvider.tsx`
+   - `src/shared/utils/dashboard/alerts.ts`
+   - `src/components/settings/ShoppingListExport.tsx`
+   - `src/components/inventory/TemplateSelector.test.tsx`, `.stories.tsx`
+   - `src/components/inventory/CategoryNav.test.tsx`, `.stories.tsx`
+   - `src/components/inventory/ItemForm.test.tsx`, `.stories.tsx`
+
+3. **Created backward-compatible re-export** in data layer:
+   - `src/data/standardCategories.ts` - Re-exports from feature (deprecated)
+   - `src/data/standardCategories.test.ts` - Minimal tests for re-exports
+
+**New Import Pattern:**
+
+```typescript
+// Preferred - Import directly from feature
+import { STANDARD_CATEGORIES, getCategoryById } from '@/features/categories';
+
+// Still works - Backward compatible re-exports (deprecated)
+import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+```
+
 ### ✅ Phase 3.1: Household Feature Migration - COMPLETED (2026-01-03)
 
 The Household feature has been migrated to `src/features/household/`. All 888 tests pass.
@@ -116,7 +151,7 @@ import type { InventoryItem } from '@/shared/types';
 Migrating features one at a time to `src/features/`:
 
 1. ✅ Household (simplest, few dependencies) - COMPLETED
-2. 🔲 Categories (data-focused)
+2. ✅ Categories (data-focused) - COMPLETED
 3. 🔲 Templates (data-focused)
 4. 🔲 Alerts (used by dashboard)
 5. 🔲 Inventory (core feature, many dependencies)

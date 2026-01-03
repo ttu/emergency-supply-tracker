@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemForm } from './ItemForm';
-import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 const meta = {

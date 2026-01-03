@@ -1,5 +1,5 @@
 import type { InventoryItem, HouseholdConfig } from '@/shared/types';
-import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   MS_PER_DAY,
   EXPIRING_SOON_ALERT_DAYS,

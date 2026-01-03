@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TemplateSelector } from './TemplateSelector';
-import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
 
 const meta = {
