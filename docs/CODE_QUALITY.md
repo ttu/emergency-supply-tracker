@@ -10,13 +10,14 @@ This document describes the code quality tools and CI/CD configuration.
 
 ## Tools Overview
 
-| Tool | Purpose | Config File |
-|------|---------|-------------|
-| ESLint | Linting | `eslint.config.js` |
-| Prettier | Formatting | `.prettierrc.json` |
-| TypeScript | Type checking | `tsconfig.json` |
-| Husky | Git hooks | `.husky/` |
-| lint-staged | Pre-commit checks | `package.json` |
+| Tool        | Purpose               | Config File                |
+| ----------- | --------------------- | -------------------------- |
+| ESLint      | Linting               | `eslint.config.js`         |
+| Prettier    | Formatting            | `.prettierrc.json`         |
+| TypeScript  | Type checking         | `tsconfig.json`            |
+| Husky       | Git hooks             | `.husky/`                  |
+| lint-staged | Pre-commit checks     | `package.json`             |
+| SonarQube   | Code quality analysis | `sonar-project.properties` |
 
 ---
 
@@ -47,22 +48,28 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
     },
   },
-  storybook.configs['flat/recommended']
+  storybook.configs['flat/recommended'],
 );
 ```
 
 ### Key Rules
 
-| Rule | Setting | Purpose |
-|------|---------|---------|
-| `react-hooks/rules-of-hooks` | error | Enforce hooks rules |
-| `react-hooks/exhaustive-deps` | warn | Check effect dependencies |
-| `@typescript-eslint/no-unused-vars` | error | No unused variables (except `_` prefixed) |
-| `react-refresh/only-export-components` | warn | Fast refresh compatibility |
+| Rule                                   | Setting | Purpose                                   |
+| -------------------------------------- | ------- | ----------------------------------------- |
+| `react-hooks/rules-of-hooks`           | error   | Enforce hooks rules                       |
+| `react-hooks/exhaustive-deps`          | warn    | Check effect dependencies                 |
+| `@typescript-eslint/no-unused-vars`    | error   | No unused variables (except `_` prefixed) |
+| `react-refresh/only-export-components` | warn    | Fast refresh compatibility                |
 
 ---
 
@@ -83,14 +90,14 @@ export default tseslint.config(
 
 ### Formatting Rules
 
-| Option | Value | Description |
-|--------|-------|-------------|
-| `semi` | true | Always use semicolons |
-| `singleQuote` | true | Use single quotes |
-| `tabWidth` | 2 | 2-space indentation |
-| `trailingComma` | all | Trailing commas everywhere |
-| `printWidth` | 80 | Line width limit |
-| `arrowParens` | always | Parentheses around arrow function params |
+| Option          | Value  | Description                              |
+| --------------- | ------ | ---------------------------------------- |
+| `semi`          | true   | Always use semicolons                    |
+| `singleQuote`   | true   | Use single quotes                        |
+| `tabWidth`      | 2      | 2-space indentation                      |
+| `trailingComma` | all    | Trailing commas everywhere               |
+| `printWidth`    | 80     | Line width limit                         |
+| `arrowParens`   | always | Parentheses around arrow function params |
 
 ---
 
@@ -102,13 +109,8 @@ export default tseslint.config(
 // package.json
 {
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix --max-warnings=0",
-      "prettier --write"
-    ],
-    "*.{json,css,md}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx}": ["eslint --fix --max-warnings=0", "prettier --write"],
+    "*.{json,css,md}": ["prettier --write"]
   }
 }
 ```
@@ -133,6 +135,9 @@ export default tseslint.config(
 │  lint   │  │  test   │  │ storybook │  │   e2e   │
 └────┬────┘  └────┬────┘  └─────┬─────┘  └────┬────┘
      │            │             │             │
+     │       ┌────▼────┐        │             │
+     │       │sonarqube│        │             │
+     │       └─────────┘        │             │
      └────────────┴─────────────┴─────────────┘
                         │
                    ┌────▼────┐
@@ -140,18 +145,91 @@ export default tseslint.config(
                    └─────────┘
 ```
 
-| Job | What It Does |
-|-----|--------------|
-| `lint` | ESLint + Prettier check |
-| `test` | Jest unit/integration tests |
-| `storybook` | Storybook component tests |
-| `e2e` | Playwright E2E tests (Chromium) |
-| `build` | Production build (runs after all pass) |
+| Job         | What It Does                           |
+| ----------- | -------------------------------------- |
+| `lint`      | ESLint + Prettier check                |
+| `test`      | Jest unit/integration tests            |
+| `storybook` | Storybook component tests              |
+| `e2e`       | Playwright E2E tests (Chromium)        |
+| `sonarqube` | Code quality analysis with SonarQube   |
+| `build`     | Production build (runs after all pass) |
 
 ### Triggers
 
 - Push to `main`
 - Pull requests to `main`
+
+---
+
+## SonarQube Configuration
+
+**File:** `sonar-project.properties`
+
+SonarQube provides static code analysis, code coverage tracking, and quality gate enforcement.
+
+### Setup
+
+1. **Create a SonarQube project:**
+   - **SonarCloud** (cloud-hosted): Sign up at [sonarcloud.io](https://sonarcloud.io) and create a project
+   - **Self-hosted**: Configure your SonarQube server and create a project
+
+2. **Add GitHub Secrets:**
+   - `SONAR_TOKEN`: SonarQube authentication token
+     - **SonarCloud**: Generate from Project Settings → Analysis Method → GitHub Actions
+     - **Self-hosted**: Generate from User → My Account → Security
+   - `SONAR_HOST_URL`: SonarQube server URL
+     - **SonarCloud**: `https://sonarcloud.io`
+     - **Self-hosted**: Your SonarQube server URL (e.g., `https://sonarqube.example.com`)
+
+> **Note:** For SonarCloud specifically, you can also use `SonarSource/sonarcloud-github-action` instead of `sonarsource/sonarqube-scan-action`. The current setup works for both SonarCloud and self-hosted SonarQube.
+
+### Configuration
+
+The `sonar-project.properties` file configures:
+
+- Source code paths and exclusions
+- Test code paths
+- Coverage report location (Jest LCOV format)
+- TypeScript configuration
+
+### Coverage Integration
+
+SonarQube automatically reads coverage from Jest:
+
+- Coverage report: `coverage/lcov.info`
+- Generated during the `test` job
+- Uploaded as artifact and downloaded by SonarQube job
+
+### Quality Gates
+
+SonarQube quality gates can be configured in the SonarQube UI to:
+
+- Enforce minimum code coverage thresholds
+- Block PRs with new code smells or security vulnerabilities
+- Track technical debt
+
+### Running Locally
+
+To run SonarQube analysis locally:
+
+```bash
+# Install SonarQube Scanner
+npm install -g sonarqube-scanner
+
+# Run analysis (requires SONAR_TOKEN and SONAR_HOST_URL)
+sonar-scanner
+```
+
+Or use Docker:
+
+```bash
+docker run --rm \
+  -v $(pwd):/usr/src \
+  -w /usr/src \
+  sonarsource/sonar-scanner-cli \
+  -Dsonar.login=$SONAR_TOKEN \
+  -Dsonar.host.url=$SONAR_HOST_URL
+```
 
 ---
 
@@ -182,14 +260,15 @@ npm run validate:all   # validate + E2E tests
 
 ### CI Pipeline (On Push/PR)
 
-| Check | Requirement |
-|-------|-------------|
-| Linting | Zero ESLint warnings |
-| Formatting | Prettier check passes |
-| Tests | All Jest tests pass |
-| Storybook | Component tests pass |
-| E2E | Playwright tests pass |
-| Build | Production build succeeds |
+| Check      | Requirement                  |
+| ---------- | ---------------------------- |
+| Linting    | Zero ESLint warnings         |
+| Formatting | Prettier check passes        |
+| Tests      | All Jest tests pass          |
+| Storybook  | Component tests pass         |
+| E2E        | Playwright tests pass        |
+| SonarQube  | Code quality analysis passes |
+| Build      | Production build succeeds    |
 
 ---
 
@@ -216,23 +295,23 @@ Key strict mode settings:
 
 ### Files
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `ItemCard.tsx` |
-| Hooks | camelCase + use | `useInventory.ts` |
-| Utilities | camelCase | `calculations.ts` |
-| Tests | .test.tsx/.spec.ts | `ItemCard.test.tsx` |
-| Stories | .stories.tsx | `ItemCard.stories.tsx` |
+| Type       | Convention         | Example                |
+| ---------- | ------------------ | ---------------------- |
+| Components | PascalCase         | `ItemCard.tsx`         |
+| Hooks      | camelCase + use    | `useInventory.ts`      |
+| Utilities  | camelCase          | `calculations.ts`      |
+| Tests      | .test.tsx/.spec.ts | `ItemCard.test.tsx`    |
+| Stories    | .stories.tsx       | `ItemCard.stories.tsx` |
 
 ### Code
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `ItemCard` |
-| Functions | camelCase | `calculateQuantity` |
-| Constants | UPPER_SNAKE | `DEFAULT_DAYS` |
-| Interfaces | PascalCase | `InventoryItem` |
-| Types | PascalCase | `ItemStatus` |
+| Type       | Convention  | Example             |
+| ---------- | ----------- | ------------------- |
+| Components | PascalCase  | `ItemCard`          |
+| Functions  | camelCase   | `calculateQuantity` |
+| Constants  | UPPER_SNAKE | `DEFAULT_DAYS`      |
+| Interfaces | PascalCase  | `InventoryItem`     |
+| Types      | PascalCase  | `ItemStatus`        |
 
 ---
 
@@ -274,18 +353,18 @@ type(scope): description
 
 ### Types
 
-| Type | Purpose |
-|------|---------|
-| `feat` | New features or functionality |
-| `fix` | Bug fixes |
+| Type       | Purpose                                  |
+| ---------- | ---------------------------------------- |
+| `feat`     | New features or functionality            |
+| `fix`      | Bug fixes                                |
 | `refactor` | Code refactoring without behavior change |
-| `test` | Adding or updating tests |
-| `docs` | Documentation changes |
-| `style` | Code formatting (Prettier, etc.) |
-| `chore` | Dependencies, tooling, misc tasks |
-| `ci` | CI/CD configuration changes |
-| `build` | Build system or external dependencies |
-| `perf` | Performance improvements |
+| `test`     | Adding or updating tests                 |
+| `docs`     | Documentation changes                    |
+| `style`    | Code formatting (Prettier, etc.)         |
+| `chore`    | Dependencies, tooling, misc tasks        |
+| `ci`       | CI/CD configuration changes              |
+| `build`    | Build system or external dependencies    |
+| `perf`     | Performance improvements                 |
 
 ### Scopes (Optional)
 
@@ -344,11 +423,11 @@ Automatic deployment to GitHub Pages on push to `main`:
 
 ## Browser Support
 
-| Browser | Versions |
-|---------|----------|
-| Chrome | Last 2 |
-| Edge | Last 2 |
-| Firefox | Last 2 |
-| Safari | Last 2 |
-| iOS Safari | 14+ |
+| Browser       | Versions    |
+| ------------- | ----------- |
+| Chrome        | Last 2      |
+| Edge          | Last 2      |
+| Firefox       | Last 2      |
+| Safari        | Last 2      |
+| iOS Safari    | 14+         |
 | Chrome Mobile | Android 10+ |
