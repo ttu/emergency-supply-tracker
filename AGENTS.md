@@ -565,6 +565,19 @@ When working in a Cursor worktree, follow these steps to create a PR:
 https://github.com/owner/repo/pull/new/your-branch-name
 ```
 
+### Checking PR Review Comments and Status
+
+**Note:** If GitHub MCP is available, use MCP tools instead of CLI commands for better integration.
+
+To check PR review comments and status:
+
+- **CI/CD checks:** `gh pr checks <PR_NUMBER> --repo ttu/emergency-supply-tracker`
+- **Review comments:** `gh api repos/ttu/emergency-supply-tracker/pulls/<PR_NUMBER>/comments`
+- **PR summary:** `gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --json comments,reviews`
+- **View in browser:** `gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --web`
+
+**Tip:** CodeRabbit resolved issues are marked with "✅ Addressed". Verify all actionable feedback is addressed before re-review.
+
 ---
 
 ## Getting Help
