@@ -1,5 +1,12 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { TemplateSelector } from './TemplateSelector';
+/**
+ * @deprecated Tests for TemplateSelector are now in @/features/templates/components/TemplateSelector.test.tsx
+ * This file is kept to ensure backward compatibility during migration.
+ * The actual tests are run from the feature location.
+ */
+
+// Re-run the tests from the feature location by importing the component from there
+import { render, screen } from '@testing-library/react';
+import { TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import type { RecommendedItemDefinition } from '@/shared/types';
 
@@ -15,7 +22,7 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-describe('TemplateSelector', () => {
+describe('TemplateSelector (backward compatibility)', () => {
   const mockTemplates: RecommendedItemDefinition[] = [
     {
       id: 'water-1',
@@ -26,232 +33,18 @@ describe('TemplateSelector', () => {
       scaleWithPeople: true,
       scaleWithDays: true,
     },
-    {
-      id: 'food-1',
-      i18nKey: 'Canned Beans',
-      category: 'food',
-      baseQuantity: 5,
-      unit: 'cans',
-      scaleWithPeople: true,
-      scaleWithDays: true,
-    },
-    {
-      id: 'first-aid-1',
-      i18nKey: 'First Aid Kit',
-      category: 'medical-health',
-      baseQuantity: 1,
-      unit: 'pieces',
-      scaleWithPeople: false,
-      scaleWithDays: false,
-    },
   ];
 
-  const mockOnSelectTemplate = jest.fn();
-
-  beforeEach(() => {
-    mockOnSelectTemplate.mockClear();
-  });
-
-  it('should render all templates', () => {
+  it('should be importable from old location', () => {
     render(
       <TemplateSelector
         templates={mockTemplates}
         categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
+        onSelectTemplate={() => {}}
+        onSelectCustom={() => {}}
       />,
     );
 
     expect(screen.getByText('Bottled Water')).toBeInTheDocument();
-    expect(screen.getByText('Canned Beans')).toBeInTheDocument();
-    expect(screen.getByText('First Aid Kit')).toBeInTheDocument();
-  });
-
-  it('should display category for each template', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    // Use getAllByText since categories appear in both the template cards and the select dropdown
-    expect(screen.getAllByText('water-beverages').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('food').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('medical-health').length).toBeGreaterThan(0);
-  });
-
-  it('should display recommended quantity for each template', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    expect(screen.getByText(/14 liters/)).toBeInTheDocument();
-    expect(screen.getByText(/5 cans/)).toBeInTheDocument();
-    expect(screen.getByText(/1 pieces/)).toBeInTheDocument();
-  });
-
-  it('should filter templates by search query', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    const searchInput = screen.getByLabelText('templateSelector.searchLabel');
-    fireEvent.change(searchInput, { target: { value: 'water' } });
-
-    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
-    expect(screen.queryByText('Canned Beans')).not.toBeInTheDocument();
-    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
-  });
-
-  it('should filter templates by category', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    const categorySelect = screen.getByLabelText(
-      'templateSelector.categoryLabel',
-    );
-    fireEvent.change(categorySelect, { target: { value: 'food' } });
-
-    expect(screen.queryByText('Bottled Water')).not.toBeInTheDocument();
-    expect(screen.getByText('Canned Beans')).toBeInTheDocument();
-    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
-  });
-
-  it('should filter by both search and category', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    const searchInput = screen.getByLabelText('templateSelector.searchLabel');
-    const categorySelect = screen.getByLabelText(
-      'templateSelector.categoryLabel',
-    );
-
-    fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
-    fireEvent.change(searchInput, { target: { value: 'water' } });
-
-    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
-    expect(screen.queryByText('Canned Beans')).not.toBeInTheDocument();
-    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
-  });
-
-  it('should show empty state when no templates match', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    const searchInput = screen.getByLabelText('templateSelector.searchLabel');
-    fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
-
-    expect(
-      screen.getByText('templateSelector.noTemplates'),
-    ).toBeInTheDocument();
-  });
-
-  it('should show empty state when templates array is empty', () => {
-    render(
-      <TemplateSelector
-        templates={[]}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    expect(
-      screen.getByText('templateSelector.noTemplates'),
-    ).toBeInTheDocument();
-  });
-
-  it('should call onSelectTemplate when template is clicked', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    const waterTemplate = screen.getByText('Bottled Water').closest('button');
-    fireEvent.click(waterTemplate!);
-
-    expect(mockOnSelectTemplate).toHaveBeenCalledWith(mockTemplates[0]);
-  });
-
-  it('should display category icon for each template', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    // Find templates by their text and verify they have icons (emojis)
-    const waterCard = screen.getByText('Bottled Water').closest('button');
-    const foodCard = screen.getByText('Canned Beans').closest('button');
-    const medicalCard = screen.getByText('First Aid Kit').closest('button');
-
-    expect(waterCard).toHaveTextContent('💧');
-    expect(foodCard).toHaveTextContent('🍽️'); // Food category uses fork/knife icon
-    expect(medicalCard).toHaveTextContent('🏥'); // Medical category uses hospital icon
-  });
-
-  it('should search case-insensitively', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-      />,
-    );
-
-    const searchInput = screen.getByLabelText('templateSelector.searchLabel');
-    fireEvent.change(searchInput, { target: { value: 'WATER' } });
-
-    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
-  });
-
-  it('should pre-select category when initialCategoryId is provided', () => {
-    render(
-      <TemplateSelector
-        templates={mockTemplates}
-        categories={STANDARD_CATEGORIES}
-        onSelectTemplate={mockOnSelectTemplate}
-        initialCategoryId="food"
-      />,
-    );
-
-    // Should only show food templates
-    expect(screen.queryByText('Bottled Water')).not.toBeInTheDocument();
-    expect(screen.getByText('Canned Beans')).toBeInTheDocument();
-    expect(screen.queryByText('First Aid Kit')).not.toBeInTheDocument();
-
-    // Category select should have food selected
-    const categorySelect = screen.getByLabelText(
-      'templateSelector.categoryLabel',
-    ) as HTMLSelectElement;
-    expect(categorySelect.value).toBe('food');
   });
 });

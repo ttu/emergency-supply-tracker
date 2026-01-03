@@ -11,7 +11,7 @@ import {
   getStatusFromPercentage,
 } from '@/shared/utils/calculations/status';
 import { calculateTotalWaterRequired } from '@/shared/utils/calculations/water';
-import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from './preparedness';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,

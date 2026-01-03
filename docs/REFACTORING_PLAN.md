@@ -7,6 +7,51 @@
 
 ## Progress Summary
 
+### ✅ Phase 3.3: Templates Feature Migration - COMPLETED (2026-01-03)
+
+The Templates feature has been migrated to `src/features/templates/`. All 891 tests pass.
+
+**Completed Tasks:**
+
+1. **Created feature directory structure** at `src/features/templates/`:
+   - `data.ts` - RECOMMENDED_ITEMS array and helper functions (getRecommendedItemById, getRecommendedItemsByCategory)
+   - `components/TemplateSelector.tsx` - TemplateSelector component
+   - `components/TemplateSelector.module.css` - Component styles
+   - `components/TemplateSelector.test.tsx` - Component tests
+   - `components/TemplateSelector.stories.tsx` - Storybook stories
+   - `components/index.ts` - Components barrel export
+   - `index.ts` - Public API (barrel exports)
+
+2. **Updated all imports** across the codebase to use `@/features/templates`:
+   - `src/pages/Inventory.test.tsx`
+   - `src/shared/contexts/RecommendedItemsProvider.tsx`, `.test.tsx`
+   - `src/shared/hooks/useAlerts.ts`
+   - `src/shared/utils/calculations/water.ts`
+   - `src/shared/utils/dashboard/preparedness.ts`
+   - `src/shared/utils/dashboard/categoryStatus.ts`
+   - `src/components/onboarding/Onboarding.tsx`
+   - `src/components/onboarding/QuickSetupScreen.tsx`
+   - `src/components/settings/DisabledRecommendations.tsx`
+   - `src/components/settings/OverriddenRecommendations.tsx`
+
+3. **Created backward-compatible re-exports**:
+   - `src/data/recommendedItems.ts` - Re-exports from feature (deprecated)
+   - `src/components/inventory/TemplateSelector.tsx` - Re-exports component from feature
+   - `src/components/inventory/TemplateSelector.test.tsx` - Minimal backward compatibility test
+   - `src/components/inventory/TemplateSelector.stories.tsx` - Re-exports stories from feature
+
+**New Import Pattern:**
+
+```typescript
+// Preferred - Import directly from feature
+import { RECOMMENDED_ITEMS, TemplateSelector } from '@/features/templates';
+import { getRecommendedItemById } from '@/features/templates';
+
+// Still works - Backward compatible re-exports (deprecated)
+import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { TemplateSelector } from '@/components/inventory/TemplateSelector';
+```
+
 ### ✅ Phase 3.2: Categories Feature Migration - COMPLETED (2026-01-03)
 
 The Categories feature has been migrated to `src/features/categories/`. All 890 tests pass.
@@ -152,7 +197,7 @@ Migrating features one at a time to `src/features/`:
 
 1. ✅ Household (simplest, few dependencies) - COMPLETED
 2. ✅ Categories (data-focused) - COMPLETED
-3. 🔲 Templates (data-focused)
+3. ✅ Templates (data-focused) - COMPLETED
 4. 🔲 Alerts (used by dashboard)
 5. 🔲 Inventory (core feature, many dependencies)
 6. 🔲 Dashboard (depends on inventory, alerts)

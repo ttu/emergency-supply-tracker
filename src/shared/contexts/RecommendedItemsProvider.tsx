@@ -12,7 +12,7 @@ import type {
   ImportedRecommendedItem,
   LocalizedNames,
 } from '@/shared/types';
-import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   getAppData,
   saveAppData,

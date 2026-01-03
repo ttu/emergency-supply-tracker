@@ -7,7 +7,7 @@ import type { HouseholdData } from './HouseholdForm';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
-import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { HOUSEHOLD_DEFAULTS } from '@/features/household';
 
 export interface OnboardingProps {
