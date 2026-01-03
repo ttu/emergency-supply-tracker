@@ -567,39 +567,16 @@ https://github.com/owner/repo/pull/new/your-branch-name
 
 ### Checking PR Review Comments and Status
 
-To check open issues and review comments on a pull request (e.g., from CodeRabbit or human reviewers):
+**Note:** If GitHub MCP is available, use MCP tools instead of CLI commands for better integration.
 
-1. **Check all CI/CD status checks:**
+To check PR review comments and status:
 
-   ```bash
-   gh pr checks <PR_NUMBER> --repo ttu/emergency-supply-tracker
-   ```
+- **CI/CD checks:** `gh pr checks <PR_NUMBER> --repo ttu/emergency-supply-tracker`
+- **Review comments:** `gh api repos/ttu/emergency-supply-tracker/pulls/<PR_NUMBER>/comments`
+- **PR summary:** `gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --json comments,reviews`
+- **View in browser:** `gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --web`
 
-   This shows the status of all automated checks (build, tests, linting, etc.).
-
-2. **Get PR review comments (inline code comments):**
-
-   ```bash
-   gh api repos/ttu/emergency-supply-tracker/pulls/<PR_NUMBER>/comments
-   ```
-
-   This returns JSON with all review comments. Look for `body` field to see comment content and check if issues are marked as resolved (e.g., "✅ Addressed").
-
-3. **Get PR summary with reviews:**
-
-   ```bash
-   gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --json comments,reviews
-   ```
-
-   This provides a summary of PR comments and review status.
-
-4. **View PR in browser:**
-
-   ```bash
-   gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --web
-   ```
-
-**Tip:** When using CodeRabbit, resolved issues are typically marked with "✅ Addressed" in the comment thread. Check that all actionable feedback has been addressed before requesting re-review.
+**Tip:** CodeRabbit resolved issues are marked with "✅ Addressed". Verify all actionable feedback is addressed before re-review.
 
 ---
 
