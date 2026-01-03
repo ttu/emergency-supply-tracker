@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Dashboard } from './Dashboard';
+import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
 import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';

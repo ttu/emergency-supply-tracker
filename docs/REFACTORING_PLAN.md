@@ -1,11 +1,61 @@
 # Feature Slices Architecture Refactoring Plan
 
-> **Status:** Phase 2 Complete - Shared Code Established
+> **Status:** Phase 3 In Progress - Feature Migration
 > **Created:** 2025-01-27
 > **Last Updated:** 2026-01-03
 > **Purpose:** Migrate from responsibility-based to feature slices architecture
 
 ## Progress Summary
+
+### ✅ Phase 3.1: Household Feature Migration - COMPLETED (2026-01-03)
+
+The Household feature has been migrated to `src/features/household/`. All 888 tests pass.
+
+**Completed Tasks:**
+
+1. **Created feature directory structure** at `src/features/household/`:
+   - `context.ts` - HouseholdContext and HouseholdContextValue type
+   - `provider.tsx` - HouseholdProvider component
+   - `hooks/useHousehold.ts` - useHousehold hook
+   - `utils/calculations.ts` - calculateHouseholdMultiplier, calculateRecommendedQuantity
+   - `utils/calculations.test.ts` - Unit tests for calculations
+   - `constants.ts` - HOUSEHOLD_DEFAULTS, HOUSEHOLD_LIMITS
+   - `index.ts` - Public API (barrel exports)
+
+2. **Updated all imports** across the codebase to use `@/features/household`:
+   - `src/main.tsx`
+   - `src/App.tsx`, `src/App.test.tsx`, `src/App.stories.tsx`
+   - `src/pages/Dashboard.tsx`, `Dashboard.test.tsx`, `Dashboard.stories.tsx`
+   - `src/pages/Inventory.tsx`, `Inventory.test.tsx`, `Inventory.stories.tsx`
+   - `src/pages/Settings.test.tsx`, `Settings.stories.tsx`
+   - `src/shared/hooks/useAlerts.ts`, `useAlerts.test.tsx`
+   - `src/components/settings/HouseholdForm.tsx`, `.test.tsx`, `.stories.tsx`
+   - `src/components/settings/HiddenAlerts.tsx`, `.test.tsx`
+   - `src/components/settings/OverriddenRecommendations.test.tsx`
+   - `src/components/onboarding/Onboarding.tsx`
+   - `src/components/onboarding/HouseholdForm.tsx`
+
+3. **Created backward-compatible re-exports** in shared code:
+   - `src/shared/hooks/useHousehold.ts` - Re-exports from feature
+   - `src/shared/contexts/HouseholdContext.ts` - Re-exports from feature
+   - `src/shared/contexts/HouseholdProvider.tsx` - Re-exports from feature
+   - `src/shared/constants/household.ts` - Re-exports from feature
+   - `src/shared/utils/calculations/household.ts` - Re-exports from feature
+
+**New Import Pattern:**
+
+```typescript
+// Preferred - Import directly from feature
+import {
+  useHousehold,
+  HouseholdProvider,
+  calculateRecommendedQuantity,
+} from '@/features/household';
+
+// Still works - Backward compatible re-exports
+import { useHousehold } from '@/shared/hooks/useHousehold';
+import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+```
 
 ### ✅ Phase 2: Shared Code First - COMPLETED (2026-01-03)
 
@@ -61,18 +111,18 @@ import { Button } from '@/shared/components/Button';
 import type { InventoryItem } from '@/shared/types';
 ```
 
-### 🔲 Phase 3: Feature Migration - NOT STARTED
+### 🔄 Phase 3: Feature Migration - IN PROGRESS
 
-Next steps: Migrate features one at a time to `src/features/`:
+Migrating features one at a time to `src/features/`:
 
-1. Household (simplest, few dependencies)
-2. Categories (data-focused)
-3. Templates (data-focused)
-4. Alerts (used by dashboard)
-5. Inventory (core feature, many dependencies)
-6. Dashboard (depends on inventory, alerts)
-7. Settings (depends on household, inventory)
-8. Onboarding (depends on household)
+1. ✅ Household (simplest, few dependencies) - COMPLETED
+2. 🔲 Categories (data-focused)
+3. 🔲 Templates (data-focused)
+4. 🔲 Alerts (used by dashboard)
+5. 🔲 Inventory (core feature, many dependencies)
+6. 🔲 Dashboard (depends on inventory, alerts)
+7. 🔲 Settings (depends on household, inventory)
+8. 🔲 Onboarding (depends on household)
 
 ---
 

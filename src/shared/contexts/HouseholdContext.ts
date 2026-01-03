@@ -1,12 +1,3 @@
-import { createContext } from 'react';
-import type { HouseholdConfig } from '@/shared/types';
-
-export interface HouseholdContextValue {
-  household: HouseholdConfig;
-  updateHousehold: (updates: Partial<HouseholdConfig>) => void;
-  setPreset: (preset: 'single' | 'couple' | 'family') => void;
-}
-
-export const HouseholdContext = createContext<
-  HouseholdContextValue | undefined
->(undefined);
+// Re-export from feature slice for backward compatibility
+export { HouseholdContext } from '@/features/household';
+export type { HouseholdContextValue } from '@/features/household';

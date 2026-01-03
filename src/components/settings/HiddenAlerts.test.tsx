@@ -5,10 +5,7 @@ import {
   InventoryContext,
   InventoryContextValue,
 } from '@/shared/contexts/InventoryContext';
-import {
-  HouseholdContext,
-  HouseholdContextValue,
-} from '@/shared/contexts/HouseholdContext';
+import { HouseholdContext, HouseholdContextValue } from '@/features/household';
 import {
   createMockInventoryItem,
   createMockHousehold,

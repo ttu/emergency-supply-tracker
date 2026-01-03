@@ -8,7 +8,7 @@ import { QuickSetupScreen } from './QuickSetupScreen';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
 import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
-import { HOUSEHOLD_DEFAULTS } from '@/shared/constants/household';
+import { HOUSEHOLD_DEFAULTS } from '@/features/household';
 
 export interface OnboardingProps {
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;

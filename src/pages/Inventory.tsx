@@ -1,7 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/shared/hooks/useInventory';
-import { useHousehold } from '@/shared/hooks/useHousehold';
+import {
+  useHousehold,
+  calculateRecommendedQuantity,
+  calculateHouseholdMultiplier,
+} from '@/features/household';
 import { useSettings } from '@/shared/hooks/useSettings';
 import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
 import { STANDARD_CATEGORIES } from '@/data/standardCategories';
@@ -18,10 +22,6 @@ import type {
   ItemStatus,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import {
-  calculateRecommendedQuantity,
-  calculateHouseholdMultiplier,
-} from '@/shared/utils/calculations/household';
 import { calculateItemStatus } from '@/shared/utils/calculations/status';
 import {
   getCategoryDisplayStatus,

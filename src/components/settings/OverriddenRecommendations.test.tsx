@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { OverriddenRecommendations } from './OverriddenRecommendations';
+import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
 import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 import {
   createMockInventoryItem,
