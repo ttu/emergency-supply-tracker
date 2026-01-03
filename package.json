@@ -25,6 +25,7 @@
     "test:all": "npm run test && npm run test:storybook",
     "validate": "npm run format:check && npm run lint && npm test && npm run build",
     "validate:all": "npm run format:check && npm run lint && npm test && npm run build && npm run test:e2e",
+    "validate:i18n": "tsx scripts/validate-i18n.ts",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -69,6 +70,7 @@
     "prettier": "^3.7.4",
     "storybook": "^10.1.10",
     "ts-jest": "^29.4.6",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.1",
     "vite": "^7.3.0",
