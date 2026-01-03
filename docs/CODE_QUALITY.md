@@ -3,6 +3,8 @@
 > **Version:** 1.0.0
 > **Last Updated:** 2025-12-28
 > **Source of Truth:** `eslint.config.js`, `.prettierrc.json`, `.github/workflows/`
+>
+> **Note:** SonarCloud configuration is managed externally via the [SonarCloud website](https://sonarcloud.io) and is not stored in this repository.
 
 This document describes the code quality tools and CI/CD configuration.
 
