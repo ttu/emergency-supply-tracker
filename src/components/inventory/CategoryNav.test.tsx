@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { CategoryNav } from './CategoryNav';
-import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

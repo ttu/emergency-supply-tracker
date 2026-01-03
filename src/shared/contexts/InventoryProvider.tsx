@@ -1,6 +1,6 @@
 import { useState, useEffect, ReactNode, useCallback } from 'react';
 import type { InventoryItem, Category } from '@/shared/types';
-import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   getAppData,
   saveAppData,
