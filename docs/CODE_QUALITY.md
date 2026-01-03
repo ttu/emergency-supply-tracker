@@ -3,6 +3,8 @@
 > **Version:** 1.0.0
 > **Last Updated:** 2025-12-28
 > **Source of Truth:** `eslint.config.js`, `.prettierrc.json`, `.github/workflows/`
+>
+> **Note:** SonarCloud configuration is managed externally via the [SonarCloud website](https://sonarcloud.io) and is not stored in this repository.
 
 This document describes the code quality tools and CI/CD configuration.
 
@@ -10,13 +12,14 @@ This document describes the code quality tools and CI/CD configuration.
 
 ## Tools Overview
 
-| Tool | Purpose | Config File |
-|------|---------|-------------|
-| ESLint | Linting | `eslint.config.js` |
-| Prettier | Formatting | `.prettierrc.json` |
-| TypeScript | Type checking | `tsconfig.json` |
-| Husky | Git hooks | `.husky/` |
-| lint-staged | Pre-commit checks | `package.json` |
+| Tool        | Purpose               | Config File                       |
+| ----------- | --------------------- | --------------------------------- |
+| ESLint      | Linting               | `eslint.config.js`                |
+| Prettier    | Formatting            | `.prettierrc.json`                |
+| TypeScript  | Type checking         | `tsconfig.json`                   |
+| Husky       | Git hooks             | `.husky/`                         |
+| lint-staged | Pre-commit checks     | `package.json`                    |
+| SonarCloud  | Code quality analysis | Configured via SonarCloud website |
 
 ---
 
@@ -47,22 +50,28 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
     },
   },
-  storybook.configs['flat/recommended']
+  storybook.configs['flat/recommended'],
 );
 ```
 
 ### Key Rules
 
-| Rule | Setting | Purpose |
-|------|---------|---------|
-| `react-hooks/rules-of-hooks` | error | Enforce hooks rules |
-| `react-hooks/exhaustive-deps` | warn | Check effect dependencies |
-| `@typescript-eslint/no-unused-vars` | error | No unused variables (except `_` prefixed) |
-| `react-refresh/only-export-components` | warn | Fast refresh compatibility |
+| Rule                                   | Setting | Purpose                                   |
+| -------------------------------------- | ------- | ----------------------------------------- |
+| `react-hooks/rules-of-hooks`           | error   | Enforce hooks rules                       |
+| `react-hooks/exhaustive-deps`          | warn    | Check effect dependencies                 |
+| `@typescript-eslint/no-unused-vars`    | error   | No unused variables (except `_` prefixed) |
+| `react-refresh/only-export-components` | warn    | Fast refresh compatibility                |
 
 ---
 
@@ -83,14 +92,14 @@ export default tseslint.config(
 
 ### Formatting Rules
 
-| Option | Value | Description |
-|--------|-------|-------------|
-| `semi` | true | Always use semicolons |
-| `singleQuote` | true | Use single quotes |
-| `tabWidth` | 2 | 2-space indentation |
-| `trailingComma` | all | Trailing commas everywhere |
-| `printWidth` | 80 | Line width limit |
-| `arrowParens` | always | Parentheses around arrow function params |
+| Option          | Value  | Description                              |
+| --------------- | ------ | ---------------------------------------- |
+| `semi`          | true   | Always use semicolons                    |
+| `singleQuote`   | true   | Use single quotes                        |
+| `tabWidth`      | 2      | 2-space indentation                      |
+| `trailingComma` | all    | Trailing commas everywhere               |
+| `printWidth`    | 80     | Line width limit                         |
+| `arrowParens`   | always | Parentheses around arrow function params |
 
 ---
 
@@ -102,13 +111,8 @@ export default tseslint.config(
 // package.json
 {
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix --max-warnings=0",
-      "prettier --write"
-    ],
-    "*.{json,css,md}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx}": ["eslint --fix --max-warnings=0", "prettier --write"],
+    "*.{json,css,md}": ["prettier --write"]
   }
 }
 ```
@@ -132,7 +136,6 @@ export default tseslint.config(
 ┌─────────┐  ┌─────────┐  ┌───────────┐  ┌─────────┐
 │  lint   │  │  test   │  │ storybook │  │   e2e   │
 └────┬────┘  └────┬────┘  └─────┬─────┘  └────┬────┘
-     │            │             │             │
      └────────────┴─────────────┴─────────────┘
                         │
                    ┌────▼────┐
@@ -140,18 +143,37 @@ export default tseslint.config(
                    └─────────┘
 ```
 
-| Job | What It Does |
-|-----|--------------|
-| `lint` | ESLint + Prettier check |
-| `test` | Jest unit/integration tests |
-| `storybook` | Storybook component tests |
-| `e2e` | Playwright E2E tests (Chromium) |
-| `build` | Production build (runs after all pass) |
+| Job         | What It Does                           |
+| ----------- | -------------------------------------- |
+| `lint`      | ESLint + Prettier check                |
+| `test`      | Jest unit/integration tests            |
+| `storybook` | Storybook component tests              |
+| `e2e`       | Playwright E2E tests (Chromium)        |
+| `build`     | Production build (runs after all pass) |
 
 ### Triggers
 
 - Push to `main`
 - Pull requests to `main`
+
+---
+
+## SonarCloud Integration
+
+SonarCloud provides static code analysis, code coverage tracking, and quality gate enforcement.
+
+> **Note:** SonarCloud is configured directly through the [SonarCloud website](https://sonarcloud.io). No local configuration files are required. The integration is set up via the SonarCloud project settings, which automatically connects to the GitHub repository and runs analysis on each push and pull request.
+
+### Quality Gates
+
+SonarCloud quality gates are configured in the SonarCloud project settings and can:
+
+- Enforce minimum code coverage thresholds
+- Block PRs with new code smells or security vulnerabilities
+- Track technical debt
+- Monitor code quality metrics over time
+
+Quality gate status is displayed directly in pull requests via SonarCloud's GitHub integration.
 
 ---
 
@@ -182,14 +204,18 @@ npm run validate:all   # validate + E2E tests
 
 ### CI Pipeline (On Push/PR)
 
-| Check | Requirement |
-|-------|-------------|
-| Linting | Zero ESLint warnings |
-| Formatting | Prettier check passes |
-| Tests | All Jest tests pass |
-| Storybook | Component tests pass |
-| E2E | Playwright tests pass |
-| Build | Production build succeeds |
+| Check      | Requirement               |
+| ---------- | ------------------------- |
+| Linting    | Zero ESLint warnings      |
+| Formatting | Prettier check passes     |
+| Tests      | All Jest tests pass       |
+| Storybook  | Component tests pass      |
+| E2E        | Playwright tests pass     |
+| Build      | Production build succeeds |
+
+### SonarCloud Quality Gates (On Push/PR)
+
+SonarCloud quality gates run automatically via the SonarCloud GitHub integration. Quality gate status is displayed in pull requests and can block merges if configured to do so. Configure quality gate rules in the SonarCloud project settings.
 
 ---
 
@@ -216,23 +242,23 @@ Key strict mode settings:
 
 ### Files
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `ItemCard.tsx` |
-| Hooks | camelCase + use | `useInventory.ts` |
-| Utilities | camelCase | `calculations.ts` |
-| Tests | .test.tsx/.spec.ts | `ItemCard.test.tsx` |
-| Stories | .stories.tsx | `ItemCard.stories.tsx` |
+| Type       | Convention         | Example                |
+| ---------- | ------------------ | ---------------------- |
+| Components | PascalCase         | `ItemCard.tsx`         |
+| Hooks      | camelCase + use    | `useInventory.ts`      |
+| Utilities  | camelCase          | `calculations.ts`      |
+| Tests      | .test.tsx/.spec.ts | `ItemCard.test.tsx`    |
+| Stories    | .stories.tsx       | `ItemCard.stories.tsx` |
 
 ### Code
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `ItemCard` |
-| Functions | camelCase | `calculateQuantity` |
-| Constants | UPPER_SNAKE | `DEFAULT_DAYS` |
-| Interfaces | PascalCase | `InventoryItem` |
-| Types | PascalCase | `ItemStatus` |
+| Type       | Convention  | Example             |
+| ---------- | ----------- | ------------------- |
+| Components | PascalCase  | `ItemCard`          |
+| Functions  | camelCase   | `calculateQuantity` |
+| Constants  | UPPER_SNAKE | `DEFAULT_DAYS`      |
+| Interfaces | PascalCase  | `InventoryItem`     |
+| Types      | PascalCase  | `ItemStatus`        |
 
 ---
 
@@ -274,18 +300,18 @@ type(scope): description
 
 ### Types
 
-| Type | Purpose |
-|------|---------|
-| `feat` | New features or functionality |
-| `fix` | Bug fixes |
+| Type       | Purpose                                  |
+| ---------- | ---------------------------------------- |
+| `feat`     | New features or functionality            |
+| `fix`      | Bug fixes                                |
 | `refactor` | Code refactoring without behavior change |
-| `test` | Adding or updating tests |
-| `docs` | Documentation changes |
-| `style` | Code formatting (Prettier, etc.) |
-| `chore` | Dependencies, tooling, misc tasks |
-| `ci` | CI/CD configuration changes |
-| `build` | Build system or external dependencies |
-| `perf` | Performance improvements |
+| `test`     | Adding or updating tests                 |
+| `docs`     | Documentation changes                    |
+| `style`    | Code formatting (Prettier, etc.)         |
+| `chore`    | Dependencies, tooling, misc tasks        |
+| `ci`       | CI/CD configuration changes              |
+| `build`    | Build system or external dependencies    |
+| `perf`     | Performance improvements                 |
 
 ### Scopes (Optional)
 
@@ -344,11 +370,11 @@ Automatic deployment to GitHub Pages on push to `main`:
 
 ## Browser Support
 
-| Browser | Versions |
-|---------|----------|
-| Chrome | Last 2 |
-| Edge | Last 2 |
-| Firefox | Last 2 |
-| Safari | Last 2 |
-| iOS Safari | 14+ |
+| Browser       | Versions    |
+| ------------- | ----------- |
+| Chrome        | Last 2      |
+| Edge          | Last 2      |
+| Firefox       | Last 2      |
+| Safari        | Last 2      |
+| iOS Safari    | 14+         |
 | Chrome Mobile | Android 10+ |
