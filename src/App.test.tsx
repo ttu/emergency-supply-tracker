@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 import { createMockAppData } from '@/shared/utils/test/factories';
 import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
-import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
 import { ThemeApplier } from './components/ThemeApplier';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';

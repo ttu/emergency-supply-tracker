@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Inventory, InventoryProps } from './Inventory';
+import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
 import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
 

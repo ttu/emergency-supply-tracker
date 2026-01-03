@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { HouseholdForm } from './HouseholdForm';
-import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { HouseholdProvider } from '@/features/household';
 
 const meta = {
   title: 'Settings/HouseholdForm',

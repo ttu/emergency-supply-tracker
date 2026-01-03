@@ -2,10 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/shared/components/Input';
 import { Button } from '@/shared/components/Button';
-import {
-  HOUSEHOLD_DEFAULTS,
-  HOUSEHOLD_LIMITS,
-} from '@/shared/constants/household';
+import { HOUSEHOLD_DEFAULTS, HOUSEHOLD_LIMITS } from '@/features/household';
 import styles from './HouseholdForm.module.css';
 
 function parseIntOrDefault(value: string, defaultValue: number): number {

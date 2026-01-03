@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { HouseholdForm } from './HouseholdForm';
-import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { HouseholdProvider } from '@/features/household';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

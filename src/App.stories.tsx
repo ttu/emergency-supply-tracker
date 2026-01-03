@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import App from './App';
 import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
-import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
 
 const meta = {

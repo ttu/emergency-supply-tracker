@@ -1,12 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Inventory } from './Inventory';
+import {
+  HouseholdProvider,
+  calculateRecommendedQuantity,
+} from '@/features/household';
 import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
 import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
 import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
-import { calculateRecommendedQuantity } from '@/shared/utils/calculations/household';
 import { calculateCategoryPreparedness } from '@/shared/utils/dashboard/preparedness';
 import {
   createMockInventoryItem,

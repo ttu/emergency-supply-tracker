@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import { useInventory } from './useInventory';
-import { useHousehold } from './useHousehold';
+import {
+  useHousehold,
+  calculateRecommendedQuantity,
+} from '@/features/household';
 import { getItemStatus } from '@/shared/utils/calculations/status';
-import { calculateRecommendedQuantity } from '@/shared/utils/calculations/household';
 import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
 
 export interface Alert {
