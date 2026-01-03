@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next';
-import { useSettings } from '../../hooks/useSettings';
+import { useSettings } from '@/shared/hooks/useSettings';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '../../utils/constants';
+} from '@/shared/utils/constants';
 import styles from './NutritionSettings.module.css';
 
 // Validation limits

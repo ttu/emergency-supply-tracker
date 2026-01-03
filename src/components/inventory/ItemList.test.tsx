@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ItemList } from './ItemList';
-import type { InventoryItem } from '../../types';
+import type { InventoryItem } from '@/shared/types';
 
 // Mock ItemCard component
 jest.mock('./ItemCard', () => ({

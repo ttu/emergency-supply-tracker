@@ -2,34 +2,34 @@ import { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DashboardHeader } from '../components/dashboard/DashboardHeader';
 import { AlertBanner } from '../components/dashboard/AlertBanner';
-import type { Alert } from '../components/dashboard/AlertBanner';
+import type { Alert } from '@/shared/utils/dashboard/alerts';
 import { CategoryGrid } from '../components/dashboard/CategoryGrid';
-import { Button } from '../components/common/Button';
-import { useInventory } from '../hooks/useInventory';
-import { useHousehold } from '../hooks/useHousehold';
-import { useSettings } from '../hooks/useSettings';
-import { useRecommendedItems } from '../hooks/useRecommendedItems';
-import { STANDARD_CATEGORIES } from '../data/standardCategories';
+import { Button } from '@/shared/components/Button';
+import { useInventory } from '@/shared/hooks/useInventory';
+import { useHousehold } from '@/shared/hooks/useHousehold';
+import { useSettings } from '@/shared/hooks/useSettings';
+import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
+import { STANDARD_CATEGORIES } from '@/data/standardCategories';
 import {
   calculatePreparednessScore,
   calculateCategoryPreparedness,
-} from '../utils/dashboard/preparedness';
+} from '@/shared/utils/dashboard/preparedness';
 import {
   calculateAllCategoryStatuses,
   type CategoryCalculationOptions,
-} from '../utils/dashboard/categoryStatus';
-import { generateDashboardAlerts } from '../utils/dashboard/alerts';
-import { getAppData } from '../utils/storage/localStorage';
+} from '@/shared/utils/dashboard/categoryStatus';
+import { generateDashboardAlerts } from '@/shared/utils/dashboard/alerts';
+import { getAppData } from '@/shared/utils/storage/localStorage';
 import {
   shouldShowBackupReminder,
   dismissBackupReminder,
-} from '../utils/dashboard/backupReminder';
+} from '@/shared/utils/dashboard/backupReminder';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '../utils/constants';
-import type { PageType } from '../components/common/Navigation';
+} from '@/shared/utils/constants';
+import type { PageType } from '@/shared/components/Navigation';
 import styles from './Dashboard.module.css';
 
 export interface DashboardProps {

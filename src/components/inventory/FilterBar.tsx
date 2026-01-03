@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Select } from '../common/Select';
-import { Input } from '../common/Input';
-import type { ItemStatus } from '../../types';
+import { Select } from '@/shared/components/Select';
+import { Input } from '@/shared/components/Input';
+import type { ItemStatus } from '@/shared/types';
 import styles from './FilterBar.module.css';
 
 export interface FilterBarProps {

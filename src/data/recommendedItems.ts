@@ -1,5 +1,5 @@
-import type { RecommendedItemDefinition } from '../types';
-import { DAILY_WATER_PER_PERSON } from '../utils/constants';
+import type { RecommendedItemDefinition } from '@/shared/types';
+import { DAILY_WATER_PER_PERSON } from '@/shared/utils/constants';
 
 export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // ===================================================================

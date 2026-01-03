@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CategoryNav } from './CategoryNav';
-import { STANDARD_CATEGORIES } from '../../data/standardCategories';
+import { STANDARD_CATEGORIES } from '@/data/standardCategories';
 
 const meta = {
   title: 'Components/Inventory/CategoryNav',

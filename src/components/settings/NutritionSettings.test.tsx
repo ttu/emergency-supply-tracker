@@ -1,12 +1,12 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { NutritionSettings } from './NutritionSettings';
-import { SettingsContext } from '../../contexts/SettingsContext';
-import type { UserSettings } from '../../types';
+import { SettingsContext } from '@/shared/contexts/SettingsContext';
+import type { UserSettings } from '@/shared/types';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '../../utils/constants';
+} from '@/shared/utils/constants';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

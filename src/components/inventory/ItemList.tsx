@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { ItemCard } from './ItemCard';
-import type { InventoryItem } from '../../types';
+import type { InventoryItem } from '@/shared/types';
 import styles from './ItemList.module.css';
 
 export interface ItemListProps {

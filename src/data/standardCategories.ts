@@ -1,4 +1,4 @@
-import type { Category, StandardCategoryId } from '../types';
+import type { Category, StandardCategoryId } from '@/shared/types';
 
 export const STANDARD_CATEGORIES: Category[] = [
   {

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ExportButton } from './ExportButton';
-import * as localStorage from '../../utils/storage/localStorage';
-import { createMockAppData } from '../../utils/test/factories';
+import * as localStorage from '@/shared/utils/storage/localStorage';
+import { createMockAppData } from '@/shared/utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -11,7 +11,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 // Mock localStorage utilities
-jest.mock('../../utils/storage/localStorage');
+jest.mock('@/shared/utils/storage/localStorage');
 
 describe('ExportButton', () => {
   beforeEach(() => {

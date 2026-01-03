@@ -10,19 +10,19 @@ jest.mock('react-i18next', () => ({
 
 // Mock useRecommendedItems hook
 const mockImportRecommendedItems = jest.fn();
-jest.mock('../../hooks/useRecommendedItems', () => ({
+jest.mock('@/shared/hooks/useRecommendedItems', () => ({
   useRecommendedItems: () => ({
     importRecommendedItems: mockImportRecommendedItems,
   }),
 }));
 
 // Mock parseRecommendedItemsFile
-jest.mock('../../utils/validation/recommendedItemsValidation', () => ({
+jest.mock('@/shared/utils/validation/recommendedItemsValidation', () => ({
   parseRecommendedItemsFile: jest.fn(),
 }));
 
 // Import the mocked function for test control
-import { parseRecommendedItemsFile } from '../../utils/validation/recommendedItemsValidation';
+import { parseRecommendedItemsFile } from '@/shared/utils/validation/recommendedItemsValidation';
 const mockParseRecommendedItemsFile = parseRecommendedItemsFile as jest.Mock;
 
 describe('ImportRecommendationsButton', () => {

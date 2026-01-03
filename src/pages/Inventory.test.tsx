@@ -1,17 +1,17 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Inventory } from './Inventory';
-import { InventoryProvider } from '../contexts/InventoryProvider';
-import { HouseholdProvider } from '../contexts/HouseholdProvider';
-import { SettingsProvider } from '../contexts/SettingsProvider';
-import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
-import { RECOMMENDED_ITEMS } from '../data/recommendedItems';
-import { calculateRecommendedQuantity } from '../utils/calculations/household';
-import { calculateCategoryPreparedness } from '../utils/dashboard/preparedness';
+import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
+import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
+import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { calculateRecommendedQuantity } from '@/shared/utils/calculations/household';
+import { calculateCategoryPreparedness } from '@/shared/utils/dashboard/preparedness';
 import {
   createMockInventoryItem,
   createMockAppData,
-} from '../utils/test/factories';
+} from '@/shared/utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

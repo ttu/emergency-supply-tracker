@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
-import { createMockAppData } from './utils/test/factories';
-import { SettingsProvider } from './contexts/SettingsProvider';
-import { HouseholdProvider } from './contexts/HouseholdProvider';
-import { InventoryProvider } from './contexts/InventoryProvider';
+import { createMockAppData } from '@/shared/utils/test/factories';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
 import { ThemeApplier } from './components/ThemeApplier';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

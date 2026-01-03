@@ -1,8 +1,8 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import HttpBackend from 'i18next-http-backend';
-import { getInitialLanguage } from '../utils/urlLanguage';
-import { getAppData } from '../utils/storage/localStorage';
+import { getInitialLanguage } from '@/shared/utils/urlLanguage';
+import { getAppData } from '@/shared/utils/storage/localStorage';
 
 // Get base path from Vite's import.meta.env.BASE_URL
 const basePath = import.meta.env.BASE_URL || '/';

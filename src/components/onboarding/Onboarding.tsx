@@ -5,10 +5,10 @@ import { HouseholdPresetSelector } from './HouseholdPresetSelector';
 import { HouseholdForm } from './HouseholdForm';
 import type { HouseholdData } from './HouseholdForm';
 import { QuickSetupScreen } from './QuickSetupScreen';
-import type { HouseholdConfig, InventoryItem } from '../../types';
+import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
-import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
-import { HOUSEHOLD_DEFAULTS } from '../../constants/household';
+import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { HOUSEHOLD_DEFAULTS } from '@/shared/constants/household';
 
 export interface OnboardingProps {
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;

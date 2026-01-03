@@ -2,7 +2,7 @@ import { describe, it, expect, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QuickSetupScreen } from './QuickSetupScreen';
-import type { HouseholdConfig } from '../../types';
+import type { HouseholdConfig } from '@/shared/types';
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({

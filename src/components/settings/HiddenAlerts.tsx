@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '../../hooks/useInventory';
-import { useHousehold } from '../../hooks/useHousehold';
-import { generateDashboardAlerts } from '../../utils/dashboard/alerts';
-import { Button } from '../common/Button';
+import { useInventory } from '@/shared/hooks/useInventory';
+import { useHousehold } from '@/shared/hooks/useHousehold';
+import { generateDashboardAlerts } from '@/shared/utils/dashboard/alerts';
+import { Button } from '@/shared/components/Button';
 import styles from './HiddenAlerts.module.css';
 
 export function HiddenAlerts() {

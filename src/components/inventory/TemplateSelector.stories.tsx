@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TemplateSelector } from './TemplateSelector';
-import { STANDARD_CATEGORIES } from '../../data/standardCategories';
-import { RECOMMENDED_ITEMS } from '../../data/recommendedItems';
+import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
 
 const meta = {
   title: 'Components/Inventory/TemplateSelector',

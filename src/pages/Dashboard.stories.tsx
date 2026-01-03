@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Dashboard } from './Dashboard';
-import { InventoryProvider } from '../contexts/InventoryProvider';
-import { HouseholdProvider } from '../contexts/HouseholdProvider';
-import { SettingsProvider } from '../contexts/SettingsProvider';
-import { RecommendedItemsProvider } from '../contexts/RecommendedItemsProvider';
-import { createMockInventoryItem } from '../utils/test/factories';
+import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
+import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
+import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',

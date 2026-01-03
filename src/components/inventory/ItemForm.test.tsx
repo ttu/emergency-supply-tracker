@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ItemForm } from './ItemForm';
-import { STANDARD_CATEGORIES } from '../../data/standardCategories';
-import { createMockInventoryItem } from '../../utils/test/factories';
+import { STANDARD_CATEGORIES } from '@/data/standardCategories';
+import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

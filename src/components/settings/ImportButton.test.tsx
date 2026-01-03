@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ImportButton } from './ImportButton';
-import * as localStorage from '../../utils/storage/localStorage';
+import * as localStorage from '@/shared/utils/storage/localStorage';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({
@@ -10,7 +10,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 // Mock localStorage utilities
-jest.mock('../../utils/storage/localStorage', () => ({
+jest.mock('@/shared/utils/storage/localStorage', () => ({
   importFromJSON: jest.fn(),
   saveAppData: jest.fn(),
 }));

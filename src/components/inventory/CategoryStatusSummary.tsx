@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '../common/Badge';
-import type { ItemStatus, Unit, InventoryItem } from '../../types';
-import { getStatusVariant } from '../../utils/calculations/status';
+import { Badge } from '@/shared/components/Badge';
+import type { ItemStatus, Unit, InventoryItem } from '@/shared/types';
+import { getStatusVariant } from '@/shared/utils/calculations/status';
 import styles from './CategoryStatusSummary.module.css';
 
 export interface CategoryShortage {

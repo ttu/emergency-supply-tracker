@@ -3,12 +3,12 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import './i18n/config';
 import App from './App.tsx';
-import { InventoryProvider } from './contexts/InventoryProvider';
-import { HouseholdProvider } from './contexts/HouseholdProvider';
-import { SettingsProvider } from './contexts/SettingsProvider';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
+import { HouseholdProvider } from '@/shared/contexts/HouseholdProvider';
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ThemeApplier } from './components/ThemeApplier';
-import * as serviceWorker from './utils/serviceWorker';
+import * as serviceWorker from '@/shared/utils/serviceWorker';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
