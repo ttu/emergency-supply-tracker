@@ -10,14 +10,14 @@ This document describes the code quality tools and CI/CD configuration.
 
 ## Tools Overview
 
-| Tool        | Purpose               | Config File                |
-| ----------- | --------------------- | -------------------------- |
-| ESLint      | Linting               | `eslint.config.js`         |
-| Prettier    | Formatting            | `.prettierrc.json`         |
-| TypeScript  | Type checking         | `tsconfig.json`            |
-| Husky       | Git hooks             | `.husky/`                  |
-| lint-staged | Pre-commit checks     | `package.json`             |
-| SonarQube   | Code quality analysis | `sonar-project.properties` |
+| Tool        | Purpose               | Config File                       |
+| ----------- | --------------------- | --------------------------------- |
+| ESLint      | Linting               | `eslint.config.js`                |
+| Prettier    | Formatting            | `.prettierrc.json`                |
+| TypeScript  | Type checking         | `tsconfig.json`                   |
+| Husky       | Git hooks             | `.husky/`                         |
+| lint-staged | Pre-commit checks     | `package.json`                    |
+| SonarCloud  | Code quality analysis | Configured via SonarCloud website |
 
 ---
 
@@ -134,10 +134,6 @@ export default tseslint.config(
 ┌─────────┐  ┌─────────┐  ┌───────────┐  ┌─────────┐
 │  lint   │  │  test   │  │ storybook │  │   e2e   │
 └────┬────┘  └────┬────┘  └─────┬─────┘  └────┬────┘
-     │            │             │             │
-     │       ┌────▼────┐        │             │
-     │       │sonarqube│        │             │
-     │       └─────────┘        │             │
      └────────────┴─────────────┴─────────────┘
                         │
                    ┌────▼────┐
@@ -151,7 +147,6 @@ export default tseslint.config(
 | `test`      | Jest unit/integration tests            |
 | `storybook` | Storybook component tests              |
 | `e2e`       | Playwright E2E tests (Chromium)        |
-| `sonarqube` | Code quality analysis with SonarQube   |
 | `build`     | Production build (runs after all pass) |
 
 ### Triggers
@@ -161,75 +156,22 @@ export default tseslint.config(
 
 ---
 
-## SonarQube Configuration
+## SonarCloud Integration
 
-**File:** `sonar-project.properties`
+SonarCloud provides static code analysis, code coverage tracking, and quality gate enforcement.
 
-SonarQube provides static code analysis, code coverage tracking, and quality gate enforcement.
-
-### Setup
-
-1. **Create a SonarQube project:**
-   - **SonarCloud** (cloud-hosted): Sign up at [sonarcloud.io](https://sonarcloud.io) and create a project
-   - **Self-hosted**: Configure your SonarQube server and create a project
-
-2. **Add GitHub Secrets:**
-   - `SONAR_TOKEN`: SonarQube authentication token
-     - **SonarCloud**: Generate from Project Settings → Analysis Method → GitHub Actions
-     - **Self-hosted**: Generate from User → My Account → Security
-   - `SONAR_HOST_URL`: SonarQube server URL
-     - **SonarCloud**: `https://sonarcloud.io`
-     - **Self-hosted**: Your SonarQube server URL (e.g., `https://sonarqube.example.com`)
-
-> **Note:** For SonarCloud specifically, you can also use `SonarSource/sonarcloud-github-action` instead of `sonarsource/sonarqube-scan-action`. The current setup works for both SonarCloud and self-hosted SonarQube.
-
-### Configuration
-
-The `sonar-project.properties` file configures:
-
-- Source code paths and exclusions
-- Test code paths
-- Coverage report location (Jest LCOV format)
-- TypeScript configuration
-
-### Coverage Integration
-
-SonarQube automatically reads coverage from Jest:
-
-- Coverage report: `coverage/lcov.info`
-- Generated during the `test` job
-- Uploaded as artifact and downloaded by SonarQube job
+> **Note:** SonarCloud is configured directly through the [SonarCloud website](https://sonarcloud.io). No local configuration files are required. The integration is set up via the SonarCloud project settings, which automatically connects to the GitHub repository and runs analysis on each push and pull request.
 
 ### Quality Gates
 
-SonarQube quality gates can be configured in the SonarQube UI to:
+SonarCloud quality gates are configured in the SonarCloud project settings and can:
 
 - Enforce minimum code coverage thresholds
 - Block PRs with new code smells or security vulnerabilities
 - Track technical debt
+- Monitor code quality metrics over time
 
-### Running Locally
-
-To run SonarQube analysis locally:
-
-```bash
-# Install SonarQube Scanner
-npm install -g sonarqube-scanner
-
-# Run analysis (requires SONAR_TOKEN and SONAR_HOST_URL)
-sonar-scanner
-```
-
-Or use Docker:
-
-```bash
-docker run --rm \
-  -v $(pwd):/usr/src \
-  -w /usr/src \
-  sonarsource/sonar-scanner-cli \
-  -Dsonar.login=$SONAR_TOKEN \
-  -Dsonar.host.url=$SONAR_HOST_URL
-```
+Quality gate status is displayed directly in pull requests via SonarCloud's GitHub integration.
 
 ---
 
@@ -260,15 +202,18 @@ npm run validate:all   # validate + E2E tests
 
 ### CI Pipeline (On Push/PR)
 
-| Check      | Requirement                  |
-| ---------- | ---------------------------- |
-| Linting    | Zero ESLint warnings         |
-| Formatting | Prettier check passes        |
-| Tests      | All Jest tests pass          |
-| Storybook  | Component tests pass         |
-| E2E        | Playwright tests pass        |
-| SonarQube  | Code quality analysis passes |
-| Build      | Production build succeeds    |
+| Check      | Requirement               |
+| ---------- | ------------------------- |
+| Linting    | Zero ESLint warnings      |
+| Formatting | Prettier check passes     |
+| Tests      | All Jest tests pass       |
+| Storybook  | Component tests pass      |
+| E2E        | Playwright tests pass     |
+| Build      | Production build succeeds |
+
+### SonarCloud Quality Gates (On Push/PR)
+
+SonarCloud quality gates run automatically via the SonarCloud GitHub integration. Quality gate status is displayed in pull requests and can block merges if configured to do so. Configure quality gate rules in the SonarCloud project settings.
 
 ---
 
