@@ -4,7 +4,7 @@
  */
 
 import type { InventoryItem, HouseholdConfig } from '@/shared/types';
-import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,

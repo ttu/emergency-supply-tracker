@@ -3,7 +3,7 @@ import type {
   HouseholdConfig,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   MAX_ITEM_SCORE,
   DEFAULT_FULL_PREPAREDNESS,

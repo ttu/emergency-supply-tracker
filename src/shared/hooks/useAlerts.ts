@@ -5,7 +5,7 @@ import {
   calculateRecommendedQuantity,
 } from '@/features/household';
 import { getItemStatus } from '@/shared/utils/calculations/status';
-import { RECOMMENDED_ITEMS } from '@/data/recommendedItems';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 
 export interface Alert {
   id: string;
