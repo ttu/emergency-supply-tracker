@@ -12,17 +12,19 @@ This document describes the code quality tools and CI/CD configuration.
 
 ## Tools Overview
 
-| Tool        | Purpose                 | Config File                        |
-| ----------- | ----------------------- | ---------------------------------- |
-| ESLint      | Linting                 | `eslint.config.js`                 |
-| Prettier    | Formatting              | `.prettierrc.json`                 |
-| TypeScript  | Type checking           | `tsconfig.json`                    |
-| Husky       | Git hooks               | `.husky/`                          |
-| lint-staged | Pre-commit checks       | `package.json`                     |
-| SonarCloud  | Code quality analysis   | Configured via SonarCloud website  |
-| CodeRabbit  | AI code review          | Configured via CodeRabbit website  |
-| Codecov     | Code coverage tracking  | `codecov.yml` + GitHub integration |
-| Vercel      | PR preview environments | Configured via Vercel website      |
+| Tool                 | Purpose                                | Config File                                        |
+| -------------------- | -------------------------------------- | -------------------------------------------------- |
+| ESLint               | Linting                                | `eslint.config.js`                                 |
+| Prettier             | Formatting                             | `.prettierrc.json`                                 |
+| TypeScript           | Type checking                          | `tsconfig.json`                                    |
+| Husky                | Git hooks                              | `.husky/`                                          |
+| lint-staged          | Pre-commit checks                      | `package.json`                                     |
+| jest-axe             | Accessibility testing (Jest/axe)       | `jest.config.js` (or `package.json` jest section)  |
+| @axe-core/playwright | Accessibility testing (Playwright/axe) | `playwright.config.ts` (or `playwright.config.js`) |
+| SonarCloud           | Code quality analysis                  | Configured via SonarCloud website                  |
+| CodeRabbit           | AI code review                         | Configured via CodeRabbit website                  |
+| Codecov              | Code coverage tracking                 | `codecov.yml` + GitHub integration                 |
+| Vercel               | PR preview environments                | Configured via Vercel website                      |
 
 ---
 
