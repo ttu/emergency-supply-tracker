@@ -38,7 +38,7 @@ export function ShoppingListExport() {
 
     // Sort categories and generate list
     Object.keys(byCategory)
-      .sort()
+      .sort((a, b) => a.localeCompare(b))
       .forEach((categoryId) => {
         const category = STANDARD_CATEGORIES.find((c) => c.id === categoryId);
         const categoryName = category

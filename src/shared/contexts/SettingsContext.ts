@@ -1,11 +1,5 @@
-import { createContext } from 'react';
-import type { UserSettings } from '@/shared/types';
-
-export interface SettingsContextValue {
-  settings: UserSettings;
-  updateSettings: (updates: Partial<UserSettings>) => void;
-}
-
-export const SettingsContext = createContext<SettingsContextValue | undefined>(
-  undefined,
-);
+/**
+ * @deprecated Import from '@/features/settings' instead
+ */
+export { SettingsContext } from '@/features/settings';
+export type { SettingsContextValue } from '@/features/settings';

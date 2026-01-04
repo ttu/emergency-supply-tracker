@@ -19,7 +19,7 @@ export function ThemeSelector() {
     updateSettings({ theme });
 
     // Apply theme to document
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.dataset.theme = theme;
   };
 
   const handleHighContrastChange = (e: React.ChangeEvent<HTMLInputElement>) => {

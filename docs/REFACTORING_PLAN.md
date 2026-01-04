@@ -7,6 +7,49 @@
 
 ## Progress Summary
 
+### ✅ Phase 3.7: Settings Feature Migration - COMPLETED (2026-01-04)
+
+The Settings feature has been migrated to `src/features/settings/`. All 879 tests pass.
+
+**Completed Tasks:**
+
+1. **Created feature directory structure** at `src/features/settings/`:
+   - `context.ts` - SettingsContext
+   - `provider.tsx` - SettingsProvider with default settings
+   - `hooks/useSettings.ts` - Settings hook
+   - `hooks/index.ts` - Hooks barrel export
+   - `components/` - All 14 settings components:
+     - ClearDataButton, DebugExport, DisabledRecommendations
+     - ExportButton, ExportRecommendationsButton, HouseholdForm
+     - ImportButton, ImportRecommendationsButton, LanguageSelector
+     - NutritionSettings, OverriddenRecommendations, RecommendationsStatus
+     - ShoppingListExport, ThemeSelector
+   - `components/index.ts` - Components barrel export
+   - `index.ts` - Public API (barrel exports)
+
+2. **Updated all imports** in Settings.tsx to use `@/features/settings`
+
+3. **Created backward-compatible re-exports**:
+   - `src/shared/contexts/SettingsContext.ts` - Re-exports from feature (deprecated)
+   - `src/shared/contexts/SettingsProvider.tsx` - Re-exports from feature (deprecated)
+   - `src/shared/hooks/useSettings.ts` - Re-exports from feature (deprecated)
+
+**New Import Pattern:**
+
+```typescript
+// Preferred - Import directly from feature
+import {
+  SettingsProvider,
+  useSettings,
+  ThemeSelector,
+  LanguageSelector,
+} from '@/features/settings';
+
+// Still works - Backward compatible re-exports (deprecated)
+import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { useSettings } from '@/shared/hooks/useSettings';
+```
+
 ### ✅ Phase 3.6: Dashboard Feature Migration - COMPLETED (2026-01-04)
 
 The Dashboard feature has been migrated to `src/features/dashboard/`. All 879 tests pass.
@@ -263,7 +306,7 @@ Migrating features one at a time to `src/features/`:
 4. ✅ Alerts (used by dashboard) - COMPLETED
 5. ✅ Inventory (core feature, many dependencies) - COMPLETED
 6. ✅ Dashboard (depends on inventory, alerts) - COMPLETED
-7. 🔲 Settings (depends on household, inventory)
+7. ✅ Settings (depends on household, inventory) - COMPLETED
 8. 🔲 Onboarding (depends on household)
 
 ---
