@@ -23,7 +23,9 @@ jest.mock('../components/dashboard/DashboardHeader', () => ({
   ),
 }));
 
-jest.mock('../components/dashboard/AlertBanner', () => ({
+const mockGenerateDashboardAlerts = jest.fn(() => []);
+
+jest.mock('@/features/alerts', () => ({
   AlertBanner: ({
     alerts,
     onDismiss,
@@ -47,6 +49,8 @@ jest.mock('../components/dashboard/AlertBanner', () => ({
       ))}
     </div>
   ),
+  generateDashboardAlerts: (...args: unknown[]) =>
+    mockGenerateDashboardAlerts(...args),
 }));
 
 jest.mock('../components/dashboard/CategoryGrid', () => ({
@@ -89,6 +93,9 @@ describe('Dashboard', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
+    // Reset mock
+    mockGenerateDashboardAlerts.mockReset();
+    mockGenerateDashboardAlerts.mockReturnValue([]);
   });
 
   it('should render dashboard header', () => {
@@ -266,6 +273,16 @@ describe('Dashboard', () => {
   });
 
   it('should show hidden alerts indicator when alerts are dismissed', () => {
+    // Mock generateDashboardAlerts to return an alert that's dismissed
+    mockGenerateDashboardAlerts.mockReturnValue([
+      {
+        id: 'category-out-of-stock-water-beverages',
+        type: 'critical',
+        message: 'No items in stock',
+        itemName: 'Water & Beverages',
+      },
+    ]);
+
     // Set up app data with an out-of-stock item and dismissed alert
     const outOfStockItem = createMockInventoryItem({
       id: '1',

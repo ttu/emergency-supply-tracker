@@ -1,4 +1,5 @@
-import { generateDashboardAlerts, countAlerts, Alert } from './alerts';
+import { generateDashboardAlerts, countAlerts } from './alerts';
+import type { Alert } from '../types';
 import type { InventoryItem, HouseholdConfig } from '@/shared/types';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 

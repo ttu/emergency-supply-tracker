@@ -3,7 +3,7 @@ import { AlertBanner } from './AlertBanner';
 import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 
 const meta = {
-  title: 'Dashboard/AlertBanner',
+  title: 'Features/Alerts/AlertBanner',
   component: AlertBanner,
   parameters: {
     layout: 'padded',

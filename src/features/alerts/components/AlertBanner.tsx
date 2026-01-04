@@ -1,15 +1,7 @@
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Alert, AlertType } from '../types';
 import styles from './AlertBanner.module.css';
-
-export type AlertType = 'critical' | 'warning' | 'info';
-
-export interface Alert {
-  id: string;
-  type: AlertType;
-  message: string;
-  itemName?: string;
-}
 
 export interface AlertBannerProps {
   alerts: Alert[];
@@ -27,6 +19,15 @@ const AlertIcon = ({ type }: { type: AlertType }): ReactNode => {
   }
 };
 
+const getAlertTypeClassName = (type: AlertType): string => {
+  const typeClassMap: Record<AlertType, string> = {
+    critical: styles.alertCritical,
+    warning: styles.alertWarning,
+    info: styles.alertInfo,
+  };
+  return typeClassMap[type];
+};
+
 export const AlertBanner = ({ alerts, onDismiss }: AlertBannerProps) => {
   const { t } = useTranslation();
 
@@ -41,7 +42,7 @@ export const AlertBanner = ({ alerts, onDismiss }: AlertBannerProps) => {
         {alerts.map((alert) => (
           <div
             key={alert.id}
-            className={`${styles.alert} ${styles[`alert${alert.type.charAt(0).toUpperCase()}${alert.type.slice(1)}`]}`}
+            className={`${styles.alert} ${getAlertTypeClassName(alert.type)}`}
           >
             <div className={styles.content}>
               <AlertIcon type={alert.type} />

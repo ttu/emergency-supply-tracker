@@ -8,7 +8,7 @@ import { ImportButton } from '../components/settings/ImportButton';
 import { ShoppingListExport } from '../components/settings/ShoppingListExport';
 import { DebugExport } from '../components/settings/DebugExport';
 import { ClearDataButton } from '../components/settings/ClearDataButton';
-import { HiddenAlerts } from '../components/settings/HiddenAlerts';
+import { HiddenAlerts } from '@/features/alerts';
 import { DisabledRecommendations } from '../components/settings/DisabledRecommendations';
 import { OverriddenRecommendations } from '../components/settings/OverriddenRecommendations';
 import { RecommendationsStatus } from '../components/settings/RecommendationsStatus';

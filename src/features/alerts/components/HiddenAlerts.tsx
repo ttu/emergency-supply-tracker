@@ -2,9 +2,21 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/shared/hooks/useInventory';
 import { useHousehold } from '@/features/household';
-import { generateDashboardAlerts } from '@/shared/utils/dashboard/alerts';
+import { generateDashboardAlerts } from '../utils';
 import { Button } from '@/shared/components/Button';
+import type { AlertType } from '../types';
 import styles from './HiddenAlerts.module.css';
+
+const getAlertIcon = (type: AlertType): string => {
+  switch (type) {
+    case 'critical':
+      return '⚠️';
+    case 'warning':
+      return '⚡';
+    case 'info':
+      return 'ℹ️';
+  }
+};
 
 export function HiddenAlerts() {
   const { t } = useTranslation();
@@ -39,16 +51,12 @@ export function HiddenAlerts() {
       <p className={styles.description}>
         {t('settings.hiddenAlerts.description', { count: hiddenAlerts.length })}
       </p>
-      <ul className={styles.alertsList} role="list">
+      <ul className={styles.alertsList}>
         {hiddenAlerts.map((alert) => (
           <li key={alert.id} className={styles.alertItem}>
             <div className={styles.alertContent}>
               <span className={styles.alertIcon} aria-hidden="true">
-                {alert.type === 'critical'
-                  ? '⚠️'
-                  : alert.type === 'warning'
-                    ? '⚡'
-                    : 'ℹ️'}
+                {getAlertIcon(alert.type)}
               </span>
               <span className={styles.alertMessage}>
                 {alert.itemName && <strong>{alert.itemName}: </strong>}
