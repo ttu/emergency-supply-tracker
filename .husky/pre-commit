@@ -1,4 +1,11 @@
+# Format and lint staged files
 npx lint-staged
+
+# Type-check (catches type errors early)
 npm run type-check
+
+# Run tests (frequent feedback for agents)
 npm test
+
+# Build check (ensures code compiles)
 npm run build
