@@ -433,10 +433,12 @@ Break large features into smaller tasks:
 
 ## Version Control Integration
 
+**Note for AI agents in Cursor:** When creating commits or PRs, use `required_permissions: ['all']` for git operations (`git commit`, `git push`) and GitHub CLI commands (`gh pr create`) to bypass sandbox restrictions. These operations require git write and network access.
+
 ### Commit Message Format
 
 ```
-type(scope): description
+type: description
 
 - Detail 1
 - Detail 2
@@ -444,7 +446,7 @@ type(scope): description
 Refs: #issue-number
 ```
 
-> **Note:** Do NOT add "Co-Authored-By" or "Generated with" footers to commit messages. Keep commits clean and simple.
+> **Note:** Do NOT add "Co-Authored-By" or "Generated with" footers to commit messages. Keep commits clean and simple. Do NOT use scopes in commit messages (e.g., use `feat:` not `feat(scope):`).
 
 **Types:**
 
@@ -458,8 +460,6 @@ Refs: #issue-number
 - `ci`: CI/CD configuration changes
 - `build`: Build system or external dependencies
 - `perf`: Performance improvements
-
-**Scopes (optional):** dashboard, inventory, settings, types, storage, utils, data, ci, deploy, lint
 
 **Examples:**
 
@@ -501,21 +501,23 @@ Step 11: Create TypeScript interfaces
 
 ```
 chore: initialize Vite + React + TypeScript project
-chore(lint): configure ESLint
-feat(types): add TypeScript interfaces for data models
+chore: configure ESLint
+feat: add TypeScript interfaces for data models
 ```
 
 **Type selection guide for implementation steps:**
 
-- Setup/tooling → `chore` (or `chore(scope)`)
-- New functionality → `feat(scope)`
-- Tests → `test` (or `test(scope)`)
+- Setup/tooling → `chore`
+- New functionality → `feat`
+- Tests → `test`
 - Documentation → `docs`
 - Formatting → `style`
 
 ### Creating PR from Cursor Worktree
 
 **Note:** This section applies specifically to Cursor worktrees. Worktrees created with the `new-worktree.sh` script work fine with standard git/gh commands.
+
+**Important - Sandbox Restrictions:** When creating commits or PRs in Cursor, commands that require network access (git push, gh pr create) or git write operations must bypass the sandbox. Always use `required_permissions: ['all']` for these operations to avoid permission errors.
 
 When working in a Cursor worktree, follow these steps to create a PR:
 
@@ -532,6 +534,8 @@ When working in a Cursor worktree, follow these steps to create a PR:
    git commit -m "type: description"
    git push -u origin your-branch-name
    ```
+
+   **Note for AI agents:** When running `git push` or `gh pr create` commands, use `required_permissions: ['all']` to bypass Cursor's sandbox restrictions. These operations require network and git write access.
 
 3. **Verify the remote branch has your commits**:
 
@@ -557,7 +561,9 @@ When working in a Cursor worktree, follow these steps to create a PR:
      --head your-branch-name
    ```
 
-   **Important:** Always specify `--repo`, `--base`, and `--head` flags when working from a worktree, as the GitHub CLI may not correctly detect the branch relationship otherwise.
+   **Important:**
+   - Always specify `--repo`, `--base`, and `--head` flags when working from a worktree, as the GitHub CLI may not correctly detect the branch relationship otherwise.
+   - **For AI agents:** Use `required_permissions: ['all']` when running `gh pr create` to bypass sandbox restrictions.
 
 **Alternative:** If the CLI fails, use the web interface:
 
