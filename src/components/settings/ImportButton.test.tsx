@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { beforeEach, afterEach, jest } from '@jest/globals';
 import { ImportButton } from './ImportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 
@@ -19,10 +20,19 @@ describe('ImportButton', () => {
   const mockImportFromJSON = localStorage.importFromJSON as jest.Mock;
   const mockSaveAppData = localStorage.saveAppData as jest.Mock;
 
+  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+
   beforeEach(() => {
     jest.clearAllMocks();
     global.alert = jest.fn();
     global.confirm = jest.fn(() => true);
+    // Suppress console.error output from expected error handling in tests
+    // This includes errors from window.location.reload() which jsdom doesn't implement
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   it('should render import button', () => {
@@ -155,10 +165,6 @@ describe('ImportButton', () => {
       throw new Error('Parse error');
     });
 
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
-
     render(<ImportButton />);
 
     const fileInput = screen.getByLabelText(
@@ -173,8 +179,6 @@ describe('ImportButton', () => {
     await waitFor(() => {
       expect(global.alert).toHaveBeenCalledWith('settings.import.error');
     });
-
-    consoleSpy.mockRestore();
   });
 
   it('should do nothing when no file selected', () => {

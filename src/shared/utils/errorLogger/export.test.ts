@@ -1,4 +1,11 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from '@jest/globals';
 import {
   generateDebugExport,
   downloadDebugExport,
@@ -8,8 +15,19 @@ import {
 import { info, error } from './logger';
 
 describe('errorLogger export', () => {
+  let consoleInfoSpy: jest.SpiedFunction<typeof console.info>;
+  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+
   beforeEach(() => {
     localStorage.clear();
+    // Suppress console output from logger functions during tests
+    consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleInfoSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   describe('generateDebugExport', () => {

@@ -188,7 +188,12 @@ describe('localStorage utilities', () => {
 
     it('throws error for invalid JSON', () => {
       const invalidJson = '{ invalid json }';
+      // Suppress console.error for this expected error
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       expect(() => importFromJSON(invalidJson)).toThrow();
+      consoleSpy.mockRestore();
     });
 
     it('sets neverExpires to true when expirationDate is null', () => {
