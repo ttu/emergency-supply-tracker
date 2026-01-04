@@ -1,7 +1,7 @@
 # Design Doc: Inventory Management System
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -61,7 +61,7 @@ interface InventoryItem {
   quantity: number; // Current quantity owned
   unit: Unit; // Measurement unit
   recommendedQuantity: number; // Calculated recommended amount
-  expirationDate?: string; // ISO date (YYYY-MM-DD)
+  expirationDate?: string; // ISO 8601 date (YYYY-MM-DD, e.g., "2025-01-23")
   neverExpires?: boolean; // Flag for non-expiring items
   location?: string; // Storage location
   notes?: string; // User notes
@@ -69,10 +69,15 @@ interface InventoryItem {
   weightGrams?: number; // Total weight (for calorie calc)
   caloriesPerUnit?: number; // Calories per unit
   markedAsEnough?: boolean; // User override: mark as sufficient
-  createdAt: string; // ISO timestamp
-  updatedAt: string; // ISO timestamp
+  createdAt: string; // ISO 8601 timestamp (e.g., "2025-01-23T12:00:00.000Z")
+  updatedAt: string; // ISO 8601 timestamp (e.g., "2025-01-23T12:00:00.000Z")
 }
 ```
+
+**Date Format:** All dates and timestamps use ISO 8601 format:
+
+- Dates: `YYYY-MM-DD` (e.g., "2025-01-23")
+- Timestamps: `YYYY-MM-DDTHH:mm:ss.sssZ` (e.g., "2025-01-23T12:00:00.000Z")
 
 ### Item Status Calculation
 
@@ -82,10 +87,11 @@ Status is determined by quantity and expiration:
 
 1. **Expiration** (highest priority)
    - Expired → `critical`
-   - Expiring within 30 days → `warning`
+   - Expiring within 30 days → `warning` (EXPIRING_SOON_DAYS_THRESHOLD)
+   - **Note:** Alerts use a more urgent 7-day threshold (EXPIRING_SOON_ALERT_DAYS)
 2. **Quantity**
    - Quantity = 0 → `critical`
-   - Quantity < 50% recommended → `warning`
+   - Quantity < 50% recommended → `warning` (LOW_QUANTITY_WARNING_RATIO = 0.5)
    - Otherwise → `ok`
 
 **Special Cases:**
@@ -95,39 +101,18 @@ Status is determined by quantity and expiration:
 
 **Location:** `src/features/inventory/utils/status.ts`
 
-```typescript
-export function getItemStatus(
-  currentQuantity: number,
-  recommendedQuantity: number,
-  expirationDate?: string,
-  neverExpires?: boolean,
-  markedAsEnough?: boolean,
-): ItemStatus {
-  // Check expiration first
-  if (!neverExpires && expirationDate) {
-    const daysUntil = getDaysUntilExpiration(expirationDate, neverExpires);
-    if (daysUntil !== null) {
-      if (daysUntil < 0) return 'critical'; // Expired
-      if (daysUntil <= 30) return 'warning'; // Expiring soon
-    }
-  }
-
-  // If marked as enough, treat as ok (unless expired)
-  if (markedAsEnough) return 'ok';
-
-  // Check quantity
-  if (currentQuantity === 0) return 'critical';
-  if (currentQuantity < recommendedQuantity * 0.5) return 'warning';
-
-  return 'ok';
-}
-```
+- `getItemStatus()` - Calculates status based on priority: expiration first, then quantity
+- Checks expiration threshold (30 days for warning), quantity threshold (50% for warning)
+- Handles special cases: `markedAsEnough`, `neverExpires`
 
 ### Constants
 
 ```typescript
-const EXPIRING_SOON_DAYS_THRESHOLD = 30; // Days before expiration to show warning
+const EXPIRING_SOON_DAYS_THRESHOLD = 30; // Days before expiration to show status warning
+const EXPIRING_SOON_ALERT_DAYS = 7; // Days before expiration to generate alert (more urgent)
 const LOW_QUANTITY_WARNING_RATIO = 0.5; // 50% of recommended = warning
+const CRITICALLY_LOW_STOCK_PERCENTAGE = 25; // Stock < 25% triggers critical alert
+const LOW_STOCK_PERCENTAGE = 50; // Stock < 50% triggers low stock alert
 ```
 
 ---

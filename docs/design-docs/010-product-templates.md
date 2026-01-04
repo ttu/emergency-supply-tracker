@@ -1,7 +1,7 @@
 # Design Doc: Product Templates System
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -93,20 +93,10 @@ interface ProductTemplate {
 
 **Location:** `src/features/inventory/components/ItemForm.tsx`
 
-```typescript
-function ItemForm({ templateId, onSave }) {
-  const template = getTemplate(templateId);
-  const [formData, setFormData] = useState({
-    name: template.name,
-    categoryId: template.categoryId,
-    unit: template.unit,
-    // ... more fields from template
-  });
-
-  // User can edit any field
-  // On save, create InventoryItem
-}
-```
+- Loads template by ID using `getTemplate()`
+- Pre-fills form with template data
+- User can override any field before saving
+- Creates InventoryItem from form data on save
 
 ### Template Creation
 
@@ -126,22 +116,9 @@ function ItemForm({ templateId, onSave }) {
 
 **Location:** `src/features/templates/data.ts`
 
-```typescript
-export function getTemplate(id: string): ProductTemplate | null {
-  const appData = getAppData();
-  const customTemplate = appData?.customTemplates?.find((t) => t.id === id);
-  if (customTemplate) return customTemplate;
-
-  const builtInTemplate = BUILT_IN_TEMPLATES.find((t) => t.id === id);
-  return builtInTemplate || null;
-}
-
-export function getAllTemplates(): ProductTemplate[] {
-  const appData = getAppData();
-  const custom = appData?.customTemplates || [];
-  return [...BUILT_IN_TEMPLATES, ...custom];
-}
-```
+- `getTemplate(id)` - Checks custom templates first, then built-in, returns null if not found
+- `getAllTemplates()` - Returns combined array of built-in and custom templates
+- Custom templates take precedence over built-in with same ID
 
 ### Template Selector Component
 

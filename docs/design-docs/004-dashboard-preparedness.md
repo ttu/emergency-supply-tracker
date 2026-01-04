@@ -1,7 +1,7 @@
 # Design Doc: Dashboard & Preparedness Score
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -51,9 +51,10 @@ Users need a quick overview of their emergency preparedness status without navig
 **Overall Score (0-100%):**
 
 - Based on how many recommended items are sufficiently stocked
-- Each recommended item contributes up to 100 points
+- Each recommended item contributes up to 100 points (MAX_ITEM_SCORE)
 - Item score = min((actualQuantity / recommendedQuantity) × 100, 100)
 - Overall score = (sum of item scores) / (number of recommended items) × 100
+- **Note:** For items with `scaleWithPeople=true`, the calculation uses `totalPeople` (adults + children) directly, not the peopleMultiplier formula. This is a simplification used in the preparedness calculation.
 
 **Category Score:**
 
@@ -62,35 +63,12 @@ Users need a quick overview of their emergency preparedness status without navig
 
 **Location:** `src/features/dashboard/utils/preparedness.ts`
 
-```typescript
-export function calculatePreparednessScore(
-  items: InventoryItem[],
-  household: HouseholdConfig,
-  recommendedItems: RecommendedItemDefinition[],
-): number {
-  // Filter recommended items (e.g., skip frozen if no freezer)
-  const relevantItems = recommendedItems.filter(/* ... */);
+- `calculatePreparednessScore()` - Filters relevant items, calculates recommended quantities, compares with actual quantities
+- Uses simplified formula: `totalPeople` (adults + children) directly for `scaleWithPeople` items (not the peopleMultiplier formula)
+- Calculates item scores (min of (actual/recommended) × 100, capped at 100), averages for overall score
+- Returns rounded percentage (0-100)
 
-  // Calculate score for each recommended item
-  let totalScore = 0;
-  let maxPossibleScore = 0;
-
-  relevantItems.forEach((recItem) => {
-    const recommendedQty = calculateRecommendedQuantity(recItem, household);
-    const matchingItems = items.filter(/* match by templateId or name */);
-    const actualQty = matchingItems.reduce(
-      (sum, item) => sum + item.quantity,
-      0,
-    );
-
-    const itemScore = Math.min((actualQty / recommendedQty) * 100, 100);
-    totalScore += itemScore;
-    maxPossibleScore += 100;
-  });
-
-  return Math.round((totalScore / maxPossibleScore) * 100);
-}
-```
+**Note:** The preparedness calculation uses a simplified approach for `scaleWithPeople` items, using `totalPeople` (adults + children) directly instead of the peopleMultiplier formula (adults × 1.0 + children × 0.75). This provides a simpler calculation while still being reasonably accurate for preparedness scoring.
 
 ### Dashboard Components
 

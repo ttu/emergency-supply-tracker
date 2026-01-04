@@ -1,7 +1,7 @@
 # Design Doc: Data Import/Export System
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -56,7 +56,7 @@ Since the application stores all data in browser LocalStorage, users need a way 
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "household": {
     "adults": 2,
     "children": 2,
@@ -187,61 +187,43 @@ Generated: 2025-01-01 12:00:00
 
 **Location:** `src/shared/utils/storage/localStorage.ts`
 
-```typescript
-export function exportAppData(): string {
-  const data = getAppData();
-  return JSON.stringify(data, null, 2);
-}
-
-export function downloadJSON(data: string, filename: string): void {
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-```
+- `exportAppData()` - Serializes AppData to JSON string
+- `downloadJSON()` - Creates blob and triggers browser download
+- Uses FileReader API and blob URLs for file downloads
 
 ### Import Functions
 
 **Location:** `src/shared/utils/storage/localStorage.ts`
 
-```typescript
-export async function importAppData(file: File): Promise<AppData> {
-  const text = await file.text();
-  const data = JSON.parse(text) as AppData;
-  validateAppData(data);
-  return data;
-}
-
-function validateAppData(data: unknown): asserts data is AppData {
-  // Validation logic
-  if (!data || typeof data !== 'object') {
-    throw new Error('Invalid data format');
-  }
-  // ... more validation
-}
-```
+- `importAppData(file)` - Reads file, parses JSON, validates structure
+- `validateAppData()` - Type guards and validation checks
+- Returns validated AppData or throws error with details
 
 ### Shopping List Export
 
 **Location:** `src/shared/utils/export/shoppingList.ts`
 
-- Filters items needing restock
+- Filters items with `quantity < recommendedQuantity`
 - Groups by category
 - Formats based on export type (TXT/MD/CSV)
-- Generates download
+- Generates downloadable file with timestamp
 
 ### Data Migration
 
 **Version Handling:**
 
-- Current version stored in exported data
+- Current version: **1.1.0** (as of 2025-01-23)
+- Version stored in exported data
 - Import checks version compatibility
 - Warns if version mismatch
+- Supported versions: 1.0.0, 1.1.0
 - Future: Migration functions for version upgrades
+
+**Date Format:**
+
+- All dates use ISO 8601 format
+- Dates: `YYYY-MM-DD` (e.g., "2025-01-23")
+- Timestamps: `YYYY-MM-DDTHH:mm:ss.sssZ` (e.g., "2025-01-23T12:00:00.000Z")
 
 ---
 

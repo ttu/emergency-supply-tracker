@@ -1,7 +1,7 @@
 # Design Doc: Internationalization (i18n) System
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -92,47 +92,25 @@ locales/
 
 **Location:** `src/i18n/config.ts`
 
-```typescript
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import enCommon from '../../public/locales/en/common.json';
-import fiCommon from '../../public/locales/fi/common.json';
-// ... more imports
-
-i18n
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: { common: enCommon, categories: enCategories, ... },
-      fi: { common: fiCommon, categories: fiCategories, ... },
-    },
-    lng: 'en', // Default language
-    fallbackLng: 'en',
-    interpolation: { escapeValue: false },
-  });
-```
+- Initializes i18next with react-i18next plugin
+- Loads translation resources from `public/locales/{lang}/`
+- Sets default language to `'en'` with fallback
+- Configures interpolation (no HTML escaping)
 
 ### Language Switching
 
 **Priority Order:**
 
-1. URL query parameter (`?lang=en`)
-2. Stored settings (from LocalStorage)
-3. Default language (`en`)
+1. URL query parameter (`?lang=en`) - checked on app load
+2. Stored settings (from LocalStorage) - persisted user preference
+3. Default language (`en`) - fallback
 
 **Implementation:**
 
-```typescript
-// Read URL parameter on app load
-const urlParams = new URLSearchParams(window.location.search);
-const langFromUrl = urlParams.get('lang');
-
-if (langFromUrl && ['en', 'fi'].includes(langFromUrl)) {
-  i18n.changeLanguage(langFromUrl);
-  // Remove parameter from URL
-  window.history.replaceState({}, '', window.location.pathname);
-}
-```
+- Reads URL parameter on app mount
+- Validates language code against supported languages
+- Applies language and removes parameter from URL
+- Persists selection to LocalStorage via settings
 
 ### Recommended Items Translation
 
@@ -150,22 +128,10 @@ if (langFromUrl && ['en', 'fi'].includes(langFromUrl)) {
 
 ### Usage in Components
 
-```typescript
-import { useTranslation } from 'react-i18next';
-
-function MyComponent() {
-  const { t } = useTranslation('common');
-
-  return <h1>{t('dashboard.title')}</h1>;
-}
-```
-
-**With Namespace:**
-
-```typescript
-const { t } = useTranslation('products');
-return <span>{t('bottled-water')}</span>;
-```
+- Import `useTranslation` hook from `react-i18next`
+- Specify namespace (e.g., `'common'`, `'products'`, `'categories'`)
+- Use `t(key)` function to translate keys
+- Supports nested keys with dot notation (e.g., `'dashboard.title'`)
 
 ---
 

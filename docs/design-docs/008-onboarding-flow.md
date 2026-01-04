@@ -1,7 +1,7 @@
 # Design Doc: Onboarding Flow
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -9,6 +9,13 @@
 ## Summary
 
 The Onboarding Flow guides first-time users through a 4-step process to configure their household and optionally add recommended items to their inventory. It provides a smooth introduction to the application.
+
+**Steps:**
+
+1. Welcome & Language Selection
+2. Household Preset Selection
+3. Household Configuration
+4. Quick Setup (Add Items or Start Empty)
 
 ---
 
@@ -111,94 +118,34 @@ The onboarding flow should be quick, intuitive, and not overwhelming.
 
 **Location:** `src/features/onboarding/components/Onboarding.tsx`
 
-```typescript
-type OnboardingStep = 'welcome' | 'preset' | 'household' | 'quickSetup';
-
-export const Onboarding = ({ onComplete }: OnboardingProps) => {
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
-  const [selectedPreset, setSelectedPreset] = useState<HouseholdPreset | null>(null);
-  const [householdConfig, setHouseholdConfig] = useState<HouseholdConfig | null>(null);
-
-  // Step navigation handlers
-  // ...
-
-  return (
-    <div>
-      {currentStep === 'welcome' && <WelcomeScreen onContinue={...} />}
-      {currentStep === 'preset' && <HouseholdPresetSelector onSelect={...} />}
-      {currentStep === 'household' && <HouseholdForm onSubmit={...} />}
-      {currentStep === 'quickSetup' && <QuickSetupScreen onComplete={...} />}
-    </div>
-  );
-};
-```
+- Manages step state (`welcome` | `preset` | `household` | `quickSetup`)
+- Tracks selected preset and household config
+- Renders appropriate step component based on current step
+- Handles step navigation (forward/back)
 
 ### Sub-Components
 
-1. **WelcomeScreen**
-   - App description
-   - Language selector
-   - Continue button
-
-2. **HouseholdPresetSelector**
-   - Preset cards (Single, Couple, Family, Custom)
-   - Visual icons/illustrations
-   - Click to select
-
-3. **HouseholdForm**
-   - Form inputs (adults, children, days, freezer)
-   - Validation
-   - Back/Continue buttons
-
-4. **QuickSetupScreen**
-   - Two options (Add All / Start Empty)
-   - Summary of items to add (if Add All)
-   - Complete button
+1. **WelcomeScreen** - App description, language selector, continue button
+2. **HouseholdPresetSelector** - Preset cards with visual icons, click to select
+3. **HouseholdForm** - Form inputs with validation, back/continue buttons
+4. **QuickSetupScreen** - Two options (Add All / Start Empty), summary, complete button
 
 ### Integration with App
 
 **Location:** `src/App.tsx`
 
-```typescript
-function App() {
-  const appData = getAppData();
-  const hasCompletedOnboarding = appData?.settings?.hasCompletedOnboarding;
-
-  if (!hasCompletedOnboarding) {
-    return <Onboarding onComplete={handleOnboardingComplete} />;
-  }
-
-  return <Router>...</Router>;
-}
-```
+- Checks `hasCompletedOnboarding` flag from settings
+- Shows onboarding if not completed
+- Shows main app router if completed
+- Onboarding completion handler saves settings and navigates to dashboard
 
 ### Preset Definitions
 
 **Location:** `src/features/onboarding/components/HouseholdPresetSelector.tsx`
 
-```typescript
-interface HouseholdPreset {
-  id: string;
-  name: string;
-  description: string;
-  adults: number;
-  children: number;
-  supplyDays: number;
-  useFreezer: boolean;
-}
-
-const PRESETS: HouseholdPreset[] = [
-  {
-    id: 'single',
-    name: 'Single Person',
-    adults: 1,
-    children: 0,
-    supplyDays: 7,
-    useFreezer: false,
-  },
-  // ... more presets
-];
-```
+- Defines `HouseholdPreset` interface with preset configuration
+- `PRESETS` array contains: Single, Couple, Family, Custom
+- Each preset includes adults, children, supplyDays, useFreezer
 
 ---
 

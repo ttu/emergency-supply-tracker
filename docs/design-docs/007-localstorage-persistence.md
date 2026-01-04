@@ -1,7 +1,7 @@
 # Design Doc: LocalStorage Persistence Architecture
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -67,7 +67,7 @@ Single key stores all application data as JSON.
 
 ```typescript
 interface AppData {
-  version: string; // Data format version
+  version: string; // Data format version (current: "1.1.0")
   household: HouseholdConfig; // Household configuration
   settings: UserSettings; // User settings
   items: InventoryItem[]; // Inventory items
@@ -76,10 +76,17 @@ interface AppData {
   customRecommendedItems: CustomRecommendations | null; // Custom recommendations
   disabledRecommendedItems: string[]; // Disabled recommendation IDs
   dismissedAlertIds: string[]; // Dismissed alert IDs
-  lastModified: string; // ISO timestamp
-  lastBackupDate?: string; // Last backup timestamp
+  lastModified: string; // ISO 8601 timestamp (e.g., "2025-01-23T12:00:00.000Z")
+  lastBackupDate?: string; // Last backup timestamp (ISO 8601 format)
 }
 ```
+
+**Current Version:** 1.1.0 (as of 2025-01-23)
+
+**Date Format:** All dates and timestamps use ISO 8601 format:
+
+- Dates: `YYYY-MM-DD` (e.g., "2025-01-23")
+- Timestamps: `YYYY-MM-DDTHH:mm:ss.sssZ` (e.g., "2025-01-23T12:00:00.000Z")
 
 ### Storage Operations
 
@@ -87,67 +94,32 @@ interface AppData {
 
 **Read:**
 
-```typescript
-export function getAppData(): AppData | null {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) return null;
-    const parsed = JSON.parse(data) as AppData;
-    return migrateDataIfNeeded(parsed);
-  } catch (error) {
-    console.error('Failed to read app data:', error);
-    return null;
-  }
-}
-```
+- `getAppData()` - Reads from LocalStorage, parses JSON, applies migration if needed
+- Returns `AppData | null` (null if no data or parse error)
+- Handles errors gracefully with fallback to null
 
 **Write:**
 
-```typescript
-export function saveAppData(data: AppData): void {
-  try {
-    const updated = {
-      ...data,
-      lastModified: new Date().toISOString(),
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  } catch (error) {
-    console.error('Failed to save app data:', error);
-    // Handle quota exceeded error
-    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-      throw new Error(
-        'Storage quota exceeded. Please export and clear some data.',
-      );
-    }
-    throw error;
-  }
-}
-```
+- `saveAppData(data)` - Serializes to JSON, updates `lastModified` timestamp
+- Handles `QuotaExceededError` with user-friendly message
+- Throws error on failure for caller to handle
 
 ### Data Migration
 
 **Version Handling:**
 
 - Each data export includes `version` field
-- On read, check version and migrate if needed
+- On read, `migrateDataIfNeeded()` checks version and applies migration functions
 - Migration functions transform old format to new format
+- Current version: 1.1.0 (supports migration from 1.0.0)
 
-**Example Migration:**
+**Migration Strategy:**
 
-```typescript
-function migrateDataIfNeeded(data: AppData): AppData {
-  if (data.version === '1.0.0') {
-    // Migrate from 1.0.0 to 1.1.0
-    return {
-      ...data,
-      version: '1.1.0',
-      // Add new fields with defaults
-      dismissedAlertIds: data.dismissedAlertIds || [],
-    };
-  }
-  return data;
-}
-```
+- Check version on read
+- Apply migration functions sequentially
+- Add new fields with defaults
+- Preserve existing data
+- Update version field
 
 ### Error Handling
 
@@ -191,41 +163,18 @@ function migrateDataIfNeeded(data: AppData): AppData {
 
 **Location:** `src/features/*/provider.tsx`
 
-Context Providers auto-save on state changes:
-
-```typescript
-function InventoryProvider({ children }) {
-  const [items, setItems] = useState(() => getAppData()?.items || []);
-
-  useEffect(() => {
-    const appData = getAppData() || createDefaultAppData();
-    saveAppData({ ...appData, items });
-  }, [items]);
-
-  // ... rest of provider
-}
-```
+- Context Providers manage feature-specific state
+- Auto-save to LocalStorage via `useEffect` hooks
+- Merge feature state with full AppData on save
+- Each provider handles its own state slice
 
 ### Default Data
 
 **Location:** `src/shared/utils/storage/localStorage.ts`
 
-```typescript
-function createDefaultAppData(): AppData {
-  return {
-    version: APP_VERSION,
-    household: HOUSEHOLD_DEFAULTS,
-    settings: DEFAULT_SETTINGS,
-    items: [],
-    customCategories: [],
-    customTemplates: [],
-    customRecommendedItems: null,
-    disabledRecommendedItems: [],
-    dismissedAlertIds: [],
-    lastModified: new Date().toISOString(),
-  };
-}
-```
+- `createDefaultAppData()` - Returns AppData with default values
+- Uses constants for defaults (HOUSEHOLD_DEFAULTS, DEFAULT_SETTINGS, etc.)
+- Sets current version and initial timestamp
 
 ### Legacy Data Migration
 
@@ -233,17 +182,10 @@ function createDefaultAppData(): AppData {
 
 - Old data used translated names in `itemType` field
 - New data uses template IDs
-- Migration function maps old names to new IDs
+- `LEGACY_ITEM_TYPE_MAP` maps old names to new IDs
+- Migration function applies mapping during data load
 
 **Location:** `src/shared/utils/storage/localStorage.ts`
-
-```typescript
-const LEGACY_ITEM_TYPE_MAP: Record<string, string> = {
-  'bottled water': 'bottled-water',
-  'canned soup': 'canned-soup',
-  // ... more mappings
-};
-```
 
 ---
 

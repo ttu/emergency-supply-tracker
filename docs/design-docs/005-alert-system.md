@@ -1,7 +1,7 @@
 # Design Doc: Alert System
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -79,9 +79,10 @@ interface Alert {
    - Message: "Item expired"
 
 2. **Expiring Soon** (`warning`)
-   - Items with `expirationDate` within 30 days
+   - Items with `expirationDate` within 7 days (more urgent than status warning)
    - One alert per expiring item
    - Message: "Item expiring in X days"
+   - **Note:** Status warnings show for items expiring within 30 days, but alerts use a 7-day threshold for urgency
 
 3. **Missing Critical Items** (`critical`)
    - Items with `quantity = 0` and `recommendedQuantity > 0`
@@ -89,9 +90,10 @@ interface Alert {
    - Message: "Category out of stock"
 
 4. **Low Quantity Items** (`warning`)
-   - Items with `quantity < 50% of recommendedQuantity`
+   - Items with `quantity < 50% of recommendedQuantity` (LOW_STOCK_PERCENTAGE)
+   - Items with `quantity < 25% of recommendedQuantity` show as critical (CRITICALLY_LOW_STOCK_PERCENTAGE)
    - Aggregated by category (one alert per category)
-   - Message: "Category running low (X%)"
+   - Message: "Category running low (X%)" or "Category critically low (X%)"
 
 5. **Water Shortage** (`warning`)
    - When food preparation requires more water than available
@@ -128,6 +130,11 @@ const ALERT_PRIORITY = {
   warning: 2,
   info: 3,
 };
+
+// Alert threshold constants
+const EXPIRING_SOON_ALERT_DAYS = 7; // More urgent than status threshold (30 days)
+const CRITICALLY_LOW_STOCK_PERCENTAGE = 25; // Stock < 25% = critical alert
+const LOW_STOCK_PERCENTAGE = 50; // Stock < 50% = low stock alert
 ```
 
 ### Alert Display
@@ -144,40 +151,26 @@ const ALERT_PRIORITY = {
 
 ## Implementation Details
 
-### Alert Generation Flow
+### Alert Generation
 
-1. **Dashboard loads** → Calls `generateDashboardAlerts()`
-2. **Function iterates items** → Generates expiration alerts
-3. **Function aggregates by category** → Generates stock alerts
-4. **Function checks water requirements** → Generates water shortage alerts
-5. **Function checks backup status** → Generates backup reminder
-6. **Function filters dismissed alerts** → Removes dismissed IDs
-7. **Function sorts by priority** → Critical first
-8. **Returns alert array** → Displayed in AlertBanner
+**Location:** `src/features/alerts/utils/alerts.ts`
 
-### Alert Dismissal Flow
+- `generateDashboardAlerts()` - Iterates items, generates alerts by type, aggregates by category, filters dismissed, sorts by priority
+- Generates: expiration alerts, stock alerts, water shortage alerts, backup reminder
+- Returns sorted array (critical → warning → info)
 
-1. **User clicks dismiss** → Calls `dismissAlert(alertId)`
-2. **Function adds ID to dismissedAlertIds** → Updates state
-3. **State persists to LocalStorage** → Auto-save
-4. **Alert removed from display** → Re-render
+### Alert Dismissal
 
-### Alert Reactivation Flow
-
-1. **User navigates to Settings → Hidden Alerts**
-2. **Component shows list of dismissed alerts**
-3. **User clicks "Reactivate"** → Calls `reactivateAlert(alertId)`
-4. **Function removes ID from dismissedAlertIds** → Updates state
-5. **State persists to LocalStorage** → Auto-save
-6. **Alert reappears on dashboard** → Next refresh
+- `dismissAlert(alertId)` - Adds ID to `dismissedAlertIds` array, persists to LocalStorage
+- Alert removed from display immediately
+- Can be reactivated from Settings → Hidden Alerts
 
 ### Backup Reminder Logic
 
 **Location:** `src/features/dashboard/utils/backupReminder.ts`
 
-- Checks `lastBackupDate` in AppData
-- If `lastBackupDate` is null or >30 days ago → Show reminder
-- If `backupReminderDismissedUntil` is set and not expired → Hide reminder
+- Checks `lastBackupDate` - shows reminder if null or >30 days ago
+- Respects `backupReminderDismissedUntil` - hides if set and not expired
 - Dismissal sets `backupReminderDismissedUntil` to first day of next month
 
 ---
@@ -278,9 +271,23 @@ const ALERT_PRIORITY = {
 
 ---
 
+## Constants Reference
+
+All constants are defined in `src/shared/utils/constants.ts`:
+
+**Alert Thresholds:**
+
+- `EXPIRING_SOON_ALERT_DAYS = 7` - Days before expiration for alerts (more urgent than status threshold of 30 days)
+- `CRITICALLY_LOW_STOCK_PERCENTAGE = 25` - Stock < 25% = critical alert
+- `LOW_STOCK_PERCENTAGE = 50` - Stock < 50% = low stock alert
+
+**Note:** Alert thresholds are more aggressive than status thresholds. Items expiring within 7 days generate alerts, while status warnings appear for items expiring within 30 days. See [012-status-calculation.md](./012-status-calculation.md) for status calculation details.
+
 ## References
 
 - [004-dashboard-preparedness.md](./004-dashboard-preparedness.md) - Dashboard integration
-- [012-status-calculation.md](./012-status-calculation.md) - Status calculation
+- [012-status-calculation.md](./012-status-calculation.md) - Status calculation (uses different thresholds)
+- [002-inventory-management.md](./002-inventory-management.md) - Item status calculation
 - `src/features/alerts/utils/alerts.ts` - Implementation
 - `src/features/alerts/components/AlertBanner.tsx` - UI component
+- `src/shared/utils/constants.ts` - All constants definitions

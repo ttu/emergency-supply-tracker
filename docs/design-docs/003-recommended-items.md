@@ -1,7 +1,7 @@
 # Design Doc: Recommended Items System
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -88,19 +88,12 @@ interface RecommendedItemDefinition {
   "meta": {
     "name": "Finnish Family Kit",
     "version": "1.0.0",
-    "description": "Optional description",
-    "source": "https://example.com",
-    "createdAt": "2025-01-01T00:00:00.000Z",
-    "language": "en"
+    "createdAt": "2025-01-01T00:00:00.000Z"
   },
   "items": [
     {
       "id": "water-example",
-      "names": {
-        "en": "Drinking Water",
-        "fi": "Juomavesi",
-        "sv": "Dricksvatten"
-      },
+      "names": { "en": "Drinking Water", "fi": "Juomavesi" },
       "category": "water-beverages",
       "baseQuantity": 3,
       "unit": "liters",
@@ -110,6 +103,8 @@ interface RecommendedItemDefinition {
   ]
 }
 ```
+
+**Date Format:** All timestamps use ISO 8601 format (`YYYY-MM-DDTHH:mm:ss.sssZ`).
 
 ### Import/Export Behavior
 
@@ -161,7 +156,9 @@ interface RecommendedItemDefinition {
 - Empty name values in `names` object
 - Missing optional fields (description, notes)
 - Duplicate item IDs
-- Invalid category IDs (warn but allow custom categories)
+- Invalid category IDs (warn but allow custom categories - custom categories are supported)
+
+**Note:** Custom category IDs are allowed in imported recommendations. The system will warn if a category ID doesn't match a standard category, but will still accept the import. Users can create custom categories in Settings if needed.
 
 ---
 
@@ -194,15 +191,8 @@ interface AppData {
 
 **Location:** `src/features/inventory/provider.tsx`
 
-```typescript
-function getRecommendedItems(): RecommendedItemDefinition[] {
-  const appData = getAppData();
-  if (appData?.customRecommendedItems) {
-    return appData.customRecommendedItems.items;
-  }
-  return BUILT_IN_RECOMMENDED_ITEMS;
-}
-```
+- `getRecommendedItems()` - Returns custom recommendations if available, otherwise built-in
+- Checks `AppData.customRecommendedItems` first, falls back to `BUILT_IN_RECOMMENDED_ITEMS`
 
 ### Import Validation
 

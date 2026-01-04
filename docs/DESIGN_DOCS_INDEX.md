@@ -1,10 +1,13 @@
 # Design Documents Index
 
-> **Purpose:** This document lists all major functionalities that have design documents, following RFC/Design Doc best practices.
+> **Purpose:** This document lists all major functionalities that have design documents, following RFC/Design Doc best practices.  
+> **Last Updated:** 2025-01-23
 
 ## Overview
 
 This project uses design documents to document major functionalities, architectural decisions, and system designs. Each design doc follows a structured format inspired by industry best practices (Google, Sourcegraph, HashiCorp, etc.).
+
+All design documents are located in the [`docs/design-docs/`](./design-docs/) directory and are numbered sequentially (001-013) for easy reference.
 
 ## Design Documents
 
@@ -127,7 +130,27 @@ Create a design doc for:
 - ❌ Minor refactorings
 - ❌ Documentation updates
 
+## Quick Reference
+
+**Total Design Documents:** 13
+
+**By Category:**
+
+- Core Systems: 5 documents
+- Data Management: 2 documents
+- User Experience: 2 documents
+- Supporting Systems: 4 documents
+
+**All documents are marked as "Published"** and reflect the current implementation as of 2025-01-23.
+
 ## References
 
 - [RFCs and Design Docs - The Pragmatic Engineer](https://blog.pragmaticengineer.com/rfcs-and-design-docs/)
 - [Engineering Planning with RFCs, Design Document and ADRs](https://blog.pragmaticengineer.com/engineering-planning/)
+
+## Related Documentation
+
+- [FUNCTIONAL_SPEC.md](./FUNCTIONAL_SPEC.md) - Functional requirements and user workflows
+- [DATA_SCHEMA.md](./DATA_SCHEMA.md) - Data structure definitions and types
+- [COMPONENT_ARCHITECTURE.md](./COMPONENT_ARCHITECTURE.md) - React component structure
+- [APPLICATION_ARCHITECTURE.md](./APPLICATION_ARCHITECTURE.md) - System architecture overview

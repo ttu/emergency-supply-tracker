@@ -1,7 +1,7 @@
 # Design Doc: Household Configuration & Calculation System
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -62,21 +62,23 @@ interface HouseholdConfig {
 
 ```
 People Multiplier = (adults × 1.0) + (children × 0.75)
-Total Multiplier = People Multiplier × (days ÷ 3)
+Total Multiplier = People Multiplier × days
 ```
 
 **For Recommended Items:**
 
 ```
-Recommended Quantity = baseQuantity × [peopleMultiplier if scaleWithPeople] × [daysMultiplier if scaleWithDays]
+Recommended Quantity = baseQuantity × [peopleMultiplier if scaleWithPeople] × [days if scaleWithDays]
 ```
+
+**Note:** The `baseQuantity` in recommended items is typically calculated for 1 person for a specific duration (often 3 days). When `scaleWithDays` is true, the quantity is multiplied directly by `supplyDurationDays`. The exact base duration varies by item - see `RECOMMENDED_ITEMS.md` for specific base quantities.
 
 **Example:**
 
 - 2 adults + 2 children for 7 days
 - People Multiplier = (2 × 1.0) + (2 × 0.75) = 3.5
 - For item with baseQuantity=3, scaleWithPeople=true, scaleWithDays=true:
-  - Recommended = 3 × 3.5 × (7 ÷ 3) = 3 × 3.5 × 2.33 = 24.5 → 25 (rounded up)
+  - Recommended = 3 × 3.5 × 7 = 73.5 → 74 (rounded up)
 
 ### Scaling Rules
 
@@ -88,11 +90,11 @@ Items can have different scaling behaviors:
 
 2. **Scale with Days Only** (`scaleWithPeople=false`, `scaleWithDays=true`)
    - Example: Daily medication (same per person, scales with days)
-   - Formula: `baseQuantity × (days ÷ 3)`
+   - Formula: `baseQuantity × days`
 
 3. **Scale with Both** (`scaleWithPeople=true`, `scaleWithDays=true`)
    - Example: Water (3L per person per day)
-   - Formula: `baseQuantity × peopleMultiplier × (days ÷ 3)`
+   - Formula: `baseQuantity × peopleMultiplier × days`
 
 4. **No Scaling** (`scaleWithPeople=false`, `scaleWithDays=false`)
    - Example: First aid kit (1 per household)
@@ -103,8 +105,10 @@ Items can have different scaling behaviors:
 ```typescript
 const ADULT_REQUIREMENT_MULTIPLIER = 1.0;
 const CHILDREN_REQUIREMENT_MULTIPLIER = 0.75;
-const BASE_SUPPLY_DURATION_DAYS = 3; // Base recommendations are for 3 days
+const BASE_SUPPLY_DURATION_DAYS = 3; // Informational: Base recommendations are typically for 3 days
 ```
+
+**Note:** `BASE_SUPPLY_DURATION_DAYS` is informational only. The actual calculation multiplies directly by `supplyDurationDays` without dividing by the base duration. The base duration is used when determining the `baseQuantity` values for recommended items, but not in the scaling calculation itself.
 
 ---
 
@@ -114,44 +118,9 @@ const BASE_SUPPLY_DURATION_DAYS = 3; // Base recommendations are for 3 days
 
 **Location:** `src/features/household/utils/calculations.ts`
 
-```typescript
-/**
- * Calculate household multiplier based on adults, children, and supply duration.
- */
-export function calculateHouseholdMultiplier(
-  config: HouseholdConfig,
-  childrenMultiplier: number = CHILDREN_REQUIREMENT_MULTIPLIER,
-): number {
-  const peopleMultiplier =
-    config.adults * ADULT_REQUIREMENT_MULTIPLIER +
-    config.children * childrenMultiplier;
-  return peopleMultiplier * config.supplyDurationDays;
-}
-
-/**
- * Calculate recommended quantity for an item based on household configuration.
- */
-export function calculateRecommendedQuantity(
-  item: RecommendedItemDefinition,
-  household: HouseholdConfig,
-  childrenMultiplier: number = CHILDREN_REQUIREMENT_MULTIPLIER,
-): number {
-  let qty = item.baseQuantity;
-
-  if (item.scaleWithPeople) {
-    const peopleMultiplier =
-      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
-      household.children * childrenMultiplier;
-    qty *= peopleMultiplier;
-  }
-
-  if (item.scaleWithDays) {
-    qty *= household.supplyDurationDays;
-  }
-
-  return Math.ceil(qty); // Always round up
-}
-```
+- `calculateHouseholdMultiplier()` - Calculates total multiplier (people × days)
+- `calculateRecommendedQuantity()` - Applies scaling rules based on item flags, rounds up result
+- Both functions accept optional `childrenMultiplier` parameter (defaults to 0.75)
 
 ### State Management
 
@@ -256,8 +225,20 @@ export function calculateRecommendedQuantity(
 
 ---
 
+## Constants Reference
+
+All constants are defined in `src/shared/utils/constants.ts`:
+
+- `ADULT_REQUIREMENT_MULTIPLIER = 1.0` - Multiplier for adults
+- `CHILDREN_REQUIREMENT_MULTIPLIER = 0.75` - Multiplier for children (configurable in settings)
+- `BASE_SUPPLY_DURATION_DAYS = 3` - Informational: Base recommendations are typically for 3 days (not used in calculation)
+
+**Note:** The children multiplier can be customized in Settings → Nutrition & Requirements.
+
 ## References
 
-- [DATA_SCHEMA.md](../DATA_SCHEMA.md) - Data structure definitions
+- [DATA_SCHEMA.md](../DATA_SCHEMA.md) - Data structure definitions and calculation formulas
 - [FUNCTIONAL_SPEC.md](../FUNCTIONAL_SPEC.md) - Functional requirements
+- [004-dashboard-preparedness.md](./004-dashboard-preparedness.md) - Preparedness score calculation (uses simplified formula)
 - `src/features/household/utils/calculations.ts` - Implementation
+- `src/shared/utils/constants.ts` - All constants definitions

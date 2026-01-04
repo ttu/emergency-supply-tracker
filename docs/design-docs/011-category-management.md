@@ -1,7 +1,7 @@
 # Design Doc: Category Management
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -89,18 +89,9 @@ interface CustomCategory {
 
 **Location:** `src/features/categories/data.ts`
 
-```typescript
-export function getAllCategories(): Category[] {
-  const appData = getAppData();
-  const custom = appData?.customCategories || [];
-  return [...STANDARD_CATEGORIES, ...custom];
-}
-
-export function getCategory(id: string): Category | null {
-  const all = getAllCategories();
-  return all.find((c) => c.id === id) || null;
-}
-```
+- `getAllCategories()` - Returns combined array of standard and custom categories
+- `getCategory(id)` - Finds category by ID from all categories, returns null if not found
+- Standard categories always appear first, custom categories follow
 
 ### Category Usage
 

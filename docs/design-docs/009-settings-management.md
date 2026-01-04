@@ -1,7 +1,7 @@
 # Design Doc: Settings Management
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -151,28 +151,13 @@ interface UserSettings {
 
 ### Settings Provider
 
-```typescript
-function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState(() =>
-    getAppData()?.settings || DEFAULT_SETTINGS
-  );
+**Location:** `src/features/settings/provider.tsx`
 
-  useEffect(() => {
-    const appData = getAppData() || createDefaultAppData();
-    saveAppData({ ...appData, settings });
-  }, [settings]);
-
-  const updateSettings = (updates: Partial<UserSettings>) => {
-    setSettings(prev => ({ ...prev, ...updates }));
-  };
-
-  return (
-    <SettingsContext.Provider value={{ settings, updateSettings }}>
-      {children}
-    </SettingsContext.Provider>
-  );
-}
-```
+- React Context Provider manages settings state
+- Initializes from LocalStorage or defaults
+- Auto-saves to LocalStorage on changes via `useEffect`
+- Provides `useSettings()` hook with `settings` and `updateSettings()`
+- Settings take effect immediately (no reload needed)
 
 ### Settings Components
 

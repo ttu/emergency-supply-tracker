@@ -1,7 +1,7 @@
 # Design Doc: Status Calculation System
 
 **Status:** Published  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-23  
 **Authors:** Development Team
 
 ---
@@ -82,44 +82,40 @@ type ItemStatus = 'ok' | 'warning' | 'critical';
 
 ### Constants
 
+**Item Status Constants:**
+
 ```typescript
-const EXPIRING_SOON_DAYS_THRESHOLD = 30; // Days before expiration
-const LOW_QUANTITY_WARNING_RATIO = 0.5; // 50% of recommended
-const CRITICAL_PERCENTAGE_THRESHOLD = 50; // Category status threshold
-const WARNING_PERCENTAGE_THRESHOLD = 80; // Category status threshold
+const EXPIRING_SOON_DAYS_THRESHOLD = 30; // Days before expiration for status warning
+const LOW_QUANTITY_WARNING_RATIO = 0.5; // 50% of recommended quantity = warning
 ```
+
+**Category Status Constants:**
+
+```typescript
+const CRITICAL_PERCENTAGE_THRESHOLD = 30; // Category completion < 30% = critical
+const WARNING_PERCENTAGE_THRESHOLD = 70; // Category completion 30-70% = warning
+const OK_SCORE_THRESHOLD = 80; // Category completion ≥ 80% = ok
+const WARNING_SCORE_THRESHOLD = 50; // Category score threshold for warning
+```
+
+**Alert Threshold Constants:**
+
+```typescript
+const EXPIRING_SOON_ALERT_DAYS = 7; // Days before expiration for alerts (more urgent than status)
+const CRITICALLY_LOW_STOCK_PERCENTAGE = 25; // Stock < 25% = critical alert
+const LOW_STOCK_PERCENTAGE = 50; // Stock < 50% = low stock alert
+```
+
+**Note:** Alert thresholds are more aggressive than status thresholds. Items expiring within 7 days generate alerts, while status warnings appear for items expiring within 30 days.
 
 ### Item Status Calculation
 
 **Location:** `src/features/inventory/utils/status.ts`
 
-```typescript
-export function getItemStatus(
-  currentQuantity: number,
-  recommendedQuantity: number,
-  expirationDate?: string,
-  neverExpires?: boolean,
-  markedAsEnough?: boolean,
-): ItemStatus {
-  // Check expiration first (highest priority)
-  if (!neverExpires && expirationDate) {
-    const daysUntil = getDaysUntilExpiration(expirationDate, neverExpires);
-    if (daysUntil !== null) {
-      if (daysUntil < 0) return 'critical'; // Expired
-      if (daysUntil <= 30) return 'warning'; // Expiring soon
-    }
-  }
-
-  // If marked as enough, treat as ok (unless expired)
-  if (markedAsEnough) return 'ok';
-
-  // Check quantity
-  if (currentQuantity === 0) return 'critical';
-  if (currentQuantity < recommendedQuantity * 0.5) return 'warning';
-
-  return 'ok';
-}
-```
+- `getItemStatus()` - Calculates status based on priority order
+- Checks expiration first (highest priority), then quantity
+- Handles special cases: `markedAsEnough`, `neverExpires`
+- Returns `'ok' | 'warning' | 'critical'`
 
 ### Category Status Calculation
 
@@ -145,44 +141,19 @@ export function getItemStatus(
 
 ### Expiration Helpers
 
-```typescript
-export function getDaysUntilExpiration(
-  expirationDate?: string,
-  neverExpires?: boolean,
-): number | null {
-  if (neverExpires || !expirationDate) return null;
+**Location:** `src/features/inventory/utils/status.ts`
 
-  const today = new Date();
-  const expiration = new Date(expirationDate);
-  const diffTime = expiration.getTime() - today.getTime();
-  return Math.ceil(diffTime / MS_PER_DAY);
-}
-
-export function isItemExpired(
-  expirationDate?: string,
-  neverExpires?: boolean,
-): boolean {
-  if (neverExpires || !expirationDate) return false;
-  return new Date(expirationDate) < new Date();
-}
-```
+- `getDaysUntilExpiration()` - Calculates days until expiration, returns null if never expires
+- `isItemExpired()` - Boolean check if item is expired
+- Uses ISO 8601 date parsing and comparison
 
 ### Status Variants for UI
 
-```typescript
-export function getStatusVariant(
-  status: ItemStatus,
-): 'success' | 'warning' | 'danger' {
-  switch (status) {
-    case 'ok':
-      return 'success';
-    case 'warning':
-      return 'warning';
-    case 'critical':
-      return 'danger';
-  }
-}
-```
+**Location:** `src/features/inventory/utils/status.ts`
+
+- `getStatusVariant()` - Maps ItemStatus to UI variant strings
+- `'ok'` → `'success'`, `'warning'` → `'warning'`, `'critical'` → `'danger'`
+- Used for CSS classes and component props
 
 ### Performance Optimization
 
@@ -279,10 +250,39 @@ export function getStatusVariant(
 
 ---
 
+## Constants Reference
+
+All constants are defined in `src/shared/utils/constants.ts`:
+
+**Item Status:**
+
+- `EXPIRING_SOON_DAYS_THRESHOLD = 30` - Days before expiration for status warning
+- `LOW_QUANTITY_WARNING_RATIO = 0.5` - 50% of recommended quantity = warning
+
+**Category Status:**
+
+- `CRITICAL_PERCENTAGE_THRESHOLD = 30` - Category completion < 30% = critical
+- `WARNING_PERCENTAGE_THRESHOLD = 70` - Category completion 30-70% = warning
+- `OK_SCORE_THRESHOLD = 80` - Category completion ≥ 80% = ok
+- `WARNING_SCORE_THRESHOLD = 50` - Category score threshold for warning
+
+**Alert Thresholds (see [005-alert-system.md](./005-alert-system.md)):**
+
+- `EXPIRING_SOON_ALERT_DAYS = 7` - Days before expiration for alerts (more urgent)
+- `CRITICALLY_LOW_STOCK_PERCENTAGE = 25` - Stock < 25% = critical alert
+- `LOW_STOCK_PERCENTAGE = 50` - Stock < 50% = low stock alert
+
+**Preparedness Score:**
+
+- `MAX_ITEM_SCORE = 100` - Maximum score for a single item
+- `DEFAULT_FULL_PREPAREDNESS = 100` - Default score for categories with items but no recommendations
+- `DEFAULT_EMPTY_PREPAREDNESS = 0` - Default score for empty categories
+
 ## References
 
 - [002-inventory-management.md](./002-inventory-management.md) - Item status usage
 - [004-dashboard-preparedness.md](./004-dashboard-preparedness.md) - Dashboard status
-- [005-alert-system.md](./005-alert-system.md) - Alert generation
+- [005-alert-system.md](./005-alert-system.md) - Alert generation (uses different thresholds)
 - `src/features/inventory/utils/status.ts` - Implementation
 - `src/features/dashboard/utils/categoryStatus.ts` - Category status
+- `src/shared/utils/constants.ts` - All constants definitions
