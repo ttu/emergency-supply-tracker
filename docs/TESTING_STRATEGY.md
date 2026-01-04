@@ -111,6 +111,11 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  // Exclude a11y tests from default e2e run - they run in separate CI job
+  // Use testMatch to conditionally include/exclude a11y tests based on RUN_A11Y_TESTS env var
+  testMatch: process.env.RUN_A11Y_TESTS
+    ? ['**/a11y.spec.ts']
+    : ['**/*.spec.ts', '!**/a11y.spec.ts'],
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
@@ -118,6 +123,19 @@ export default defineConfig({
   // ... browser projects
 });
 ```
+
+### Test Organization
+
+E2E tests are organized by feature:
+
+- `e2e/dashboard.spec.ts` - Dashboard functionality tests
+- `e2e/inventory.spec.ts` - Inventory management tests
+- `e2e/settings.spec.ts` - Settings page tests
+- `e2e/navigation.spec.ts` - Navigation and routing tests
+- `e2e/data-management.spec.ts` - Import/export functionality
+- `e2e/a11y.spec.ts` - Accessibility tests (excluded from default e2e run)
+
+**Note:** `a11y.spec.ts` is excluded from the default E2E test run (`npm run test:e2e`) to avoid duplication. Accessibility tests run in a separate CI job. To run a11y tests explicitly, use: `npx playwright test e2e/a11y.spec.ts`
 
 ### Browser Coverage
 
@@ -140,10 +158,13 @@ npm run test:watch        # Watch mode
 npm run test:coverage     # With coverage report
 
 # Playwright E2E
-npm run test:e2e          # Run all E2E tests
+npm run test:e2e          # Run all E2E tests (excludes a11y.spec.ts)
 npm run test:e2e:ui       # Interactive UI mode
 npm run test:e2e:headed   # Run with browser visible
 npm run test:e2e:chromium # Chromium only
+
+# Accessibility tests (run separately)
+npx playwright test e2e/a11y.spec.ts --project=chromium
 
 # Storybook tests
 npm run test:storybook    # Vitest Storybook tests

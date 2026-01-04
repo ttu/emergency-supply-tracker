@@ -120,13 +120,13 @@
 .templateCategory {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text);
 }
 
 .templateQuantity {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text);
 }
 
 @media (max-width: 768px) {

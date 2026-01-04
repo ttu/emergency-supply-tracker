@@ -68,7 +68,7 @@ This document outlines improvements to the validation infrastructure to ensure a
 - Add `jest-axe` for component-level a11y tests
 - Add `@axe-core/playwright` for E2E a11y checks
 - Create a11y test suite for critical components
-- Add a11y job to CI (or integrate into existing E2E job)
+- Add separate a11y job to CI (runs independently from e2e job)
 
 **Files to create**:
 
@@ -78,7 +78,14 @@ This document outlines improvements to the validation infrastructure to ensure a
 **Files to modify**:
 
 - `package.json` - Add a11y dependencies
-- `.github/workflows/ci.yml` - Add a11y checks
+- `playwright.config.ts` - Exclude `a11y.spec.ts` from default e2e run
+- `.github/workflows/ci.yml` - Add separate a11y job
+
+**Note**: `a11y.spec.ts` is excluded from the default E2E test run to avoid duplication. The a11y tests run in a separate CI job. This separation allows:
+
+- E2E tests to focus on functionality
+- A11y tests to run independently and be easily identified in CI
+- Faster feedback when only one type of test fails
 
 ---
 

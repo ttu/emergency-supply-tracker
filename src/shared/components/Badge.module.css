@@ -41,8 +41,9 @@
 }
 
 .danger {
-  background-color: var(--color-error-alpha);
-  color: var(--color-error);
+  /* Use darker red background with white text for WCAG AA compliance (small text needs 4.5:1) */
+  background-color: var(--color-error-dark);
+  color: white;
 }
 
 .info {

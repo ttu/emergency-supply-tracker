@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import { Layout } from './Layout';
 import { Header } from './Header';
 import { Footer } from './Footer';
@@ -157,5 +158,18 @@ describe('Layout', () => {
     const layoutDiv = container.firstChild as HTMLElement;
     expect(layoutDiv.className).toContain('layout');
     expect(layoutDiv.className).toContain('custom-class');
+  });
+
+  it('should have no accessibility violations', async () => {
+    const { container } = render(
+      <Layout
+        header={{ logo: <span>Logo</span> }}
+        footer={{ copyright: '© 2024 Test' }}
+      >
+        Content
+      </Layout>,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

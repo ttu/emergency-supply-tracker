@@ -12,14 +12,19 @@ This document describes the code quality tools and CI/CD configuration.
 
 ## Tools Overview
 
-| Tool        | Purpose               | Config File                       |
-| ----------- | --------------------- | --------------------------------- |
-| ESLint      | Linting               | `eslint.config.js`                |
-| Prettier    | Formatting            | `.prettierrc.json`                |
-| TypeScript  | Type checking         | `tsconfig.json`                   |
-| Husky       | Git hooks             | `.husky/`                         |
-| lint-staged | Pre-commit checks     | `package.json`                    |
-| SonarCloud  | Code quality analysis | Configured via SonarCloud website |
+| Tool                 | Purpose                                | Config File                                        |
+| -------------------- | -------------------------------------- | -------------------------------------------------- |
+| ESLint               | Linting                                | `eslint.config.js`                                 |
+| Prettier             | Formatting                             | `.prettierrc.json`                                 |
+| TypeScript           | Type checking                          | `tsconfig.json`                                    |
+| Husky                | Git hooks                              | `.husky/`                                          |
+| lint-staged          | Pre-commit checks                      | `package.json`                                     |
+| jest-axe             | Accessibility testing (Jest/axe)       | `jest.config.js` (or `package.json` jest section)  |
+| @axe-core/playwright | Accessibility testing (Playwright/axe) | `playwright.config.ts` (or `playwright.config.js`) |
+| SonarCloud           | Code quality analysis                  | Configured via SonarCloud website                  |
+| CodeRabbit           | AI code review                         | Configured via CodeRabbit website                  |
+| Codecov              | Code coverage tracking                 | `codecov.yml` + GitHub integration                 |
+| Vercel               | PR preview environments                | Configured via Vercel website                      |
 
 ---
 
@@ -158,11 +163,27 @@ export default tseslint.config(
 
 ---
 
-## SonarCloud Integration
+## External Code Quality Services
+
+### SonarCloud Integration
 
 SonarCloud provides static code analysis, code coverage tracking, and quality gate enforcement.
 
 > **Note:** SonarCloud is configured directly through the [SonarCloud website](https://sonarcloud.io). No local configuration files are required. The integration is set up via the SonarCloud project settings, which automatically connects to the GitHub repository and runs analysis on each push and pull request.
+
+### Configuration Settings
+
+The following SonarCloud settings are configured in the SonarCloud UI (Project Settings → Analysis Scope):
+
+- **Test File Inclusions** (`sonar.test.inclusions`): `**/*.spec.ts,**/*.test.ts`
+  - Marks test files for proper analysis and coverage calculation
+  - Ensures test files are correctly identified and excluded from main code metrics
+
+- **Code Duplication Exclusions** (`sonar.cpd.exclusions`): `**/*.spec.ts,**/*.test.ts`
+  - Excludes test files from duplicate code detection
+  - Prevents test code duplication from affecting code quality metrics
+
+These settings ensure that test files are properly handled in SonarCloud analysis and don't skew code quality metrics.
 
 ### Quality Gates
 
@@ -174,6 +195,96 @@ SonarCloud quality gates are configured in the SonarCloud project settings and c
 - Monitor code quality metrics over time
 
 Quality gate status is displayed directly in pull requests via SonarCloud's GitHub integration.
+
+### CodeRabbit Integration
+
+CodeRabbit provides AI-powered automated code reviews on pull requests, offering suggestions for code improvements, best practices, security issues, and accessibility concerns.
+
+> **Note:** CodeRabbit is configured directly through the [CodeRabbit website](https://coderabbit.ai). No local configuration files are required. The integration is set up via the CodeRabbit project settings, which automatically connects to the GitHub repository and reviews pull requests on each push and pull request.
+
+#### Features
+
+- **Automated Code Reviews**: AI analyzes code changes and provides contextual suggestions
+- **Best Practices**: Suggests improvements based on industry standards and project patterns
+- **Security Scanning**: Identifies potential security vulnerabilities
+- **Accessibility Checks**: Reviews code for accessibility issues
+- **Documentation**: Suggests improvements to code comments and documentation
+- **Performance**: Identifies potential performance optimizations
+
+#### Review Process
+
+- CodeRabbit automatically reviews pull requests when opened or updated
+- Reviews appear as PR comments with actionable suggestions
+- Resolved issues are marked with "✅ Addressed" for easy tracking
+- Reviewers should verify all actionable feedback is addressed before merging
+
+> **Tip:** CodeRabbit resolved issues are marked with "✅ Addressed". Verify all actionable feedback is addressed before re-review.
+
+### Vercel Preview Environments
+
+Vercel automatically creates preview deployments for every pull request, providing a live URL to review changes in a production-like environment.
+
+> **Note:** Vercel is configured through the [Vercel website](https://vercel.com) or GitHub App installation. Configuration is stored in `vercel.json` and managed via Vercel project settings. The integration automatically deploys preview environments for each pull request.
+
+#### Features
+
+- **Automatic PR Previews**: Every PR gets a unique preview URL
+- **Production-like Environment**: Preview deployments mirror production settings
+- **Fast Deployments**: Changes are deployed automatically on push
+- **Visual Testing**: Review UI changes in a real browser environment
+- **Shareable Links**: Preview URLs can be shared with team members or stakeholders
+- **Build Validation**: Preview builds validate that code compiles and runs correctly
+
+#### Preview URLs
+
+- Preview deployments are automatically created for each pull request
+- Preview URLs are posted as comments in pull requests
+- Each preview is a full production build, allowing comprehensive testing
+- Preview environments are automatically cleaned up when PRs are closed or merged
+
+#### Configuration
+
+Vercel configuration is stored in `vercel.json` and includes:
+
+- Build settings
+- Environment variables
+- Routing configuration
+- Deployment settings
+
+Preview environments help catch issues before merging by allowing visual and functional testing of changes in a production-like environment.
+
+### Codecov Integration
+
+Codecov provides automated code coverage tracking and reporting for pull requests, ensuring that new code maintains adequate test coverage.
+
+> **Note:** Codecov is configured through the [Codecov website](https://codecov.io) and integrated with GitHub via the `codecov/codecov-action` in the CI workflow. Configuration is stored in `codecov.yml` in the repository root.
+
+#### Features
+
+- **Coverage Tracking**: Automatically tracks code coverage for every commit and pull request
+- **PR Comments**: Posts detailed coverage reports as PR comments showing coverage changes
+- **Coverage Thresholds**: Enforces minimum coverage requirements for new code
+- **Coverage Trends**: Tracks coverage trends over time to prevent regression
+- **Status Checks**: Can block PRs that don't meet coverage requirements
+
+#### Configuration
+
+Codecov configuration is stored in `codecov.yml` and includes:
+
+- **Project Coverage**: Must not decrease (1% tolerance for fluctuation)
+- **Patch Coverage**: New/modified code must have ≥80% coverage
+- **Comment Layout**: Configured to show reach, diff, flags, and files in PR comments
+
+#### Integration
+
+Codecov is integrated into the CI pipeline via the `test` job in `.github/workflows/ci.yml`:
+
+1. Jest runs tests with coverage collection (`npm run test:coverage`)
+2. Coverage data is uploaded to Codecov using `codecov/codecov-action@v5`
+3. Codecov analyzes coverage and posts a report as a PR comment
+4. Status checks validate that coverage requirements are met
+
+For more details on coverage requirements and guidelines, see [CODE_COVERAGE.md](CODE_COVERAGE.md).
 
 ---
 
@@ -213,9 +324,27 @@ npm run validate:all   # validate + E2E tests
 | E2E        | Playwright tests pass     |
 | Build      | Production build succeeds |
 
-### SonarCloud Quality Gates (On Push/PR)
+### External Quality Gates (On Push/PR)
+
+#### SonarCloud Quality Gates
 
 SonarCloud quality gates run automatically via the SonarCloud GitHub integration. Quality gate status is displayed in pull requests and can block merges if configured to do so. Configure quality gate rules in the SonarCloud project settings.
+
+#### CodeRabbit Code Reviews
+
+CodeRabbit automatically reviews pull requests and provides AI-powered code review feedback. Review comments appear directly in PRs with suggestions for improvements. While CodeRabbit doesn't block merges by default, it's recommended to address actionable feedback before merging.
+
+#### Codecov Coverage Checks
+
+Codecov automatically tracks code coverage and posts coverage reports in pull requests. Coverage requirements are enforced:
+
+- Project coverage must not decrease (1% tolerance)
+- New/modified code must have ≥80% coverage
+- Coverage status checks can block PRs that don't meet requirements
+
+#### Vercel Preview Environments
+
+Vercel automatically creates preview deployments for each pull request, providing live URLs for visual and functional testing. Preview URLs are posted in PR comments, allowing reviewers to test changes in a production-like environment before merging. Preview environments are automatically cleaned up when PRs are closed or merged.
 
 ---
 

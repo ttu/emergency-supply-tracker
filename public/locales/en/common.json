@@ -30,6 +30,7 @@
       "description": "Transparent code you can inspect and contribute to"
     },
     "features": {
+      "title": "Features",
       "track": {
         "title": "Track Supplies",
         "description": "Keep track of your emergency supplies and expiration dates"

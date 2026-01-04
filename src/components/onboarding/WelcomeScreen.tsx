@@ -23,14 +23,17 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
   };
 
   return (
-    <div className={styles.container}>
+    <main className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.header}>
+        <header className={styles.header}>
           <h1 className={styles.title}>{t('app.title')}</h1>
           <p className={styles.tagline}>{t('app.tagline')}</p>
-        </div>
+        </header>
 
-        <div className={styles.languageSection}>
+        <section
+          className={styles.languageSection}
+          aria-labelledby="language-label"
+        >
           <Select
             id="language-select"
             label={t('settings.language.label')}
@@ -41,9 +44,12 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
               { value: 'fi', label: 'Suomi' },
             ]}
           />
-        </div>
+        </section>
 
-        <div className={styles.sellingPoints}>
+        <section
+          className={styles.sellingPoints}
+          aria-label={t('landing.sellingPoints')}
+        >
           <div className={styles.sellingPoint}>
             <span className={styles.sellingPointIcon} aria-hidden="true">
               &#10003;
@@ -98,9 +104,12 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
               <p>{t('landing.cloudSync.description')}</p>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className={styles.features}>
+        <section className={styles.features} aria-labelledby="features-heading">
+          <h2 id="features-heading" className="sr-only">
+            {t('landing.features.title')}
+          </h2>
           <div className={styles.feature}>
             <h3>{t('landing.features.track.title')}</h3>
             <p>{t('landing.features.track.description')}</p>
@@ -113,7 +122,7 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
             <h3>{t('landing.features.prepared.title')}</h3>
             <p>{t('landing.features.prepared.description')}</p>
           </div>
-        </div>
+        </section>
 
         <div className={styles.actions}>
           <Button onClick={onContinue} size="large" fullWidth>
@@ -121,6 +130,6 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
           </Button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

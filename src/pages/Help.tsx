@@ -76,9 +76,9 @@ export function Help() {
         <p className={styles.subtitle}>{t('help.subtitle')}</p>
       </header>
 
-      <div className={styles.content}>
-        <section className={styles.section}>
-          <h2>{t('help.faqTitle')}</h2>
+      <main className={styles.content}>
+        <section className={styles.section} aria-labelledby="faq-heading">
+          <h2 id="faq-heading">{t('help.faqTitle')}</h2>
           <div className={styles.topics}>
             {helpTopics.map((topic) => (
               <div key={topic.id} className={styles.topic}>
@@ -102,8 +102,8 @@ export function Help() {
           </div>
         </section>
 
-        <section className={styles.section}>
-          <h2>{t('help.quickTipsTitle')}</h2>
+        <section className={styles.section} aria-labelledby="tips-heading">
+          <h2 id="tips-heading">{t('help.quickTipsTitle')}</h2>
           <ul className={styles.tipsList}>
             <li>{t('help.tips.tip1')}</li>
             <li>{t('help.tips.tip2')}</li>
@@ -113,8 +113,8 @@ export function Help() {
           </ul>
         </section>
 
-        <section className={styles.section}>
-          <h2>{t('help.contactTitle')}</h2>
+        <section className={styles.section} aria-labelledby="contact-heading">
+          <h2 id="contact-heading">{t('help.contactTitle')}</h2>
           <p>{t('help.contactText')}</p>
           <a
             href="https://github.com/yourusername/emergency-supply-tracker"
@@ -125,7 +125,7 @@ export function Help() {
             {t('help.githubLink')}
           </a>
         </section>
-      </div>
+      </main>
     </div>
   );
 }
