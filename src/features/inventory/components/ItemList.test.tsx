@@ -30,6 +30,7 @@ describe('ItemList', () => {
     {
       id: '1',
       name: 'Item 1',
+      itemType: 'bottled-water',
       categoryId: 'water-beverages',
       quantity: 10,
       unit: 'liters',
@@ -42,6 +43,7 @@ describe('ItemList', () => {
     {
       id: '2',
       name: 'Item 2',
+      itemType: 'canned-food',
       categoryId: 'food',
       quantity: 5,
       unit: 'cans',

@@ -1,7 +1,7 @@
 import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { InventoryProvider } from './InventoryProvider';
-import { useInventory } from '@/shared/hooks/useInventory';
+import { InventoryProvider } from './provider';
+import { useInventory } from './hooks/useInventory';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import * as analytics from '@/shared/utils/analytics';
