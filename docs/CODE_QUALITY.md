@@ -164,6 +164,20 @@ SonarCloud provides static code analysis, code coverage tracking, and quality ga
 
 > **Note:** SonarCloud is configured directly through the [SonarCloud website](https://sonarcloud.io). No local configuration files are required. The integration is set up via the SonarCloud project settings, which automatically connects to the GitHub repository and runs analysis on each push and pull request.
 
+### Configuration Settings
+
+The following SonarCloud settings are configured in the SonarCloud UI (Project Settings → Analysis Scope):
+
+- **Test File Inclusions** (`sonar.test.inclusions`): `**/*.spec.ts,**/*.test.ts`
+  - Marks test files for proper analysis and coverage calculation
+  - Ensures test files are correctly identified and excluded from main code metrics
+
+- **Code Duplication Exclusions** (`sonar.cpd.exclusions`): `**/*.spec.ts,**/*.test.ts`
+  - Excludes test files from duplicate code detection
+  - Prevents test code duplication from affecting code quality metrics
+
+These settings ensure that test files are properly handled in SonarCloud analysis and don't skew code quality metrics.
+
 ### Quality Gates
 
 SonarCloud quality gates are configured in the SonarCloud project settings and can:
