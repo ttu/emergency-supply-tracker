@@ -87,11 +87,18 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         household,
         disabledRecommendedItems,
         recommendedItems,
+        calculationOptions,
       );
       map.set(category.id, score);
     });
     return map;
-  }, [items, household, disabledRecommendedItems, recommendedItems]);
+  }, [
+    items,
+    household,
+    disabledRecommendedItems,
+    recommendedItems,
+    calculationOptions,
+  ]);
 
   // Calculate category statuses
   const categoryStatuses = useMemo(

@@ -462,6 +462,7 @@ export function getCategoryDisplayStatus(
     household,
     disabledRecommendedItems,
     recommendedItems,
+    options,
   );
 
   const shortageInfo = calculateCategoryShortages(

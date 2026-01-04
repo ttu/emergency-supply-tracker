@@ -8,7 +8,10 @@ import {
   MAX_ITEM_SCORE,
   DEFAULT_FULL_PREPAREDNESS,
   DEFAULT_EMPTY_PREPAREDNESS,
+  ADULT_REQUIREMENT_MULTIPLIER,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
+import type { CategoryCalculationOptions } from './categoryStatus';
 
 /**
  * Calculate overall preparedness score (0-100)
@@ -57,12 +60,11 @@ export function calculatePreparednessScore(
   recommendedForHousehold.forEach((recItem) => {
     const recommendedQty = recommendedQuantities.get(recItem.id) || 0;
 
-    // Find matching inventory items by productTemplateId or name
+    // Find matching inventory items by productTemplateId or name only
+    // (not by category, to avoid double-counting items across multiple recommended items)
     const matchingItems = items.filter(
       (item) =>
-        item.productTemplateId === recItem.id ||
-        item.name === recItem.id ||
-        item.categoryId === recItem.category,
+        item.productTemplateId === recItem.id || item.name === recItem.id,
     );
 
     const totalQty = matchingItems.reduce(
@@ -91,6 +93,7 @@ export function calculateCategoryPreparedness(
   household: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
   recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
+  options: CategoryCalculationOptions = {},
 ): number {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
   const recommendedForCategory = recommendedItems.filter(
@@ -105,7 +108,15 @@ export function calculateCategoryPreparedness(
       : DEFAULT_EMPTY_PREPAREDNESS;
   }
 
-  const totalPeople = household.adults + household.children;
+  // Use childrenMultiplier from options, falling back to default constant
+  const childrenMultiplier =
+    options.childrenMultiplier ?? CHILDREN_REQUIREMENT_MULTIPLIER;
+
+  // Adults count as 1.0, children use the configurable multiplier
+  const peopleMultiplier =
+    household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+    household.children * childrenMultiplier;
+
   let totalScore = 0;
   let maxScore = 0;
 
@@ -113,7 +124,7 @@ export function calculateCategoryPreparedness(
     let recommendedQty = recItem.baseQuantity;
 
     if (recItem.scaleWithPeople) {
-      recommendedQty *= totalPeople;
+      recommendedQty *= peopleMultiplier;
     }
 
     if (recItem.scaleWithDays) {
