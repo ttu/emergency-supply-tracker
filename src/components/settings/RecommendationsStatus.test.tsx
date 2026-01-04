@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, afterEach, jest } from '@jest/globals';
 import { RecommendationsStatus } from './RecommendationsStatus';
 
 // Mock i18next
@@ -22,8 +23,16 @@ jest.mock('@/shared/hooks/useRecommendedItems', () => ({
 }));
 
 describe('RecommendationsStatus', () => {
+  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    // Suppress console.error output from expected error handling in tests
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   it('should show default status when using built-in recommendations', () => {

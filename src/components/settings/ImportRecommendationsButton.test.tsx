@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { beforeEach, afterEach, jest } from '@jest/globals';
 import { ImportRecommendationsButton } from './ImportRecommendationsButton';
 
 // Mock i18next
@@ -41,14 +42,22 @@ describe('ImportRecommendationsButton', () => {
     ],
   };
 
+  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    // Suppress console.error output from expected error handling in tests
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     mockImportRecommendedItems.mockReturnValue({
       valid: true,
       errors: [],
       warnings: [],
     });
     mockParseRecommendedItemsFile.mockReturnValue(validFile);
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   it('should render import button', () => {
