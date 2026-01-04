@@ -16,10 +16,32 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-// Mock child components
-jest.mock('../components/dashboard/DashboardHeader', () => ({
+// Mock dashboard feature components
+jest.mock('@/features/dashboard', () => ({
+  ...jest.requireActual('@/features/dashboard'),
   DashboardHeader: ({ preparednessScore }: { preparednessScore: number }) => (
     <div data-testid="dashboard-header">Preparedness: {preparednessScore}%</div>
+  ),
+  CategoryGrid: ({
+    categories,
+  }: {
+    categories: Array<{
+      categoryId: string;
+      categoryName: string;
+      onClick?: () => void;
+    }>;
+  }) => (
+    <div data-testid="category-grid">
+      {categories.map((cat) => (
+        <button
+          key={cat.categoryId}
+          data-testid={`category-${cat.categoryId}`}
+          onClick={cat.onClick}
+        >
+          {cat.categoryName}
+        </button>
+      ))}
+    </div>
   ),
 }));
 
@@ -51,30 +73,6 @@ jest.mock('@/features/alerts', () => ({
   ),
   generateDashboardAlerts: (...args: unknown[]) =>
     mockGenerateDashboardAlerts(...args),
-}));
-
-jest.mock('../components/dashboard/CategoryGrid', () => ({
-  CategoryGrid: ({
-    categories,
-  }: {
-    categories: Array<{
-      categoryId: string;
-      categoryName: string;
-      onClick?: () => void;
-    }>;
-  }) => (
-    <div data-testid="category-grid">
-      {categories.map((cat) => (
-        <button
-          key={cat.categoryId}
-          data-testid={`category-${cat.categoryId}`}
-          onClick={cat.onClick}
-        >
-          {cat.categoryName}
-        </button>
-      ))}
-    </div>
-  ),
 }));
 
 const renderWithProviders = (ui: React.ReactElement) => {

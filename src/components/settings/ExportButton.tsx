@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import { getAppData, exportToJSON } from '@/shared/utils/storage/localStorage';
-import { recordBackupDate } from '@/shared/utils/dashboard/backupReminder';
+import { recordBackupDate } from '@/features/dashboard';
 import styles from './ExportButton.module.css';
 
 export function ExportButton() {

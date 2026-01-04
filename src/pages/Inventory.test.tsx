@@ -9,7 +9,7 @@ import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
 import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
 import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
-import { calculateCategoryPreparedness } from '@/shared/utils/dashboard/preparedness';
+import { calculateCategoryPreparedness } from '@/features/dashboard';
 import {
   createMockInventoryItem,
   createMockAppData,

@@ -22,11 +22,11 @@ import type {
   ItemStatus,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { calculateItemStatus } from '@/shared/utils/calculations/status';
+import { calculateItemStatus } from '@/features/inventory';
 import {
   getCategoryDisplayStatus,
   type CategoryCalculationOptions,
-} from '@/shared/utils/dashboard/categoryStatus';
+} from '@/features/dashboard';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,

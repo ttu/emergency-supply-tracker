@@ -7,6 +7,68 @@
 
 ## Progress Summary
 
+### ✅ Phase 3.6: Dashboard Feature Migration - COMPLETED (2026-01-04)
+
+The Dashboard feature has been migrated to `src/features/dashboard/`. All 879 tests pass.
+
+**Completed Tasks:**
+
+1. **Created feature directory structure** at `src/features/dashboard/`:
+   - `components/CategoryCard.tsx` - Category status card component
+   - `components/CategoryCard.module.css` - Component styles
+   - `components/CategoryCard.test.tsx` - Component tests
+   - `components/CategoryCard.stories.tsx` - Storybook stories
+   - `components/CategoryGrid.tsx` - Grid layout for category cards
+   - `components/CategoryGrid.module.css` - Component styles
+   - `components/CategoryGrid.test.tsx` - Component tests
+   - `components/CategoryGrid.stories.tsx` - Storybook stories
+   - `components/DashboardHeader.tsx` - Dashboard header with preparedness score
+   - `components/DashboardHeader.module.css` - Component styles
+   - `components/DashboardHeader.test.tsx` - Component tests
+   - `components/DashboardHeader.stories.tsx` - Storybook stories
+   - `components/index.ts` - Components barrel export
+   - `utils/categoryStatus.ts` - Category status calculations
+   - `utils/categoryStatus.test.ts` - Category status tests
+   - `utils/preparedness.ts` - Preparedness score calculations
+   - `utils/preparedness.test.ts` - Preparedness tests
+   - `utils/backupReminder.ts` - Backup reminder logic
+   - `utils/backupReminder.test.ts` - Backup reminder tests
+   - `utils/index.ts` - Utils barrel export
+   - `index.ts` - Public API (barrel exports)
+
+2. **Updated all imports** across the codebase to use `@/features/dashboard`:
+   - `src/pages/Dashboard.tsx`
+   - `src/pages/Dashboard.test.tsx`
+   - `src/pages/Inventory.tsx`
+   - `src/pages/Inventory.test.tsx`
+   - `src/components/settings/ExportButton.tsx`
+
+3. **Created backward-compatible re-exports**:
+   - `src/components/dashboard/CategoryCard.tsx` - Re-exports from feature (deprecated)
+   - `src/components/dashboard/CategoryGrid.tsx` - Re-exports from feature (deprecated)
+   - `src/components/dashboard/DashboardHeader.tsx` - Re-exports from feature (deprecated)
+   - `src/shared/utils/dashboard/categoryStatus.ts` - Re-exports from feature (deprecated)
+   - `src/shared/utils/dashboard/preparedness.ts` - Re-exports from feature (deprecated)
+   - `src/shared/utils/dashboard/backupReminder.ts` - Re-exports from feature (deprecated)
+
+**New Import Pattern:**
+
+```typescript
+// Preferred - Import directly from feature
+import {
+  DashboardHeader,
+  CategoryGrid,
+  CategoryCard,
+  calculatePreparednessScore,
+  getCategoryDisplayStatus,
+  type CategoryShortage,
+} from '@/features/dashboard';
+
+// Still works - Backward compatible re-exports (deprecated)
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { getCategoryDisplayStatus } from '@/shared/utils/dashboard/categoryStatus';
+```
+
 ### ✅ Phase 3.3: Templates Feature Migration - COMPLETED (2026-01-03)
 
 The Templates feature has been migrated to `src/features/templates/`. All 891 tests pass.
@@ -198,9 +260,9 @@ Migrating features one at a time to `src/features/`:
 1. ✅ Household (simplest, few dependencies) - COMPLETED
 2. ✅ Categories (data-focused) - COMPLETED
 3. ✅ Templates (data-focused) - COMPLETED
-4. 🔲 Alerts (used by dashboard)
-5. 🔲 Inventory (core feature, many dependencies)
-6. 🔲 Dashboard (depends on inventory, alerts)
+4. ✅ Alerts (used by dashboard) - COMPLETED
+5. ✅ Inventory (core feature, many dependencies) - COMPLETED
+6. ✅ Dashboard (depends on inventory, alerts) - COMPLETED
 7. 🔲 Settings (depends on household, inventory)
 8. 🔲 Onboarding (depends on household)
 
