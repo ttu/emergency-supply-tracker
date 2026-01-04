@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+echo "🔍 Running pre-push validation..."
+
+# i18n translation completeness check
+# (This is the only check not covered by pre-commit)
+npm run validate:i18n
+
+echo "✅ Pre-push validation passed!"
+
