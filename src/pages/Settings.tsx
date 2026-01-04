@@ -1,19 +1,21 @@
 import { useTranslation } from 'react-i18next';
-import { LanguageSelector } from '../components/settings/LanguageSelector';
-import { ThemeSelector } from '../components/settings/ThemeSelector';
-import { HouseholdForm } from '../components/settings/HouseholdForm';
-import { NutritionSettings } from '../components/settings/NutritionSettings';
-import { ExportButton } from '../components/settings/ExportButton';
-import { ImportButton } from '../components/settings/ImportButton';
-import { ShoppingListExport } from '../components/settings/ShoppingListExport';
-import { DebugExport } from '../components/settings/DebugExport';
-import { ClearDataButton } from '../components/settings/ClearDataButton';
 import { HiddenAlerts } from '@/features/alerts';
-import { DisabledRecommendations } from '../components/settings/DisabledRecommendations';
-import { OverriddenRecommendations } from '../components/settings/OverriddenRecommendations';
-import { RecommendationsStatus } from '../components/settings/RecommendationsStatus';
-import { ImportRecommendationsButton } from '../components/settings/ImportRecommendationsButton';
-import { ExportRecommendationsButton } from '../components/settings/ExportRecommendationsButton';
+import {
+  LanguageSelector,
+  ThemeSelector,
+  HouseholdForm,
+  NutritionSettings,
+  ExportButton,
+  ImportButton,
+  ShoppingListExport,
+  DebugExport,
+  ClearDataButton,
+  DisabledRecommendations,
+  OverriddenRecommendations,
+  RecommendationsStatus,
+  ImportRecommendationsButton,
+  ExportRecommendationsButton,
+} from '@/features/settings';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
 

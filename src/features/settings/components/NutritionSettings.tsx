@@ -27,8 +27,8 @@ export function NutritionSettings() {
     CHILDREN_REQUIREMENT_MULTIPLIER * 100;
 
   const handleCaloriesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value)) {
+    const value = Number.parseInt(e.target.value, 10);
+    if (!Number.isNaN(value)) {
       const clamped = Math.max(
         LIMITS.dailyCalories.min,
         Math.min(LIMITS.dailyCalories.max, value),
@@ -38,8 +38,8 @@ export function NutritionSettings() {
   };
 
   const handleWaterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    if (!isNaN(value)) {
+    const value = Number.parseFloat(e.target.value);
+    if (!Number.isNaN(value)) {
       const clamped = Math.max(
         LIMITS.dailyWater.min,
         Math.min(LIMITS.dailyWater.max, value),
@@ -51,8 +51,8 @@ export function NutritionSettings() {
   const handleChildrenPercentageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value)) {
+    const value = Number.parseInt(e.target.value, 10);
+    if (!Number.isNaN(value)) {
       const clamped = Math.max(
         LIMITS.childrenPercentage.min,
         Math.min(LIMITS.childrenPercentage.max, value),

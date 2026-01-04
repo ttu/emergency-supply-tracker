@@ -41,7 +41,7 @@ export function HouseholdForm() {
           label={t('settings.household.adults')}
           value={household.adults.toString()}
           onChange={(e) =>
-            handleChange('adults', parseInt(e.target.value, 10) || 0)
+            handleChange('adults', Number.parseInt(e.target.value, 10) || 0)
           }
           min={0}
         />
@@ -52,7 +52,7 @@ export function HouseholdForm() {
           label={t('settings.household.children')}
           value={household.children.toString()}
           onChange={(e) =>
-            handleChange('children', parseInt(e.target.value, 10) || 0)
+            handleChange('children', Number.parseInt(e.target.value, 10) || 0)
           }
           min={0}
         />
@@ -65,7 +65,7 @@ export function HouseholdForm() {
           onChange={(e) =>
             handleChange(
               'supplyDurationDays',
-              parseInt(e.target.value, 10) || 1,
+              Number.parseInt(e.target.value, 10) || 1,
             )
           }
           min={1}
@@ -93,7 +93,7 @@ export function HouseholdForm() {
             onChange={(e) =>
               handleChange(
                 'freezerHoldTimeHours',
-                parseInt(e.target.value, 10) || undefined,
+                Number.parseInt(e.target.value, 10) || undefined,
               )
             }
             min={0}
