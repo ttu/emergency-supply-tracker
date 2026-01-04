@@ -30,6 +30,7 @@
       "description": "Läpinäkyvä koodi, jota voit tarkastella ja kehittää"
     },
     "features": {
+      "title": "Ominaisuudet",
       "track": {
         "title": "Seuraa varastoja",
         "description": "Pidä kirjaa hätävarastoistasi ja vanhenemispäivistä"

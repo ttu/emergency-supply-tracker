@@ -108,7 +108,7 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
 
         <section className={styles.features} aria-labelledby="features-heading">
           <h2 id="features-heading" className="sr-only">
-            Features
+            {t('landing.features.title')}
           </h2>
           <div className={styles.feature}>
             <h3>{t('landing.features.track.title')}</h3>
