@@ -58,6 +58,34 @@ test.describe('Accessibility', () => {
     expect(accessibilityScanResults.violations).toEqual([]);
   });
 
+  test('Dashboard page should have no accessibility violations on mobile', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
+      .analyze();
+
+    expect(accessibilityScanResults.violations).toEqual([]);
+  });
+
+  test('Inventory page should have no accessibility violations on mobile', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/inventory');
+    await page.waitForLoadState('networkidle');
+
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
+      .analyze();
+
+    expect(accessibilityScanResults.violations).toEqual([]);
+  });
+
   test('Item form modal should have no accessibility violations', async ({
     page,
   }) => {
@@ -82,12 +110,19 @@ test.describe('Accessibility', () => {
 
     // Test keyboard navigation through main navigation
     await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
 
-    // Check that focus is visible
-    const focusedElement = await page.evaluate(() => document.activeElement);
-    expect(focusedElement).not.toBeNull();
+    // Verify focus is on a navigation element with visible focus indicator
+    const firstFocusedElement = page.locator(':focus');
+    await expect(firstFocusedElement).toBeVisible();
+
+    // Continue tabbing and verify we can navigate through interactive elements
+    await page.keyboard.press('Tab');
+    const secondFocusedElement = page.locator(':focus');
+    await expect(secondFocusedElement).toBeVisible();
+
+    await page.keyboard.press('Tab');
+    const thirdFocusedElement = page.locator(':focus');
+    await expect(thirdFocusedElement).toBeVisible();
 
     // Run a11y check
     const accessibilityScanResults = await new AxeBuilder({ page })
