@@ -6,7 +6,7 @@ import { HOUSEHOLD_DEFAULTS, HOUSEHOLD_LIMITS } from '@/features/household';
 import styles from './HouseholdForm.module.css';
 
 function parseIntOrDefault(value: string, defaultValue: number): number {
-  const parsed = parseInt(value, 10);
+  const parsed = Number.parseInt(value, 10);
   return Number.isNaN(parsed) ? defaultValue : parsed;
 }
 
