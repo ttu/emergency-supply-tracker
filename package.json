@@ -21,6 +21,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:chromium": "playwright test --project=chromium --workers=100%",
+    "test:a11y": "RUN_A11Y_TESTS=1 playwright test --project=chromium --workers=100%",
     "test:storybook": "vitest --project=storybook --run",
     "test:all": "npm run test && npm run test:storybook",
     "validate": "npm run format:check && npm run lint && npm test && npm run build",

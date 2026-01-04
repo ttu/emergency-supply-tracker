@@ -11,7 +11,11 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   // Exclude a11y tests from default e2e run - they run in separate CI job
-  testIgnore: ['**/a11y.spec.ts'],
+  // Use testMatch to only include non-a11y files for default runs
+  // Explicit file paths (like in test:a11y script) will still work
+  testMatch: process.env.RUN_A11Y_TESTS
+    ? ['**/a11y.spec.ts']
+    : ['**/*.spec.ts', '!**/a11y.spec.ts'],
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',

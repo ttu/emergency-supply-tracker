@@ -120,13 +120,17 @@
 .templateCategory {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  /* Use darker text for better contrast on light backgrounds (WCAG AA) */
+  color: var(--color-text);
+  opacity: 0.8;
 }
 
 .templateQuantity {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  /* Use darker text for better contrast on light backgrounds (WCAG AA) */
+  color: var(--color-text);
+  opacity: 0.8;
 }
 
 @media (max-width: 768px) {
