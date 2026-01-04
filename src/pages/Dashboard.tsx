@@ -1,8 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DashboardHeader } from '../components/dashboard/DashboardHeader';
-import { AlertBanner } from '../components/dashboard/AlertBanner';
-import type { Alert } from '@/shared/utils/dashboard/alerts';
 import { CategoryGrid } from '../components/dashboard/CategoryGrid';
 import { Button } from '@/shared/components/Button';
 import { useInventory } from '@/shared/hooks/useInventory';
@@ -11,6 +9,11 @@ import { useSettings } from '@/shared/hooks/useSettings';
 import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
+  AlertBanner,
+  generateDashboardAlerts,
+  type Alert,
+} from '@/features/alerts';
+import {
   calculatePreparednessScore,
   calculateCategoryPreparedness,
 } from '@/shared/utils/dashboard/preparedness';
@@ -18,7 +21,6 @@ import {
   calculateAllCategoryStatuses,
   type CategoryCalculationOptions,
 } from '@/shared/utils/dashboard/categoryStatus';
-import { generateDashboardAlerts } from '@/shared/utils/dashboard/alerts';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import {
   shouldShowBackupReminder,

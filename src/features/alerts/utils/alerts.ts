@@ -8,19 +8,8 @@ import {
   CUSTOM_ITEM_TYPE,
 } from '@/shared/utils/constants';
 import { calculateWaterRequirements } from '@/shared/utils/calculations/water';
-
-// Alert type definition (moved from component to avoid circular dependency)
-export interface Alert {
-  id: string;
-  type: 'critical' | 'warning' | 'info';
-  message: string;
-  itemName?: string;
-}
-
-type TranslationFunction = (
-  key: string,
-  options?: Record<string, string | number>,
-) => string;
+import type { Alert, AlertCounts, TranslationFunction } from '../types';
+import { ALERT_PRIORITY } from '../types';
 
 /**
  * Get the translated item name for an inventory item.
@@ -211,8 +200,7 @@ export function generateDashboardAlerts(
   ];
 
   // Sort by priority: critical first, then warning, then info
-  const priorityOrder = { critical: 0, warning: 1, info: 2 };
-  allAlerts.sort((a, b) => priorityOrder[a.type] - priorityOrder[b.type]);
+  allAlerts.sort((a, b) => ALERT_PRIORITY[a.type] - ALERT_PRIORITY[b.type]);
 
   return allAlerts;
 }
@@ -220,13 +208,8 @@ export function generateDashboardAlerts(
 /**
  * Count alerts by type
  */
-export function countAlerts(alerts: Alert[]): {
-  critical: number;
-  warning: number;
-  info: number;
-  total: number;
-} {
-  const counts = {
+export function countAlerts(alerts: Alert[]): AlertCounts {
+  const counts: AlertCounts = {
     critical: 0,
     warning: 0,
     info: 0,

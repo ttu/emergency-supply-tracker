@@ -1,15 +1,7 @@
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Alert, AlertType } from '../types';
 import styles from './AlertBanner.module.css';
-
-export type AlertType = 'critical' | 'warning' | 'info';
-
-export interface Alert {
-  id: string;
-  type: AlertType;
-  message: string;
-  itemName?: string;
-}
 
 export interface AlertBannerProps {
   alerts: Alert[];

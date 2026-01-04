@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/shared/hooks/useInventory';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { Button } from '@/shared/components/Button';
-import styles from './HiddenAlerts.module.css';
+import styles from './OverriddenRecommendations.module.css';
 
 export function OverriddenRecommendations() {
   const { t } = useTranslation(['common', 'products', 'categories']);
