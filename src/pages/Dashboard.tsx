@@ -1,7 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DashboardHeader } from '../components/dashboard/DashboardHeader';
-import { CategoryGrid } from '../components/dashboard/CategoryGrid';
 import { Button } from '@/shared/components/Button';
 import { useInventory } from '@/shared/hooks/useInventory';
 import { useHousehold } from '@/features/household';
@@ -14,18 +12,16 @@ import {
   type Alert,
 } from '@/features/alerts';
 import {
+  DashboardHeader,
+  CategoryGrid,
   calculatePreparednessScore,
   calculateCategoryPreparedness,
-} from '@/shared/utils/dashboard/preparedness';
-import {
   calculateAllCategoryStatuses,
-  type CategoryCalculationOptions,
-} from '@/shared/utils/dashboard/categoryStatus';
-import { getAppData } from '@/shared/utils/storage/localStorage';
-import {
   shouldShowBackupReminder,
   dismissBackupReminder,
-} from '@/shared/utils/dashboard/backupReminder';
+  type CategoryCalculationOptions,
+} from '@/features/dashboard';
+import { getAppData } from '@/shared/utils/storage/localStorage';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
@@ -91,11 +87,18 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         household,
         disabledRecommendedItems,
         recommendedItems,
+        calculationOptions,
       );
       map.set(category.id, score);
     });
     return map;
-  }, [items, household, disabledRecommendedItems, recommendedItems]);
+  }, [
+    items,
+    household,
+    disabledRecommendedItems,
+    recommendedItems,
+    calculationOptions,
+  ]);
 
   // Calculate category statuses
   const categoryStatuses = useMemo(
