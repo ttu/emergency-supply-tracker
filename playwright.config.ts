@@ -10,6 +10,8 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  // Exclude a11y tests from default e2e run - they run in separate CI job
+  testIgnore: ['**/a11y.spec.ts'],
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
