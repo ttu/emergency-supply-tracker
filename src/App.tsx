@@ -12,7 +12,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Inventory } from './pages/Inventory';
 import { Settings } from './pages/Settings';
 import { Help } from './pages/Help';
-import { Onboarding } from './components/onboarding/Onboarding';
+import { Onboarding } from '@/features/onboarding';
 import { useSettings } from '@/shared/hooks/useSettings';
 import { useInventory } from '@/shared/hooks/useInventory';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
