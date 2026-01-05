@@ -33,7 +33,7 @@ const DEFAULT_SETTINGS: UserSettings = {
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<UserSettings>(() => {
     const data = getAppData();
-    // Merge stored settings with defaults to handle new fields (migration)
+    // Merge stored settings with defaults to handle new fields
     const storedSettings = { ...DEFAULT_SETTINGS, ...data?.settings };
 
     // If URL has a lang parameter, use it to override stored language
