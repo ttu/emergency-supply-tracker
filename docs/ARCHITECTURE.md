@@ -17,7 +17,6 @@ src/
 │   └── templates/         # Product templates (recommended items)
 ├── shared/                # Shared code across features
 │   ├── components/        # Reusable UI components
-│   ├── contexts/          # Shared React contexts (RecommendedItems)
 │   ├── hooks/             # Shared custom hooks
 │   ├── types/             # TypeScript type definitions
 │   └── utils/             # Utility functions
