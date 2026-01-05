@@ -230,7 +230,7 @@ interface AppData {
 
 ### Risk 1: Storage Quota Exceeded
 
-**Risk:** Very large inventories exceed LocalStorage limit (5-10MB).
+**Risk:** Large inventories (1000+ items) may approach LocalStorage limit (5-10MB).
 
 **Mitigation:**
 

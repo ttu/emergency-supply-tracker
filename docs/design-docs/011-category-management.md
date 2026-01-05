@@ -134,6 +134,8 @@ interface CustomCategory {
 - Calculates category preparedness percentage
 - Returns worst status (Critical > Warning > OK)
 
+**Note:** Category status aggregation uses item statuses calculated per [012-status-calculation.md](./012-status-calculation.md). See that document for item status determination logic.
+
 ### Custom Category Creation
 
 **Location:** `src/features/settings/components/CustomCategories.tsx`

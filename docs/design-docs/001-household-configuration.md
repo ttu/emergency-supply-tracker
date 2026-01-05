@@ -60,14 +60,14 @@ interface HouseholdConfig {
 
 **Base Formula:**
 
-```
+```text
 People Multiplier = (adults × 1.0) + (children × 0.75)
 Total Multiplier = People Multiplier × days
 ```
 
 **For Recommended Items:**
 
-```
+```text
 Recommended Quantity = baseQuantity × [peopleMultiplier if scaleWithPeople] × [days if scaleWithDays]
 ```
 

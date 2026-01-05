@@ -102,11 +102,12 @@ interface ProductTemplate {
 
 **Flow:**
 
-1. User adds custom item to inventory
-2. Option: "Save as Template"
-3. System creates template from item data
-4. Template saved to `customTemplates`
-5. Template available for future use
+1. User adds custom item to inventory (via ItemForm)
+2. After saving item, user can click "Save as Template" button (in item detail view or ItemForm)
+3. System creates template from item data (name, category, unit, etc.)
+4. Template saved to `customTemplates` array in AppData
+5. Template immediately available in TemplateSelector for future use
+6. No duplicate detection performed (future enhancement)
 
 ---
 
@@ -118,6 +119,7 @@ interface ProductTemplate {
 
 - `getTemplate(id)` - Checks custom templates first, then built-in, returns null if not found
 - `getAllTemplates()` - Returns combined array of built-in and custom templates
+- **ID Collision:** Custom template IDs use UUID format, while built-in template IDs are hardcoded strings (e.g., 'bottled-water'). No collision possible.
 - Custom templates take precedence over built-in with same ID
 
 ### Template Selector Component

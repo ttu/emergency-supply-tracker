@@ -59,13 +59,13 @@ The onboarding flow should be quick, intuitive, and not overwhelming.
 
 ### Flow Steps
 
-**Step 1: Welcome**
+### Step 1: Welcome
 
 - App name and brief description
 - Language selector (English/Finnish)
 - "Continue" button
 
-**Step 2: Preset Selection**
+### Step 2: Preset Selection
 
 - Common household presets:
   - Single person (1 adult, 0 children)
@@ -74,7 +74,7 @@ The onboarding flow should be quick, intuitive, and not overwhelming.
   - Custom (manual entry)
 - Pre-fills household form if preset selected
 
-**Step 3: Household Configuration**
+### Step 3: Household Configuration
 
 - Number of adults (min: 1, default: 2)
 - Number of children (min: 0, default: 0)
@@ -82,7 +82,7 @@ The onboarding flow should be quick, intuitive, and not overwhelming.
 - Use freezer toggle (default: false)
 - Back/Continue buttons
 
-**Step 4: Quick Setup**
+### Step 4: Quick Setup
 
 - Option 1: "Add All Recommended Items"
   - Adds all 70 recommended items with quantity=0

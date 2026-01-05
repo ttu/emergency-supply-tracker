@@ -52,7 +52,7 @@ The application is based on Finnish emergency preparedness guidelines (72tuntia.
 
 **Location:** `public/locales/{lang}/`
 
-```
+```text
 locales/
 ├── en/
 │   ├── common.json      # Common UI text

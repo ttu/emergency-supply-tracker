@@ -82,29 +82,7 @@ type ItemStatus = 'ok' | 'warning' | 'critical';
 
 ### Constants
 
-**Item Status Constants:**
-
-```typescript
-const EXPIRING_SOON_DAYS_THRESHOLD = 30; // Days before expiration for status warning
-const LOW_QUANTITY_WARNING_RATIO = 0.5; // 50% of recommended quantity = warning
-```
-
-**Category Status Constants:**
-
-```typescript
-const CRITICAL_PERCENTAGE_THRESHOLD = 30; // Category completion < 30% = critical
-const WARNING_PERCENTAGE_THRESHOLD = 70; // Category completion 30-70% = warning
-const OK_SCORE_THRESHOLD = 80; // Category completion ≥ 80% = ok
-const WARNING_SCORE_THRESHOLD = 50; // Category score threshold for warning
-```
-
-**Alert Threshold Constants:**
-
-```typescript
-const EXPIRING_SOON_ALERT_DAYS = 7; // Days before expiration for alerts (more urgent than status)
-const CRITICALLY_LOW_STOCK_PERCENTAGE = 25; // Stock < 25% = critical alert
-const LOW_STOCK_PERCENTAGE = 50; // Stock < 50% = low stock alert
-```
+See [Constants Reference](#constants-reference) section below for all defined constants.
 
 **Note:** Alert thresholds are more aggressive than status thresholds. Items expiring within 7 days generate alerts, while status warnings appear for items expiring within 30 days.
 
@@ -157,10 +135,11 @@ const LOW_STOCK_PERCENTAGE = 50; // Stock < 50% = low stock alert
 
 ### Performance Optimization
 
-- Memoized calculations (useMemo)
-- Only recalculate when dependencies change
-- Efficient date comparisons
-- Cached status per item
+- Memoized calculations using React `useMemo` and `useCallback` hooks
+- Caching strategy for date calculations (avoid repeated date parsing)
+- Performance target: <200ms for 200+ items
+- Only recalculate when dependencies change (items, household, settings)
+- Cached status per item to avoid redundant calculations
 
 ---
 
