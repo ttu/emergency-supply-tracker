@@ -418,7 +418,7 @@ features/inventory/
 **Implementation:**
 
 - ✅ Created branded types module (`src/shared/types/branded.ts`)
-- ✅ Implemented branded types: `ItemId`, `CategoryId`, `TemplateId`, `AlertId`, `RecommendedItemId`
+- ✅ Implemented branded types: `ItemId`, `CategoryId`, `ProductTemplateId`, `AlertId`
 - ✅ Updated all type definitions to use branded types
 - ✅ Updated codebase to use branded type helper functions
 - ✅ Fixed all TypeScript compilation errors
@@ -430,9 +430,8 @@ features/inventory/
 // Branded types
 type ItemId = string & { readonly __brand: 'ItemId' };
 type CategoryId = string & { readonly __brand: 'CategoryId' };
-type TemplateId = string & { readonly __brand: 'TemplateId' };
+type ProductTemplateId = string & { readonly __brand: 'ProductTemplateId' };
 type AlertId = string & { readonly __brand: 'AlertId' };
-type RecommendedItemId = string & { readonly __brand: 'RecommendedItemId' };
 
 // Helper functions
 function createItemId(id: string): ItemId {
@@ -441,7 +440,12 @@ function createItemId(id: string): ItemId {
 function createCategoryId(id: string): CategoryId {
   return id as CategoryId;
 }
-// ... etc
+function createProductTemplateId(id: string): ProductTemplateId {
+  return id as ProductTemplateId;
+}
+function createAlertId(id: string): AlertId {
+  return id as AlertId;
+}
 ```
 
 **Benefits Achieved:**

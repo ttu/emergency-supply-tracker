@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/features/inventory';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { Button } from '@/shared/components/Button';
-import { createItemId } from '@/shared/types';
+import type { ItemId } from '@/shared/types';
 import styles from './OverriddenRecommendations.module.css';
 
 export function OverriddenRecommendations() {
@@ -46,8 +46,8 @@ export function OverriddenRecommendations() {
       .filter((item) => item !== null);
   }, [items, t]);
 
-  const handleUnmark = (itemId: string) => {
-    updateItem(createItemId(itemId), { markedAsEnough: false });
+  const handleUnmark = (itemId: ItemId) => {
+    updateItem(itemId, { markedAsEnough: false });
   };
 
   const handleUnmarkAll = () => {
