@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemForm } from './ItemForm';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import { createItemId, createCategoryId } from '@/shared/types';
 
 const meta = {
   title: 'Components/Inventory/ItemForm',
@@ -23,9 +24,9 @@ const futureDate = new Date(
 ).toISOString();
 
 const sampleItem = createMockInventoryItem({
-  id: '1',
+  id: createItemId('1'),
   name: 'Bottled Water',
-  categoryId: 'water-beverages',
+  categoryId: createCategoryId('water-beverages'),
   quantity: 20,
   unit: 'liters',
   recommendedQuantity: 28,

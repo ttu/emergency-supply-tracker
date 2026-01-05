@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/features/inventory';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { Button } from '@/shared/components/Button';
+import type { ItemId } from '@/shared/types';
 import styles from './OverriddenRecommendations.module.css';
 
 export function OverriddenRecommendations() {
@@ -17,7 +18,7 @@ export function OverriddenRecommendations() {
         // Try to find matching recommended item
         const recommendedItem = RECOMMENDED_ITEMS.find(
           (rec) =>
-            rec.id === item.productTemplateId ||
+            item.productTemplateId === rec.id ||
             rec.id === item.itemType?.toLowerCase().replace(/\s+/g, '-'),
         );
 
@@ -45,7 +46,7 @@ export function OverriddenRecommendations() {
       .filter((item) => item !== null);
   }, [items, t]);
 
-  const handleUnmark = (itemId: string) => {
+  const handleUnmark = (itemId: ItemId) => {
     updateItem(itemId, { markedAsEnough: false });
   };
 

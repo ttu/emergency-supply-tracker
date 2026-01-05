@@ -6,6 +6,11 @@ import type {
   Category,
   ProductTemplate,
 } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 
 /**
  * Test data factories for creating mock data in tests
@@ -42,7 +47,7 @@ export function createMockSettings(
 
 export function createMockCategory(overrides?: Partial<Category>): Category {
   return {
-    id: 'test-category',
+    id: createCategoryId('test-category'),
     name: 'Test Category',
     icon: '🧪',
     isCustom: true,
@@ -55,10 +60,10 @@ export function createMockInventoryItem(
 ): InventoryItem {
   const now = new Date().toISOString();
   return {
-    id: 'test-item-1',
+    id: createItemId('test-item-1'),
     name: 'Test Item',
     itemType: 'test-item', // Template ID (kebab-case)
-    categoryId: 'food',
+    categoryId: createCategoryId('food'),
     quantity: 10,
     unit: 'pieces',
     recommendedQuantity: 20,
@@ -74,7 +79,7 @@ export function createMockProductTemplate(
   overrides?: Partial<ProductTemplate>,
 ): ProductTemplate {
   return {
-    id: 'test-template',
+    id: createProductTemplateId('test-template'),
     name: 'Test Template',
     category: 'food',
     defaultUnit: 'pieces' as const,
@@ -92,8 +97,8 @@ export function createMockAppData(overrides?: Partial<AppData>): AppData {
     customCategories: [],
     items: [],
     customTemplates: [],
-    dismissedAlertIds: [],
-    disabledRecommendedItems: [],
+    dismissedAlertIds: [] as AppData['dismissedAlertIds'],
+    disabledRecommendedItems: [] as AppData['disabledRecommendedItems'],
     lastModified: new Date().toISOString(),
     ...overrides,
   };

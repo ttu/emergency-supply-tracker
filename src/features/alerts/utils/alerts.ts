@@ -1,4 +1,5 @@
 import type { InventoryItem, HouseholdConfig } from '@/shared/types';
+import { createAlertId } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   MS_PER_DAY,
@@ -62,14 +63,14 @@ function generateExpirationAlerts(
 
     if (daysUntilExpiration < 0) {
       alerts.push({
-        id: `expired-${item.id}`,
+        id: createAlertId(`expired-${item.id}`),
         type: 'critical',
         message: t('alerts.expiration.expired'),
         itemName: getTranslatedItemName(item, t),
       });
     } else if (daysUntilExpiration <= EXPIRING_SOON_ALERT_DAYS) {
       alerts.push({
-        id: `expiring-soon-${item.id}`,
+        id: createAlertId(`expiring-soon-${item.id}`),
         type: 'warning',
         message: t('alerts.expiration.expiringSoon', {
           days: daysUntilExpiration,
@@ -118,14 +119,14 @@ function generateCategoryStockAlerts(
 
     if (totalQuantity === 0) {
       alerts.push({
-        id: `category-out-of-stock-${category.id}`,
+        id: createAlertId(`category-out-of-stock-${category.id}`),
         type: 'critical',
         message: t('alerts.stock.outOfStock'),
         itemName: categoryName,
       });
     } else if (percentOfRecommended < CRITICALLY_LOW_STOCK_PERCENTAGE) {
       alerts.push({
-        id: `category-critically-low-${category.id}`,
+        id: createAlertId(`category-critically-low-${category.id}`),
         type: 'critical',
         message: t('alerts.stock.criticallyLow', {
           percent: Math.round(percentOfRecommended),
@@ -134,7 +135,7 @@ function generateCategoryStockAlerts(
       });
     } else if (percentOfRecommended < LOW_STOCK_PERCENTAGE) {
       alerts.push({
-        id: `category-low-stock-${category.id}`,
+        id: createAlertId(`category-low-stock-${category.id}`),
         type: 'warning',
         message: t('alerts.stock.runningLow', {
           percent: Math.round(percentOfRecommended),
@@ -169,7 +170,7 @@ function generateWaterShortageAlerts(
   ) {
     const shortfall = Math.ceil(waterRequirements.waterShortfall * 10) / 10; // Round to 1 decimal
     alerts.push({
-      id: 'water-shortage-preparation',
+      id: createAlertId('water-shortage-preparation'),
       type: 'warning',
       message: t('alerts.water.preparationShortage', {
         liters: shortfall,

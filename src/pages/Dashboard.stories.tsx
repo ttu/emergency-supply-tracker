@@ -5,6 +5,7 @@ import { InventoryProvider } from '@/features/inventory';
 import { SettingsProvider } from '@/features/settings';
 import { RecommendedItemsProvider } from '@/features/templates';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import { createItemId, createCategoryId } from '@/shared/types';
 
 const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',
@@ -46,9 +47,9 @@ export const WithItems: Story = {
       // Set up some inventory items in localStorage
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Bottled Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: 20,
           unit: 'liters',
           recommendedQuantity: 28,
@@ -57,9 +58,9 @@ export const WithItems: Story = {
           location: 'Pantry',
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Canned Beans',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: 15,
           unit: 'cans',
           recommendedQuantity: 20,
@@ -68,9 +69,9 @@ export const WithItems: Story = {
           location: 'Pantry',
         }),
         createMockInventoryItem({
-          id: '3',
+          id: createItemId('3'),
           name: 'First Aid Kit',
-          categoryId: 'medical-health',
+          categoryId: createCategoryId('medical-health'),
           quantity: 1,
           unit: 'pieces',
           recommendedQuantity: 1,
@@ -103,9 +104,9 @@ export const WithAlerts: Story = {
       // Set up inventory with items that will trigger alerts
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Expired Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: 10,
           unit: 'liters',
           recommendedQuantity: 28,
@@ -114,9 +115,9 @@ export const WithAlerts: Story = {
           location: 'Pantry',
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Low Stock Food',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: 2,
           unit: 'cans',
           recommendedQuantity: 20,
@@ -125,9 +126,9 @@ export const WithAlerts: Story = {
           location: 'Pantry',
         }),
         createMockInventoryItem({
-          id: '3',
+          id: createItemId('3'),
           name: 'Expiring Soon Medicine',
-          categoryId: 'medical-health',
+          categoryId: createCategoryId('medical-health'),
           quantity: 5,
           unit: 'pieces',
           recommendedQuantity: 10,
@@ -163,9 +164,9 @@ export const WellPrepared: Story = {
       // Set up a well-stocked inventory
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Bottled Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: 30,
           unit: 'liters',
           recommendedQuantity: 28,
@@ -174,9 +175,9 @@ export const WellPrepared: Story = {
           location: 'Pantry',
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Canned Vegetables',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: 25,
           unit: 'cans',
           recommendedQuantity: 20,
@@ -185,9 +186,9 @@ export const WellPrepared: Story = {
           location: 'Pantry',
         }),
         createMockInventoryItem({
-          id: '3',
+          id: createItemId('3'),
           name: 'Flashlight',
-          categoryId: 'light-power',
+          categoryId: createCategoryId('light-power'),
           quantity: 2,
           unit: 'pieces',
           recommendedQuantity: 2,
@@ -195,9 +196,9 @@ export const WellPrepared: Story = {
           location: 'Utility Closet',
         }),
         createMockInventoryItem({
-          id: '4',
+          id: createItemId('4'),
           name: 'First Aid Kit',
-          categoryId: 'medical-health',
+          categoryId: createCategoryId('medical-health'),
           quantity: 1,
           unit: 'pieces',
           recommendedQuantity: 1,

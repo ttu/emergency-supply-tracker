@@ -19,6 +19,11 @@ import { useRecommendedItems, TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 import type {
   InventoryItem,
   ItemStatus,
@@ -180,7 +185,7 @@ export function Inventory({
 
   const handleDeleteItem = (itemId: string) => {
     if (window.confirm(t('inventory.confirmDelete'))) {
-      deleteItem(itemId);
+      deleteItem(createItemId(itemId));
       setShowAddModal(false);
       setEditingItem(undefined);
     }
@@ -188,7 +193,7 @@ export function Inventory({
 
   const handleMarkAsEnough = useCallback(
     (itemId: string) => {
-      updateItem(itemId, { markedAsEnough: true });
+      updateItem(createItemId(itemId), { markedAsEnough: true });
     },
     [updateItem],
   );
@@ -226,7 +231,7 @@ export function Inventory({
       const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
         name: templateName,
         itemType: template.id, // Store template ID for i18n lookup
-        categoryId: template.category,
+        categoryId: createCategoryId(template.category),
         quantity: 0,
         unit: template.unit,
         recommendedQuantity: recommendedQty,
@@ -289,7 +294,7 @@ export function Inventory({
   // Handler for disabling a recommended item
   const handleDisableRecommendedItem = useCallback(
     (itemId: string) => {
-      disableRecommendedItem(itemId);
+      disableRecommendedItem(createProductTemplateId(itemId));
     },
     [disableRecommendedItem],
   );

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InventoryItem, Category } from '@/shared/types';
+import { createCategoryId } from '@/shared/types';
 import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
 import { Button } from '@/shared/components/Button';
@@ -147,7 +148,7 @@ export const ItemForm = ({
     onSubmit({
       name: formData.name.trim(),
       itemType: formData.itemType.trim() || CUSTOM_ITEM_TYPE,
-      categoryId: formData.categoryId,
+      categoryId: createCategoryId(formData.categoryId),
       quantity: parseFloat(formData.quantity),
       unit: formData.unit as
         | 'pieces'
