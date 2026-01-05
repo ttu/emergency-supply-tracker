@@ -20,6 +20,11 @@ import {
 import { TemplateSelector } from '@/features/templates';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
+import {
+  createItemId,
+  createCategoryId,
+  createRecommendedItemId,
+} from '@/shared/types';
 import type {
   InventoryItem,
   ItemStatus,
@@ -181,7 +186,7 @@ export function Inventory({
 
   const handleDeleteItem = (itemId: string) => {
     if (window.confirm(t('inventory.confirmDelete'))) {
-      deleteItem(itemId);
+      deleteItem(createItemId(itemId));
       setShowAddModal(false);
       setEditingItem(undefined);
     }
@@ -189,7 +194,7 @@ export function Inventory({
 
   const handleMarkAsEnough = useCallback(
     (itemId: string) => {
-      updateItem(itemId, { markedAsEnough: true });
+      updateItem(createItemId(itemId), { markedAsEnough: true });
     },
     [updateItem],
   );
@@ -199,7 +204,8 @@ export function Inventory({
     // If item has a template, set it so weight/calorie calculations work
     if (item.productTemplateId) {
       const template = recommendedItems.find(
-        (t) => t.id === item.productTemplateId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (t) => t.id === (item.productTemplateId as any),
       );
       setSelectedTemplate(template);
     } else {
@@ -227,7 +233,7 @@ export function Inventory({
       const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
         name: templateName,
         itemType: template.id, // Store template ID for i18n lookup
-        categoryId: template.category,
+        categoryId: createCategoryId(template.category),
         quantity: 0,
         unit: template.unit,
         recommendedQuantity: recommendedQty,
@@ -238,7 +244,8 @@ export function Inventory({
                 template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
             ).toISOString()
           : undefined,
-        productTemplateId: template.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        productTemplateId: template.id as any, // RecommendedItemId is compatible with TemplateId
         weightGrams: template.weightGramsPerUnit,
         caloriesPerUnit: template.caloriesPerUnit,
       };
@@ -290,7 +297,7 @@ export function Inventory({
   // Handler for disabling a recommended item
   const handleDisableRecommendedItem = useCallback(
     (itemId: string) => {
-      disableRecommendedItem(itemId);
+      disableRecommendedItem(createRecommendedItemId(itemId));
     },
     [disableRecommendedItem],
   );

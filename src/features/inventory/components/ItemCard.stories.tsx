@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemCard } from './ItemCard';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import { createItemId, createCategoryId } from '@/shared/types';
 
 const meta = {
   title: 'Components/Inventory/ItemCard',
@@ -25,9 +26,9 @@ const expiredDate = new Date(
 ).toISOString();
 
 const baseItem = createMockInventoryItem({
-  id: '1',
+  id: createItemId('1'),
   name: 'Bottled Water',
-  categoryId: 'water-beverages',
+  categoryId: createCategoryId('water-beverages'),
   quantity: 20,
   unit: 'liters',
   recommendedQuantity: 28,

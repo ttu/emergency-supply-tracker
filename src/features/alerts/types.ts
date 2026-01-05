@@ -12,11 +12,13 @@ export const ALERT_PRIORITY: Record<AlertType, number> = {
   info: 2,
 };
 
+import type { AlertId } from '@/shared/types';
+
 /**
  * Alert definition
  */
 export interface Alert {
-  id: string;
+  id: AlertId;
   type: AlertType;
   message: string;
   itemName?: string;

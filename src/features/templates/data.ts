@@ -1,4 +1,5 @@
 import type { RecommendedItemDefinition } from '@/shared/types';
+import { createRecommendedItemId } from '@/shared/types';
 import { DAILY_WATER_PER_PERSON } from '@/shared/utils/constants';
 
 export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
@@ -6,7 +7,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // 1. Water & Beverages
   // ===================================================================
   {
-    id: 'bottled-water',
+    id: createRecommendedItemId('bottled-water'),
     i18nKey: 'products.bottled-water',
     category: 'water-beverages',
     baseQuantity: DAILY_WATER_PER_PERSON,
@@ -16,7 +17,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 12,
   },
   {
-    id: 'long-life-milk',
+    id: createRecommendedItemId('long-life-milk'),
     i18nKey: 'products.long-life-milk',
     category: 'water-beverages',
     baseQuantity: 2,
@@ -26,7 +27,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 12,
   },
   {
-    id: 'long-life-juice',
+    id: createRecommendedItemId('long-life-juice'),
     i18nKey: 'products.long-life-juice',
     category: 'water-beverages',
     baseQuantity: 2,
@@ -41,7 +42,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // Calorie values: ~2000 kcal/day/adult recommended for emergency situations
   // ===================================================================
   {
-    id: 'canned-soup',
+    id: createRecommendedItemId('canned-soup'),
     i18nKey: 'products.canned-soup',
     category: 'food',
     baseQuantity: 1,
@@ -54,7 +55,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 200, // ~200 kcal per can (400g can)
   },
   {
-    id: 'canned-vegetables',
+    id: createRecommendedItemId('canned-vegetables'),
     i18nKey: 'products.canned-vegetables',
     category: 'food',
     baseQuantity: 1,
@@ -67,7 +68,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 100, // ~100 kcal per can (400g can)
   },
   {
-    id: 'canned-fish',
+    id: createRecommendedItemId('canned-fish'),
     i18nKey: 'products.canned-fish',
     category: 'food',
     baseQuantity: 0.67,
@@ -80,7 +81,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 200, // ~200 kcal per can (150g drained)
   },
   {
-    id: 'canned-meat',
+    id: createRecommendedItemId('canned-meat'),
     i18nKey: 'products.canned-meat',
     category: 'food',
     baseQuantity: 0.67,
@@ -93,7 +94,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 300, // ~300 kcal per can (200g can)
   },
   {
-    id: 'pasta',
+    id: createRecommendedItemId('pasta'),
     i18nKey: 'products.pasta',
     category: 'food',
     baseQuantity: 0.17,
@@ -107,7 +108,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     requiresWaterLiters: 1.0, // ~1 liter per kg of pasta for cooking
   },
   {
-    id: 'rice',
+    id: createRecommendedItemId('rice'),
     i18nKey: 'products.rice',
     category: 'food',
     baseQuantity: 0.17,
@@ -121,7 +122,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     requiresWaterLiters: 1.5, // ~1.5 liters per kg of rice for cooking (rice absorbs more)
   },
   {
-    id: 'oats',
+    id: createRecommendedItemId('oats'),
     i18nKey: 'products.oats',
     category: 'food',
     baseQuantity: 0.17,
@@ -135,7 +136,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     requiresWaterLiters: 2.0, // ~2 liters per kg of oats for porridge
   },
   {
-    id: 'crackers',
+    id: createRecommendedItemId('crackers'),
     i18nKey: 'products.crackers',
     category: 'food',
     baseQuantity: 0.67,
@@ -148,7 +149,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 500, // ~500 kcal per package (200g)
   },
   {
-    id: 'energy-bars',
+    id: createRecommendedItemId('energy-bars'),
     i18nKey: 'products.energy-bars',
     category: 'food',
     baseQuantity: 2,
@@ -161,7 +162,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 250, // ~250 kcal per bar
   },
   {
-    id: 'spreads',
+    id: createRecommendedItemId('spreads'),
     i18nKey: 'products.spreads',
     category: 'food',
     baseQuantity: 1,
@@ -174,7 +175,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 1600, // ~1600 kcal per jar (peanut butter, 400g)
   },
   {
-    id: 'dried-fruits',
+    id: createRecommendedItemId('dried-fruits'),
     i18nKey: 'products.dried-fruits',
     category: 'food',
     baseQuantity: 0.1,
@@ -187,7 +188,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 3000, // ~300 kcal per 100g
   },
   {
-    id: 'nuts',
+    id: createRecommendedItemId('nuts'),
     i18nKey: 'products.nuts',
     category: 'food',
     baseQuantity: 0.1,
@@ -200,7 +201,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 6000, // ~600 kcal per 100g
   },
   {
-    id: 'salt-sugar',
+    id: createRecommendedItemId('salt-sugar'),
     i18nKey: 'products.salt-sugar',
     category: 'food',
     baseQuantity: 0.2,
@@ -210,7 +211,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     // No calories - salt has 0, sugar is condiment
   },
   {
-    id: 'coffee-tea',
+    id: createRecommendedItemId('coffee-tea'),
     i18nKey: 'products.coffee-tea',
     category: 'food',
     baseQuantity: 0.2,
@@ -222,7 +223,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     requiresWaterLiters: 10, // ~10 liters per kg for brewing (about 50 cups per kg)
   },
   {
-    id: 'frozen-vegetables',
+    id: createRecommendedItemId('frozen-vegetables'),
     i18nKey: 'products.frozen-vegetables',
     category: 'food',
     baseQuantity: 0.34,
@@ -236,7 +237,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 400, // ~40 kcal per 100g
   },
   {
-    id: 'frozen-meat',
+    id: createRecommendedItemId('frozen-meat'),
     i18nKey: 'products.frozen-meat',
     category: 'food',
     baseQuantity: 0.17,
@@ -250,7 +251,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 2500, // ~250 kcal per 100g (average meat)
   },
   {
-    id: 'frozen-meals',
+    id: createRecommendedItemId('frozen-meals'),
     i18nKey: 'products.frozen-meals',
     category: 'food',
     baseQuantity: 1,
@@ -268,7 +269,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // 3. Cooking & Heat
   // ===================================================================
   {
-    id: 'camping-stove',
+    id: createRecommendedItemId('camping-stove'),
     i18nKey: 'products.camping-stove',
     category: 'cooking-heat',
     baseQuantity: 1,
@@ -277,7 +278,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'stove-fuel',
+    id: createRecommendedItemId('stove-fuel'),
     i18nKey: 'products.stove-fuel',
     category: 'cooking-heat',
     baseQuantity: 1,
@@ -287,7 +288,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'matches',
+    id: createRecommendedItemId('matches'),
     i18nKey: 'products.matches',
     category: 'cooking-heat',
     baseQuantity: 2,
@@ -297,7 +298,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'lighter',
+    id: createRecommendedItemId('lighter'),
     i18nKey: 'products.lighter',
     category: 'cooking-heat',
     baseQuantity: 2,
@@ -306,7 +307,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'candles',
+    id: createRecommendedItemId('candles'),
     i18nKey: 'products.candles',
     category: 'cooking-heat',
     baseQuantity: 10,
@@ -315,7 +316,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'fire-starter',
+    id: createRecommendedItemId('fire-starter'),
     i18nKey: 'products.fire-starter',
     category: 'cooking-heat',
     baseQuantity: 1,
@@ -328,7 +329,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // 4. Light & Power
   // ===================================================================
   {
-    id: 'flashlight',
+    id: createRecommendedItemId('flashlight'),
     i18nKey: 'products.flashlight',
     category: 'light-power',
     baseQuantity: 2,
@@ -337,7 +338,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'headlamp',
+    id: createRecommendedItemId('headlamp'),
     i18nKey: 'products.headlamp',
     category: 'light-power',
     baseQuantity: 1,
@@ -346,7 +347,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'batteries-aa',
+    id: createRecommendedItemId('batteries-aa'),
     i18nKey: 'products.batteries-aa',
     category: 'light-power',
     baseQuantity: 20,
@@ -356,7 +357,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'batteries-aaa',
+    id: createRecommendedItemId('batteries-aaa'),
     i18nKey: 'products.batteries-aaa',
     category: 'light-power',
     baseQuantity: 12,
@@ -366,7 +367,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'batteries-d',
+    id: createRecommendedItemId('batteries-d'),
     i18nKey: 'products.batteries-d',
     category: 'light-power',
     baseQuantity: 8,
@@ -376,7 +377,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'power-bank',
+    id: createRecommendedItemId('power-bank'),
     i18nKey: 'products.power-bank',
     category: 'light-power',
     baseQuantity: 1,
@@ -385,7 +386,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'charging-cables',
+    id: createRecommendedItemId('charging-cables'),
     i18nKey: 'products.charging-cables',
     category: 'light-power',
     baseQuantity: 2,
@@ -394,7 +395,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'solar-charger',
+    id: createRecommendedItemId('solar-charger'),
     i18nKey: 'products.solar-charger',
     category: 'light-power',
     baseQuantity: 1,
@@ -403,7 +404,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'power-generator',
+    id: createRecommendedItemId('power-generator'),
     i18nKey: 'products.power-generator',
     category: 'light-power',
     baseQuantity: 1,
@@ -412,7 +413,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'generator-fuel',
+    id: createRecommendedItemId('generator-fuel'),
     i18nKey: 'products.generator-fuel',
     category: 'light-power',
     baseQuantity: 10,
@@ -426,7 +427,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // 5. Communication
   // ===================================================================
   {
-    id: 'battery-radio',
+    id: createRecommendedItemId('battery-radio'),
     i18nKey: 'products.battery-radio',
     category: 'communication-info',
     baseQuantity: 1,
@@ -435,7 +436,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'hand-crank-radio',
+    id: createRecommendedItemId('hand-crank-radio'),
     i18nKey: 'products.hand-crank-radio',
     category: 'communication-info',
     baseQuantity: 1,
@@ -448,7 +449,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // 6. Medical & First Aid
   // ===================================================================
   {
-    id: 'first-aid-kit',
+    id: createRecommendedItemId('first-aid-kit'),
     i18nKey: 'products.first-aid-kit',
     category: 'medical-health',
     baseQuantity: 1,
@@ -458,7 +459,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 36,
   },
   {
-    id: 'prescription-meds',
+    id: createRecommendedItemId('prescription-meds'),
     i18nKey: 'products.prescription-meds',
     category: 'medical-health',
     baseQuantity: 1,
@@ -467,7 +468,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
   },
   {
-    id: 'pain-relievers',
+    id: createRecommendedItemId('pain-relievers'),
     i18nKey: 'products.pain-relievers',
     category: 'medical-health',
     baseQuantity: 1,
@@ -477,7 +478,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 36,
   },
   {
-    id: 'fever-reducers',
+    id: createRecommendedItemId('fever-reducers'),
     i18nKey: 'products.fever-reducers',
     category: 'medical-health',
     baseQuantity: 1,
@@ -487,7 +488,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 36,
   },
   {
-    id: 'bandages',
+    id: createRecommendedItemId('bandages'),
     i18nKey: 'products.bandages',
     category: 'medical-health',
     baseQuantity: 20,
@@ -497,7 +498,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 60,
   },
   {
-    id: 'disinfectant',
+    id: createRecommendedItemId('disinfectant'),
     i18nKey: 'products.disinfectant',
     category: 'medical-health',
     baseQuantity: 1,
@@ -507,7 +508,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 36,
   },
   {
-    id: 'thermometer',
+    id: createRecommendedItemId('thermometer'),
     i18nKey: 'products.thermometer',
     category: 'medical-health',
     baseQuantity: 1,
@@ -516,7 +517,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'antihistamines',
+    id: createRecommendedItemId('antihistamines'),
     i18nKey: 'products.antihistamines',
     category: 'medical-health',
     baseQuantity: 1,
@@ -526,7 +527,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 36,
   },
   {
-    id: 'diarrhea-meds',
+    id: createRecommendedItemId('diarrhea-meds'),
     i18nKey: 'products.diarrhea-meds',
     category: 'medical-health',
     baseQuantity: 1,
@@ -540,7 +541,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // 7. Hygiene & Sanitation
   // ===================================================================
   {
-    id: 'toilet-paper',
+    id: createRecommendedItemId('toilet-paper'),
     i18nKey: 'products.toilet-paper',
     category: 'hygiene-sanitation',
     baseQuantity: 1,
@@ -549,7 +550,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
   },
   {
-    id: 'wet-wipes',
+    id: createRecommendedItemId('wet-wipes'),
     i18nKey: 'products.wet-wipes',
     category: 'hygiene-sanitation',
     baseQuantity: 1,
@@ -559,7 +560,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 24,
   },
   {
-    id: 'hand-sanitizer',
+    id: createRecommendedItemId('hand-sanitizer'),
     i18nKey: 'products.hand-sanitizer',
     category: 'hygiene-sanitation',
     baseQuantity: 1,
@@ -569,7 +570,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 24,
   },
   {
-    id: 'soap',
+    id: createRecommendedItemId('soap'),
     i18nKey: 'products.soap',
     category: 'hygiene-sanitation',
     baseQuantity: 2,
@@ -578,7 +579,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'toothbrush',
+    id: createRecommendedItemId('toothbrush'),
     i18nKey: 'products.toothbrush',
     category: 'hygiene-sanitation',
     baseQuantity: 1,
@@ -587,7 +588,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'toothpaste',
+    id: createRecommendedItemId('toothpaste'),
     i18nKey: 'products.toothpaste',
     category: 'hygiene-sanitation',
     baseQuantity: 1,
@@ -597,7 +598,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     defaultExpirationMonths: 24,
   },
   {
-    id: 'feminine-hygiene',
+    id: createRecommendedItemId('feminine-hygiene'),
     i18nKey: 'products.feminine-hygiene',
     category: 'hygiene-sanitation',
     baseQuantity: 0.34,
@@ -606,7 +607,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
   },
   {
-    id: 'diapers',
+    id: createRecommendedItemId('diapers'),
     i18nKey: 'products.diapers',
     category: 'hygiene-sanitation',
     baseQuantity: 10,
@@ -615,7 +616,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: true,
   },
   {
-    id: 'garbage-bags',
+    id: createRecommendedItemId('garbage-bags'),
     i18nKey: 'products.garbage-bags',
     category: 'hygiene-sanitation',
     baseQuantity: 20,
@@ -624,7 +625,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'paper-towels',
+    id: createRecommendedItemId('paper-towels'),
     i18nKey: 'products.paper-towels',
     category: 'hygiene-sanitation',
     baseQuantity: 2,
@@ -637,7 +638,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // 8. Tools & Supplies
   // ===================================================================
   {
-    id: 'bucket',
+    id: createRecommendedItemId('bucket'),
     i18nKey: 'products.bucket',
     category: 'tools-supplies',
     baseQuantity: 1,
@@ -646,7 +647,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'water-container',
+    id: createRecommendedItemId('water-container'),
     i18nKey: 'products.water-container',
     category: 'tools-supplies',
     baseQuantity: 1,
@@ -655,7 +656,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'duct-tape',
+    id: createRecommendedItemId('duct-tape'),
     i18nKey: 'products.duct-tape',
     category: 'tools-supplies',
     baseQuantity: 1,
@@ -664,7 +665,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'multi-tool',
+    id: createRecommendedItemId('multi-tool'),
     i18nKey: 'products.multi-tool',
     category: 'tools-supplies',
     baseQuantity: 1,
@@ -673,7 +674,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'can-opener',
+    id: createRecommendedItemId('can-opener'),
     i18nKey: 'products.can-opener',
     category: 'tools-supplies',
     baseQuantity: 1,
@@ -682,7 +683,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'plastic-bags',
+    id: createRecommendedItemId('plastic-bags'),
     i18nKey: 'products.plastic-bags',
     category: 'tools-supplies',
     baseQuantity: 20,
@@ -691,7 +692,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'aluminum-foil',
+    id: createRecommendedItemId('aluminum-foil'),
     i18nKey: 'products.aluminum-foil',
     category: 'tools-supplies',
     baseQuantity: 1,
@@ -700,7 +701,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'plastic-wrap',
+    id: createRecommendedItemId('plastic-wrap'),
     i18nKey: 'products.plastic-wrap',
     category: 'tools-supplies',
     baseQuantity: 1,
@@ -709,7 +710,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'rope',
+    id: createRecommendedItemId('rope'),
     i18nKey: 'products.rope',
     category: 'tools-supplies',
     baseQuantity: 10,
@@ -718,7 +719,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'work-gloves',
+    id: createRecommendedItemId('work-gloves'),
     i18nKey: 'products.work-gloves',
     category: 'tools-supplies',
     baseQuantity: 2,
@@ -727,7 +728,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'whistle',
+    id: createRecommendedItemId('whistle'),
     i18nKey: 'products.whistle',
     category: 'tools-supplies',
     baseQuantity: 1,
@@ -740,7 +741,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
   // 9. Cash & Documents
   // ===================================================================
   {
-    id: 'cash',
+    id: createRecommendedItemId('cash'),
     i18nKey: 'products.cash',
     category: 'cash-documents',
     baseQuantity: 300,
@@ -749,7 +750,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'document-copies',
+    id: createRecommendedItemId('document-copies'),
     i18nKey: 'products.document-copies',
     category: 'cash-documents',
     baseQuantity: 1,
@@ -758,7 +759,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithDays: false,
   },
   {
-    id: 'contact-list',
+    id: createRecommendedItemId('contact-list'),
     i18nKey: 'products.contact-list',
     category: 'cash-documents',
     baseQuantity: 1,

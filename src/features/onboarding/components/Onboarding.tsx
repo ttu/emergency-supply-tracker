@@ -6,6 +6,7 @@ import { HouseholdForm } from './HouseholdForm';
 import type { HouseholdData } from './HouseholdForm';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
+import { createItemId, createCategoryId } from '@/shared/types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { HOUSEHOLD_DEFAULTS } from '@/features/household';
@@ -83,16 +84,17 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       const itemName = t(item.i18nKey.replace('products.', ''));
 
       return {
-        id: crypto.randomUUID(),
+        id: createItemId(crypto.randomUUID()),
         name: itemName,
         itemType: item.id, // Store template ID for i18n lookup
-        categoryId: item.category,
+        categoryId: createCategoryId(item.category),
         quantity: 0, // Start with 0, user needs to add them
         unit: item.unit,
         recommendedQuantity: quantity,
         expirationDate,
         neverExpires: !item.defaultExpirationMonths,
-        productTemplateId: item.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        productTemplateId: item.id as any, // RecommendedItemId is compatible with TemplateId
         weightGrams: item.weightGramsPerUnit, // Store template weight per unit for calculations
         caloriesPerUnit: item.caloriesPerUnit, // Store template calories per unit
         createdAt: now,

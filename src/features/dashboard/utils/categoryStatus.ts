@@ -194,7 +194,8 @@ export function calculateCategoryShortages(
     const recItemIdNormalized = recItemId.toLowerCase();
     const matchingItems = categoryItems.filter((item) => {
       // Direct template ID match
-      if (item.productTemplateId === recItemId) return true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (item.productTemplateId === (recItemId as any)) return true;
       // itemType is now stored as template ID directly
       if (item.itemType === recItemId) return true;
       // Match name by normalizing to kebab-case (for manually created items)

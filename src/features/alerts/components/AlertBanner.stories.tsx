@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AlertBanner } from './AlertBanner';
 import { SettingsProvider } from '@/features/settings';
+import { createAlertId } from '@/shared/types';
 
 const meta = {
   title: 'Features/Alerts/AlertBanner',
@@ -31,7 +32,7 @@ export const CriticalAlert: Story = {
   args: {
     alerts: [
       {
-        id: '1',
+        id: createAlertId('1'),
         type: 'critical',
         message: 'Item has expired',
         itemName: 'Bottled Water',
@@ -44,7 +45,7 @@ export const WarningAlert: Story = {
   args: {
     alerts: [
       {
-        id: '1',
+        id: createAlertId('1'),
         type: 'warning',
         message: 'Running low on stock',
         itemName: 'Canned Soup',
@@ -57,7 +58,7 @@ export const InfoAlert: Story = {
   args: {
     alerts: [
       {
-        id: '1',
+        id: createAlertId('1'),
         type: 'info',
         message: 'Time to check your supplies',
       },
@@ -69,25 +70,25 @@ export const MultipleAlerts: Story = {
   args: {
     alerts: [
       {
-        id: '1',
+        id: createAlertId('1'),
         type: 'critical',
         message: 'Item has expired',
         itemName: 'First Aid Kit',
       },
       {
-        id: '2',
+        id: createAlertId('2'),
         type: 'critical',
         message: 'Item has expired',
         itemName: 'Batteries',
       },
       {
-        id: '3',
+        id: createAlertId('3'),
         type: 'warning',
         message: 'Running low on stock',
         itemName: 'Bottled Water',
       },
       {
-        id: '4',
+        id: createAlertId('4'),
         type: 'info',
         message: 'Consider adding more variety to your food supplies',
       },
@@ -99,13 +100,13 @@ export const WithDismiss: Story = {
   args: {
     alerts: [
       {
-        id: '1',
+        id: createAlertId('1'),
         type: 'warning',
         message: 'Expiring soon',
         itemName: 'Energy Bars',
       },
     ],
-    onDismiss: (id: string) => {
+    onDismiss: (id) => {
       console.log('Dismissed alert:', id);
     },
   },

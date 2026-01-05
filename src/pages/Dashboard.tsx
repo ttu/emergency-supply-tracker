@@ -22,6 +22,7 @@ import {
   type CategoryCalculationOptions,
 } from '@/features/dashboard';
 import { getAppData } from '@/shared/utils/storage/localStorage';
+import { createAlertId } from '@/shared/types';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
@@ -37,7 +38,7 @@ export interface DashboardProps {
   ) => void;
 }
 
-const BACKUP_REMINDER_ALERT_ID = 'backup-reminder';
+const BACKUP_REMINDER_ALERT_ID = createAlertId('backup-reminder');
 
 export function Dashboard({ onNavigate }: DashboardProps = {}) {
   const { t } = useTranslation();
@@ -172,11 +173,12 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
 
   const handleDismissAlert = useCallback(
     (alertId: string) => {
-      if (alertId === BACKUP_REMINDER_ALERT_ID) {
+      const alertIdTyped = createAlertId(alertId);
+      if (alertIdTyped === BACKUP_REMINDER_ALERT_ID) {
         dismissBackupReminder();
         setBackupReminderDismissed(true);
       } else {
-        dismissAlert(alertId);
+        dismissAlert(alertIdTyped);
       }
     },
     [dismissAlert],

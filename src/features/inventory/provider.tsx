@@ -1,5 +1,16 @@
 import { useState, useEffect, ReactNode, useCallback } from 'react';
-import type { InventoryItem, Category } from '@/shared/types';
+import type {
+  InventoryItem,
+  Category,
+  ItemId,
+  AlertId,
+  RecommendedItemId,
+} from '@/shared/types';
+import {
+  createItemId,
+  createAlertId,
+  createRecommendedItemId,
+} from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   getAppData,
@@ -19,15 +30,15 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     return data?.items || [];
   });
   const [categories] = useState<Category[]>(STANDARD_CATEGORIES);
-  const [dismissedAlertIds, setDismissedAlertIds] = useState<string[]>(() => {
+  const [dismissedAlertIds, setDismissedAlertIds] = useState<AlertId[]>(() => {
     const data = getAppData();
-    return data?.dismissedAlertIds || [];
+    return (data?.dismissedAlertIds || []).map(createAlertId);
   });
   const [disabledRecommendedItems, setDisabledRecommendedItems] = useState<
-    string[]
+    RecommendedItemId[]
   >(() => {
     const data = getAppData();
-    return data?.disabledRecommendedItems || [];
+    return (data?.disabledRecommendedItems || []).map(createRecommendedItemId);
   });
 
   // Save items, dismissedAlertIds, and disabledRecommendedItems to localStorage on change
@@ -47,7 +58,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     const now = new Date().toISOString();
     const newItem: InventoryItem = {
       ...item,
-      id: crypto.randomUUID(),
+      id: createItemId(crypto.randomUUID()),
       createdAt: now,
       updatedAt: now,
     };
@@ -55,7 +66,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     trackItemAdded(item.name, item.categoryId);
   };
 
-  const updateItem = (id: string, updates: Partial<InventoryItem>) => {
+  const updateItem = (id: ItemId, updates: Partial<InventoryItem>) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id
@@ -65,7 +76,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const deleteItem = (id: string) => {
+  const deleteItem = (id: ItemId) => {
     const itemToDelete = items.find((item) => item.id === id);
     setItems((prev) => prev.filter((item) => item.id !== id));
     if (itemToDelete) {
@@ -80,13 +91,13 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const dismissAlert = useCallback((alertId: string) => {
+  const dismissAlert = useCallback((alertId: AlertId) => {
     setDismissedAlertIds((prev) =>
       prev.includes(alertId) ? prev : [...prev, alertId],
     );
   }, []);
 
-  const reactivateAlert = useCallback((alertId: string) => {
+  const reactivateAlert = useCallback((alertId: AlertId) => {
     setDismissedAlertIds((prev) => prev.filter((id) => id !== alertId));
   }, []);
 
@@ -94,13 +105,13 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     setDismissedAlertIds([]);
   }, []);
 
-  const disableRecommendedItem = useCallback((itemId: string) => {
+  const disableRecommendedItem = useCallback((itemId: RecommendedItemId) => {
     setDisabledRecommendedItems((prev) =>
       prev.includes(itemId) ? prev : [...prev, itemId],
     );
   }, []);
 
-  const enableRecommendedItem = useCallback((itemId: string) => {
+  const enableRecommendedItem = useCallback((itemId: RecommendedItemId) => {
     setDisabledRecommendedItems((prev) => prev.filter((id) => id !== itemId));
   }, []);
 

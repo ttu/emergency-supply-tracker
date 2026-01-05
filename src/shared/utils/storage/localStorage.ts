@@ -1,5 +1,12 @@
 import type { AppData, InventoryItem } from '@/shared/types';
 import {
+  createItemId,
+  createCategoryId,
+  createTemplateId,
+  createAlertId,
+  createRecommendedItemId,
+} from '@/shared/types';
+import {
   CUSTOM_ITEM_TYPE,
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
@@ -35,7 +42,8 @@ function normalizeItemType(itemType: string | undefined): string {
 }
 
 /**
- * Normalizes inventory items by ensuring itemType values are valid template IDs.
+ * Normalizes inventory items by ensuring itemType values are valid template IDs
+ * and casting IDs to branded types.
  */
 function normalizeItems(
   items: InventoryItem[] | undefined,
@@ -44,7 +52,12 @@ function normalizeItems(
 
   return items.map((item) => ({
     ...item,
+    id: createItemId(item.id as string),
+    categoryId: createCategoryId(item.categoryId as string),
     itemType: normalizeItemType(item.itemType),
+    productTemplateId: item.productTemplateId
+      ? createTemplateId(item.productTemplateId as string)
+      : undefined,
   }));
 }
 
@@ -83,10 +96,31 @@ export function getAppData(): AppData | null {
   try {
     const json = localStorage.getItem(STORAGE_KEY);
     if (!json) return null;
-    const data = JSON.parse(json) as AppData;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rawData = JSON.parse(json) as any;
 
-    // Normalize items: ensure itemType values are valid template IDs
-    data.items = normalizeItems(data.items) ?? [];
+    // Normalize items: ensure itemType values are valid template IDs and cast IDs
+    const normalizedItems = normalizeItems(rawData.items) ?? [];
+
+    // Cast IDs to branded types
+    const data: AppData = {
+      ...rawData,
+      items: normalizedItems,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      customCategories: (rawData.customCategories || []).map((cat: any) => ({
+        ...cat,
+        id: createCategoryId(cat.id as string),
+      })),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      customTemplates: (rawData.customTemplates || []).map((template: any) => ({
+        ...template,
+        id: createTemplateId(template.id as string),
+      })),
+      dismissedAlertIds: (rawData.dismissedAlertIds || []).map(createAlertId),
+      disabledRecommendedItems: (rawData.disabledRecommendedItems || []).map(
+        createRecommendedItemId,
+      ),
+    };
 
     return data;
   } catch (error) {
@@ -172,14 +206,22 @@ export function importFromJSON(json: string): AppData {
     data.customTemplates = [];
   }
 
-  // Ensure dismissedAlertIds exists
+  // Ensure dismissedAlertIds exists and cast to branded types
   if (!data.dismissedAlertIds) {
     data.dismissedAlertIds = [];
+  } else {
+    data.dismissedAlertIds = (data.dismissedAlertIds as string[]).map(
+      createAlertId,
+    );
   }
 
-  // Ensure disabledRecommendedItems exists
+  // Ensure disabledRecommendedItems exists and cast to branded types
   if (!data.disabledRecommendedItems) {
     data.disabledRecommendedItems = [];
+  } else {
+    data.disabledRecommendedItems = (
+      data.disabledRecommendedItems as string[]
+    ).map(createRecommendedItemId);
   }
 
   // customRecommendedItems is optional - preserve if present, otherwise leave undefined

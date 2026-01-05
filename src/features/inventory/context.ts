@@ -1,5 +1,11 @@
 import { createContext } from 'react';
-import type { InventoryItem, Category } from '@/shared/types';
+import type {
+  InventoryItem,
+  Category,
+  ItemId,
+  AlertId,
+  RecommendedItemId,
+} from '@/shared/types';
 
 export interface InventoryContextValue {
   items: InventoryItem[];
@@ -8,17 +14,17 @@ export interface InventoryContextValue {
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
   ) => void;
   addItems: (items: InventoryItem[]) => void;
-  updateItem: (id: string, updates: Partial<InventoryItem>) => void;
-  deleteItem: (id: string) => void;
+  updateItem: (id: ItemId, updates: Partial<InventoryItem>) => void;
+  deleteItem: (id: ItemId) => void;
   // Alert dismissal
-  dismissedAlertIds: string[];
-  dismissAlert: (alertId: string) => void;
-  reactivateAlert: (alertId: string) => void;
+  dismissedAlertIds: AlertId[];
+  dismissAlert: (alertId: AlertId) => void;
+  reactivateAlert: (alertId: AlertId) => void;
   reactivateAllAlerts: () => void;
   // Disabled recommended items
-  disabledRecommendedItems: string[];
-  disableRecommendedItem: (itemId: string) => void;
-  enableRecommendedItem: (itemId: string) => void;
+  disabledRecommendedItems: RecommendedItemId[];
+  disableRecommendedItem: (itemId: RecommendedItemId) => void;
+  enableRecommendedItem: (itemId: RecommendedItemId) => void;
   enableAllRecommendedItems: () => void;
 }
 

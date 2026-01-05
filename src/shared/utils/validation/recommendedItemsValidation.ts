@@ -3,7 +3,9 @@ import type {
   Unit,
   RecommendedItemsFile,
   ImportedRecommendedItem,
+  RecommendedItemDefinition,
 } from '@/shared/types';
+import { createRecommendedItemId } from '@/shared/types';
 
 export interface ValidationError {
   path: string;
@@ -546,25 +548,9 @@ export function parseRecommendedItemsFile(json: string): RecommendedItemsFile {
  */
 export function convertToRecommendedItemDefinitions(
   items: ImportedRecommendedItem[],
-): {
-  id: string;
-  i18nKey: string;
-  category: StandardCategoryId;
-  baseQuantity: number;
-  unit: Unit;
-  scaleWithPeople: boolean;
-  scaleWithDays: boolean;
-  requiresFreezer?: boolean;
-  defaultExpirationMonths?: number;
-  weightGramsPerUnit?: number;
-  caloriesPer100g?: number;
-  caloriesPerUnit?: number;
-  capacityMah?: number;
-  capacityWh?: number;
-  requiresWaterLiters?: number;
-}[] {
+): RecommendedItemDefinition[] {
   return items.map((item) => ({
-    id: item.id,
+    id: createRecommendedItemId(item.id),
     // Use i18nKey if provided, otherwise create a synthetic key for lookup
     i18nKey: item.i18nKey || `custom.${item.id}`,
     category: item.category,

@@ -1,3 +1,28 @@
+// Branded types - import first so they can be used in interfaces below
+import type {
+  ItemId,
+  CategoryId,
+  TemplateId,
+  AlertId,
+  RecommendedItemId,
+} from './branded';
+export type {
+  ItemId,
+  CategoryId,
+  TemplateId,
+  AlertId,
+  RecommendedItemId,
+} from './branded';
+export {
+  createItemId,
+  createCategoryId,
+  createTemplateId,
+  createAlertId,
+  createRecommendedItemId,
+  isItemId,
+  isCategoryId,
+} from './branded';
+
 // Core types
 export type Unit =
   | 'pieces'
@@ -75,7 +100,7 @@ export interface UserSettings {
 
 // Category
 export interface Category {
-  id: string;
+  id: CategoryId;
   standardCategoryId?: StandardCategoryId;
   name: string;
   icon?: string;
@@ -84,10 +109,10 @@ export interface Category {
 
 // Inventory Item
 export interface InventoryItem {
-  id: string;
+  id: ItemId;
   name: string;
   itemType: string; // Template ID (e.g., "canned-fish") or "custom" for user-created items, used for i18n lookup
-  categoryId: string;
+  categoryId: CategoryId;
   quantity: number;
   unit: Unit;
   recommendedQuantity: number;
@@ -95,7 +120,7 @@ export interface InventoryItem {
   neverExpires?: boolean;
   location?: string;
   notes?: string;
-  productTemplateId?: string;
+  productTemplateId?: TemplateId;
   weightGrams?: number; // Weight per unit in grams (e.g., one can weighs 400g)
   caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal)
   capacityMah?: number; // Capacity in milliamp-hours (for powerbanks)
@@ -108,7 +133,7 @@ export interface InventoryItem {
 
 // Product Template
 export interface ProductTemplate {
-  id: string;
+  id: TemplateId;
   name?: string;
   i18nKey?: string;
   kind?: ProductKind;
@@ -122,7 +147,7 @@ export interface ProductTemplate {
 
 // Recommended Item Definition
 export interface RecommendedItemDefinition {
-  id: string;
+  id: RecommendedItemId;
   i18nKey: string;
   category: StandardCategoryId;
   baseQuantity: number;
@@ -147,7 +172,7 @@ export type LocalizedNames = Record<string, string>; // e.g., { en: "Water", fi:
 
 // Imported Recommended Item (supports inline translations for custom items)
 export interface ImportedRecommendedItem {
-  id: string;
+  id: RecommendedItemId;
   i18nKey?: string; // Use built-in translation key (e.g., "products.bottled-water")
   names?: LocalizedNames; // OR inline localized names: { en: "Water", fi: "Vesi" }
   category: StandardCategoryId;
@@ -189,8 +214,8 @@ export interface AppData {
   customCategories: Category[]; // Only user's custom categories, STANDARD_CATEGORIES are always available
   items: InventoryItem[];
   customTemplates: ProductTemplate[];
-  dismissedAlertIds: string[]; // Alert IDs that have been dismissed by the user
-  disabledRecommendedItems: string[]; // Recommended item IDs that have been disabled by the user
+  dismissedAlertIds: AlertId[]; // Alert IDs that have been dismissed by the user
+  disabledRecommendedItems: RecommendedItemId[]; // Recommended item IDs that have been disabled by the user
   customRecommendedItems?: RecommendedItemsFile | null; // Custom imported recommendations (null = use built-in)
   lastModified: string;
   lastBackupDate?: string; // ISO date of last export

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemList } from './ItemList';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import { createItemId, createCategoryId } from '@/shared/types';
 
 const meta = {
   title: 'Components/Inventory/ItemList',
@@ -22,9 +23,9 @@ const futureDate = new Date(
 
 const sampleItems = [
   createMockInventoryItem({
-    id: '1',
+    id: createItemId('1'),
     name: 'Bottled Water',
-    categoryId: 'water-beverages',
+    categoryId: createCategoryId('water-beverages'),
     quantity: 20,
     unit: 'liters',
     recommendedQuantity: 28,
@@ -33,9 +34,9 @@ const sampleItems = [
     location: 'Pantry',
   }),
   createMockInventoryItem({
-    id: '2',
+    id: createItemId('2'),
     name: 'Canned Beans',
-    categoryId: 'food',
+    categoryId: createCategoryId('food'),
     quantity: 5,
     unit: 'cans',
     recommendedQuantity: 20,
@@ -44,9 +45,9 @@ const sampleItems = [
     location: 'Pantry',
   }),
   createMockInventoryItem({
-    id: '3',
+    id: createItemId('3'),
     name: 'First Aid Kit',
-    categoryId: 'medical-health',
+    categoryId: createCategoryId('medical-health'),
     quantity: 1,
     unit: 'pieces',
     recommendedQuantity: 1,

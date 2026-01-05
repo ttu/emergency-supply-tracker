@@ -64,7 +64,9 @@ export function calculatePreparednessScore(
     // (not by category, to avoid double-counting items across multiple recommended items)
     const matchingItems = items.filter(
       (item) =>
-        item.productTemplateId === recItem.id || item.name === recItem.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        item.productTemplateId === (recItem.id as any) ||
+        item.name === recItem.id,
     );
 
     const totalQty = matchingItems.reduce(
@@ -133,7 +135,9 @@ export function calculateCategoryPreparedness(
 
     const matchingItems = categoryItems.filter(
       (item) =>
-        item.productTemplateId === recItem.id || item.name === recItem.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        item.productTemplateId === (recItem.id as any) ||
+        item.name === recItem.id,
     );
 
     const actualQty = matchingItems.reduce(
