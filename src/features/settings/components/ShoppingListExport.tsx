@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '@/shared/hooks/useInventory';
+import { useInventory } from '@/features/inventory';
 import { Button } from '@/shared/components/Button';
 import type { InventoryItem } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';

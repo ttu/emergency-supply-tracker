@@ -1,8 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
 import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { InventoryProvider } from '@/features/inventory';
+import { SettingsProvider } from '@/features/settings';
 import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
 import {
   createMockInventoryItem,

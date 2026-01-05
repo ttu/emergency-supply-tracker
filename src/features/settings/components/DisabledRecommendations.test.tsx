@@ -25,7 +25,7 @@ jest.mock('react-i18next', () => ({
 const mockEnableRecommendedItem = jest.fn();
 const mockEnableAllRecommendedItems = jest.fn();
 
-jest.mock('@/shared/hooks/useInventory', () => ({
+jest.mock('@/features/inventory', () => ({
   useInventory: () => ({
     disabledRecommendedItems: ['bottled-water', 'long-life-milk'],
     enableRecommendedItem: mockEnableRecommendedItem,
@@ -90,7 +90,7 @@ describe('DisabledRecommendations with no disabled items', () => {
 
   it('should show empty message when no items are disabled', () => {
     // Re-mock with empty array
-    jest.doMock('@/shared/hooks/useInventory', () => ({
+    jest.doMock('@/features/inventory', () => ({
       useInventory: () => ({
         disabledRecommendedItems: [],
         enableRecommendedItem: jest.fn(),

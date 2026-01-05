@@ -1,20 +1,23 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '@/shared/hooks/useInventory';
 import {
   useHousehold,
   calculateRecommendedQuantity,
   calculateHouseholdMultiplier,
 } from '@/features/household';
-import { useSettings } from '@/shared/hooks/useSettings';
+import { useInventory } from '@/features/inventory';
+import { useSettings } from '@/features/settings';
 import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
 import { STANDARD_CATEGORIES } from '@/features/categories';
-import { CategoryNav } from '../components/inventory/CategoryNav';
-import { FilterBar } from '../components/inventory/FilterBar';
-import { ItemList } from '../components/inventory/ItemList';
-import { ItemForm } from '../components/inventory/ItemForm';
-import { TemplateSelector } from '../components/inventory/TemplateSelector';
-import { CategoryStatusSummary } from '../components/inventory/CategoryStatusSummary';
+import {
+  CategoryNav,
+  FilterBar,
+  ItemList,
+  ItemForm,
+  CategoryStatusSummary,
+  calculateItemStatus,
+} from '@/features/inventory';
+import { TemplateSelector } from '@/features/templates';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
 import type {
@@ -22,7 +25,6 @@ import type {
   ItemStatus,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { calculateItemStatus } from '@/features/inventory';
 import {
   getCategoryDisplayStatus,
   type CategoryCalculationOptions,

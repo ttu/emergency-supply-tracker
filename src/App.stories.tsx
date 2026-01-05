@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import App from './App';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { SettingsProvider } from '@/features/settings';
 import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
+import { InventoryProvider } from '@/features/inventory';
 
 const meta = {
   title: 'App/Shell',

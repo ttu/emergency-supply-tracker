@@ -3,8 +3,8 @@ import { ReactNode } from 'react';
 import { ShoppingListExport } from './ShoppingListExport';
 import {
   InventoryContext,
-  InventoryContextValue,
-} from '@/shared/contexts/InventoryContext';
+  type InventoryContextValue,
+} from '@/features/inventory';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import type { InventoryItem } from '@/shared/types';
 

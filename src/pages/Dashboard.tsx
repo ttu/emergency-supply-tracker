@@ -1,9 +1,9 @@
 import { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
-import { useInventory } from '@/shared/hooks/useInventory';
+import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
-import { useSettings } from '@/shared/hooks/useSettings';
+import { useSettings } from '@/features/settings';
 import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {

@@ -3,8 +3,8 @@ import { ReactNode } from 'react';
 import { HiddenAlerts } from './HiddenAlerts';
 import {
   InventoryContext,
-  InventoryContextValue,
-} from '@/shared/contexts/InventoryContext';
+  type InventoryContextValue,
+} from '@/features/inventory';
 import { HouseholdContext, HouseholdContextValue } from '@/features/household';
 import {
   createMockInventoryItem,

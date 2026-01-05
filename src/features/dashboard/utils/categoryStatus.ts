@@ -9,7 +9,7 @@ import type {
 import {
   calculateItemStatus,
   getStatusFromPercentage,
-} from '@/shared/utils/calculations/status';
+} from '@/features/inventory';
 import { calculateTotalWaterRequired } from '@/shared/utils/calculations/water';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from './preparedness';

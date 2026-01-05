@@ -5,8 +5,8 @@ import {
   HouseholdProvider,
   calculateRecommendedQuantity,
 } from '@/features/household';
-import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { InventoryProvider } from '@/features/inventory';
+import { SettingsProvider } from '@/features/settings';
 import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from '@/features/dashboard';

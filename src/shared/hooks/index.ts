@@ -1,5 +1,3 @@
 // Hook exports
-export { useHousehold } from './useHousehold';
-export { useInventory } from './useInventory';
-export { useSettings } from './useSettings';
+export { useRecommendedItems } from './useRecommendedItems';
 export { useKeyboardNavigation } from './useKeyboardNavigation';
