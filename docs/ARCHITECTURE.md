@@ -4,7 +4,7 @@ This document describes the application architecture using a **Feature Slice Arc
 
 ## Directory Structure
 
-```
+```text
 src/
 ├── features/              # Feature modules (domain-organized)
 │   ├── alerts/            # Alert generation and display
@@ -38,7 +38,7 @@ Each feature slice is a self-contained module with its own:
 
 ### Feature Structure
 
-```
+```text
 features/{feature-name}/
 ├── components/            # Feature-specific components
 │   ├── ComponentName.tsx
