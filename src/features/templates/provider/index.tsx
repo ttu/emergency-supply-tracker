@@ -12,13 +12,13 @@ import type {
   ImportedRecommendedItem,
   LocalizedNames,
 } from '@/shared/types';
-import { RECOMMENDED_ITEMS } from '@/features/templates';
+import { RECOMMENDED_ITEMS } from '../data';
 import {
   getAppData,
   saveAppData,
   createDefaultAppData,
 } from '@/shared/utils/storage/localStorage';
-import { RecommendedItemsContext } from './RecommendedItemsContext';
+import { RecommendedItemsContext } from '../context';
 import {
   validateRecommendedItemsFile,
   convertToRecommendedItemDefinitions,

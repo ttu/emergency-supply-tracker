@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '@/shared/hooks/useInventory';
+import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { generateDashboardAlerts } from '../utils';
 import { Button } from '@/shared/components/Button';

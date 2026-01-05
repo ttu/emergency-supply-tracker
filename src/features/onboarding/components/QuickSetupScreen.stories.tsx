@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { QuickSetupScreen } from './QuickSetupScreen';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { SettingsProvider } from '@/features/settings';
 import { createMockHousehold } from '@/shared/utils/test/factories';
 
 const meta = {

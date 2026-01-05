@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trackAppLaunch } from '@/shared/utils/analytics';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { SettingsProvider, useSettings } from '@/features/settings';
 import { HouseholdProvider, useHousehold } from '@/features/household';
-import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
+import { InventoryProvider, useInventory } from '@/features/inventory';
+import { RecommendedItemsProvider } from '@/features/templates';
 import { ThemeApplier } from './components/ThemeApplier';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { Navigation, PageType } from '@/shared/components/Navigation';
@@ -13,8 +13,6 @@ import { Inventory } from './pages/Inventory';
 import { Settings } from './pages/Settings';
 import { Help } from './pages/Help';
 import { Onboarding } from '@/features/onboarding';
-import { useSettings } from '@/shared/hooks/useSettings';
-import { useInventory } from '@/shared/hooks/useInventory';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import './App.css';
 

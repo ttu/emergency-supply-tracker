@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
-import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
+import { useRecommendedItems } from '@/features/templates';
 import styles from './ExportRecommendationsButton.module.css';
 
 export function ExportRecommendationsButton() {

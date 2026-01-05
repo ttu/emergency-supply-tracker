@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { HouseholdPresetSelector } from './HouseholdPresetSelector';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { SettingsProvider } from '@/features/settings';
 import { useState } from 'react';
 
 const meta = {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSettings } from '@/shared/hooks/useSettings';
+import { useSettings } from '@/features/settings';
 
 export function ThemeApplier({ children }: { children: React.ReactNode }) {
   const { settings } = useSettings();

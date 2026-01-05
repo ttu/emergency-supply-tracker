@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 import { createMockAppData } from '@/shared/utils/test/factories';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { SettingsProvider } from '@/features/settings';
 import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
+import { InventoryProvider } from '@/features/inventory';
 import { ThemeApplier } from './components/ThemeApplier';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Settings } from './Settings';
 import { HouseholdProvider } from '@/features/household';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
-import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
+import { SettingsProvider } from '@/features/settings';
+import { InventoryProvider } from '@/features/inventory';
+import { RecommendedItemsProvider } from '@/features/templates';
 
 const meta = {
   title: 'Pages/Settings',

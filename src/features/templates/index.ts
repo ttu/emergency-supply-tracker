@@ -1,3 +1,13 @@
+// Context
+export { RecommendedItemsContext } from './context';
+export type { RecommendedItemsContextValue } from './context';
+
+// Provider
+export { RecommendedItemsProvider } from './provider';
+
+// Hooks
+export { useRecommendedItems } from './hooks';
+
 // Data
 export {
   RECOMMENDED_ITEMS,

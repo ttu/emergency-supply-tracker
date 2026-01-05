@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AlertBanner } from './AlertBanner';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
+import { SettingsProvider } from '@/features/settings';
 
 const meta = {
   title: 'Features/Alerts/AlertBanner',

@@ -38,7 +38,7 @@ jest.mock('react-i18next', () => ({
 
 const mockUpdateSettings = jest.fn();
 
-jest.mock('@/shared/hooks/useSettings', () => ({
+jest.mock('@/features/settings', () => ({
   useSettings: () => ({
     settings: { language: 'en' },
     updateSettings: mockUpdateSettings,

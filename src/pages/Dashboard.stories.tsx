@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Dashboard } from './Dashboard';
 import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/shared/contexts/InventoryProvider';
-import { SettingsProvider } from '@/shared/contexts/SettingsProvider';
-import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
+import { InventoryProvider } from '@/features/inventory';
+import { SettingsProvider } from '@/features/settings';
+import { RecommendedItemsProvider } from '@/features/templates';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 const meta: Meta<typeof Dashboard> = {

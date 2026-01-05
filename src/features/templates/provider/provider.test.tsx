@@ -1,8 +1,8 @@
 import { render, screen, act, waitFor } from '@testing-library/react';
-import { RecommendedItemsProvider } from './RecommendedItemsProvider';
-import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
+import { RecommendedItemsProvider } from './index';
+import { useRecommendedItems } from '../hooks';
 import * as localStorage from '@/shared/utils/storage/localStorage';
-import { RECOMMENDED_ITEMS } from '@/features/templates';
+import { RECOMMENDED_ITEMS } from '../data';
 import type { RecommendedItemsFile } from '@/shared/types';
 
 // Mock localStorage utilities

@@ -16,7 +16,7 @@ global.URL.revokeObjectURL = mockRevokeObjectURL;
 
 // Mock useRecommendedItems hook
 const mockExportRecommendedItems = jest.fn();
-jest.mock('@/shared/hooks/useRecommendedItems', () => ({
+jest.mock('@/features/templates', () => ({
   useRecommendedItems: () => ({
     exportRecommendedItems: mockExportRecommendedItems,
     customRecommendationsInfo: null,

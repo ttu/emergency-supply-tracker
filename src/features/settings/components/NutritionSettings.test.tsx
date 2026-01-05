@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { NutritionSettings } from './NutritionSettings';
-import { SettingsContext } from '@/shared/contexts/SettingsContext';
+import { SettingsContext } from '@/features/settings';
 import type { UserSettings } from '@/shared/types';
 import {
   DAILY_CALORIES_PER_PERSON,

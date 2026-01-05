@@ -3,8 +3,8 @@ import { ReactNode } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import {
   SettingsContext,
-  SettingsContextValue,
-} from '@/shared/contexts/SettingsContext';
+  type SettingsContextValue,
+} from '@/features/settings';
 
 // Mock react-i18next
 const mockChangeLanguage = jest.fn().mockResolvedValue(undefined);

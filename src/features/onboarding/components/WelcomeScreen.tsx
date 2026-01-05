@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import { Select } from '@/shared/components/Select';
-import { useSettings } from '@/shared/hooks/useSettings';
+import { useSettings } from '@/features/settings';
 import styles from './WelcomeScreen.module.css';
 
 export interface WelcomeScreenProps {

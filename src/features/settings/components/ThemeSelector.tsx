@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useSettings } from '@/shared/hooks/useSettings';
+import { useSettings } from '@/features/settings';
 import styles from './ThemeSelector.module.css';
 
 export function ThemeSelector() {
