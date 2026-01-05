@@ -152,5 +152,4 @@ Create a design doc for:
 
 - [FUNCTIONAL_SPEC.md](./FUNCTIONAL_SPEC.md) - Functional requirements and user workflows
 - [DATA_SCHEMA.md](./DATA_SCHEMA.md) - Data structure definitions and types
-- [COMPONENT_ARCHITECTURE.md](./COMPONENT_ARCHITECTURE.md) - React component structure
-- [APPLICATION_ARCHITECTURE.md](./APPLICATION_ARCHITECTURE.md) - System architecture overview
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Complete application architecture (layered architecture, feature slices, components)
