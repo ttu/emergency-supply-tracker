@@ -1,2 +1,0 @@
-// Components exported here
-export {};
