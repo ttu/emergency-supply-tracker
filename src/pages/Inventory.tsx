@@ -5,11 +5,8 @@ import {
   calculateRecommendedQuantity,
   calculateHouseholdMultiplier,
 } from '@/features/household';
-import { useInventory } from '@/features/inventory';
-import { useSettings } from '@/features/settings';
-import { useRecommendedItems } from '@/features/templates';
-import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
+  useInventory,
   CategoryNav,
   FilterBar,
   ItemList,
@@ -17,7 +14,9 @@ import {
   CategoryStatusSummary,
   calculateItemStatus,
 } from '@/features/inventory';
-import { TemplateSelector } from '@/features/templates';
+import { useSettings } from '@/features/settings';
+import { useRecommendedItems, TemplateSelector } from '@/features/templates';
+import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
 import {

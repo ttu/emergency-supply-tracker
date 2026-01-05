@@ -96,7 +96,7 @@ export function getAppData(): AppData | null {
     const json = localStorage.getItem(STORAGE_KEY);
     if (!json) return null;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rawData = JSON.parse(json) as any;
+    const rawData: any = JSON.parse(json);
 
     // Normalize items: ensure itemType values are valid template IDs and cast IDs
     const normalizedItems = normalizeItems(rawData.items) ?? [];
@@ -206,21 +206,21 @@ export function importFromJSON(json: string): AppData {
   }
 
   // Ensure dismissedAlertIds exists and cast to branded types
-  if (!data.dismissedAlertIds) {
-    data.dismissedAlertIds = [];
-  } else {
+  if (data.dismissedAlertIds) {
     data.dismissedAlertIds = (data.dismissedAlertIds as string[]).map(
       createAlertId,
     );
+  } else {
+    data.dismissedAlertIds = [];
   }
 
   // Ensure disabledRecommendedItems exists and cast to branded types
-  if (!data.disabledRecommendedItems) {
-    data.disabledRecommendedItems = [];
-  } else {
+  if (data.disabledRecommendedItems) {
     data.disabledRecommendedItems = (
       data.disabledRecommendedItems as string[]
     ).map(createProductTemplateId);
+  } else {
+    data.disabledRecommendedItems = [];
   }
 
   // customRecommendedItems is optional - preserve if present, otherwise leave undefined
