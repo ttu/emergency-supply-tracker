@@ -1,249 +1,661 @@
-# Architecture Overview
+# Application Architecture
 
-This document describes the application architecture using a **Feature Slice Architecture** pattern.
+> **Version:** 2.0.0  
+> **Last Updated:** 2025-01-23  
+> **Source of Truth:** `src/features/`, `src/shared/`, `src/pages/`
 
-## Directory Structure
+This document describes the complete architecture of the Emergency Supply Tracker application, including the layered architecture, feature slice organization, component structure, and data flow.
 
-```text
+---
+
+## Architecture Overview
+
+The application follows a **layered architecture** with **feature slice organization** and **anemic domain models**:
+
+- **Anemic Domain Models**: Plain TypeScript interfaces (data only, no behavior)
+- **Business Logic**: Pure utility functions (separated from data)
+- **State Management**: React Context API (manages state and persistence)
+- **UI Layer**: React components organized by feature slices
+- **Feature Slices**: Self-contained features with components, hooks, utils, and state
+
+---
+
+## High-Level Architecture
+
+```mermaid
+graph TB
+    subgraph "UI Layer (React Components)"
+        Pages[Pages<br/>Dashboard, Inventory, Settings]
+        FeatureComponents[Feature Components<br/>ItemCard, CategoryGrid, etc.]
+        SharedComponents[Shared Components<br/>Button, Modal, Badge, etc.]
+    end
+
+    subgraph "State Management Layer (Context + Hooks)"
+        Providers[Context Providers<br/>InventoryProvider<br/>HouseholdProvider<br/>SettingsProvider]
+        Hooks[Custom Hooks<br/>useInventory<br/>useHousehold<br/>useSettings]
+    end
+
+    subgraph "Business Logic Layer (Pure Functions)"
+        Calculations[Calculations<br/>calculateRecommendedQuantity<br/>calculateItemStatus<br/>calculatePreparednessScore]
+        Validation[Validation<br/>validateRecommendedItems<br/>validateItem]
+    end
+
+    subgraph "Data Layer (Anemic Domain Models)"
+        Types[TypeScript Interfaces<br/>InventoryItem<br/>HouseholdConfig<br/>UserSettings<br/>RecommendedItemDefinition]
+        Storage[LocalStorage<br/>getAppData<br/>saveAppData]
+    end
+
+    Pages --> Hooks
+    FeatureComponents --> Hooks
+    SharedComponents --> FeatureComponents
+    Hooks --> Providers
+    Providers --> Calculations
+    Providers --> Storage
+    Calculations --> Types
+    Validation --> Types
+    Storage --> Types
+    Storage --> Providers
+```
+
+---
+
+## Feature Slice Architecture
+
+The application is organized using **Feature Slice Architecture**, where each feature is self-contained with its own components, hooks, utilities, and state management.
+
+### Directory Structure
+
+```
 src/
-├── features/              # Feature modules (domain-organized)
-│   ├── alerts/            # Alert generation and display
-│   ├── categories/        # Supply category definitions
-│   ├── dashboard/         # Dashboard page and components
-│   ├── household/         # Household configuration
-│   ├── inventory/         # Inventory management
-│   ├── onboarding/        # User onboarding flow
-│   ├── settings/          # User settings
-│   └── templates/         # Product templates (recommended items)
+├── features/              # Feature slices (domain-driven)
+│   ├── alerts/
+│   │   ├── components/    # AlertBanner, HiddenAlerts
+│   │   ├── utils/         # Alert generation logic
+│   │   ├── types.ts       # Alert-specific types
+│   │   └── index.ts       # Public API
+│   ├── dashboard/
+│   │   ├── components/    # CategoryCard, CategoryGrid, DashboardHeader
+│   │   ├── utils/         # Preparedness calculations
+│   │   └── index.ts
+│   ├── household/
+│   │   ├── components/    # (if any)
+│   │   ├── hooks/         # useHousehold
+│   │   ├── utils/         # Household calculations
+│   │   ├── context.ts     # HouseholdContext
+│   │   ├── provider.tsx   # HouseholdProvider
+│   │   └── index.ts
+│   ├── inventory/
+│   │   ├── components/    # ItemCard, ItemForm, ItemList, etc.
+│   │   ├── hooks/         # useInventory
+│   │   ├── utils/         # Status calculations
+│   │   ├── context.ts      # InventoryContext
+│   │   ├── provider.tsx   # InventoryProvider
+│   │   └── index.ts
+│   ├── settings/
+│   │   ├── components/    # Settings form components
+│   │   ├── hooks/         # useSettings
+│   │   ├── context.ts      # SettingsContext
+│   │   ├── provider.tsx   # SettingsProvider
+│   │   └── index.ts
+│   ├── onboarding/
+│   │   ├── components/    # Onboarding flow components
+│   │   └── index.ts
+│   ├── templates/
+│   │   ├── components/    # TemplateSelector
+│   │   ├── data.ts        # Template definitions
+│   │   └── index.ts
+│   └── categories/
+│       ├── data.ts        # Category definitions
+│       └── index.ts
+│
 ├── shared/                # Shared code across features
-│   ├── components/        # Reusable UI components
-│   ├── hooks/             # Shared custom hooks
-│   ├── types/             # TypeScript type definitions
-│   └── utils/             # Utility functions
-├── pages/                 # Page components (composed from features)
-├── components/            # App-level components (ThemeApplier)
-├── i18n/                  # Internationalization configuration
-└── locales/               # Translation files (en, fi)
+│   ├── components/        # Reusable UI primitives
+│   │   ├── Badge/
+│   │   ├── Button/
+│   │   ├── Modal/
+│   │   ├── Navigation/
+│   │   └── ...
+│   ├── hooks/             # Shared hooks
+│   │   └── useKeyboardNavigation
+│   ├── utils/             # Shared utilities
+│   │   ├── calculations/  # Pure calculation functions
+│   │   ├── storage/       # LocalStorage operations
+│   │   └── validation/    # Validation functions
+│   ├── types/             # Shared TypeScript types
+│   └── contexts/          # Shared contexts (if any)
+│
+└── pages/                 # Page components (compose features)
+    ├── Dashboard.tsx
+    ├── Inventory.tsx
+    └── Settings.tsx
 ```
 
-## Feature Slices
+### Feature Structure Template
 
-Each feature slice is a self-contained module with its own:
+Each feature follows this structure:
 
-- **Components** - UI components specific to the feature
-- **Context/Provider** - State management for the feature
-- **Hooks** - Custom hooks for accessing feature state
-- **Utils** - Business logic and calculations
-- **Types** - Feature-specific TypeScript types (re-exported via index.ts)
-
-### Feature Structure
-
-```text
+```
 features/{feature-name}/
-├── components/            # Feature-specific components
-│   ├── ComponentName.tsx
-│   ├── ComponentName.module.css
-│   ├── ComponentName.stories.tsx
-│   ├── ComponentName.test.tsx
-│   └── index.ts           # Component exports
-├── context/               # Feature context (optional)
+├── components/          # Feature-specific components
+│   ├── ComponentName/
+│   │   ├── ComponentName.tsx
+│   │   ├── ComponentName.module.css
+│   │   ├── ComponentName.test.tsx
+│   │   ├── ComponentName.stories.tsx
+│   │   └── index.ts
+│   └── index.ts        # Re-export all components
+├── hooks/              # Feature-specific hooks
+│   ├── useFeatureHook.ts
 │   └── index.ts
-├── provider/              # Feature provider (optional)
+├── utils/              # Feature-specific utilities
+│   ├── utility.ts
+│   ├── utility.test.ts
 │   └── index.ts
-├── hooks/                 # Feature hooks (optional)
-│   └── index.ts
-├── utils/                 # Feature utilities (optional)
-│   └── index.ts
-└── index.ts               # Public API (barrel export)
+├── types.ts            # Feature-specific types
+├── context.ts          # Context definition (if needed)
+├── provider.tsx        # Provider component (if needed)
+└── index.ts            # Public API exports
 ```
 
-### Public API (index.ts)
+### Public API Pattern
 
-Each feature exports its public API through `index.ts`:
+Each feature's `index.ts` exports only the public API:
 
 ```typescript
 // features/inventory/index.ts
 
-// Context
-export { InventoryContext } from './context';
-export type { InventoryContextValue } from './context';
-
-// Provider
-export { InventoryProvider } from './provider';
+// Components
+export { ItemList } from './components/ItemList';
+export { ItemForm } from './components/ItemForm';
 
 // Hooks
-export { useInventory } from './hooks';
+export { useInventory } from './hooks/useInventory';
 
-// Utils
-export { calculateItemStatus, getStatusFromPercentage } from './utils';
+// Context/Provider
+export { InventoryProvider } from './provider';
+export type { InventoryContextValue } from './context';
 
-// Components
-export { ItemCard, ItemList, ItemForm } from './components';
-export type { ItemCardProps, ItemListProps, ItemFormProps } from './components';
+// Types
+export type { InventoryItem } from './types';
+
+// Utils (if needed externally)
+export { calculateItemStatus } from './utils/status';
 ```
 
-## Feature Modules
+---
 
-### alerts
+## Layer Details
 
-Alert generation and display for the dashboard.
+### 1. Data Layer (Anemic Domain Models)
 
-- Components: `AlertBanner`, `HiddenAlerts`
-- Utils: `generateDashboardAlerts`
+**Location:** `src/shared/types/index.ts`, `src/features/*/types.ts`
 
-### categories
+**What it is:**
 
-Standard supply category definitions.
+- Plain TypeScript interfaces
+- No methods, only data properties
+- Serializable to JSON
 
-- Data: `STANDARD_CATEGORIES`
-- Utils: `getCategoryById`
-
-### dashboard
-
-Dashboard page components and calculations.
-
-- Components: `DashboardHeader`, `CategoryCard`, `CategoryGrid`
-- Utils: `calculatePreparednessScore`, `calculateCategoryPreparedness`, backup reminder functions
-
-### household
-
-Household configuration state and calculations.
-
-- Provider: `HouseholdProvider`
-- Hooks: `useHousehold`
-- Utils: `calculateRecommendedQuantity`, `calculateHouseholdMultiplier`
-
-### inventory
-
-Inventory management state and components.
-
-- Provider: `InventoryProvider`
-- Hooks: `useInventory`
-- Components: `ItemCard`, `ItemList`, `ItemForm`, `CategoryNav`, `FilterBar`, `CategoryStatusSummary`
-- Utils: Status calculations (`calculateItemStatus`, `isItemExpired`, etc.)
-
-### onboarding
-
-User onboarding flow.
-
-- Components: `Onboarding`, `WelcomeScreen`, `HouseholdForm`, `QuickSetupScreen`, `HouseholdPresetSelector`
-
-### settings
-
-User settings state and components.
-
-- Provider: `SettingsProvider`
-- Hooks: `useSettings`
-- Components: Various settings components (theme, language, import/export, etc.)
-
-### templates
-
-Product templates and recommended items management.
-
-- Provider: `RecommendedItemsProvider`
-- Hooks: `useRecommendedItems`
-- Data: `RECOMMENDED_ITEMS`
-- Components: `TemplateSelector`
-- Utils: `getRecommendedItemById`, `getRecommendedItemsByCategory`
-
-## Shared Module
-
-The `shared/` directory contains code that is used across multiple features:
-
-### components
-
-Reusable UI components: `Button`, `Modal`, `Badge`, `Select`, `Navigation`, etc.
-
-### hooks
-
-Shared hooks:
-
-- `useKeyboardNavigation` - Keyboard navigation utilities
-
-### types
-
-Shared TypeScript type definitions used across features.
-
-### utils
-
-Shared utility functions:
-
-- `calculations/` - Calorie, water, household calculations
-- `storage/` - LocalStorage operations
-- `analytics/` - Usage tracking
-- `errorLogger/` - Error logging
-- `validation/` - Data validation
-
-## Import Guidelines
-
-### Feature-to-Feature Imports
-
-Features can import from other features through their public API:
+**Key Models:**
 
 ```typescript
-// In features/dashboard/utils/categoryStatus.ts
-import { calculateItemStatus } from '@/features/inventory';
-import { STANDARD_CATEGORIES } from '@/features/categories';
+interface InventoryItem {
+  id: string;
+  name: string;
+  quantity: number;
+  recommendedQuantity: number;
+  categoryId: string;
+  // ... more fields
+}
+
+interface HouseholdConfig {
+  adults: number;
+  children: number;
+  supplyDurationDays: number;
+  useFreezer: boolean;
+}
+
+interface UserSettings {
+  language: 'en' | 'fi';
+  theme: 'light' | 'dark' | 'auto';
+  // ... more fields
+}
 ```
 
-### Shared Imports
+**Connections:**
 
-All code can import from shared:
+- Used by: Business Logic, Context Providers, LocalStorage
+- Created by: Context Providers (when user adds/updates)
+- Stored by: LocalStorage (JSON serialization)
+
+---
+
+### 2. Business Logic Layer (Pure Functions)
+
+**Location:** `src/shared/utils/`, `src/features/*/utils/`
+
+**What it is:**
+
+- Pure functions (no side effects)
+- Operate on anemic domain models
+- Stateless calculations
+
+**Key Functions:**
 
 ```typescript
-import { Button } from '@/shared/components/Button';
-import type { InventoryItem } from '@/shared/types';
+// Calculations
+calculateRecommendedQuantity(item, household): number
+calculateItemStatus(item): ItemStatus
+calculatePreparednessScore(items, household): number
+calculateHouseholdMultiplier(household): number
+
+// Status
+getItemStatus(quantity, recommended, expiration): ItemStatus
+isItemExpired(expirationDate): boolean
+
+// Validation
+validateRecommendedItems(file): ValidationResult
 ```
 
-### Page Imports
+**Connections:**
 
-Pages compose features:
+- Input: Anemic domain models (InventoryItem, HouseholdConfig)
+- Output: Calculated values (numbers, status, etc.)
+- Called by: Context Providers, UI Components
+
+---
+
+### 3. State Management Layer (Context + Hooks)
+
+**Location:** `src/features/*/provider.tsx`, `src/features/*/hooks/`
+
+**What it is:**
+
+- React Context Providers (manage state)
+- Custom hooks (access context)
+- Bridge between UI and data
+
+**Key Providers:**
+
+| Provider            | Manages                                          | Actions                                     | Location                          |
+| ------------------- | ------------------------------------------------ | ------------------------------------------- | --------------------------------- |
+| `InventoryProvider` | `items[]`, `categories[]`, `dismissedAlertIds[]` | `addItem()`, `updateItem()`, `deleteItem()` | `features/inventory/provider.tsx` |
+| `HouseholdProvider` | `household` (HouseholdConfig)                    | `updateHousehold()`                         | `features/household/provider.tsx` |
+| `SettingsProvider`  | `settings` (UserSettings)                        | `updateSettings()`                          | `features/settings/provider.tsx`  |
+
+**Custom Hooks:**
+
+| Hook             | Purpose                  | Location                    |
+| ---------------- | ------------------------ | --------------------------- |
+| `useInventory()` | Access inventory context | `features/inventory/hooks/` |
+| `useHousehold()` | Access household context | `features/household/hooks/` |
+| `useSettings()`  | Access settings context  | `features/settings/hooks/`  |
+
+**Connections:**
+
+- Reads from: LocalStorage (on mount)
+- Writes to: LocalStorage (on state change)
+- Uses: Business logic functions (for calculations)
+- Provides: State and actions to UI via hooks
+
+---
+
+### 4. UI Layer (React Components)
+
+**Location:** `src/pages/`, `src/features/*/components/`, `src/shared/components/`
+
+**What it is:**
+
+- React components (presentation)
+- User interaction handlers
+- Uses hooks to access state
+
+**Component Hierarchy:**
+
+```
+App
+├── ErrorBoundary
+├── SettingsProvider
+├── HouseholdProvider
+├── InventoryProvider
+└── AppContent
+    ├── Navigation
+    └── [Page Content]
+        │
+        ├── Dashboard (/)
+        │   ├── DashboardHeader
+        │   ├── AlertBanner
+        │   └── CategoryGrid
+        │       └── CategoryCard[]
+        │
+        ├── Inventory (/inventory)
+        │   ├── CategoryNav
+        │   ├── FilterBar
+        │   ├── CategoryStatusSummary
+        │   └── ItemList
+        │       └── ItemCard[]
+        │
+        └── Settings (/settings)
+            ├── HouseholdForm
+            ├── NutritionSettings
+            ├── LanguageSelector
+            ├── ThemeSelector
+            └── [Other settings components]
+```
+
+**Shared Components:**
+
+Reusable building blocks in `src/shared/components/`:
+
+| Component    | Description                      | Usage                  |
+| ------------ | -------------------------------- | ---------------------- |
+| `Badge`      | Status badge with color variants | Status indicators      |
+| `Button`     | Primary action button            | Actions throughout app |
+| `Modal`      | Dialog overlay                   | Forms, confirmations   |
+| `Navigation` | Bottom/side navigation tabs      | Main navigation        |
+| `Select`     | Dropdown select                  | Form inputs            |
+| `Input`      | Text input field                 | Forms                  |
+| `Card`       | Container card                   | Content containers     |
+
+**Connections:**
+
+- Uses: Custom hooks (useInventory, useHousehold, useSettings)
+- Calls: Context actions (addItem, updateItem, etc.)
+- Displays: Data from context state
+- Triggers: Business logic via context actions
+
+---
+
+## Data Flow
+
+### Adding an Item Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant ItemForm
+    participant useInventory
+    participant InventoryProvider
+    participant Calculations
+    participant LocalStorage
+    participant InventoryItem
+
+    User->>ItemForm: Fills form & submits
+    ItemForm->>ItemForm: Validates input
+    ItemForm->>useInventory: addItem(itemData)
+    useInventory->>InventoryProvider: addItem(itemData)
+    InventoryProvider->>Calculations: calculateRecommendedQuantity()
+    Calculations-->>InventoryProvider: recommendedQuantity
+    InventoryProvider->>InventoryProvider: Creates InventoryItem object
+    InventoryProvider->>InventoryProvider: setItems([...items, newItem])
+    InventoryProvider->>LocalStorage: saveAppData(data)
+    LocalStorage->>LocalStorage: JSON.stringify(items)
+    InventoryProvider-->>useInventory: State updated
+    useInventory-->>ItemForm: Re-render with new items
+    ItemForm-->>User: Shows updated list
+```
+
+### Dashboard Load Flow
+
+```mermaid
+graph TD
+    Start[User opens Dashboard] --> Load[App.tsx renders]
+    Load --> Providers[Context Providers mount]
+    Providers --> LS1[LocalStorage.getAppData]
+    LS1 --> Parse[JSON.parse data]
+    Parse --> Models[Create InventoryItem[], HouseholdConfig, UserSettings objects]
+    Models --> State[Providers setState with models]
+    State --> Hook[useInventory, useHousehold hooks]
+    Hook --> Page[Dashboard component]
+    Page --> Calc1[calculatePreparednessScore items, household]
+    Calc1 --> Calc2[calculateCategoryStatus for each category]
+    Calc2 --> Calc3[calculateItemStatus for each item]
+    Calc3 --> Display[Render DashboardHeader, CategoryGrid, AlertBanner]
+    Display --> User[User sees dashboard]
+```
+
+---
+
+## Key Architectural Patterns
+
+### 1. Anemic Domain Model Pattern
+
+**Data (Interfaces):**
 
 ```typescript
-// In pages/Dashboard.tsx
-import { useInventory } from '@/features/inventory';
-import { useHousehold } from '@/features/household';
-import { DashboardHeader, CategoryGrid } from '@/features/dashboard';
+interface InventoryItem {
+  id: string;
+  quantity: number;
+  // ... data only
+}
 ```
 
-## State Management
+**Behavior (Functions):**
 
-State is managed through React Context within feature providers:
-
-1. **SettingsProvider** - User preferences (theme, language, nutrition settings)
-2. **HouseholdProvider** - Household configuration (adults, children, supply days)
-3. **InventoryProvider** - Inventory items and operations
-4. **RecommendedItemsProvider** - Recommended items (built-in or custom)
-
-Providers are composed in `App.tsx`:
-
-```tsx
-<SettingsProvider>
-  <HouseholdProvider>
-    <RecommendedItemsProvider>
-      <InventoryProvider>
-        <AppContent />
-      </InventoryProvider>
-    </RecommendedItemsProvider>
-  </HouseholdProvider>
-</SettingsProvider>
+```typescript
+function calculateItemStatus(item: InventoryItem): ItemStatus {
+  // Logic here
+}
 ```
 
-## Testing Strategy
+**Why:** Separates data from behavior, making data easy to serialize and functions easy to test.
 
-See [TESTING_STRATEGY.md](./TESTING_STRATEGY.md) for the complete testing approach.
+---
 
-- **Unit Tests** (10%): Pure utility functions
-- **Integration Tests** (70%): Components with React Testing Library
-- **E2E Tests** (20%): Critical user flows with Playwright
+### 2. Context Provider Pattern
 
-Test files are co-located with their source files:
+**Provider manages:**
 
-- `ComponentName.test.tsx` for components
-- `utils.test.ts` for utilities
+- State (React useState)
+- Persistence (LocalStorage sync)
+- Business logic calls (calculations)
 
-## Future Considerations
+**Example:**
 
-1. **Feature Lazy Loading**: Features could be lazy-loaded for better initial bundle size.
+```typescript
+function InventoryProvider({ children }) {
+  const [items, setItems] = useState(() => getAppData()?.items || []);
 
-2. **Feature Testing Isolation**: Each feature could have its own test setup for better isolation.
+  // Auto-save on change
+  useEffect(() => {
+    saveAppData({ ...data, items });
+  }, [items]);
+
+  const addItem = (itemData) => {
+    const recommendedQty = calculateRecommendedQuantity(itemData, household);
+    const newItem = { ...itemData, recommendedQuantity: recommendedQty };
+    setItems([...items, newItem]);
+  };
+
+  return <InventoryContext.Provider value={{ items, addItem }}>...</InventoryContext.Provider>;
+}
+```
+
+---
+
+### 3. Hook Pattern
+
+**Hooks provide:**
+
+- Access to context
+- Error handling (throws if outside provider)
+- Type safety
+
+**Example:**
+
+```typescript
+function useInventory() {
+  const context = useContext(InventoryContext);
+  if (!context) throw new Error('Must be within InventoryProvider');
+  return context;
+}
+```
+
+---
+
+### 4. Feature Slice Pattern
+
+**Each feature is self-contained:**
+
+- Own components (UI)
+- Own hooks (state access)
+- Own utils (business logic)
+- Own types (data models)
+- Own context/provider (state management)
+
+**Benefits:**
+
+- Clear boundaries between features
+- Easy to locate feature code
+- Reduced coupling between features
+- Easier to test in isolation
+
+---
+
+## Data Relationships
+
+```mermaid
+erDiagram
+    InventoryItem ||--o{ Category : "belongs to"
+    InventoryItem }o--|| RecommendedItemDefinition : "based on"
+    HouseholdConfig ||--o{ InventoryItem : "influences recommendedQuantity"
+    UserSettings ||--o{ HouseholdConfig : "configures"
+    AppData ||--o{ InventoryItem : "contains"
+    AppData ||--|| HouseholdConfig : "contains"
+    AppData ||--|| UserSettings : "contains"
+
+    InventoryItem {
+        string id
+        string name
+        number quantity
+        number recommendedQuantity
+        string categoryId
+    }
+
+    HouseholdConfig {
+        number adults
+        number children
+        number supplyDurationDays
+    }
+
+    RecommendedItemDefinition {
+        string id
+        number baseQuantity
+        boolean scaleWithPeople
+        boolean scaleWithDays
+    }
+```
+
+---
+
+## Component Patterns
+
+### File Structure
+
+Each component follows this structure:
+
+```
+features/{feature}/components/
+├── ComponentName/
+│   ├── ComponentName.tsx         # Main component
+│   ├── ComponentName.module.css  # Styles
+│   ├── ComponentName.test.tsx    # Tests
+│   └── ComponentName.stories.tsx # Storybook stories
+└── index.ts                      # Component exports
+```
+
+### Props Pattern
+
+```typescript
+interface ComponentNameProps {
+  // Required props
+  requiredProp: string;
+
+  // Optional props with defaults
+  optionalProp?: boolean;
+
+  // Event handlers
+  onAction?: () => void;
+
+  // Children
+  children?: React.ReactNode;
+}
+```
+
+---
+
+## Styling
+
+- **CSS Modules** for component-scoped styles
+- Theme-aware colors via CSS custom properties
+- Responsive design with mobile-first approach
+- Consistent spacing using design tokens
+
+---
+
+## Accessibility
+
+The application implements comprehensive accessibility features following WCAG 2.1 guidelines.
+
+### Semantic HTML
+
+- **Skip Link**: "Skip to main content" link at page start
+- **Landmarks**: Proper use of `<main>`, `<nav>`, `<header>`, `<section>`
+- **Headings**: Correct heading hierarchy (h1 > h2 > h3)
+- **Forms**: All form inputs have associated `<label>` elements
+- **Dynamic Language**: The `lang` attribute on `<html>` updates based on selected language
+
+### ARIA Attributes
+
+| Attribute             | Usage                                  |
+| --------------------- | -------------------------------------- |
+| `aria-label`          | Navigation elements, icon-only buttons |
+| `aria-current="page"` | Active navigation items                |
+| `aria-modal="true"`   | Modal dialogs                          |
+| `aria-labelledby`     | Modal title associations               |
+| `aria-invalid`        | Form validation errors                 |
+| `aria-describedby`    | Error messages and helper text         |
+
+### Keyboard Navigation
+
+| Key                | Action                                     |
+| ------------------ | ------------------------------------------ |
+| `Tab`              | Move focus to next interactive element     |
+| `Shift + Tab`      | Move focus to previous interactive element |
+| `Enter` / `Space`  | Activate buttons and links                 |
+| `Escape`           | Close modals and dialogs                   |
+| `Arrow Left/Right` | Navigate between tabs                      |
+
+### Focus Management
+
+- **Focus Indicators**: All interactive elements have visible focus states
+- **Focus Trap**: Modal dialogs trap focus within the dialog
+- **Focus Restoration**: When modals close, focus returns to the opening element
+- **High Contrast Mode**: Toggle available in Settings > Appearance
+
+---
+
+## Summary
+
+**How the Architecture Works:**
+
+1. **Data Layer** (Interfaces) → Stored in LocalStorage as JSON
+2. **Business Logic** (Functions) → Operates on interfaces, returns calculated values
+3. **State Management** (Context) → Holds interfaces in React state, calls business logic
+4. **UI Layer** (Components) → Uses hooks to access state, displays data, triggers actions
+
+**Key Insights:**
+
+- **Anemic Domain Models** are passive data structures that flow through the application
+- **Feature Slices** organize code by domain, making it easy to locate and maintain
+- **Business Logic** lives in separate utility functions, not in the models themselves
+- **Context Providers** bridge between UI and data, managing state and persistence
+
+---
+
+## References
+
+- [DATA_SCHEMA.md](./DATA_SCHEMA.md) - Data structure definitions
+- [FUNCTIONAL_SPEC.md](./FUNCTIONAL_SPEC.md) - Functional requirements
+- [DESIGN_DOCS_INDEX.md](./DESIGN_DOCS_INDEX.md) - Design documents
+- [REFACTORING_QUICK_START.md](./REFACTORING_QUICK_START.md) - Feature slice migration guide
