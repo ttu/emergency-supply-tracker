@@ -1,4 +1,20 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import {
+  test as base,
+  expect,
+  type Page,
+  type Locator,
+} from '@playwright/test';
+
+// Helper to wait for element count to change
+export async function waitForCountChange(
+  locator: Locator,
+  initialCount: number,
+  options: { timeout?: number; decrease?: boolean } = {},
+) {
+  const { timeout = 5000, decrease = true } = options;
+  const expectedCount = decrease ? initialCount - 1 : initialCount + 1;
+  await expect(locator).toHaveCount(expectedCount, { timeout });
+}
 
 // Default app data with onboarding completed
 export const defaultAppData = {
@@ -31,9 +47,6 @@ export async function expandRecommendedItems(page: Page) {
   // Wait for recommended items section to appear
   await expect(page.locator('text=Recommended:')).toBeVisible();
 
-  // Wait for the component to fully render
-  await page.waitForTimeout(500);
-
   // Find and click the expand button
   // Use XPath to reliably locate the button following "Recommended:" label
   // This is equivalent to the pattern: .locator('button', { hasText: /Show \d+ recommended items/ })
@@ -43,6 +56,11 @@ export async function expandRecommendedItems(page: Page) {
     .locator('xpath=following::button[1]');
   await expect(expandButton).toBeVisible({ timeout: 5000 });
   await expandButton.click();
+
+  // Wait for the recommended items list to be visible after expanding
+  await expect(page.locator('[class*="missingItemText"]').first()).toBeVisible({
+    timeout: 5000,
+  });
 }
 
 // Helper to close any open modals
@@ -55,7 +73,8 @@ async function closeAnyOpenModals(page: Page) {
   if (isOpen) {
     // Try pressing Escape to close
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(200);
+    // Wait for the dialog to be hidden
+    await dialog.waitFor({ state: 'hidden', timeout: 2000 }).catch(() => {});
 
     // If still open, try clicking the close button
     const stillOpen = await dialog.isVisible().catch(() => false);
@@ -64,9 +83,22 @@ async function closeAnyOpenModals(page: Page) {
       const closeVisible = await closeButton.isVisible().catch(() => false);
       if (closeVisible) {
         await closeButton.click({ timeout: 1000 }).catch(() => {});
-        await page.waitForTimeout(200);
+        await dialog
+          .waitFor({ state: 'hidden', timeout: 2000 })
+          .catch(() => {});
       }
     }
+  }
+}
+
+// Helper to ensure no modals are blocking interactions
+// More reliable than checking visibility + timeout
+export async function ensureNoModals(page: Page) {
+  const dialog = page.locator('[role="dialog"]').first();
+  const isOpen = await dialog.isVisible().catch(() => false);
+  if (isOpen) {
+    await page.keyboard.press('Escape');
+    await dialog.waitFor({ state: 'hidden', timeout: 2000 }).catch(() => {});
   }
 }
 

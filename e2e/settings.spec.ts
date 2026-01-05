@@ -1,4 +1,10 @@
-import { test, expect, expandRecommendedItems } from './fixtures';
+import {
+  test,
+  expect,
+  expandRecommendedItems,
+  ensureNoModals,
+  waitForCountChange,
+} from './fixtures';
 
 test.describe('Settings', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -23,8 +29,11 @@ test.describe('Settings', () => {
     // Change to Finnish
     await languageSelect.selectOption('fi');
 
-    // Wait for language change to apply
-    await page.waitForTimeout(500);
+    // Wait for language change to apply by waiting for Finnish text to appear
+    // Finnish for "Dashboard" is "Näkymä"
+    await expect(page.locator('nav button:has-text("Näkymä")')).toBeVisible({
+      timeout: 5000,
+    });
 
     // Navigate to different page to see translated content
     const firstNavButton = page.locator('nav button').first();
@@ -115,12 +124,7 @@ test.describe('Settings', () => {
     await page.click('text=Inventory');
 
     // Ensure no modals are open
-    const dialog = page.locator('[role="dialog"]').first();
-    const hasModal = await dialog.isVisible().catch(() => false);
-    if (hasModal) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     await page.click('button:has-text("Water")');
 
@@ -128,15 +132,20 @@ test.describe('Settings', () => {
     await expandRecommendedItems(page);
 
     // Ensure no modals are blocking before clicking
-    const hasModalBeforeClick = await dialog.isVisible().catch(() => false);
-    if (hasModalBeforeClick) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
+
+    // Get the count before disabling
+    const missingItemsLocator = page.locator('[class*="missingItemText"]');
+    const initialCount = await missingItemsLocator.count();
 
     // Click the × button to disable the first recommended item
     const disableButton = page.locator('button:has-text("×")').first();
     await disableButton.click();
+
+    // Wait for the count to decrease
+    await waitForCountChange(missingItemsLocator, initialCount, {
+      decrease: true,
+    });
 
     // Navigate to Settings
     await page.click('text=Settings');
@@ -162,12 +171,7 @@ test.describe('Settings', () => {
     await page.click('text=Inventory');
 
     // Ensure no modals are open
-    const dialog = page.locator('[role="dialog"]').first();
-    const hasModal = await dialog.isVisible().catch(() => false);
-    if (hasModal) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     await page.click('button:has-text("Water")');
 
@@ -175,25 +179,22 @@ test.describe('Settings', () => {
     await expandRecommendedItems(page);
 
     // Ensure no modals are blocking before clicking
-    const hasModalBeforeClick = await dialog.isVisible().catch(() => false);
-    if (hasModalBeforeClick) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     // Count initial recommended items
-    const initialCount = await page
-      .locator('[class*="missingItemText"]')
-      .count();
+    const missingItemsLocator = page.locator('[class*="missingItemText"]');
+    const initialCount = await missingItemsLocator.count();
 
     // Disable the first item
     await page.locator('button:has-text("×")').first().click();
-    await page.waitForTimeout(300);
+
+    // Wait for item to be disabled
+    await waitForCountChange(missingItemsLocator, initialCount, {
+      decrease: true,
+    });
 
     // Verify item is disabled
-    const afterDisableCount = await page
-      .locator('[class*="missingItemText"]')
-      .count();
+    const afterDisableCount = await missingItemsLocator.count();
     expect(afterDisableCount).toBe(initialCount - 1);
 
     // Navigate to Settings and re-enable the item
@@ -212,12 +213,11 @@ test.describe('Settings', () => {
     // Expand recommended items again
     await expandRecommendedItems(page);
 
-    // Wait for list to update
-    await page.waitForTimeout(300);
-
     // The item should be back in the recommended list
-    const finalCount = await page.locator('[class*="missingItemText"]').count();
-    expect(finalCount).toBe(initialCount);
+    const finalMissingItemsLocator = page.locator('[class*="missingItemText"]');
+    await expect(finalMissingItemsLocator).toHaveCount(initialCount, {
+      timeout: 5000,
+    });
   });
 
   test('should enable all disabled recommendations at once', async ({
@@ -227,12 +227,7 @@ test.describe('Settings', () => {
     await page.click('text=Inventory');
 
     // Ensure no modals are open
-    const dialog = page.locator('[role="dialog"]').first();
-    const hasModal = await dialog.isVisible().catch(() => false);
-    if (hasModal) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     await page.click('button:has-text("Water")');
 
@@ -240,22 +235,23 @@ test.describe('Settings', () => {
     await expandRecommendedItems(page);
 
     // Ensure no modals are blocking before clicking
-    const hasModalBeforeClick = await dialog.isVisible().catch(() => false);
-    if (hasModalBeforeClick) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     // Count initial recommended items
-    const initialCount = await page
-      .locator('[class*="missingItemText"]')
-      .count();
+    const missingItemsLocator = page.locator('[class*="missingItemText"]');
+    const initialCount = await missingItemsLocator.count();
 
-    // Disable two items
+    // Disable first item
     await page.locator('button:has-text("×")').first().click();
-    await page.waitForTimeout(200);
+    await waitForCountChange(missingItemsLocator, initialCount, {
+      decrease: true,
+    });
+
+    // Disable second item
     await page.locator('button:has-text("×")').first().click();
-    await page.waitForTimeout(200);
+    await waitForCountChange(missingItemsLocator, initialCount - 1, {
+      decrease: true,
+    });
 
     // Navigate to Settings
     await page.click('text=Settings');
@@ -276,11 +272,10 @@ test.describe('Settings', () => {
     // Expand recommended items again
     await expandRecommendedItems(page);
 
-    // Wait for list to update
-    await page.waitForTimeout(300);
-
     // All items should be back
-    const finalCount = await page.locator('[class*="missingItemText"]').count();
-    expect(finalCount).toBe(initialCount);
+    const finalMissingItemsLocator = page.locator('[class*="missingItemText"]');
+    await expect(finalMissingItemsLocator).toHaveCount(initialCount, {
+      timeout: 5000,
+    });
   });
 });
