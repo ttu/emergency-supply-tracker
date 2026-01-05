@@ -4,6 +4,7 @@ import {
   type Page,
   type Locator,
 } from '@playwright/test';
+import { createMockAppData } from '../src/shared/utils/test/factories';
 
 // Helper to wait for element count to change
 export async function waitForCountChange(
@@ -17,24 +18,27 @@ export async function waitForCountChange(
 }
 
 // Default app data with onboarding completed
-export const defaultAppData = {
-  version: '1.0.0',
+export const defaultAppData = createMockAppData({
   settings: {
     onboardingCompleted: true,
     language: 'en',
     theme: 'light',
+    highContrast: false,
+    advancedFeatures: {
+      calorieTracking: false,
+      powerManagement: false,
+      waterTracking: false,
+    },
   },
   household: {
     adults: 2,
     children: 0,
     supplyDurationDays: 3,
     useFreezer: true,
-    freezerHoldTime: 48,
   },
   items: [],
-  categories: [],
-  lastModified: new Date().toISOString(),
-};
+  customCategories: [],
+});
 
 // Helper function to expand recommended items
 // Uses consistent locator pattern to find button with text matching "Show X recommended items"

@@ -72,13 +72,16 @@ describe('calculatePreparednessScore', () => {
   });
 
   it('should filter out frozen items when no freezer', () => {
-    const withFreezer: HouseholdConfig = { ...baseHousehold, useFreezer: true };
-    const withoutFreezer: HouseholdConfig = {
+    const withFreezer = createMockHousehold({
+      ...baseHousehold,
+      useFreezer: true,
+    });
+    const withoutFreezer = createMockHousehold({
       ...baseHousehold,
       useFreezer: false,
-    };
+    });
 
-    const items: InventoryItem[] = [];
+    const items: ReturnType<typeof createMockInventoryItem>[] = [];
 
     const scoreWith = calculatePreparednessScore(items, withFreezer);
     const scoreWithout = calculatePreparednessScore(items, withoutFreezer);
@@ -89,8 +92,8 @@ describe('calculatePreparednessScore', () => {
   });
 
   it('should cap item score at 100%', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water',
@@ -100,10 +103,7 @@ describe('calculatePreparednessScore', () => {
         neverExpires: false,
         expirationDate: '2025-12-31',
         productTemplateId: 'water',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const score = calculatePreparednessScore(items, baseHousehold);
@@ -113,23 +113,22 @@ describe('calculatePreparednessScore', () => {
 });
 
 describe('calculateCategoryPreparedness', () => {
-  const baseHousehold: HouseholdConfig = {
+  const baseHousehold = createMockHousehold({
     adults: 2,
     children: 0,
-    hasPets: false,
     useFreezer: false,
     supplyDurationDays: 14,
-  };
+  });
 
   it('should return 0 for empty category with no recommended items', () => {
-    const items: InventoryItem[] = [];
+    const items: ReturnType<typeof createMockInventoryItem>[] = [];
     const score = calculateCategoryPreparedness('custom', items, baseHousehold);
     expect(score).toBe(0);
   });
 
   it('should return 100 for category with items but no recommendations', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Custom Item',
         categoryId: 'custom',
@@ -138,18 +137,15 @@ describe('calculateCategoryPreparedness', () => {
         recommendedQuantity: 0,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
     const score = calculateCategoryPreparedness('custom', items, baseHousehold);
     expect(score).toBe(100);
   });
 
   it('should return valid score for water category', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water',
@@ -159,10 +155,7 @@ describe('calculateCategoryPreparedness', () => {
         neverExpires: false,
         expirationDate: '2025-12-31',
         productTemplateId: 'water',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
     const score = calculateCategoryPreparedness('water', items, baseHousehold);
     expect(score).toBeGreaterThanOrEqual(0);
@@ -170,8 +163,8 @@ describe('calculateCategoryPreparedness', () => {
   });
 
   it('should calculate scores independently per category', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water',
@@ -181,11 +174,8 @@ describe('calculateCategoryPreparedness', () => {
         neverExpires: false,
         expirationDate: '2025-12-31',
         productTemplateId: 'water',
-        location: '',
-        notes: '',
-        tags: [],
-      },
-      {
+      }),
+      createMockInventoryItem({
         id: '2',
         name: 'Canned Food',
         categoryId: 'food',
@@ -194,10 +184,7 @@ describe('calculateCategoryPreparedness', () => {
         recommendedQuantity: 10,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const waterScore = calculateCategoryPreparedness(

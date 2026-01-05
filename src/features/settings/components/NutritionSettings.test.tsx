@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { NutritionSettings } from './NutritionSettings';
 import { SettingsContext } from '@/features/settings';
-import type { UserSettings } from '@/shared/types';
+import { createMockSettings } from '@/shared/utils/test/factories';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
@@ -29,7 +29,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 describe('NutritionSettings', () => {
-  const defaultSettings: UserSettings = {
+  const defaultSettings = createMockSettings({
     language: 'en',
     theme: 'light',
     highContrast: false,
@@ -41,10 +41,10 @@ describe('NutritionSettings', () => {
     dailyCaloriesPerPerson: DAILY_CALORIES_PER_PERSON,
     dailyWaterPerPerson: DAILY_WATER_PER_PERSON,
     childrenRequirementPercentage: CHILDREN_REQUIREMENT_MULTIPLIER * 100,
-  };
+  });
 
   const renderWithContext = (
-    settings: UserSettings = defaultSettings,
+    settings: ReturnType<typeof createMockSettings> = defaultSettings,
     updateSettings = jest.fn(),
   ) => {
     return render(
@@ -151,12 +151,12 @@ describe('NutritionSettings', () => {
 
   it('resets all values to defaults when reset button clicked', () => {
     const updateSettings = jest.fn();
-    const customSettings: UserSettings = {
+    const customSettings = createMockSettings({
       ...defaultSettings,
       dailyCaloriesPerPerson: 2500,
       dailyWaterPerPerson: 4,
       childrenRequirementPercentage: 80,
-    };
+    });
     renderWithContext(customSettings, updateSettings);
 
     const resetButton = screen.getByRole('button', {
@@ -172,7 +172,7 @@ describe('NutritionSettings', () => {
   });
 
   it('uses defaults when settings values are undefined', () => {
-    const settingsWithoutNutrition: UserSettings = {
+    const settingsWithoutNutrition = createMockSettings({
       language: 'en',
       theme: 'light',
       highContrast: false,
@@ -182,7 +182,7 @@ describe('NutritionSettings', () => {
         waterTracking: false,
       },
       // Intentionally omitting nutrition settings
-    };
+    });
     renderWithContext(settingsWithoutNutrition);
 
     const caloriesInput = screen.getByLabelText(

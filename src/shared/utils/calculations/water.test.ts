@@ -8,7 +8,10 @@ import {
   calculateRecommendedWaterStorage,
   calculateTotalWaterNeeds,
 } from './water';
-import type { InventoryItem, HouseholdConfig } from '@/shared/types';
+import {
+  createMockInventoryItem,
+  createMockHousehold,
+} from '@/shared/utils/test/factories';
 import { DAILY_WATER_PER_PERSON } from '@/shared/utils/constants';
 
 describe('water calculations', () => {
@@ -54,21 +57,19 @@ describe('water calculations', () => {
 
   describe('getWaterRequirementPerUnit', () => {
     it('returns 0 for items without water requirement', () => {
-      const item: InventoryItem = {
+      const item = createMockInventoryItem({
         id: '1',
         name: 'Crackers',
         categoryId: 'food',
         quantity: 2,
         unit: 'packages',
         recommendedQuantity: 3,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      });
       expect(getWaterRequirementPerUnit(item)).toBe(0);
     });
 
     it('returns custom water requirement if set on item', () => {
-      const item: InventoryItem = {
+      const item = createMockInventoryItem({
         id: '1',
         name: 'Instant Noodles',
         categoryId: 'food',
@@ -76,14 +77,12 @@ describe('water calculations', () => {
         unit: 'packages',
         recommendedQuantity: 5,
         requiresWaterLiters: 0.5,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      });
       expect(getWaterRequirementPerUnit(item)).toBe(0.5);
     });
 
     it('returns template water requirement for items with productTemplateId', () => {
-      const item: InventoryItem = {
+      const item = createMockInventoryItem({
         id: '1',
         name: 'My Pasta',
         categoryId: 'food',
@@ -91,14 +90,12 @@ describe('water calculations', () => {
         unit: 'kilograms',
         recommendedQuantity: 1,
         productTemplateId: 'pasta',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      });
       expect(getWaterRequirementPerUnit(item)).toBe(1.0);
     });
 
     it('returns template water requirement for items with matching itemType', () => {
-      const item: InventoryItem = {
+      const item = createMockInventoryItem({
         id: '1',
         name: 'My Rice',
         categoryId: 'food',
@@ -106,14 +103,12 @@ describe('water calculations', () => {
         unit: 'kilograms',
         recommendedQuantity: 1,
         itemType: 'Rice',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      });
       expect(getWaterRequirementPerUnit(item)).toBe(1.5);
     });
 
     it('prefers custom water requirement over template', () => {
-      const item: InventoryItem = {
+      const item = createMockInventoryItem({
         id: '1',
         name: 'My Pasta',
         categoryId: 'food',
@@ -122,9 +117,7 @@ describe('water calculations', () => {
         recommendedQuantity: 1,
         productTemplateId: 'pasta',
         requiresWaterLiters: 2.0, // Custom value overrides template's 1.0
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      });
       expect(getWaterRequirementPerUnit(item)).toBe(2.0);
     });
   });
@@ -135,8 +128,8 @@ describe('water calculations', () => {
     });
 
     it('calculates total water required for items', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Pasta',
           categoryId: 'food',
@@ -144,10 +137,8 @@ describe('water calculations', () => {
           unit: 'kilograms',
           recommendedQuantity: 1,
           productTemplateId: 'pasta', // 1.0 L/kg
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Rice',
           categoryId: 'food',
@@ -155,27 +146,23 @@ describe('water calculations', () => {
           unit: 'kilograms',
           recommendedQuantity: 1,
           productTemplateId: 'rice', // 1.5 L/kg
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       // 2 * 1.0 + 1 * 1.5 = 3.5
       expect(calculateTotalWaterRequired(items)).toBe(3.5);
     });
 
     it('ignores items without water requirements', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Crackers',
           categoryId: 'food',
           quantity: 5,
           unit: 'packages',
           recommendedQuantity: 5,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Pasta',
           categoryId: 'food',
@@ -183,9 +170,7 @@ describe('water calculations', () => {
           unit: 'kilograms',
           recommendedQuantity: 1,
           productTemplateId: 'pasta',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       expect(calculateTotalWaterRequired(items)).toBe(1.0);
     });
@@ -197,8 +182,8 @@ describe('water calculations', () => {
     });
 
     it('sums water from bottled-water items in liters', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Bottled Water',
           categoryId: 'water-beverages',
@@ -206,10 +191,8 @@ describe('water calculations', () => {
           unit: 'liters',
           recommendedQuantity: 9,
           productTemplateId: 'bottled-water',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Tap Water Container',
           categoryId: 'water-beverages',
@@ -217,16 +200,14 @@ describe('water calculations', () => {
           unit: 'liters',
           recommendedQuantity: 5,
           itemType: 'Bottled Water',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(15);
     });
 
     it('ignores non-water items in water-beverages category', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Bottled Water',
           categoryId: 'water-beverages',
@@ -234,10 +215,8 @@ describe('water calculations', () => {
           unit: 'liters',
           recommendedQuantity: 9,
           productTemplateId: 'bottled-water',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Long Life Milk',
           categoryId: 'water-beverages',
@@ -245,16 +224,14 @@ describe('water calculations', () => {
           unit: 'liters',
           recommendedQuantity: 2,
           productTemplateId: 'long-life-milk',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(10);
     });
 
     it('ignores water items in wrong category', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Bottled Water',
           categoryId: 'food', // Wrong category
@@ -262,16 +239,14 @@ describe('water calculations', () => {
           unit: 'liters',
           recommendedQuantity: 9,
           productTemplateId: 'bottled-water',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(0);
     });
 
     it('ignores water items not in liters', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Bottled Water',
           categoryId: 'water-beverages',
@@ -279,9 +254,7 @@ describe('water calculations', () => {
           unit: 'bottles', // Not liters
           recommendedQuantity: 9,
           productTemplateId: 'bottled-water',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(0);
     });
@@ -289,17 +262,15 @@ describe('water calculations', () => {
 
   describe('calculateWaterRequirements', () => {
     it('returns correct values when no water required', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Crackers',
           categoryId: 'food',
           quantity: 5,
           unit: 'packages',
           recommendedQuantity: 5,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       const result = calculateWaterRequirements(items);
       expect(result.totalWaterRequired).toBe(0);
@@ -309,8 +280,8 @@ describe('water calculations', () => {
     });
 
     it('returns correct values when enough water available', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Bottled Water',
           categoryId: 'water-beverages',
@@ -318,10 +289,8 @@ describe('water calculations', () => {
           unit: 'liters',
           recommendedQuantity: 18,
           productTemplateId: 'bottled-water',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Pasta',
           categoryId: 'food',
@@ -329,9 +298,7 @@ describe('water calculations', () => {
           unit: 'kilograms',
           recommendedQuantity: 1,
           productTemplateId: 'pasta', // 1.0 L/kg
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       const result = calculateWaterRequirements(items);
       expect(result.totalWaterRequired).toBe(2); // 2kg * 1.0L
@@ -342,8 +309,8 @@ describe('water calculations', () => {
     });
 
     it('returns correct shortfall when not enough water', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Bottled Water',
           categoryId: 'water-beverages',
@@ -351,10 +318,8 @@ describe('water calculations', () => {
           unit: 'liters',
           recommendedQuantity: 18,
           productTemplateId: 'bottled-water',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'Pasta',
           categoryId: 'food',
@@ -362,9 +327,7 @@ describe('water calculations', () => {
           unit: 'kilograms',
           recommendedQuantity: 1,
           productTemplateId: 'pasta', // 1.0 L/kg
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       const result = calculateWaterRequirements(items);
       expect(result.totalWaterRequired).toBe(10); // 10kg * 1.0L
@@ -374,8 +337,8 @@ describe('water calculations', () => {
     });
 
     it('provides detailed items requiring water', () => {
-      const items: InventoryItem[] = [
-        {
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'My Pasta',
           categoryId: 'food',
@@ -383,10 +346,8 @@ describe('water calculations', () => {
           unit: 'kilograms',
           recommendedQuantity: 1,
           productTemplateId: 'pasta',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
+        }),
+        createMockInventoryItem({
           id: '2',
           name: 'My Rice',
           categoryId: 'food',
@@ -394,9 +355,7 @@ describe('water calculations', () => {
           unit: 'kilograms',
           recommendedQuantity: 1,
           productTemplateId: 'rice',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       const result = calculateWaterRequirements(items);
       expect(result.itemsRequiringWater).toHaveLength(2);
@@ -419,24 +378,24 @@ describe('water calculations', () => {
 
   describe('calculateRecommendedWaterStorage', () => {
     it('calculates for single adult', () => {
-      const household: HouseholdConfig = {
+      const household = createMockHousehold({
         adults: 1,
         children: 0,
         supplyDurationDays: 3,
         useFreezer: false,
-      };
+      });
       expect(
         calculateRecommendedWaterStorage(household, DAILY_WATER_PER_PERSON),
       ).toBe(9); // 1 * 3 * 3
     });
 
     it('calculates for family with children', () => {
-      const household: HouseholdConfig = {
+      const household = createMockHousehold({
         adults: 2,
         children: 2,
         supplyDurationDays: 3,
         useFreezer: false,
-      };
+      });
       // (2 * 1.0 + 2 * 0.75) * 3 * 3 = 3.5 * 3 * 3 = 31.5
       expect(
         calculateRecommendedWaterStorage(household, DAILY_WATER_PER_PERSON),
@@ -444,12 +403,12 @@ describe('water calculations', () => {
     });
 
     it('scales with supply duration', () => {
-      const household: HouseholdConfig = {
+      const household = createMockHousehold({
         adults: 1,
         children: 0,
         supplyDurationDays: 7,
         useFreezer: false,
-      };
+      });
       expect(
         calculateRecommendedWaterStorage(household, DAILY_WATER_PER_PERSON),
       ).toBe(21); // 1 * 3 * 7
@@ -458,14 +417,14 @@ describe('water calculations', () => {
 
   describe('calculateTotalWaterNeeds', () => {
     it('combines drinking water and preparation water', () => {
-      const household: HouseholdConfig = {
+      const household = createMockHousehold({
         adults: 2,
         children: 0,
         supplyDurationDays: 3,
         useFreezer: false,
-      };
-      const items: InventoryItem[] = [
-        {
+      });
+      const items = [
+        createMockInventoryItem({
           id: '1',
           name: 'Pasta',
           categoryId: 'food',
@@ -473,9 +432,7 @@ describe('water calculations', () => {
           unit: 'kilograms',
           recommendedQuantity: 1,
           productTemplateId: 'pasta', // 1.0 L/kg
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ];
       const result = calculateTotalWaterNeeds(
         items,
