@@ -3,7 +3,7 @@ import { Inventory, InventoryProps } from './Inventory';
 import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
 import { SettingsProvider } from '@/features/settings';
-import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
+import { RecommendedItemsProvider } from '@/features/templates';
 
 const meta: Meta<InventoryProps> = {
   title: 'Pages/Inventory',

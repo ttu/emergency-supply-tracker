@@ -53,11 +53,11 @@ Reusable building blocks used throughout the application. Located in `src/shared
 
 Components for the main dashboard view.
 
-| Component         | Description                          | Used In      |
-| ----------------- | ------------------------------------ | ------------ |
-| `CategoryCard`    | Single category status card          | CategoryGrid |
-| `CategoryGrid`    | Grid layout of all category cards    | Dashboard    |
-| `DashboardHeader` | Overall preparedness summary         | Dashboard    |
+| Component         | Description                       | Used In      |
+| ----------------- | --------------------------------- | ------------ |
+| `CategoryCard`    | Single category status card       | CategoryGrid |
+| `CategoryGrid`    | Grid layout of all category cards | Dashboard    |
+| `DashboardHeader` | Overall preparedness summary      | Dashboard    |
 
 ### Alerts Feature (`features/alerts/components/`)
 
@@ -105,20 +105,20 @@ First-time user setup flow.
 
 Settings and data management.
 
-| Component                 | Description                                  | Section         |
-| ------------------------- | -------------------------------------------- | --------------- |
-| `ClearDataButton`         | Delete all data with confirmation            | Data            |
-| `DebugExport`             | Export error logs and debug information      | Data            |
-| `DisabledRecommendations` | Manage disabled recommended items            | Recommendations |
-| `ExportButton`            | Export data as JSON                          | Data            |
-| `HouseholdForm`           | Edit household configuration                 | Household       |
-| `ImportButton`            | Import data from JSON                        | Data            |
-| `LanguageSelector`        | Language preference                          | Preferences     |
-| `NutritionSettings`       | Customize nutrition and requirement settings | Nutrition       |
-| `OverriddenRecommendations` | Manage quantity overrides                  | Recommendations |
-| `RecommendationsStatus`   | Display custom recommendations status        | Recommendations |
-| `ShoppingListExport`      | Export shopping list (TXT/Markdown/CSV)      | Data            |
-| `ThemeSelector`           | Theme preference (light/dark/auto)           | Preferences     |
+| Component                   | Description                                  | Section         |
+| --------------------------- | -------------------------------------------- | --------------- |
+| `ClearDataButton`           | Delete all data with confirmation            | Data            |
+| `DebugExport`               | Export error logs and debug information      | Data            |
+| `DisabledRecommendations`   | Manage disabled recommended items            | Recommendations |
+| `ExportButton`              | Export data as JSON                          | Data            |
+| `HouseholdForm`             | Edit household configuration                 | Household       |
+| `ImportButton`              | Import data from JSON                        | Data            |
+| `LanguageSelector`          | Language preference                          | Preferences     |
+| `NutritionSettings`         | Customize nutrition and requirement settings | Nutrition       |
+| `OverriddenRecommendations` | Manage quantity overrides                    | Recommendations |
+| `RecommendationsStatus`     | Display custom recommendations status        | Recommendations |
+| `ShoppingListExport`        | Export shopping list (TXT/Markdown/CSV)      | Data            |
+| `ThemeSelector`             | Theme preference (light/dark/auto)           | Preferences     |
 
 ---
 
@@ -180,22 +180,22 @@ App
 
 ### Context Providers
 
-| Context                    | Purpose                             | Location                                   |
-| -------------------------- | ----------------------------------- | ------------------------------------------ |
-| `SettingsContext`          | User settings and preferences       | `features/settings/context/`               |
-| `HouseholdContext`         | Household configuration             | `features/household/context/`              |
-| `InventoryContext`         | Inventory items and CRUD operations | `features/inventory/context/`              |
-| `RecommendedItemsContext`  | Custom recommended items            | `shared/contexts/`                         |
+| Context                   | Purpose                             | Location                      |
+| ------------------------- | ----------------------------------- | ----------------------------- |
+| `SettingsContext`         | User settings and preferences       | `features/settings/context/`  |
+| `HouseholdContext`        | Household configuration             | `features/household/context/` |
+| `InventoryContext`        | Inventory items and CRUD operations | `features/inventory/context/` |
+| `RecommendedItemsContext` | Custom recommended items            | `features/templates/context/` |
 
 ### Custom Hooks
 
-| Hook                   | Purpose                         | Location                     |
-| ---------------------- | ------------------------------- | ---------------------------- |
-| `useSettings`          | Access settings context         | `features/settings/hooks/`   |
-| `useHousehold`         | Access household context        | `features/household/hooks/`  |
-| `useInventory`         | Access inventory context        | `features/inventory/hooks/`  |
-| `useRecommendedItems`  | Access recommended items        | `shared/hooks/`              |
-| `useKeyboardNavigation`| Keyboard navigation utilities   | `shared/hooks/`              |
+| Hook                    | Purpose                       | Location                    |
+| ----------------------- | ----------------------------- | --------------------------- |
+| `useSettings`           | Access settings context       | `features/settings/hooks/`  |
+| `useHousehold`          | Access household context      | `features/household/hooks/` |
+| `useInventory`          | Access inventory context      | `features/inventory/hooks/` |
+| `useRecommendedItems`   | Access recommended items      | `features/templates/hooks/` |
+| `useKeyboardNavigation` | Keyboard navigation utilities | `shared/hooks/`             |
 
 ---
 

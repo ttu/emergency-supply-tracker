@@ -3,7 +3,7 @@ import { Settings } from './Settings';
 import { HouseholdProvider } from '@/features/household';
 import { SettingsProvider } from '@/features/settings';
 import { InventoryProvider } from '@/features/inventory';
-import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
+import { RecommendedItemsProvider } from '@/features/templates';
 
 // Mock i18next
 jest.mock('react-i18next', () => ({

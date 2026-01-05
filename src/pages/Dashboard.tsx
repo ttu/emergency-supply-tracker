@@ -4,7 +4,7 @@ import { Button } from '@/shared/components/Button';
 import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { useSettings } from '@/features/settings';
-import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
+import { useRecommendedItems } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   AlertBanner,

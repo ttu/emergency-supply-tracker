@@ -7,7 +7,7 @@ import {
 } from '@/features/household';
 import { useInventory } from '@/features/inventory';
 import { useSettings } from '@/features/settings';
-import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
+import { useRecommendedItems } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   CategoryNav,

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { RecommendedItemsContext } from '../contexts/RecommendedItemsContext';
+import { RecommendedItemsContext } from '../context';
 
 export function useRecommendedItems() {
   const context = useContext(RecommendedItemsContext);

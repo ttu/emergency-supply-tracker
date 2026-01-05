@@ -4,7 +4,7 @@ import { trackAppLaunch } from '@/shared/utils/analytics';
 import { SettingsProvider, useSettings } from '@/features/settings';
 import { HouseholdProvider, useHousehold } from '@/features/household';
 import { InventoryProvider, useInventory } from '@/features/inventory';
-import { RecommendedItemsProvider } from '@/shared/contexts/RecommendedItemsProvider';
+import { RecommendedItemsProvider } from '@/features/templates';
 import { ThemeApplier } from './components/ThemeApplier';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { Navigation, PageType } from '@/shared/components/Navigation';

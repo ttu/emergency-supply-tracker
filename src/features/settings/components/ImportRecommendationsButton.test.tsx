@@ -11,7 +11,7 @@ jest.mock('react-i18next', () => ({
 
 // Mock useRecommendedItems hook
 const mockImportRecommendedItems = jest.fn();
-jest.mock('@/shared/hooks/useRecommendedItems', () => ({
+jest.mock('@/features/templates', () => ({
   useRecommendedItems: () => ({
     importRecommendedItems: mockImportRecommendedItems,
   }),

@@ -86,45 +86,63 @@ export type { ItemCardProps, ItemListProps, ItemFormProps } from './components';
 ## Feature Modules
 
 ### alerts
+
 Alert generation and display for the dashboard.
+
 - Components: `AlertBanner`, `HiddenAlerts`
 - Utils: `generateDashboardAlerts`
 
 ### categories
+
 Standard supply category definitions.
+
 - Data: `STANDARD_CATEGORIES`
 - Utils: `getCategoryById`
 
 ### dashboard
+
 Dashboard page components and calculations.
+
 - Components: `DashboardHeader`, `CategoryCard`, `CategoryGrid`
 - Utils: `calculatePreparednessScore`, `calculateCategoryPreparedness`, backup reminder functions
 
 ### household
+
 Household configuration state and calculations.
+
 - Provider: `HouseholdProvider`
 - Hooks: `useHousehold`
 - Utils: `calculateRecommendedQuantity`, `calculateHouseholdMultiplier`
 
 ### inventory
+
 Inventory management state and components.
+
 - Provider: `InventoryProvider`
 - Hooks: `useInventory`
 - Components: `ItemCard`, `ItemList`, `ItemForm`, `CategoryNav`, `FilterBar`, `CategoryStatusSummary`
 - Utils: Status calculations (`calculateItemStatus`, `isItemExpired`, etc.)
 
 ### onboarding
+
 User onboarding flow.
+
 - Components: `Onboarding`, `WelcomeScreen`, `HouseholdForm`, `QuickSetupScreen`, `HouseholdPresetSelector`
 
 ### settings
+
 User settings state and components.
+
 - Provider: `SettingsProvider`
 - Hooks: `useSettings`
 - Components: Various settings components (theme, language, import/export, etc.)
 
 ### templates
-Product templates (recommended items).
+
+Product templates and recommended items management.
+
+- Provider: `RecommendedItemsProvider`
+- Hooks: `useRecommendedItems`
 - Data: `RECOMMENDED_ITEMS`
 - Components: `TemplateSelector`
 - Utils: `getRecommendedItemById`, `getRecommendedItemsByCategory`
@@ -134,22 +152,23 @@ Product templates (recommended items).
 The `shared/` directory contains code that is used across multiple features:
 
 ### components
+
 Reusable UI components: `Button`, `Modal`, `Badge`, `Select`, `Navigation`, etc.
 
-### contexts
-Shared contexts not tied to a specific feature:
-- `RecommendedItemsContext/Provider` - Custom recommended items (could be migrated to features/templates)
-
 ### hooks
+
 Shared hooks:
-- `useRecommendedItems` - Access recommended items context
+
 - `useKeyboardNavigation` - Keyboard navigation utilities
 
 ### types
+
 Shared TypeScript type definitions used across features.
 
 ### utils
+
 Shared utility functions:
+
 - `calculations/` - Calorie, water, household calculations
 - `storage/` - LocalStorage operations
 - `analytics/` - Usage tracking
@@ -220,13 +239,12 @@ See [TESTING_STRATEGY.md](./TESTING_STRATEGY.md) for the complete testing approa
 - **E2E Tests** (20%): Critical user flows with Playwright
 
 Test files are co-located with their source files:
+
 - `ComponentName.test.tsx` for components
 - `utils.test.ts` for utilities
 
 ## Future Considerations
 
-1. **RecommendedItems Migration**: The `RecommendedItemsContext/Provider` in `shared/contexts/` could be migrated to `features/templates/` for consistency.
+1. **Feature Lazy Loading**: Features could be lazy-loaded for better initial bundle size.
 
-2. **Feature Lazy Loading**: Features could be lazy-loaded for better initial bundle size.
-
-3. **Feature Testing Isolation**: Each feature could have its own test setup for better isolation.
+2. **Feature Testing Isolation**: Each feature could have its own test setup for better isolation.

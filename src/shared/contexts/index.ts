@@ -1,4 +1,2 @@
-// Recommended Items context (not yet migrated to features)
-export { RecommendedItemsContext } from './RecommendedItemsContext';
-export type { RecommendedItemsContextValue } from './RecommendedItemsContext';
-export { RecommendedItemsProvider } from './RecommendedItemsProvider';
+// All contexts have been migrated to feature slices
+// See @/features/settings, @/features/household, @/features/inventory, @/features/templates

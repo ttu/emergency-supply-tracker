@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { Toast } from '@/shared/components/Toast';
-import { useRecommendedItems } from '@/shared/hooks/useRecommendedItems';
+import { useRecommendedItems } from '@/features/templates';
 import { parseRecommendedItemsFile } from '@/shared/utils/validation/recommendedItemsValidation';
 import type { RecommendedItemsFile } from '@/shared/types';
 import styles from './ImportRecommendationsButton.module.css';
