@@ -2,9 +2,8 @@ import type { AppData, InventoryItem } from '@/shared/types';
 import {
   createItemId,
   createCategoryId,
-  createTemplateId,
+  createProductTemplateId,
   createAlertId,
-  createRecommendedItemId,
 } from '@/shared/types';
 import {
   CUSTOM_ITEM_TYPE,
@@ -56,7 +55,7 @@ function normalizeItems(
     categoryId: createCategoryId(item.categoryId as string),
     itemType: normalizeItemType(item.itemType),
     productTemplateId: item.productTemplateId
-      ? createTemplateId(item.productTemplateId as string)
+      ? createProductTemplateId(item.productTemplateId as string)
       : undefined,
   }));
 }
@@ -114,11 +113,11 @@ export function getAppData(): AppData | null {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       customTemplates: (rawData.customTemplates || []).map((template: any) => ({
         ...template,
-        id: createTemplateId(template.id as string),
+        id: createProductTemplateId(template.id as string),
       })),
       dismissedAlertIds: (rawData.dismissedAlertIds || []).map(createAlertId),
       disabledRecommendedItems: (rawData.disabledRecommendedItems || []).map(
-        createRecommendedItemId,
+        createProductTemplateId,
       ),
     };
 
@@ -221,7 +220,7 @@ export function importFromJSON(json: string): AppData {
   } else {
     data.disabledRecommendedItems = (
       data.disabledRecommendedItems as string[]
-    ).map(createRecommendedItemId);
+    ).map(createProductTemplateId);
   }
 
   // customRecommendedItems is optional - preserve if present, otherwise leave undefined

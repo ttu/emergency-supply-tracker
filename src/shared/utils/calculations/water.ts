@@ -80,8 +80,7 @@ export function getWaterRequirementPerUnit(item: InventoryItem): number {
   // Look up the template value
   if (item.productTemplateId) {
     const template = RECOMMENDED_ITEMS.find(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (rec) => rec.id === (item.productTemplateId as any),
+      (rec) => rec.id === item.productTemplateId,
     );
     if (
       template?.requiresWaterLiters !== undefined &&

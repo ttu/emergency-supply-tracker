@@ -23,21 +23,20 @@ export type ItemId = string & { readonly __brand: 'ItemId' };
 export type CategoryId = string & { readonly __brand: 'CategoryId' };
 
 /**
- * Branded type for template/product template IDs
+ * Branded type for product template IDs.
+ *
+ * Product templates are used to create inventory items. This includes:
+ * - Recommended items (built-in product templates from 72tuntia.fi)
+ * - Custom user-created product templates (future)
  */
-export type TemplateId = string & { readonly __brand: 'TemplateId' };
+export type ProductTemplateId = string & {
+  readonly __brand: 'ProductTemplateId';
+};
 
 /**
  * Branded type for alert IDs
  */
 export type AlertId = string & { readonly __brand: 'AlertId' };
-
-/**
- * Branded type for recommended item IDs
- */
-export type RecommendedItemId = string & {
-  readonly __brand: 'RecommendedItemId';
-};
 
 /**
  * Creates an ItemId from a string
@@ -54,10 +53,10 @@ export function createCategoryId(id: string): CategoryId {
 }
 
 /**
- * Creates a TemplateId from a string
+ * Creates a ProductTemplateId from a string
  */
-export function createTemplateId(id: string): TemplateId {
-  return id as TemplateId;
+export function createProductTemplateId(id: string): ProductTemplateId {
+  return id as ProductTemplateId;
 }
 
 /**
@@ -65,13 +64,6 @@ export function createTemplateId(id: string): TemplateId {
  */
 export function createAlertId(id: string): AlertId {
   return id as AlertId;
-}
-
-/**
- * Creates a RecommendedItemId from a string
- */
-export function createRecommendedItemId(id: string): RecommendedItemId {
-  return id as RecommendedItemId;
 }
 
 /**

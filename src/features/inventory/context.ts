@@ -4,7 +4,7 @@ import type {
   Category,
   ItemId,
   AlertId,
-  RecommendedItemId,
+  ProductTemplateId,
 } from '@/shared/types';
 
 export interface InventoryContextValue {
@@ -22,9 +22,9 @@ export interface InventoryContextValue {
   reactivateAlert: (alertId: AlertId) => void;
   reactivateAllAlerts: () => void;
   // Disabled recommended items
-  disabledRecommendedItems: RecommendedItemId[];
-  disableRecommendedItem: (itemId: RecommendedItemId) => void;
-  enableRecommendedItem: (itemId: RecommendedItemId) => void;
+  disabledRecommendedItems: ProductTemplateId[];
+  disableRecommendedItem: (itemId: ProductTemplateId) => void;
+  enableRecommendedItem: (itemId: ProductTemplateId) => void;
   enableAllRecommendedItems: () => void;
 }
 

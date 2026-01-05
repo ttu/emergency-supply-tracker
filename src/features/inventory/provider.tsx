@@ -4,12 +4,12 @@ import type {
   Category,
   ItemId,
   AlertId,
-  RecommendedItemId,
+  ProductTemplateId,
 } from '@/shared/types';
 import {
   createItemId,
   createAlertId,
-  createRecommendedItemId,
+  createProductTemplateId,
 } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
@@ -35,10 +35,10 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     return (data?.dismissedAlertIds || []).map(createAlertId);
   });
   const [disabledRecommendedItems, setDisabledRecommendedItems] = useState<
-    RecommendedItemId[]
+    ProductTemplateId[]
   >(() => {
     const data = getAppData();
-    return (data?.disabledRecommendedItems || []).map(createRecommendedItemId);
+    return (data?.disabledRecommendedItems || []).map(createProductTemplateId);
   });
 
   // Save items, dismissedAlertIds, and disabledRecommendedItems to localStorage on change
@@ -105,13 +105,13 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     setDismissedAlertIds([]);
   }, []);
 
-  const disableRecommendedItem = useCallback((itemId: RecommendedItemId) => {
+  const disableRecommendedItem = useCallback((itemId: ProductTemplateId) => {
     setDisabledRecommendedItems((prev) =>
       prev.includes(itemId) ? prev : [...prev, itemId],
     );
   }, []);
 
-  const enableRecommendedItem = useCallback((itemId: RecommendedItemId) => {
+  const enableRecommendedItem = useCallback((itemId: ProductTemplateId) => {
     setDisabledRecommendedItems((prev) => prev.filter((id) => id !== itemId));
   }, []);
 

@@ -18,8 +18,7 @@ export function OverriddenRecommendations() {
         // Try to find matching recommended item
         const recommendedItem = RECOMMENDED_ITEMS.find(
           (rec) =>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            rec.id === (item.productTemplateId as any) ||
+            item.productTemplateId === rec.id ||
             rec.id === item.itemType?.toLowerCase().replace(/\s+/g, '-'),
         );
 

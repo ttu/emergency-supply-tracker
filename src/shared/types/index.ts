@@ -1,24 +1,11 @@
 // Branded types - import first so they can be used in interfaces below
-import type {
-  ItemId,
-  CategoryId,
-  TemplateId,
-  AlertId,
-  RecommendedItemId,
-} from './branded';
-export type {
-  ItemId,
-  CategoryId,
-  TemplateId,
-  AlertId,
-  RecommendedItemId,
-} from './branded';
+import type { ItemId, CategoryId, ProductTemplateId, AlertId } from './branded';
+export type { ItemId, CategoryId, ProductTemplateId, AlertId } from './branded';
 export {
   createItemId,
   createCategoryId,
-  createTemplateId,
+  createProductTemplateId,
   createAlertId,
-  createRecommendedItemId,
   isItemId,
   isCategoryId,
 } from './branded';
@@ -120,7 +107,7 @@ export interface InventoryItem {
   neverExpires?: boolean;
   location?: string;
   notes?: string;
-  productTemplateId?: TemplateId;
+  productTemplateId?: ProductTemplateId;
   weightGrams?: number; // Weight per unit in grams (e.g., one can weighs 400g)
   caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal)
   capacityMah?: number; // Capacity in milliamp-hours (for powerbanks)
@@ -133,7 +120,7 @@ export interface InventoryItem {
 
 // Product Template
 export interface ProductTemplate {
-  id: TemplateId;
+  id: ProductTemplateId;
   name?: string;
   i18nKey?: string;
   kind?: ProductKind;
@@ -147,7 +134,7 @@ export interface ProductTemplate {
 
 // Recommended Item Definition
 export interface RecommendedItemDefinition {
-  id: RecommendedItemId;
+  id: ProductTemplateId; // Recommended items are product templates
   i18nKey: string;
   category: StandardCategoryId;
   baseQuantity: number;
@@ -172,7 +159,7 @@ export type LocalizedNames = Record<string, string>; // e.g., { en: "Water", fi:
 
 // Imported Recommended Item (supports inline translations for custom items)
 export interface ImportedRecommendedItem {
-  id: RecommendedItemId;
+  id: ProductTemplateId;
   i18nKey?: string; // Use built-in translation key (e.g., "products.bottled-water")
   names?: LocalizedNames; // OR inline localized names: { en: "Water", fi: "Vesi" }
   category: StandardCategoryId;
@@ -215,7 +202,7 @@ export interface AppData {
   items: InventoryItem[];
   customTemplates: ProductTemplate[];
   dismissedAlertIds: AlertId[]; // Alert IDs that have been dismissed by the user
-  disabledRecommendedItems: RecommendedItemId[]; // Recommended item IDs that have been disabled by the user
+  disabledRecommendedItems: ProductTemplateId[]; // Product template IDs that have been disabled by the user
   customRecommendedItems?: RecommendedItemsFile | null; // Custom imported recommendations (null = use built-in)
   lastModified: string;
   lastBackupDate?: string; // ISO date of last export

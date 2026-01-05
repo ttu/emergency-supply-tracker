@@ -93,8 +93,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
         recommendedQuantity: quantity,
         expirationDate,
         neverExpires: !item.defaultExpirationMonths,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        productTemplateId: item.id as any, // RecommendedItemId is compatible with TemplateId
+        productTemplateId: item.id,
         weightGrams: item.weightGramsPerUnit, // Store template weight per unit for calculations
         caloriesPerUnit: item.caloriesPerUnit, // Store template calories per unit
         createdAt: now,

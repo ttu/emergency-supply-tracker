@@ -23,7 +23,7 @@ import { Button } from '@/shared/components/Button';
 import {
   createItemId,
   createCategoryId,
-  createRecommendedItemId,
+  createProductTemplateId,
 } from '@/shared/types';
 import type {
   InventoryItem,
@@ -204,8 +204,7 @@ export function Inventory({
     // If item has a template, set it so weight/calorie calculations work
     if (item.productTemplateId) {
       const template = recommendedItems.find(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (t) => t.id === (item.productTemplateId as any),
+        (t) => t.id === item.productTemplateId,
       );
       setSelectedTemplate(template);
     } else {
@@ -244,8 +243,7 @@ export function Inventory({
                 template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
             ).toISOString()
           : undefined,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        productTemplateId: template.id as any, // RecommendedItemId is compatible with TemplateId
+        productTemplateId: template.id,
         weightGrams: template.weightGramsPerUnit,
         caloriesPerUnit: template.caloriesPerUnit,
       };
@@ -297,7 +295,7 @@ export function Inventory({
   // Handler for disabling a recommended item
   const handleDisableRecommendedItem = useCallback(
     (itemId: string) => {
-      disableRecommendedItem(createRecommendedItemId(itemId));
+      disableRecommendedItem(createProductTemplateId(itemId));
     },
     [disableRecommendedItem],
   );

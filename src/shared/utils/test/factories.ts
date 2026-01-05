@@ -9,7 +9,7 @@ import type {
 import {
   createItemId,
   createCategoryId,
-  createTemplateId,
+  createProductTemplateId,
 } from '@/shared/types';
 
 /**
@@ -79,7 +79,7 @@ export function createMockProductTemplate(
   overrides?: Partial<ProductTemplate>,
 ): ProductTemplate {
   return {
-    id: createTemplateId('test-template'),
+    id: createProductTemplateId('test-template'),
     name: 'Test Template',
     category: 'food',
     defaultUnit: 'pieces' as const,

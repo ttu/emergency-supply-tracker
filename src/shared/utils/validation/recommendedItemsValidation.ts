@@ -5,7 +5,7 @@ import type {
   ImportedRecommendedItem,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { createRecommendedItemId } from '@/shared/types';
+import { createProductTemplateId } from '@/shared/types';
 
 export interface ValidationError {
   path: string;
@@ -550,7 +550,7 @@ export function convertToRecommendedItemDefinitions(
   items: ImportedRecommendedItem[],
 ): RecommendedItemDefinition[] {
   return items.map((item) => ({
-    id: createRecommendedItemId(item.id),
+    id: createProductTemplateId(item.id),
     // Use i18nKey if provided, otherwise create a synthetic key for lookup
     i18nKey: item.i18nKey || `custom.${item.id}`,
     category: item.category,
