@@ -197,7 +197,7 @@ export function calculateCategoryShortages(
       if (item.productTemplateId === recItemId) return true;
       // itemType is now stored as template ID directly
       if (item.itemType === recItemId) return true;
-      // Match name by normalizing to kebab-case (for legacy/manual items)
+      // Match name by normalizing to kebab-case (for manually created items)
       const nameNormalized = item.name.toLowerCase().replace(/\s+/g, '-');
       if (nameNormalized === recItemIdNormalized) return true;
       return false;

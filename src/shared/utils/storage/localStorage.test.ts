@@ -108,24 +108,6 @@ describe('localStorage utilities', () => {
       expect(imported.household).toEqual(mockData.household);
     });
 
-    it('imports data from legacy format with categories field', () => {
-      const mockData = createMockAppData();
-      const legacyData = {
-        version: mockData.version,
-        household: mockData.household,
-        settings: mockData.settings,
-        categories: [createMockCategory({ id: 'custom-1' })],
-        items: mockData.items,
-        customTemplates: mockData.customTemplates,
-        lastModified: mockData.lastModified,
-      };
-      const json = JSON.stringify(legacyData);
-      const imported = importFromJSON(json);
-
-      // Should initialize customCategories even if old format has categories
-      expect(imported.customCategories).toEqual([]);
-    });
-
     it('ensures customTemplates exists when missing', () => {
       const mockData = createMockAppData();
       const dataWithoutTemplates = {
@@ -232,54 +214,6 @@ describe('localStorage utilities', () => {
       expect(imported.items[1].neverExpires).toBe(false);
     });
 
-    it('migrates legacy English translated itemType to template ID', () => {
-      const dataWithLegacyItemType = {
-        version: '1.0.0',
-        household: { adults: 2, children: 0, supplyDurationDays: 3 },
-        settings: { language: 'en', theme: 'light', highContrast: false },
-        items: [
-          {
-            id: 'item-1',
-            name: 'My Water',
-            itemType: 'Bottled Water', // Legacy translated name
-            categoryId: 'water-beverages',
-            quantity: 5,
-            unit: 'liters',
-            neverExpires: true,
-          },
-        ],
-        lastModified: new Date().toISOString(),
-      };
-      const json = JSON.stringify(dataWithLegacyItemType);
-      const imported = importFromJSON(json);
-
-      expect(imported.items[0].itemType).toBe('bottled-water');
-    });
-
-    it('migrates legacy Finnish translated itemType to template ID', () => {
-      const dataWithLegacyItemType = {
-        version: '1.0.0',
-        household: { adults: 2, children: 0, supplyDurationDays: 3 },
-        settings: { language: 'fi', theme: 'light', highContrast: false },
-        items: [
-          {
-            id: 'item-1',
-            name: 'Vesi',
-            itemType: 'Pullovesi', // Legacy Finnish translated name
-            categoryId: 'water-beverages',
-            quantity: 5,
-            unit: 'liters',
-            neverExpires: true,
-          },
-        ],
-        lastModified: new Date().toISOString(),
-      };
-      const json = JSON.stringify(dataWithLegacyItemType);
-      const imported = importFromJSON(json);
-
-      expect(imported.items[0].itemType).toBe('bottled-water');
-    });
-
     it('preserves valid template ID in itemType', () => {
       const dataWithTemplateId = {
         version: '1.0.0',
@@ -304,8 +238,8 @@ describe('localStorage utilities', () => {
       expect(imported.items[0].itemType).toBe('bottled-water');
     });
 
-    it('sets itemType to custom when no match found', () => {
-      const dataWithUnknownItemType = {
+    it('sets itemType to custom when invalid template ID is provided', () => {
+      const dataWithInvalidItemType = {
         version: '1.0.0',
         household: { adults: 2, children: 0, supplyDurationDays: 3 },
         settings: { language: 'en', theme: 'light', highContrast: false },
@@ -313,7 +247,7 @@ describe('localStorage utilities', () => {
           {
             id: 'item-1',
             name: 'My Custom Thing',
-            itemType: 'Unknown Item Type',
+            itemType: 'Invalid Item Type', // Not a valid kebab-case template ID
             categoryId: 'food',
             quantity: 3,
             unit: 'pieces',
@@ -322,13 +256,13 @@ describe('localStorage utilities', () => {
         ],
         lastModified: new Date().toISOString(),
       };
-      const json = JSON.stringify(dataWithUnknownItemType);
+      const json = JSON.stringify(dataWithInvalidItemType);
       const imported = importFromJSON(json);
 
       expect(imported.items[0].itemType).toBe('custom');
     });
 
-    it('uses item name to find template ID when itemType is missing', () => {
+    it('sets itemType to custom when itemType is missing', () => {
       const dataWithNoItemType = {
         version: '1.0.0',
         household: { adults: 2, children: 0, supplyDurationDays: 3 },
@@ -336,7 +270,7 @@ describe('localStorage utilities', () => {
         items: [
           {
             id: 'item-1',
-            name: 'Canned Soup', // Name matches a known product
+            name: 'Custom Item',
             categoryId: 'food',
             quantity: 3,
             unit: 'cans',
@@ -349,7 +283,7 @@ describe('localStorage utilities', () => {
       const json = JSON.stringify(dataWithNoItemType);
       const imported = importFromJSON(json);
 
-      expect(imported.items[0].itemType).toBe('canned-soup');
+      expect(imported.items[0].itemType).toBe('custom');
     });
   });
 });

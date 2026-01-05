@@ -1,4 +1,4 @@
-// Re-export from feature slice for backward compatibility
+// Re-export from feature slice
 export {
   calculateHouseholdMultiplier,
   calculateRecommendedQuantity,
