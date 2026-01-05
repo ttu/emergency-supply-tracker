@@ -26,18 +26,21 @@ test.describe('Data Management', () => {
     const exportButton = page.locator('button', { hasText: 'Export Data' });
     await expect(exportButton).toBeVisible();
 
+    // Set up dialog handler to catch any error dialogs
+    const dialogs: string[] = [];
+    page.on('dialog', async (dialog) => {
+      dialogs.push(dialog.message());
+      await dialog.accept();
+    });
+
     // Click Export Data button (this uses programmatic download via createElement)
     await exportButton.click();
 
-    // Wait a moment for download to trigger
-    await page.waitForTimeout(500);
-
-    // Verify no error alert appeared
-    const dialogs: string[] = [];
-    page.on('dialog', (dialog) => dialogs.push(dialog.message()));
+    // The export should succeed without showing "No data to export" alert
+    // Give a brief moment for any potential dialog to appear
+    await page.waitForLoadState('domcontentloaded');
 
     // If there was an error, it would show "No data to export" alert
-    await page.waitForTimeout(100);
     expect(dialogs).not.toContain('No data to export');
   });
 
@@ -130,16 +133,18 @@ test.describe('Data Management', () => {
     await expect(exportButton).toBeVisible();
     await expect(exportButton).toBeEnabled();
 
+    // Set up dialog handler to catch any error dialogs
+    const dialogs: string[] = [];
+    page.on('dialog', async (dialog) => {
+      dialogs.push(dialog.message());
+      await dialog.accept();
+    });
+
     // Click Export Shopping List button (programmatic download)
     await exportButton.click();
 
-    // Wait for download to trigger
-    await page.waitForTimeout(500);
-
-    // Verify no error alert appeared
-    const dialogs: string[] = [];
-    page.on('dialog', (dialog) => dialogs.push(dialog.message()));
-    await page.waitForTimeout(100);
+    // The export should succeed
+    await page.waitForLoadState('domcontentloaded');
 
     // Should not show "no items need restocking" alert
     expect(dialogs).not.toContain(
@@ -186,13 +191,7 @@ test.describe('Data Management', () => {
     // Wait for settings page to fully load - verify the main heading appears
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
 
-    // Scroll to ensure all sections are visible
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(300);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(300);
-
-    // Look for the Recommended Items section
+    // Look for the Recommended Items section (scroll if needed by Playwright's auto-scrolling)
     await expect(
       page.getByRole('heading', { name: 'Recommended Items' }),
     ).toBeVisible({ timeout: 5000 });
@@ -249,8 +248,8 @@ test.describe('Data Management', () => {
     // Click the Import button to confirm
     await confirmDialog.getByRole('button', { name: 'Import' }).click();
 
-    // Wait for import to complete
-    await page.waitForTimeout(500);
+    // Wait for import to complete - dialog should close
+    await expect(confirmDialog).not.toBeVisible({ timeout: 5000 });
 
     // Verify status now shows custom recommendations
     await expect(page.locator('text=Test Custom Kit')).toBeVisible();
@@ -275,11 +274,9 @@ test.describe('Data Management', () => {
     // Click Export Recommendations button
     await exportButton.click();
 
-    // Wait for download to trigger
-    await page.waitForTimeout(500);
-
     // No error should occur - test passes if button is clickable
-    // (Actual download verification would require additional Playwright setup)
+    // The export is synchronous, so just verify the button remained enabled (no loading state)
+    await expect(exportButton).toBeEnabled();
   });
 
   test('should reset to default recommendations', async ({ page }) => {
@@ -319,7 +316,8 @@ test.describe('Data Management', () => {
     await expect(importDialog).toBeVisible();
     await importDialog.getByRole('button', { name: 'Import' }).click();
 
-    await page.waitForTimeout(500);
+    // Wait for dialog to close
+    await expect(importDialog).not.toBeVisible({ timeout: 5000 });
 
     // Verify custom recommendations are active
     await expect(page.locator('text=Temporary Kit')).toBeVisible();
@@ -336,8 +334,8 @@ test.describe('Data Management', () => {
     // Find the confirm button in the reset dialog (it uses the same label as the button)
     await resetDialog.getByRole('button', { name: /reset/i }).click();
 
-    // Wait for reset to complete
-    await page.waitForTimeout(500);
+    // Wait for dialog to close
+    await expect(resetDialog).not.toBeVisible({ timeout: 5000 });
 
     // Verify status shows Built-in again
     await expect(page.locator('text=/Built-in/')).toBeVisible();
@@ -387,7 +385,8 @@ test.describe('Data Management', () => {
     await expect(confirmDialog).toBeVisible();
     await confirmDialog.getByRole('button', { name: 'Import' }).click();
 
-    await page.waitForTimeout(500);
+    // Wait for dialog to close
+    await expect(confirmDialog).not.toBeVisible({ timeout: 5000 });
 
     // Verify import was successful - status should show custom kit name
     await expect(page.getByText('Multi-lang Kit')).toBeVisible();
@@ -422,11 +421,18 @@ test.describe('Data Management', () => {
 
     // Expand recommended items again (in Finnish, use "Suositeltu:" instead of "Recommended:")
     await expect(page.locator('text=Suositeltu:')).toBeVisible();
-    await page.waitForTimeout(500);
     const expandButtonFi = page
       .locator('text=Suositeltu:')
       .locator('xpath=following::button[1]');
+    await expect(expandButtonFi).toBeVisible({ timeout: 5000 });
     await expandButtonFi.click();
+
+    // Wait for the list to expand
+    await expect(
+      page.locator('[class*="missingItemText"]').first(),
+    ).toBeVisible({
+      timeout: 5000,
+    });
 
     // Verify Finnish name is displayed
     await expect(page.locator('text=Hätävesivarasto')).toBeVisible();
@@ -452,11 +458,11 @@ test.describe('Data Management', () => {
       buffer: Buffer.from(JSON.stringify(invalidRecommendations)),
     });
 
-    await page.waitForTimeout(500);
-
     // Should show error message (no confirm dialog appears for invalid files)
     // The error is displayed inline in the component
-    await expect(page.locator('text=/version.*required/i')).toBeVisible();
+    await expect(page.locator('text=/version.*required/i')).toBeVisible({
+      timeout: 5000,
+    });
 
     // Should still show Built-in (import failed)
     await expect(page.locator('text=/Built-in/')).toBeVisible();

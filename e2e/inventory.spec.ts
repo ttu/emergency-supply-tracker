@@ -1,4 +1,10 @@
-import { test, expect, expandRecommendedItems } from './fixtures';
+import {
+  test,
+  expect,
+  expandRecommendedItems,
+  ensureNoModals,
+  waitForCountChange,
+} from './fixtures';
 
 test.describe('Inventory Management', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -19,14 +25,12 @@ test.describe('Inventory Management', () => {
     // Search for water
     await page.fill('input[placeholder*="Search"]', 'water');
 
-    // Wait for search results to filter
-    await page.waitForTimeout(300);
-
-    // Click on the first template that contains "water" (button.templateCard or button[type="button"])
+    // Wait for search results to filter - wait for the water template to be visible
     const waterTemplate = page
       .locator('button[type="button"]')
       .filter({ hasText: /water/i })
       .first();
+    await expect(waterTemplate).toBeVisible();
     await waterTemplate.click();
 
     // Fill in the form
@@ -412,12 +416,7 @@ test.describe('Inventory Management', () => {
     await page.click('text=Inventory');
 
     // Ensure no modals are open
-    const dialog = page.locator('[role="dialog"]').first();
-    const hasModal = await dialog.isVisible().catch(() => false);
-    if (hasModal) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     // Click on Water category
     await page.click('button:has-text("Water")');
@@ -426,11 +425,7 @@ test.describe('Inventory Management', () => {
     await expandRecommendedItems(page);
 
     // Ensure no modals are blocking before clicking
-    const hasModalBeforeClick = await dialog.isVisible().catch(() => false);
-    if (hasModalBeforeClick) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     // Click the + button on the first recommended item
     const addButton = page.locator('button:has-text("+")').first();
@@ -451,12 +446,7 @@ test.describe('Inventory Management', () => {
     await page.click('text=Inventory');
 
     // Ensure no modals are open
-    const dialog = page.locator('[role="dialog"]').first();
-    const hasModal = await dialog.isVisible().catch(() => false);
-    if (hasModal) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     // Click on Water category
     await page.click('button:has-text("Water")');
@@ -465,28 +455,23 @@ test.describe('Inventory Management', () => {
     await expandRecommendedItems(page);
 
     // Ensure no modals are blocking before clicking
-    const hasModalBeforeClick = await dialog.isVisible().catch(() => false);
-    if (hasModalBeforeClick) {
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-    }
+    await ensureNoModals(page);
 
     // Count initial recommended items
-    const initialShortages = await page
-      .locator('[class*="missingItemText"]')
-      .count();
+    const missingItemsLocator = page.locator('[class*="missingItemText"]');
+    const initialShortages = await missingItemsLocator.count();
 
     // Click the × button on the first recommended item
     const disableButton = page.locator('button:has-text("×")').first();
     await disableButton.click();
 
-    // Wait for the list to update
-    await page.waitForTimeout(300);
+    // Wait for the list to update - use explicit count assertion instead of timeout
+    await waitForCountChange(missingItemsLocator, initialShortages, {
+      decrease: true,
+    });
 
     // The disabled item should no longer appear in the list
-    const finalShortages = await page
-      .locator('[class*="missingItemText"]')
-      .count();
+    const finalShortages = await missingItemsLocator.count();
     expect(finalShortages).toBe(initialShortages - 1);
   });
 });
