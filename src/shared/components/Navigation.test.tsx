@@ -1,13 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Navigation } from './Navigation';
 
-// Mock i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 describe('Navigation', () => {
   const mockOnNavigate = jest.fn();
 

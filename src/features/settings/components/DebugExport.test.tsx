@@ -1,13 +1,20 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { I18nextProvider } from 'react-i18next';
 import i18n from 'i18next';
-import { DebugExport } from './DebugExport';
+import { initReactI18next } from 'react-i18next';
 import * as errorLogger from '@/shared/utils/errorLogger';
 
+// Use real react-i18next for this test since it uses I18nextProvider with real translations
+jest.mock('react-i18next', () => jest.requireActual('react-i18next'));
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { I18nextProvider } = require('react-i18next');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { DebugExport } = require('./DebugExport');
+
 // Initialize i18n for tests
-i18n.init({
+i18n.use(initReactI18next).init({
   lng: 'en',
   resources: {
     en: {

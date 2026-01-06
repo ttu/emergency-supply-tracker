@@ -250,6 +250,107 @@ test('completes onboarding flow', async ({ page }) => {
 
 ## Testing Patterns
 
+### Centralized Test Utilities
+
+All test utilities are centralized in `src/test/` and can be imported from `@/test`:
+
+```typescript
+import {
+  renderWithProviders,
+  renderWithSettings,
+  renderWithHousehold,
+  screen,
+  fireEvent,
+  createMockInventoryItem,
+  createMockAppData,
+} from '@/test';
+```
+
+**Available utilities:**
+
+| Utility                  | Description                                                                            |
+| ------------------------ | -------------------------------------------------------------------------------------- |
+| `renderWithProviders`    | Renders with all standard providers (Settings, Household, RecommendedItems, Inventory) |
+| `renderWithSettings`     | Renders with only SettingsProvider                                                     |
+| `renderWithHousehold`    | Renders with only HouseholdProvider                                                    |
+| `renderWithInventory`    | Renders with only InventoryProvider                                                    |
+| `renderWithAllProviders` | Renders with all providers including ErrorBoundary and ThemeApplier                    |
+| `createI18nMock`         | Creates custom i18next mock for tests needing specific translations                    |
+
+### Testing with i18n
+
+A global i18next mock is automatically applied via `src/test/setup.ts`. For most tests, you don't need to add any i18n-related code.
+
+**Default behavior** - The mock returns translation keys as-is:
+
+```typescript
+// No i18n mock needed - uses global default
+import { screen } from '@testing-library/react';
+import { renderWithProviders } from '@/test';
+
+it('displays dashboard', () => {
+  renderWithProviders(<Dashboard />);
+  expect(screen.getByText('dashboard.title')).toBeInTheDocument();
+});
+```
+
+**Custom translations** - Override when tests need specific translated values:
+
+```typescript
+// For tests that need specific translations
+const mockChangeLanguage = jest.fn();
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'dashboard.title': 'Dashboard',
+        'dashboard.subtitle': 'Welcome!',
+      };
+      return translations[key] || key;
+    },
+    i18n: { changeLanguage: mockChangeLanguage },
+  }),
+}));
+```
+
+**Real i18next** - For components using `withTranslation` HOC:
+
+```typescript
+// Use real react-i18next when testing class components with withTranslation
+jest.mock('react-i18next', () => jest.requireActual('react-i18next'));
+```
+
+### Testing Context Providers
+
+Use the centralized `renderWithProviders` function:
+
+```typescript
+import { renderWithProviders, screen } from '@/test';
+
+it('renders dashboard with providers', () => {
+  renderWithProviders(<Dashboard />);
+  expect(screen.getByText('dashboard.title')).toBeInTheDocument();
+});
+
+// With initial data
+renderWithProviders(<Dashboard />, {
+  initialAppData: {
+    items: [createMockInventoryItem()],
+    household: { adults: 4 },
+  },
+});
+
+// With specific providers only
+renderWithProviders(<HouseholdForm />, {
+  providers: {
+    settings: false,
+    household: true,
+    recommendedItems: false,
+    inventory: false,
+  },
+});
+```
+
 ### Mocking LocalStorage
 
 ```typescript
@@ -267,35 +368,6 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
-```
-
-### Testing with i18n
-
-```typescript
-import { I18nextProvider } from 'react-i18next';
-import i18n from '../i18n/testConfig';
-
-const renderWithI18n = (component: React.ReactElement) => {
-  return render(
-    <I18nextProvider i18n={i18n}>
-      {component}
-    </I18nextProvider>
-  );
-};
-```
-
-### Testing Context Providers
-
-```typescript
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
-    <SettingsProvider>
-      <InventoryProvider>
-        {component}
-      </InventoryProvider>
-    </SettingsProvider>
-  );
-};
 ```
 
 ### Test Data Factories
