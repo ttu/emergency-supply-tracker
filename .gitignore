@@ -38,6 +38,7 @@ reports/mutation
 
 # Personal AI agent workflows
 AGENTS.local.md
-.claude
+.claude/settings.local.json
+.claude/*.local.json
 *storybook.log
 storybook-static
