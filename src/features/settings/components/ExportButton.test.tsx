@@ -3,13 +3,6 @@ import { ExportButton } from './ExportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { createMockAppData } from '@/shared/utils/test/factories';
 
-// Mock i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 // Mock localStorage utilities
 jest.mock('@/shared/utils/storage/localStorage');
 

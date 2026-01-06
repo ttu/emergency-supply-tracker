@@ -6,11 +6,16 @@ import {
   type SettingsContextValue,
 } from '@/features/settings';
 
-// Mock react-i18next
+// Create mock before jest.mock hoisting
 const mockChangeLanguage = jest.fn().mockResolvedValue(undefined);
+
+// Mock react-i18next with custom changeLanguage function
+// Using inline mock that creates its own i18n mock to work with jest hoisting
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
+    t: (key: string) => key,
     i18n: {
+      language: 'en',
       changeLanguage: mockChangeLanguage,
     },
   }),

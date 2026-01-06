@@ -3,13 +3,6 @@ import { beforeEach, afterEach, jest } from '@jest/globals';
 import { ImportButton } from './ImportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 
-// Mock i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 // Mock localStorage utilities
 jest.mock('@/shared/utils/storage/localStorage', () => ({
   importFromJSON: jest.fn(),

@@ -8,13 +8,6 @@ import {
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import type { InventoryItem } from '@/shared/types';
 
-// Mock i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 const createMockInventoryContext = (
   items: InventoryItem[] = [],
 ): InventoryContextValue => ({

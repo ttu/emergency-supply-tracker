@@ -1,21 +1,10 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { HouseholdForm } from './HouseholdForm';
-import { HouseholdProvider } from '@/features/household';
-
-// Mock i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(<HouseholdProvider>{component}</HouseholdProvider>);
-};
+import { renderWithHousehold } from '@/test';
 
 describe('HouseholdForm', () => {
   it('should render household form fields', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     expect(
       screen.getByLabelText('settings.household.adults'),
@@ -32,7 +21,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should render preset buttons', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     expect(
       screen.getByText('settings.household.presets.single'),
@@ -46,7 +35,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should show default values', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const adultsInput = screen.getByLabelText(
       'settings.household.adults',
@@ -64,7 +53,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should update adults value', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const adultsInput = screen.getByLabelText(
       'settings.household.adults',
@@ -76,7 +65,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should show freezer hold time when freezer is checked', async () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const freezerCheckbox = screen.getByLabelText(
       'settings.household.useFreezer',
@@ -97,7 +86,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should toggle freezer checkbox', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const freezerCheckbox = screen.getByLabelText(
       'settings.household.useFreezer',
@@ -116,7 +105,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should apply single preset', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const singleButton = screen.getByText('settings.household.presets.single');
     fireEvent.click(singleButton);
@@ -128,7 +117,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should apply couple preset', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const coupleButton = screen.getByText('settings.household.presets.couple');
     fireEvent.click(coupleButton);
@@ -140,7 +129,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should apply family preset', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const familyButton = screen.getByText('settings.household.presets.family');
     fireEvent.click(familyButton);
@@ -156,7 +145,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should update children value', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const childrenInput = screen.getByLabelText(
       'settings.household.children',
@@ -167,7 +156,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should update supply days value', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const supplyDaysInput = screen.getByLabelText(
       'settings.household.supplyDays',
@@ -178,7 +167,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should handle empty adults value as 0', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const adultsInput = screen.getByLabelText(
       'settings.household.adults',
@@ -189,7 +178,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should handle empty children value as 0', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const childrenInput = screen.getByLabelText(
       'settings.household.children',
@@ -200,7 +189,7 @@ describe('HouseholdForm', () => {
   });
 
   it('should handle empty supply days value as 1', () => {
-    renderWithProviders(<HouseholdForm />);
+    renderWithHousehold(<HouseholdForm />);
 
     const supplyDaysInput = screen.getByLabelText(
       'settings.household.supplyDays',

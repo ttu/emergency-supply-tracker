@@ -2,13 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { beforeEach, afterEach, jest } from '@jest/globals';
 import { ImportRecommendationsButton } from './ImportRecommendationsButton';
 
-// Mock i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 // Mock useRecommendedItems hook
 const mockImportRecommendedItems = jest.fn();
 jest.mock('@/features/templates', () => ({

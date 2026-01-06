@@ -1,13 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ExportRecommendationsButton } from './ExportRecommendationsButton';
 
-// Mock i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 // Mock URL.createObjectURL and URL.revokeObjectURL
 const mockCreateObjectURL = jest.fn(() => 'blob:test-url');
 const mockRevokeObjectURL = jest.fn();

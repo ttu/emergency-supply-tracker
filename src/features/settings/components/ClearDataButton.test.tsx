@@ -2,13 +2,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ClearDataButton } from './ClearDataButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 
-// Mock i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 // Mock localStorage utilities
 jest.mock('@/shared/utils/storage/localStorage');
 

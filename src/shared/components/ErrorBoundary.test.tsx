@@ -1,12 +1,20 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { I18nextProvider } from 'react-i18next';
 import i18n from 'i18next';
-import { ErrorBoundary } from './ErrorBoundary';
+import { initReactI18next } from 'react-i18next';
+
+// Override the global i18next mock with real implementation for this test
+// ErrorBoundary uses withTranslation HOC which requires real i18next
+jest.mock('react-i18next', () => jest.requireActual('react-i18next'));
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { I18nextProvider } = require('react-i18next');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { ErrorBoundary } = require('./ErrorBoundary');
 
 // Initialize i18n for tests
-i18n.init({
+i18n.use(initReactI18next).init({
   lng: 'en',
   resources: {
     en: {
