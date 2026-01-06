@@ -5,12 +5,15 @@ import type {
   InventoryItem,
   Category,
   ProductTemplate,
+  RecommendedItemDefinition,
 } from '@/shared/types';
 import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createAlertId,
 } from '@/shared/types';
+import type { Alert } from '@/features/alerts/types';
 
 /**
  * Test data factories for creating mock data in tests
@@ -100,6 +103,30 @@ export function createMockAppData(overrides?: Partial<AppData>): AppData {
     dismissedAlertIds: [] as AppData['dismissedAlertIds'],
     disabledRecommendedItems: [] as AppData['disabledRecommendedItems'],
     lastModified: new Date().toISOString(),
+    ...overrides,
+  };
+}
+
+export function createMockAlert(overrides?: Partial<Alert>): Alert {
+  return {
+    id: createAlertId('test-alert-1'),
+    type: 'warning',
+    message: 'Test alert message',
+    ...overrides,
+  };
+}
+
+export function createMockRecommendedItem(
+  overrides?: Partial<RecommendedItemDefinition>,
+): RecommendedItemDefinition {
+  return {
+    id: createProductTemplateId('test-recommended'),
+    i18nKey: 'products.test-item',
+    category: 'food',
+    baseQuantity: 1,
+    unit: 'pieces',
+    scaleWithPeople: true,
+    scaleWithDays: true,
     ...overrides,
   };
 }

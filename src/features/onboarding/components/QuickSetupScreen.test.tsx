@@ -2,7 +2,7 @@ import { describe, it, expect, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QuickSetupScreen } from './QuickSetupScreen';
-import type { HouseholdConfig } from '@/shared/types';
+import { createMockHousehold } from '@/shared/utils/test/factories';
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -89,12 +89,12 @@ jest.mock('react-i18next', () => ({
 }));
 
 describe('QuickSetupScreen', () => {
-  const defaultHousehold: HouseholdConfig = {
+  const defaultHousehold = createMockHousehold({
     adults: 2,
     children: 1,
     supplyDurationDays: 3,
     useFreezer: true,
-  };
+  });
 
   it('renders title and subtitle', () => {
     const onAddItems = jest.fn();
@@ -210,10 +210,10 @@ describe('QuickSetupScreen', () => {
   it('shows freezer note when household has no freezer', () => {
     const onAddItems = jest.fn();
     const onSkip = jest.fn();
-    const householdWithoutFreezer: HouseholdConfig = {
+    const householdWithoutFreezer = createMockHousehold({
       ...defaultHousehold,
       useFreezer: false,
-    };
+    });
 
     render(
       <QuickSetupScreen

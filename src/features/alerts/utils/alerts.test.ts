@@ -1,7 +1,9 @@
 import { generateDashboardAlerts, countAlerts } from './alerts';
-import type { Alert } from '../types';
-import type { InventoryItem, HouseholdConfig } from '@/shared/types';
-import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import {
+  createMockInventoryItem,
+  createMockHousehold,
+  createMockAlert,
+} from '@/shared/utils/test/factories';
 
 // Mock translation function
 const mockT = (key: string, options?: Record<string, string | number>) => {
@@ -19,12 +21,12 @@ const mockT = (key: string, options?: Record<string, string | number>) => {
   return key;
 };
 
-const mockHousehold: HouseholdConfig = {
+const mockHousehold = createMockHousehold({
   adults: 2,
   children: 0,
   supplyDurationDays: 3,
   useFreezer: false,
-};
+});
 
 describe('generateDashboardAlerts', () => {
   beforeEach(() => {
@@ -67,8 +69,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should generate expiring soon alerts', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Expiring Water',
         categoryId: 'water',
@@ -77,10 +79,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2025-01-05', // 4 days from test date
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -93,8 +92,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should not generate alerts for items that never expire', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Salt',
         categoryId: 'food',
@@ -102,10 +101,7 @@ describe('generateDashboardAlerts', () => {
         unit: 'boxes',
         recommendedQuantity: 5,
         neverExpires: true,
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -117,8 +113,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should generate category out of stock alerts', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water-beverages',
@@ -127,10 +123,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -144,8 +137,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should generate category critically low stock alerts', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water-beverages',
@@ -154,10 +147,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 28, // 5/28 = 17.8% < 25%
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -172,8 +162,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should generate category low stock warning alerts', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water-beverages',
@@ -182,10 +172,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 28, // 10/28 = 35.7% (between 25% and 50%)
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -198,8 +185,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should not generate stock alerts when category quantity is adequate', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Water',
         categoryId: 'water-beverages',
@@ -208,10 +195,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -221,8 +205,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should sort alerts by priority (critical first, then warning)', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Warning Item',
         categoryId: 'food',
@@ -231,11 +215,8 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2025-01-05',
-        location: '',
-        notes: '',
-        tags: [],
-      },
-      {
+      }),
+      createMockInventoryItem({
         id: '2',
         name: 'Critical Item',
         categoryId: 'water',
@@ -244,10 +225,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2024-12-01',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -268,8 +246,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should handle items with no recommended quantity', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Custom Item',
         categoryId: 'custom',
@@ -278,10 +256,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 0,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -292,8 +267,8 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should aggregate multiple items in same category for stock alerts', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
@@ -302,11 +277,8 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 20,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
-      {
+      }),
+      createMockInventoryItem({
         id: '2',
         name: 'Juice',
         categoryId: 'water-beverages',
@@ -315,10 +287,7 @@ describe('generateDashboardAlerts', () => {
         recommendedQuantity: 15,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        location: '',
-        notes: '',
-        tags: [],
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
@@ -335,11 +304,11 @@ describe('generateDashboardAlerts', () => {
 
 describe('countAlerts', () => {
   it('should count alerts correctly by type', () => {
-    const alerts: Alert[] = [
-      { id: '1', type: 'critical', message: 'Test 1' },
-      { id: '2', type: 'critical', message: 'Test 2' },
-      { id: '3', type: 'warning', message: 'Test 3' },
-      { id: '4', type: 'info', message: 'Test 4' },
+    const alerts = [
+      createMockAlert({ id: '1', type: 'critical', message: 'Test 1' }),
+      createMockAlert({ id: '2', type: 'critical', message: 'Test 2' }),
+      createMockAlert({ id: '3', type: 'warning', message: 'Test 3' }),
+      createMockAlert({ id: '4', type: 'info', message: 'Test 4' }),
     ];
 
     const counts = countAlerts(alerts);
@@ -353,7 +322,7 @@ describe('countAlerts', () => {
   });
 
   it('should return zeros for empty alerts array', () => {
-    const alerts: Alert[] = [];
+    const alerts: ReturnType<typeof createMockAlert>[] = [];
     const counts = countAlerts(alerts);
 
     expect(counts).toEqual({
@@ -365,10 +334,10 @@ describe('countAlerts', () => {
   });
 
   it('should handle all critical alerts', () => {
-    const alerts: Alert[] = [
-      { id: '1', type: 'critical', message: 'Test 1' },
-      { id: '2', type: 'critical', message: 'Test 2' },
-      { id: '3', type: 'critical', message: 'Test 3' },
+    const alerts = [
+      createMockAlert({ id: '1', type: 'critical', message: 'Test 1' }),
+      createMockAlert({ id: '2', type: 'critical', message: 'Test 2' }),
+      createMockAlert({ id: '3', type: 'critical', message: 'Test 3' }),
     ];
 
     const counts = countAlerts(alerts);
@@ -393,8 +362,8 @@ describe('water shortage alerts', () => {
   });
 
   it('should generate water shortage alert when food requires more water than available', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
@@ -404,10 +373,8 @@ describe('water shortage alerts', () => {
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
+      }),
+      createMockInventoryItem({
         id: '2',
         name: 'Pasta',
         categoryId: 'food',
@@ -417,9 +384,7 @@ describe('water shortage alerts', () => {
         productTemplateId: 'pasta', // 1.0 L/kg water requirement
         neverExpires: false,
         expirationDate: '2025-12-31',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
@@ -434,8 +399,8 @@ describe('water shortage alerts', () => {
   });
 
   it('should not generate water shortage alert when enough water available', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
@@ -445,10 +410,8 @@ describe('water shortage alerts', () => {
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
+      }),
+      createMockInventoryItem({
         id: '2',
         name: 'Pasta',
         categoryId: 'food',
@@ -458,9 +421,7 @@ describe('water shortage alerts', () => {
         productTemplateId: 'pasta', // 1.0 L/kg water requirement = 5L needed
         neverExpires: false,
         expirationDate: '2025-12-31',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
@@ -472,8 +433,8 @@ describe('water shortage alerts', () => {
   });
 
   it('should not generate water shortage alert when no food requires water', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Crackers',
         categoryId: 'food',
@@ -482,9 +443,7 @@ describe('water shortage alerts', () => {
         recommendedQuantity: 5,
         neverExpires: false,
         expirationDate: '2025-12-31',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
@@ -496,8 +455,8 @@ describe('water shortage alerts', () => {
   });
 
   it('should not generate water shortage alert when household is not provided', () => {
-    const items: InventoryItem[] = [
-      {
+    const items = [
+      createMockInventoryItem({
         id: '1',
         name: 'Pasta',
         categoryId: 'food',
@@ -507,9 +466,7 @@ describe('water shortage alerts', () => {
         productTemplateId: 'pasta',
         neverExpires: false,
         expirationDate: '2025-12-31',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
+      }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT); // No household
