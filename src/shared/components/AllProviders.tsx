@@ -1,5 +1,6 @@
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { SettingsProvider } from '@/features/settings';
+import { CloudSyncProvider } from '@/features/cloudSync';
 import { ThemeApplier } from '@/components/ThemeApplier';
 import { HouseholdProvider } from '@/features/household';
 import { RecommendedItemsProvider } from '@/features/templates';
@@ -13,11 +14,12 @@ import { composeProviders } from '@/shared/utils/composeProviders';
  * Provider nesting order (outermost to innermost):
  * 1. ErrorBoundary - Catches React errors
  * 2. SettingsProvider - Provides settings context (theme, language, etc.)
- * 3. ThemeApplier - Applies theme CSS variables (requires SettingsProvider)
- * 4. NotificationProvider - Provides notification context (must wrap InventoryProvider)
- * 5. HouseholdProvider - Provides household configuration
- * 6. RecommendedItemsProvider - Provides recommended item definitions
- * 7. InventoryProvider - Provides inventory items and categories (innermost)
+ * 3. CloudSyncProvider - Provides cloud sync functionality (requires SettingsProvider)
+ * 4. ThemeApplier - Applies theme CSS variables (requires SettingsProvider)
+ * 5. NotificationProvider - Provides notification context (must wrap InventoryProvider)
+ * 6. HouseholdProvider - Provides household configuration
+ * 7. RecommendedItemsProvider - Provides recommended item definitions
+ * 8. InventoryProvider - Provides inventory items and categories (innermost)
  *
  * Used by Storybook stories and test utilities to provide consistent context.
  * Note: This order matches App.tsx for consistency (except DocumentMetadata is excluded).
@@ -25,6 +27,7 @@ import { composeProviders } from '@/shared/utils/composeProviders';
 export const AllProviders = composeProviders([
   ErrorBoundary,
   SettingsProvider,
+  CloudSyncProvider,
   ThemeApplier,
   NotificationProvider,
   HouseholdProvider,
