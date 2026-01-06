@@ -20,6 +20,7 @@ import {
   InventorySetSection,
   InventorySetSelector,
 } from '@/features/settings';
+import { CloudSyncSection } from '@/features/cloudSync';
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
 import { CONTACT_EMAIL } from '@/shared/utils/constants';
@@ -44,6 +45,7 @@ type SettingsSection =
   | 'recommendationKits'
   | 'backupTransfer'
   | 'debugLog'
+  | 'cloudSync'
   | 'about'
   | 'dangerZone';
 
@@ -165,6 +167,10 @@ export function Settings() {
         {
           id: 'dangerZone',
           label: t('settings.navigation.sections.dangerZone'),
+        },
+        {
+          id: 'cloudSync',
+          label: t('settings.navigation.sections.cloudSync'),
         },
       ],
     },
@@ -301,6 +307,16 @@ export function Settings() {
               <ExportButton />
               <ImportButton />
             </div>
+          </Section>
+        );
+
+      case 'cloudSync':
+        return (
+          <Section
+            testId="section-cloud-sync"
+            titleKey="settings.navigation.sections.cloudSync"
+          >
+            <CloudSyncSection />
           </Section>
         );
 
