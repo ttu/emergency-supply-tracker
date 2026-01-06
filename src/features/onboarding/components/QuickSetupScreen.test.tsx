@@ -1,11 +1,11 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import { createMockHousehold } from '@/shared/utils/test/factories';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: { ns?: string }) => {
       // Translations organized by namespace
@@ -97,8 +97,8 @@ describe('QuickSetupScreen', () => {
   });
 
   it('renders title and subtitle', () => {
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -114,8 +114,8 @@ describe('QuickSetupScreen', () => {
   });
 
   it('displays summary information', () => {
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -132,8 +132,8 @@ describe('QuickSetupScreen', () => {
 
   it('shows details when toggle button is clicked', async () => {
     const user = userEvent.setup();
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -152,8 +152,8 @@ describe('QuickSetupScreen', () => {
 
   it('hides details when toggle button is clicked again', async () => {
     const user = userEvent.setup();
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -173,8 +173,8 @@ describe('QuickSetupScreen', () => {
 
   it('calls onAddItems when Add Items button is clicked', async () => {
     const user = userEvent.setup();
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -191,8 +191,8 @@ describe('QuickSetupScreen', () => {
 
   it('calls onSkip when Skip button is clicked', async () => {
     const user = userEvent.setup();
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -208,8 +208,8 @@ describe('QuickSetupScreen', () => {
   });
 
   it('shows freezer note when household has no freezer', () => {
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     const householdWithoutFreezer = createMockHousehold({
       ...defaultHousehold,
       useFreezer: false,
@@ -229,8 +229,8 @@ describe('QuickSetupScreen', () => {
   });
 
   it('does not show freezer note when household has freezer', () => {
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -245,8 +245,8 @@ describe('QuickSetupScreen', () => {
   });
 
   it('has accessible toggle button', () => {
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -261,8 +261,8 @@ describe('QuickSetupScreen', () => {
 
   it('updates aria-expanded when details are shown', async () => {
     const user = userEvent.setup();
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}
@@ -280,8 +280,8 @@ describe('QuickSetupScreen', () => {
 
   it('should display translated item names and units when showing details', async () => {
     const user = userEvent.setup();
-    const onAddItems = jest.fn();
-    const onSkip = jest.fn();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
     render(
       <QuickSetupScreen
         household={defaultHousehold}

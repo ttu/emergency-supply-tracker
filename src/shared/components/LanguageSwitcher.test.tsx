@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -6,12 +7,12 @@ import {
   type SettingsContextValue,
 } from '@/features/settings';
 
-// Create mock before jest.mock hoisting
-const mockChangeLanguage = jest.fn().mockResolvedValue(undefined);
+// Create mock before vi.mock hoisting
+const mockChangeLanguage = vi.fn().mockResolvedValue(undefined);
 
 // Mock react-i18next with custom changeLanguage function
-// Using inline mock that creates its own i18n mock to work with jest hoisting
-jest.mock('react-i18next', () => ({
+// Using inline mock that creates its own i18n mock to work with vi hoisting
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: {
@@ -30,7 +31,7 @@ const createMockSettingsContext = (
     highContrast: false,
     advancedFeatures: {},
   },
-  updateSettings: jest.fn(),
+  updateSettings: vi.fn(),
   ...overrides,
 });
 
@@ -47,7 +48,7 @@ const renderWithContext = (
 
 describe('LanguageSwitcher', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render language selector', () => {
@@ -74,7 +75,7 @@ describe('LanguageSwitcher', () => {
   });
 
   it('should change language when selecting a different option', () => {
-    const mockUpdateSettings = jest.fn();
+    const mockUpdateSettings = vi.fn();
     const context = createMockSettingsContext({
       updateSettings: mockUpdateSettings,
     });
@@ -89,12 +90,10 @@ describe('LanguageSwitcher', () => {
   });
 
   it('should handle language change error gracefully', async () => {
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mockChangeLanguage.mockRejectedValueOnce(new Error('Failed to change'));
 
-    const mockUpdateSettings = jest.fn();
+    const mockUpdateSettings = vi.fn();
     const context = createMockSettingsContext({
       updateSettings: mockUpdateSettings,
     });

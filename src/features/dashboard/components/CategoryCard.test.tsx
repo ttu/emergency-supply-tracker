@@ -1,10 +1,10 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CategoryCard } from './CategoryCard';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       const categoryTranslations: Record<string, string> = {
@@ -140,7 +140,7 @@ describe('CategoryCard', () => {
 
   it('calls onClick when card is clicked', async () => {
     const user = userEvent.setup();
-    const onClick = jest.fn();
+    const onClick = vi.fn();
 
     render(
       <CategoryCard
@@ -187,7 +187,7 @@ describe('CategoryCard', () => {
 
   it('handles keyboard interaction when clickable', async () => {
     const user = userEvent.setup();
-    const onClick = jest.fn();
+    const onClick = vi.fn();
 
     render(
       <CategoryCard

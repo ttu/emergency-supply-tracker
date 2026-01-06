@@ -1,9 +1,10 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ItemList } from './ItemList';
 import type { InventoryItem } from '@/shared/types';
 
 // Mock ItemCard component
-jest.mock('./ItemCard', () => ({
+vi.mock('./ItemCard', () => ({
   ItemCard: ({
     item,
     onClick,
@@ -18,7 +19,7 @@ jest.mock('./ItemCard', () => ({
 }));
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
@@ -74,7 +75,7 @@ describe('ItemList', () => {
   });
 
   it('should call onItemClick when an item is clicked', () => {
-    const onItemClick = jest.fn();
+    const onItemClick = vi.fn();
     render(<ItemList items={sampleItems} onItemClick={onItemClick} />);
 
     const item = screen.getByTestId('item-1');

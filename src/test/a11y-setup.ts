@@ -1,8 +1,8 @@
 /**
- * Accessibility testing setup for Jest
+ * Accessibility testing setup for Vitest
  *
  * This file configures jest-axe for component-level accessibility testing.
- * This setup file runs automatically via jest.config.js setupFilesAfterEnv.
+ * This setup file runs automatically via vite.config.ts setupFiles.
  * Tests can use the `toHaveNoViolations` matcher without any additional setup.
  *
  * @example
@@ -19,6 +19,7 @@
  */
 
 import { toHaveNoViolations } from 'jest-axe';
+import { expect } from 'vitest';
 
-// Extend Jest matchers with a11y assertions
+// Extend Vitest matchers with a11y assertions
 expect.extend(toHaveNoViolations);

@@ -1,23 +1,23 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { beforeEach, afterEach, jest } from '@jest/globals';
+import { beforeEach, afterEach, vi, type Mock, type SpyInstance } from 'vitest';
 import { ImportRecommendationsButton } from './ImportRecommendationsButton';
 
 // Mock useRecommendedItems hook
-const mockImportRecommendedItems = jest.fn();
-jest.mock('@/features/templates', () => ({
+const mockImportRecommendedItems = vi.fn();
+vi.mock('@/features/templates', () => ({
   useRecommendedItems: () => ({
     importRecommendedItems: mockImportRecommendedItems,
   }),
 }));
 
 // Mock parseRecommendedItemsFile
-jest.mock('@/shared/utils/validation/recommendedItemsValidation', () => ({
-  parseRecommendedItemsFile: jest.fn(),
+vi.mock('@/shared/utils/validation/recommendedItemsValidation', () => ({
+  parseRecommendedItemsFile: vi.fn(),
 }));
 
 // Import the mocked function for test control
 import { parseRecommendedItemsFile } from '@/shared/utils/validation/recommendedItemsValidation';
-const mockParseRecommendedItemsFile = parseRecommendedItemsFile as jest.Mock;
+const mockParseRecommendedItemsFile = parseRecommendedItemsFile as Mock;
 
 describe('ImportRecommendationsButton', () => {
   const validFile = {
@@ -35,12 +35,12 @@ describe('ImportRecommendationsButton', () => {
     ],
   };
 
-  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+  let consoleErrorSpy: SpyInstance;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     // Suppress console.error output from expected error handling in tests
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mockImportRecommendedItems.mockReturnValue({
       valid: true,
       errors: [],
@@ -81,7 +81,7 @@ describe('ImportRecommendationsButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.recommendations.import.button',
     ) as HTMLInputElement;
-    const clickSpy = jest.spyOn(fileInput, 'click');
+    const clickSpy = vi.spyOn(fileInput, 'click');
 
     const button = screen.getByText('settings.recommendations.import.button');
     fireEvent.click(button);

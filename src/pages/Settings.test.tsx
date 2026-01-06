@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Settings } from './Settings';
 import { HouseholdProvider } from '@/features/household';
@@ -6,7 +7,7 @@ import { InventoryProvider } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

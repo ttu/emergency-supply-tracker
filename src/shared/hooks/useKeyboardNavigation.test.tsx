@@ -1,11 +1,12 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useKeyboardNavigation } from './useKeyboardNavigation';
 
 describe('useKeyboardNavigation', () => {
-  const mockOnIndexChange = jest.fn();
+  const mockOnIndexChange = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('horizontal navigation', () => {
@@ -22,7 +23,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowRight',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -42,7 +43,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowLeft',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -63,7 +64,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowLeft',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -84,7 +85,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowRight',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -105,7 +106,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowLeft',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -126,7 +127,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowRight',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -148,7 +149,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowDown',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -168,7 +169,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowUp',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -189,7 +190,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowUp',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -210,7 +211,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowDown',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -231,7 +232,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'Home',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -250,7 +251,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'End',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -269,7 +270,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'Home',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -288,7 +289,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'End',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -339,7 +340,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'Tab',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -358,7 +359,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'Enter',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -380,7 +381,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowRight',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 
@@ -400,7 +401,7 @@ describe('useKeyboardNavigation', () => {
       act(() => {
         result.current.handleKeyDown({
           key: 'ArrowLeft',
-          preventDefault: jest.fn(),
+          preventDefault: vi.fn(),
         } as unknown as React.KeyboardEvent);
       });
 

@@ -1,10 +1,10 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HouseholdPresetSelector } from './HouseholdPresetSelector';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -25,7 +25,7 @@ jest.mock('react-i18next', () => ({
 
 describe('HouseholdPresetSelector', () => {
   it('renders all preset options', () => {
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
     expect(screen.getByText('Single Person')).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe('HouseholdPresetSelector', () => {
   });
 
   it('displays household configuration details', () => {
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
     expect(screen.getByText('1 Adults')).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe('HouseholdPresetSelector', () => {
 
   it('calls onSelectPreset when a preset is clicked', async () => {
     const user = userEvent.setup();
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
     const singlePreset = screen
@@ -61,7 +61,7 @@ describe('HouseholdPresetSelector', () => {
 
   it('calls onSelectPreset when custom is clicked', async () => {
     const user = userEvent.setup();
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
     const customPreset = screen.getByText('Custom').closest('[role="button"]');
@@ -75,7 +75,7 @@ describe('HouseholdPresetSelector', () => {
   });
 
   it('highlights the selected preset', () => {
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(
       <HouseholdPresetSelector
         selectedPreset="couple"
@@ -93,7 +93,7 @@ describe('HouseholdPresetSelector', () => {
 
   it('supports keyboard navigation with Enter key', async () => {
     const user = userEvent.setup();
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
     const familyPreset = screen.getByText('Family').closest('[role="button"]');
@@ -109,7 +109,7 @@ describe('HouseholdPresetSelector', () => {
 
   it('supports keyboard navigation with Space key', async () => {
     const user = userEvent.setup();
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
     const couplePreset = screen.getByText('Couple').closest('[role="button"]');
@@ -125,7 +125,7 @@ describe('HouseholdPresetSelector', () => {
 
   it('supports keyboard navigation on custom preset with Enter key', async () => {
     const user = userEvent.setup();
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
     const customPreset = screen.getByText('Custom').closest('[role="button"]');
@@ -141,7 +141,7 @@ describe('HouseholdPresetSelector', () => {
 
   it('supports keyboard navigation on custom preset with Space key', async () => {
     const user = userEvent.setup();
-    const onSelectPreset = jest.fn();
+    const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
     const customPreset = screen.getByText('Custom').closest('[role="button"]');

@@ -1,4 +1,13 @@
 import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockedFunction,
+} from 'vitest';
+import {
   shouldShowBackupReminder,
   dismissBackupReminder,
   recordBackupDate,
@@ -9,16 +18,16 @@ import {
 } from '@/shared/utils/test/factories';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 
-jest.mock('@/shared/utils/storage/localStorage');
+vi.mock('@/shared/utils/storage/localStorage');
 
 describe('shouldShowBackupReminder', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-02-15T12:00:00.000Z'));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-02-15T12:00:00.000Z'));
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should return false for null appData', () => {
@@ -136,21 +145,21 @@ describe('shouldShowBackupReminder', () => {
 });
 
 describe('dismissBackupReminder', () => {
-  const mockGetAppData = localStorage.getAppData as jest.MockedFunction<
+  const mockGetAppData = localStorage.getAppData as MockedFunction<
     typeof localStorage.getAppData
   >;
-  const mockSaveAppData = localStorage.saveAppData as jest.MockedFunction<
+  const mockSaveAppData = localStorage.saveAppData as MockedFunction<
     typeof localStorage.saveAppData
   >;
 
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-02-15T12:00:00.000Z'));
-    jest.clearAllMocks();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-02-15T12:00:00.000Z'));
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should set backupReminderDismissedUntil to first day of next month', () => {
@@ -178,7 +187,7 @@ describe('dismissBackupReminder', () => {
   });
 
   it('should calculate correct next month at year boundary', () => {
-    jest.setSystemTime(new Date('2025-12-15T12:00:00.000Z'));
+    vi.setSystemTime(new Date('2025-12-15T12:00:00.000Z'));
     const appData = createMockAppData();
     mockGetAppData.mockReturnValue(appData);
 
@@ -210,21 +219,21 @@ describe('dismissBackupReminder', () => {
 });
 
 describe('recordBackupDate', () => {
-  const mockGetAppData = localStorage.getAppData as jest.MockedFunction<
+  const mockGetAppData = localStorage.getAppData as MockedFunction<
     typeof localStorage.getAppData
   >;
-  const mockSaveAppData = localStorage.saveAppData as jest.MockedFunction<
+  const mockSaveAppData = localStorage.saveAppData as MockedFunction<
     typeof localStorage.saveAppData
   >;
 
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-02-15T12:00:00.000Z'));
-    jest.clearAllMocks();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-02-15T12:00:00.000Z'));
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should set lastBackupDate to current date', () => {

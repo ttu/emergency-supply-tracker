@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
 import { HouseholdProvider } from '@/features/household';
@@ -10,44 +11,49 @@ import {
 } from '@/shared/utils/test/factories';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
 // Mock dashboard feature components
-jest.mock('@/features/dashboard', () => ({
-  ...jest.requireActual('@/features/dashboard'),
-  DashboardHeader: ({ preparednessScore }: { preparednessScore: number }) => (
-    <div data-testid="dashboard-header">Preparedness: {preparednessScore}%</div>
-  ),
-  CategoryGrid: ({
-    categories,
-  }: {
-    categories: Array<{
-      categoryId: string;
-      categoryName: string;
-      onClick?: () => void;
-    }>;
-  }) => (
-    <div data-testid="category-grid">
-      {categories.map((cat) => (
-        <button
-          key={cat.categoryId}
-          data-testid={`category-${cat.categoryId}`}
-          onClick={cat.onClick}
-        >
-          {cat.categoryName}
-        </button>
-      ))}
-    </div>
-  ),
-}));
+vi.mock('@/features/dashboard', async () => {
+  const actual = await vi.importActual('@/features/dashboard');
+  return {
+    ...actual,
+    DashboardHeader: ({ preparednessScore }: { preparednessScore: number }) => (
+      <div data-testid="dashboard-header">
+        Preparedness: {preparednessScore}%
+      </div>
+    ),
+    CategoryGrid: ({
+      categories,
+    }: {
+      categories: Array<{
+        categoryId: string;
+        categoryName: string;
+        onClick?: () => void;
+      }>;
+    }) => (
+      <div data-testid="category-grid">
+        {categories.map((cat) => (
+          <button
+            key={cat.categoryId}
+            data-testid={`category-${cat.categoryId}`}
+            onClick={cat.onClick}
+          >
+            {cat.categoryName}
+          </button>
+        ))}
+      </div>
+    ),
+  };
+});
 
-const mockGenerateDashboardAlerts = jest.fn(() => []);
+const mockGenerateDashboardAlerts = vi.fn(() => []);
 
-jest.mock('@/features/alerts', () => ({
+vi.mock('@/features/alerts', () => ({
   AlertBanner: ({
     alerts,
     onDismiss,
@@ -126,7 +132,7 @@ describe('Dashboard', () => {
   });
 
   it('should handle category click', () => {
-    const onNavigate = jest.fn();
+    const onNavigate = vi.fn();
     renderWithProviders(<Dashboard onNavigate={onNavigate} />);
 
     const categoryButton = screen.getByTestId('category-water-beverages');
@@ -139,8 +145,8 @@ describe('Dashboard', () => {
   });
 
   it('should handle quick action clicks', () => {
-    const onNavigate = jest.fn();
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    const onNavigate = vi.fn();
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation();
     renderWithProviders(<Dashboard onNavigate={onNavigate} />);
 
     // Test Add Items button - should navigate to inventory with modal open

@@ -1,15 +1,16 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ExportRecommendationsButton } from './ExportRecommendationsButton';
 
 // Mock URL.createObjectURL and URL.revokeObjectURL
-const mockCreateObjectURL = jest.fn(() => 'blob:test-url');
-const mockRevokeObjectURL = jest.fn();
+const mockCreateObjectURL = vi.fn(() => 'blob:test-url');
+const mockRevokeObjectURL = vi.fn();
 global.URL.createObjectURL = mockCreateObjectURL;
 global.URL.revokeObjectURL = mockRevokeObjectURL;
 
 // Mock useRecommendedItems hook
-const mockExportRecommendedItems = jest.fn();
-jest.mock('@/features/templates', () => ({
+const mockExportRecommendedItems = vi.fn();
+vi.mock('@/features/templates', () => ({
   useRecommendedItems: () => ({
     exportRecommendedItems: mockExportRecommendedItems,
     customRecommendationsInfo: null,
@@ -18,7 +19,7 @@ jest.mock('@/features/templates', () => ({
 
 describe('ExportRecommendationsButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockExportRecommendedItems.mockReturnValue({
       meta: {
         name: 'Test Kit',

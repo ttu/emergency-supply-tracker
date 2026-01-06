@@ -1,10 +1,11 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TemplateSelector } from './TemplateSelector';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import type { RecommendedItemDefinition } from '@/shared/types';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       if (key.startsWith('categories.')) return key.replace('categories.', '');
@@ -46,7 +47,7 @@ describe('TemplateSelector', () => {
     },
   ];
 
-  const mockOnSelectTemplate = jest.fn();
+  const mockOnSelectTemplate = vi.fn();
 
   beforeEach(() => {
     mockOnSelectTemplate.mockClear();

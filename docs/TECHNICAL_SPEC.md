@@ -12,38 +12,37 @@ This document describes the technical architecture and stack of the Emergency Su
 
 ### Core Framework
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React | 19.2.3 | UI framework |
-| TypeScript | 5.9.3 | Type safety |
-| Vite | 7.3.0 | Build tool and dev server |
+| Technology | Version | Purpose                   |
+| ---------- | ------- | ------------------------- |
+| React      | 19.2.3  | UI framework              |
+| TypeScript | 5.9.3   | Type safety               |
+| Vite       | 7.3.0   | Build tool and dev server |
 
 ### Internationalization
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| i18next | 25.7.3 | i18n framework |
-| react-i18next | 16.5.0 | React bindings |
-| i18next-http-backend | 3.0.2 | Load translations |
+| Technology           | Version | Purpose           |
+| -------------------- | ------- | ----------------- |
+| i18next              | 25.7.3  | i18n framework    |
+| react-i18next        | 16.5.0  | React bindings    |
+| i18next-http-backend | 3.0.2   | Load translations |
 
 ### Testing
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Jest | 30.2.0 | Unit/Integration testing |
-| Testing Library | 16.3.1 | React component testing |
-| Playwright | 1.57.0 | E2E testing |
-| Vitest | 4.0.16 | Storybook testing |
+| Technology      | Version | Purpose                                        |
+| --------------- | ------- | ---------------------------------------------- |
+| Vitest          | 4.0.16  | Unit/Integration testing and Storybook testing |
+| Testing Library | 16.3.1  | React component testing                        |
+| Playwright      | 1.57.0  | E2E testing                                    |
 
 ### Development Tools
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| ESLint | 9.39.2 | Code linting |
-| Prettier | 3.7.4 | Code formatting |
-| Husky | 9.1.7 | Git hooks |
-| lint-staged | 16.2.7 | Pre-commit linting |
-| Storybook | 10.1.10 | Component development |
+| Technology  | Version | Purpose               |
+| ----------- | ------- | --------------------- |
+| ESLint      | 9.39.2  | Code linting          |
+| Prettier    | 3.7.4   | Code formatting       |
+| Husky       | 9.1.7   | Git hooks             |
+| lint-staged | 16.2.7  | Pre-commit linting    |
+| Storybook   | 10.1.10 | Component development |
 
 ---
 
@@ -79,7 +78,6 @@ emergency-supply-tracker/
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
-├── jest.config.js
 ├── playwright.config.ts
 └── eslint.config.js
 ```
@@ -100,12 +98,14 @@ emergency-supply-tracker/
 **Decision:** LocalStorage
 
 **Rationale:**
+
 - Simpler API
 - Sufficient for expected data size (<1000 items)
 - Synchronous access
 - Wide browser support
 
 **Limitations:**
+
 - 5-10MB storage limit (varies by browser)
 - Synchronous blocking (not an issue for small data)
 
@@ -114,6 +114,7 @@ emergency-supply-tracker/
 **Decision:** React Context API
 
 **Rationale:**
+
 - Simpler for small-medium apps
 - No additional dependencies
 - Sufficient for global state needs
@@ -122,11 +123,13 @@ emergency-supply-tracker/
 ### Testing Strategy: Testing Diamond
 
 **Distribution:**
+
 - 70% Integration tests (React Testing Library)
 - 20% E2E tests (Playwright)
-- 10% Unit tests (Jest)
+- 10% Unit tests (Vitest)
 
 **Rationale:**
+
 - Integration tests provide best coverage/effort ratio
 - E2E tests verify critical user flows
 - Unit tests for complex business logic
@@ -145,9 +148,9 @@ npm run storybook    # Start Storybook
 ### Testing
 
 ```bash
-npm run test         # Run Jest tests
-npm run test:watch   # Jest watch mode
-npm run test:coverage # Jest with coverage
+npm run test         # Run Vitest tests
+npm run test:watch   # Vitest watch mode
+npm run test:coverage # Vitest with coverage
 npm run test:e2e     # Run Playwright tests
 npm run test:e2e:ui  # Playwright UI mode
 npm run test:storybook # Vitest Storybook tests
@@ -190,11 +193,12 @@ npm run validate:all # Full validation including E2E
 - 2 space indentation
 - Trailing commas
 
-### Jest (`jest.config.js`)
+### Vitest (`vite.config.ts`)
 
 - jsdom environment
-- TypeScript support via ts-jest
+- Native TypeScript support
 - Testing Library matchers
+- Integrated with Vite build system
 
 ### Playwright (`playwright.config.ts`)
 
@@ -209,10 +213,12 @@ npm run validate:all # Full validation including E2E
 ### GitHub Actions Workflows
 
 **CI (`ci.yml`):**
+
 - Runs on push/PR to main
 - Steps: Install, Lint, Test, Build
 
 **Deploy (`deploy.yml`):**
+
 - Deploys to GitHub Pages
 - Triggered on main branch push
 
@@ -220,25 +226,25 @@ npm run validate:all # Full validation including E2E
 
 ## Browser Compatibility
 
-| Browser | Version |
-|---------|---------|
-| Chrome | Latest 2 |
-| Edge | Latest 2 |
-| Firefox | Latest 2 |
-| Safari | Latest 2 |
-| iOS Safari | 14+ |
+| Browser       | Version     |
+| ------------- | ----------- |
+| Chrome        | Latest 2    |
+| Edge          | Latest 2    |
+| Firefox       | Latest 2    |
+| Safari        | Latest 2    |
+| iOS Safari    | 14+         |
 | Chrome Mobile | Android 10+ |
 
 ---
 
 ## Performance Targets
 
-| Metric | Target |
-|--------|--------|
-| First Contentful Paint | < 1.5s |
-| Time to Interactive | < 3s |
-| Lighthouse Performance | > 90 |
-| Bundle Size (gzipped) | < 100KB |
+| Metric                 | Target  |
+| ---------------------- | ------- |
+| First Contentful Paint | < 1.5s  |
+| Time to Interactive    | < 3s    |
+| Lighthouse Performance | > 90    |
+| Bundle Size (gzipped)  | < 100KB |
 
 ---
 

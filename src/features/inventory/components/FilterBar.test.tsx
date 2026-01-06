@@ -1,8 +1,9 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FilterBar } from './FilterBar';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
@@ -11,15 +12,15 @@ jest.mock('react-i18next', () => ({
 describe('FilterBar', () => {
   const defaultProps = {
     searchQuery: '',
-    onSearchChange: jest.fn(),
+    onSearchChange: vi.fn(),
     statusFilter: 'all' as const,
-    onStatusFilterChange: jest.fn(),
+    onStatusFilterChange: vi.fn(),
     sortBy: 'name' as const,
-    onSortByChange: jest.fn(),
+    onSortByChange: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render search input', () => {

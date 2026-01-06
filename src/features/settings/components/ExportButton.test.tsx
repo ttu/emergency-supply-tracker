@@ -1,17 +1,18 @@
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ExportButton } from './ExportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { createMockAppData } from '@/shared/utils/test/factories';
 
 // Mock localStorage utilities
-jest.mock('@/shared/utils/storage/localStorage');
+vi.mock('@/shared/utils/storage/localStorage');
 
 describe('ExportButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    global.alert = jest.fn();
-    global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-    global.URL.revokeObjectURL = jest.fn();
+    vi.clearAllMocks();
+    globalThis.alert = vi.fn();
+    globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+    globalThis.URL.revokeObjectURL = vi.fn();
   });
 
   it('should render export button', () => {
@@ -22,14 +23,14 @@ describe('ExportButton', () => {
   });
 
   it('should show alert when no data to export', () => {
-    (localStorage.getAppData as jest.Mock).mockReturnValue(null);
+    (localStorage.getAppData as Mock).mockReturnValue(null);
 
     render(<ExportButton />);
 
     const button = screen.getByText('settings.export.button');
     fireEvent.click(button);
 
-    expect(global.alert).toHaveBeenCalledWith('settings.export.noData');
+    expect(globalThis.alert).toHaveBeenCalledWith('settings.export.noData');
   });
 
   it('should export data when available', () => {
@@ -42,8 +43,8 @@ describe('ExportButton', () => {
       },
     });
 
-    (localStorage.getAppData as jest.Mock).mockReturnValue(mockData);
-    (localStorage.exportToJSON as jest.Mock).mockReturnValue(
+    (localStorage.getAppData as Mock).mockReturnValue(mockData);
+    (localStorage.exportToJSON as Mock).mockReturnValue(
       JSON.stringify(mockData),
     );
 
@@ -53,6 +54,6 @@ describe('ExportButton', () => {
     fireEvent.click(button);
 
     expect(localStorage.exportToJSON).toHaveBeenCalledWith(mockData);
-    expect(global.URL.createObjectURL).toHaveBeenCalled();
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
   });
 });

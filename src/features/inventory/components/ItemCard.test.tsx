@@ -1,9 +1,10 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ItemCard } from './ItemCard';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, unknown>) => {
       if (key.includes('expiresIn') && params) {
@@ -91,7 +92,7 @@ describe('ItemCard', () => {
   });
 
   it('should be clickable when onClick is provided', () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     const { container } = render(
       <ItemCard item={baseItem} onClick={onClick} />,
     );
@@ -103,7 +104,7 @@ describe('ItemCard', () => {
   });
 
   it('should handle keyboard events when clickable', () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     const { container } = render(
       <ItemCard item={baseItem} onClick={onClick} />,
     );

@@ -1,12 +1,12 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Onboarding } from './Onboarding';
 import { SettingsProvider } from '@/features/settings';
 
 // Mock react-i18next
-const mockChangeLanguage = jest.fn();
-jest.mock('react-i18next', () => ({
+const mockChangeLanguage = vi.fn();
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -55,7 +55,7 @@ describe('Onboarding', () => {
   });
 
   it('renders welcome screen initially', () => {
-    const onComplete = jest.fn();
+    const onComplete = vi.fn();
     render(
       <SettingsProvider>
         <Onboarding onComplete={onComplete} />
@@ -67,7 +67,7 @@ describe('Onboarding', () => {
 
   it('progresses from welcome to preset selection', async () => {
     const user = userEvent.setup();
-    const onComplete = jest.fn();
+    const onComplete = vi.fn();
     render(
       <SettingsProvider>
         <Onboarding onComplete={onComplete} />
@@ -84,7 +84,7 @@ describe('Onboarding', () => {
 
   it('progresses from preset to household form', async () => {
     const user = userEvent.setup();
-    const onComplete = jest.fn();
+    const onComplete = vi.fn();
     render(
       <SettingsProvider>
         <Onboarding onComplete={onComplete} />
@@ -112,7 +112,7 @@ describe('Onboarding', () => {
 
   it('allows going back from household form to preset', async () => {
     const user = userEvent.setup();
-    const onComplete = jest.fn();
+    const onComplete = vi.fn();
     render(
       <SettingsProvider>
         <Onboarding onComplete={onComplete} />
@@ -148,7 +148,7 @@ describe('Onboarding', () => {
 
   it('calls onComplete with household config when skip is clicked', async () => {
     const user = userEvent.setup();
-    const onComplete = jest.fn();
+    const onComplete = vi.fn();
     render(
       <SettingsProvider>
         <Onboarding onComplete={onComplete} />
@@ -195,7 +195,7 @@ describe('Onboarding', () => {
 
   it('calls onComplete with household config and items when add items is clicked', async () => {
     const user = userEvent.setup();
-    const onComplete = jest.fn();
+    const onComplete = vi.fn();
     render(
       <SettingsProvider>
         <Onboarding onComplete={onComplete} />

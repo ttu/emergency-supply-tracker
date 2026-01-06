@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { generateDashboardAlerts, countAlerts } from './alerts';
 import {
   createMockInventoryItem,
@@ -31,12 +32,12 @@ const mockHousehold = createMockHousehold({
 describe('generateDashboardAlerts', () => {
   beforeEach(() => {
     // Set a fixed date for testing
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-01-01'));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-01-01'));
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should return empty array for no items', () => {
@@ -353,12 +354,12 @@ describe('countAlerts', () => {
 
 describe('water shortage alerts', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-01-01'));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-01-01'));
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should generate water shortage alert when food requires more water than available', () => {

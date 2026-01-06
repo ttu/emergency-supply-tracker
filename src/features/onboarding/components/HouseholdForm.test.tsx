@@ -1,10 +1,10 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HouseholdForm } from './HouseholdForm';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, unknown>) => {
       const translations: Record<string, string> = {
@@ -35,7 +35,7 @@ jest.mock('react-i18next', () => ({
 
 describe('HouseholdForm', () => {
   it('renders form fields', () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     render(<HouseholdForm onSubmit={onSubmit} />);
 
     expect(screen.getByLabelText(/Adults/i)).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe('HouseholdForm', () => {
   });
 
   it('displays initial data when provided', () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     render(
       <HouseholdForm
         onSubmit={onSubmit}
@@ -66,7 +66,7 @@ describe('HouseholdForm', () => {
 
   it('calls onSubmit with form data when submitted', async () => {
     const user = userEvent.setup();
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
     const adultsInput = screen.getByLabelText(/Adults/i);
@@ -91,7 +91,7 @@ describe('HouseholdForm', () => {
   });
 
   it('shows validation error for too many adults', () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
     const adultsInput = screen.getByLabelText(/Adults/i);
@@ -106,7 +106,7 @@ describe('HouseholdForm', () => {
   });
 
   it('shows validation error for too many children', () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
     const childrenInput = screen.getByLabelText(/Children/i);
@@ -121,7 +121,7 @@ describe('HouseholdForm', () => {
   });
 
   it('shows validation error for too many supply days', () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
     const supplyDaysInput = screen.getByLabelText(/Supply Duration/i);
@@ -135,7 +135,7 @@ describe('HouseholdForm', () => {
   });
 
   it('clears error when user corrects invalid input', () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
 
     const adultsInput = screen.getByLabelText(/Adults/i);
@@ -156,8 +156,8 @@ describe('HouseholdForm', () => {
   });
 
   it('renders cancel button when onCancel is provided', () => {
-    const onSubmit = jest.fn();
-    const onCancel = jest.fn();
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
     render(<HouseholdForm onSubmit={onSubmit} onCancel={onCancel} />);
 
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
@@ -165,8 +165,8 @@ describe('HouseholdForm', () => {
 
   it('calls onCancel when cancel button is clicked', async () => {
     const user = userEvent.setup();
-    const onSubmit = jest.fn();
-    const onCancel = jest.fn();
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
     render(<HouseholdForm onSubmit={onSubmit} onCancel={onCancel} />);
 
     const cancelButton = screen.getByRole('button', { name: 'Cancel' });

@@ -1,9 +1,10 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { CategoryNav } from './CategoryNav';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: { ns?: string }) => {
       const categoryTranslations: Record<string, string> = {
@@ -27,7 +28,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 describe('CategoryNav', () => {
-  const onSelectCategory = jest.fn();
+  const onSelectCategory = vi.fn();
 
   beforeEach(() => {
     onSelectCategory.mockClear();

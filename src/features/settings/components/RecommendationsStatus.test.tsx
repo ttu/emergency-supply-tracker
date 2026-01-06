@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, afterEach, jest } from '@jest/globals';
+import { beforeEach, afterEach, vi, type SpyInstance } from 'vitest';
 import { RecommendationsStatus } from './RecommendationsStatus';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       if (options) {
@@ -16,19 +16,19 @@ jest.mock('react-i18next', () => ({
 }));
 
 // Mock useRecommendedItems hook
-const mockResetToDefaultRecommendations = jest.fn();
-const mockUseRecommendedItems = jest.fn();
-jest.mock('@/features/templates', () => ({
+const mockResetToDefaultRecommendations = vi.fn();
+const mockUseRecommendedItems = vi.fn();
+vi.mock('@/features/templates', () => ({
   useRecommendedItems: () => mockUseRecommendedItems(),
 }));
 
 describe('RecommendationsStatus', () => {
-  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+  let consoleErrorSpy: SpyInstance;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     // Suppress console.error output from expected error handling in tests
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {

@@ -4,9 +4,9 @@ This project uses automated code coverage monitoring to ensure all new functiona
 
 ## Coverage Requirements
 
-### Project-Level Thresholds (Jest)
+### Project-Level Thresholds (Vitest)
 
-The following thresholds are enforced locally via Jest configuration:
+The following thresholds are enforced locally via Vitest configuration:
 
 | Metric     | Threshold |
 | ---------- | --------- |
@@ -28,7 +28,7 @@ The following thresholds are enforced locally via Jest configuration:
 npm run test:coverage
 ```
 
-This runs Jest with coverage collection and generates reports in the `coverage/` directory.
+This runs Vitest with coverage collection and generates reports in the `coverage/` directory.
 
 ### View HTML Report
 
@@ -56,7 +56,7 @@ npm run test:watch
 
 Coverage is automatically collected and reported on every push and pull request:
 
-1. **Jest runs with coverage** during the `test` job
+1. **Vitest runs with coverage** during the `test` job
 2. **Coverage is uploaded to Codecov** for analysis
 3. **Codecov posts a comment** on PRs showing coverage changes
 4. **Status checks** block PRs that don't meet coverage requirements
@@ -103,7 +103,7 @@ When you open a PR, Codecov will:
 
 ### Coverage is Below Threshold
 
-If Jest fails due to coverage thresholds:
+If Vitest fails due to coverage thresholds:
 
 1. Run `npm run test:coverage` locally
 2. Open the HTML report to identify uncovered code

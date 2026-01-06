@@ -2,7 +2,7 @@
 
 > **Version:** 1.0.0
 > **Last Updated:** 2025-12-28
-> **Source of Truth:** `jest.config.js`, `playwright.config.ts`
+> **Source of Truth:** `vite.config.ts`, `playwright.config.ts`
 
 This document describes the testing approach for the Emergency Supply Tracker application.
 
@@ -49,43 +49,59 @@ We use the **Testing Diamond** approach instead of the traditional pyramid:
 
 ## Test Distribution
 
-| Type        | Coverage | Tools                        | Location            |
-| ----------- | -------- | ---------------------------- | ------------------- |
-| Integration | ~70%     | Jest + React Testing Library | `src/**/*.test.tsx` |
-| E2E         | ~20%     | Playwright                   | `e2e/*.spec.ts`     |
-| Unit        | ~10%     | Jest                         | `src/**/*.test.ts`  |
+| Type        | Coverage | Tools                          | Location            |
+| ----------- | -------- | ------------------------------ | ------------------- |
+| Integration | ~70%     | Vitest + React Testing Library | `src/**/*.test.tsx` |
+| E2E         | ~20%     | Playwright                     | `e2e/*.spec.ts`     |
+| Unit        | ~10%     | Vitest                         | `src/**/*.test.ts`  |
 
 ---
 
-## Jest Configuration
+## Vitest Configuration
 
-**File:** `jest.config.js`
+**File:** `vite.config.ts`
 
-```javascript
-export default {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
-  testPathIgnorePatterns: ['/node_modules/', '/e2e/'],
-  moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '\\.(svg|png|jpg|jpeg|gif)$': 'identity-obj-proxy',
-  },
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/main.tsx',
-    '!src/test/**',
-  ],
-  coverageThreshold: {
-    global: {
+Vitest is configured as part of the Vite configuration. The test configuration includes:
+
+```typescript
+test: {
+  globals: true,
+  environment: 'jsdom',
+  setupFiles: ['./src/test/setup.ts', './src/test/a11y-setup.ts'],
+  exclude: ['**/node_modules/**', '**/e2e/**'],
+  coverage: {
+    provider: 'v8',
+    reporter: ['text', 'json', 'html', 'lcov'],
+    include: [
+      'src/**/*.{ts,tsx}',
+      '!src/**/*.d.ts',
+      '!src/**/*.stories.tsx',
+      '!src/main.tsx',
+      '!src/test/**',
+    ],
+    thresholds: {
       branches: 80,
       functions: 80,
       lines: 80,
       statements: 80,
     },
   },
-};
+  projects: [
+    {
+      test: {
+        name: 'unit',
+        environment: 'jsdom',
+        include: ['**/*.{test,spec}.{ts,tsx}'],
+        exclude: [
+          '**/node_modules/**',
+          '**/e2e/**',
+          '**/.storybook/**',
+          '**/*.stories.{ts,tsx}',
+        ],
+      },
+    },
+  ],
+}
 ```
 
 ### Coverage Thresholds
@@ -152,8 +168,8 @@ E2E tests are organized by feature:
 ## Test Scripts
 
 ```bash
-# Jest tests
-npm run test              # Run all Jest tests
+# Vitest tests
+npm run test              # Run all Vitest unit/integration tests
 npm run test:watch        # Watch mode
 npm run test:coverage     # With coverage report
 
@@ -174,7 +190,7 @@ npm run test:mutation     # Run mutation testing (interactive)
 npm run test:mutation:ci  # Run mutation testing (CI mode)
 
 # All tests
-npm run test:all          # Jest + Storybook (not E2E)
+npm run test:all          # Vitest + Storybook (not E2E)
 npm run validate:all      # Full validation including E2E
 ```
 
@@ -210,7 +226,7 @@ describe('ItemCard', () => {
   });
 
   it('calls onEdit when edit button clicked', async () => {
-    const onEdit = jest.fn();
+    const onEdit = vi.fn();
     render(<ItemCard item={mockItem} onEdit={onEdit} />);
     await userEvent.click(screen.getByRole('button', { name: /edit/i }));
     expect(onEdit).toHaveBeenCalledWith(mockItem.id);
@@ -298,8 +314,9 @@ it('displays dashboard', () => {
 
 ```typescript
 // For tests that need specific translations
-const mockChangeLanguage = jest.fn();
-jest.mock('react-i18next', () => ({
+import { vi } from 'vitest';
+const mockChangeLanguage = vi.fn();
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -317,7 +334,8 @@ jest.mock('react-i18next', () => ({
 
 ```typescript
 // Use real react-i18next when testing class components with withTranslation
-jest.mock('react-i18next', () => jest.requireActual('react-i18next'));
+import { vi } from 'vitest';
+vi.mock('react-i18next', () => vi.importActual('react-i18next'));
 ```
 
 ### Testing Context Providers
@@ -354,19 +372,21 @@ renderWithProviders(<HouseholdForm />, {
 ### Mocking LocalStorage
 
 ```typescript
+import { vi } from 'vitest';
+
 const mockStorage: Record<string, string> = {};
 
 beforeEach(() => {
-  jest
-    .spyOn(Storage.prototype, 'getItem')
-    .mockImplementation((key) => mockStorage[key] || null);
-  jest.spyOn(Storage.prototype, 'setItem').mockImplementation((key, value) => {
+  vi.spyOn(Storage.prototype, 'getItem').mockImplementation(
+    (key) => mockStorage[key] || null,
+  );
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key, value) => {
     mockStorage[key] = value;
   });
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 ```
 
@@ -510,7 +530,7 @@ If a mutant changes `a + b` to `a - b` and tests still pass, it means:
 
 ### CI Pipeline
 
-- All Jest tests pass
+- All Vitest tests pass
 - Coverage thresholds met (80%)
 - E2E tests pass
 - Build succeeds
@@ -521,7 +541,7 @@ If a mutant changes `a + b` to `a - b` and tests still pass, it means:
 
 ## References
 
-- [Jest Documentation](https://jestjs.io/)
+- [Vitest Documentation](https://vitest.dev/)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [Playwright Documentation](https://playwright.dev/)
 - [StrykerJS Documentation](https://stryker-mutator.io/docs/stryker-js/introduction)
