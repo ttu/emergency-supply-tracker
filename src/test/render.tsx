@@ -131,8 +131,11 @@ export function renderWithProviders(
     themeApplier = false,
   } = providers;
 
+  // Track if we set localStorage so we can clean it up
+  const didSetLocalStorage = initialAppData !== undefined;
+
   // Setup localStorage if initial data provided
-  if (initialAppData !== undefined) {
+  if (didSetLocalStorage) {
     const data = createMockAppData(initialAppData);
     localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
   }
@@ -155,7 +158,18 @@ export function renderWithProviders(
     return <>{wrapped}</>;
   }
 
-  return render(ui, { wrapper: AllProviders, ...renderOptions });
+  const result = render(ui, { wrapper: AllProviders, ...renderOptions });
+
+  // Wrap unmount to clean up localStorage when test completes
+  const originalUnmount = result.unmount;
+  result.unmount = () => {
+    if (didSetLocalStorage) {
+      localStorage.removeItem('emergencySupplyTracker');
+    }
+    return originalUnmount();
+  };
+
+  return result;
 }
 
 /**
