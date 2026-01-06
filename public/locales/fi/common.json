@@ -31,8 +31,8 @@
       "description": "Käytä varastotietojasi milloin tahansa, myös ilman internet-yhteyttä"
     },
     "cloudSync": {
-      "title": "Pilvisynkronointi (tulossa)",
-      "description": "Valinnainen synkronointi omaan pilvipalveluun"
+      "title": "Pilvisynkronointi",
+      "description": "Valinnainen synkronointi omaan Google Driveen"
     },
     "openSource": {
       "title": "Avoin lähdekoodi",
@@ -175,7 +175,8 @@
         "about": "Tietoja",
         "dangerZone": "Vaaravyöhyke",
         "recommendationKits": "Suosituspaketit",
-        "customTemplates": "Omat mallit"
+        "customTemplates": "Omat mallit",
+        "cloudSync": "Pilvisynkronointi"
       }
     },
     "nutrition": {
@@ -757,6 +758,45 @@
       "nameRequired": "Vähintään yksi nimi vaaditaan",
       "idExists": "Tuote tällä tunnuksella on jo olemassa",
       "quantityPositive": "Määrän on oltava suurempi kuin 0"
+    }
+  },
+  "cloudSync": {
+    "status": {
+      "disconnected": "Ei yhdistetty",
+      "connected": "Yhdistetty",
+      "syncing": "Synkronoidaan...",
+      "error": "Synkronointivirhe",
+      "neverSynced": "Ei koskaan synkronoitu",
+      "lastSync": "Viimeksi synkronoitu: {{date}} klo {{time}}"
+    },
+    "providers": {
+      "google-drive": "Google Drive"
+    },
+    "section": {
+      "connectTitle": "Yhdistä pilveen",
+      "syncTitle": "Synkronoi tiedot",
+      "accountTitle": "Yhdistetty tili"
+    },
+    "button": {
+      "sync": "Synkronoi nyt",
+      "syncing": "Synkronoidaan...",
+      "description": "Synkronoi tietosi manuaalisesti pilveen. Käyttää viimeinen-voittaa -periaatetta ristiriidoissa."
+    },
+    "result": {
+      "uploaded": "Tiedot ladattu pilveen",
+      "downloaded": "Tiedot ladattu pilvestä",
+      "noChanges": "Jo synkronoitu, ei muutoksia"
+    },
+    "google": {
+      "connect": "Yhdistä Google Drive",
+      "connecting": "Yhdistetään...",
+      "connected": "Yhdistetty Google Driveen",
+      "description": "Kirjaudu sisään Google-tililläsi synkronoidaksesi tiedot Google Driveen."
+    },
+    "disconnect": {
+      "button": "Katkaise yhteys",
+      "disconnecting": "Katkaistaan yhteyttä...",
+      "confirm": "Katkaistaanko pilvisynkronointi? Paikalliset tietosi säilyvät, mutta pilvisynkronointi poistetaan käytöstä."
     }
   }
 }
