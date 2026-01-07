@@ -96,7 +96,12 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Google Identity Services (for Google Drive sync) -->
+    <!--
+      Google Identity Services (for Google Drive sync)
+      Note: SRI (integrity) attribute is intentionally omitted.
+      Google dynamically updates this script and doesn't provide stable hashes.
+      OAuth2 security is ensured through authorized origins and client validation.
+    -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <!-- Structured Data (JSON-LD) -->
