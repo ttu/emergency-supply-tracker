@@ -83,19 +83,21 @@ const MIGRATIONS: Migration[] = [
 /**
  * Parses a semantic version string into components.
  */
+const VERSION_REGEX = /^(\d+)\.(\d+)\.(\d+)$/;
+
 function parseVersion(version: string): {
   major: number;
   minor: number;
   patch: number;
 } {
-  const match = version.match(/^(\d+)\.(\d+)\.(\d+)$/);
+  const match = VERSION_REGEX.exec(version);
   if (!match) {
     throw new Error(`Invalid version format: ${version}. Expected x.y.z`);
   }
   return {
-    major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3], 10),
+    major: Number.parseInt(match[1], 10),
+    minor: Number.parseInt(match[2], 10),
+    patch: Number.parseInt(match[3], 10),
   };
 }
 
@@ -161,18 +163,62 @@ export class MigrationError extends Error {
  * saveAppData(newData);
  * ```
  */
+/**
+ * Validates that a version is supported for migration.
+ * @throws MigrationError if version is not supported
+ */
+function validateVersionSupport(version: string): void {
+  if (!isVersionSupported(version)) {
+    throw new MigrationError(
+      `Schema version ${version} is not supported. Minimum supported version is ${MIN_SUPPORTED_VERSION}.`,
+      version,
+      CURRENT_SCHEMA_VERSION,
+    );
+  }
+}
+
+/**
+ * Applies a single migration to the data.
+ * @throws MigrationError if migration fails
+ */
+function applyMigration(
+  data: AppData,
+  migration: Migration,
+): { data: AppData; newVersion: string } {
+  try {
+    const migratedData = migration.migrate(data);
+    migratedData.version = migration.toVersion;
+    return { data: migratedData, newVersion: migration.toVersion };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    const cause = error instanceof Error ? error : undefined;
+    throw new MigrationError(
+      `Migration from ${migration.fromVersion} to ${migration.toVersion} failed: ${message}`,
+      migration.fromVersion,
+      migration.toVersion,
+      cause,
+    );
+  }
+}
+
+/**
+ * Checks if a migration should be applied based on current version.
+ */
+function shouldApplyMigration(
+  currentVersion: string,
+  migration: Migration,
+): boolean {
+  return (
+    compareVersions(currentVersion, migration.fromVersion) === 0 &&
+    compareVersions(currentVersion, CURRENT_SCHEMA_VERSION) < 0
+  );
+}
+
 export function migrateToCurrentVersion(data: AppData): AppData {
   let currentData = { ...data };
   let currentVersion = currentData.version || '1.0.0';
 
-  // Check if version is supported
-  if (!isVersionSupported(currentVersion)) {
-    throw new MigrationError(
-      `Schema version ${currentVersion} is not supported. Minimum supported version is ${MIN_SUPPORTED_VERSION}.`,
-      currentVersion,
-      CURRENT_SCHEMA_VERSION,
-    );
-  }
+  validateVersionSupport(currentVersion);
 
   // If already at current version, no migration needed
   if (!needsMigration(currentData)) {
@@ -189,22 +235,10 @@ export function migrateToCurrentVersion(data: AppData): AppData {
 
   // Apply migrations sequentially
   for (const migration of MIGRATIONS) {
-    if (
-      compareVersions(currentVersion, migration.fromVersion) === 0 &&
-      compareVersions(currentVersion, CURRENT_SCHEMA_VERSION) < 0
-    ) {
-      try {
-        currentData = migration.migrate(currentData);
-        currentData.version = migration.toVersion;
-        currentVersion = migration.toVersion;
-      } catch (error) {
-        throw new MigrationError(
-          `Migration from ${migration.fromVersion} to ${migration.toVersion} failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          migration.fromVersion,
-          migration.toVersion,
-          error instanceof Error ? error : undefined,
-        );
-      }
+    if (shouldApplyMigration(currentVersion, migration)) {
+      const result = applyMigration(currentData, migration);
+      currentData = result.data;
+      currentVersion = result.newVersion;
     }
   }
 
