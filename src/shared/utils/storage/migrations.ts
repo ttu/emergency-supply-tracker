@@ -179,6 +179,14 @@ export function migrateToCurrentVersion(data: AppData): AppData {
     return currentData;
   }
 
+  // No migrations registered yet - return data as-is with updated version
+  // This branch will be removed when first migration is added
+  if (MIGRATIONS.length === 0) {
+    currentData.version = CURRENT_SCHEMA_VERSION;
+    currentData.lastModified = new Date().toISOString();
+    return currentData;
+  }
+
   // Apply migrations sequentially
   for (const migration of MIGRATIONS) {
     if (
