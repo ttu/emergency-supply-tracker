@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   ProductTemplateFactory,
   ProductTemplateValidationError,
@@ -8,10 +8,9 @@ import { createProductTemplateId } from '@/shared/types';
 
 // Mock crypto.randomUUID
 const mockUUID = 'test-uuid-123';
-global.crypto = {
-  ...global.crypto,
-  randomUUID: () => mockUUID,
-} as Crypto;
+vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(
+  mockUUID as `${string}-${string}-${string}-${string}-${string}`,
+);
 
 describe('ProductTemplateFactory', () => {
   describe('createCustom', () => {

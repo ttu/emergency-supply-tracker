@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   InventoryItemFactory,
   InventoryItemValidationError,
@@ -19,10 +19,9 @@ import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 
 // Mock crypto.randomUUID
 const mockUUID = 'test-uuid-123';
-global.crypto = {
-  ...global.crypto,
-  randomUUID: () => mockUUID,
-} as Crypto;
+vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(
+  mockUUID as `${string}-${string}-${string}-${string}-${string}`,
+);
 
 describe('InventoryItemFactory', () => {
   let validInput: CreateItemInput;
@@ -683,14 +682,14 @@ describe('InventoryItemFactory', () => {
       });
     });
 
-    it('generates unique IDs for each item', () => {
+    it('generates IDs for each item', () => {
       const item1 = InventoryItemFactory.create(validInput);
       const item2 = InventoryItemFactory.create(validInput);
 
-      // Since we're mocking crypto.randomUUID, they'll be the same
-      // But in real usage, they'd be different
       expect(item1.id).toBeDefined();
       expect(item2.id).toBeDefined();
+      // Note: With mocked crypto.randomUUID, IDs will be the same
+      // In real usage, crypto.randomUUID() generates unique IDs
     });
 
     it('sets createdAt and updatedAt to same timestamp on creation', () => {
