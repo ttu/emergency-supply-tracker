@@ -18,8 +18,6 @@ vi.mock('@/features/templates', () => ({
 }));
 
 describe('ExportRecommendationsButton', () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
-
   beforeEach(() => {
     vi.clearAllMocks();
     mockExportRecommendedItems.mockReturnValue({
@@ -32,26 +30,13 @@ describe('ExportRecommendationsButton', () => {
     });
 
     // Mock anchor element click to prevent jsdom navigation errors
-    // Access prototype method directly to avoid circular reference
-    const originalCreateElement =
-      Document.prototype.createElement.bind(document);
-    createElementSpy = vi
-      .spyOn(document, 'createElement')
-      .mockImplementation((tagName: string) => {
-        const element = originalCreateElement(tagName);
-        if (tagName === 'a') {
-          // Mock click to prevent navigation
-          element.click = vi.fn();
-        }
-        return element;
-      });
+    // Directly mock HTMLAnchorElement.prototype.click instead of intercepting createElement
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(vi.fn());
   });
 
   afterEach(() => {
-    // Defensively restore the spy only if it exists and has mockRestore
-    if (createElementSpy?.mockRestore) {
-      createElementSpy.mockRestore();
-    }
+    // Restore all mocks to prevent test state leakage
+    vi.restoreAllMocks();
   });
 
   it('should render export button', () => {
