@@ -38,7 +38,7 @@ describe('RecommendationsStatus', () => {
   it('should show default status when using built-in recommendations', () => {
     mockUseRecommendedItems.mockReturnValue({
       recommendedItems: new Array(70).fill({}),
-      customRecommendationsInfo: null,
+      customRecommendationsInfo: undefined,
       isUsingCustomRecommendations: false,
       resetToDefaultRecommendations: mockResetToDefaultRecommendations,
     });
@@ -54,6 +54,22 @@ describe('RecommendationsStatus', () => {
     expect(
       screen.queryByTestId('reset-recommendations-button'),
     ).not.toBeInTheDocument();
+  });
+
+  it('should show default status when isUsingCustomRecommendations is true but customRecommendationsInfo is undefined', () => {
+    mockUseRecommendedItems.mockReturnValue({
+      recommendedItems: new Array(70).fill({}),
+      customRecommendationsInfo: undefined,
+      isUsingCustomRecommendations: true,
+      resetToDefaultRecommendations: mockResetToDefaultRecommendations,
+    });
+
+    render(<RecommendationsStatus />);
+
+    // Should show default status when customRecommendationsInfo is undefined
+    expect(
+      screen.getByText(/settings.recommendations.status.default.*"count":70/),
+    ).toBeInTheDocument();
   });
 
   it('should show custom status when using imported recommendations', () => {

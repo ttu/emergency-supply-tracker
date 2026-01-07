@@ -133,18 +133,15 @@ function validateItemInput(input: CreateItemInput): void {
     throw new InventoryItemValidationError('categoryId is required');
   }
 
-  if (input.quantity === undefined || input.quantity === null) {
+  if (input.quantity === undefined) {
     throw new InventoryItemValidationError('quantity is required');
   }
 
-  if (input.unit === undefined || input.unit === null) {
+  if (input.unit === undefined) {
     throw new InventoryItemValidationError('unit is required');
   }
 
-  if (
-    input.recommendedQuantity === undefined ||
-    input.recommendedQuantity === null
-  ) {
+  if (input.recommendedQuantity === undefined) {
     throw new InventoryItemValidationError('recommendedQuantity is required');
   }
 

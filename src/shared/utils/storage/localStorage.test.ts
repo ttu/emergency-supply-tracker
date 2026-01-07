@@ -285,5 +285,78 @@ describe('localStorage utilities', () => {
 
       expect(imported.items[0].itemType).toBe('custom');
     });
+
+    it('maps customCategories and customTemplates with createCategoryId and createProductTemplateId', () => {
+      const dataWithCustoms = {
+        version: '1.0.0',
+        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        settings: { language: 'en', theme: 'light', highContrast: false },
+        customCategories: [
+          { id: 'custom-cat-1', name: 'Custom Category 1', isCustom: true },
+        ],
+        customTemplates: [
+          {
+            id: 'custom-template-1',
+            name: 'Custom Template 1',
+            category: 'food',
+            isCustom: true,
+          },
+        ],
+        items: [],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(dataWithCustoms);
+      const imported = importFromJSON(json);
+
+      // Verify IDs are properly converted using branded types
+      expect(imported.customCategories[0].id).toBe('custom-cat-1');
+      expect(imported.customTemplates[0].id).toBe('custom-template-1');
+    });
+  });
+
+  describe('error handling', () => {
+    it('handles localStorage.getItem error gracefully', () => {
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const getItemSpy = vi
+        .spyOn(Storage.prototype, 'getItem')
+        .mockImplementation(() => {
+          throw new Error('Storage error');
+        });
+
+      const result = getAppData();
+
+      expect(result).toBeUndefined();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to load data from localStorage:',
+        expect.any(Error),
+      );
+
+      getItemSpy.mockRestore();
+      consoleSpy.mockRestore();
+    });
+
+    it('handles localStorage.setItem error gracefully', () => {
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const setItemSpy = vi
+        .spyOn(Storage.prototype, 'setItem')
+        .mockImplementation(() => {
+          throw new Error('Storage quota exceeded');
+        });
+
+      const mockData = createMockAppData();
+      saveAppData(mockData);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to save data to localStorage:',
+        expect.any(Error),
+      );
+
+      setItemSpy.mockRestore();
+      consoleSpy.mockRestore();
+    });
   });
 });
