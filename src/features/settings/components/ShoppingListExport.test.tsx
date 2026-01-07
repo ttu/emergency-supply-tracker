@@ -74,10 +74,10 @@ describe('ShoppingListExport', () => {
   });
 
   afterEach(() => {
-    createElementSpy.mockRestore();
-  });
-
-  afterEach(() => {
+    // Defensively restore the spy only if it exists and has mockRestore
+    if (createElementSpy?.mockRestore) {
+      createElementSpy.mockRestore();
+    }
     vi.restoreAllMocks();
   });
 

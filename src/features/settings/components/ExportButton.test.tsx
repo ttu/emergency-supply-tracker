@@ -41,7 +41,10 @@ describe('ExportButton', () => {
   });
 
   afterEach(() => {
-    createElementSpy.mockRestore();
+    // Defensively restore the spy only if it exists and has mockRestore
+    if (createElementSpy?.mockRestore) {
+      createElementSpy.mockRestore();
+    }
   });
 
   it('should render export button', () => {
