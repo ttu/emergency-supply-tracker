@@ -14,7 +14,7 @@ This document tracks the implementation status of validation improvements outlin
 - [x] Add explicit type-check job to CI (separate from build)
 - [ ] Add pre-push hook for full validation
 - [ ] Add i18n translation validation script and integrate into CI
-- [ ] Add basic accessibility testing (jest-axe + @axe-core/playwright)
+- [ ] Add basic accessibility testing (jest-axe with Vitest + @axe-core/playwright)
 
 ### Phase 2: Important Additions
 
@@ -41,7 +41,7 @@ The following validations are already implemented and working:
 
 - ✅ **ESLint** - Code linting in CI and pre-commit
 - ✅ **Prettier** - Code formatting checks in CI and pre-commit
-- ✅ **Jest Tests** - Unit and integration tests with 80% coverage threshold
+- ✅ **Vitest Tests** - Unit and integration tests with 80% coverage threshold
 - ✅ **Codecov** - Coverage tracking and PR comments
 - ✅ **Playwright E2E** - End-to-end tests (Chromium) in CI
 - ✅ **Storybook Tests** - Component tests via Vitest
@@ -56,12 +56,12 @@ The following validations are already implemented and working:
 
 ### Phase 1: Quick Wins (Priority 1)
 
-| #   | Task                                                              | Status       | Notes                                                                            |
-| --- | ----------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------- |
-| 1   | Add explicit type-check job to CI (separate from build)           | ✅ Completed | Added `type-check` script and CI job                                             |
-| 2   | Add pre-push hook for full validation                             | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#2-add-pre-push-hook)               |
-| 3   | Add i18n translation validation script and integrate into CI      | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#3-add-i18n-validation)             |
-| 4   | Add basic accessibility testing (jest-axe + @axe-core/playwright) | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#4-add-basic-accessibility-testing) |
+| #   | Task                                                                          | Status       | Notes                                                                            |
+| --- | ----------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------- |
+| 1   | Add explicit type-check job to CI (separate from build)                       | ✅ Completed | Added `type-check` script and CI job                                             |
+| 2   | Add pre-push hook for full validation                                         | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#2-add-pre-push-hook)               |
+| 3   | Add i18n translation validation script and integrate into CI                  | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#3-add-i18n-validation)             |
+| 4   | Add basic accessibility testing (jest-axe with Vitest + @axe-core/playwright) | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#4-add-basic-accessibility-testing) |
 
 ### Phase 2: Important Additions (Priority 2)
 

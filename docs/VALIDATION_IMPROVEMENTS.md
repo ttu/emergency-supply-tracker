@@ -12,7 +12,7 @@ This document outlines improvements to the validation infrastructure to ensure a
 
 ### ✅ What We Have
 
-- **Pre-commit hooks**: ESLint, Prettier, Jest tests, build check
+- **Pre-commit hooks**: ESLint, Prettier, Vitest tests, build check
 - **CI Pipeline**: Lint, test (with coverage), Storybook, E2E (Chromium), build
 - **Coverage tracking**: Codecov with 80% thresholds
 - **Mutation testing**: Stryker (local only)
@@ -61,18 +61,18 @@ This document outlines improvements to the validation infrastructure to ensure a
 
 **Problem**: No automated accessibility checks. Agents might introduce a11y issues.
 
-**Solution**: Add automated a11y testing with `@axe-core/playwright` or `jest-axe`.
+**Solution**: Add automated a11y testing with `@axe-core/playwright` or `jest-axe` (works with Vitest).
 
 **Implementation**:
 
-- Add `jest-axe` for component-level a11y tests
+- Add `jest-axe` for component-level a11y tests (compatible with Vitest)
 - Add `@axe-core/playwright` for E2E a11y checks
 - Create a11y test suite for critical components
 - Add separate a11y job to CI (runs independently from e2e job)
 
 **Files to create**:
 
-- `src/test/a11y-setup.ts` - Jest a11y setup
+- `src/test/a11y-setup.ts` - Vitest a11y setup
 - `e2e/a11y.spec.ts` - E2E a11y tests
 
 **Files to modify**:
@@ -325,11 +325,11 @@ This document outlines improvements to the validation infrastructure to ensure a
 - Use GitHub Actions annotations for test failures
 - Upload test reports as artifacts
 - Add test summary to PR comments (via action)
-- Use `jest-junit` for better CI integration
+- Use Vitest's built-in reporters for better CI integration
 
 **Files to modify**:
 
-- `jest.config.js` - Add junit reporter
+- `vite.config.ts` - Add Vitest reporter configuration
 - `.github/workflows/ci.yml` - Add test result reporting
 
 ---
@@ -391,7 +391,7 @@ When agents add functionality, they should verify:
     "type-check": "tsc --noEmit",
     "validate:i18n": "tsx scripts/validate-i18n.ts",
     "test:smoke": "playwright test e2e/smoke.spec.ts --project=chromium",
-    "test:a11y": "jest --testPathPattern=a11y",
+    "test:a11y": "vitest run --testPathPattern=a11y",
     "test:size": "size-limit",
     "test:lighthouse": "lhci autorun"
   }
@@ -427,7 +427,7 @@ When agents add functionality, they should verify:
 ## References
 
 - [TypeScript Type Checking](https://www.typescriptlang.org/docs/handbook/compiler-options.html)
-- [Jest Axe](https://github.com/nickcolley/jest-axe)
+- [jest-axe](https://github.com/nickcolley/jest-axe) (works with Vitest)
 - [Playwright Axe](https://github.com/abhinaba-ghosh/axe-playwright)
 - [Chromatic Visual Testing](https://www.chromatic.com/docs/)
 - [Size Limit](https://github.com/ai/size-limit)

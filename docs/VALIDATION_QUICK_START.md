@@ -48,7 +48,7 @@ build:
 
 1. `npx lint-staged` - ESLint and Prettier on staged files
 2. `npm run type-check` - TypeScript type checking
-3. `npm test` - Jest tests
+3. `npm test` - Vitest tests
 4. `npm run build` - Production build
 
 **Current implementation** (`.husky/pre-commit`):
@@ -176,13 +176,14 @@ lint:
 1. Install dependencies:
 
 ```bash
-npm install --save-dev jest-axe @axe-core/playwright
+npm install --save-dev jest-axe @axe-core/playwright  # jest-axe works with Vitest
 ```
 
 2. Create `src/test/a11y-setup.ts`:
 
 ```typescript
 import { toHaveNoViolations } from 'jest-axe';
+import { expect } from 'vitest';
 expect.extend(toHaveNoViolations);
 ```
 
@@ -198,6 +199,7 @@ import './a11y-setup';
 ```typescript
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
+import { expect, it } from 'vitest';
 import { Button } from './Button';
 
 it('should have no accessibility violations', async () => {
