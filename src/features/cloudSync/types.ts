@@ -38,6 +38,7 @@ export interface SyncResult {
   direction: SyncDirection;
   timestamp: string; // ISO 8601 timestamp
   error?: string;
+  requiresReload?: boolean; // When true, caller should reload to reflect downloaded data
 }
 
 /**
