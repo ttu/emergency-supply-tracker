@@ -8,6 +8,8 @@ import {
   migrateToCurrentVersion,
   getMigrationPath,
   MigrationError,
+  applyTestMigrations,
+  type TestMigration,
 } from './migrations';
 import { createAppData } from '@/shared/utils/test/factories';
 
@@ -161,6 +163,217 @@ describe('migrations', () => {
       expect(error.fromVersion).toBe('1.0.0');
       expect(error.toVersion).toBe('1.1.0');
       expect(error.cause).toBeInstanceOf(Error);
+    });
+  });
+
+  describe('applyTestMigrations', () => {
+    it('should apply a single migration', () => {
+      const migrations: TestMigration[] = [
+        {
+          fromVersion: '1.0.0',
+          toVersion: '1.1.0',
+          migrate: (data) => ({
+            ...data,
+            settings: { ...data.settings, theme: 'dark' as const },
+          }),
+        },
+      ];
+
+      const data = createAppData({ version: '1.0.0' });
+      const result = applyTestMigrations(data, migrations, '1.1.0');
+
+      expect(result.version).toBe('1.1.0');
+      expect(result.settings.theme).toBe('dark');
+      expect(result.lastModified).toBeDefined();
+    });
+
+    it('should apply multiple migrations sequentially', () => {
+      const migrations: TestMigration[] = [
+        {
+          fromVersion: '1.0.0',
+          toVersion: '1.1.0',
+          migrate: (data) => ({
+            ...data,
+            household: { ...data.household, adults: data.household.adults + 1 },
+          }),
+        },
+        {
+          fromVersion: '1.1.0',
+          toVersion: '1.2.0',
+          migrate: (data) => ({
+            ...data,
+            household: {
+              ...data.household,
+              children: data.household.children + 1,
+            },
+          }),
+        },
+      ];
+
+      const data = createAppData({
+        version: '1.0.0',
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 7,
+          useFreezer: false,
+        },
+      });
+      const result = applyTestMigrations(data, migrations, '1.2.0');
+
+      expect(result.version).toBe('1.2.0');
+      expect(result.household.adults).toBe(3); // 2 + 1
+      expect(result.household.children).toBe(1); // 0 + 1
+    });
+
+    it('should skip migrations for newer versions', () => {
+      const migrations: TestMigration[] = [
+        {
+          fromVersion: '1.0.0',
+          toVersion: '1.1.0',
+          migrate: (data) => ({
+            ...data,
+            household: { ...data.household, adults: 999 },
+          }),
+        },
+      ];
+
+      const data = createAppData({
+        version: '1.1.0',
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 7,
+          useFreezer: false,
+        },
+      });
+      const result = applyTestMigrations(data, migrations, '1.1.0');
+
+      // Migration should not be applied since data is already at 1.1.0
+      expect(result.household.adults).toBe(2);
+    });
+
+    it('should throw MigrationError when migration function throws', () => {
+      const migrations: TestMigration[] = [
+        {
+          fromVersion: '1.0.0',
+          toVersion: '1.1.0',
+          migrate: () => {
+            throw new Error('Migration failed');
+          },
+        },
+      ];
+
+      const data = createAppData({ version: '1.0.0' });
+
+      expect(() => applyTestMigrations(data, migrations, '1.1.0')).toThrow(
+        MigrationError,
+      );
+    });
+
+    it('should include error details in MigrationError', () => {
+      const migrations: TestMigration[] = [
+        {
+          fromVersion: '1.0.0',
+          toVersion: '1.1.0',
+          migrate: () => {
+            throw new Error('Specific error message');
+          },
+        },
+      ];
+
+      const data = createAppData({ version: '1.0.0' });
+
+      try {
+        applyTestMigrations(data, migrations, '1.1.0');
+        expect.fail('Should have thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(MigrationError);
+        const migrationError = error as MigrationError;
+        expect(migrationError.fromVersion).toBe('1.0.0');
+        expect(migrationError.toVersion).toBe('1.1.0');
+        expect(migrationError.message).toContain('Specific error message');
+        expect(migrationError.cause).toBeInstanceOf(Error);
+      }
+    });
+
+    it('should handle non-Error throws in migration', () => {
+      const migrations: TestMigration[] = [
+        {
+          fromVersion: '1.0.0',
+          toVersion: '1.1.0',
+          migrate: () => {
+            throw 'string error'; // Non-Error throw
+          },
+        },
+      ];
+
+      const data = createAppData({ version: '1.0.0' });
+
+      try {
+        applyTestMigrations(data, migrations, '1.1.0');
+        expect.fail('Should have thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(MigrationError);
+        const migrationError = error as MigrationError;
+        expect(migrationError.message).toContain('Unknown error');
+        expect(migrationError.cause).toBeUndefined();
+      }
+    });
+
+    it('should throw for unsupported versions', () => {
+      const migrations: TestMigration[] = [];
+      const data = createAppData({ version: '0.1.0' });
+
+      expect(() => applyTestMigrations(data, migrations, '1.0.0')).toThrow(
+        MigrationError,
+      );
+    });
+
+    it('should preserve all data fields through migration', () => {
+      const migrations: TestMigration[] = [
+        {
+          fromVersion: '1.0.0',
+          toVersion: '1.1.0',
+          migrate: (data) => ({ ...data }),
+        },
+      ];
+
+      const data = createAppData({
+        version: '1.0.0',
+        household: {
+          adults: 3,
+          children: 2,
+          supplyDurationDays: 14,
+          useFreezer: true,
+        },
+        items: [],
+        customCategories: [],
+      });
+
+      const result = applyTestMigrations(data, migrations, '1.1.0');
+
+      expect(result.household.adults).toBe(3);
+      expect(result.household.children).toBe(2);
+      expect(result.household.supplyDurationDays).toBe(14);
+      expect(result.household.useFreezer).toBe(true);
+    });
+
+    it('should apply migrations with no applicable migrations', () => {
+      const migrations: TestMigration[] = [
+        {
+          fromVersion: '2.0.0',
+          toVersion: '2.1.0',
+          migrate: (data) => ({ ...data }),
+        },
+      ];
+
+      const data = createAppData({ version: '1.0.0' });
+      const result = applyTestMigrations(data, migrations, '1.0.0');
+
+      // No migrations applied, but version and lastModified updated
+      expect(result.version).toBe('1.0.0');
+      expect(result.lastModified).toBeDefined();
     });
   });
 });

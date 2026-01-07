@@ -202,50 +202,63 @@ function applyMigration(
 }
 
 /**
- * Checks if a migration should be applied based on current version.
+ * Finds migrations that need to be applied for a given version.
  */
-function shouldApplyMigration(
-  currentVersion: string,
-  migration: Migration,
-): boolean {
-  return (
-    compareVersions(currentVersion, migration.fromVersion) === 0 &&
-    compareVersions(currentVersion, CURRENT_SCHEMA_VERSION) < 0
-  );
-}
+function findApplicableMigrations(fromVersion: string): Migration[] {
+  const applicable: Migration[] = [];
+  let currentVersion = fromVersion;
 
-export function migrateToCurrentVersion(data: AppData): AppData {
-  let currentData = { ...data };
-  let currentVersion = currentData.version || '1.0.0';
-
-  validateVersionSupport(currentVersion);
-
-  // If already at current version, no migration needed
-  if (!needsMigration(currentData)) {
-    return currentData;
-  }
-
-  // No migrations registered yet - return data as-is with updated version
-  // This branch will be removed when first migration is added
-  if (MIGRATIONS.length === 0) {
-    currentData.version = CURRENT_SCHEMA_VERSION;
-    currentData.lastModified = new Date().toISOString();
-    return currentData;
-  }
-
-  // Apply migrations sequentially
   for (const migration of MIGRATIONS) {
-    if (shouldApplyMigration(currentVersion, migration)) {
-      const result = applyMigration(currentData, migration);
-      currentData = result.data;
-      currentVersion = result.newVersion;
+    if (compareVersions(currentVersion, migration.fromVersion) === 0) {
+      applicable.push(migration);
+      currentVersion = migration.toVersion;
     }
   }
 
-  // Update lastModified after migration
-  currentData.lastModified = new Date().toISOString();
+  return applicable;
+}
+
+/**
+ * Applies a sequence of migrations to the data.
+ */
+function applyMigrations(data: AppData, migrations: Migration[]): AppData {
+  let currentData = data;
+
+  for (const migration of migrations) {
+    const result = applyMigration(currentData, migration);
+    currentData = result.data;
+  }
 
   return currentData;
+}
+
+/**
+ * Finalizes migrated data by updating version and timestamp.
+ */
+function finalizeMigration(data: AppData): AppData {
+  return {
+    ...data,
+    version: CURRENT_SCHEMA_VERSION,
+    lastModified: new Date().toISOString(),
+  };
+}
+
+export function migrateToCurrentVersion(data: AppData): AppData {
+  const currentVersion = data.version || '1.0.0';
+
+  validateVersionSupport(currentVersion);
+
+  if (!needsMigration(data)) {
+    return data;
+  }
+
+  const migrations = findApplicableMigrations(currentVersion);
+  const migratedData =
+    migrations.length > 0
+      ? applyMigrations({ ...data }, migrations)
+      : { ...data };
+
+  return finalizeMigration(migratedData);
 }
 
 /**
@@ -296,3 +309,58 @@ export function getMigrationPath(
 //   };
 // }
 // =============================================================================
+
+// =============================================================================
+// TEST UTILITIES
+// =============================================================================
+// These exports are for testing migration logic with mock migrations.
+// They should not be used in production code.
+
+/**
+ * Migration definition for testing.
+ * @internal - exported for testing only
+ */
+export interface TestMigration {
+  fromVersion: string;
+  toVersion: string;
+  migrate: MigrationFn;
+}
+
+/**
+ * Applies a sequence of test migrations to data.
+ * @internal - exported for testing only
+ */
+export function applyTestMigrations(
+  data: AppData,
+  migrations: TestMigration[],
+  targetVersion: string,
+): AppData {
+  const currentVersion = data.version || '1.0.0';
+
+  validateVersionSupport(currentVersion);
+
+  // Find applicable migrations
+  const applicable: TestMigration[] = [];
+  let version = currentVersion;
+
+  for (const migration of migrations) {
+    if (compareVersions(version, migration.fromVersion) === 0) {
+      applicable.push(migration);
+      version = migration.toVersion;
+    }
+  }
+
+  // Apply migrations
+  let currentData = { ...data };
+  for (const migration of applicable) {
+    const result = applyMigration(currentData, migration);
+    currentData = result.data;
+  }
+
+  // Finalize
+  return {
+    ...currentData,
+    version: targetVersion,
+    lastModified: new Date().toISOString(),
+  };
+}
