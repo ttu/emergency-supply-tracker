@@ -274,13 +274,11 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
           error: null,
         });
 
-        // Trigger page reload to reflect new data
-        window.location.reload();
-
         return {
           success: true,
           direction: 'download',
           timestamp,
+          requiresReload: true,
         };
       } else {
         // No changes needed

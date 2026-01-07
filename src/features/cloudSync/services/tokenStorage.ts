@@ -27,21 +27,27 @@ export function getStoredTokens(): StoredTokens | null {
     const json = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!json) return null;
 
-    const tokens = JSON.parse(json) as StoredTokens;
+    const tokens: unknown = JSON.parse(json);
 
-    // Validate structure
+    // Validate structure before type assertion
     if (
-      !tokens.accessToken ||
+      typeof tokens !== 'object' ||
+      tokens === null ||
+      !('accessToken' in tokens) ||
       typeof tokens.accessToken !== 'string' ||
-      !tokens.provider ||
-      typeof tokens.expiresAt !== 'number'
+      !('provider' in tokens) ||
+      typeof tokens.provider !== 'string' ||
+      !('expiresAt' in tokens) ||
+      typeof tokens.expiresAt !== 'number' ||
+      !('refreshToken' in tokens) ||
+      (tokens.refreshToken !== null && typeof tokens.refreshToken !== 'string')
     ) {
       console.warn('Invalid token structure, clearing tokens');
       clearTokens();
       return null;
     }
 
-    return tokens;
+    return tokens as StoredTokens;
   } catch (error) {
     console.error('Failed to retrieve OAuth tokens:', error);
     return null;
