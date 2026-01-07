@@ -8,6 +8,17 @@ export { InventoryProvider } from './provider';
 // Hooks
 export { useInventory } from './hooks';
 
+// Factories
+export {
+  InventoryItemFactory,
+  InventoryItemValidationError,
+} from './factories/InventoryItemFactory';
+export type {
+  CreateItemInput,
+  CreateFromTemplateOptions,
+  CreateFromFormInput,
+} from './factories/InventoryItemFactory';
+
 // Utils
 export {
   getDaysUntilExpiration,

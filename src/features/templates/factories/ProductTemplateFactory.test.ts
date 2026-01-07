@@ -1,0 +1,229 @@
+import { describe, it, expect } from '@jest/globals';
+import {
+  ProductTemplateFactory,
+  ProductTemplateValidationError,
+  type CreateProductTemplateInput,
+} from './ProductTemplateFactory';
+import { createProductTemplateId } from '@/shared/types';
+
+// Mock crypto.randomUUID
+const mockUUID = 'test-uuid-123';
+global.crypto = {
+  ...global.crypto,
+  randomUUID: () => mockUUID,
+} as Crypto;
+
+describe('ProductTemplateFactory', () => {
+  describe('createCustom', () => {
+    it('creates a valid custom template', () => {
+      const input: CreateProductTemplateInput = {
+        name: 'Test Template',
+        category: 'food',
+        defaultUnit: 'pieces',
+        isCustom: true,
+        isBuiltIn: false,
+      };
+
+      const template = ProductTemplateFactory.createCustom(input);
+
+      expect(template.id).toBeDefined();
+      expect(template.name).toBe('Test Template');
+      expect(template.category).toBe('food');
+      expect(template.defaultUnit).toBe('pieces');
+      expect(template.isCustom).toBe(true);
+      expect(template.isBuiltIn).toBe(false);
+      expect(template.createdAt).toBeDefined();
+      expect(template.updatedAt).toBeDefined();
+      expect(template.i18nKey).toBeUndefined();
+    });
+
+    it('trims name whitespace', () => {
+      const input: CreateProductTemplateInput = {
+        name: '  Test Template  ',
+        category: 'food',
+        defaultUnit: 'pieces',
+        isCustom: true,
+        isBuiltIn: false,
+      };
+
+      const template = ProductTemplateFactory.createCustom(input);
+
+      expect(template.name).toBe('Test Template');
+    });
+
+    it('throws error when neither name nor i18nKey is provided', () => {
+      expect(() => {
+        ProductTemplateFactory.createCustom({
+          category: 'food',
+          defaultUnit: 'pieces',
+          isCustom: true,
+          isBuiltIn: false,
+        });
+      }).toThrow(ProductTemplateValidationError);
+    });
+
+    it('throws error when both name and i18nKey are provided', () => {
+      expect(() => {
+        ProductTemplateFactory.createCustom({
+          name: 'Test',
+          i18nKey: 'products.test',
+          category: 'food',
+          defaultUnit: 'pieces',
+          isCustom: true,
+          isBuiltIn: false,
+        });
+      }).toThrow(ProductTemplateValidationError);
+    });
+
+    it('throws error when category is invalid', () => {
+      expect(() => {
+        ProductTemplateFactory.createCustom({
+          name: 'Test',
+          category: '',
+          defaultUnit: 'pieces',
+          isCustom: true,
+          isBuiltIn: false,
+        });
+      }).toThrow(ProductTemplateValidationError);
+    });
+
+    it('throws error when defaultUnit is invalid', () => {
+      expect(() => {
+        // @ts-expect-error - Testing invalid input
+        ProductTemplateFactory.createCustom({
+          name: 'Test',
+          category: 'food',
+          defaultUnit: 'invalid-unit',
+          isCustom: true,
+          isBuiltIn: false,
+        });
+      }).toThrow(ProductTemplateValidationError);
+    });
+
+    it('throws error when kind is invalid', () => {
+      expect(() => {
+        // @ts-expect-error - Testing invalid input
+        ProductTemplateFactory.createCustom({
+          name: 'Test',
+          category: 'food',
+          defaultUnit: 'pieces',
+          kind: 'invalid-kind',
+          isCustom: true,
+          isBuiltIn: false,
+        });
+      }).toThrow(ProductTemplateValidationError);
+    });
+
+    it('overrides isBuiltIn to false for custom templates', () => {
+      // createCustom always sets isBuiltIn to false, so this should work
+      const template = ProductTemplateFactory.createCustom({
+        name: 'Test',
+        category: 'food',
+        defaultUnit: 'pieces',
+        isCustom: true,
+        isBuiltIn: true, // Will be overridden to false
+      });
+
+      expect(template.isBuiltIn).toBe(false);
+      expect(template.isCustom).toBe(true);
+    });
+
+    it('allows custom category strings', () => {
+      const template = ProductTemplateFactory.createCustom({
+        name: 'Test',
+        category: 'custom-category-id',
+        defaultUnit: 'pieces',
+        isCustom: true,
+        isBuiltIn: false,
+      });
+
+      expect(template.category).toBe('custom-category-id');
+    });
+
+    it('allows all valid unit types', () => {
+      const units = [
+        'pieces',
+        'liters',
+        'kilograms',
+        'grams',
+        'cans',
+        'bottles',
+      ] as const;
+
+      units.forEach((unit) => {
+        const template = ProductTemplateFactory.createCustom({
+          name: 'Test',
+          category: 'food',
+          defaultUnit: unit,
+          isCustom: true,
+          isBuiltIn: false,
+        });
+        expect(template.defaultUnit).toBe(unit);
+      });
+    });
+
+    it('allows all valid product kinds', () => {
+      const kinds = [
+        'food',
+        'water',
+        'medicine',
+        'energy',
+        'hygiene',
+        'device',
+        'other',
+      ] as const;
+
+      kinds.forEach((kind) => {
+        const template = ProductTemplateFactory.createCustom({
+          name: 'Test',
+          category: 'food',
+          defaultUnit: 'pieces',
+          kind,
+          isCustom: true,
+          isBuiltIn: false,
+        });
+        expect(template.kind).toBe(kind);
+      });
+    });
+  });
+
+  describe('createBuiltIn', () => {
+    it('creates a built-in template', () => {
+      const input: CreateProductTemplateInput = {
+        i18nKey: 'products.bottled-water',
+        category: 'water-beverages',
+        defaultUnit: 'liters',
+        isCustom: false,
+        isBuiltIn: true,
+      };
+
+      const template = ProductTemplateFactory.createBuiltIn(
+        input,
+        'bottled-water',
+      );
+
+      expect(template.id).toBe(createProductTemplateId('bottled-water'));
+      expect(template.i18nKey).toBe('products.bottled-water');
+      expect(template.name).toBeUndefined();
+      expect(template.isBuiltIn).toBe(true);
+      expect(template.isCustom).toBe(false);
+      expect(template.createdAt).toBeUndefined();
+      expect(template.updatedAt).toBeUndefined();
+    });
+
+    it('throws error when name is provided for built-in', () => {
+      expect(() => {
+        ProductTemplateFactory.createBuiltIn(
+          {
+            name: 'Test',
+            category: 'food',
+            defaultUnit: 'pieces',
+            isCustom: false,
+            isBuiltIn: true,
+          },
+          'test-id',
+        );
+      }).toThrow(ProductTemplateValidationError);
+    });
+  });
+});

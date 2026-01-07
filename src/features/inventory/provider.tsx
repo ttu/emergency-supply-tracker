@@ -6,11 +6,7 @@ import type {
   AlertId,
   ProductTemplateId,
 } from '@/shared/types';
-import {
-  createItemId,
-  createAlertId,
-  createProductTemplateId,
-} from '@/shared/types';
+import { createAlertId, createProductTemplateId } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   getAppData,
@@ -23,6 +19,7 @@ import {
   trackItemDeleted,
   trackItemsBulkAdded,
 } from '@/shared/utils/analytics';
+import { InventoryItemFactory } from './factories/InventoryItemFactory';
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<InventoryItem[]>(() => {
@@ -55,13 +52,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   const addItem = (
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
   ) => {
-    const now = new Date().toISOString();
-    const newItem: InventoryItem = {
-      ...item,
-      id: createItemId(crypto.randomUUID()),
-      createdAt: now,
-      updatedAt: now,
-    };
+    const newItem = InventoryItemFactory.create(item);
     setItems((prev) => [...prev, newItem]);
     trackItemAdded(item.name, item.categoryId);
   };

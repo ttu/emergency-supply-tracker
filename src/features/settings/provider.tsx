@@ -10,36 +10,21 @@ import {
   getLanguageFromUrl,
   clearLanguageFromUrl,
 } from '@/shared/utils/urlLanguage';
-import {
-  DAILY_CALORIES_PER_PERSON,
-  DAILY_WATER_PER_PERSON,
-  CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '@/shared/utils/constants';
-
-const DEFAULT_SETTINGS: UserSettings = {
-  language: 'en',
-  theme: 'ocean',
-  highContrast: false,
-  advancedFeatures: {
-    calorieTracking: false,
-    powerManagement: false,
-    waterTracking: false,
-  },
-  dailyCaloriesPerPerson: DAILY_CALORIES_PER_PERSON,
-  dailyWaterPerPerson: DAILY_WATER_PER_PERSON,
-  childrenRequirementPercentage: CHILDREN_REQUIREMENT_MULTIPLIER * 100,
-};
+import { UserSettingsFactory } from './factories/UserSettingsFactory';
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<UserSettings>(() => {
     const data = getAppData();
-    // Merge stored settings with defaults to handle new fields
-    const storedSettings = { ...DEFAULT_SETTINGS, ...data?.settings };
+    // Merge stored settings with defaults using factory to handle new fields
+    const storedSettings = UserSettingsFactory.create(data?.settings || {});
 
     // If URL has a lang parameter, use it to override stored language
     const urlLanguage = getLanguageFromUrl();
     if (urlLanguage) {
-      return { ...storedSettings, language: urlLanguage };
+      return UserSettingsFactory.create({
+        ...storedSettings,
+        language: urlLanguage,
+      });
     }
 
     return storedSettings;

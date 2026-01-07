@@ -14,3 +14,13 @@ export {
 
 // Constants
 export { HOUSEHOLD_DEFAULTS, HOUSEHOLD_LIMITS } from './constants';
+
+// Factories
+export {
+  HouseholdConfigFactory,
+  HouseholdConfigValidationError,
+} from './factories/HouseholdConfigFactory';
+export type {
+  CreateHouseholdConfigInput,
+  HouseholdPreset,
+} from './factories/HouseholdConfigFactory';

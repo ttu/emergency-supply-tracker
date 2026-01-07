@@ -18,3 +18,10 @@ export {
 // Components
 export { TemplateSelector } from './components';
 export type { TemplateSelectorProps } from './components';
+
+// Factories
+export {
+  ProductTemplateFactory,
+  ProductTemplateValidationError,
+} from './factories/ProductTemplateFactory';
+export type { CreateProductTemplateInput } from './factories/ProductTemplateFactory';
