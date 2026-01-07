@@ -91,6 +91,7 @@ export class GoogleDriveService implements CloudStorageProvider {
   private tokenClient: GoogleTokenClient | null = null;
   private pendingAuthResolve: ((value: void) => void) | null = null;
   private pendingAuthReject: ((error: Error) => void) | null = null;
+  private pendingAuthPromise: Promise<void> | null = null;
 
   /**
    * Initialize Google Identity Services token client.
@@ -167,13 +168,18 @@ export class GoogleDriveService implements CloudStorageProvider {
       return;
     }
 
+    // If auth is already in progress, wait for it (prevents race condition)
+    if (this.pendingAuthPromise) {
+      return this.pendingAuthPromise;
+    }
+
     // Initialize token client if needed
     if (!this.tokenClient) {
       this.tokenClient = this.initTokenClient();
     }
 
     // Request access token (opens Google sign-in popup)
-    return new Promise((resolve, reject) => {
+    this.pendingAuthPromise = new Promise<void>((resolve, reject) => {
       this.pendingAuthResolve = resolve;
       this.pendingAuthReject = reject;
 
@@ -182,7 +188,11 @@ export class GoogleDriveService implements CloudStorageProvider {
       this.tokenClient!.requestAccessToken({
         prompt: hasExpiredTokens ? '' : 'consent',
       });
+    }).finally(() => {
+      this.pendingAuthPromise = null;
     });
+
+    return this.pendingAuthPromise;
   }
 
   /**

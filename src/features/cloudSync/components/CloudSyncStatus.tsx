@@ -7,7 +7,7 @@ import styles from './CloudSyncStatus.module.css';
  * Shows connection state, last sync time, and any errors.
  */
 export function CloudSyncStatus() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { state } = useCloudSync();
 
   const getStatusText = () => {
@@ -47,8 +47,8 @@ export function CloudSyncStatus() {
 
     const date = new Date(state.lastSyncTimestamp);
     return t('cloudSync.status.lastSync', {
-      date: date.toLocaleDateString(),
-      time: date.toLocaleTimeString(),
+      date: date.toLocaleDateString(i18n.language),
+      time: date.toLocaleTimeString(i18n.language),
     });
   };
 
