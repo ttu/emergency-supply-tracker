@@ -1,9 +1,9 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { CategoryGrid } from './CategoryGrid';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: { ns?: string }) => {
       const categoryTranslations: Record<string, string> = {

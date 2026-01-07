@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -7,7 +8,7 @@ import {
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       const categoryTranslations: Record<string, string> = {
@@ -451,7 +452,7 @@ describe('CategoryStatusSummary', () => {
 
     it('calls onAddToInventory when add button is clicked', async () => {
       const user = userEvent.setup();
-      const onAddToInventory = jest.fn();
+      const onAddToInventory = vi.fn();
 
       render(
         <CategoryStatusSummary
@@ -484,7 +485,7 @@ describe('CategoryStatusSummary', () => {
 
     it('calls onDisableRecommended when disable button is clicked', async () => {
       const user = userEvent.setup();
-      const onDisableRecommended = jest.fn();
+      const onDisableRecommended = vi.fn();
 
       render(
         <CategoryStatusSummary
@@ -572,7 +573,7 @@ describe('CategoryStatusSummary', () => {
 
     it('shows only add button when onAddToInventory is provided', async () => {
       const user = userEvent.setup();
-      const onAddToInventory = jest.fn();
+      const onAddToInventory = vi.fn();
 
       render(
         <CategoryStatusSummary
@@ -606,7 +607,7 @@ describe('CategoryStatusSummary', () => {
 
     it('shows only disable button when onDisableRecommended is provided', async () => {
       const user = userEvent.setup();
-      const onDisableRecommended = jest.fn();
+      const onDisableRecommended = vi.fn();
 
       render(
         <CategoryStatusSummary
@@ -640,8 +641,8 @@ describe('CategoryStatusSummary', () => {
 
     it('shows both buttons when both handlers are provided', async () => {
       const user = userEvent.setup();
-      const onAddToInventory = jest.fn();
-      const onDisableRecommended = jest.fn();
+      const onAddToInventory = vi.fn();
+      const onDisableRecommended = vi.fn();
 
       render(
         <CategoryStatusSummary
@@ -867,7 +868,7 @@ describe('CategoryStatusSummary', () => {
           totalNeeded={10}
           primaryUnit="pieces"
           shortages={[shortage]}
-          onMarkAsEnough={jest.fn()}
+          onMarkAsEnough={vi.fn()}
           items={[matchingItem]}
         />,
       );
@@ -906,7 +907,7 @@ describe('CategoryStatusSummary', () => {
           totalNeeded={10}
           primaryUnit="pieces"
           shortages={[shortage]}
-          onMarkAsEnough={jest.fn()}
+          onMarkAsEnough={vi.fn()}
           items={[markedItem]}
         />,
       );
@@ -937,7 +938,7 @@ describe('CategoryStatusSummary', () => {
           totalNeeded={10}
           primaryUnit="pieces"
           shortages={[shortage]}
-          onMarkAsEnough={jest.fn()}
+          onMarkAsEnough={vi.fn()}
           items={[zeroQuantityItem]}
         />,
       );
@@ -949,7 +950,7 @@ describe('CategoryStatusSummary', () => {
 
     it('calls onMarkAsEnough when mark button is clicked', async () => {
       const user = userEvent.setup();
-      const onMarkAsEnough = jest.fn();
+      const onMarkAsEnough = vi.fn();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
         id: 'item-1',
@@ -1013,7 +1014,7 @@ describe('CategoryStatusSummary', () => {
           totalNeeded={10}
           primaryUnit="pieces"
           shortages={[shortage]}
-          onMarkAsEnough={jest.fn()}
+          onMarkAsEnough={vi.fn()}
           items={[matchingItem]}
         />,
       );
@@ -1051,7 +1052,7 @@ describe('CategoryStatusSummary', () => {
           totalNeeded={10}
           primaryUnit="pieces"
           shortages={[shortage]}
-          onMarkAsEnough={jest.fn()}
+          onMarkAsEnough={vi.fn()}
           items={[matchingItem]}
         />,
       );

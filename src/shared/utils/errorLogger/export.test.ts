@@ -4,8 +4,9 @@ import {
   expect,
   beforeEach,
   afterEach,
-  jest,
-} from '@jest/globals';
+  vi,
+  type SpyInstance,
+} from 'vitest';
 import {
   generateDebugExport,
   downloadDebugExport,
@@ -15,14 +16,14 @@ import {
 import { info, error } from './logger';
 
 describe('errorLogger export', () => {
-  let consoleInfoSpy: jest.SpiedFunction<typeof console.info>;
-  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+  let consoleInfoSpy: SpyInstance;
+  let consoleErrorSpy: SpyInstance;
 
   beforeEach(() => {
     localStorage.clear();
     // Suppress console output from logger functions during tests
-    consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -67,16 +68,16 @@ describe('errorLogger export', () => {
 
   describe('downloadDebugExport', () => {
     it('creates and triggers download', () => {
-      const mockClick = jest.fn();
-      const mockCreateObjectURL = jest.fn().mockReturnValue('blob:test');
-      const mockRevokeObjectURL = jest.fn();
+      const mockClick = vi.fn();
+      const mockCreateObjectURL = vi.fn().mockReturnValue('blob:test');
+      const mockRevokeObjectURL = vi.fn();
 
       global.URL.createObjectURL = mockCreateObjectURL;
       global.URL.revokeObjectURL = mockRevokeObjectURL;
 
       // Create a real anchor element but mock its click
       const originalCreateElement = document.createElement.bind(document);
-      jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
         const element = originalCreateElement(tagName);
         if (tagName === 'a') {
           element.click = mockClick;
@@ -90,7 +91,7 @@ describe('errorLogger export', () => {
       expect(mockClick).toHaveBeenCalled();
       expect(mockRevokeObjectURL).toHaveBeenCalled();
 
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     });
   });
 

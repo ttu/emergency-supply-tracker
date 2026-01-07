@@ -18,7 +18,7 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 - LocalStorage (no backend)
 - CSS Modules
 - Storybook (component development & documentation)
-- Jest 30 + React Testing Library (integration tests - 70%)
+- Vitest + React Testing Library (integration tests - 70%)
 - Playwright 1.57 (E2E tests - 20%)
 - react-i18next (English + Finnish)
 
@@ -340,7 +340,7 @@ The `docs/` folder contains up-to-date documentation that reflects the actual im
 | **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)**           | All 70 recommended items with current data    |
 | **[docs/COMPONENT_ARCHITECTURE.md](docs/COMPONENT_ARCHITECTURE.md)** | React component structure                     |
 | **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)**                 | Technology stack and configuration            |
-| **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)**             | Testing approach, Jest, Playwright            |
+| **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)**             | Testing approach, Vitest, Playwright          |
 | **[docs/TRANSLATION_GUIDE.md](docs/TRANSLATION_GUIDE.md)**           | Internationalization (i18n)                   |
 | **[docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)**                     | ESLint, Prettier, CI/CD                       |
 | **[docs/CODE_COVERAGE.md](docs/CODE_COVERAGE.md)**                   | Coverage thresholds, Codecov, PR requirements |
@@ -615,7 +615,7 @@ npm run dev                    # Start dev server
 npm run storybook              # Start Storybook component explorer
 
 # Testing
-npm run test                  # Run Jest tests
+npm run test                  # Run Vitest tests
 npm run test:watch            # Watch mode
 npm run test:coverage         # Coverage report
 npm run test:e2e              # Run Playwright tests (install Playwright first)

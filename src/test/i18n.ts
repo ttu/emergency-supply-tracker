@@ -5,6 +5,8 @@
  * that need specific translations or i18n behavior.
  */
 
+import { vi, type Mock } from 'vitest';
+
 type TranslationParams = Record<string, unknown>;
 
 /**
@@ -27,7 +29,7 @@ export const defaultI18nMock = {
     t: (key: string) => key,
     i18n: {
       language: 'en',
-      changeLanguage: jest.fn().mockResolvedValue(undefined),
+      changeLanguage: vi.fn().mockResolvedValue(undefined),
     },
   }),
   // withTranslation HOC - returns a function that wraps components
@@ -62,9 +64,9 @@ export interface I18nMockOptions {
 
   /**
    * Mock function for i18n.changeLanguage
-   * @default jest.fn().mockResolvedValue(undefined)
+   * @default vi.fn().mockResolvedValue(undefined)
    */
-  changeLanguage?: jest.Mock;
+  changeLanguage?: Mock;
 }
 
 /**
@@ -72,7 +74,7 @@ export interface I18nMockOptions {
  *
  * @example
  * // Simple translations
- * jest.mock('react-i18next', () => require('@/test/i18n').createI18nMock({
+ * vi.mock('react-i18next', () => require('@/test/i18n').createI18nMock({
  *   translations: {
  *     'dashboard.title': 'Dashboard',
  *     'dashboard.subtitle': 'Welcome, {{name}}!',
@@ -81,7 +83,7 @@ export interface I18nMockOptions {
  *
  * @example
  * // With namespace support
- * jest.mock('react-i18next', () => require('@/test/i18n').createI18nMock({
+ * vi.mock('react-i18next', () => require('@/test/i18n').createI18nMock({
  *   namespaces: {
  *     categories: { 'food': 'Food', 'water': 'Water' },
  *     products: { 'bottled-water': 'Bottled Water' },
@@ -90,8 +92,8 @@ export interface I18nMockOptions {
  *
  * @example
  * // With custom changeLanguage mock
- * const mockChangeLanguage = jest.fn();
- * jest.mock('react-i18next', () => require('@/test/i18n').createI18nMock({
+ * const mockChangeLanguage = vi.fn();
+ * vi.mock('react-i18next', () => require('@/test/i18n').createI18nMock({
  *   changeLanguage: mockChangeLanguage,
  * }));
  */
@@ -100,7 +102,7 @@ export function createI18nMock(options: I18nMockOptions = {}) {
     translations = {},
     namespaces,
     language = 'en',
-    changeLanguage = jest.fn().mockResolvedValue(undefined),
+    changeLanguage = vi.fn().mockResolvedValue(undefined),
   } = options;
 
   return {

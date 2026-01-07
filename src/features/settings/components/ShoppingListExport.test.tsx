@@ -1,3 +1,12 @@
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+} from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { ShoppingListExport } from './ShoppingListExport';
@@ -13,18 +22,18 @@ const createMockInventoryContext = (
 ): InventoryContextValue => ({
   items,
   categories: [],
-  addItem: jest.fn(),
-  addItems: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
+  addItem: vi.fn(),
+  addItems: vi.fn(),
+  updateItem: vi.fn(),
+  deleteItem: vi.fn(),
   dismissedAlertIds: [],
-  dismissAlert: jest.fn(),
-  reactivateAlert: jest.fn(),
-  reactivateAllAlerts: jest.fn(),
+  dismissAlert: vi.fn(),
+  reactivateAlert: vi.fn(),
+  reactivateAllAlerts: vi.fn(),
   disabledRecommendedItems: [],
-  disableRecommendedItem: jest.fn(),
-  enableRecommendedItem: jest.fn(),
-  enableAllRecommendedItems: jest.fn(),
+  disableRecommendedItem: vi.fn(),
+  enableRecommendedItem: vi.fn(),
+  enableAllRecommendedItems: vi.fn(),
 });
 
 const renderWithContext = (
@@ -40,15 +49,36 @@ const renderWithContext = (
 };
 
 describe('ShoppingListExport', () => {
+  let createElementSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
-    jest.clearAllMocks();
-    global.alert = jest.fn();
-    global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-    global.URL.revokeObjectURL = jest.fn();
+    vi.clearAllMocks();
+    globalThis.alert = vi.fn();
+    globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+    globalThis.URL.revokeObjectURL = vi.fn();
+
+    // Mock anchor element click to prevent jsdom navigation errors
+    // Access prototype method directly to avoid circular reference
+    const originalCreateElement =
+      Document.prototype.createElement.bind(document);
+    createElementSpy = vi
+      .spyOn(document, 'createElement')
+      .mockImplementation((tagName: string) => {
+        const element = originalCreateElement(tagName);
+        if (tagName === 'a') {
+          // Mock click to prevent navigation
+          element.click = vi.fn();
+        }
+        return element;
+      });
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    // Defensively restore the spy only if it exists and has mockRestore
+    if (createElementSpy?.mockRestore) {
+      createElementSpy.mockRestore();
+    }
+    vi.restoreAllMocks();
   });
 
   it('should render shopping list export button', () => {
@@ -111,7 +141,7 @@ describe('ShoppingListExport', () => {
     expect(button).toBeDisabled();
     fireEvent.click(button);
 
-    expect(global.URL.createObjectURL).not.toHaveBeenCalled();
+    expect(globalThis.URL.createObjectURL).not.toHaveBeenCalled();
   });
 
   it('should export shopping list when button is clicked', () => {
@@ -129,8 +159,10 @@ describe('ShoppingListExport', () => {
     const button = screen.getByText('settings.shoppingList.button');
     fireEvent.click(button);
 
-    expect(global.URL.createObjectURL).toHaveBeenCalled();
-    expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
+    expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith(
+      'blob:mock-url',
+    );
   });
 
   it('should create blob with text content', () => {
@@ -148,7 +180,7 @@ describe('ShoppingListExport', () => {
     const button = screen.getByText('settings.shoppingList.button');
     fireEvent.click(button);
 
-    const blobCall = (global.URL.createObjectURL as jest.Mock).mock.calls[0][0];
+    const blobCall = (globalThis.URL.createObjectURL as Mock).mock.calls[0][0];
     expect(blobCall).toBeInstanceOf(Blob);
     expect(blobCall.type).toBe('text/plain;charset=utf-8');
   });
@@ -209,6 +241,6 @@ describe('ShoppingListExport', () => {
     fireEvent.click(button);
 
     // Verify export was triggered
-    expect(global.URL.createObjectURL).toHaveBeenCalled();
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
   });
 });

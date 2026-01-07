@@ -2,8 +2,11 @@
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "packageManager": "npm",
   "reporters": ["html", "clear-text", "progress", "json"],
-  "testRunner": "jest",
-  "testRunnerNodeArgs": ["--experimental-vm-modules"],
+  "testRunner": "vitest",
+  "vitest": {
+    "configFile": "vite.config.ts",
+    "related": true
+  },
   "checkers": ["typescript"],
   "tsconfigFile": "tsconfig.json",
   "coverageAnalysis": "perTest",
@@ -19,10 +22,6 @@
   ],
   "mutator": {
     "plugins": ["typescript"]
-  },
-  "jest": {
-    "configFile": "jest.config.js",
-    "enableFindRelatedTests": true
   },
   "thresholds": {
     "high": 80,

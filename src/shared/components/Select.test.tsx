@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Select, SelectOption } from './Select';
@@ -105,7 +106,7 @@ describe('Select', () => {
 
   it('handles user selection', async () => {
     const user = userEvent.setup();
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
     render(
       <Select
         label="Choose option"

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   getAppData,
   saveAppData,
@@ -171,7 +171,7 @@ describe('localStorage utilities', () => {
     it('throws error for invalid JSON', () => {
       const invalidJson = '{ invalid json }';
       // Suppress console.error for this expected error
-      const consoleSpy = jest
+      const consoleSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {});
       expect(() => importFromJSON(invalidJson)).toThrow();

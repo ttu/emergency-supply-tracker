@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { render, screen, act, waitFor } from '@testing-library/react';
 import { RecommendedItemsProvider } from './index';
 import { useRecommendedItems } from '../hooks';
@@ -6,10 +7,10 @@ import { RECOMMENDED_ITEMS } from '../data';
 import type { RecommendedItemsFile } from '@/shared/types';
 
 // Mock localStorage utilities
-jest.mock('@/shared/utils/storage/localStorage', () => ({
-  getAppData: jest.fn(),
-  saveAppData: jest.fn(),
-  createDefaultAppData: jest.fn(() => ({
+vi.mock('@/shared/utils/storage/localStorage', () => ({
+  getAppData: vi.fn(),
+  saveAppData: vi.fn(),
+  createDefaultAppData: vi.fn(() => ({
     version: '1.0.0',
     household: {
       adults: 2,
@@ -58,8 +59,8 @@ function TestComponent({
 }
 
 describe('RecommendedItemsProvider', () => {
-  const mockGetAppData = localStorage.getAppData as jest.Mock;
-  const mockSaveAppData = localStorage.saveAppData as jest.Mock;
+  const mockGetAppData = localStorage.getAppData as Mock;
+  const mockSaveAppData = localStorage.saveAppData as Mock;
 
   const validCustomFile: RecommendedItemsFile = {
     meta: {
@@ -90,7 +91,7 @@ describe('RecommendedItemsProvider', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockGetAppData.mockReturnValue(null);
   });
 

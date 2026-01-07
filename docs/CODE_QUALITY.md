@@ -19,7 +19,7 @@ This document describes the code quality tools and CI/CD configuration.
 | TypeScript           | Type checking                          | `tsconfig.json`                                    |
 | Husky                | Git hooks                              | `.husky/`                                          |
 | lint-staged          | Pre-commit checks                      | `package.json`                                     |
-| jest-axe             | Accessibility testing (Jest/axe)       | `jest.config.js` (or `package.json` jest section)  |
+| vitest-axe           | Accessibility testing (Vitest/axe)     | `vite.config.ts` (Vitest configuration)            |
 | @axe-core/playwright | Accessibility testing (Playwright/axe) | `playwright.config.ts` (or `playwright.config.js`) |
 | SonarCloud           | Code quality analysis                  | Configured via SonarCloud website                  |
 | CodeRabbit           | AI code review                         | Configured via CodeRabbit website                  |
@@ -151,7 +151,7 @@ export default tseslint.config(
 | Job         | What It Does                           |
 | ----------- | -------------------------------------- |
 | `lint`      | ESLint + Prettier check                |
-| `test`      | Jest unit/integration tests            |
+| `test`      | Vitest unit/integration tests          |
 | `storybook` | Storybook component tests              |
 | `e2e`       | Playwright E2E tests (Chromium)        |
 | `build`     | Production build (runs after all pass) |
@@ -279,7 +279,7 @@ Codecov configuration is stored in `codecov.yml` and includes:
 
 Codecov is integrated into the CI pipeline via the `test` job in `.github/workflows/ci.yml`:
 
-1. Jest runs tests with coverage collection (`npm run test:coverage`)
+1. Vitest runs tests with coverage collection (`npm run test:coverage`)
 2. Coverage data is uploaded to Codecov using `codecov/codecov-action@v5`
 3. Codecov analyzes coverage and posts a report as a PR comment
 4. Status checks validate that coverage requirements are met
@@ -319,7 +319,7 @@ npm run validate:all   # validate + E2E tests
 | ---------- | ------------------------- |
 | Linting    | Zero ESLint warnings      |
 | Formatting | Prettier check passes     |
-| Tests      | All Jest tests pass       |
+| Tests      | All Vitest tests pass     |
 | Storybook  | Component tests pass      |
 | E2E        | Playwright tests pass     |
 | Build      | Production build succeeds |

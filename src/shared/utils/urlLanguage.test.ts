@@ -1,4 +1,13 @@
 import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type SpyInstance,
+} from 'vitest';
+import {
   extractLanguageFromSearch,
   isSupportedLanguage,
   getLanguageFromUrl,
@@ -60,59 +69,59 @@ describe('urlLanguage', () => {
     let originalSearch: string;
 
     beforeEach(() => {
-      originalSearch = window.location.search;
+      originalSearch = globalThis.location.search;
     });
 
     afterEach(() => {
       // Restore original search by navigating
-      window.history.replaceState(
+      globalThis.history.replaceState(
         {},
         '',
-        window.location.pathname + originalSearch,
+        globalThis.location.pathname + originalSearch,
       );
     });
 
     it('returns language from URL when lang param is present', () => {
-      window.history.replaceState({}, '', '/?lang=fi');
+      globalThis.history.replaceState({}, '', '/?lang=fi');
       expect(getLanguageFromUrl()).toBe('fi');
     });
 
     it('returns null when no lang param in URL', () => {
-      window.history.replaceState({}, '', '/');
+      globalThis.history.replaceState({}, '', '/');
       expect(getLanguageFromUrl()).toBeNull();
     });
 
     it('returns null for unsupported language in URL', () => {
-      window.history.replaceState({}, '', '/?lang=de');
+      globalThis.history.replaceState({}, '', '/?lang=de');
       expect(getLanguageFromUrl()).toBeNull();
     });
 
     it('returns en when lang=en in URL', () => {
-      window.history.replaceState({}, '', '/?lang=en');
+      globalThis.history.replaceState({}, '', '/?lang=en');
       expect(getLanguageFromUrl()).toBe('en');
     });
   });
 
   describe('clearLanguageFromUrl', () => {
     let originalSearch: string;
-    let replaceStateSpy: jest.SpyInstance;
+    let replaceStateSpy: SpyInstance;
 
     beforeEach(() => {
-      originalSearch = window.location.search;
-      replaceStateSpy = jest.spyOn(window.history, 'replaceState');
+      originalSearch = globalThis.location.search;
+      replaceStateSpy = vi.spyOn(globalThis.history, 'replaceState');
     });
 
     afterEach(() => {
       replaceStateSpy.mockRestore();
-      window.history.replaceState(
+      globalThis.history.replaceState(
         {},
         '',
-        window.location.pathname + originalSearch,
+        globalThis.location.pathname + originalSearch,
       );
     });
 
     it('removes lang param and preserves other params', () => {
-      window.history.replaceState({}, '', '/?lang=fi&other=value');
+      globalThis.history.replaceState({}, '', '/?lang=fi&other=value');
       replaceStateSpy.mockClear();
 
       clearLanguageFromUrl();
@@ -124,7 +133,7 @@ describe('urlLanguage', () => {
     });
 
     it('does not call replaceState when no lang param', () => {
-      window.history.replaceState({}, '', '/?other=value');
+      globalThis.history.replaceState({}, '', '/?other=value');
       replaceStateSpy.mockClear();
 
       clearLanguageFromUrl();
@@ -133,7 +142,7 @@ describe('urlLanguage', () => {
     });
 
     it('removes lang param when it is the only param', () => {
-      window.history.replaceState({}, '', '/?lang=en');
+      globalThis.history.replaceState({}, '', '/?lang=en');
       replaceStateSpy.mockClear();
 
       clearLanguageFromUrl();
@@ -148,32 +157,32 @@ describe('urlLanguage', () => {
     let originalSearch: string;
 
     beforeEach(() => {
-      originalSearch = window.location.search;
+      originalSearch = globalThis.location.search;
     });
 
     afterEach(() => {
-      window.history.replaceState(
+      globalThis.history.replaceState(
         {},
         '',
-        window.location.pathname + originalSearch,
+        globalThis.location.pathname + originalSearch,
       );
     });
 
     it('returns URL language when present (overrides stored)', () => {
-      window.history.replaceState({}, '', '/?lang=fi');
+      globalThis.history.replaceState({}, '', '/?lang=fi');
 
       // URL language 'fi' should override stored 'en'
       expect(getInitialLanguage('en')).toBe('fi');
     });
 
     it('returns stored language when no URL parameter', () => {
-      window.history.replaceState({}, '', '/');
+      globalThis.history.replaceState({}, '', '/');
 
       expect(getInitialLanguage('fi')).toBe('fi');
     });
 
     it('returns default "en" when no stored language and no URL param', () => {
-      window.history.replaceState({}, '', '/');
+      globalThis.history.replaceState({}, '', '/');
 
       expect(getInitialLanguage()).toBe('en');
       expect(getInitialLanguage(null)).toBe('en');
@@ -181,19 +190,19 @@ describe('urlLanguage', () => {
     });
 
     it('returns default "en" for unsupported URL lang', () => {
-      window.history.replaceState({}, '', '/?lang=de');
+      globalThis.history.replaceState({}, '', '/?lang=de');
 
       expect(getInitialLanguage()).toBe('en');
     });
 
     it('returns stored language when URL has unsupported lang', () => {
-      window.history.replaceState({}, '', '/?lang=sv');
+      globalThis.history.replaceState({}, '', '/?lang=sv');
 
       expect(getInitialLanguage('fi')).toBe('fi');
     });
 
     it('returns default when URL has empty lang param', () => {
-      window.history.replaceState({}, '', '/?lang=');
+      globalThis.history.replaceState({}, '', '/?lang=');
 
       expect(getInitialLanguage()).toBe('en');
     });

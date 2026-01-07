@@ -347,11 +347,13 @@ const { t } = useTranslation();
 ## Testing Translations
 
 ```typescript
-// Mock i18n for tests
-jest.mock('react-i18next', () => ({
+// Mock i18n for tests (Vitest)
+import { vi } from 'vitest';
+
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
-    i18n: { language: 'en', changeLanguage: jest.fn() },
+    i18n: { language: 'en', changeLanguage: vi.fn() },
   }),
 }));
 ```

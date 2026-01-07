@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Inventory } from './Inventory';
@@ -18,12 +19,12 @@ import {
 } from '@/shared/utils/test/factories';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: {
       language: 'en',
-      changeLanguage: jest.fn(),
+      changeLanguage: vi.fn(),
     },
   }),
 }));
@@ -43,11 +44,11 @@ const renderWithProviders = (component: React.ReactElement) => {
 describe('Inventory Page', () => {
   beforeEach(() => {
     // Mock window.confirm
-    global.confirm = jest.fn(() => true);
+    globalThis.confirm = vi.fn(() => true);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should render inventory page', () => {
@@ -384,7 +385,7 @@ describe('Inventory Page with items', () => {
   });
 
   beforeEach(() => {
-    global.confirm = jest.fn(() => true);
+    globalThis.confirm = vi.fn(() => true);
     // Store items in localStorage
     const appData = createMockAppData({
       household: {
@@ -400,7 +401,7 @@ describe('Inventory Page with items', () => {
 
   afterEach(() => {
     localStorage.clear();
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should display items from inventory', () => {
@@ -503,7 +504,7 @@ describe('Inventory Page with items', () => {
     fireEvent.click(deleteButton);
 
     // confirm was called
-    expect(global.confirm).toHaveBeenCalled();
+    expect(globalThis.confirm).toHaveBeenCalled();
   });
 
   it('should copy item when clicking copy button', async () => {
@@ -751,7 +752,7 @@ describe('Inventory Page - Mark as Enough', () => {
   });
 
   beforeEach(() => {
-    global.confirm = jest.fn(() => true);
+    globalThis.confirm = vi.fn(() => true);
     const appData = createMockAppData({
       household: {
         adults: 2,
@@ -766,7 +767,7 @@ describe('Inventory Page - Mark as Enough', () => {
 
   afterEach(() => {
     localStorage.clear();
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should show mark as enough button in recommended list for item with low quantity', async () => {

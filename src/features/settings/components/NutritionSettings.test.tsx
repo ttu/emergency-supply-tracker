@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { NutritionSettings } from './NutritionSettings';
 import { SettingsContext } from '@/features/settings';
@@ -9,7 +10,7 @@ import {
 } from '@/shared/utils/constants';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, unknown>) => {
       const translations: Record<string, string> = {
@@ -45,7 +46,7 @@ describe('NutritionSettings', () => {
 
   const renderWithContext = (
     settings: ReturnType<typeof createMockSettings> = defaultSettings,
-    updateSettings = jest.fn(),
+    updateSettings = vi.fn(),
   ) => {
     return render(
       <SettingsContext.Provider value={{ settings, updateSettings }}>
@@ -88,7 +89,7 @@ describe('NutritionSettings', () => {
   });
 
   it('calls updateSettings when calories input changes', () => {
-    const updateSettings = jest.fn();
+    const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const caloriesInput = screen.getByLabelText(/daily calories/i);
@@ -100,7 +101,7 @@ describe('NutritionSettings', () => {
   });
 
   it('calls updateSettings when water input changes', () => {
-    const updateSettings = jest.fn();
+    const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const waterInput = screen.getByLabelText(/daily water/i);
@@ -112,7 +113,7 @@ describe('NutritionSettings', () => {
   });
 
   it('calls updateSettings when children percentage changes', () => {
-    const updateSettings = jest.fn();
+    const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const childrenInput = screen.getByLabelText(/children.*requirements/i);
@@ -124,7 +125,7 @@ describe('NutritionSettings', () => {
   });
 
   it('clamps values to minimum', () => {
-    const updateSettings = jest.fn();
+    const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const caloriesInput = screen.getByLabelText(/daily calories/i);
@@ -137,7 +138,7 @@ describe('NutritionSettings', () => {
   });
 
   it('clamps values to maximum', () => {
-    const updateSettings = jest.fn();
+    const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const caloriesInput = screen.getByLabelText(/daily calories/i);
@@ -150,7 +151,7 @@ describe('NutritionSettings', () => {
   });
 
   it('resets all values to defaults when reset button clicked', () => {
-    const updateSettings = jest.fn();
+    const updateSettings = vi.fn();
     const customSettings = createMockSettings({
       ...defaultSettings,
       dailyCaloriesPerPerson: 2500,

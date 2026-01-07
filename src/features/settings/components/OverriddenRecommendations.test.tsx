@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { OverriddenRecommendations } from './OverriddenRecommendations';
@@ -10,7 +11,7 @@ import {
 } from '@/shared/utils/test/factories';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       const translations: Record<string, string> = {

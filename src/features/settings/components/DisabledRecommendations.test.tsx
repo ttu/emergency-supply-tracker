@@ -1,8 +1,9 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { DisabledRecommendations } from './DisabledRecommendations';
 
 // Mock the translation hook
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: { count?: number }) => {
       const translations: Record<string, string> = {
@@ -22,10 +23,10 @@ jest.mock('react-i18next', () => ({
 }));
 
 // Mock the inventory hook
-const mockEnableRecommendedItem = jest.fn();
-const mockEnableAllRecommendedItems = jest.fn();
+const mockEnableRecommendedItem = vi.fn();
+const mockEnableAllRecommendedItems = vi.fn();
 
-jest.mock('@/features/inventory', () => ({
+vi.mock('@/features/inventory', () => ({
   useInventory: () => ({
     disabledRecommendedItems: ['bottled-water', 'long-life-milk'],
     enableRecommendedItem: mockEnableRecommendedItem,
@@ -85,16 +86,16 @@ describe('DisabledRecommendations', () => {
 
 describe('DisabledRecommendations with no disabled items', () => {
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
   });
 
   it('should show empty message when no items are disabled', () => {
     // Re-mock with empty array
-    jest.doMock('@/features/inventory', () => ({
+    vi.doMock('@/features/inventory', () => ({
       useInventory: () => ({
         disabledRecommendedItems: [],
-        enableRecommendedItem: jest.fn(),
-        enableAllRecommendedItems: jest.fn(),
+        enableRecommendedItem: vi.fn(),
+        enableAllRecommendedItems: vi.fn(),
       }),
     }));
 

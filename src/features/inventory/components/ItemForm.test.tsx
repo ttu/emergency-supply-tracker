@@ -1,18 +1,19 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ItemForm } from './ItemForm';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
 describe('ItemForm', () => {
-  const mockOnSubmit = jest.fn();
-  const mockOnCancel = jest.fn();
+  const mockOnSubmit = vi.fn();
+  const mockOnCancel = vi.fn();
 
   beforeEach(() => {
     mockOnSubmit.mockClear();

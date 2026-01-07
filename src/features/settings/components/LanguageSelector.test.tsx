@@ -1,10 +1,11 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LanguageSelector } from './LanguageSelector';
 import { SettingsProvider } from '@/features/settings';
 
 // Mock i18next
-const mockChangeLanguage = jest.fn();
-jest.mock('react-i18next', () => ({
+const mockChangeLanguage = vi.fn();
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: {

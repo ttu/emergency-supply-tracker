@@ -15,6 +15,16 @@ const dirname =
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    include: [
+      '@storybook/addon-vitest',
+      '@storybook/react-vite',
+      'storybook/internal/channels',
+    ],
+  },
+  ssr: {
+    noExternal: ['@storybook/addon-vitest'],
+  },
   resolve: {
     alias: {
       '@': path.resolve(dirname, './src'),
@@ -32,7 +42,49 @@ export default defineConfig({
       ? process.env.VITE_BASE_PATH || '/emergency-supply-tracker/'
       : '/',
   test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts', './src/test/a11y-setup.ts'],
+    exclude: ['**/node_modules/**', '**/e2e/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      include: [
+        'src/**/*.{ts,tsx}',
+        '!src/**/*.d.ts',
+        '!src/**/*.stories.tsx',
+        '!src/main.tsx',
+        '!src/test/**',
+        '!src/i18n/config.ts',
+        '!src/serviceWorker.ts',
+      ],
+      thresholds: {
+        branches: 80,
+        functions: 80,
+        lines: 80,
+        statements: 80,
+      },
+    },
     projects: [
+      // Main test project - runs all unit/integration tests
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          globals: true,
+          environment: 'jsdom',
+          setupFiles: ['./src/test/setup.ts', './src/test/a11y-setup.ts'],
+          include: ['**/*.{test,spec}.{ts,tsx}'],
+          exclude: [
+            '**/node_modules/**',
+            '**/e2e/**',
+            '**/.storybook/**',
+            '**/storybook-static/**',
+            '**/*.stories.{ts,tsx}',
+          ],
+        },
+      },
+      // Storybook test project
       {
         extends: true,
         plugins: [
@@ -40,10 +92,18 @@ export default defineConfig({
           // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
           storybookTest({
             configDir: path.join(dirname, '.storybook'),
+            storybookUrl: 'http://localhost:6006',
           }),
         ],
         test: {
           name: 'storybook',
+          exclude: [
+            '**/node_modules/**',
+            '**/e2e/**',
+            '**/.storybook/**',
+            '**/storybook-static/**',
+            '**/*.{test,spec}.{ts,tsx}',
+          ],
           browser: {
             enabled: true,
             headless: true,

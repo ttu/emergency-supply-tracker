@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { HiddenAlerts } from './HiddenAlerts';
@@ -12,7 +13,7 @@ import {
 } from '@/shared/utils/test/factories';
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: { count?: number; ns?: string }) => {
       // Category translations
@@ -39,26 +40,26 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-const mockReactivateAlert = jest.fn();
-const mockReactivateAllAlerts = jest.fn();
+const mockReactivateAlert = vi.fn();
+const mockReactivateAllAlerts = vi.fn();
 
 const createMockInventoryContext = (
   overrides?: Partial<InventoryContextValue>,
 ): InventoryContextValue => ({
   items: [],
   categories: [],
-  addItem: jest.fn(),
-  addItems: jest.fn(),
-  updateItem: jest.fn(),
-  deleteItem: jest.fn(),
+  addItem: vi.fn(),
+  addItems: vi.fn(),
+  updateItem: vi.fn(),
+  deleteItem: vi.fn(),
   dismissedAlertIds: [],
-  dismissAlert: jest.fn(),
+  dismissAlert: vi.fn(),
   reactivateAlert: mockReactivateAlert,
   reactivateAllAlerts: mockReactivateAllAlerts,
   disabledRecommendedItems: [],
-  disableRecommendedItem: jest.fn(),
-  enableRecommendedItem: jest.fn(),
-  enableAllRecommendedItems: jest.fn(),
+  disableRecommendedItem: vi.fn(),
+  enableRecommendedItem: vi.fn(),
+  enableAllRecommendedItems: vi.fn(),
   ...overrides,
 });
 
@@ -71,8 +72,8 @@ const createMockHouseholdContext = (
     supplyDurationDays: 3,
     useFreezer: false,
   }),
-  updateHousehold: jest.fn(),
-  setPreset: jest.fn(),
+  updateHousehold: vi.fn(),
+  setPreset: vi.fn(),
   ...overrides,
 });
 
@@ -94,7 +95,7 @@ const renderWithContext = (
 
 describe('HiddenAlerts', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should show empty message when no hidden alerts', () => {

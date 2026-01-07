@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InventoryProvider } from './provider';
@@ -7,10 +8,10 @@ import * as localStorage from '@/shared/utils/storage/localStorage';
 import * as analytics from '@/shared/utils/analytics';
 
 // Mock localStorage utilities
-jest.mock('@/shared/utils/storage/localStorage', () => ({
-  getAppData: jest.fn(),
-  saveAppData: jest.fn(),
-  createDefaultAppData: jest.fn(() => ({
+vi.mock('@/shared/utils/storage/localStorage', () => ({
+  getAppData: vi.fn(),
+  saveAppData: vi.fn(),
+  createDefaultAppData: vi.fn(() => ({
     version: '1.0.0',
     household: {
       adults: 2,
@@ -34,17 +35,17 @@ jest.mock('@/shared/utils/storage/localStorage', () => ({
 }));
 
 // Mock analytics
-jest.mock('@/shared/utils/analytics', () => ({
-  trackItemAdded: jest.fn(),
-  trackItemDeleted: jest.fn(),
-  trackItemsBulkAdded: jest.fn(),
+vi.mock('@/shared/utils/analytics', () => ({
+  trackItemAdded: vi.fn(),
+  trackItemDeleted: vi.fn(),
+  trackItemsBulkAdded: vi.fn(),
 }));
 
 // Mock crypto.randomUUID
 const mockUUID = 'test-uuid-123';
 Object.defineProperty(global, 'crypto', {
   value: {
-    randomUUID: jest.fn(() => mockUUID),
+    randomUUID: vi.fn(() => mockUUID),
   },
 });
 
@@ -106,11 +107,11 @@ function TestComponent({
 }
 
 describe('InventoryProvider', () => {
-  const mockGetAppData = localStorage.getAppData as jest.Mock;
-  const mockSaveAppData = localStorage.saveAppData as jest.Mock;
+  const mockGetAppData = localStorage.getAppData as Mock;
+  const mockSaveAppData = localStorage.saveAppData as Mock;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockGetAppData.mockReturnValue(null);
   });
 

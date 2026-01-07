@@ -1,17 +1,16 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import { initReactI18next, I18nextProvider } from 'react-i18next';
 
 // Override the global i18next mock with real implementation for this test
 // ErrorBoundary uses withTranslation HOC which requires real i18next
-jest.mock('react-i18next', () => jest.requireActual('react-i18next'));
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { I18nextProvider } = require('react-i18next');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { ErrorBoundary } = require('./ErrorBoundary');
+vi.mock('react-i18next', async () => {
+  const actual = await vi.importActual('react-i18next');
+  return actual;
+});
+import { ErrorBoundary } from './ErrorBoundary';
 
 // Initialize i18n for tests
 i18n.use(initReactI18next).init({
@@ -53,11 +52,11 @@ describe('ErrorBoundary', () => {
   beforeEach(() => {
     localStorage.clear();
     // Suppress console.error for expected errors
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('renders children when there is no error', () => {
@@ -120,7 +119,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('calls onError callback when error occurs', () => {
-    const handleError = jest.fn();
+    const handleError = vi.fn();
 
     renderWithI18n(
       <ErrorBoundary onError={handleError}>

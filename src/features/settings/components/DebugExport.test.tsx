@@ -1,17 +1,16 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import { initReactI18next, I18nextProvider } from 'react-i18next';
 import * as errorLogger from '@/shared/utils/errorLogger';
 
 // Use real react-i18next for this test since it uses I18nextProvider with real translations
-jest.mock('react-i18next', () => jest.requireActual('react-i18next'));
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { I18nextProvider } = require('react-i18next');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { DebugExport } = require('./DebugExport');
+vi.mock('react-i18next', async () => {
+  const actual = await vi.importActual('react-i18next');
+  return actual;
+});
+import { DebugExport } from './DebugExport';
 
 // Initialize i18n for tests
 i18n.use(initReactI18next).init({
@@ -38,7 +37,7 @@ i18n.use(initReactI18next).init({
 describe('DebugExport', () => {
   beforeEach(() => {
     localStorage.clear();
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('renders export button', () => {
@@ -67,7 +66,7 @@ describe('DebugExport', () => {
 
   it('calls downloadDebugExport when button is clicked', async () => {
     const user = userEvent.setup();
-    const downloadSpy = jest
+    const downloadSpy = vi
       .spyOn(errorLogger, 'downloadDebugExport')
       .mockImplementation(() => {});
 
@@ -83,7 +82,7 @@ describe('DebugExport', () => {
   });
 
   it('shows log count when logs exist', () => {
-    jest.spyOn(errorLogger, 'getLogCount').mockReturnValue(5);
+    vi.spyOn(errorLogger, 'getLogCount').mockReturnValue(5);
 
     render(
       <I18nextProvider i18n={i18n}>
@@ -95,7 +94,7 @@ describe('DebugExport', () => {
   });
 
   it('does not show log count when no logs exist', () => {
-    jest.spyOn(errorLogger, 'getLogCount').mockReturnValue(0);
+    vi.spyOn(errorLogger, 'getLogCount').mockReturnValue(0);
 
     render(
       <I18nextProvider i18n={i18n}>

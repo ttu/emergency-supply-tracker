@@ -1,4 +1,11 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import {
+  render,
+  screen,
+  waitFor,
+  act,
+  fireEvent,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Tooltip } from './Tooltip';
 
@@ -24,57 +31,55 @@ describe('Tooltip', () => {
   });
 
   it('should show tooltip on mouse enter after delay', async () => {
-    jest.useFakeTimers();
-    const user = userEvent.setup({ delay: null });
-    render(
-      <Tooltip content="Test tooltip" delay={200}>
-        <button>Trigger</button>
-      </Tooltip>,
-    );
+    vi.useFakeTimers();
+    try {
+      render(
+        <Tooltip content="Test tooltip" delay={200}>
+          <button>Trigger</button>
+        </Tooltip>,
+      );
 
-    const trigger = screen.getByText('Trigger');
-    await user.hover(trigger);
+      const trigger = screen.getByText('Trigger');
+      fireEvent.mouseEnter(trigger);
 
-    // Fast-forward past the delay
-    await act(async () => {
-      jest.advanceTimersByTime(200);
-    });
+      // Fast-forward past the delay
+      await act(async () => {
+        vi.advanceTimersByTime(200);
+      });
 
-    await waitFor(() => {
+      // Direct assertion - no waitFor with fake timers
       expect(screen.getByRole('tooltip')).toBeInTheDocument();
       expect(screen.getByText('Test tooltip')).toBeInTheDocument();
-    });
-
-    jest.useRealTimers();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('should hide tooltip on mouse leave', async () => {
-    jest.useFakeTimers();
-    const user = userEvent.setup({ delay: null });
-    render(
-      <Tooltip content="Test tooltip" delay={200}>
-        <button>Trigger</button>
-      </Tooltip>,
-    );
+    vi.useFakeTimers();
+    try {
+      render(
+        <Tooltip content="Test tooltip" delay={200}>
+          <button>Trigger</button>
+        </Tooltip>,
+      );
 
-    const trigger = screen.getByText('Trigger');
-    await user.hover(trigger);
+      const trigger = screen.getByText('Trigger');
+      fireEvent.mouseEnter(trigger);
 
-    await act(async () => {
-      jest.advanceTimersByTime(200);
-    });
+      await act(async () => {
+        vi.advanceTimersByTime(200);
+      });
 
-    await waitFor(() => {
       expect(screen.getByRole('tooltip')).toBeInTheDocument();
-    });
 
-    await user.unhover(trigger);
+      fireEvent.mouseLeave(trigger);
 
-    await waitFor(() => {
+      // Tooltip should hide immediately on mouse leave
       expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-    });
-
-    jest.useRealTimers();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('should show tooltip on focus', async () => {
@@ -130,58 +135,59 @@ describe('Tooltip', () => {
   });
 
   it('should cancel tooltip if mouse leaves before delay', async () => {
-    jest.useFakeTimers();
-    const user = userEvent.setup({ delay: null });
-    render(
-      <Tooltip content="Test tooltip" delay={500}>
-        <button>Trigger</button>
-      </Tooltip>,
-    );
+    vi.useFakeTimers();
+    try {
+      render(
+        <Tooltip content="Test tooltip" delay={500}>
+          <button>Trigger</button>
+        </Tooltip>,
+      );
 
-    const trigger = screen.getByText('Trigger');
-    await user.hover(trigger);
+      const trigger = screen.getByText('Trigger');
+      fireEvent.mouseEnter(trigger);
 
-    await act(async () => {
-      jest.advanceTimersByTime(200);
-    });
+      await act(async () => {
+        vi.advanceTimersByTime(200);
+      });
 
-    await user.unhover(trigger);
+      fireEvent.mouseLeave(trigger);
 
-    await act(async () => {
-      jest.advanceTimersByTime(500);
-    });
+      await act(async () => {
+        vi.advanceTimersByTime(500);
+      });
 
-    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-
-    jest.useRealTimers();
+      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('should render with custom delay', async () => {
-    jest.useFakeTimers();
-    const user = userEvent.setup({ delay: null });
-    render(
-      <Tooltip content="Test tooltip" delay={1000}>
-        <button>Trigger</button>
-      </Tooltip>,
-    );
+    vi.useFakeTimers();
+    try {
+      render(
+        <Tooltip content="Test tooltip" delay={1000}>
+          <button>Trigger</button>
+        </Tooltip>,
+      );
 
-    const trigger = screen.getByText('Trigger');
-    await user.hover(trigger);
+      const trigger = screen.getByText('Trigger');
+      fireEvent.mouseEnter(trigger);
 
-    // Before delay completes
-    await act(async () => {
-      jest.advanceTimersByTime(500);
-    });
-    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+      // Before delay completes
+      await act(async () => {
+        vi.advanceTimersByTime(500);
+      });
+      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 
-    // After delay completes
-    await act(async () => {
-      jest.advanceTimersByTime(500);
-    });
-    await waitFor(() => {
+      // After delay completes
+      await act(async () => {
+        vi.advanceTimersByTime(500);
+      });
+      // Direct assertion - no waitFor with fake timers
       expect(screen.getByRole('tooltip')).toBeInTheDocument();
-    });
-
-    jest.useRealTimers();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

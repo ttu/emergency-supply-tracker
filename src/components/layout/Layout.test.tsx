@@ -1,5 +1,6 @@
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 import { Layout } from './Layout';
 import { Header } from './Header';
 import { Footer } from './Footer';

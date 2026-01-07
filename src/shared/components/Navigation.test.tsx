@@ -1,8 +1,9 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Navigation } from './Navigation';
 
 describe('Navigation', () => {
-  const mockOnNavigate = jest.fn();
+  const mockOnNavigate = vi.fn();
 
   beforeEach(() => {
     mockOnNavigate.mockClear();

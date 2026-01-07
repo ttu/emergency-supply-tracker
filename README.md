@@ -30,7 +30,7 @@ A web-based emergency supply tracking application that helps households manage t
 - **LocalStorage** (no backend required)
 - **CSS Modules** for styling
 - **Storybook** for component development
-- **Jest 30** + **React Testing Library** for integration tests (70% of test suite)
+- **Vitest 4** + **React Testing Library** for integration tests (70% of test suite)
 - **Playwright 1.57** for E2E tests (20% of test suite)
 - **react-i18next** for internationalization
 
@@ -85,7 +85,7 @@ npm run dev              # Start dev server
 npm run storybook        # Start Storybook component explorer
 
 # Testing
-npm run test            # Run Jest tests
+npm run test            # Run Vitest tests
 npm run test:watch      # Run tests in watch mode
 npm run test:coverage   # Generate coverage report
 npm run test:e2e        # Run Playwright E2E tests
@@ -118,15 +118,15 @@ The project uses:
 - **Prettier** for code formatting
 - **TypeScript** for type safety
 - **Husky** + **lint-staged** for pre-commit hooks
-- **Jest** for unit and integration tests
+- **Vitest** for unit and integration tests
 - **Playwright** for E2E tests
-- **jest-axe** and **@axe-core/playwright** for accessibility testing
+- **vitest-axe** and **@axe-core/playwright** for accessibility testing
 
 ### Testing Strategy
 
 We use the **Testing Diamond** approach:
 
-- **70% Integration Tests**: Jest + React Testing Library
+- **70% Integration Tests**: Vitest + React Testing Library
 - **20% E2E Tests**: Playwright
 - **10% Unit Tests**: Pure business logic
 

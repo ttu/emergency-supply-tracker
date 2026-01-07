@@ -1,10 +1,10 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AlertBanner } from './AlertBanner';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -82,7 +82,7 @@ describe('AlertBanner', () => {
 
   it('calls onDismiss when dismiss button is clicked', async () => {
     const user = userEvent.setup();
-    const onDismiss = jest.fn();
+    const onDismiss = vi.fn();
 
     render(
       <AlertBanner

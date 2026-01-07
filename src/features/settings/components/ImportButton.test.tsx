@@ -1,27 +1,30 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { beforeEach, afterEach, jest } from '@jest/globals';
+import { beforeEach, afterEach, vi, type Mock, type SpyInstance } from 'vitest';
 import { ImportButton } from './ImportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 
 // Mock localStorage utilities
-jest.mock('@/shared/utils/storage/localStorage', () => ({
-  importFromJSON: jest.fn(),
-  saveAppData: jest.fn(),
+vi.mock('@/shared/utils/storage/localStorage', () => ({
+  importFromJSON: vi.fn(),
+  saveAppData: vi.fn(),
 }));
 
 describe('ImportButton', () => {
-  const mockImportFromJSON = localStorage.importFromJSON as jest.Mock;
-  const mockSaveAppData = localStorage.saveAppData as jest.Mock;
+  const mockImportFromJSON = localStorage.importFromJSON as Mock;
+  const mockSaveAppData = localStorage.saveAppData as Mock;
 
-  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+  let consoleErrorSpy: SpyInstance;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    global.alert = jest.fn();
-    global.confirm = jest.fn(() => true);
+    vi.clearAllMocks();
+    global.alert = vi.fn();
+    global.confirm = vi.fn(() => true);
     // Suppress console.error output from expected error handling in tests
-    // This includes errors from window.location.reload() which jsdom doesn't implement
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    // Mock window.location.reload to prevent jsdom navigation errors
+    globalThis.location = {
+      reload: vi.fn(),
+    } as unknown as Location;
   });
 
   afterEach(() => {
@@ -50,7 +53,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const clickSpy = jest.spyOn(fileInput, 'click');
+    const clickSpy = vi.spyOn(fileInput, 'click');
 
     const button = screen.getByText('settings.import.button');
     fireEvent.click(button);
@@ -68,7 +71,7 @@ describe('ImportButton', () => {
     };
 
     mockImportFromJSON.mockReturnValue(validData);
-    const onImportSuccess = jest.fn();
+    const onImportSuccess = vi.fn();
 
     render(<ImportButton onImportSuccess={onImportSuccess} />);
 
@@ -133,7 +136,7 @@ describe('ImportButton', () => {
     };
 
     mockImportFromJSON.mockReturnValue(validData);
-    (global.confirm as jest.Mock).mockReturnValue(false);
+    (global.confirm as Mock).mockReturnValue(false);
 
     render(<ImportButton />);
 

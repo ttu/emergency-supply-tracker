@@ -1,10 +1,10 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WelcomeScreen } from './WelcomeScreen';
 
 // Mock the hooks
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -31,14 +31,14 @@ jest.mock('react-i18next', () => ({
       return translations[key] || key;
     },
     i18n: {
-      changeLanguage: jest.fn(() => Promise.resolve()),
+      changeLanguage: vi.fn(() => Promise.resolve()),
     },
   }),
 }));
 
-const mockUpdateSettings = jest.fn();
+const mockUpdateSettings = vi.fn();
 
-jest.mock('@/features/settings', () => ({
+vi.mock('@/features/settings', () => ({
   useSettings: () => ({
     settings: { language: 'en' },
     updateSettings: mockUpdateSettings,
@@ -47,7 +47,7 @@ jest.mock('@/features/settings', () => ({
 
 describe('WelcomeScreen', () => {
   it('renders the welcome screen with title and tagline', () => {
-    const onContinue = jest.fn();
+    const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
     expect(screen.getByText('Emergency Supply Tracker')).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe('WelcomeScreen', () => {
   });
 
   it('renders language selector', () => {
-    const onContinue = jest.fn();
+    const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
     expect(screen.getByLabelText('Language')).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe('WelcomeScreen', () => {
   });
 
   it('renders feature highlights', () => {
-    const onContinue = jest.fn();
+    const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
     expect(screen.getByText('Track Supplies')).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe('WelcomeScreen', () => {
   });
 
   it('renders selling points', () => {
-    const onContinue = jest.fn();
+    const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
     expect(screen.getByText('No Signup Required')).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe('WelcomeScreen', () => {
 
   it('calls onContinue when Get Started button is clicked', async () => {
     const user = userEvent.setup();
-    const onContinue = jest.fn();
+    const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
     const button = screen.getByRole('button', { name: /get started/i });
@@ -95,7 +95,7 @@ describe('WelcomeScreen', () => {
   });
 
   it('renders language options', () => {
-    const onContinue = jest.fn();
+    const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
     expect(screen.getByText('English')).toBeInTheDocument();
@@ -103,7 +103,7 @@ describe('WelcomeScreen', () => {
   });
 
   it('renders works offline selling point', () => {
-    const onContinue = jest.fn();
+    const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
     expect(screen.getByText('Works Offline')).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe('WelcomeScreen', () => {
   it('calls updateSettings when language selector is changed', async () => {
     mockUpdateSettings.mockClear();
     const user = userEvent.setup();
-    const onContinue = jest.fn();
+    const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
     const languageSelect = screen.getByRole('combobox');
