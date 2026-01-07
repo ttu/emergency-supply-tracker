@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+} from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ExportButton } from './ExportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
@@ -8,11 +16,32 @@ import { createMockAppData } from '@/shared/utils/test/factories';
 vi.mock('@/shared/utils/storage/localStorage');
 
 describe('ExportButton', () => {
+  let createElementSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
     globalThis.alert = vi.fn();
     globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
     globalThis.URL.revokeObjectURL = vi.fn();
+
+    // Mock anchor element click to prevent jsdom navigation errors
+    // Access prototype method directly to avoid circular reference
+    const originalCreateElement =
+      HTMLDocument.prototype.createElement.bind(document);
+    createElementSpy = vi
+      .spyOn(document, 'createElement')
+      .mockImplementation((tagName: string) => {
+        const element = originalCreateElement(tagName);
+        if (tagName === 'a') {
+          // Mock click to prevent navigation
+          element.click = vi.fn();
+        }
+        return element;
+      });
+  });
+
+  afterEach(() => {
+    createElementSpy.mockRestore();
   });
 
   it('should render export button', () => {

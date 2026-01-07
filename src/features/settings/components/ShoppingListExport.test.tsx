@@ -49,11 +49,32 @@ const renderWithContext = (
 };
 
 describe('ShoppingListExport', () => {
+  let createElementSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
     globalThis.alert = vi.fn();
     globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
     globalThis.URL.revokeObjectURL = vi.fn();
+
+    // Mock anchor element click to prevent jsdom navigation errors
+    // Access prototype method directly to avoid circular reference
+    const originalCreateElement =
+      HTMLDocument.prototype.createElement.bind(document);
+    createElementSpy = vi
+      .spyOn(document, 'createElement')
+      .mockImplementation((tagName: string) => {
+        const element = originalCreateElement(tagName);
+        if (tagName === 'a') {
+          // Mock click to prevent navigation
+          element.click = vi.fn();
+        }
+        return element;
+      });
+  });
+
+  afterEach(() => {
+    createElementSpy.mockRestore();
   });
 
   afterEach(() => {

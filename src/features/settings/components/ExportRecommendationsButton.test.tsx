@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ExportRecommendationsButton } from './ExportRecommendationsButton';
 
@@ -18,6 +18,8 @@ vi.mock('@/features/templates', () => ({
 }));
 
 describe('ExportRecommendationsButton', () => {
+  let createElementSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockExportRecommendedItems.mockReturnValue({
@@ -28,6 +30,25 @@ describe('ExportRecommendationsButton', () => {
       },
       items: [],
     });
+
+    // Mock anchor element click to prevent jsdom navigation errors
+    // Access prototype method directly to avoid circular reference
+    const originalCreateElement =
+      HTMLDocument.prototype.createElement.bind(document);
+    createElementSpy = vi
+      .spyOn(document, 'createElement')
+      .mockImplementation((tagName: string) => {
+        const element = originalCreateElement(tagName);
+        if (tagName === 'a') {
+          // Mock click to prevent navigation
+          element.click = vi.fn();
+        }
+        return element;
+      });
+  });
+
+  afterEach(() => {
+    createElementSpy.mockRestore();
   });
 
   it('should render export button', () => {
