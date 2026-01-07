@@ -47,7 +47,7 @@ function validateCategoryInput(
   existingCategories: Category[] = [],
 ): void {
   // Required fields
-  if (!input.name || !input.name.trim()) {
+  if (!input.name?.trim()) {
     throw new CategoryValidationError('name is required and cannot be empty');
   }
 

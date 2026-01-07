@@ -117,9 +117,15 @@ function validateNonNegative(
  */
 function validateItemInput(input: CreateItemInput): void {
   // Required fields
-  if (!input.name || !input.name.trim()) {
+  if (!input.name?.trim()) {
     throw new InventoryItemValidationError(
       'name is required and cannot be empty',
+    );
+  }
+
+  if (!input.itemType?.trim()) {
+    throw new InventoryItemValidationError(
+      'itemType is required and cannot be empty',
     );
   }
 
@@ -218,9 +224,7 @@ export class InventoryItemFactory {
       // Ensure optional fields are undefined if not provided
       location: input.location?.trim() || undefined,
       notes: input.notes?.trim() || undefined,
-      productTemplateId: input.productTemplateId
-        ? (input.productTemplateId as ProductTemplateId)
-        : undefined,
+      productTemplateId: input.productTemplateId || undefined,
     };
   }
 

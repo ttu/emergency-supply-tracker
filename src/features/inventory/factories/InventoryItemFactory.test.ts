@@ -132,6 +132,34 @@ describe('InventoryItemFactory', () => {
       }).toThrow(InventoryItemValidationError);
     });
 
+    it('throws error when itemType is missing', () => {
+      expect(() => {
+        // @ts-expect-error - Testing invalid input
+        InventoryItemFactory.create({
+          ...validInput,
+          itemType: undefined,
+        });
+      }).toThrow(InventoryItemValidationError);
+    });
+
+    it('throws error when itemType is empty', () => {
+      expect(() => {
+        InventoryItemFactory.create({
+          ...validInput,
+          itemType: '',
+        });
+      }).toThrow(InventoryItemValidationError);
+    });
+
+    it('throws error when itemType is only whitespace', () => {
+      expect(() => {
+        InventoryItemFactory.create({
+          ...validInput,
+          itemType: '   ',
+        });
+      }).toThrow(InventoryItemValidationError);
+    });
+
     it('throws error when categoryId is missing', () => {
       expect(() => {
         // @ts-expect-error - Testing invalid input

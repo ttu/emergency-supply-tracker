@@ -55,9 +55,7 @@ function isValidUnit(unit: string | undefined): unit is Unit {
 /**
  * Validates that a category is a valid StandardCategoryId or non-empty string.
  */
-function isValidCategory(
-  category: StandardCategoryId | string | undefined,
-): boolean {
+function isValidCategory(category: string | undefined): boolean {
   if (!category) return false;
   if (typeof category !== 'string') return false;
 
@@ -99,13 +97,9 @@ function isValidProductKind(kind: string | undefined): kind is ProductKind {
 }
 
 /**
- * Validates template input.
+ * Validates name/i18nKey requirements.
  */
-function validateTemplateInput(input: CreateProductTemplateInput): void {
-  // Validate name OR i18nKey (mutually exclusive)
-  const hasName = input.name && input.name.trim().length > 0;
-  const hasI18nKey = input.i18nKey && input.i18nKey.trim().length > 0;
-
+function validateNameOrI18nKey(hasName: boolean, hasI18nKey: boolean): void {
   if (!hasName && !hasI18nKey) {
     throw new ProductTemplateValidationError(
       'Either name or i18nKey is required',
@@ -117,6 +111,45 @@ function validateTemplateInput(input: CreateProductTemplateInput): void {
       'Cannot specify both name and i18nKey. Use name for custom templates, i18nKey for built-in templates.',
     );
   }
+}
+
+/**
+ * Validates template flags and their consistency with name/i18nKey.
+ */
+function validateTemplateFlags(
+  hasName: boolean,
+  hasI18nKey: boolean,
+  isBuiltIn: boolean | undefined,
+  isCustom: boolean | undefined,
+): void {
+  if (isBuiltIn && isCustom) {
+    throw new ProductTemplateValidationError(
+      'Template cannot be both built-in and custom',
+    );
+  }
+
+  if (isCustom && !hasName) {
+    throw new ProductTemplateValidationError(
+      'Custom templates must have a name (not i18nKey)',
+    );
+  }
+
+  if (isBuiltIn && !hasI18nKey) {
+    throw new ProductTemplateValidationError(
+      'Built-in templates should have i18nKey (not name)',
+    );
+  }
+}
+
+/**
+ * Validates template input.
+ */
+function validateTemplateInput(input: CreateProductTemplateInput): void {
+  // Validate name OR i18nKey (mutually exclusive)
+  const hasName = Boolean(input.name?.trim());
+  const hasI18nKey = Boolean(input.i18nKey?.trim());
+
+  validateNameOrI18nKey(hasName, hasI18nKey);
 
   // Validate category
   if (!isValidCategory(input.category)) {
@@ -139,26 +172,8 @@ function validateTemplateInput(input: CreateProductTemplateInput): void {
     );
   }
 
-  // Validate isBuiltIn and isCustom flags
-  if (input.isBuiltIn && input.isCustom) {
-    throw new ProductTemplateValidationError(
-      'Template cannot be both built-in and custom',
-    );
-  }
-
-  // Custom templates must have name (not i18nKey)
-  if (input.isCustom && !hasName) {
-    throw new ProductTemplateValidationError(
-      'Custom templates must have a name (not i18nKey)',
-    );
-  }
-
-  // Built-in templates should have i18nKey (not name)
-  if (input.isBuiltIn && !hasI18nKey) {
-    throw new ProductTemplateValidationError(
-      'Built-in templates should have i18nKey (not name)',
-    );
-  }
+  // Validate flags
+  validateTemplateFlags(hasName, hasI18nKey, input.isBuiltIn, input.isCustom);
 }
 
 /**

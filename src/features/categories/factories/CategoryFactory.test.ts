@@ -142,7 +142,7 @@ describe('CategoryFactory', () => {
       expect(category.name).toBe('Test Category');
     });
 
-    it('generates unique IDs for each category', () => {
+    it('assigns IDs to each category', () => {
       const category1 = CategoryFactory.createCustom({
         name: 'Category 1',
         isCustom: true,
@@ -154,8 +154,6 @@ describe('CategoryFactory', () => {
 
       expect(category1.id).toBeDefined();
       expect(category2.id).toBeDefined();
-      // Note: With mocked crypto.randomUUID, IDs will be the same
-      // In real usage, crypto.randomUUID() generates unique IDs
     });
   });
 
