@@ -146,9 +146,8 @@ test.describe('Shopping List Export Formats', () => {
     });
     await expect(exportButton).toBeVisible();
 
-    // Button might be disabled or enabled depending on whether quantity >= recommended
-    // This is a soft check - the button exists
-    await expect(exportButton).toBeVisible();
+    // Assert that the export button is disabled when no items need restocking
+    await expect(exportButton).toBeDisabled();
   });
 
   test('should include only items needing restocking in export', async ({

@@ -16,8 +16,8 @@ test.describe('Theme Switching', () => {
     await themeSelect.selectOption('dark');
 
     // Verify theme is applied to document
-    const themeAttribute = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
+    const themeAttribute = await page.evaluate(
+      () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('dark');
   });
@@ -30,8 +30,8 @@ test.describe('Theme Switching', () => {
     await themeSelect.selectOption('midnight');
 
     // Verify theme is set
-    let themeAttribute = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
+    let themeAttribute = await page.evaluate(
+      () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('midnight');
 
@@ -43,8 +43,8 @@ test.describe('Theme Switching', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify theme persisted on document
-    themeAttribute = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
+    themeAttribute = await page.evaluate(
+      () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('midnight');
 
@@ -79,8 +79,8 @@ test.describe('Theme Switching', () => {
       await themeSelect.selectOption(theme);
 
       // Verify theme is applied immediately
-      const themeAttribute = await page.evaluate(() =>
-        document.documentElement.getAttribute('data-theme'),
+      const themeAttribute = await page.evaluate(
+        () => document.documentElement.dataset.theme,
       );
       expect(themeAttribute).toBe(theme);
     }
@@ -102,8 +102,8 @@ test.describe('Theme Switching', () => {
     expect(newState).toBe(!initialState);
 
     // Verify high contrast attribute is set
-    const highContrastAttribute = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-high-contrast'),
+    const highContrastAttribute = await page.evaluate(
+      () => document.documentElement.dataset.highContrast,
     );
     expect(highContrastAttribute).toBe(newState ? 'true' : 'false');
   });
@@ -140,20 +140,20 @@ test.describe('Theme Switching', () => {
 
     // Navigate to different pages and verify theme persists
     await page.click('text=Dashboard');
-    let themeAttribute = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
+    let themeAttribute = await page.evaluate(
+      () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('forest');
 
     await page.click('text=Inventory');
-    themeAttribute = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
+    themeAttribute = await page.evaluate(
+      () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('forest');
 
     await page.click('text=Settings');
-    themeAttribute = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
+    themeAttribute = await page.evaluate(
+      () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('forest');
   });

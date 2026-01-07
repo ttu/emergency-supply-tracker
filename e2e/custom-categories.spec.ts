@@ -211,15 +211,20 @@ test.describe('Custom Categories', () => {
     // Dashboard shows category cards, custom categories should be included
     await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
 
+    // Verify dashboard loaded successfully
+    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
+
     // Category might be shown as a card or in a list
     // This is a soft check - custom categories are supported in the data model
+    // but may not be fully integrated in the dashboard UI yet
     const categoryVisible = await page
       .getByText(/Custom Supplies|📦/i)
       .isVisible()
       .catch(() => false);
 
-    // If not visible, at least verify dashboard loads
-    expect(categoryVisible || true).toBe(true);
+    // Assert the actual category visibility value
+    // This will fail if categoryVisible is false, ensuring the test validates visibility
+    expect(categoryVisible).toBe(true);
   });
 
   test('should allow filtering by custom category', async ({ page }) => {

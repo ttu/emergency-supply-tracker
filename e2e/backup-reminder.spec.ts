@@ -220,12 +220,17 @@ test.describe('Backup Reminder', () => {
 
     // Navigate back to Dashboard
     await page.click('text=Dashboard');
+    await page.waitForLoadState('networkidle');
 
     // Reminder should be gone (backup date was recorded)
-    // Note: The reminder logic checks if data was modified after backup
-    // Since we're using old lastModified, reminder might still show
-    // This test verifies the export functionality works
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
+    // The backup reminder logic checks if data was modified after backup
+    // Since lastModified is old (31 days ago) and lastBackupDate is now (after export),
+    // the condition lastModified <= lastBackupDate should be true, so reminder should not show
+    await expect(page.getByText(/backup|Backup|varmuuskopio/i)).not.toBeVisible(
+      {
+        timeout: 3000,
+      },
+    );
   });
 
   test('should show reminder on dashboard when conditions are met', async ({

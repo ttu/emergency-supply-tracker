@@ -21,19 +21,18 @@ test.describe('Advanced Features', () => {
       return;
     }
 
-    // Find calorie tracking checkbox - look for any checkbox that might be related
-    // Since the exact structure is unknown, we'll use a more flexible approach
-    const calorieCheckbox = page.locator('input[type="checkbox"]').first();
+    // Use the first checkbox for calorie tracking
+    const calorieCheckbox = allCheckboxes.nth(0);
 
-    // Enable calorie tracking
+    // Enable calorie tracking (click only if not already checked)
     const initialState = await calorieCheckbox.isChecked();
     if (!initialState) {
       await calorieCheckbox.click();
     }
 
-    // Verify the checkbox state changed
+    // Verify calorie tracking is enabled
     const newState = await calorieCheckbox.isChecked();
-    expect(newState).toBe(!initialState);
+    expect(newState).toBe(true);
 
     // Note: Verifying that calorie data appears on dashboard depends on
     // the actual implementation. The toggle functionality is tested here.
@@ -49,23 +48,24 @@ test.describe('Advanced Features', () => {
     const allCheckboxes = page.locator('input[type="checkbox"]');
     const checkboxCount = await allCheckboxes.count();
 
-    if (checkboxCount === 0) {
+    // Need at least 2 checkboxes for this test (water tracking is the second one)
+    if (checkboxCount < 2) {
       test.skip();
       return;
     }
 
-    // Use a flexible approach to find checkboxes
-    const waterCheckbox = page.locator('input[type="checkbox"]').first();
+    // Use the second checkbox for water tracking
+    const waterCheckbox = allCheckboxes.nth(1);
 
-    // Enable water tracking
+    // Enable water tracking (click only if not already checked)
     const initialState = await waterCheckbox.isChecked();
     if (!initialState) {
       await waterCheckbox.click();
     }
 
-    // Verify the checkbox state changed
+    // Verify water tracking is enabled
     const newState = await waterCheckbox.isChecked();
-    expect(newState).toBe(!initialState);
+    expect(newState).toBe(true);
 
     // Note: Verifying that water data appears on dashboard depends on
     // the actual implementation. The toggle functionality is tested here.
@@ -80,22 +80,24 @@ test.describe('Advanced Features', () => {
     const allCheckboxes = page.locator('input[type="checkbox"]');
     const checkboxCount = await allCheckboxes.count();
 
-    if (checkboxCount === 0) {
+    // Need at least 3 checkboxes for this test (power management is the third one)
+    if (checkboxCount < 3) {
       test.skip();
       return;
     }
 
-    const powerCheckbox = page.locator('input[type="checkbox"]').first();
+    // Use the third checkbox for power management
+    const powerCheckbox = allCheckboxes.nth(2);
 
-    // Enable power management
+    // Enable power management (click only if not already checked)
     const initialState = await powerCheckbox.isChecked();
     if (!initialState) {
       await powerCheckbox.click();
     }
 
-    // Verify the checkbox state changed
+    // Verify power management is enabled
     const newState = await powerCheckbox.isChecked();
-    expect(newState).toBe(!initialState);
+    expect(newState).toBe(true);
 
     // Note: Verifying that power data appears on dashboard depends on
     // the actual implementation. The toggle functionality is tested here.

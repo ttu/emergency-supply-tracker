@@ -30,11 +30,13 @@ test.describe('Item Status Indicators', () => {
 
     // Look for OK status indicator (checkmark, green badge, or "OK" text)
     // Status might be shown as icon, badge, or text
-    // If no specific indicator found, at least verify item is visible and not showing warning/critical
+    // Assert each locator separately
     await expect(
       itemCard.locator(
         '[class*="status"], [class*="ok"], [aria-label*="ok" i], [aria-label*="sufficient" i]',
       ),
+    ).not.toBeVisible();
+    await expect(
       itemCard.locator('text=/critical|warning|low/i'),
     ).not.toBeVisible();
   });
@@ -62,10 +64,16 @@ test.describe('Item Status Indicators', () => {
     const itemCard = page.locator('text=Warning Status Item').locator('..');
     await expect(itemCard).toBeVisible();
 
-    // Look for warning indicator (warning icon, yellow badge, or "Warning" text)
-    // Status might be shown visually, so we check the item is visible
-    // and verify it's not showing critical status
-    await expect(itemCard).toBeVisible();
+    // Verify warning indicator is present (warning icon, yellow badge, or "Warning" text)
+    const warningIndicator = itemCard.locator(
+      '[class*="warning"], [class*="status-warning"], [aria-label*="warning" i], text=/Warning|Varoitus/i',
+    );
+    await expect(warningIndicator).toBeVisible({ timeout: 5000 });
+
+    // Verify it does not show Critical indicator
+    await expect(
+      itemCard.locator('text=/critical|Critical|Kriittinen/i'),
+    ).not.toBeVisible();
   });
 
   test('should show Critical status for item with zero quantity', async ({

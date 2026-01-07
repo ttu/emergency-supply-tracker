@@ -20,7 +20,11 @@ test.describe('Item Expiration Tracking', () => {
 
     // Uncheck "Never Expires" and set expiration date
     await page.uncheck('input[type="checkbox"]');
-    await page.fill('input[type="date"]', '2025-12-31');
+    // Compute future date (30 days from now) to ensure item is not expired
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 30);
+    const futureDateString = futureDate.toISOString().split('T')[0];
+    await page.fill('input[type="date"]', futureDateString);
 
     await page.click('button[type="submit"]');
 
@@ -154,7 +158,11 @@ test.describe('Item Expiration Tracking', () => {
 
     // Uncheck neverExpires and set expiration
     await page.uncheck('input[type="checkbox"]');
-    await page.fill('input[type="date"]', '2025-12-31');
+    // Compute future date (30 days from now) to ensure item is not expired
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 30);
+    const futureDateString = futureDate.toISOString().split('T')[0];
+    await page.fill('input[type="date"]', futureDateString);
     await page.click('button[type="submit"]');
 
     // Verify item still exists
@@ -173,7 +181,11 @@ test.describe('Item Expiration Tracking', () => {
     await page.fill('input[name="quantity"]', '3');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.uncheck('input[type="checkbox"]');
-    await page.fill('input[type="date"]', '2025-12-31');
+    // Compute future date (30 days from now) to ensure item is not expired
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 30);
+    const futureDateString = futureDate.toISOString().split('T')[0];
+    await page.fill('input[type="date"]', futureDateString);
     await page.click('button[type="submit"]');
 
     // Item card should show expiration date (format may vary)
@@ -181,6 +193,7 @@ test.describe('Item Expiration Tracking', () => {
     // Look for the expiration emoji and date format
     const itemCard = page.locator('text=Item With Date').locator('..');
     await expect(itemCard).toBeVisible();
+
     // Date is formatted using toLocaleDateString, so format varies by locale
     // The expiration section shows an emoji (📅) and formatted date
     // Check for either the emoji or expiration-related text
@@ -188,8 +201,10 @@ test.describe('Item Expiration Tracking', () => {
       .locator('text=/📅|Expires|Vanhenee|expiration/i')
       .isVisible()
       .catch(() => false);
-    // If expiration section not visible, the date might be far in future and not shown
-    // Just verify item card exists with the item name
-    expect(hasExpiration || (await itemCard.isVisible())).toBe(true);
+
+    // Assert that expiration date is displayed on the item card
+    // Note: If expiration is not visible, it may indicate a UI issue or the date
+    // might be formatted differently than expected, but we expect it to be shown
+    expect(hasExpiration).toBe(true);
   });
 });

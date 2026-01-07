@@ -232,10 +232,21 @@ test.describe('Hidden Alerts Management', () => {
     const dismissButtons = page.locator(
       'button[aria-label*="dismiss" i], button[aria-label*="sulje" i]',
     );
-    const count = await dismissButtons.count();
-    for (let i = 0; i < count; i++) {
-      await dismissButtons.nth(i).click();
-      await page.waitForTimeout(200);
+    let remaining = await dismissButtons.count();
+
+    // Dismiss buttons one by one, waiting for DOM update after each click
+    while (remaining > 0) {
+      // Click the first remaining button
+      const buttonToClick = dismissButtons.nth(0);
+      await buttonToClick.click();
+
+      // Wait for the button count to decrease (button was removed from DOM)
+      await expect(dismissButtons).toHaveCount(remaining - 1, {
+        timeout: 3000,
+      });
+
+      // Update remaining count
+      remaining = await dismissButtons.count();
     }
 
     // Go to Settings
@@ -303,8 +314,23 @@ test.describe('Hidden Alerts Management', () => {
     await expect(dismissButton).toBeVisible({ timeout: 5000 });
     await dismissButton.click();
 
-    // Wait for dismissal to save
-    await page.waitForTimeout(500);
+    // Wait for dismissal to be persisted in localStorage
+    await page.waitForFunction(
+      () => {
+        const data = localStorage.getItem('emergencySupplyTracker');
+        if (!data) return false;
+        try {
+          const appData = JSON.parse(data);
+          return (
+            Array.isArray(appData.dismissedAlertIds) &&
+            appData.dismissedAlertIds.length > 0
+          );
+        } catch {
+          return false;
+        }
+      },
+      { timeout: 3000 },
+    );
 
     // Reload page
     await page.reload({ waitUntil: 'domcontentloaded' });
