@@ -61,23 +61,25 @@ This document outlines improvements to the validation infrastructure to ensure a
 
 **Problem**: No automated accessibility checks. Agents might introduce a11y issues.
 
-**Solution**: Add automated a11y testing with `@axe-core/playwright` or `jest-axe` (works with Vitest).
+**Solution**: Add automated a11y testing with `vitest-axe` for component-level tests and `@axe-core/playwright` for E2E tests.
 
 **Implementation**:
 
-- Add `jest-axe` for component-level a11y tests (compatible with Vitest)
+- Add `vitest-axe` for component-level a11y tests (native Vitest support)
 - Add `@axe-core/playwright` for E2E a11y checks
 - Create a11y test suite for critical components
 - Add separate a11y job to CI (runs independently from e2e job)
+- **Important**: Configure Vitest to use `jsdom` environment (not `happy-dom`) due to the `isConnected` bug in happy-dom that breaks axe-core
 
 **Files to create**:
 
-- `src/test/a11y-setup.ts` - Vitest a11y setup
+- `src/test/a11y-setup.ts` - Vitest a11y setup (imports from `vitest-axe/matchers`)
 - `e2e/a11y.spec.ts` - E2E a11y tests
 
 **Files to modify**:
 
-- `package.json` - Add a11y dependencies
+- `package.json` - Add `vitest-axe` and `@axe-core/playwright` dependencies
+- `vite.config.ts` - Ensure test environment is `jsdom` (required for axe-core)
 - `playwright.config.ts` - Exclude `a11y.spec.ts` from default e2e run
 - `.github/workflows/ci.yml` - Add separate a11y job
 
@@ -339,9 +341,9 @@ This document outlines improvements to the validation infrastructure to ensure a
 ### Phase 1: Quick Wins (1-2 days)
 
 1. ✅ Explicit type checking in CI
-2. ⏳ Pre-push hook for validation
-3. ⏳ i18n translation validation
-4. ⏳ Accessibility testing (basic)
+2. ✅ Pre-push hook for validation
+3. ✅ i18n translation validation
+4. ✅ Accessibility testing (basic)
 
 ### Phase 2: Important Additions (3-5 days)
 
@@ -358,7 +360,7 @@ This document outlines improvements to the validation infrastructure to ensure a
 4. ⏳ Data migration testing
 5. ⏳ Enhanced test reporting
 
-> **Note**: For current implementation status and progress tracking, see [VALIDATION_PROGRESS.md](./VALIDATION_PROGRESS.md). That document is the source of truth for completion status (currently 1/13 completed - 8%).
+> **Note**: For current implementation status and progress tracking, see [VALIDATION_PROGRESS.md](./VALIDATION_PROGRESS.md). That document is the source of truth for completion status (currently 4/13 completed - 31%).
 
 ---
 
@@ -427,7 +429,7 @@ When agents add functionality, they should verify:
 ## References
 
 - [TypeScript Type Checking](https://www.typescriptlang.org/docs/handbook/compiler-options.html)
-- [jest-axe](https://github.com/nickcolley/jest-axe) (works with Vitest)
+- [vitest-axe](https://github.com/chaance/vitest-axe) (native Vitest support for axe-core)
 - [Playwright Axe](https://github.com/abhinaba-ghosh/axe-playwright)
 - [Chromatic Visual Testing](https://www.chromatic.com/docs/)
 - [Size Limit](https://github.com/ai/size-limit)

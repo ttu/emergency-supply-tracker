@@ -120,7 +120,7 @@ The project uses:
 - **Husky** + **lint-staged** for pre-commit hooks
 - **Vitest** for unit and integration tests
 - **Playwright** for E2E tests
-- **jest-axe** and **@axe-core/playwright** for accessibility testing
+- **vitest-axe** and **@axe-core/playwright** for accessibility testing
 
 ### Testing Strategy
 

@@ -176,15 +176,15 @@ lint:
 1. Install dependencies:
 
 ```bash
-npm install --save-dev jest-axe @axe-core/playwright  # jest-axe works with Vitest
+npm install --save-dev vitest-axe @axe-core/playwright
 ```
 
 2. Create `src/test/a11y-setup.ts`:
 
 ```typescript
-import { toHaveNoViolations } from 'jest-axe';
+import * as matchers from 'vitest-axe/matchers';
 import { expect } from 'vitest';
-expect.extend(toHaveNoViolations);
+expect.extend(matchers);
 ```
 
 3. Update `src/test/setup.ts`:
@@ -198,7 +198,7 @@ import './a11y-setup';
 
 ```typescript
 import { render } from '@testing-library/react';
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 import { expect, it } from 'vitest';
 import { Button } from './Button';
 

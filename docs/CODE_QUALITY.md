@@ -19,7 +19,7 @@ This document describes the code quality tools and CI/CD configuration.
 | TypeScript           | Type checking                          | `tsconfig.json`                                    |
 | Husky                | Git hooks                              | `.husky/`                                          |
 | lint-staged          | Pre-commit checks                      | `package.json`                                     |
-| jest-axe             | Accessibility testing (Vitest/axe)     | `vite.config.ts` (Vitest configuration)            |
+| vitest-axe           | Accessibility testing (Vitest/axe)     | `vite.config.ts` (Vitest configuration)            |
 | @axe-core/playwright | Accessibility testing (Playwright/axe) | `playwright.config.ts` (or `playwright.config.js`) |
 | SonarCloud           | Code quality analysis                  | Configured via SonarCloud website                  |
 | CodeRabbit           | AI code review                         | Configured via CodeRabbit website                  |

@@ -12,9 +12,9 @@ This document tracks the implementation status of validation improvements outlin
 ### Phase 1: Quick Wins
 
 - [x] Add explicit type-check job to CI (separate from build)
-- [ ] Add pre-push hook for full validation
-- [ ] Add i18n translation validation script and integrate into CI
-- [ ] Add basic accessibility testing (jest-axe with Vitest + @axe-core/playwright)
+- [x] Add pre-push hook for full validation
+- [x] Add i18n translation validation script and integrate into CI
+- [x] Add basic accessibility testing (vitest-axe + @axe-core/playwright)
 
 ### Phase 2: Important Additions
 
@@ -31,7 +31,7 @@ This document tracks the implementation status of validation improvements outlin
 - [ ] Add data migration testing
 - [ ] Improve test result reporting
 
-**Progress**: 1/13 completed (8%)
+**Progress**: 4/13 completed (31%)
 
 ---
 
@@ -56,12 +56,12 @@ The following validations are already implemented and working:
 
 ### Phase 1: Quick Wins (Priority 1)
 
-| #   | Task                                                                          | Status       | Notes                                                                            |
-| --- | ----------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------- |
-| 1   | Add explicit type-check job to CI (separate from build)                       | ✅ Completed | Added `type-check` script and CI job                                             |
-| 2   | Add pre-push hook for full validation                                         | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#2-add-pre-push-hook)               |
-| 3   | Add i18n translation validation script and integrate into CI                  | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#3-add-i18n-validation)             |
-| 4   | Add basic accessibility testing (jest-axe with Vitest + @axe-core/playwright) | ⏳ Pending   | See [Quick Start](./VALIDATION_QUICK_START.md#4-add-basic-accessibility-testing) |
+| #   | Task                                                                | Status       | Notes                                                              |
+| --- | ------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------ |
+| 1   | Add explicit type-check job to CI (separate from build)             | ✅ Completed | Added `type-check` script and CI job                               |
+| 2   | Add pre-push hook for full validation                               | ✅ Completed | Added `.husky/pre-push` hook                                       |
+| 3   | Add i18n translation validation script and integrate into CI        | ✅ Completed | Added `validate:i18n` script and CI integration                    |
+| 4   | Add basic accessibility testing (vitest-axe + @axe-core/playwright) | ✅ Completed | Added vitest-axe for component tests, @axe-core/playwright for E2E |
 
 ### Phase 2: Important Additions (Priority 2)
 
