@@ -321,4 +321,33 @@ export class InventoryItemFactory {
       itemType: input.itemType || CUSTOM_ITEM_TYPE,
     });
   }
+
+  /**
+   * Creates a draft InventoryItem from a template for form initialization.
+   * Draft items have empty id/timestamps and are used to pre-populate forms
+   * before the user submits. The form will create a new item with a real id
+   * when submitted.
+   *
+   * @param template - Recommended item definition
+   * @param household - Household configuration for quantity calculation
+   * @param options - Optional overrides (name, quantity, expirationDate, childrenMultiplier)
+   * @returns Draft InventoryItem (with empty id/timestamps for form use)
+   * @throws InventoryItemValidationError if validation fails
+   */
+  static createDraftFromTemplate(
+    template: RecommendedItemDefinition,
+    household: HouseholdConfig,
+    options: CreateFromTemplateOptions = {},
+  ): InventoryItem {
+    // Create the full item data using the same logic as createFromTemplate
+    const itemData = this.createFromTemplate(template, household, options);
+
+    // Return as draft (empty id/timestamps - form will treat as new item)
+    return {
+      ...itemData,
+      id: createItemId(''), // Empty id signals this is a draft/new item
+      createdAt: '',
+      updatedAt: '',
+    };
+  }
 }

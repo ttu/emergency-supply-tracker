@@ -223,9 +223,9 @@ export function Inventory({
         ? getItemName(template, i18n.language)
         : t(template.i18nKey.replace('products.', ''), { ns: 'products' });
 
-      // Use factory to create item from template with proper calculations
-      // Then strip id/timestamps for form (form will create new item on submit)
-      const fullItem = InventoryItemFactory.createFromTemplate(
+      // Create draft item from template for form initialization
+      // Draft items have empty id/timestamps so form treats them as new items
+      const draftItem = InventoryItemFactory.createDraftFromTemplate(
         template,
         household,
         {
@@ -233,17 +233,6 @@ export function Inventory({
           quantity: 0,
         },
       );
-
-      // Create draft item without id/timestamps for the form
-      // The form checks editingItem?.id to determine if it's editing or adding
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { id, createdAt, updatedAt, ...itemData } = fullItem;
-      const draftItem: InventoryItem = {
-        ...itemData,
-        id: createItemId(''), // Temporary empty id - form will treat as new item
-        createdAt: '',
-        updatedAt: '',
-      };
 
       setSelectedTemplate(template);
       setEditingItem(draftItem);

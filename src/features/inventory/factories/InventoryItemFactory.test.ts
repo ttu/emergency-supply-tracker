@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   InventoryItemFactory,
   InventoryItemValidationError,
@@ -10,7 +10,11 @@ import {
   createMockHousehold,
   createMockRecommendedItem,
 } from '@/shared/utils/test/factories';
-import { createCategoryId, createProductTemplateId } from '@/shared/types';
+import {
+  createCategoryId,
+  createProductTemplateId,
+  createItemId,
+} from '@/shared/types';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 
 // Mock crypto.randomUUID
@@ -433,6 +437,96 @@ describe('InventoryItemFactory', () => {
 
       // 3 * (2 * 1.0 + 1 * 0.5) * 7 = 3 * 2.5 * 7 = 52.5, ceil = 53
       expect(item.recommendedQuantity).toBe(53);
+    });
+  });
+
+  describe('createDraftFromTemplate', () => {
+    it('creates draft item with empty id and timestamps', () => {
+      const template = createMockRecommendedItem({
+        id: 'water',
+        i18nKey: 'products.water',
+        category: 'water-beverages',
+        baseQuantity: 3,
+        unit: 'liters',
+        scaleWithPeople: true,
+        scaleWithDays: true,
+      });
+
+      const draft = InventoryItemFactory.createDraftFromTemplate(
+        template,
+        household,
+      );
+
+      // Draft should have empty id/timestamps
+      expect(draft.id).toBe(createItemId(''));
+      expect(draft.createdAt).toBe('');
+      expect(draft.updatedAt).toBe('');
+
+      // But should have all other fields calculated correctly
+      expect(draft.name).toBe('products.water');
+      expect(draft.itemType).toBe('water');
+      expect(draft.categoryId).toBe(createCategoryId('water-beverages'));
+      expect(draft.recommendedQuantity).toBe(58); // Same calculation as createFromTemplate
+    });
+
+    it('creates draft with same data as createFromTemplate except id/timestamps', () => {
+      const template = createMockRecommendedItem({
+        id: 'flashlight',
+        i18nKey: 'products.flashlight',
+        category: 'light-power',
+        baseQuantity: 1,
+        unit: 'pieces',
+        scaleWithPeople: false,
+        scaleWithDays: false,
+      });
+
+      const fullItem = InventoryItemFactory.createFromTemplate(
+        template,
+        household,
+      );
+      const draft = InventoryItemFactory.createDraftFromTemplate(
+        template,
+        household,
+      );
+
+      // Compare all fields except id/timestamps
+      expect(draft.name).toBe(fullItem.name);
+      expect(draft.itemType).toBe(fullItem.itemType);
+      expect(draft.categoryId).toBe(fullItem.categoryId);
+      expect(draft.quantity).toBe(fullItem.quantity);
+      expect(draft.unit).toBe(fullItem.unit);
+      expect(draft.recommendedQuantity).toBe(fullItem.recommendedQuantity);
+
+      // But id/timestamps should be different
+      expect(draft.id).not.toBe(fullItem.id);
+      expect(draft.id).toBe(createItemId(''));
+      expect(draft.createdAt).toBe('');
+      expect(draft.updatedAt).toBe('');
+    });
+
+    it('respects options like createFromTemplate', () => {
+      const template = createMockRecommendedItem({
+        id: 'water',
+        i18nKey: 'products.water',
+        category: 'water-beverages',
+        baseQuantity: 3,
+        unit: 'liters',
+        scaleWithPeople: true,
+        scaleWithDays: true,
+      });
+
+      const draft = InventoryItemFactory.createDraftFromTemplate(
+        template,
+        household,
+        {
+          name: 'Custom Water',
+          quantity: 5,
+        },
+      );
+
+      expect(draft.name).toBe('Custom Water');
+      expect(draft.quantity).toBe(5);
+      expect(draft.id).toBe(createItemId(''));
     });
   });
 
