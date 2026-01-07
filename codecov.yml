@@ -7,8 +7,10 @@ coverage:
     patch:
       default:
         target: 80% # New code must have 80% coverage
+  ignore:
+    - 'src/test/**' # Test utilities are excluded from coverage
 
 comment:
-  layout: "reach,diff,flags,files"
+  layout: 'reach,diff,flags,files'
   behavior: default
   require_changes: true

@@ -119,7 +119,7 @@ describe('Tooltip', () => {
   });
 
   it('should render tooltip with position attribute', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <Tooltip content="Test tooltip" position="bottom">
         <button>Trigger</button>
