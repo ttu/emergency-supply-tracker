@@ -5,13 +5,9 @@ import {
   createProductTemplateId,
   createAlertId,
 } from '@/shared/types';
-import {
-  CUSTOM_ITEM_TYPE,
-  DAILY_CALORIES_PER_PERSON,
-  DAILY_WATER_PER_PERSON,
-  CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '@/shared/utils/constants';
+import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
+import { UserSettingsFactory } from '@/features/settings/factories/UserSettingsFactory';
 
 const STORAGE_KEY = 'emergencySupplyTracker';
 
@@ -69,19 +65,7 @@ export function createDefaultAppData(): AppData {
       supplyDurationDays: 7,
       useFreezer: false,
     },
-    settings: {
-      language: 'en',
-      theme: 'ocean',
-      highContrast: false,
-      advancedFeatures: {
-        calorieTracking: false,
-        powerManagement: false,
-        waterTracking: false,
-      },
-      dailyCaloriesPerPerson: DAILY_CALORIES_PER_PERSON,
-      dailyWaterPerPerson: DAILY_WATER_PER_PERSON,
-      childrenRequirementPercentage: CHILDREN_REQUIREMENT_MULTIPLIER * 100,
-    },
+    settings: UserSettingsFactory.createDefault(),
     customCategories: [],
     items: [],
     customTemplates: [],

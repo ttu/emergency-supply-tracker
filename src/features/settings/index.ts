@@ -25,3 +25,10 @@ export {
   ShoppingListExport,
   ThemeSelector,
 } from './components';
+
+// Factories
+export {
+  UserSettingsFactory,
+  UserSettingsValidationError,
+} from './factories/UserSettingsFactory';
+export type { CreateUserSettingsInput } from './factories/UserSettingsFactory';

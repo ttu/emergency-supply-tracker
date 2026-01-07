@@ -79,6 +79,7 @@ function TestComponent({
             quantity: 5,
             unit: 'pieces',
             recommendedQuantity: 10,
+            neverExpires: true,
           })
         }
       >

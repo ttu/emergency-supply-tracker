@@ -6,10 +6,10 @@ import { HouseholdForm } from './HouseholdForm';
 import type { HouseholdData } from './HouseholdForm';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
-import { createItemId, createCategoryId } from '@/shared/types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { HOUSEHOLD_DEFAULTS } from '@/features/household';
+import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 
 export interface OnboardingProps {
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;
@@ -57,48 +57,14 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       }
       return true;
     }).map((item) => {
-      // Calculate quantity
-      let quantity = item.baseQuantity;
-
-      if (item.scaleWithPeople) {
-        const totalPeople = householdConfig.adults + householdConfig.children;
-        quantity *= totalPeople;
-      }
-
-      if (item.scaleWithDays) {
-        quantity *= householdConfig.supplyDurationDays;
-      }
-
-      quantity = Math.ceil(quantity);
-
-      // Calculate expiration date if applicable
-      let expirationDate: string | undefined;
-      if (item.defaultExpirationMonths) {
-        const expDate = new Date();
-        expDate.setMonth(expDate.getMonth() + item.defaultExpirationMonths);
-        expirationDate = expDate.toISOString().split('T')[0];
-      }
-
-      const now = new Date().toISOString();
-
+      // Translate item name
       const itemName = t(item.i18nKey.replace('products.', ''));
 
-      return {
-        id: createItemId(crypto.randomUUID()),
+      // Create item using factory
+      return InventoryItemFactory.createFromTemplate(item, householdConfig, {
         name: itemName,
-        itemType: item.id, // Store template ID for i18n lookup
-        categoryId: createCategoryId(item.category),
         quantity: 0, // Start with 0, user needs to add them
-        unit: item.unit,
-        recommendedQuantity: quantity,
-        expirationDate,
-        neverExpires: !item.defaultExpirationMonths,
-        productTemplateId: item.id,
-        weightGrams: item.weightGramsPerUnit, // Store template weight per unit for calculations
-        caloriesPerUnit: item.caloriesPerUnit, // Store template calories per unit
-        createdAt: now,
-        updatedAt: now,
-      };
+      });
     });
 
     onComplete(householdConfig, items);

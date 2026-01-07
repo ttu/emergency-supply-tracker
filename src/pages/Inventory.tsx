@@ -2,7 +2,6 @@ import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useHousehold,
-  calculateRecommendedQuantity,
   calculateHouseholdMultiplier,
 } from '@/features/household';
 import {
@@ -19,16 +18,13 @@ import { useRecommendedItems, TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
-import {
-  createItemId,
-  createCategoryId,
-  createProductTemplateId,
-} from '@/shared/types';
+import { createItemId, createProductTemplateId } from '@/shared/types';
 import type {
   InventoryItem,
   ItemStatus,
   RecommendedItemDefinition,
 } from '@/shared/types';
+import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import {
   getCategoryDisplayStatus,
   type CategoryCalculationOptions,
@@ -222,33 +218,24 @@ export function Inventory({
 
   const handleSelectTemplate = useCallback(
     (template: RecommendedItemDefinition) => {
-      const recommendedQty = calculateRecommendedQuantity(template, household);
       // For custom items (i18nKey starts with 'custom.'), use getItemName; otherwise translate
       const templateName = template.i18nKey.startsWith('custom.')
         ? getItemName(template, i18n.language)
         : t(template.i18nKey.replace('products.', ''), { ns: 'products' });
 
-      const newItem: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
-        name: templateName,
-        itemType: template.id, // Store template ID for i18n lookup
-        categoryId: createCategoryId(template.category),
-        quantity: 0,
-        unit: template.unit,
-        recommendedQuantity: recommendedQty,
-        neverExpires: !template.defaultExpirationMonths,
-        expirationDate: template.defaultExpirationMonths
-          ? new Date(
-              Date.now() +
-                template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
-            ).toISOString()
-          : undefined,
-        productTemplateId: template.id,
-        weightGrams: template.weightGramsPerUnit,
-        caloriesPerUnit: template.caloriesPerUnit,
-      };
+      // Create draft item from template for form initialization
+      // Draft items have empty id/timestamps so form treats them as new items
+      const draftItem = InventoryItemFactory.createDraftFromTemplate(
+        template,
+        household,
+        {
+          name: templateName,
+          quantity: 0,
+        },
+      );
 
       setSelectedTemplate(template);
-      setEditingItem(newItem as InventoryItem);
+      setEditingItem(draftItem);
       setShowTemplateModal(false);
       setShowAddModal(true);
     },
