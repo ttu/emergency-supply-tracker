@@ -1,0 +1,644 @@
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { CloudSyncProvider } from './provider';
+import { useCloudSync } from './hooks';
+import * as cloudStorageProvider from './__mocks__/services/cloudStorageProvider';
+import * as localStorage from '@/shared/utils/storage/localStorage';
+import type { CloudStorageProvider as ICloudStorageProvider } from './types';
+
+// Mock localStorage functions
+jest.mock('@/shared/utils/storage/localStorage', () => ({
+  getAppData: jest.fn(),
+  saveAppData: jest.fn(),
+}));
+const mockLocalStorage = localStorage as jest.Mocked<typeof localStorage>;
+
+// Store reference to original initializeProviders
+const originalInitializeProviders = cloudStorageProvider.initializeProviders;
+
+// Test component that exposes the hook
+function TestConsumer({
+  onStateChange,
+}: {
+  onStateChange?: (state: ReturnType<typeof useCloudSync>) => void;
+}) {
+  const cloudSync = useCloudSync();
+  onStateChange?.(cloudSync);
+
+  return (
+    <div>
+      <div data-testid="state">{cloudSync.state.state}</div>
+      <div data-testid="provider">{cloudSync.state.provider ?? 'none'}</div>
+      <div data-testid="error">{cloudSync.state.error ?? 'none'}</div>
+      <button onClick={() => cloudSync.connect('google-drive')}>Connect</button>
+      <button onClick={() => cloudSync.disconnect()}>Disconnect</button>
+      <button onClick={() => cloudSync.syncNow()}>Sync</button>
+      <button onClick={() => cloudSync.clearError()}>Clear Error</button>
+    </div>
+  );
+}
+
+describe('CloudSyncProvider', () => {
+  // Create mock provider with jest.fn() for each method
+  const createMockProvider = (): ICloudStorageProvider => ({
+    providerId: 'google-drive' as const,
+    connect: jest.fn().mockResolvedValue(undefined),
+    disconnect: jest.fn().mockResolvedValue(undefined),
+    isConnected: jest.fn().mockReturnValue(true),
+    getAccessToken: jest.fn().mockResolvedValue('token'),
+    upload: jest.fn().mockResolvedValue('file-id'),
+    download: jest.fn().mockResolvedValue('{}'),
+    getFileMetadata: jest.fn().mockResolvedValue(null),
+    findSyncFile: jest.fn().mockResolvedValue(null),
+  });
+
+  let mockProvider: ICloudStorageProvider;
+
+  beforeEach(() => {
+    window.localStorage.clear();
+    cloudStorageProvider.resetProviders();
+
+    // Create fresh mock provider for each test
+    mockProvider = createMockProvider();
+    // Return the SAME instance every time getProvider is called
+    cloudStorageProvider.registerProvider('google-drive', () => mockProvider);
+    mockLocalStorage.getAppData.mockReturnValue(null);
+
+    // Override initializeProviders to be a no-op since we register our own provider
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (cloudStorageProvider as any).initializeProviders = () => {};
+  });
+
+  afterEach(() => {
+    // Restore original initializeProviders
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (cloudStorageProvider as any).initializeProviders =
+      originalInitializeProviders;
+    jest.clearAllMocks();
+  });
+
+  it('should render children', () => {
+    render(
+      <CloudSyncProvider>
+        <div>Child content</div>
+      </CloudSyncProvider>,
+    );
+
+    expect(screen.getByText('Child content')).toBeInTheDocument();
+  });
+
+  it('should initialize with disconnected state', () => {
+    render(
+      <CloudSyncProvider>
+        <TestConsumer />
+      </CloudSyncProvider>,
+    );
+
+    expect(screen.getByTestId('state')).toHaveTextContent('disconnected');
+    expect(screen.getByTestId('provider')).toHaveTextContent('none');
+  });
+
+  it('should restore connected state from config if tokens exist', () => {
+    // Store config in localStorage
+    const config = {
+      provider: 'google-drive',
+      lastSyncTimestamp: '2024-01-01T00:00:00Z',
+      remoteFileId: 'file-123',
+    };
+    window.localStorage.setItem(
+      'emergencySupplyTracker_cloudSyncConfig',
+      JSON.stringify(config),
+    );
+
+    // Store tokens
+    const tokens = {
+      accessToken: 'token',
+      refreshToken: null,
+      expiresAt: Date.now() + 3600000,
+      provider: 'google-drive',
+    };
+    window.localStorage.setItem(
+      'emergencySupplyTracker_cloudTokens',
+      JSON.stringify(tokens),
+    );
+
+    render(
+      <CloudSyncProvider>
+        <TestConsumer />
+      </CloudSyncProvider>,
+    );
+
+    expect(screen.getByTestId('state')).toHaveTextContent('connected');
+    expect(screen.getByTestId('provider')).toHaveTextContent('google-drive');
+  });
+
+  describe('connect', () => {
+    it('should connect to provider successfully', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+      expect(screen.getByTestId('provider')).toHaveTextContent('google-drive');
+    });
+
+    it('should find existing sync file on connect', async () => {
+      const user = userEvent.setup();
+      (mockProvider.findSyncFile as jest.Mock).mockResolvedValue(
+        'existing-file-id',
+      );
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      // Check that config was saved with file ID
+      const savedConfig = JSON.parse(
+        window.localStorage.getItem('emergencySupplyTracker_cloudSyncConfig') ??
+          '{}',
+      );
+      expect(savedConfig.remoteFileId).toBe('existing-file-id');
+    });
+
+    it('should handle provider not available', async () => {
+      const user = userEvent.setup();
+      cloudStorageProvider.resetProviders(); // No providers registered
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('error');
+      });
+      expect(screen.getByTestId('error')).toHaveTextContent(
+        'Provider not available',
+      );
+    });
+
+    it('should handle connection error', async () => {
+      const user = userEvent.setup();
+      (mockProvider.connect as jest.Mock).mockRejectedValue(
+        new Error('Connection failed'),
+      );
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('error');
+      });
+      expect(screen.getByTestId('error')).toHaveTextContent(
+        'Failed to connect',
+      );
+    });
+
+    it('should handle CloudSyncError with specific message', async () => {
+      const user = userEvent.setup();
+      const { CloudSyncError } = jest.requireActual('./types');
+      (mockProvider.connect as jest.Mock).mockRejectedValue(
+        new CloudSyncError('User cancelled', 'AUTH_CANCELLED'),
+      );
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('error')).toHaveTextContent('User cancelled');
+      });
+    });
+  });
+
+  describe('disconnect', () => {
+    it('should disconnect from provider', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      // First connect
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      // Then disconnect
+      await user.click(screen.getByText('Disconnect'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('disconnected');
+      });
+      expect(screen.getByTestId('provider')).toHaveTextContent('none');
+    });
+
+    it('should handle disconnect error gracefully', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      (mockProvider.disconnect as jest.Mock).mockRejectedValue(
+        new Error('Disconnect failed'),
+      );
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      await user.click(screen.getByText('Disconnect'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('disconnected');
+      });
+      expect(consoleSpy).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('syncNow', () => {
+    it('should return error when not connected', async () => {
+      render(
+        <CloudSyncProvider>
+          <TestConsumer
+            onStateChange={(cs) => {
+              (window as unknown as Record<string, unknown>).testSyncNow =
+                cs.syncNow;
+            }}
+          />
+        </CloudSyncProvider>,
+      );
+
+      const syncResult = await (
+        window as unknown as { testSyncNow: () => Promise<unknown> }
+      ).testSyncNow();
+
+      expect(syncResult).toEqual(
+        expect.objectContaining({
+          success: false,
+          error: 'Not connected to a cloud provider',
+        }),
+      );
+    });
+
+    it('should return error result when no local data without changing state', async () => {
+      const user = userEvent.setup();
+      mockLocalStorage.getAppData.mockReturnValue(null);
+
+      let capturedSyncNow: (() => Promise<unknown>) | null = null;
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer
+            onStateChange={(cs) => {
+              capturedSyncNow = cs.syncNow;
+            }}
+          />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      // Sync with no data - should return error result but not change state
+      const result = await capturedSyncNow!();
+      expect(result).toEqual(
+        expect.objectContaining({
+          success: false,
+          error: 'No local data to sync',
+        }),
+      );
+
+      // State should stay connected (not changed to error)
+      expect(screen.getByTestId('state')).toHaveTextContent('connected');
+    });
+
+    it('should upload when local is newer', async () => {
+      const user = userEvent.setup();
+      const localData = {
+        lastModified: new Date().toISOString(),
+        items: [],
+      };
+      mockLocalStorage.getAppData.mockReturnValue(localData);
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      await user.click(screen.getByText('Sync'));
+
+      await waitFor(() => {
+        expect(mockProvider.upload).toHaveBeenCalled();
+      });
+    });
+
+    it('should download when remote is newer', async () => {
+      const user = userEvent.setup();
+      const oldDate = new Date(Date.now() - 3600000).toISOString(); // 1 hour ago
+      const newDate = new Date().toISOString();
+
+      const localData = {
+        lastModified: oldDate,
+        items: [],
+      };
+      const remoteData = {
+        lastModified: newDate,
+        items: [{ id: 'remote-item' }],
+      };
+
+      mockLocalStorage.getAppData.mockReturnValue(localData);
+      (mockProvider.findSyncFile as jest.Mock).mockResolvedValue(
+        'remote-file-id',
+      );
+      (mockProvider.getFileMetadata as jest.Mock).mockResolvedValue({
+        id: 'remote-file-id',
+        name: 'test.json',
+        modifiedTime: newDate,
+      });
+      (mockProvider.download as jest.Mock).mockResolvedValue(
+        JSON.stringify(remoteData),
+      );
+
+      // Spy on console.error to suppress jsdom "not implemented" error for location.reload
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      await user.click(screen.getByText('Sync'));
+
+      // Verify download was called and data was saved
+      // Note: window.location.reload() is called but jsdom doesn't implement it
+      await waitFor(() => {
+        expect(mockProvider.download).toHaveBeenCalledWith('remote-file-id');
+        expect(mockLocalStorage.saveAppData).toHaveBeenCalledWith(remoteData);
+      });
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle sync error', async () => {
+      const user = userEvent.setup();
+      const localData = {
+        lastModified: new Date().toISOString(),
+        items: [],
+      };
+      mockLocalStorage.getAppData.mockReturnValue(localData);
+      (mockProvider.upload as jest.Mock).mockRejectedValue(
+        new Error('Upload failed'),
+      );
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      await user.click(screen.getByText('Sync'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('error');
+        expect(screen.getByTestId('error')).toHaveTextContent('Upload failed');
+      });
+    });
+
+    it('should handle no changes needed', async () => {
+      const user = userEvent.setup();
+      const sameDate = new Date().toISOString();
+
+      const localData = {
+        lastModified: sameDate,
+        items: [],
+      };
+
+      mockLocalStorage.getAppData.mockReturnValue(localData);
+      (mockProvider.findSyncFile as jest.Mock).mockResolvedValue(
+        'remote-file-id',
+      );
+      (mockProvider.getFileMetadata as jest.Mock).mockResolvedValue({
+        id: 'remote-file-id',
+        name: 'test.json',
+        modifiedTime: sameDate,
+      });
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      await user.click(screen.getByText('Sync'));
+
+      await waitFor(() => {
+        expect(mockProvider.upload).not.toHaveBeenCalled();
+        expect(mockProvider.download).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should handle remote file deleted', async () => {
+      const user = userEvent.setup();
+      const localData = {
+        lastModified: new Date().toISOString(),
+        items: [],
+      };
+
+      mockLocalStorage.getAppData.mockReturnValue(localData);
+
+      // Store config with file ID that will be deleted
+      window.localStorage.setItem(
+        'emergencySupplyTracker_cloudSyncConfig',
+        JSON.stringify({
+          provider: 'google-drive',
+          lastSyncTimestamp: null,
+          remoteFileId: 'old-file-id',
+        }),
+      );
+
+      // Store tokens to appear connected
+      window.localStorage.setItem(
+        'emergencySupplyTracker_cloudTokens',
+        JSON.stringify({
+          accessToken: 'token',
+          refreshToken: null,
+          expiresAt: Date.now() + 3600000,
+          provider: 'google-drive',
+        }),
+      );
+
+      // File metadata returns null (deleted)
+      (mockProvider.getFileMetadata as jest.Mock).mockResolvedValue(null);
+      // Find sync file also returns null
+      (mockProvider.findSyncFile as jest.Mock).mockResolvedValue(null);
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      // Should be connected from stored config
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      await user.click(screen.getByText('Sync'));
+
+      await waitFor(() => {
+        expect(mockProvider.upload).toHaveBeenCalled();
+      });
+    });
+
+    it('should return error when provider is not connected', async () => {
+      const user = userEvent.setup();
+      (mockProvider.isConnected as jest.Mock).mockReturnValue(false);
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      // Now provider reports disconnected
+      await user.click(screen.getByText('Sync'));
+
+      // Should handle gracefully - state remains connected
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+    });
+  });
+
+  describe('clearError', () => {
+    it('should clear error and restore to disconnected state', async () => {
+      const user = userEvent.setup();
+      // Make connect reject to trigger an error
+      (mockProvider.connect as jest.Mock).mockRejectedValueOnce(
+        new Error('Connection failed'),
+      );
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      // Trigger an error
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('error');
+      });
+
+      // Clear the error
+      await user.click(screen.getByText('Clear Error'));
+
+      expect(screen.getByTestId('state')).toHaveTextContent('disconnected');
+      expect(screen.getByTestId('error')).toHaveTextContent('none');
+    });
+
+    it('should restore connected state when provider exists', async () => {
+      const user = userEvent.setup();
+      const localData = {
+        lastModified: new Date().toISOString(),
+        items: [],
+      };
+      mockLocalStorage.getAppData.mockReturnValue(localData);
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      // Connect first
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      // Now set upload to fail for next call
+      (mockProvider.upload as jest.Mock).mockRejectedValueOnce(
+        new Error('Upload failed'),
+      );
+
+      // Trigger sync error
+      await user.click(screen.getByText('Sync'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('error');
+      });
+
+      // Clear the error
+      await user.click(screen.getByText('Clear Error'));
+
+      expect(screen.getByTestId('state')).toHaveTextContent('connected');
+    });
+  });
+});
