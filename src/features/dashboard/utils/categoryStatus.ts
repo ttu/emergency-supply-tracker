@@ -54,7 +54,7 @@ export interface CategoryStatusSummary {
   shortages: CategoryShortage[];
   totalActual: number;
   totalNeeded: number;
-  primaryUnit: Unit | null;
+  primaryUnit?: Unit;
   // Calorie-based tracking for food category
   totalActualCalories?: number;
   totalNeededCalories?: number;
@@ -102,7 +102,7 @@ export function calculateCategoryShortages(
   shortages: CategoryShortage[];
   totalActual: number;
   totalNeeded: number;
-  primaryUnit: Unit | null;
+  primaryUnit?: Unit;
   totalActualCalories?: number;
   totalNeededCalories?: number;
   missingCalories?: number;
@@ -129,7 +129,12 @@ export function calculateCategoryShortages(
     : 0;
 
   if (recommendedForCategory.length === 0) {
-    return { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
+    return {
+      shortages: [],
+      totalActual: 0,
+      totalNeeded: 0,
+      primaryUnit: undefined,
+    };
   }
 
   // Adults count as 1.0, children use the configurable multiplier
@@ -260,7 +265,7 @@ export function calculateCategoryShortages(
   });
 
   // Find the most common unit by quantity
-  let primaryUnit: Unit | null = null;
+  let primaryUnit: Unit | undefined = undefined;
   let maxCount = 0;
   unitCounts.forEach((count, unit) => {
     if (count > maxCount) {
@@ -274,7 +279,7 @@ export function calculateCategoryShortages(
   if (hasMixedUnits) {
     totalActual = itemTypesFulfilled;
     totalNeeded = totalItemTypes;
-    primaryUnit = null; // Signal to show "items" instead of a specific unit
+    primaryUnit = undefined; // Signal to show "items" instead of a specific unit
   }
 
   // Sort shortages by missing amount (descending)
@@ -348,7 +353,7 @@ export function calculateCategoryStatus(
         recommendedItems,
         options,
       )
-    : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: null };
+    : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: undefined };
 
   // Check if inventory meets the minimum requirements
   const hasEnough = household && hasEnoughInventory(category.id, shortageInfo);
@@ -433,7 +438,7 @@ export interface CategoryDisplayStatus {
   completionPercentage: number;
   totalActual: number;
   totalNeeded: number;
-  primaryUnit: Unit | null;
+  primaryUnit?: Unit;
   shortages: CategoryShortage[];
   // Calorie data for food category
   totalActualCalories?: number;

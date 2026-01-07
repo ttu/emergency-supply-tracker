@@ -60,7 +60,7 @@ function generateSessionId(): string {
 /**
  * Current session data (initialized on first access).
  */
-let currentSession: { id: string; start: string } | null = null;
+let currentSession: { id: string; start: string } | undefined = undefined;
 
 function getCurrentSession(): { id: string; start: string } {
   if (!currentSession) {

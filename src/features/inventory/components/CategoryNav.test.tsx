@@ -38,7 +38,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -50,7 +50,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -64,7 +64,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -100,14 +100,14 @@ describe('CategoryNav', () => {
     const allButton = screen.getByText('inventory.allCategories');
     fireEvent.click(allButton);
 
-    expect(onSelectCategory).toHaveBeenCalledWith(null);
+    expect(onSelectCategory).toHaveBeenCalledWith(undefined);
   });
 
   it('should call onSelectCategory when clicking a category', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -122,7 +122,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -138,7 +138,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -154,7 +154,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -176,7 +176,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -206,7 +206,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -230,8 +230,8 @@ describe('CategoryNav', () => {
     const nav = screen.getByRole('navigation');
     fireEvent.keyDown(nav, { key: 'ArrowRight' });
 
-    // Should wrap to "All" (null)
-    expect(onSelectCategory).toHaveBeenCalledWith(null);
+    // Should wrap to "All" (undefined)
+    expect(onSelectCategory).toHaveBeenCalledWith(undefined);
   });
 
   it('should navigate to first category with Home key', () => {
@@ -246,14 +246,14 @@ describe('CategoryNav', () => {
     const nav = screen.getByRole('navigation');
     fireEvent.keyDown(nav, { key: 'Home' });
 
-    expect(onSelectCategory).toHaveBeenCalledWith(null);
+    expect(onSelectCategory).toHaveBeenCalledWith(undefined);
   });
 
   it('should navigate to last category with End key', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -268,7 +268,7 @@ describe('CategoryNav', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId={null}
+        selectedCategoryId={undefined}
         onSelectCategory={onSelectCategory}
       />,
     );

@@ -41,12 +41,12 @@ describe('getItemStatus', () => {
 });
 
 describe('getDaysUntilExpiration', () => {
-  it('returns null when neverExpires is true', () => {
-    expect(getDaysUntilExpiration('2025-12-31', true)).toBeNull();
+  it('returns undefined when neverExpires is true', () => {
+    expect(getDaysUntilExpiration('2025-12-31', true)).toBeUndefined();
   });
 
-  it('returns null when no expiration date', () => {
-    expect(getDaysUntilExpiration(undefined, false)).toBeNull();
+  it('returns undefined when no expiration date', () => {
+    expect(getDaysUntilExpiration(undefined, false)).toBeUndefined();
   });
 
   it('returns positive days for future date', () => {

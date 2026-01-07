@@ -39,13 +39,13 @@ export interface WaterRequirementItem {
 
 /**
  * Validates water requirement value.
- * Returns null if valid, error message if invalid.
+ * Returns undefined if valid, error message if invalid.
  */
 export function validateWaterRequirement(
-  requiresWaterLiters: number | undefined | null,
-): string | null {
-  if (requiresWaterLiters === undefined || requiresWaterLiters === null) {
-    return null; // No water requirement is valid
+  requiresWaterLiters?: number,
+): string | undefined {
+  if (requiresWaterLiters === undefined) {
+    return undefined; // No water requirement is valid
   }
 
   if (typeof requiresWaterLiters !== 'number') {
@@ -60,7 +60,7 @@ export function validateWaterRequirement(
     return 'Water requirement must be a finite number';
   }
 
-  return null;
+  return undefined;
 }
 
 /**
@@ -69,11 +69,7 @@ export function validateWaterRequirement(
  */
 export function getWaterRequirementPerUnit(item: InventoryItem): number {
   // First check if item has a custom water requirement
-  if (
-    item.requiresWaterLiters !== undefined &&
-    item.requiresWaterLiters !== null &&
-    item.requiresWaterLiters > 0
-  ) {
+  if (item.requiresWaterLiters !== undefined && item.requiresWaterLiters > 0) {
     return item.requiresWaterLiters;
   }
 

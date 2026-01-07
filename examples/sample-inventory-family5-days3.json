@@ -97,7 +97,6 @@
       "categoryId": "medical-health",
       "quantity": 1,
       "unit": "pieces",
-      "expirationDate": null,
       "neverExpires": true,
       "notes": "Comprehensive kit",
       "addedDate": "2024-08-15"
@@ -120,7 +119,6 @@
       "categoryId": "light-power",
       "quantity": 3,
       "unit": "pieces",
-      "expirationDate": null,
       "neverExpires": true,
       "notes": "LED, with batteries",
       "addedDate": "2024-12-05"
@@ -132,7 +130,6 @@
       "categoryId": "light-power",
       "quantity": 12,
       "unit": "pieces",
-      "expirationDate": null,
       "neverExpires": true,
       "notes": "Long-burning",
       "addedDate": "2024-11-01"
@@ -144,7 +141,6 @@
       "categoryId": "light-power",
       "quantity": 2,
       "unit": "pieces",
-      "expirationDate": null,
       "neverExpires": true,
       "notes": "For charging phones and tablets",
       "capacityMah": 20000,
@@ -158,7 +154,6 @@
       "categoryId": "communication-info",
       "quantity": 1,
       "unit": "pieces",
-      "expirationDate": null,
       "neverExpires": true,
       "notes": "Hand-crank backup",
       "addedDate": "2024-10-15"
@@ -181,7 +176,6 @@
       "categoryId": "hygiene-sanitation",
       "quantity": 24,
       "unit": "rolls",
-      "expirationDate": null,
       "neverExpires": true,
       "notes": "2 packs",
       "addedDate": "2024-11-20"
@@ -204,7 +198,6 @@
       "categoryId": "tools-supplies",
       "quantity": 4,
       "unit": "pieces",
-      "expirationDate": null,
       "neverExpires": true,
       "notes": "Emergency thermal blankets",
       "addedDate": "2024-10-10"

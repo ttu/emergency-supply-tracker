@@ -13,7 +13,7 @@ export interface CategoryCardProps {
   shortages?: CategoryShortage[];
   totalActual?: number;
   totalNeeded?: number;
-  primaryUnit?: Unit | null;
+  primaryUnit?: Unit;
   // Calorie data for food category
   totalActualCalories?: number;
   totalNeededCalories?: number;
@@ -42,7 +42,7 @@ export const CategoryCard = ({
   const isFoodCategory = categoryId === 'food';
 
   // Format shortage summary - show calories for food, items for others
-  const getShortageText = (): string | null => {
+  const getShortageText = (): string | undefined => {
     // For food category, show missing calories
     if (isFoodCategory && missingCalories && missingCalories > 0) {
       return t('dashboard.category.missingCalories', {
@@ -50,7 +50,7 @@ export const CategoryCard = ({
       });
     }
 
-    if (shortages.length === 0) return null;
+    if (shortages.length === 0) return undefined;
 
     // Show the most critical shortage
     const topShortage = shortages[0];
@@ -76,7 +76,7 @@ export const CategoryCard = ({
   };
 
   // Format progress text - calories for food, units for others
-  const getProgressText = (): string | null => {
+  const getProgressText = (): string | undefined => {
     // For food category, show calories
     if (isFoodCategory && totalNeededCalories && totalNeededCalories > 0) {
       const actualKcal = Math.round((totalActualCalories ?? 0) / 1000);
@@ -84,7 +84,7 @@ export const CategoryCard = ({
       return `${actualKcal} / ${neededKcal} ${t('dashboard.category.kcal')}`;
     }
 
-    if (totalNeeded === 0 || !primaryUnit) return null;
+    if (totalNeeded === 0 || !primaryUnit) return undefined;
     const unitLabel = t(primaryUnit, { ns: 'units' });
     return `${Math.round(totalActual)} / ${Math.round(totalNeeded)} ${unitLabel}`;
   };

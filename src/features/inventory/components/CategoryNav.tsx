@@ -5,8 +5,8 @@ import styles from './CategoryNav.module.css';
 
 export interface CategoryNavProps {
   categories: Category[];
-  selectedCategoryId: string | null;
-  onSelectCategory: (categoryId: string | null) => void;
+  selectedCategoryId?: string;
+  onSelectCategory: (categoryId?: string) => void;
 }
 
 export const CategoryNav = ({
@@ -19,10 +19,7 @@ export const CategoryNav = ({
 
   // Create array with "All" as first item followed by categories
   const allItems = useMemo(
-    () => [
-      { id: null as string | null, icon: '📦', isAll: true },
-      ...categories,
-    ],
+    () => [{ id: undefined, icon: '📦', isAll: true }, ...categories],
     [categories],
   );
 
@@ -85,10 +82,10 @@ export const CategoryNav = ({
     >
       <button
         className={`${styles.categoryButton} ${
-          selectedCategoryId === null ? styles.active : ''
+          selectedCategoryId === undefined ? styles.active : ''
         }`}
-        onClick={() => onSelectCategory(null)}
-        aria-current={selectedCategoryId === null ? 'page' : undefined}
+        onClick={() => onSelectCategory(undefined)}
+        aria-current={selectedCategoryId === undefined ? 'page' : undefined}
         aria-label={allCategoriesLabel}
         title={allCategoriesLabel}
         tabIndex={getTabIndex(0)}

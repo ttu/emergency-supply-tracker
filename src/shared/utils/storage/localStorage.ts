@@ -75,10 +75,10 @@ export function createDefaultAppData(): AppData {
   };
 }
 
-export function getAppData(): AppData | null {
+export function getAppData(): AppData | undefined {
   try {
     const json = localStorage.getItem(STORAGE_KEY);
-    if (!json) return null;
+    if (!json) return undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rawData: any = JSON.parse(json);
 
@@ -108,7 +108,7 @@ export function getAppData(): AppData | null {
     return data;
   } catch (error) {
     console.error('Failed to load data from localStorage:', error);
-    return null;
+    return undefined;
   }
 }
 
@@ -214,9 +214,13 @@ export function importFromJSON(json: string): AppData {
     // First normalize itemType values to ensure they're valid template IDs
     data.items = normalizeItems(data.items as InventoryItem[]);
 
-    // Then handle neverExpires normalization
+    // Then handle neverExpires normalization and migrate null to undefined
     data.items = data.items?.map((item) => ({
       ...item,
+      // Migrate legacy null to undefined
+      expirationDate:
+        item.expirationDate === null ? undefined : item.expirationDate,
+      // If expirationDate was null (legacy), set neverExpires to true
       neverExpires: item.expirationDate === null ? true : item.neverExpires,
     }));
   }

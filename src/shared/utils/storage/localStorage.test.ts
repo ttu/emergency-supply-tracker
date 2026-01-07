@@ -23,15 +23,15 @@ describe('localStorage utilities', () => {
     expect(loaded).toEqual(mockData);
   });
 
-  it('returns null when no data exists', () => {
-    expect(getAppData()).toBeNull();
+  it('returns undefined when no data exists', () => {
+    expect(getAppData()).toBeUndefined();
   });
 
   it('clears data', () => {
     const mockData = createMockAppData();
     saveAppData(mockData);
     clearAppData();
-    expect(getAppData()).toBeNull();
+    expect(getAppData()).toBeUndefined();
   });
 
   describe('import/export', () => {

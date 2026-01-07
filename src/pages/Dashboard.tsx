@@ -131,11 +131,11 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
 
   // Generate backup reminder alert if needed
   // Note: items is included in deps to re-evaluate when inventory changes
-  const backupReminderAlert: Alert | null = useMemo(() => {
-    if (backupReminderDismissed) return null;
+  const backupReminderAlert: Alert | undefined = useMemo(() => {
+    if (backupReminderDismissed) return undefined;
 
     const appData = getAppData();
-    if (!shouldShowBackupReminder(appData)) return null;
+    if (!shouldShowBackupReminder(appData)) return undefined;
 
     return {
       id: BACKUP_REMINDER_ALERT_ID,

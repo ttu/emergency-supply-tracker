@@ -13,7 +13,9 @@ import {
  *    30 days have passed since the last modification
  * 3. The dismissal period hasn't expired
  */
-export function shouldShowBackupReminder(appData: AppData | null): boolean {
+export function shouldShowBackupReminder(
+  appData: AppData | undefined,
+): boolean {
   if (!appData) return false;
 
   const now = new Date();
