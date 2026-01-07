@@ -22,11 +22,9 @@ describe('ImportButton', () => {
     // Suppress console.error output from expected error handling in tests
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     // Mock window.location.reload to prevent jsdom navigation errors
-    delete (globalThis as { location?: { reload?: () => void } }).location;
     globalThis.location = {
-      ...globalThis.location,
       reload: vi.fn(),
-    } as Location;
+    } as unknown as Location;
   });
 
   afterEach(() => {

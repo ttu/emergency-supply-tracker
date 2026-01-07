@@ -15,11 +15,9 @@ describe('ClearDataButton', () => {
     globalThis.alert = vi.fn();
     globalThis.confirm = vi.fn(() => false);
     // Mock globalThis.location.reload to prevent jsdom error
-    delete (globalThis as { location?: { reload?: () => void } }).location;
     globalThis.location = {
-      ...globalThis.location,
       reload: vi.fn(),
-    } as Location;
+    } as unknown as Location;
     // Suppress the "Not implemented: navigation" error from jsdom
     console.error = vi.fn();
   });
