@@ -189,11 +189,41 @@ describe('InventoryItemFactory', () => {
       }).toThrow(InventoryItemValidationError);
     });
 
+    it('throws error when quantity is null', () => {
+      expect(() => {
+        // @ts-expect-error - Testing invalid input
+        InventoryItemFactory.create({
+          ...validInput,
+          quantity: null,
+        });
+      }).toThrow(InventoryItemValidationError);
+    });
+
     it('throws error when recommendedQuantity is negative', () => {
       expect(() => {
         InventoryItemFactory.create({
           ...validInput,
           recommendedQuantity: -1,
+        });
+      }).toThrow(InventoryItemValidationError);
+    });
+
+    it('throws error when unit is missing', () => {
+      expect(() => {
+        // @ts-expect-error - Testing invalid input
+        InventoryItemFactory.create({
+          ...validInput,
+          unit: undefined,
+        });
+      }).toThrow(InventoryItemValidationError);
+    });
+
+    it('throws error when unit is null', () => {
+      expect(() => {
+        // @ts-expect-error - Testing invalid input
+        InventoryItemFactory.create({
+          ...validInput,
+          unit: null,
         });
       }).toThrow(InventoryItemValidationError);
     });

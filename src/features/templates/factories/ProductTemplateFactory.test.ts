@@ -127,6 +127,33 @@ describe('ProductTemplateFactory', () => {
       expect(template.isCustom).toBe(true);
     });
 
+    it('throws error when custom template has i18nKey but no name', () => {
+      expect(() => {
+        ProductTemplateFactory.createCustom({
+          i18nKey: 'products.test',
+          category: 'food',
+          defaultUnit: 'pieces',
+          isCustom: true,
+          isBuiltIn: false,
+        });
+      }).toThrow(ProductTemplateValidationError);
+    });
+
+    it('throws error when built-in template has name but no i18nKey', () => {
+      expect(() => {
+        ProductTemplateFactory.createBuiltIn(
+          {
+            name: 'Test',
+            category: 'food',
+            defaultUnit: 'pieces',
+            isBuiltIn: true,
+            isCustom: false,
+          },
+          'test-template',
+        );
+      }).toThrow(ProductTemplateValidationError);
+    });
+
     it('allows custom category strings', () => {
       const template = ProductTemplateFactory.createCustom({
         name: 'Test',
