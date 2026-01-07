@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CloudSyncProvider } from './provider';
@@ -5,13 +6,14 @@ import { useCloudSync } from './hooks';
 import * as cloudStorageProvider from './__mocks__/services/cloudStorageProvider';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import type { CloudStorageProvider as ICloudStorageProvider } from './types';
+import type { Mock } from 'vitest';
 
 // Mock localStorage functions
-jest.mock('@/shared/utils/storage/localStorage', () => ({
-  getAppData: jest.fn(),
-  saveAppData: jest.fn(),
+vi.mock('@/shared/utils/storage/localStorage', () => ({
+  getAppData: vi.fn(),
+  saveAppData: vi.fn(),
 }));
-const mockLocalStorage = localStorage as jest.Mocked<typeof localStorage>;
+const mockLocalStorage = localStorage as { getAppData: Mock; saveAppData: Mock };
 
 // Store reference to original initializeProviders
 const originalInitializeProviders = cloudStorageProvider.initializeProviders;
@@ -39,17 +41,17 @@ function TestConsumer({
 }
 
 describe('CloudSyncProvider', () => {
-  // Create mock provider with jest.fn() for each method
+  // Create mock provider with vi.fn() for each method
   const createMockProvider = (): ICloudStorageProvider => ({
     providerId: 'google-drive' as const,
-    connect: jest.fn().mockResolvedValue(undefined),
-    disconnect: jest.fn().mockResolvedValue(undefined),
-    isConnected: jest.fn().mockReturnValue(true),
-    getAccessToken: jest.fn().mockResolvedValue('token'),
-    upload: jest.fn().mockResolvedValue('file-id'),
-    download: jest.fn().mockResolvedValue('{}'),
-    getFileMetadata: jest.fn().mockResolvedValue(null),
-    findSyncFile: jest.fn().mockResolvedValue(null),
+    connect: vi.fn().mockResolvedValue(undefined),
+    disconnect: vi.fn().mockResolvedValue(undefined),
+    isConnected: vi.fn().mockReturnValue(true),
+    getAccessToken: vi.fn().mockResolvedValue('token'),
+    upload: vi.fn().mockResolvedValue('file-id'),
+    download: vi.fn().mockResolvedValue('{}'),
+    getFileMetadata: vi.fn().mockResolvedValue(null),
+    findSyncFile: vi.fn().mockResolvedValue(null),
   });
 
   let mockProvider: ICloudStorageProvider;
@@ -74,7 +76,7 @@ describe('CloudSyncProvider', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (cloudStorageProvider as any).initializeProviders =
       originalInitializeProviders;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render children', () => {
@@ -132,6 +134,24 @@ describe('CloudSyncProvider', () => {
     expect(screen.getByTestId('provider')).toHaveTextContent('google-drive');
   });
 
+  it('should handle invalid JSON in config gracefully', () => {
+    // Store invalid JSON
+    window.localStorage.setItem(
+      'emergencySupplyTracker_cloudSyncConfig',
+      'invalid json{',
+    );
+
+    render(
+      <CloudSyncProvider>
+        <TestConsumer />
+      </CloudSyncProvider>,
+    );
+
+    // Should fall back to disconnected state
+    expect(screen.getByTestId('state')).toHaveTextContent('disconnected');
+    expect(screen.getByTestId('provider')).toHaveTextContent('none');
+  });
+
   describe('connect', () => {
     it('should connect to provider successfully', async () => {
       const user = userEvent.setup();
@@ -152,7 +172,7 @@ describe('CloudSyncProvider', () => {
 
     it('should find existing sync file on connect', async () => {
       const user = userEvent.setup();
-      (mockProvider.findSyncFile as jest.Mock).mockResolvedValue(
+      (mockProvider.findSyncFile as Mock).mockResolvedValue(
         'existing-file-id',
       );
 
@@ -198,7 +218,7 @@ describe('CloudSyncProvider', () => {
 
     it('should handle connection error', async () => {
       const user = userEvent.setup();
-      (mockProvider.connect as jest.Mock).mockRejectedValue(
+      (mockProvider.connect as Mock).mockRejectedValue(
         new Error('Connection failed'),
       );
 
@@ -220,8 +240,8 @@ describe('CloudSyncProvider', () => {
 
     it('should handle CloudSyncError with specific message', async () => {
       const user = userEvent.setup();
-      const { CloudSyncError } = jest.requireActual('./types');
-      (mockProvider.connect as jest.Mock).mockRejectedValue(
+      const { CloudSyncError } = await vi.importActual('./types');
+      (mockProvider.connect as Mock).mockRejectedValue(
         new CloudSyncError('User cancelled', 'AUTH_CANCELLED'),
       );
 
@@ -266,8 +286,8 @@ describe('CloudSyncProvider', () => {
 
     it('should handle disconnect error gracefully', async () => {
       const user = userEvent.setup();
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      (mockProvider.disconnect as jest.Mock).mockRejectedValue(
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      (mockProvider.disconnect as Mock).mockRejectedValue(
         new Error('Disconnect failed'),
       );
 
@@ -393,20 +413,20 @@ describe('CloudSyncProvider', () => {
       };
 
       mockLocalStorage.getAppData.mockReturnValue(localData);
-      (mockProvider.findSyncFile as jest.Mock).mockResolvedValue(
+      (mockProvider.findSyncFile as Mock).mockResolvedValue(
         'remote-file-id',
       );
-      (mockProvider.getFileMetadata as jest.Mock).mockResolvedValue({
+      (mockProvider.getFileMetadata as Mock).mockResolvedValue({
         id: 'remote-file-id',
         name: 'test.json',
         modifiedTime: newDate,
       });
-      (mockProvider.download as jest.Mock).mockResolvedValue(
+      (mockProvider.download as Mock).mockResolvedValue(
         JSON.stringify(remoteData),
       );
 
       // Spy on console.error to suppress jsdom "not implemented" error for location.reload
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       render(
         <CloudSyncProvider>
@@ -438,7 +458,7 @@ describe('CloudSyncProvider', () => {
         items: [],
       };
       mockLocalStorage.getAppData.mockReturnValue(localData);
-      (mockProvider.upload as jest.Mock).mockRejectedValue(
+      (mockProvider.upload as Mock).mockRejectedValue(
         new Error('Upload failed'),
       );
 
@@ -471,10 +491,10 @@ describe('CloudSyncProvider', () => {
       };
 
       mockLocalStorage.getAppData.mockReturnValue(localData);
-      (mockProvider.findSyncFile as jest.Mock).mockResolvedValue(
+      (mockProvider.findSyncFile as Mock).mockResolvedValue(
         'remote-file-id',
       );
-      (mockProvider.getFileMetadata as jest.Mock).mockResolvedValue({
+      (mockProvider.getFileMetadata as Mock).mockResolvedValue({
         id: 'remote-file-id',
         name: 'test.json',
         modifiedTime: sameDate,
@@ -530,9 +550,9 @@ describe('CloudSyncProvider', () => {
       );
 
       // File metadata returns null (deleted)
-      (mockProvider.getFileMetadata as jest.Mock).mockResolvedValue(null);
+      (mockProvider.getFileMetadata as Mock).mockResolvedValue(null);
       // Find sync file also returns null
-      (mockProvider.findSyncFile as jest.Mock).mockResolvedValue(null);
+      (mockProvider.findSyncFile as Mock).mockResolvedValue(null);
 
       render(
         <CloudSyncProvider>
@@ -552,9 +572,67 @@ describe('CloudSyncProvider', () => {
       });
     });
 
+    it('should find and use remote file when no initial remoteFileId', async () => {
+      const user = userEvent.setup();
+      const oldDate = new Date(Date.now() - 3600000).toISOString();
+      const newDate = new Date().toISOString();
+
+      const localData = {
+        lastModified: oldDate,
+        items: [],
+      };
+      const remoteData = {
+        lastModified: newDate,
+        items: [{ id: 'from-remote' }],
+      };
+
+      mockLocalStorage.getAppData.mockReturnValue(localData);
+
+      // No initial remoteFileId but findSyncFile returns one
+      (mockProvider.findSyncFile as Mock).mockResolvedValue(
+        'found-file-id',
+      );
+      (mockProvider.getFileMetadata as Mock).mockResolvedValue({
+        id: 'found-file-id',
+        name: 'test.json',
+        modifiedTime: newDate,
+      });
+      (mockProvider.download as Mock).mockResolvedValue(
+        JSON.stringify(remoteData),
+      );
+
+      // Spy on console.error to suppress jsdom "not implemented" error for location.reload
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      render(
+        <CloudSyncProvider>
+          <TestConsumer />
+        </CloudSyncProvider>,
+      );
+
+      await user.click(screen.getByText('Connect'));
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      });
+
+      await user.click(screen.getByText('Sync'));
+
+      // Should have found and downloaded from the remote file
+      await waitFor(() => {
+        expect(mockProvider.findSyncFile).toHaveBeenCalled();
+        expect(mockProvider.getFileMetadata).toHaveBeenCalledWith(
+          'found-file-id',
+        );
+        expect(mockProvider.download).toHaveBeenCalledWith('found-file-id');
+        expect(mockLocalStorage.saveAppData).toHaveBeenCalledWith(remoteData);
+      });
+
+      consoleSpy.mockRestore();
+    });
+
     it('should return error when provider is not connected', async () => {
       const user = userEvent.setup();
-      (mockProvider.isConnected as jest.Mock).mockReturnValue(false);
+      (mockProvider.isConnected as Mock).mockReturnValue(false);
 
       render(
         <CloudSyncProvider>
@@ -581,7 +659,7 @@ describe('CloudSyncProvider', () => {
     it('should clear error and restore to disconnected state', async () => {
       const user = userEvent.setup();
       // Make connect reject to trigger an error
-      (mockProvider.connect as jest.Mock).mockRejectedValueOnce(
+      (mockProvider.connect as Mock).mockRejectedValueOnce(
         new Error('Connection failed'),
       );
 
@@ -625,7 +703,7 @@ describe('CloudSyncProvider', () => {
       });
 
       // Now set upload to fail for next call
-      (mockProvider.upload as jest.Mock).mockRejectedValueOnce(
+      (mockProvider.upload as Mock).mockRejectedValueOnce(
         new Error('Upload failed'),
       );
 
