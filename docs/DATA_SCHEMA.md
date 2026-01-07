@@ -480,3 +480,81 @@ totalCalories = quantity * caloriesPerUnit;
 // Or calculated from weight
 totalCalories = (weightGrams / 100) * caloriesPer100g;
 ```
+
+---
+
+## Schema Versioning & Migrations
+
+The application uses semantic versioning for the data schema to handle future changes safely.
+
+### Version Format
+
+Schema versions follow semantic versioning (`major.minor.patch`):
+
+- **Major:** Breaking changes requiring data transformation
+- **Minor:** New optional fields (backward compatible)
+- **Patch:** Bug fixes in migration logic
+
+### Current Version
+
+The current schema version is defined in `src/shared/utils/storage/migrations.ts`:
+
+```typescript
+export const CURRENT_SCHEMA_VERSION = '1.0.0';
+```
+
+### Migration System
+
+When the application loads data from localStorage or imports data:
+
+1. **Version Check:** Data version is compared to `CURRENT_SCHEMA_VERSION`
+2. **Migration Applied:** If data is older, sequential migrations transform it
+3. **Auto-Save:** Migrated data is automatically saved back to localStorage
+4. **Error Handling:** If migration fails, original data is preserved
+
+### Adding a New Migration
+
+When making schema changes that require data transformation:
+
+1. Increment `CURRENT_SCHEMA_VERSION` in `migrations.ts`
+2. Add a migration function (e.g., `migrateV100ToV110`)
+3. Register it in the `MIGRATIONS` array
+4. Add tests in `migrations.test.ts`
+
+**Example migration:**
+
+```typescript
+// Migration from 1.0.0 to 1.1.0: Add new 'priority' field to items
+function migrateV100ToV110(data: AppData): AppData {
+  return {
+    ...data,
+    items: data.items.map((item) => ({
+      ...item,
+      priority: item.priority ?? 'normal', // Add default value
+    })),
+  };
+}
+
+// Register in MIGRATIONS array:
+const MIGRATIONS: Migration[] = [
+  {
+    fromVersion: '1.0.0',
+    toVersion: '1.1.0',
+    migrate: migrateV100ToV110,
+  },
+];
+```
+
+### Migration Rules
+
+- Migrations must be **idempotent** (safe to run multiple times)
+- Migrations must handle **missing/undefined fields** gracefully
+- **Never delete user data**; transform or archive it
+- Each migration should be **small and focused**
+- **Test migrations** with real-world data samples
+
+### Import/Export Compatibility
+
+- Exported data includes the schema version
+- Imported data is automatically migrated to current version
+- Unsupported versions (< `MIN_SUPPORTED_VERSION`) are rejected with an error
