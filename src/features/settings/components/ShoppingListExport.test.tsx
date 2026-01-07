@@ -60,7 +60,7 @@ describe('ShoppingListExport', () => {
     // Mock anchor element click to prevent jsdom navigation errors
     // Access prototype method directly to avoid circular reference
     const originalCreateElement =
-      HTMLDocument.prototype.createElement.bind(document);
+      Document.prototype.createElement.bind(document);
     createElementSpy = vi
       .spyOn(document, 'createElement')
       .mockImplementation((tagName: string) => {
