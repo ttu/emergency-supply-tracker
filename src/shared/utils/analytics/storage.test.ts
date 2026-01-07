@@ -17,8 +17,8 @@ describe('analytics storage', () => {
       expect(stats.totalLaunches).toBe(0);
       expect(stats.totalItemsAdded).toBe(0);
       expect(stats.totalItemsDeleted).toBe(0);
-      expect(stats.firstLaunch).toBeNull();
-      expect(stats.lastLaunch).toBeNull();
+      expect(stats.firstLaunch).toBeUndefined();
+      expect(stats.lastLaunch).toBeUndefined();
     });
 
     it('returns accumulated stats after tracking events', () => {

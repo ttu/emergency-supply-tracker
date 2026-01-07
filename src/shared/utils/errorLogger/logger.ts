@@ -23,7 +23,7 @@ function extractErrorDetails(error: unknown): LogEntry['error'] | undefined {
       stack: error.stack,
     };
   }
-  if (error !== undefined && error !== null) {
+  if (error !== undefined) {
     return {
       name: 'UnknownError',
       message: String(error),

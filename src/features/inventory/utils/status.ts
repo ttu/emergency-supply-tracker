@@ -11,13 +11,13 @@ import {
 
 /**
  * Calculate days until expiration for an item
- * Returns null if item never expires or has no expiration date
+ * Returns undefined if item never expires or has no expiration date
  */
 export function getDaysUntilExpiration(
   expirationDate?: string,
   neverExpires?: boolean,
-): number | null {
-  if (neverExpires || !expirationDate) return null;
+): number | undefined {
+  if (neverExpires || !expirationDate) return undefined;
 
   const today = new Date();
   const expiration = new Date(expirationDate);
@@ -53,7 +53,7 @@ export function getItemStatus(
       neverExpires,
     );
 
-    if (daysUntilExpiration !== null) {
+    if (daysUntilExpiration !== undefined) {
       if (daysUntilExpiration < 0) return 'critical'; // Expired
       if (daysUntilExpiration <= EXPIRING_SOON_DAYS_THRESHOLD) return 'warning'; // Expiring soon
     }

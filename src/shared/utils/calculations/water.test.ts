@@ -16,18 +16,14 @@ import { DAILY_WATER_PER_PERSON } from '@/shared/utils/constants';
 
 describe('water calculations', () => {
   describe('validateWaterRequirement', () => {
-    it('returns null for undefined value', () => {
-      expect(validateWaterRequirement(undefined)).toBeNull();
+    it('returns undefined for undefined value', () => {
+      expect(validateWaterRequirement(undefined)).toBeUndefined();
     });
 
-    it('returns null for null value', () => {
-      expect(validateWaterRequirement(null)).toBeNull();
-    });
-
-    it('returns null for valid positive number', () => {
-      expect(validateWaterRequirement(1.5)).toBeNull();
-      expect(validateWaterRequirement(0.1)).toBeNull();
-      expect(validateWaterRequirement(10)).toBeNull();
+    it('returns undefined for valid positive number', () => {
+      expect(validateWaterRequirement(1.5)).toBeUndefined();
+      expect(validateWaterRequirement(0.1)).toBeUndefined();
+      expect(validateWaterRequirement(10)).toBeUndefined();
     });
 
     it('returns error for zero value', () => {

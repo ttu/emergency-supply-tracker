@@ -189,12 +189,12 @@ describe('InventoryItemFactory', () => {
       }).toThrow(InventoryItemValidationError);
     });
 
-    it('throws error when quantity is null', () => {
+    it('throws error when quantity is undefined', () => {
       expect(() => {
         // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
-          quantity: null,
+          quantity: undefined,
         });
       }).toThrow(InventoryItemValidationError);
     });
@@ -218,12 +218,12 @@ describe('InventoryItemFactory', () => {
       }).toThrow(InventoryItemValidationError);
     });
 
-    it('throws error when unit is null', () => {
+    it('throws error when unit is undefined', () => {
       expect(() => {
         // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
-          unit: null,
+          unit: undefined,
         });
       }).toThrow(InventoryItemValidationError);
     });

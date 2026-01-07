@@ -65,7 +65,7 @@ function hasKey(obj: TranslationObject, keyPath: string): boolean {
 function loadTranslations(
   lang: string,
   namespace: string,
-): TranslationObject | null {
+): TranslationObject | undefined {
   const filePath = join(BASE_DIR, lang, `${namespace}.json`);
 
   try {
@@ -76,7 +76,7 @@ function loadTranslations(
       `❌ Failed to load ${lang}/${namespace}.json:`,
       error instanceof Error ? error.message : String(error),
     );
-    return null;
+    return undefined;
   }
 }
 

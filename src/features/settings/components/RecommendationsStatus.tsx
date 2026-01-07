@@ -17,7 +17,7 @@ export function RecommendationsStatus() {
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const handleResetClick = useCallback(() => {
@@ -26,7 +26,7 @@ export function RecommendationsStatus() {
 
   const handleConfirmReset = useCallback(async () => {
     setIsResetting(true);
-    setError(null);
+    setError(undefined);
 
     try {
       resetToDefaultRecommendations();
@@ -56,7 +56,7 @@ export function RecommendationsStatus() {
   }, []);
 
   const handleCloseError = useCallback(() => {
-    setError(null);
+    setError(undefined);
   }, []);
 
   return (

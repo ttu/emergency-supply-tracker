@@ -20,7 +20,7 @@ export interface CategoryStatusSummaryProps {
   completionPercentage: number;
   totalActual: number;
   totalNeeded: number;
-  primaryUnit: string | null;
+  primaryUnit?: string;
   shortages?: CategoryShortage[];
   // Calorie data for food category
   totalActualCalories?: number;
@@ -36,7 +36,7 @@ export interface CategoryStatusSummaryProps {
   // Items to check if they can be marked as enough
   items?: InventoryItem[];
   // Optional custom item name resolver for custom recommendations
-  resolveItemName?: (itemId: string, i18nKey: string) => string | null;
+  resolveItemName?: (itemId: string, i18nKey: string) => string | undefined;
 }
 
 export const CategoryStatusSummary = ({
@@ -77,7 +77,7 @@ export const CategoryStatusSummary = ({
       return `${completionPercentage}%`;
     }
 
-    // When primaryUnit is null, it means mixed units - show item type count
+    // When primaryUnit is undefined, it means mixed units - show item type count
     if (!primaryUnit) {
       return `${Math.round(totalActual)} / ${Math.round(totalNeeded)} ${t('dashboard.category.items')}`;
     }

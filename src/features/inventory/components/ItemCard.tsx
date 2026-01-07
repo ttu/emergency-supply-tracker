@@ -62,13 +62,13 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
               </span>
             ) : (
               <>
-                {daysUntil !== null &&
+                {daysUntil !== undefined &&
                   daysUntil <= EXPIRING_SOON_DAYS_THRESHOLD && (
                     <span className={styles.expiringSoon}>
                       📅 {t('inventory.expiresIn', { days: daysUntil })}
                     </span>
                   )}
-                {daysUntil !== null &&
+                {daysUntil !== undefined &&
                   daysUntil > EXPIRING_SOON_DAYS_THRESHOLD && (
                     <span className={styles.expirationDate}>
                       📅 {formatExpirationDate(item.expirationDate)}

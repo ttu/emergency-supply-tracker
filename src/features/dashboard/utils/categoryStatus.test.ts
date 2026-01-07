@@ -34,7 +34,7 @@ describe('calculateCategoryStatus', () => {
       shortages: [],
       totalActual: 0,
       totalNeeded: 0,
-      primaryUnit: null,
+      primaryUnit: undefined,
     });
   });
 
@@ -468,7 +468,7 @@ describe('calculateCategoryShortages', () => {
     expect(result.shortages).toEqual([]);
     expect(result.totalActual).toBe(0);
     expect(result.totalNeeded).toBe(0);
-    expect(result.primaryUnit).toBeNull();
+    expect(result.primaryUnit).toBeUndefined();
   });
 
   it('should sort shortages by missing amount descending', () => {
@@ -773,7 +773,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
     expect(result.shortages).toEqual([]);
     expect(result.totalNeeded).toBe(0);
     expect(result.totalActual).toBe(0);
-    expect(result.primaryUnit).toBeNull();
+    expect(result.primaryUnit).toBeUndefined();
   });
 
   it('should not affect items that are not in the disabled list', () => {

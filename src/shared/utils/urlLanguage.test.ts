@@ -33,9 +33,9 @@ describe('urlLanguage', () => {
   });
 
   describe('extractLanguageFromSearch', () => {
-    it('returns null when no lang parameter is present', () => {
-      expect(extractLanguageFromSearch('')).toBeNull();
-      expect(extractLanguageFromSearch('?foo=bar')).toBeNull();
+    it('returns undefined when no lang parameter is present', () => {
+      expect(extractLanguageFromSearch('')).toBeUndefined();
+      expect(extractLanguageFromSearch('?foo=bar')).toBeUndefined();
     });
 
     it('returns "en" when lang=en is in the search string', () => {
@@ -46,13 +46,13 @@ describe('urlLanguage', () => {
       expect(extractLanguageFromSearch('?lang=fi')).toBe('fi');
     });
 
-    it('returns null for unsupported language codes', () => {
-      expect(extractLanguageFromSearch('?lang=de')).toBeNull();
-      expect(extractLanguageFromSearch('?lang=sv')).toBeNull();
+    it('returns undefined for unsupported language codes', () => {
+      expect(extractLanguageFromSearch('?lang=de')).toBeUndefined();
+      expect(extractLanguageFromSearch('?lang=sv')).toBeUndefined();
     });
 
-    it('returns null for empty lang parameter', () => {
-      expect(extractLanguageFromSearch('?lang=')).toBeNull();
+    it('returns undefined for empty lang parameter', () => {
+      expect(extractLanguageFromSearch('?lang=')).toBeUndefined();
     });
 
     it('handles multiple query parameters', () => {
@@ -86,14 +86,14 @@ describe('urlLanguage', () => {
       expect(getLanguageFromUrl()).toBe('fi');
     });
 
-    it('returns null when no lang param in URL', () => {
+    it('returns undefined when no lang param in URL', () => {
       globalThis.history.replaceState({}, '', '/');
-      expect(getLanguageFromUrl()).toBeNull();
+      expect(getLanguageFromUrl()).toBeUndefined();
     });
 
-    it('returns null for unsupported language in URL', () => {
+    it('returns undefined for unsupported language in URL', () => {
       globalThis.history.replaceState({}, '', '/?lang=de');
-      expect(getLanguageFromUrl()).toBeNull();
+      expect(getLanguageFromUrl()).toBeUndefined();
     });
 
     it('returns en when lang=en in URL', () => {
@@ -185,7 +185,6 @@ describe('urlLanguage', () => {
       globalThis.history.replaceState({}, '', '/');
 
       expect(getInitialLanguage()).toBe('en');
-      expect(getInitialLanguage(null)).toBe('en');
       expect(getInitialLanguage(undefined)).toBe('en');
     });
 

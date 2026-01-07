@@ -30,8 +30,8 @@ describe('shouldShowBackupReminder', () => {
     vi.useRealTimers();
   });
 
-  it('should return false for null appData', () => {
-    expect(shouldShowBackupReminder(null)).toBe(false);
+  it('should return false for undefined appData', () => {
+    expect(shouldShowBackupReminder(undefined)).toBe(false);
   });
 
   it('should return false when there are no items', () => {
@@ -179,7 +179,7 @@ describe('dismissBackupReminder', () => {
   });
 
   it('should not call saveAppData when appData is null', () => {
-    mockGetAppData.mockReturnValue(null);
+    mockGetAppData.mockReturnValue(undefined);
 
     dismissBackupReminder();
 
@@ -248,7 +248,7 @@ describe('recordBackupDate', () => {
   });
 
   it('should not call saveAppData when appData is null', () => {
-    mockGetAppData.mockReturnValue(null);
+    mockGetAppData.mockReturnValue(undefined);
 
     recordBackupDate();
 

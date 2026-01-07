@@ -16,11 +16,11 @@ export function isSupportedLanguage(lang: string): lang is SupportedLanguage {
 /**
  * Extracts the language from a URL search string.
  * @param search The URL search string (e.g., "?lang=en&foo=bar")
- * @returns The language code if valid, or null if not present or invalid.
+ * @returns The language code if valid, or undefined if not present or invalid.
  */
 export function extractLanguageFromSearch(
   search: string,
-): SupportedLanguage | null {
+): SupportedLanguage | undefined {
   const params = new URLSearchParams(search);
   const lang = params.get('lang');
 
@@ -28,14 +28,14 @@ export function extractLanguageFromSearch(
     return lang;
   }
 
-  return null;
+  return undefined;
 }
 
 /**
  * Gets the language from the URL query parameter.
- * @returns The language code if valid, or null if not present or invalid.
+ * @returns The language code if valid, or undefined if not present or invalid.
  */
-export function getLanguageFromUrl(): SupportedLanguage | null {
+export function getLanguageFromUrl(): SupportedLanguage | undefined {
   return extractLanguageFromSearch(window.location.search);
 }
 
@@ -61,7 +61,7 @@ export function clearLanguageFromUrl(): void {
  * @returns The language to use for initialization.
  */
 export function getInitialLanguage(
-  storedLanguage?: SupportedLanguage | null,
+  storedLanguage?: SupportedLanguage,
 ): SupportedLanguage {
   const urlLanguage = getLanguageFromUrl();
 

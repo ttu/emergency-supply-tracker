@@ -465,6 +465,91 @@ fix: correct quantity calculation for children
 
 ---
 
+## TypeScript Patterns
+
+### Null vs Undefined Standard
+
+**Standard Pattern:** Use `undefined` for "doesn't exist" / "not set" cases. Use `null` only when you need to explicitly distinguish "empty" from "not set".
+
+#### When to Use `undefined`
+
+- Optional properties (`?:`) naturally use `undefined`
+- Function returns for "not found" cases
+- Component props for optional values
+- Validation results (undefined = valid/missing)
+
+#### When to Use `null`
+
+Only use `null` when you need to distinguish:
+
+- **"Not set"** (`undefined`) vs **"Explicitly empty"** (`null`)
+
+Example:
+
+```typescript
+// User can explicitly choose "use built-in" (null) vs "not configured" (undefined)
+customRecommendedItems?: RecommendedItemsFile | null;
+```
+
+#### Benefits
+
+1. **TypeScript-idiomatic**: Optional properties (`?:`) naturally use `undefined`
+2. **JSON serialization**: `undefined` is omitted, `null` is included (smaller storage)
+3. **Less checking**: Just `value ?? defaultValue` or `value === undefined`
+4. **Consistency**: Matches TypeScript's default behavior
+5. **Cleaner code**: No need to check both `undefined` and `null`
+
+#### Code Examples
+
+**Good Patterns ✅**
+
+```typescript
+// Optional properties (undefined by default)
+interface Item {
+  expirationDate?: string; // undefined when not set
+  location?: string; // undefined when not set
+}
+
+// Function returns
+function findItem(id: string): Item | undefined {
+  return items.find((item) => item.id === id);
+}
+
+// Nullish coalescing
+const value = item.location ?? 'Unknown';
+
+// Optional chaining
+const length = item.notes?.length ?? 0;
+```
+
+**Patterns to Avoid ❌**
+
+```typescript
+// Unnecessary null union
+interface Props {
+  value?: string | null; // Just use string | undefined
+}
+
+// Mixed checks
+if (value === undefined || value === null) {
+  // Just check undefined
+}
+
+// Returning null when undefined is clearer
+function getData(): Data | null {
+  // Use undefined
+}
+```
+
+#### JSON Serialization
+
+When working with JSON (import/export, LocalStorage):
+
+- `undefined` properties are **omitted** from JSON (smaller files)
+- `null` values are **included** in JSON (explicit empty state)
+- The app normalizes legacy `null` values to `undefined` during import
+- Example data files omit optional fields rather than using `null`
+
 ## Best Practices
 
 ### Do
@@ -474,6 +559,7 @@ fix: correct quantity calculation for children
 - Use TypeScript strict mode
 - Write tests for new features
 - Use meaningful commit messages
+- Use `undefined` for optional/missing values (TypeScript convention)
 
 ### Don't
 
@@ -482,6 +568,8 @@ fix: correct quantity calculation for children
 - Leave console.log statements
 - Ignore TypeScript errors
 - Push without running tests
+- Use `null` when `undefined` would suffice
+- Check both `undefined` and `null` when only `undefined` is needed
 
 ---
 

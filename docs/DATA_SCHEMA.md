@@ -217,9 +217,11 @@ interface InventoryItem {
 
 ### Notes
 
+- **Optional Properties**: All optional properties use `undefined` when not set (TypeScript convention). In JSON, `undefined` properties are omitted entirely.
 - `itemType` is required: use template ID (e.g., "canned-fish") for items from templates, or "custom" for user-created items
 - `recommendedQuantity` is calculated based on household configuration and scaling rules
 - Items with `neverExpires: true` don't show expiration warnings
+- `expirationDate` should be omitted (not set to `null`) when not applicable - the app normalizes legacy `null` values during import
 - `weightGrams` and `caloriesPerUnit` are used when calorie tracking is enabled
 - `capacityMah` and `capacityWh` are used for power bank tracking when power management is enabled
 - `requiresWaterLiters` tracks water needed for preparation (e.g., pasta, rice)
@@ -376,7 +378,7 @@ interface AppData {
   customTemplates: ProductTemplate[]; // User's custom templates
   dismissedAlertIds: string[]; // Alert IDs that have been dismissed by the user
   disabledRecommendedItems: string[]; // Recommended item IDs that have been disabled by the user
-  customRecommendedItems?: RecommendedItemsFile | null; // Custom imported recommendations
+  customRecommendedItems?: RecommendedItemsFile | null; // Custom imported recommendations (null = explicitly use built-in, undefined = not configured)
   lastModified: string; // ISO timestamp
   lastBackupDate?: string; // ISO date of last export
   backupReminderDismissedUntil?: string; // ISO date (first of next month) - reminder hidden until this date
@@ -385,7 +387,13 @@ interface AppData {
 
 ### Notes
 
-- `customRecommendedItems`: When `null` or `undefined`, the app uses the built-in 70-item recommendation list
+- **Optional Properties**: All optional properties use `undefined` when not set (TypeScript convention). In JSON, `undefined` properties are omitted entirely. See [CODE_QUALITY.md](CODE_QUALITY.md#null-vs-undefined-standard) for the complete standard.
+- **`customRecommendedItems`**:
+  - `undefined` = not configured (uses built-in recommendations)
+  - `null` = explicitly use built-in recommendations (user choice)
+  - `RecommendedItemsFile` = use custom imported recommendations
+- **Legacy Data**: The app normalizes legacy `null` values to `undefined` during import for consistency.
+- **JSON Serialization**: When exporting/importing data, optional fields should be omitted (not set to `null`) for consistency with the codebase standard.
 - `disabledRecommendedItems`: Cleared when custom recommendations are imported (IDs may no longer exist)
 
 ### Storage

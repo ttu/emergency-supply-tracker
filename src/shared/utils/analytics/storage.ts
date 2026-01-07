@@ -21,8 +21,8 @@ export function getAnalyticsData(): AnalyticsData {
           totalLaunches: 0,
           totalItemsAdded: 0,
           totalItemsDeleted: 0,
-          firstLaunch: null,
-          lastLaunch: null,
+          firstLaunch: undefined,
+          lastLaunch: undefined,
         },
       };
     }
@@ -35,8 +35,8 @@ export function getAnalyticsData(): AnalyticsData {
         totalLaunches: 0,
         totalItemsAdded: 0,
         totalItemsDeleted: 0,
-        firstLaunch: null,
-        lastLaunch: null,
+        firstLaunch: undefined,
+        lastLaunch: undefined,
       },
     };
   }

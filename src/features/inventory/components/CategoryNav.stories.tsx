@@ -19,7 +19,7 @@ type Story = StoryObj<typeof meta>;
 export const AllCategories: Story = {
   args: {
     categories: STANDARD_CATEGORIES,
-    selectedCategoryId: null,
+    selectedCategoryId: undefined,
     onSelectCategory: () => {},
   },
 };
@@ -35,7 +35,7 @@ export const WithSelection: Story = {
 export const FewCategories: Story = {
   args: {
     categories: STANDARD_CATEGORIES.slice(0, 3),
-    selectedCategoryId: null,
+    selectedCategoryId: undefined,
     onSelectCategory: () => {},
   },
 };

@@ -13,18 +13,18 @@ export function ImportRecommendationsButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { importRecommendedItems } = useRecommendedItems();
 
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [pendingFile, setPendingFile] = useState<RecommendedItemsFile | null>(
-    null,
-  );
+  const [pendingFile, setPendingFile] = useState<
+    RecommendedItemsFile | undefined
+  >(undefined);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setError(null);
+    setError(undefined);
 
     const reader = new FileReader();
 
@@ -76,7 +76,7 @@ export function ImportRecommendationsButton() {
       const result = importRecommendedItems(pendingFile);
       if (result.valid) {
         setShowSuccessToast(true);
-        setError(null);
+        setError(undefined);
       } else {
         const errorMessages = result.errors.map((e) => e.message).join('\n');
         setError(errorMessages);
@@ -90,13 +90,13 @@ export function ImportRecommendationsButton() {
       setError(message);
     } finally {
       setShowConfirm(false);
-      setPendingFile(null);
+      setPendingFile(undefined);
     }
   }, [pendingFile, importRecommendedItems, t]);
 
   const handleCancelImport = useCallback(() => {
     setShowConfirm(false);
-    setPendingFile(null);
+    setPendingFile(undefined);
   }, []);
 
   const handleCloseToast = useCallback(() => {

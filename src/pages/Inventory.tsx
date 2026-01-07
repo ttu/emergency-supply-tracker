@@ -79,9 +79,9 @@ export function Inventory({
   );
 
   // Filter and sort state
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    initialCategoryId || null,
-  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<
+    string | undefined
+  >(initialCategoryId || undefined);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');
   const [sortBy, setSortBy] = useState<SortBy>('name');
@@ -98,7 +98,7 @@ export function Inventory({
 
   // Calculate category status when a category is selected
   const categoryStatus = useMemo(() => {
-    if (!selectedCategoryId) return null;
+    if (!selectedCategoryId) return undefined;
     return getCategoryDisplayStatus(
       selectedCategoryId,
       items,
@@ -288,16 +288,16 @@ export function Inventory({
 
   // Resolver for custom item names in CategoryStatusSummary
   const resolveItemName = useCallback(
-    (itemId: string, i18nKey: string): string | null => {
+    (itemId: string, i18nKey: string): string | undefined => {
       // Only resolve custom items (i18nKey starts with 'custom.')
       if (!i18nKey.startsWith('custom.')) {
-        return null; // Let the component use translation
+        return undefined; // Let the component use translation
       }
       const item = recommendedItems.find((rec) => rec.id === itemId);
       if (item) {
         return getItemName(item, i18n.language);
       }
-      return null;
+      return undefined;
     },
     [recommendedItems, getItemName, i18n.language],
   );

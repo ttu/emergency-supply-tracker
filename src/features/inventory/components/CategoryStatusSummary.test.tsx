@@ -164,7 +164,7 @@ describe('CategoryStatusSummary', () => {
         completionPercentage={75}
         totalActual={0}
         totalNeeded={0}
-        primaryUnit={null}
+        primaryUnit={undefined}
       />,
     );
 
@@ -516,7 +516,7 @@ describe('CategoryStatusSummary', () => {
       expect(onDisableRecommended).toHaveBeenCalledWith('bandages');
     });
 
-    it('shows item count text when primaryUnit is null and totalNeeded > 0', () => {
+    it('shows item count text when primaryUnit is undefined and totalNeeded > 0', () => {
       render(
         <CategoryStatusSummary
           categoryId="water-beverages"
@@ -524,7 +524,7 @@ describe('CategoryStatusSummary', () => {
           completionPercentage={50}
           totalActual={5}
           totalNeeded={10}
-          primaryUnit={null}
+          primaryUnit={undefined}
         />,
       );
 

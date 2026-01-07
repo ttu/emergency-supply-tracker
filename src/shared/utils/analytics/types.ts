@@ -18,8 +18,8 @@ export interface AnalyticsStats {
   totalLaunches: number;
   totalItemsAdded: number;
   totalItemsDeleted: number;
-  firstLaunch: string | null;
-  lastLaunch: string | null;
+  firstLaunch?: string;
+  lastLaunch?: string;
 }
 
 export interface AnalyticsData {
