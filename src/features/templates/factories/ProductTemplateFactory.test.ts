@@ -4,7 +4,12 @@ import {
   ProductTemplateValidationError,
   type CreateProductTemplateInput,
 } from './ProductTemplateFactory';
-import { createProductTemplateId } from '@/shared/types';
+import {
+  createProductTemplateId,
+  VALID_CATEGORIES,
+  VALID_UNITS,
+} from '@/shared/types';
+import { faker } from '@faker-js/faker';
 
 // Mock crypto.randomUUID
 const mockUUID = 'test-uuid-123';
@@ -15,10 +20,13 @@ vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(
 describe('ProductTemplateFactory', () => {
   describe('createCustom', () => {
     it('creates a valid custom template', () => {
+      const name = faker.commerce.productName();
+      const category = faker.helpers.arrayElement(VALID_CATEGORIES);
+      const defaultUnit = faker.helpers.arrayElement(VALID_UNITS);
       const input: CreateProductTemplateInput = {
-        name: 'Test Template',
-        category: 'food',
-        defaultUnit: 'pieces',
+        name,
+        category,
+        defaultUnit,
         isCustom: true,
         isBuiltIn: false,
       };
@@ -26,9 +34,9 @@ describe('ProductTemplateFactory', () => {
       const template = ProductTemplateFactory.createCustom(input);
 
       expect(template.id).toBeDefined();
-      expect(template.name).toBe('Test Template');
-      expect(template.category).toBe('food');
-      expect(template.defaultUnit).toBe('pieces');
+      expect(template.name).toBe(name);
+      expect(template.category).toBe(category);
+      expect(template.defaultUnit).toBe(defaultUnit);
       expect(template.isCustom).toBe(true);
       expect(template.isBuiltIn).toBe(false);
       expect(template.createdAt).toBeDefined();

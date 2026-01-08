@@ -7,60 +7,56 @@ import {
   createMockHousehold,
   createMockRecommendedItem,
 } from '@/shared/utils/test/factories';
+import {
+  ADULT_REQUIREMENT_MULTIPLIER,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+} from '@/shared/utils/constants';
 
 describe('calculateHouseholdMultiplier', () => {
-  it('calculates multiplier for 2 adults, 1 child, 7 days', () => {
-    const config = createMockHousehold({
-      adults: 2,
-      children: 1,
-      supplyDurationDays: 7,
-      useFreezer: false,
-    });
-    // (2 * 1.0 + 1 * 0.75) * 7 = 2.75 * 7 = 19.25
+  it('calculates multiplier correctly for random household configurations', () => {
+    const config = createMockHousehold();
+    const expected =
+      (config.adults * ADULT_REQUIREMENT_MULTIPLIER +
+        config.children * CHILDREN_REQUIREMENT_MULTIPLIER) *
+      config.supplyDurationDays;
     const result = calculateHouseholdMultiplier(config);
-    expect(result).toBeCloseTo(19.25, 1);
+    expect(result).toBeCloseTo(expected, 1);
   });
 });
 
 describe('calculateRecommendedQuantity', () => {
   it('scales with people and days', () => {
+    const baseQuantity = 3; // 3 liters per person per day
     const item = createMockRecommendedItem({
       id: 'water',
       i18nKey: 'products.water',
       category: 'water-beverages',
-      baseQuantity: 3, // 3 liters per person per day
+      baseQuantity,
       unit: 'liters',
       scaleWithPeople: true,
       scaleWithDays: true,
     });
-    const household = createMockHousehold({
-      adults: 2,
-      children: 0,
-      supplyDurationDays: 7,
-      useFreezer: false,
-    });
-    // 3 * 2 * 7 = 42 liters
+    const household = createMockHousehold({ children: 0 });
+    const expected =
+      baseQuantity * household.adults * household.supplyDurationDays;
     const result = calculateRecommendedQuantity(item, household);
-    expect(result).toBe(42);
+    expect(result).toBe(expected);
   });
 
   it('does not scale when flags are false', () => {
+    const baseQuantity = 1;
     const item = createMockRecommendedItem({
       id: 'flashlight',
       i18nKey: 'products.flashlight',
       category: 'light-power',
-      baseQuantity: 1,
+      baseQuantity,
       unit: 'pieces',
       scaleWithPeople: false,
       scaleWithDays: false,
     });
-    const household = createMockHousehold({
-      adults: 5,
-      children: 3,
-      supplyDurationDays: 14,
-      useFreezer: false,
-    });
+    const household = createMockHousehold();
     const result = calculateRecommendedQuantity(item, household);
-    expect(result).toBe(1);
+    // Should return baseQuantity regardless of household size
+    expect(result).toBe(baseQuantity);
   });
 });

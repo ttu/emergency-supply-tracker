@@ -9,6 +9,7 @@ import {
 import {
   createMockAppData,
   createMockCategory,
+  createMockHousehold,
 } from '@/shared/utils/test/factories';
 
 describe('localStorage utilities', () => {
@@ -181,14 +182,14 @@ describe('localStorage utilities', () => {
     it('sets neverExpires to true when expirationDate is null', () => {
       const dataWithNullExpiration = {
         version: '1.0.0',
-        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         items: [
           {
             id: 'item-1',
             name: 'Test Item',
             categoryId: 'water',
-            quantity: 5,
+            quantity: 1,
             unit: 'liters',
             expirationDate: null,
             neverExpires: false,
@@ -197,7 +198,7 @@ describe('localStorage utilities', () => {
             id: 'item-2',
             name: 'Test Item 2',
             categoryId: 'food',
-            quantity: 3,
+            quantity: 1,
             unit: 'pieces',
             expirationDate: '2025-12-31',
             neverExpires: false,
@@ -217,7 +218,7 @@ describe('localStorage utilities', () => {
     it('preserves valid template ID in itemType', () => {
       const dataWithTemplateId = {
         version: '1.0.0',
-        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         items: [
           {
@@ -225,7 +226,7 @@ describe('localStorage utilities', () => {
             name: 'Water',
             itemType: 'bottled-water', // Already a valid template ID
             categoryId: 'water-beverages',
-            quantity: 5,
+            quantity: 1,
             unit: 'liters',
             neverExpires: true,
           },
@@ -241,7 +242,7 @@ describe('localStorage utilities', () => {
     it('sets itemType to custom when invalid template ID is provided', () => {
       const dataWithInvalidItemType = {
         version: '1.0.0',
-        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         items: [
           {
@@ -249,7 +250,7 @@ describe('localStorage utilities', () => {
             name: 'My Custom Thing',
             itemType: 'Invalid Item Type', // Not a valid kebab-case template ID
             categoryId: 'food',
-            quantity: 3,
+            quantity: 1,
             unit: 'pieces',
             neverExpires: true,
           },
@@ -265,14 +266,14 @@ describe('localStorage utilities', () => {
     it('sets itemType to custom when itemType is missing', () => {
       const dataWithNoItemType = {
         version: '1.0.0',
-        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         items: [
           {
             id: 'item-1',
             name: 'Custom Item',
             categoryId: 'food',
-            quantity: 3,
+            quantity: 1,
             unit: 'cans',
             neverExpires: false,
             expirationDate: '2025-12-31',
@@ -289,7 +290,7 @@ describe('localStorage utilities', () => {
     it('maps customCategories and customTemplates with createCategoryId and createProductTemplateId', () => {
       const dataWithCustoms = {
         version: '1.0.0',
-        household: { adults: 2, children: 0, supplyDurationDays: 3 },
+        household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         customCategories: [
           { id: 'custom-cat-1', name: 'Custom Category 1', isCustom: true },
