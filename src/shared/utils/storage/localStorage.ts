@@ -15,7 +15,7 @@ const STORAGE_KEY = 'emergencySupplyTracker';
 /**
  * Checks if a value looks like a valid template ID (kebab-case).
  */
-function isTemplateId(value: string): boolean {
+export function isTemplateId(value: string): boolean {
   return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(value);
 }
 

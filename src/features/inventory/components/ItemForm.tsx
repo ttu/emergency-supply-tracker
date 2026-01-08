@@ -11,6 +11,7 @@ import { Select } from '@/shared/components/Select';
 import { Button } from '@/shared/components/Button';
 import { calculateCaloriesFromWeight } from '@/shared/utils/calculations/calories';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
+import { isTemplateId } from '@/shared/utils/storage/localStorage';
 import styles from './ItemForm.module.css';
 
 export interface ItemFormProps {
@@ -150,9 +151,10 @@ export const ItemForm = ({
     }
 
     const trimmedItemType = formData.itemType.trim();
-    const itemType: ProductTemplateId | 'custom' = trimmedItemType
-      ? createProductTemplateId(trimmedItemType)
-      : CUSTOM_ITEM_TYPE;
+    const itemType: ProductTemplateId | 'custom' =
+      trimmedItemType && isTemplateId(trimmedItemType)
+        ? createProductTemplateId(trimmedItemType)
+        : CUSTOM_ITEM_TYPE;
 
     onSubmit({
       name: formData.name.trim(),

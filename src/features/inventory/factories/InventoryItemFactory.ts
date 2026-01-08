@@ -12,6 +12,7 @@ import {
 } from '@/shared/types';
 import { calculateRecommendedQuantity } from '@/features/household/utils/calculations';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
+import { isTemplateId } from '@/shared/utils/storage/localStorage';
 
 /**
  * Base input for creating an inventory item.
@@ -286,9 +287,10 @@ export class InventoryItemFactory {
    * @throws InventoryItemValidationError if validation fails
    */
   static createFromFormData(formData: CreateFromFormInput): InventoryItem {
-    const itemType: ProductTemplateId | 'custom' = formData.itemType
-      ? createProductTemplateId(formData.itemType)
-      : CUSTOM_ITEM_TYPE;
+    const itemType: ProductTemplateId | 'custom' =
+      formData.itemType && isTemplateId(formData.itemType)
+        ? createProductTemplateId(formData.itemType)
+        : CUSTOM_ITEM_TYPE;
 
     return this.create({
       name: formData.name,
