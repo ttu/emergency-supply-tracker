@@ -1,28 +1,5 @@
 import type { Unit } from '@/shared/types';
-
-/**
- * List of all valid unit types.
- * Exported as readonly to prevent modification.
- */
-export const VALID_UNITS: readonly Unit[] = [
-  'pieces',
-  'liters',
-  'kilograms',
-  'grams',
-  'cans',
-  'bottles',
-  'packages',
-  'jars',
-  'canisters',
-  'boxes',
-  'days',
-  'rolls',
-  'tubes',
-  'meters',
-  'pairs',
-  'euros',
-  'sets',
-] as const;
+import { VALID_UNITS } from '@/shared/types';
 
 /**
  * Validates that a unit is a valid Unit type.

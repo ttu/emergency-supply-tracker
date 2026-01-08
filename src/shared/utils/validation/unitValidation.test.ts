@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { isValidUnit, VALID_UNITS } from './unitValidation';
-import type { Unit } from '@/shared/types';
+import { isValidUnit } from './unitValidation';
+import { VALID_UNITS, type Unit } from '@/shared/types';
 
 describe('unitValidation', () => {
   describe('VALID_UNITS', () => {

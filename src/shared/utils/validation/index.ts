@@ -1,4 +1,5 @@
-export { isValidUnit, VALID_UNITS } from './unitValidation';
+export { isValidUnit } from './unitValidation';
+export { VALID_UNITS } from '@/shared/types';
 export {
   validateRecommendedItemsFile,
   parseRecommendedItemsFile,
