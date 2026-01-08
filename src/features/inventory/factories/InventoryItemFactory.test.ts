@@ -341,10 +341,10 @@ describe('InventoryItemFactory', () => {
       expect(item.categoryId).toBe(createCategoryId('water-beverages'));
       expect(item.quantity).toBe(0); // Default
       expect(item.unit).toBe('liters');
-      // Calculate expected: baseQuantity * (adults * 1.0 + children * CHILDREN_REQUIREMENT_MULTIPLIER) * days
+      // Calculate expected: baseQuantity * (adults * 1 + children * CHILDREN_REQUIREMENT_MULTIPLIER) * days
       const expected = Math.ceil(
         3 *
-          (household.adults * 1.0 +
+          (household.adults * 1 +
             household.children * CHILDREN_REQUIREMENT_MULTIPLIER) *
           household.supplyDurationDays,
       );
@@ -502,10 +502,10 @@ describe('InventoryItemFactory', () => {
         },
       );
 
-      // Calculate expected: baseQuantity * (adults * 1.0 + children * customMultiplier) * days
+      // Calculate expected: baseQuantity * (adults * 1 + children * customMultiplier) * days
       const expected = Math.ceil(
         3 *
-          (household.adults * 1.0 + household.children * 0.5) *
+          (household.adults * 1 + household.children * 0.5) *
           household.supplyDurationDays,
       );
       expect(item.recommendedQuantity).toBe(expected);

@@ -235,7 +235,7 @@ describe('calculateCategoryShortages', () => {
         oneAdultHousehold,
       );
 
-      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1.0 + children × 0.75) × days
+      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
       const peopleMultiplier =
         oneAdultHousehold.adults * ADULT_REQUIREMENT_MULTIPLIER +
         oneAdultHousehold.children * CHILDREN_REQUIREMENT_MULTIPLIER;
@@ -288,7 +288,7 @@ describe('calculateCategoryShortages', () => {
         weekHousehold,
       );
 
-      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1.0 + children × 0.75) × days
+      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
       const peopleMultiplier =
         weekHousehold.adults * ADULT_REQUIREMENT_MULTIPLIER +
         weekHousehold.children * CHILDREN_REQUIREMENT_MULTIPLIER;
@@ -317,7 +317,7 @@ describe('calculateCategoryShortages', () => {
         familyHousehold,
       );
 
-      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1.0 + children × 0.75) × days
+      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
       const peopleMultiplier =
         familyHousehold.adults * ADULT_REQUIREMENT_MULTIPLIER +
         familyHousehold.children * CHILDREN_REQUIREMENT_MULTIPLIER;
@@ -347,7 +347,7 @@ describe('calculateCategoryShortages', () => {
         childOnlyHousehold,
       );
 
-      // Calculate expected: DAILY_WATER_PER_PERSON × (0 × 1.0 + children × 0.75) × days
+      // Calculate expected: DAILY_WATER_PER_PERSON × (0 × 1 + children × 0.75) × days
       const peopleMultiplier =
         childOnlyHousehold.children * CHILDREN_REQUIREMENT_MULTIPLIER;
       const expected = Math.ceil(
@@ -364,7 +364,7 @@ describe('calculateCategoryShortages', () => {
     });
 
     it('should include water for food preparation in bottled-water recommendation', () => {
-      // Items include pasta which requires 1.0L per kg for preparation
+      // Items include pasta which requires 1L per kg for preparation
       const pastaQuantity = randomQuantityFloatMinOne();
       const items: InventoryItem[] = [
         createMockInventoryItem({
@@ -374,7 +374,7 @@ describe('calculateCategoryShortages', () => {
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: 1,
-          productTemplateId: 'pasta', // 1.0 L/kg water requirement
+          productTemplateId: 'pasta', // 1 L/kg water requirement
           neverExpires: false,
           expirationDate: '2025-12-31',
         }),
@@ -395,7 +395,7 @@ describe('calculateCategoryShortages', () => {
           peopleMultiplier *
           household.supplyDurationDays,
       );
-      const preparationWater = pastaQuantity * 1.0; // 1.0 L/kg
+      const preparationWater = pastaQuantity * 1; // 1 L/kg
       const expected = Math.ceil(baseWater + preparationWater);
 
       const waterShortage = result.shortages.find(

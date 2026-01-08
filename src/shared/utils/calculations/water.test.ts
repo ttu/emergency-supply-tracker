@@ -114,7 +114,7 @@ describe('water calculations', () => {
         unit: 'kilograms',
         productTemplateId: 'pasta',
       });
-      expect(getWaterRequirementPerUnit(item)).toBe(1.0);
+      expect(getWaterRequirementPerUnit(item)).toBe(1);
     });
 
     it('returns template water requirement for items with matching itemType', () => {
@@ -140,7 +140,7 @@ describe('water calculations', () => {
         categoryId: 'food',
         unit: 'kilograms',
         productTemplateId: 'pasta',
-        requiresWaterLiters: customWaterReq, // Custom value overrides template's 1.0
+        requiresWaterLiters: customWaterReq, // Custom value overrides template's 1
       });
       expect(getWaterRequirementPerUnit(item)).toBe(customWaterReq);
     });
@@ -162,7 +162,7 @@ describe('water calculations', () => {
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'pasta', // 1.0 L/kg
+          productTemplateId: 'pasta', // 1 L/kg
         }),
         createMockInventoryItem({
           id: '2',
@@ -174,7 +174,7 @@ describe('water calculations', () => {
           productTemplateId: 'rice', // 1.5 L/kg
         }),
       ];
-      const expected = pastaQuantity * 1.0 + riceQuantity * 1.5;
+      const expected = pastaQuantity * 1 + riceQuantity * 1.5;
       expect(calculateTotalWaterRequired(items)).toBe(expected);
     });
 
@@ -196,7 +196,7 @@ describe('water calculations', () => {
           productTemplateId: 'pasta',
         }),
       ];
-      expect(calculateTotalWaterRequired(items)).toBe(pastaQuantity * 1.0);
+      expect(calculateTotalWaterRequired(items)).toBe(pastaQuantity * 1);
     });
   });
 
@@ -301,7 +301,7 @@ describe('water calculations', () => {
 
     it('returns correct values when enough water available', () => {
       const pastaQuantity = randomQuantityFloat();
-      const waterQuantity = pastaQuantity * 1.0 + randomQuantitySmall(); // More than needed
+      const waterQuantity = pastaQuantity * 1 + randomQuantitySmall(); // More than needed
       const items = [
         createMockInventoryItem({
           id: '1',
@@ -319,11 +319,11 @@ describe('water calculations', () => {
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'pasta', // 1.0 L/kg
+          productTemplateId: 'pasta', // 1 L/kg
         }),
       ];
       const result = calculateWaterRequirements(items);
-      const expectedRequired = pastaQuantity * 1.0;
+      const expectedRequired = pastaQuantity * 1;
       expect(result.totalWaterRequired).toBe(expectedRequired);
       expect(result.totalWaterAvailable).toBe(waterQuantity);
       expect(result.hasEnoughWater).toBe(true);
@@ -360,11 +360,11 @@ describe('water calculations', () => {
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'pasta', // 1.0 L/kg
+          productTemplateId: 'pasta', // 1 L/kg
         }),
       ];
       const result = calculateWaterRequirements(items);
-      const expectedRequired = pastaQuantity * 1.0;
+      const expectedRequired = pastaQuantity * 1;
       const expectedShortfall = expectedRequired - waterQuantity;
       expect(result.totalWaterRequired).toBe(expectedRequired);
       expect(result.totalWaterAvailable).toBe(waterQuantity);
@@ -401,8 +401,8 @@ describe('water calculations', () => {
         itemId: '1',
         itemName: 'My Pasta',
         quantity: pastaQuantity,
-        waterPerUnit: 1.0,
-        totalWaterRequired: pastaQuantity * 1.0,
+        waterPerUnit: 1,
+        totalWaterRequired: pastaQuantity * 1,
       });
       expect(result.itemsRequiringWater).toContainEqual({
         itemId: '2',
@@ -480,7 +480,7 @@ describe('water calculations', () => {
           categoryId: 'food',
           quantity: pastaQuantity,
           unit: 'kilograms',
-          productTemplateId: 'pasta', // 1.0 L/kg
+          productTemplateId: 'pasta', // 1 L/kg
         }),
       ];
       const result = calculateTotalWaterNeeds(
@@ -493,7 +493,7 @@ describe('water calculations', () => {
         ADULT_REQUIREMENT_MULTIPLIER *
         DAILY_WATER_PER_PERSON *
         household.supplyDurationDays;
-      const expectedPreparation = pastaQuantity * 1.0;
+      const expectedPreparation = pastaQuantity * 1;
       expect(result.drinkingWater).toBe(expectedDrinking);
       expect(result.preparationWater).toBe(expectedPreparation);
       expect(result.totalWater).toBe(expectedDrinking + expectedPreparation);

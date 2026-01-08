@@ -7,8 +7,10 @@ import type {
   ProductTemplate,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { VALID_THEMES, VALID_UNITS, VALID_CATEGORIES } from '@/shared/types';
 import {
+  VALID_THEMES,
+  VALID_UNITS,
+  VALID_CATEGORIES,
   createItemId,
   createCategoryId,
   createProductTemplateId,
