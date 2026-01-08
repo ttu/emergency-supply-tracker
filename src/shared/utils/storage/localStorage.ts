@@ -8,6 +8,7 @@ import {
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
 import { UserSettingsFactory } from '@/features/settings/factories/UserSettingsFactory';
+import { STANDARD_CATEGORIES } from '@/features/categories/data';
 
 const STORAGE_KEY = 'emergencySupplyTracker';
 
@@ -153,8 +154,8 @@ export function exportToJSON(data: AppData): string {
       itemCount: data.items?.length ?? 0,
       categoryCount:
         (data.customCategories?.length ?? 0) +
-        // Standard categories are always available (9 standard categories)
-        9,
+        // Standard categories are always available
+        STANDARD_CATEGORIES.length,
     },
   };
   return JSON.stringify(exportData, null, 2);
