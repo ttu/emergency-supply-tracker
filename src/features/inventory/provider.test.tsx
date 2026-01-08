@@ -209,6 +209,7 @@ describe('InventoryProvider', () => {
     const existingItem = createMockInventoryItem({
       id: 'item-1',
       name: 'To Delete',
+      categoryId: 'food',
     });
     mockGetAppData.mockReturnValue({
       items: [existingItem],

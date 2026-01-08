@@ -8,6 +8,7 @@ import { RecommendedItemsProvider } from '@/features/templates';
 import {
   createMockInventoryItem,
   createMockAppData,
+  createMockHousehold,
 } from '@/shared/utils/test/factories';
 
 // Mock i18next
@@ -319,20 +320,12 @@ describe('Dashboard', () => {
     // Set up app data with items but no backup date to trigger backup reminder
     // Backup reminder shows when: no backup date AND items.length > 0
     const appData = createMockAppData({
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
+      household: createMockHousehold({ children: 0, supplyDurationDays: 7 }),
       items: [
         createMockInventoryItem({
           id: '1',
           name: 'Water',
           categoryId: 'water-beverages',
-          quantity: 10,
-          unit: 'gallons',
-          recommendedQuantity: 28,
           neverExpires: true,
         }),
       ],
@@ -380,9 +373,6 @@ describe('Dashboard', () => {
           id: '1',
           name: 'Water',
           categoryId: 'water-beverages',
-          quantity: 10,
-          unit: 'gallons',
-          recommendedQuantity: 28,
           neverExpires: true,
         }),
       ],

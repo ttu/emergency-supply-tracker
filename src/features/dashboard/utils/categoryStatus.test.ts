@@ -10,7 +10,24 @@ import {
   createMockInventoryItem,
   createMockHousehold,
 } from '@/shared/utils/test/factories';
-import { DAILY_WATER_PER_PERSON } from '@/shared/utils/constants';
+import {
+  DAILY_WATER_PER_PERSON,
+  ADULT_REQUIREMENT_MULTIPLIER,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+} from '@/shared/utils/constants';
+import {
+  randomChildrenMinOne,
+  randomSupplyDurationDaysLong,
+  randomQuantitySmall,
+  randomQuantityMedium,
+  randomQuantityLarge,
+  randomQuantityFloat,
+  randomQuantityFloatMinOne,
+  randomLessThan,
+  randomMoreThan,
+  randomPercentageLow,
+  randomPercentageMid,
+} from '@/shared/utils/test/faker-helpers';
 
 describe('calculateCategoryStatus', () => {
   const waterCategory = createMockCategory({
@@ -205,22 +222,12 @@ describe('calculateAllCategoryStatuses', () => {
 });
 
 describe('calculateCategoryShortages', () => {
-  const household = createMockHousehold({
-    adults: 2,
-    children: 0,
-    supplyDurationDays: 3,
-    useFreezer: false,
-  });
+  const household = createMockHousehold();
 
   // Water calculation tests - DAILY_WATER_PER_PERSON liters per person per day
   describe(`water calculation - ${DAILY_WATER_PER_PERSON}L per person per day`, () => {
-    it('should calculate 9 liters for 1 adult, 3 days', () => {
-      const oneAdultHousehold = createMockHousehold({
-        adults: 1,
-        children: 0,
-        supplyDurationDays: 3,
-        useFreezer: false,
-      });
+    it('should calculate water correctly for random household configurations', () => {
+      const oneAdultHousehold = createMockHousehold({ useFreezer: false });
 
       const result = calculateCategoryShortages(
         'water-beverages',
@@ -228,35 +235,50 @@ describe('calculateCategoryShortages', () => {
         oneAdultHousehold,
       );
 
-      // 1 adult × 3 days × DAILY_WATER_PER_PERSON = 9 liters
-      // Formula: baseQuantity(9) × adults(1) × days(3/3) = 9
+      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
+      const peopleMultiplier =
+        oneAdultHousehold.adults * ADULT_REQUIREMENT_MULTIPLIER +
+        oneAdultHousehold.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+      const expected = Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          oneAdultHousehold.supplyDurationDays,
+      );
+
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );
       expect(waterShortage).toBeDefined();
-      expect(waterShortage!.needed).toBe(9);
+      expect(waterShortage!.needed).toBe(expected);
     });
 
-    it('should calculate 18 liters for 2 adults, 3 days', () => {
+    it('should calculate water correctly for household', () => {
       const result = calculateCategoryShortages(
         'water-beverages',
         [],
         household,
       );
 
-      // 2 adults × 3 days × DAILY_WATER_PER_PERSON = 18 liters
+      // Calculate expected based on household configuration
+      const peopleMultiplier =
+        household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+        household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+      const expected = Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          household.supplyDurationDays,
+      );
+
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );
       expect(waterShortage).toBeDefined();
-      expect(waterShortage!.needed).toBe(18);
+      expect(waterShortage!.needed).toBe(expected);
     });
 
-    it('should calculate 42 liters for 2 adults, 7 days', () => {
+    it('should calculate water correctly for longer supply duration', () => {
       const weekHousehold = createMockHousehold({
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
+        supplyDurationDays: randomSupplyDurationDaysLong(),
         useFreezer: false,
       });
 
@@ -266,20 +288,26 @@ describe('calculateCategoryShortages', () => {
         weekHousehold,
       );
 
-      // 2 adults × 7 days × DAILY_WATER_PER_PERSON = 42 liters
-      // Formula: baseQuantity(9) × adults(2) × days(7/3) = 9 × 2 × 2.33 = 42
+      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
+      const peopleMultiplier =
+        weekHousehold.adults * ADULT_REQUIREMENT_MULTIPLIER +
+        weekHousehold.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+      const expected = Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          weekHousehold.supplyDurationDays,
+      );
+
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );
       expect(waterShortage).toBeDefined();
-      expect(waterShortage!.needed).toBe(42);
+      expect(waterShortage!.needed).toBe(expected);
     });
 
-    it('should calculate children at 75% of adult water needs', () => {
+    it('should calculate children at correct multiplier for water needs', () => {
       const familyHousehold = createMockHousehold({
-        adults: 2,
-        children: 2,
-        supplyDurationDays: 3,
+        children: randomChildrenMinOne(),
         useFreezer: false,
       });
 
@@ -289,20 +317,27 @@ describe('calculateCategoryShortages', () => {
         familyHousehold,
       );
 
-      // (2 adults × 1.0 + 2 children × 0.75) × 3 days × DAILY_WATER_PER_PERSON
-      // = (2 + 1.5) × 9 = 3.5 × 9 = 31.5, rounded up to 32
+      // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
+      const peopleMultiplier =
+        familyHousehold.adults * ADULT_REQUIREMENT_MULTIPLIER +
+        familyHousehold.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+      const expected = Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          familyHousehold.supplyDurationDays,
+      );
+
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );
       expect(waterShortage).toBeDefined();
-      expect(waterShortage!.needed).toBe(32);
+      expect(waterShortage!.needed).toBe(expected);
     });
 
-    it('should calculate 1 child at 75% of 1 adult', () => {
+    it('should calculate correctly for children-only households', () => {
       const childOnlyHousehold = createMockHousehold({
         adults: 0,
-        children: 1,
-        supplyDurationDays: 3,
+        children: randomChildrenMinOne(),
         useFreezer: false,
       });
 
@@ -312,26 +347,34 @@ describe('calculateCategoryShortages', () => {
         childOnlyHousehold,
       );
 
-      // 0 adults + 1 child × 0.75 = 0.75 people equivalent
-      // 0.75 × 3 days × DAILY_WATER_PER_PERSON = 6.75, rounded up to 7
+      // Calculate expected: DAILY_WATER_PER_PERSON × (0 × 1 + children × 0.75) × days
+      const peopleMultiplier =
+        childOnlyHousehold.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+      const expected = Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          childOnlyHousehold.supplyDurationDays,
+      );
+
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );
       expect(waterShortage).toBeDefined();
-      expect(waterShortage!.needed).toBe(7);
+      expect(waterShortage!.needed).toBe(expected);
     });
 
     it('should include water for food preparation in bottled-water recommendation', () => {
-      // Items include pasta which requires 1.0L per kg for preparation
+      // Items include pasta which requires 1L per kg for preparation
+      const pastaQuantity = randomQuantityFloatMinOne();
       const items: InventoryItem[] = [
         createMockInventoryItem({
           id: '1',
           name: 'Pasta',
           categoryId: 'food',
-          quantity: 5, // 5 kg of pasta
+          quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: 1,
-          productTemplateId: 'pasta', // 1.0 L/kg water requirement
+          productTemplateId: 'pasta', // 1 L/kg water requirement
           neverExpires: false,
           expirationDate: '2025-12-31',
         }),
@@ -343,15 +386,24 @@ describe('calculateCategoryShortages', () => {
         household,
       );
 
-      // For 2 adults, 3 days: bottled-water base = 9 * 2 = 18 liters
-      // Plus 5kg pasta * 1.0L/kg = 5L for preparation
-      // Total = 23 liters
+      // Calculate expected: base water + preparation water
+      const peopleMultiplier =
+        household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+        household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+      const baseWater = Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          household.supplyDurationDays,
+      );
+      const preparationWater = pastaQuantity * 1; // 1 L/kg
+      const expected = Math.ceil(baseWater + preparationWater);
+
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );
       expect(waterShortage).toBeDefined();
-      expect(waterShortage!.needed).toBe(23);
-      expect(result.preparationWaterNeeded).toBe(5);
+      expect(waterShortage!.needed).toBe(expected);
+      expect(result.preparationWaterNeeded).toBeCloseTo(preparationWater, 1);
     });
 
     it('should not add preparation water when no food requires water', () => {
@@ -360,9 +412,7 @@ describe('calculateCategoryShortages', () => {
           id: '1',
           name: 'Crackers',
           categoryId: 'food',
-          quantity: 5,
           unit: 'packages',
-          recommendedQuantity: 5,
           neverExpires: false,
           expirationDate: '2025-12-31',
         }),
@@ -374,25 +424,42 @@ describe('calculateCategoryShortages', () => {
         household,
       );
 
-      // No preparation water needed
+      // Calculate expected: just base water requirement (no preparation water)
+      const peopleMultiplier =
+        household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+        household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+      const expected = Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          household.supplyDurationDays,
+      );
+
       const waterShortage = result.shortages.find(
         (s) => s.itemId === 'bottled-water',
       );
       expect(waterShortage).toBeDefined();
-      expect(waterShortage!.needed).toBe(18); // Just base water requirement
-      expect(result.preparationWaterNeeded).toBe(0); // Now always defined for water-beverages category
+      expect(waterShortage!.needed).toBe(expected);
+      expect(result.preparationWaterNeeded).toBe(0);
     });
   });
 
   it('should calculate shortages for water category', () => {
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const needed = Math.ceil(
+      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    );
+    const actual = randomLessThan(needed);
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
-        quantity: 9,
+        quantity: actual,
         unit: 'liters',
-        recommendedQuantity: 18,
+        recommendedQuantity: needed,
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -405,26 +472,30 @@ describe('calculateCategoryShortages', () => {
       household,
     );
 
-    // For 2 adults, 3 days: bottled-water needs 9 * 2 * (3/3) = 18 liters
-    // (base 9L is calibrated for 1 person for 3 days = 3L/day)
     expect(result.shortages.length).toBeGreaterThan(0);
-    expect(result.totalActual).toBe(9);
+    expect(result.totalActual).toBe(actual);
     expect(result.primaryUnit).toBe('liters');
   });
 
   it('should return no shortages when fully stocked', () => {
-    // For 2 adults, 3 days:
-    // - bottled-water: 9 * 2 * (3/3) = 18 liters
-    // - long-life-milk: 2 * 2 = 4 liters (doesn't scale with days)
-    // - long-life-juice: 2 * 2 = 4 liters (doesn't scale with days)
+    // Calculate needed quantities based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const waterNeeded = Math.ceil(
+      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    );
+    const milkNeeded = Math.ceil(2 * peopleMultiplier);
+    const juiceNeeded = Math.ceil(2 * peopleMultiplier);
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
-        quantity: 18,
+        quantity: waterNeeded,
         unit: 'liters',
-        recommendedQuantity: 18,
+        recommendedQuantity: waterNeeded,
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -433,9 +504,9 @@ describe('calculateCategoryShortages', () => {
         id: '2',
         name: 'Long Life Milk',
         categoryId: 'water-beverages',
-        quantity: 4,
+        quantity: milkNeeded,
         unit: 'liters',
-        recommendedQuantity: 4,
+        recommendedQuantity: milkNeeded,
         productTemplateId: 'long-life-milk',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -444,9 +515,9 @@ describe('calculateCategoryShortages', () => {
         id: '3',
         name: 'Long Life Juice',
         categoryId: 'water-beverages',
-        quantity: 4,
+        quantity: juiceNeeded,
         unit: 'liters',
-        recommendedQuantity: 4,
+        recommendedQuantity: juiceNeeded,
         productTemplateId: 'long-life-juice',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -502,42 +573,61 @@ describe('calculateCategoryShortages', () => {
   });
 
   it('should calculate calories for food category', () => {
+    const soupQuantity = randomQuantitySmall();
+    const pastaQuantity = randomQuantityFloat();
+    const soupCalories = 200;
+    const pastaCalories = 3500;
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'food',
-        quantity: 5, // 5 cans of soup
+        quantity: soupQuantity,
         productTemplateId: 'canned-soup',
-        caloriesPerUnit: 200,
+        caloriesPerUnit: soupCalories,
       }),
       createMockInventoryItem({
         id: '2',
         categoryId: 'food',
-        quantity: 2, // 2 kg pasta
+        quantity: pastaQuantity,
         productTemplateId: 'pasta',
-        caloriesPerUnit: 3500,
+        caloriesPerUnit: pastaCalories,
       }),
     ];
 
     const result = calculateCategoryShortages('food', items, household);
 
-    // 5 cans * 200 kcal + 2 kg * 3500 kcal = 1000 + 7000 = 8000 kcal
-    expect(result.totalActualCalories).toBe(8000);
+    const actualCalories =
+      soupQuantity * soupCalories + pastaQuantity * pastaCalories;
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const neededCalories = Math.ceil(
+      peopleMultiplier * household.supplyDurationDays * 2000,
+    );
+    const missingCalories = Math.max(0, neededCalories - actualCalories);
 
-    // 2 people * 3 days * 2000 kcal = 12000 kcal
-    expect(result.totalNeededCalories).toBe(12000);
-
-    // Missing = 12000 - 8000 = 4000 kcal
-    expect(result.missingCalories).toBe(4000);
+    expect(result.totalActualCalories).toBeCloseTo(actualCalories, 0);
+    expect(result.totalNeededCalories).toBe(neededCalories);
+    expect(result.missingCalories).toBeCloseTo(missingCalories, 0);
   });
 
   it('should return no missing calories when fully stocked', () => {
-    // Create items with enough calories for 2 people * 3 days = 12000 kcal
+    // Calculate needed calories based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const neededCalories = Math.ceil(
+      peopleMultiplier * household.supplyDurationDays * 2000,
+    );
+    // Create items with enough calories (more than needed)
+    const riceQuantity = Math.ceil((neededCalories / 3600) * 1.2); // 20% more than needed
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'food',
-        quantity: 4, // 4 kg rice = 14400 kcal
+        quantity: riceQuantity,
         productTemplateId: 'rice',
         caloriesPerUnit: 3600,
       }),
@@ -545,9 +635,10 @@ describe('calculateCategoryShortages', () => {
 
     const result = calculateCategoryShortages('food', items, household);
 
-    expect(result.totalActualCalories).toBe(14400);
-    expect(result.totalNeededCalories).toBe(12000);
-    expect(result.missingCalories).toBe(0); // We have more than needed
+    const actualCalories = riceQuantity * 3600;
+    expect(result.totalActualCalories).toBe(actualCalories);
+    expect(result.totalNeededCalories).toBe(neededCalories);
+    expect(result.missingCalories).toBe(0);
   });
 
   it('should not return calorie data for non-food categories', () => {
@@ -585,24 +676,30 @@ describe('calculateCategoryStatus - inventory-based status', () => {
     icon: '🥫',
   });
 
-  const household = createMockHousehold({
-    adults: 1,
-    children: 0,
-    supplyDurationDays: 3,
-    useFreezer: false,
-  });
+  const household = createMockHousehold();
 
   it('should return ok status when totalActual >= totalNeeded even with low completion percentage', () => {
-    // Have enough water (15L) but missing milk and juice (recommended items)
-    // This should still be "ok" because we meet the minimum water requirement
+    // Calculate needed water based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const needed = Math.ceil(
+      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    );
+    // Need to account for milk and juice requirements too
+    const milkNeeded = Math.ceil(2 * peopleMultiplier);
+    const juiceNeeded = Math.ceil(2 * peopleMultiplier);
+    const totalNeeded = needed + milkNeeded + juiceNeeded;
+    const actual = randomMoreThan(totalNeeded); // More than total needed
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
-        quantity: 15, // More than the 9L needed for 1 adult, 3 days
+        quantity: actual,
         unit: 'liters',
-        recommendedQuantity: 9,
+        recommendedQuantity: needed,
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -610,48 +707,83 @@ describe('calculateCategoryStatus - inventory-based status', () => {
     ];
 
     // Low completion percentage because we're missing milk and juice
-    const result = calculateCategoryStatus(waterCategory, items, 33, household);
+    const completionPercentage = randomPercentageMid();
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      completionPercentage,
+      household,
+    );
 
-    // Should be "ok" because we have enough total inventory (15 >= 13 needed)
-    // even though completion percentage is low
+    // Should be "ok" because we have enough total inventory
     expect(result.status).toBe('ok');
     expect(result.totalActual).toBeGreaterThanOrEqual(result.totalNeeded);
   });
 
   it('should return critical status when totalActual < totalNeeded and low completion', () => {
+    // Calculate needed water based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const needed = Math.ceil(
+      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    );
+    const actual = randomLessThan(needed); // Less than needed
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
-        quantity: 3, // Less than needed
+        quantity: actual,
         unit: 'liters',
-        recommendedQuantity: 9,
+        recommendedQuantity: needed,
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
       }),
     ];
 
-    const result = calculateCategoryStatus(waterCategory, items, 10, household);
+    const completionPercentage = randomPercentageLow();
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      completionPercentage,
+      household,
+    );
 
     expect(result.status).toBe('critical');
   });
 
   it('should return ok for food category when totalActualCalories >= totalNeededCalories', () => {
-    // Have enough calories even if missing some recommended food items
+    // Calculate needed calories based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const neededCalories = Math.ceil(
+      peopleMultiplier * household.supplyDurationDays * 2000,
+    );
+    // Create items with enough calories (more than needed)
+    const riceQuantity = Math.ceil((neededCalories / 3600) * 1.2);
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'food',
-        quantity: 4, // 4 kg rice = 14400 kcal, more than 6000 needed for 1 person 3 days
+        quantity: riceQuantity,
         productTemplateId: 'rice',
         caloriesPerUnit: 3600,
       }),
     ];
 
     // Low completion percentage because we're missing other recommended food items
-    const result = calculateCategoryStatus(foodCategory, items, 25, household);
+    const completionPercentage = randomPercentageMid();
+    const result = calculateCategoryStatus(
+      foodCategory,
+      items,
+      completionPercentage,
+      household,
+    );
 
     // Should be "ok" because we have enough calories
     expect(result.status).toBe('ok');
@@ -661,17 +793,33 @@ describe('calculateCategoryStatus - inventory-based status', () => {
   });
 
   it('should return critical for food category when totalActualCalories < totalNeededCalories', () => {
+    // Calculate needed calories based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const neededCalories = Math.ceil(
+      peopleMultiplier * household.supplyDurationDays * 2000,
+    );
+    // Create items with insufficient calories
+    const riceQuantity = Math.max(0.1, (neededCalories / 3600) * 0.5); // 50% of needed
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'food',
-        quantity: 1, // 1 kg rice = 3600 kcal, less than 6000 needed
+        quantity: riceQuantity,
         productTemplateId: 'rice',
         caloriesPerUnit: 3600,
       }),
     ];
 
-    const result = calculateCategoryStatus(foodCategory, items, 10, household);
+    const completionPercentage = randomPercentageLow();
+    const result = calculateCategoryStatus(
+      foodCategory,
+      items,
+      completionPercentage,
+      household,
+    );
 
     expect(result.status).toBe('critical');
   });
@@ -692,12 +840,7 @@ describe('calculateCategoryStatus - inventory-based status', () => {
 });
 
 describe('calculateCategoryShortages with disabledRecommendedItems', () => {
-  const household = createMockHousehold({
-    adults: 2,
-    children: 0,
-    supplyDurationDays: 3,
-    useFreezer: false,
-  });
+  const household = createMockHousehold();
 
   it('should exclude disabled recommended items from calculations', () => {
     // Calculate shortages without any disabled items
@@ -790,19 +933,23 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
 });
 
 describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
-  const household = createMockHousehold({
-    adults: 2,
-    children: 0,
-    supplyDurationDays: 3,
-    useFreezer: false,
-  });
+  const household = createMockHousehold();
 
   it('should exclude disabled items from status calculation', () => {
+    // Calculate needed water based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const needed = Math.ceil(
+      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    );
+    const actual = needed + randomQuantitySmall(); // Enough or more
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'water-beverages',
-        quantity: 18, // Enough for bottled-water requirement
+        quantity: actual,
         productTemplateId: 'bottled-water',
       }),
     ];
@@ -821,11 +968,13 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
   });
 
   it('should show ok status when all recommended items are disabled and there is inventory', () => {
+    const quantity = randomQuantityMedium();
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'water-beverages',
-        quantity: 10,
+        quantity,
         productTemplateId: 'bottled-water',
       }),
     ];
@@ -844,19 +993,16 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
 });
 
 describe('getCategoryDisplayStatus', () => {
-  const household = createMockHousehold({
-    adults: 2,
-    children: 0,
-    supplyDurationDays: 3,
-    useFreezer: false,
-  });
+  const household = createMockHousehold();
 
   it('should return all display data for a category', () => {
+    const quantity = randomQuantityLarge();
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'water-beverages',
-        quantity: 27,
+        quantity,
         productTemplateId: 'bottled-water',
       }),
     ];
@@ -890,11 +1036,13 @@ describe('getCategoryDisplayStatus', () => {
   });
 
   it('should include calorie data for food category', () => {
+    const quantity = randomQuantityFloat();
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'food',
-        quantity: 2,
+        quantity,
         productTemplateId: 'rice',
         caloriesPerUnit: 3600,
       }),
@@ -908,11 +1056,13 @@ describe('getCategoryDisplayStatus', () => {
   });
 
   it('should not include calorie data for non-food categories', () => {
+    const quantity = randomQuantityLarge();
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'water-beverages',
-        quantity: 54,
+        quantity,
         productTemplateId: 'bottled-water',
       }),
     ];
@@ -929,17 +1079,26 @@ describe('getCategoryDisplayStatus', () => {
   });
 
   it('should return ok status when totalActual >= totalNeeded even with missing recommended items', () => {
-    // User scenario: have enough water to meet total needs (including milk/juice recommendations)
-    // For 2 adults, 3 days: water=18L, milk=4L, juice=4L = 26L total needed
-    // Status should be "ok" because total quantity meets the needs
+    // Calculate total needed based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const waterNeeded = Math.ceil(
+      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    );
+    const milkNeeded = Math.ceil(2 * peopleMultiplier);
+    const juiceNeeded = Math.ceil(2 * peopleMultiplier);
+    const totalNeeded = waterNeeded + milkNeeded + juiceNeeded;
+    const actual = randomMoreThan(totalNeeded); // More than needed
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         name: 'Bottled Water',
         categoryId: 'water-beverages',
-        quantity: 30, // More than 26L total needed for 2 adults, 3 days
+        quantity: actual,
         unit: 'liters',
-        recommendedQuantity: 18,
+        recommendedQuantity: waterNeeded,
         productTemplateId: 'bottled-water',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -952,18 +1111,27 @@ describe('getCategoryDisplayStatus', () => {
       household,
     );
 
-    // Should be "ok" because we have enough total quantity (30 >= 26)
+    // Should be "ok" because we have enough total quantity
     expect(result.status).toBe('ok');
     expect(result.totalActual).toBeGreaterThanOrEqual(result.totalNeeded);
   });
 
   it('should return ok for food when calories are sufficient despite missing items', () => {
-    // Have enough calories from rice alone
+    // Calculate needed calories based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const neededCalories = Math.ceil(
+      peopleMultiplier * household.supplyDurationDays * 2000,
+    );
+    // Create items with enough calories (more than needed)
+    const riceQuantity = Math.ceil((neededCalories / 3600) * 1.2);
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'food',
-        quantity: 5, // 5 kg rice = 18000 kcal, more than 12000 needed
+        quantity: riceQuantity,
         productTemplateId: 'rice',
         caloriesPerUnit: 3600,
       }),
@@ -978,11 +1146,20 @@ describe('getCategoryDisplayStatus', () => {
   });
 
   it('should return critical when not enough inventory', () => {
+    // Calculate needed water based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const needed = Math.ceil(
+      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    );
+    const actual = randomLessThan(needed); // Less than needed
+
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: '1',
         categoryId: 'water-beverages',
-        quantity: 5, // Less than 18L needed
+        quantity: actual,
         productTemplateId: 'bottled-water',
       }),
     ];

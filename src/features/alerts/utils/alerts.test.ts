@@ -22,12 +22,7 @@ const mockT = (key: string, options?: Record<string, string | number>) => {
   return key;
 };
 
-const mockHousehold = createMockHousehold({
-  adults: 2,
-  children: 0,
-  supplyDurationDays: 3,
-  useFreezer: false,
-});
+const mockHousehold = createMockHousehold();
 
 describe('generateDashboardAlerts', () => {
   beforeEach(() => {
@@ -52,9 +47,6 @@ describe('generateDashboardAlerts', () => {
         id: '1',
         name: 'Expired Water',
         categoryId: 'water',
-        quantity: 10,
-        unit: 'gallons',
-        recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2024-12-01',
       }),
@@ -75,9 +67,6 @@ describe('generateDashboardAlerts', () => {
         id: '1',
         name: 'Expiring Water',
         categoryId: 'water',
-        quantity: 10,
-        unit: 'gallons',
-        recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2025-01-05', // 4 days from test date
       }),
@@ -98,9 +87,6 @@ describe('generateDashboardAlerts', () => {
         id: '1',
         name: 'Salt',
         categoryId: 'food',
-        quantity: 5,
-        unit: 'boxes',
-        recommendedQuantity: 5,
         neverExpires: true,
       }),
     ];
@@ -211,9 +197,6 @@ describe('generateDashboardAlerts', () => {
         id: '1',
         name: 'Warning Item',
         categoryId: 'food',
-        quantity: 10,
-        unit: 'cans',
-        recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2025-01-05',
       }),
@@ -221,8 +204,7 @@ describe('generateDashboardAlerts', () => {
         id: '2',
         name: 'Critical Item',
         categoryId: 'water',
-        quantity: 0,
-        unit: 'gallons',
+        quantity: 0, // Out of stock for critical alert
         recommendedQuantity: 28,
         neverExpires: false,
         expirationDate: '2024-12-01',
@@ -252,9 +234,7 @@ describe('generateDashboardAlerts', () => {
         id: '1',
         name: 'Custom Item',
         categoryId: 'custom',
-        quantity: 5,
-        unit: 'units',
-        recommendedQuantity: 0,
+        recommendedQuantity: 0, // No recommended quantity
         neverExpires: false,
         expirationDate: '2025-12-31',
       }),
@@ -439,9 +419,6 @@ describe('water shortage alerts', () => {
         id: '1',
         name: 'Crackers',
         categoryId: 'food',
-        quantity: 5,
-        unit: 'packages',
-        recommendedQuantity: 5,
         neverExpires: false,
         expirationDate: '2025-12-31',
       }),
@@ -461,9 +438,6 @@ describe('water shortage alerts', () => {
         id: '1',
         name: 'Pasta',
         categoryId: 'food',
-        quantity: 10,
-        unit: 'kilograms',
-        recommendedQuantity: 1,
         productTemplateId: 'pasta',
         neverExpires: false,
         expirationDate: '2025-12-31',

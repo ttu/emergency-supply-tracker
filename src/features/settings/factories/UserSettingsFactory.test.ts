@@ -9,6 +9,8 @@ import {
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
+import { VALID_THEMES } from '@/shared/types';
+import { faker } from '@faker-js/faker';
 
 describe('UserSettingsFactory', () => {
   describe('create', () => {
@@ -29,31 +31,50 @@ describe('UserSettingsFactory', () => {
     });
 
     it('creates settings with custom values', () => {
+      const language = faker.helpers.arrayElement(['en', 'fi']);
+      const theme = faker.helpers.arrayElement(VALID_THEMES);
+      const highContrast = faker.datatype.boolean();
+      const calorieTracking = faker.datatype.boolean();
+      const powerManagement = faker.datatype.boolean();
+      const waterTracking = faker.datatype.boolean();
+      const dailyCaloriesPerPerson = faker.number.int({ min: 1000, max: 5000 });
+      const dailyWaterPerPerson = faker.number.float({
+        min: 1,
+        max: 10,
+        fractionDigits: 1,
+      });
+      const childrenRequirementPercentage = faker.number.int({
+        min: 0,
+        max: 100,
+      });
+
       const input: CreateUserSettingsInput = {
-        language: 'fi',
-        theme: 'dark',
-        highContrast: true,
+        language,
+        theme,
+        highContrast,
         advancedFeatures: {
-          calorieTracking: true,
-          powerManagement: true,
-          waterTracking: false,
+          calorieTracking,
+          powerManagement,
+          waterTracking,
         },
-        dailyCaloriesPerPerson: 2500,
-        dailyWaterPerPerson: 4,
-        childrenRequirementPercentage: 80,
+        dailyCaloriesPerPerson,
+        dailyWaterPerPerson,
+        childrenRequirementPercentage,
       };
 
       const settings = UserSettingsFactory.create(input);
 
-      expect(settings.language).toBe('fi');
-      expect(settings.theme).toBe('dark');
-      expect(settings.highContrast).toBe(true);
-      expect(settings.advancedFeatures.calorieTracking).toBe(true);
-      expect(settings.advancedFeatures.powerManagement).toBe(true);
-      expect(settings.advancedFeatures.waterTracking).toBe(false);
-      expect(settings.dailyCaloriesPerPerson).toBe(2500);
-      expect(settings.dailyWaterPerPerson).toBe(4);
-      expect(settings.childrenRequirementPercentage).toBe(80);
+      expect(settings.language).toBe(language);
+      expect(settings.theme).toBe(theme);
+      expect(settings.highContrast).toBe(highContrast);
+      expect(settings.advancedFeatures.calorieTracking).toBe(calorieTracking);
+      expect(settings.advancedFeatures.powerManagement).toBe(powerManagement);
+      expect(settings.advancedFeatures.waterTracking).toBe(waterTracking);
+      expect(settings.dailyCaloriesPerPerson).toBe(dailyCaloriesPerPerson);
+      expect(settings.dailyWaterPerPerson).toBe(dailyWaterPerPerson);
+      expect(settings.childrenRequirementPercentage).toBe(
+        childrenRequirementPercentage,
+      );
     });
 
     it('merges advancedFeatures correctly', () => {

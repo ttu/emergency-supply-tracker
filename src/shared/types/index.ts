@@ -11,35 +11,43 @@ export {
 } from './branded';
 
 // Core types
-export type Unit =
-  | 'pieces'
-  | 'liters'
-  | 'kilograms'
-  | 'grams'
-  | 'cans'
-  | 'bottles'
-  | 'packages'
-  | 'jars'
-  | 'canisters'
-  | 'boxes'
-  | 'days'
-  | 'rolls'
-  | 'tubes'
-  | 'meters'
-  | 'pairs'
-  | 'euros'
-  | 'sets';
+export const VALID_UNITS = [
+  'pieces',
+  'liters',
+  'kilograms',
+  'grams',
+  'cans',
+  'bottles',
+  'packages',
+  'jars',
+  'canisters',
+  'boxes',
+  'days',
+  'rolls',
+  'tubes',
+  'meters',
+  'pairs',
+  'euros',
+  'sets',
+] as const;
+
+export type Unit = (typeof VALID_UNITS)[number];
+
 export type ItemStatus = 'ok' | 'warning' | 'critical';
-export type StandardCategoryId =
-  | 'water-beverages'
-  | 'food'
-  | 'cooking-heat'
-  | 'light-power'
-  | 'communication-info'
-  | 'medical-health'
-  | 'hygiene-sanitation'
-  | 'tools-supplies'
-  | 'cash-documents';
+
+export const VALID_CATEGORIES = [
+  'water-beverages',
+  'food',
+  'cooking-heat',
+  'light-power',
+  'communication-info',
+  'medical-health',
+  'hygiene-sanitation',
+  'tools-supplies',
+  'cash-documents',
+] as const;
+
+export type StandardCategoryId = (typeof VALID_CATEGORIES)[number];
 export type ProductKind =
   | 'food'
   | 'water'
@@ -60,18 +68,23 @@ export interface HouseholdConfig {
 }
 
 // User Settings
+export const VALID_THEMES = [
+  'light',
+  'dark',
+  'auto',
+  'midnight',
+  'ocean',
+  'sunset',
+  'forest',
+  'lavender',
+  'minimal',
+] as const;
+
+export type Theme = (typeof VALID_THEMES)[number];
+
 export interface UserSettings {
   language: 'en' | 'fi';
-  theme:
-    | 'light'
-    | 'dark'
-    | 'auto'
-    | 'midnight'
-    | 'ocean'
-    | 'sunset'
-    | 'forest'
-    | 'lavender'
-    | 'minimal';
+  theme: Theme;
   highContrast: boolean;
   advancedFeatures: {
     calorieTracking: boolean;

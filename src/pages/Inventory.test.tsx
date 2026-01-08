@@ -16,6 +16,7 @@ import { calculateCategoryPreparedness } from '@/features/dashboard';
 import {
   createMockInventoryItem,
   createMockAppData,
+  createMockHousehold,
 } from '@/shared/utils/test/factories';
 
 // Mock i18next
@@ -348,10 +349,8 @@ describe('Inventory Page with items', () => {
     name: 'Test Water',
     itemType: 'bottled-water',
     categoryId: 'water-beverages',
-    quantity: 10,
-    unit: 'liters',
+    quantity: 10, // Used in sorting test
     recommendedQuantity: 20,
-    neverExpires: false,
     expirationDate: new Date(
       Date.now() + 30 * 24 * 60 * 60 * 1000,
     ).toISOString(),
@@ -363,10 +362,7 @@ describe('Inventory Page with items', () => {
     name: 'Expired Food',
     itemType: 'canned-soup',
     categoryId: 'food',
-    quantity: 5,
-    unit: 'cans',
-    recommendedQuantity: 10,
-    neverExpires: false,
+    quantity: 5, // Used in sorting test
     expirationDate: new Date(
       Date.now() - 30 * 24 * 60 * 60 * 1000,
     ).toISOString(),
@@ -378,8 +374,7 @@ describe('Inventory Page with items', () => {
     name: 'Batteries',
     itemType: 'batteries',
     categoryId: 'lighting-power',
-    quantity: 20,
-    unit: 'pieces',
+    quantity: 20, // Used in sorting test (highest)
     recommendedQuantity: 10,
     neverExpires: true,
   });
@@ -388,12 +383,7 @@ describe('Inventory Page with items', () => {
     globalThis.confirm = vi.fn(() => true);
     // Store items in localStorage
     const appData = createMockAppData({
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 3,
-        useFreezer: false,
-      },
+      household: createMockHousehold({ children: 0 }),
       items: [mockItem, expiredItem, neverExpiresItem],
     });
     localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
@@ -604,12 +594,7 @@ describe('Template to InventoryItem conversion', () => {
       throw new Error('Template not found');
     }
 
-    const household = {
-      adults: 2,
-      children: 0,
-      supplyDurationDays: 3,
-      useFreezer: false,
-    };
+    const household = createMockHousehold({ children: 0 });
 
     const recommendedQty = calculateRecommendedQuantity(template, household);
 
@@ -648,12 +633,7 @@ describe('Template to InventoryItem conversion', () => {
       throw new Error('Template not found');
     }
 
-    const household = {
-      adults: 2,
-      children: 0,
-      supplyDurationDays: 3,
-      useFreezer: false,
-    };
+    const household = createMockHousehold({ children: 0 });
 
     const recommendedQty = calculateRecommendedQuantity(template, household);
 
@@ -683,12 +663,16 @@ describe('Template to InventoryItem conversion', () => {
   });
 
   it('should match items with productTemplateId in preparedness calculation', () => {
-    const household = {
-      adults: 2,
-      children: 0,
-      supplyDurationDays: 3,
-      useFreezer: false,
-    };
+    const household = createMockHousehold({ children: 0 });
+
+    // Calculate expected quantity based on household
+    const template = RECOMMENDED_ITEMS.find(
+      (item) => item.id === 'bottled-water',
+    );
+    if (!template) {
+      throw new Error('Template not found');
+    }
+    const expectedQuantity = calculateRecommendedQuantity(template, household);
 
     // Item WITH productTemplateId (the fix)
     const itemWithTemplateId = createMockInventoryItem({
@@ -696,11 +680,9 @@ describe('Template to InventoryItem conversion', () => {
       name: 'Bottled Water',
       itemType: 'bottled-water',
       categoryId: 'water-beverages',
-      quantity: 54, // Matches recommended for 2 adults, 3 days (9 * 2 * 3 = 54)
-      unit: 'liters',
-      recommendedQuantity: 54,
+      quantity: expectedQuantity, // Needed for calculation
+      recommendedQuantity: expectedQuantity, // Needed for calculation
       productTemplateId: 'bottled-water', // This enables matching
-      neverExpires: false,
     });
 
     // Item WITHOUT productTemplateId (the bug)
@@ -709,11 +691,9 @@ describe('Template to InventoryItem conversion', () => {
       name: 'Bottled Water',
       itemType: 'custom',
       categoryId: 'water-beverages',
-      quantity: 54,
-      unit: 'liters',
-      recommendedQuantity: 54,
+      quantity: expectedQuantity, // Needed for calculation
+      recommendedQuantity: expectedQuantity, // Needed for calculation
       // productTemplateId is missing - this was the bug
-      neverExpires: false,
     });
 
     const scoreWithTemplateId = calculateCategoryPreparedness(
@@ -754,12 +734,7 @@ describe('Inventory Page - Mark as Enough', () => {
   beforeEach(() => {
     globalThis.confirm = vi.fn(() => true);
     const appData = createMockAppData({
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 3,
-        useFreezer: false,
-      },
+      household: createMockHousehold({ children: 0 }),
       items: [itemWithLowQuantity],
     });
     localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));

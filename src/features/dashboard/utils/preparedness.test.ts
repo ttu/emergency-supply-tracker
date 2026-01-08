@@ -9,7 +9,6 @@ import {
 
 describe('calculatePreparednessScore', () => {
   const baseHousehold = createMockHousehold({
-    adults: 2,
     children: 0,
     useFreezer: false,
     supplyDurationDays: 14,
@@ -27,11 +26,6 @@ describe('calculatePreparednessScore', () => {
         id: '1',
         name: 'Water',
         categoryId: 'water',
-        quantity: 28,
-        unit: 'gallons',
-        recommendedQuantity: 28,
-        neverExpires: false,
-        expirationDate: '2025-12-31',
         productTemplateId: 'water',
       }),
     ];
@@ -41,9 +35,8 @@ describe('calculatePreparednessScore', () => {
   });
 
   it('should return valid score for different household sizes', () => {
-    const smallHousehold = createMockHousehold({ adults: 1 });
+    const smallHousehold = createMockHousehold({ adults: 1, children: 0 });
     const largeHousehold = createMockHousehold({
-      adults: 2,
       children: 2,
     });
 
@@ -52,11 +45,6 @@ describe('calculatePreparednessScore', () => {
         id: '1',
         name: 'Water',
         categoryId: 'water',
-        quantity: 14,
-        unit: 'gallons',
-        recommendedQuantity: 14,
-        neverExpires: false,
-        expirationDate: '2025-12-31',
         productTemplateId: 'water',
       }),
     ];
@@ -73,12 +61,12 @@ describe('calculatePreparednessScore', () => {
 
   it('should filter out frozen items when no freezer', () => {
     const withFreezer = createMockHousehold({
-      ...baseHousehold,
-      useFreezer: true,
+      children: 0,
+      useFreezer: true, // Only override what's needed
     });
     const withoutFreezer = createMockHousehold({
-      ...baseHousehold,
-      useFreezer: false,
+      children: 0,
+      useFreezer: false, // Only override what's needed
     });
 
     const items: ReturnType<typeof createMockInventoryItem>[] = [];
@@ -97,11 +85,8 @@ describe('calculatePreparednessScore', () => {
         id: '1',
         name: 'Water',
         categoryId: 'water',
-        quantity: 100,
-        unit: 'gallons',
-        recommendedQuantity: 50,
-        neverExpires: false,
-        expirationDate: '2025-12-31',
+        quantity: 100, // Needed for capping test (100/50 = 200%, should cap at 100%)
+        recommendedQuantity: 50, // Needed for capping test
         productTemplateId: 'water',
       }),
     ];
@@ -114,7 +99,6 @@ describe('calculatePreparednessScore', () => {
 
 describe('calculateCategoryPreparedness', () => {
   const baseHousehold = createMockHousehold({
-    adults: 2,
     children: 0,
     useFreezer: false,
     supplyDurationDays: 14,
@@ -132,11 +116,7 @@ describe('calculateCategoryPreparedness', () => {
         id: '1',
         name: 'Custom Item',
         categoryId: 'custom',
-        quantity: 5,
-        unit: 'units',
-        recommendedQuantity: 0,
-        neverExpires: false,
-        expirationDate: '2025-12-31',
+        recommendedQuantity: 0, // No recommendations
       }),
     ];
     const score = calculateCategoryPreparedness('custom', items, baseHousehold);
@@ -149,11 +129,6 @@ describe('calculateCategoryPreparedness', () => {
         id: '1',
         name: 'Water',
         categoryId: 'water',
-        quantity: 14,
-        unit: 'gallons',
-        recommendedQuantity: 28,
-        neverExpires: false,
-        expirationDate: '2025-12-31',
         productTemplateId: 'water',
       }),
     ];
@@ -168,22 +143,12 @@ describe('calculateCategoryPreparedness', () => {
         id: '1',
         name: 'Water',
         categoryId: 'water',
-        quantity: 28,
-        unit: 'gallons',
-        recommendedQuantity: 28,
-        neverExpires: false,
-        expirationDate: '2025-12-31',
         productTemplateId: 'water',
       }),
       createMockInventoryItem({
         id: '2',
         name: 'Canned Food',
         categoryId: 'food',
-        quantity: 10,
-        unit: 'cans',
-        recommendedQuantity: 10,
-        neverExpires: false,
-        expirationDate: '2025-12-31',
       }),
     ];
 
