@@ -92,10 +92,10 @@ describe('migrations', () => {
       expect(needsMigration(data)).toBe(false);
     });
 
-    it('should return true for data at older version', () => {
-      // This test will become relevant when we have version > 1.0.0
-      // For now, 1.0.0 is current, so no migration needed
-      const data = createAppData({ version: '1.0.0' });
+    it('should use 1.0.0 as default version when version is missing', () => {
+      const data = createAppData({});
+      delete (data as { version?: string }).version;
+      // With CURRENT_SCHEMA_VERSION at 1.0.0, data defaults to 1.0.0, so no migration needed
       expect(needsMigration(data)).toBe(false);
     });
 
