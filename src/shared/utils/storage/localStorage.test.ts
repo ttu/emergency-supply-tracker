@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
+  createDefaultAppData,
   getAppData,
   saveAppData,
   clearAppData,
@@ -14,6 +15,34 @@ import {
 describe('localStorage utilities', () => {
   beforeEach(() => {
     clearAppData();
+  });
+
+  describe('createDefaultAppData', () => {
+    it('creates default app data with correct structure', () => {
+      const defaultData = createDefaultAppData();
+
+      expect(defaultData.version).toBe('1.0.0');
+      expect(defaultData.household).toBeDefined();
+      expect(defaultData.household.adults).toBe(2);
+      expect(defaultData.household.children).toBe(0);
+      expect(defaultData.household.supplyDurationDays).toBe(7);
+      expect(defaultData.household.useFreezer).toBe(false);
+      expect(defaultData.settings).toBeDefined();
+      expect(defaultData.customCategories).toEqual([]);
+      expect(defaultData.items).toEqual([]);
+      expect(defaultData.customTemplates).toEqual([]);
+      expect(defaultData.dismissedAlertIds).toEqual([]);
+      expect(defaultData.disabledRecommendedItems).toEqual([]);
+      expect(defaultData.lastModified).toBeDefined();
+      expect(typeof defaultData.lastModified).toBe('string');
+    });
+
+    it('creates valid ISO date string for lastModified', () => {
+      const defaultData = createDefaultAppData();
+      const date = new Date(defaultData.lastModified);
+      expect(date.toISOString()).toBe(defaultData.lastModified);
+      expect(date.getTime()).not.toBeNaN();
+    });
   });
 
   it('saves and loads data', () => {
