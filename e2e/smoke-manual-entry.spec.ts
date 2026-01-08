@@ -9,17 +9,26 @@ import {
 // Helper functions to reduce cognitive complexity
 
 async function completeOnboarding(page: Page) {
-  // Clear localStorage first, then navigate to ensure fresh state
+  // Navigate to page first
   await page.goto('/');
-  await page.evaluate(() => localStorage.clear());
-  await page.reload({ waitUntil: 'networkidle' });
 
-  // Wait for app to fully load
-  await page.waitForTimeout(1000);
+  // Clear localStorage and all app state
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  // Force a hard reload by navigating away and back
+  await page.goto('about:blank');
+  await page.goto('/');
+
+  // Wait for page to fully load
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(2000);
 
   // Welcome screen - increase timeout for deployed sites
   await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
-    timeout: 10000,
+    timeout: 15000,
   });
   await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
 
