@@ -68,8 +68,16 @@
   border-radius: var(--radius-md);
   font-family: inherit;
   font-size: 1rem;
+  background-color: var(--color-surface);
+  color: var(--color-text);
   resize: vertical;
   min-height: 4rem;
+  transition: all var(--transition-base);
+}
+
+.textarea:hover:not(:disabled) {
+  border-color: var(--color-border-hover);
+  background-color: var(--color-surface-hover);
 }
 
 .textarea:focus-visible {
