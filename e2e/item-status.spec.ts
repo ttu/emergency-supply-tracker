@@ -65,10 +65,22 @@ test.describe('Item Status Indicators', () => {
     await expect(itemCard).toBeVisible();
 
     // Verify warning indicator is present (warning icon, yellow badge, or "Warning" text)
-    const warningIndicator = itemCard.locator(
-      '[class*="warning"], [class*="status-warning"], [aria-label*="warning" i], text=/Warning|Varoitus/i',
+    // Check for warning-related CSS classes or aria-labels
+    const warningIndicatorByClass = itemCard.locator(
+      '[class*="warning"], [class*="status-warning"], [aria-label*="warning" i]',
     );
-    await expect(warningIndicator).toBeVisible({ timeout: 5000 });
+    // Also check for warning text separately
+    const warningIndicatorByText = itemCard.locator('text=/Warning|Varoitus/i');
+
+    // At least one warning indicator should be visible
+    const hasWarningClass = await warningIndicatorByClass
+      .isVisible()
+      .catch(() => false);
+    const hasWarningText = await warningIndicatorByText
+      .isVisible()
+      .catch(() => false);
+
+    expect(hasWarningClass || hasWarningText).toBe(true);
 
     // Verify it does not show Critical indicator
     await expect(

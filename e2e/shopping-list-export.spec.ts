@@ -51,7 +51,7 @@ test.describe('Shopping List Export Formats', () => {
       // Verify file content (read the downloaded file)
       const path = await download.path();
       if (path) {
-        const fs = await import('fs/promises');
+        const fs = await import('node:fs/promises');
         const content = await fs.readFile(path, 'utf-8');
 
         // Verify content structure
@@ -103,11 +103,11 @@ test.describe('Shopping List Export Formats', () => {
     // Verify description shows item count
     // The description should mention the number of items needing restock
     // Look for text containing numbers and "item" or "items"
-    const description = page.locator('text=/\\d+.*item/i');
+    const description = page.locator(String.raw`text=/\d+.*item/i`);
     const descriptionVisible = await description.isVisible().catch(() => false);
 
     // If description not visible, check if export button shows item count
-    if (!descriptionVisible) {
+    if (descriptionVisible === false) {
       // The export button might be disabled if no items need restocking
       // or the count might be in a different format
       const exportButton = page.locator('button', {
