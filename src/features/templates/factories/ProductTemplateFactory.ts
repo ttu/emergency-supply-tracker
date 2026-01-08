@@ -1,10 +1,10 @@
 import type {
   ProductTemplate,
   StandardCategoryId,
-  Unit,
   ProductKind,
 } from '@/shared/types';
 import { createProductTemplateId } from '@/shared/types';
+import { isValidUnit } from '@/shared/utils/validation/unitValidation';
 
 /**
  * Input for creating a custom product template.
@@ -23,33 +23,6 @@ export class ProductTemplateValidationError extends Error {
     super(message);
     this.name = 'ProductTemplateValidationError';
   }
-}
-
-/**
- * Validates that a unit is a valid Unit type.
- */
-function isValidUnit(unit: string | undefined): unit is Unit {
-  if (!unit) return false;
-  const validUnits: Unit[] = [
-    'pieces',
-    'liters',
-    'kilograms',
-    'grams',
-    'cans',
-    'bottles',
-    'packages',
-    'jars',
-    'canisters',
-    'boxes',
-    'days',
-    'rolls',
-    'tubes',
-    'meters',
-    'pairs',
-    'euros',
-    'sets',
-  ];
-  return validUnits.includes(unit as Unit);
 }
 
 /**
