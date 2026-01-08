@@ -1,9 +1,173 @@
+import { type Page } from '@playwright/test';
 import {
   test,
   expect,
   expandRecommendedItems,
   ensureNoModals,
 } from './fixtures';
+
+// Helper functions to reduce cognitive complexity
+
+async function completeOnboarding(page: Page) {
+  // Clear localStorage first, then navigate to ensure fresh state
+  await page.goto('/');
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: 'networkidle' });
+
+  // Wait for app to fully load
+  await page.waitForTimeout(1000);
+
+  // Welcome screen - increase timeout for deployed sites
+  await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
+    timeout: 10000,
+  });
+  await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
+
+  // Preset selection - choose "Family"
+  await expect(page.getByText(/Family|Perhe/i)).toBeVisible({ timeout: 5000 });
+  await page.getByRole('button', { name: /Family|Perhe/i }).click();
+
+  // Household configuration
+  await expect(page.locator('input[type="number"]').first()).toBeVisible({
+    timeout: 5000,
+  });
+  const adultsInput = page.locator('input[type="number"]').first();
+  const adultsValue = await adultsInput.inputValue();
+  expect(Number.parseInt(adultsValue, 10)).toBeGreaterThan(0);
+
+  // Submit form
+  await page.getByRole('button', { name: /Save|Tallenna/i }).click();
+
+  // Quick Setup - Skip
+  await expect(
+    page.getByRole('button', { name: /Skip for now|Ohita toistaiseksi/i }),
+  ).toBeVisible({ timeout: 5000 });
+  await page
+    .getByRole('button', { name: /Skip for now|Ohita toistaiseksi/i })
+    .click();
+
+  // Should navigate to Dashboard
+  await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
+    timeout: 5000,
+  });
+}
+
+async function testDashboardInteractions(page: Page) {
+  // Verify dashboard elements
+  await expect(page.locator('text=Quick Actions')).toBeVisible();
+  await expect(page.locator('text=Categories Overview')).toBeVisible();
+
+  // Test quick action - Add Items
+  const addItemsButton = page.locator('button', { hasText: 'Add Items' });
+  if (await addItemsButton.isVisible().catch(() => false)) {
+    await addItemsButton.click();
+    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.keyboard.press('Escape');
+  }
+
+  // Test category card click
+  const foodCategoryCard = page.locator('[data-testid="category-food"]');
+  if (await foodCategoryCard.isVisible().catch(() => false)) {
+    await foodCategoryCard.click();
+    await expect(page.locator('h1:has-text("Inventory")')).toBeVisible();
+    await page.click('text=Dashboard');
+  }
+}
+
+async function addItemFromTemplate(page: Page) {
+  await page.click('button:has-text("Add Item")');
+  await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+
+  await page.fill('input[placeholder*="Search"]', 'water');
+  const waterTemplate = page
+    .locator('button[type="button"]')
+    .filter({ hasText: /water/i })
+    .first();
+  await expect(waterTemplate).toBeVisible();
+  await waterTemplate.click();
+
+  await page.fill('input[name="quantity"]', '5');
+  await page.click('button[type="submit"]');
+  await page
+    .waitForSelector('[role="dialog"]', { state: 'hidden' })
+    .catch(() => {});
+
+  await expect(page.locator('text=/water/i').first()).toBeVisible({
+    timeout: 5000,
+  });
+}
+
+async function addCustomItem(page: Page) {
+  await ensureNoModals(page);
+  await page.click('button:has-text("Add Item")');
+  await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+  await page.click('button:has-text("Custom Item")');
+  await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+
+  await page.fill('input[name="name"]', 'Custom Test Item');
+  await page.selectOption('select[name="category"]', 'food');
+  await page.fill('input[name="quantity"]', '3');
+  await page.selectOption('select[name="unit"]', 'pieces');
+  await page.check('input[type="checkbox"]');
+  await page.click('button[type="submit"]');
+  await page
+    .waitForSelector('[role="dialog"]', { state: 'hidden' })
+    .catch(() => {});
+}
+
+async function verifyCustomItemExists(page: Page) {
+  const customItemVisible = await page
+    .locator('text=Custom Test Item')
+    .isVisible()
+    .catch(() => false);
+
+  if (!customItemVisible) {
+    await page.click('button:has-text("Food")');
+    const itemVisibleAfterFilter = await page
+      .locator('text=Custom Test Item')
+      .isVisible()
+      .catch(() => false);
+    if (!itemVisibleAfterFilter) {
+      const itemInStorage = await page.evaluate(() => {
+        const data = localStorage.getItem('emergencySupplyTracker');
+        if (!data) return false;
+        try {
+          const appData = JSON.parse(data);
+          return appData.items?.some(
+            (item: { name: string }) => item.name === 'Custom Test Item',
+          );
+        } catch {
+          return false;
+        }
+      });
+      expect(itemInStorage).toBe(true);
+    }
+  }
+}
+
+async function testRecommendedItems(page: Page) {
+  await ensureNoModals(page);
+  await page.click('button:has-text("Water")');
+  await expandRecommendedItems(page);
+
+  const addButton = page.locator('button:has-text("+")').first();
+  if (await addButton.isVisible().catch(() => false)) {
+    await addButton.click();
+    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.keyboard.press('Escape');
+  }
+
+  const disableButton = page.locator('button:has-text("×")').first();
+  if (await disableButton.isVisible().catch(() => false)) {
+    const missingItemsLocator = page.locator('[class*="missingItemText"]');
+    const initialCount = await missingItemsLocator.count();
+    await disableButton.click();
+    await expect(missingItemsLocator).toHaveCount(
+      Math.max(0, initialCount - 1),
+      { timeout: 3000 },
+    );
+  }
+}
 
 /**
  * Comprehensive smoke test that verifies the MANUAL ENTRY workflow
@@ -20,156 +184,21 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
     page,
   }) => {
     test.setTimeout(120000); // 2 minutes for comprehensive test
-    // ============================================
-    // PHASE 1: ONBOARDING (First-time user)
-    // ============================================
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Welcome screen
-    await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible();
-    await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
+    // PHASE 1: ONBOARDING
+    await completeOnboarding(page);
 
-    // Preset selection - choose "Family"
-    await expect(page.getByText(/Family|Perhe/i)).toBeVisible({
-      timeout: 5000,
-    });
-    await page.getByRole('button', { name: /Family|Perhe/i }).click();
-
-    // Household configuration
-    await expect(page.locator('input[type="number"]').first()).toBeVisible({
-      timeout: 5000,
-    });
-    const adultsInput = page.locator('input[type="number"]').first();
-    const adultsValue = await adultsInput.inputValue();
-    expect(parseInt(adultsValue, 10)).toBeGreaterThan(0);
-
-    // Submit form
-    await page.getByRole('button', { name: /Save|Tallenna/i }).click();
-
-    // Quick Setup - Skip
-    await expect(
-      page.getByRole('button', {
-        name: /Skip for now|Ohita toistaiseksi/i,
-      }),
-    ).toBeVisible({ timeout: 5000 });
-    await page
-      .getByRole('button', { name: /Skip for now|Ohita toistaiseksi/i })
-      .click();
-
-    // Should navigate to Dashboard
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
-      timeout: 5000,
-    });
-
-    // ============================================
     // PHASE 2: DASHBOARD INTERACTIONS
-    // ============================================
-    // Verify dashboard elements
-    await expect(page.locator('text=Quick Actions')).toBeVisible();
-    await expect(page.locator('text=Categories Overview')).toBeVisible();
+    await testDashboardInteractions(page);
 
-    // Test quick action - Add Items
-    const addItemsButton = page.locator('button', { hasText: 'Add Items' });
-    if (await addItemsButton.isVisible().catch(() => false)) {
-      await addItemsButton.click();
-      await expect(
-        page.locator('h2', { hasText: 'Select Item' }),
-      ).toBeVisible();
-      await page.keyboard.press('Escape'); // Close modal
-    }
-
-    // Test category card click - navigate to inventory with filter
-    const foodCategoryCard = page.locator('[data-testid="category-food"]');
-    if (await foodCategoryCard.isVisible().catch(() => false)) {
-      await foodCategoryCard.click();
-      await expect(page.locator('h1:has-text("Inventory")')).toBeVisible();
-      await page.click('text=Dashboard'); // Go back
-    }
-
-    // ============================================
     // PHASE 3: INVENTORY MANAGEMENT
-    // ============================================
     await page.click('text=Inventory');
     await expect(page.locator('button:has-text("Add Item")')).toBeVisible();
-
-    // Ensure no modals are open
     await ensureNoModals(page);
 
-    // Add item from template
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-
-    // Search for template
-    await page.fill('input[placeholder*="Search"]', 'water');
-    const waterTemplate = page
-      .locator('button[type="button"]')
-      .filter({ hasText: /water/i })
-      .first();
-    await expect(waterTemplate).toBeVisible();
-    await waterTemplate.click();
-
-    // Fill form with small quantity (will trigger alert for Family household)
-    // Family needs more supplies, so small quantity will be insufficient
-    await page.fill('input[name="quantity"]', '5');
-    await page.click('button[type="submit"]');
-    await page
-      .waitForSelector('[role="dialog"]', { state: 'hidden' })
-      .catch(() => {});
-
-    // Verify item appears
-    await expect(page.locator('text=/water/i').first()).toBeVisible({
-      timeout: 5000,
-    });
-
-    // Add custom item with small quantity (will trigger alert for Family)
-    await ensureNoModals(page);
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
-
-    await page.fill('input[name="name"]', 'Custom Test Item');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '3'); // Small quantity for Family
-    await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]'); // Never expires
-    await page.click('button[type="submit"]');
-    await page
-      .waitForSelector('[role="dialog"]', { state: 'hidden' })
-      .catch(() => {});
-
-    // Verify custom item appears (check localStorage as fallback)
-    const customItemVisible = await page
-      .locator('text=Custom Test Item')
-      .isVisible()
-      .catch(() => false);
-
-    if (!customItemVisible) {
-      // Try filtering by Food category
-      await page.click('button:has-text("Food")');
-      const itemVisibleAfterFilter = await page
-        .locator('text=Custom Test Item')
-        .isVisible()
-        .catch(() => false);
-      if (!itemVisibleAfterFilter) {
-        // Verify in localStorage
-        const itemInStorage = await page.evaluate(() => {
-          const data = localStorage.getItem('emergencySupplyTracker');
-          if (!data) return false;
-          try {
-            const appData = JSON.parse(data);
-            return appData.items?.some(
-              (item: { name: string }) => item.name === 'Custom Test Item',
-            );
-          } catch {
-            return false;
-          }
-        });
-        expect(itemInStorage).toBe(true);
-      }
-    }
+    await addItemFromTemplate(page);
+    await addCustomItem(page);
+    await verifyCustomItemExists(page);
 
     // Edit item (if visible)
     const customItemLocator = page.locator('text=Custom Test Item');
@@ -184,44 +213,14 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
         .catch(() => {});
     }
 
-    // Filter by category
+    // Filter and search
     await page.click('button:has-text("Food")');
-    // Item might be visible now after filtering - continue regardless
-
-    // Search items
     await page.fill('input[placeholder*="Search"]', 'Custom');
-    // Continue regardless - search functionality is tested
-    await page.fill('input[placeholder*="Search"]', ''); // Clear search
+    await page.fill('input[placeholder*="Search"]', '');
 
-    // Test recommended items - add from recommendations
-    await ensureNoModals(page);
-    await page.click('button:has-text("Water")');
-    await expandRecommendedItems(page);
+    await testRecommendedItems(page);
 
-    // Add recommended item
-    const addButton = page.locator('button:has-text("+")').first();
-    if (await addButton.isVisible().catch(() => false)) {
-      await addButton.click();
-      await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
-      await page.keyboard.press('Escape'); // Close without saving
-    }
-
-    // Test disabling recommended item
-    const disableButton = page.locator('button:has-text("×")').first();
-    if (await disableButton.isVisible().catch(() => false)) {
-      const missingItemsLocator = page.locator('[class*="missingItemText"]');
-      const initialCount = await missingItemsLocator.count();
-      await disableButton.click();
-      // Wait for count to decrease
-      await expect(missingItemsLocator).toHaveCount(
-        Math.max(0, initialCount - 1),
-        { timeout: 3000 },
-      );
-    }
-
-    // ============================================
-    // PHASE 4: DASHBOARD ALERTS (with Family household)
-    // ============================================
+    // PHASE 4: DASHBOARD ALERTS
     // Navigate to Dashboard - should see alerts for insufficient quantities
     // (Family needs more supplies, so small quantities trigger alerts)
     await page.click('text=Dashboard');
@@ -337,7 +336,7 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
       // Verify household changed (Single Person = 1 adult)
       const householdAdultsInput = page.locator('input[type="number"]').first();
       const adultsValue = await householdAdultsInput.inputValue();
-      expect(parseInt(adultsValue, 10)).toBe(1);
+      expect(Number.parseInt(adultsValue, 10)).toBe(1);
     }
 
     // Toggle advanced features

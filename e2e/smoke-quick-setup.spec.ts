@@ -29,12 +29,18 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     // ============================================
     // PHASE 1: ONBOARDING WITH QUICK SETUP
     // ============================================
+    // Clear localStorage first, then navigate to ensure fresh state
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.reload({ waitUntil: 'networkidle' });
 
-    // Welcome screen
-    await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible();
+    // Wait for app to fully load
+    await page.waitForTimeout(1000);
+
+    // Welcome screen - increase timeout for deployed sites
+    await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
+      timeout: 10000,
+    });
     await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
 
     // Preset selection - choose "Family"
@@ -49,7 +55,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     });
     const adultsInput = page.locator('input[type="number"]').first();
     const adultsValue = await adultsInput.inputValue();
-    expect(parseInt(adultsValue, 10)).toBeGreaterThan(0);
+    expect(Number.parseInt(adultsValue, 10)).toBeGreaterThan(0);
 
     // Submit form
     await page.getByRole('button', { name: /Save|Tallenna/i }).click();
@@ -382,7 +388,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       // Verify household changed (Single Person = 1 adult)
       const householdAdultsInput = page.locator('input[type="number"]').first();
       const adultsValue = await householdAdultsInput.inputValue();
-      expect(parseInt(adultsValue, 10)).toBe(1);
+      expect(Number.parseInt(adultsValue, 10)).toBe(1);
     }
 
     // ============================================
