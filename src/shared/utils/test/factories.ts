@@ -84,7 +84,9 @@ export function createMockInventoryItem(
   return {
     id: createItemId(faker.string.uuid()),
     name: faker.commerce.productName(),
-    itemType: faker.string.alphanumeric(10).toLowerCase(),
+    itemType: createProductTemplateId(
+      faker.helpers.slugify(faker.commerce.productName()).toLowerCase(),
+    ), // Template ID (kebab-case)
     categoryId: createCategoryId(faker.helpers.arrayElement(VALID_CATEGORIES)),
     quantity: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
     unit: faker.helpers.arrayElement(VALID_UNITS),
