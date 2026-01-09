@@ -13,6 +13,7 @@ import {
 import { calculateRecommendedQuantity } from '@/features/household/utils/calculations';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { isTemplateId } from '@/shared/utils/storage/localStorage';
+import { isValidUnit } from '@/shared/utils/validation/unitValidation';
 
 /**
  * Base input for creating an inventory item.
@@ -75,32 +76,6 @@ export class InventoryItemValidationError extends Error {
     super(message);
     this.name = 'InventoryItemValidationError';
   }
-}
-
-/**
- * Validates that a unit is a valid Unit type.
- */
-function isValidUnit(unit: string): unit is Unit {
-  const validUnits: Unit[] = [
-    'pieces',
-    'liters',
-    'kilograms',
-    'grams',
-    'cans',
-    'bottles',
-    'packages',
-    'jars',
-    'canisters',
-    'boxes',
-    'days',
-    'rolls',
-    'tubes',
-    'meters',
-    'pairs',
-    'euros',
-    'sets',
-  ];
-  return validUnits.includes(unit as Unit);
 }
 
 /**

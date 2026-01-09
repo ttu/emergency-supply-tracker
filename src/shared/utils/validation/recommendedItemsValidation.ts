@@ -5,7 +5,11 @@ import type {
   ImportedRecommendedItem,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { createProductTemplateId } from '@/shared/types';
+import {
+  createProductTemplateId,
+  VALID_CATEGORIES,
+  VALID_UNITS,
+} from '@/shared/types';
 
 export interface ValidationError {
   path: string;
@@ -24,38 +28,6 @@ export interface ValidationResult {
   errors: ValidationError[];
   warnings: ValidationWarning[];
 }
-
-const VALID_CATEGORIES: StandardCategoryId[] = [
-  'water-beverages',
-  'food',
-  'cooking-heat',
-  'light-power',
-  'communication-info',
-  'medical-health',
-  'hygiene-sanitation',
-  'tools-supplies',
-  'cash-documents',
-];
-
-const VALID_UNITS: Unit[] = [
-  'pieces',
-  'liters',
-  'kilograms',
-  'grams',
-  'cans',
-  'bottles',
-  'packages',
-  'jars',
-  'canisters',
-  'boxes',
-  'days',
-  'rolls',
-  'tubes',
-  'meters',
-  'pairs',
-  'euros',
-  'sets',
-];
 
 function isValidCategory(value: unknown): value is StandardCategoryId {
   return (
