@@ -21,12 +21,15 @@ Create a pull request for the current branch following our project conventions.
    - Run `git push -u origin <branch-name>`
 
 4. Create the PR using GitHub CLI with this format:
+
    ```bash
    gh pr create --repo ttu/emergency-supply-tracker \
      --title "<type>: <description>" \
      --body "$(cat <<'EOF'
    ## Summary
    <bullet points summarizing the changes>
+
+   Closes #<issue_number>   <!-- Include if implementing an issue -->
 
    ## Changes
    <grouped list of specific changes>
@@ -42,6 +45,10 @@ Create a pull request for the current branch following our project conventions.
      --base main \
      --head <branch-name>
    ```
+
+   **Issue linking**: If this PR implements a GitHub issue, include a closing keyword in the body:
+   - Valid keywords: `close`, `closes`, `closed`, `fix`, `fixes`, `fixed`, `resolve`, `resolves`, `resolved`
+   - Example: `Closes #42` or `Fixes #42`
 
 5. Use conventional commit types for the title:
    - `feat`: New features
