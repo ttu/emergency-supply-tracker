@@ -387,14 +387,14 @@ describe('calculateCategoryShortages', () => {
       );
 
       // Calculate expected: base water + preparation water
+      // Note: ceiling is applied once at the end, not separately on base water
       const peopleMultiplier =
         household.adults * ADULT_REQUIREMENT_MULTIPLIER +
         household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
-      const baseWater = Math.ceil(
+      const baseWater =
         DAILY_WATER_PER_PERSON *
-          peopleMultiplier *
-          household.supplyDurationDays,
-      );
+        peopleMultiplier *
+        household.supplyDurationDays;
       const preparationWater = pastaQuantity * 1; // 1 L/kg
       const expected = Math.ceil(baseWater + preparationWater);
 
@@ -1153,7 +1153,10 @@ describe('getCategoryDisplayStatus', () => {
     const needed = Math.ceil(
       DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
     );
-    const actual = randomLessThan(needed); // Less than needed
+    // Use less than 30% of needed to guarantee 'critical' status
+    // (critical threshold is 30%)
+    const criticalPercentage = randomPercentageLow(); // 0-30%
+    const actual = Math.floor((needed * criticalPercentage) / 100);
 
     const items: InventoryItem[] = [
       createMockInventoryItem({

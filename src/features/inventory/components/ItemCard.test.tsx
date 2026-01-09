@@ -172,17 +172,17 @@ describe('ItemCard', () => {
     expect(screen.queryByText(/🔋/)).not.toBeInTheDocument();
   });
 
-  it('should display recommended quantity when provided', () => {
+  it('should display item type', () => {
     render(<ItemCard item={baseItem} />);
-    expect(screen.getByText(/\/ 28/)).toBeInTheDocument();
+    expect(screen.getByText('bottled-water')).toBeInTheDocument();
   });
 
-  it('should not display recommended quantity when zero', () => {
-    const itemWithoutRecommended = {
+  it('should display custom for custom items', () => {
+    const customItem = createMockInventoryItem({
       ...baseItem,
-      recommendedQuantity: 0,
-    };
-    render(<ItemCard item={itemWithoutRecommended} />);
-    expect(screen.queryByText(/\/ 0/)).not.toBeInTheDocument();
+      itemType: 'custom',
+    });
+    render(<ItemCard item={customItem} />);
+    expect(screen.getByText('custom')).toBeInTheDocument();
   });
 });

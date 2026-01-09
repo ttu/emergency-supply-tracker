@@ -11,7 +11,7 @@ export interface ItemCardProps {
 }
 
 export const ItemCard = ({ item, onClick }: ItemCardProps) => {
-  const { t } = useTranslation(['common', 'units']);
+  const { t } = useTranslation(['common', 'units', 'products']);
 
   const formatExpirationDate = (dateString?: string): string => {
     if (!dateString) return '';
@@ -40,17 +40,15 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
     >
       <div className={styles.header}>
         <h3 className={styles.name}>{item.name}</h3>
+        <span className={styles.itemType}>
+          {t(item.itemType, { ns: 'products' })}
+        </span>
       </div>
 
       <div className={styles.body}>
         <div className={styles.quantity}>
           <span className={styles.current}>{item.quantity}</span>
           <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
-          {item.recommendedQuantity > 0 && (
-            <span className={styles.recommended}>
-              / {item.recommendedQuantity}
-            </span>
-          )}
         </div>
 
         {!item.neverExpires && item.expirationDate && (
