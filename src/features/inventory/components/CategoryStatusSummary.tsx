@@ -98,7 +98,18 @@ export const CategoryStatusSummary = ({
       });
     }
     const unitLabel = t(shortage.unit, { ns: 'units' });
-    return `${shortage.missing} ${unitLabel} ${itemName}`;
+
+    // Use "missing" format when user has partial inventory
+    const hasPartialInventory = shortage.actual > 0;
+    const formatKey = hasPartialInventory
+      ? 'inventory.shortageFormatMissing'
+      : 'inventory.shortageFormat';
+
+    return t(formatKey, {
+      item: itemName,
+      count: shortage.missing,
+      unit: unitLabel,
+    });
   };
 
   const getVisibleShortages = (): CategoryShortage[] => {

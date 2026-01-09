@@ -37,6 +37,9 @@ vi.mock('react-i18next', () => ({
         'inventory.recommended': 'Recommended',
         'inventory.showLess': 'Show less',
         'inventory.showRecommended': 'Show {{count}} recommended items',
+        'inventory.shortageFormat': '{{item}} – {{count}} {{unit}}',
+        'inventory.shortageFormatMissing':
+          '{{item}} – {{count}} {{unit}} missing',
         'inventory.markAsEnough': 'Mark as enough',
         'inventory.addToInventory': 'Add to inventory',
         'inventory.disableRecommended': "Don't recommend this item",
@@ -73,6 +76,13 @@ vi.mock('react-i18next', () => ({
       }
       if (key === 'dashboard.category.recommendedCalories' && options?.count) {
         return `Recommended ${options.count} kcal more`;
+      }
+      // Handle shortage format interpolation
+      if (key === 'inventory.shortageFormat' && options?.item) {
+        return `${options.item} – ${options.count} ${options.unit}`;
+      }
+      if (key === 'inventory.shortageFormatMissing' && options?.item) {
+        return `${options.item} – ${options.count} ${options.unit} missing`;
       }
 
       return commonTranslations[key] || key;
@@ -282,10 +292,10 @@ describe('CategoryStatusSummary', () => {
       );
 
       expect(screen.getByText('Recommended:')).toBeInTheDocument();
-      // Items should be hidden by default
-      expect(screen.queryByText('20 pcs Bandages')).not.toBeInTheDocument();
+      // Items should be hidden by default (new format: "Item – quantity unit")
+      expect(screen.queryByText('Bandages – 20 pcs')).not.toBeInTheDocument();
       expect(
-        screen.queryByText('10 pcs Pain Relievers'),
+        screen.queryByText('Pain Relievers – 10 pcs'),
       ).not.toBeInTheDocument();
       // Expand button should be visible
       expect(
@@ -322,16 +332,18 @@ describe('CategoryStatusSummary', () => {
         />,
       );
 
-      // All items should be hidden by default
-      expect(screen.queryByText('20 pcs Bandages')).not.toBeInTheDocument();
+      // All items should be hidden by default (new format: "Item – quantity unit")
+      expect(screen.queryByText('Bandages – 20 pcs')).not.toBeInTheDocument();
       expect(
-        screen.queryByText('10 pcs Pain Relievers'),
+        screen.queryByText('Pain Relievers – 10 pcs'),
       ).not.toBeInTheDocument();
-      expect(screen.queryByText('5 pcs Antiseptic')).not.toBeInTheDocument();
-      expect(screen.queryByText('1 pcs First Aid Kit')).not.toBeInTheDocument();
-      expect(screen.queryByText('2 pcs Thermometer')).not.toBeInTheDocument();
+      expect(screen.queryByText('Antiseptic – 5 pcs')).not.toBeInTheDocument();
       expect(
-        screen.queryByText('45 pcs Prescription Medications'),
+        screen.queryByText('First Aid Kit – 1 pcs'),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText('Thermometer – 2 pcs')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Prescription Medications – 45 pcs'),
       ).not.toBeInTheDocument();
     });
 
@@ -393,14 +405,14 @@ describe('CategoryStatusSummary', () => {
         screen.getByRole('button', { name: 'Show 6 recommended items' }),
       );
 
-      // All items should now be visible
-      expect(screen.getByText('20 pcs Bandages')).toBeInTheDocument();
-      expect(screen.getByText('10 pcs Pain Relievers')).toBeInTheDocument();
-      expect(screen.getByText('5 pcs Antiseptic')).toBeInTheDocument();
-      expect(screen.getByText('1 pcs First Aid Kit')).toBeInTheDocument();
-      expect(screen.getByText('2 pcs Thermometer')).toBeInTheDocument();
+      // All items should now be visible (new format: "Item – quantity unit")
+      expect(screen.getByText('Bandages – 20 pcs')).toBeInTheDocument();
+      expect(screen.getByText('Pain Relievers – 10 pcs')).toBeInTheDocument();
+      expect(screen.getByText('Antiseptic – 5 pcs')).toBeInTheDocument();
+      expect(screen.getByText('First Aid Kit – 1 pcs')).toBeInTheDocument();
+      expect(screen.getByText('Thermometer – 2 pcs')).toBeInTheDocument();
       expect(
-        screen.getByText('45 pcs Prescription Medications'),
+        screen.getByText('Prescription Medications – 45 pcs'),
       ).toBeInTheDocument();
 
       // Button should now show "Show less"
@@ -432,16 +444,18 @@ describe('CategoryStatusSummary', () => {
       // Collapse
       await user.click(screen.getByRole('button', { name: 'Show less' }));
 
-      // All items should be hidden again
-      expect(screen.queryByText('20 pcs Bandages')).not.toBeInTheDocument();
+      // All items should be hidden again (new format: "Item – quantity unit")
+      expect(screen.queryByText('Bandages – 20 pcs')).not.toBeInTheDocument();
       expect(
-        screen.queryByText('10 pcs Pain Relievers'),
+        screen.queryByText('Pain Relievers – 10 pcs'),
       ).not.toBeInTheDocument();
-      expect(screen.queryByText('5 pcs Antiseptic')).not.toBeInTheDocument();
-      expect(screen.queryByText('1 pcs First Aid Kit')).not.toBeInTheDocument();
-      expect(screen.queryByText('2 pcs Thermometer')).not.toBeInTheDocument();
+      expect(screen.queryByText('Antiseptic – 5 pcs')).not.toBeInTheDocument();
       expect(
-        screen.queryByText('45 pcs Prescription Medications'),
+        screen.queryByText('First Aid Kit – 1 pcs'),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText('Thermometer – 2 pcs')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Prescription Medications – 45 pcs'),
       ).not.toBeInTheDocument();
 
       // Button should show "Show 6 recommended items" again
@@ -567,8 +581,43 @@ describe('CategoryStatusSummary', () => {
       });
       await user.click(expandButton);
 
-      // Check that the shortage is formatted correctly
-      expect(screen.getByText(/20 pcs Bandages/)).toBeInTheDocument();
+      // Check that the shortage is formatted correctly (new format: "Item – quantity unit")
+      expect(screen.getByText('Bandages – 20 pcs')).toBeInTheDocument();
+    });
+
+    it('shows "missing" suffix when user has partial inventory', async () => {
+      const user = userEvent.setup();
+
+      // Create a shortage where user has some items (actual > 0)
+      const partialShortage: CategoryShortage = {
+        itemId: 'bandages',
+        itemName: 'products.bandages',
+        actual: 5, // User has 5
+        needed: 20, // Needs 20
+        unit: 'pieces',
+        missing: 15, // Missing 15
+      };
+
+      render(
+        <CategoryStatusSummary
+          categoryId="medical-health"
+          status="warning"
+          completionPercentage={25}
+          totalActual={5}
+          totalNeeded={20}
+          primaryUnit="pieces"
+          shortages={[partialShortage]}
+        />,
+      );
+
+      // Expand to see the formatted shortage
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Check that the shortage shows "missing" suffix (format: "Item – quantity unit missing")
+      expect(screen.getByText('Bandages – 15 pcs missing')).toBeInTheDocument();
     });
 
     it('shows only add button when onAddToInventory is provided', async () => {
