@@ -1,10 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { Settings } from './Settings';
-import { HouseholdProvider } from '@/features/household';
-import { SettingsProvider } from '@/features/settings';
-import { InventoryProvider } from '@/features/inventory';
-import { RecommendedItemsProvider } from '@/features/templates';
+import { renderWithProviders } from '@/shared/utils/test/render';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -12,18 +9,6 @@ vi.mock('react-i18next', () => ({
     t: (key: string) => key,
   }),
 }));
-
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
-    <SettingsProvider>
-      <HouseholdProvider>
-        <RecommendedItemsProvider>
-          <InventoryProvider>{component}</InventoryProvider>
-        </RecommendedItemsProvider>
-      </HouseholdProvider>
-    </SettingsProvider>,
-  );
-};
 
 describe('Settings Page', () => {
   it('should render settings page', () => {

@@ -1,10 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
-import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/features/inventory';
 import { SettingsProvider } from '@/features/settings';
+import { HouseholdProvider } from '@/features/household';
 import { RecommendedItemsProvider } from '@/features/templates';
+import { InventoryProvider } from '@/features/inventory';
+import { renderWithProviders } from '@/shared/utils/test/render';
 import {
   createMockInventoryItem,
   createMockAppData,
@@ -82,17 +83,16 @@ vi.mock('@/features/alerts', () => ({
     mockGenerateDashboardAlerts(...args),
 }));
 
-const renderWithProviders = (ui: React.ReactElement) => {
-  return render(
-    <SettingsProvider>
-      <HouseholdProvider>
-        <RecommendedItemsProvider>
-          <InventoryProvider>{ui}</InventoryProvider>
-        </RecommendedItemsProvider>
-      </HouseholdProvider>
-    </SettingsProvider>,
-  );
-};
+// Re-render helper for tests that need to rerender with providers
+const rerenderWithProviders = (ui: React.ReactElement) => (
+  <SettingsProvider>
+    <HouseholdProvider>
+      <RecommendedItemsProvider>
+        <InventoryProvider>{ui}</InventoryProvider>
+      </RecommendedItemsProvider>
+    </HouseholdProvider>
+  </SettingsProvider>
+);
 
 describe('Dashboard', () => {
   beforeEach(() => {
@@ -252,17 +252,7 @@ describe('Dashboard', () => {
     localStorage.setItem('inventory', JSON.stringify([item]));
 
     // Re-render to pick up changes
-    rerender(
-      <SettingsProvider>
-        <HouseholdProvider>
-          <RecommendedItemsProvider>
-            <InventoryProvider>
-              <Dashboard />
-            </InventoryProvider>
-          </RecommendedItemsProvider>
-        </HouseholdProvider>
-      </SettingsProvider>,
-    );
+    rerender(rerenderWithProviders(<Dashboard />));
 
     expect(screen.getByTestId('dashboard-header')).toBeInTheDocument();
   });

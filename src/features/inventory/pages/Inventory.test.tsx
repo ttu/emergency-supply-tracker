@@ -1,18 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Inventory } from './Inventory';
-import {
-  HouseholdProvider,
-  calculateRecommendedQuantity,
-} from '@/features/household';
-import { InventoryProvider } from '@/features/inventory';
-import { SettingsProvider } from '@/features/settings';
-import {
-  RecommendedItemsProvider,
-  RECOMMENDED_ITEMS,
-} from '@/features/templates';
+import { calculateRecommendedQuantity } from '@/features/household';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from '@/features/dashboard';
+import { renderWithProviders } from '@/shared/utils/test/render';
 import {
   createMockInventoryItem,
   createMockAppData,
@@ -29,18 +22,6 @@ vi.mock('react-i18next', () => ({
     },
   }),
 }));
-
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
-    <SettingsProvider>
-      <HouseholdProvider>
-        <RecommendedItemsProvider>
-          <InventoryProvider>{component}</InventoryProvider>
-        </RecommendedItemsProvider>
-      </HouseholdProvider>
-    </SettingsProvider>,
-  );
-};
 
 describe('Inventory Page', () => {
   beforeEach(() => {
