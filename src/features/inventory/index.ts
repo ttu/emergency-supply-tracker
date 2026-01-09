@@ -49,3 +49,7 @@ export type {
   CategoryStatusSummaryProps,
   CategoryShortage,
 } from './components';
+
+// Pages
+export { Inventory } from './pages/Inventory';
+export type { InventoryProps } from './pages/Inventory';
