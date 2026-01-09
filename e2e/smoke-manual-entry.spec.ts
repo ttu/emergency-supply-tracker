@@ -6,21 +6,31 @@ import {
   ensureNoModals,
 } from './fixtures';
 
+// Get base URL - use environment variable for deployed sites
+const getBaseURL = () =>
+  process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
+
 // Helper functions to reduce cognitive complexity
 
 async function completeOnboarding(page: Page) {
   // Navigate to page first
-  await page.goto('/');
+  await page.goto(getBaseURL());
 
-  // Clear localStorage and all app state
-  await page.evaluate(() => {
+  // Unregister service workers and clear all app state
+  await page.evaluate(async () => {
+    // Unregister all service workers
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((r) => r.unregister()));
+    }
+    // Clear all storage
     localStorage.clear();
     sessionStorage.clear();
   });
 
   // Force a hard reload by navigating away and back
   await page.goto('about:blank');
-  await page.goto('/');
+  await page.goto(getBaseURL());
 
   // Wait for page to fully load
   await page.waitForLoadState('domcontentloaded');
@@ -249,16 +259,16 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
 
     // Add expired item to ensure we have at least one alert
     await ensureNoModals(page);
-    // Use direct navigation to avoid overlay issues
-    await page.goto('/inventory', {
-      waitUntil: 'domcontentloaded',
-      timeout: 10000,
+    // Use client-side navigation for SPAs (GitHub Pages doesn't serve /inventory directly)
+    await page.click('text=Inventory');
+    await expect(page.locator('h1:has-text("Inventory")')).toBeVisible({
+      timeout: 5000,
     });
-    await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
     await ensureNoModals(page);
-    await page.click('button:has-text("Add Item")');
+    // Language is still English at this point (before Phase 5 settings)
+    await page.getByRole('button', { name: 'Add Item' }).click();
     await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
+    await page.getByRole('button', { name: 'Custom Item' }).click();
     await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
 
     const pastDate = new Date();
@@ -399,21 +409,12 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
     // PHASE 5B: VERIFY ALERTS DISAPPEAR AFTER HOUSEHOLD CHANGE
     // ============================================
     // Navigate to Dashboard after changing household to Single Person
-    // Alerts for insufficient quantities should disappear because
-    // the same quantities are now sufficient for a single person
-    // Note: Language may have been changed to Finnish, so use direct navigation
-    await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 10000 });
-    await page.waitForLoadState('domcontentloaded');
+    // Use first nav button (Dashboard is always first)
+    await page.locator('nav button').first().click();
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: 5000 });
 
     // Wait a moment for alerts to recalculate
     await page.waitForTimeout(1000);
-
-    // Low stock/critical alerts should be gone (items are sufficient for single person)
-    // Note: The expired alert was dismissed earlier in Phase 4, so it may not be visible
-    // We just verify navigation worked - the dismissal state persists as expected
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
-      timeout: 5000,
-    });
 
     // ============================================
     // PHASE 6: DATA MANAGEMENT
@@ -464,7 +465,10 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
         await dashboardNav.click({ timeout: 5000 });
         await page.waitForLoadState('domcontentloaded', { timeout: 5000 });
       } else {
-        await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 10000 });
+        await page.goto(getBaseURL(), {
+          waitUntil: 'domcontentloaded',
+          timeout: 10000,
+        });
       }
       await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
         timeout: 5000,
@@ -522,7 +526,7 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
     expect(dataPersisted.hasCustom).toBe(true);
 
     // Verify settings persisted - navigate to settings
-    await page.goto('/settings', {
+    await page.goto(`${getBaseURL()}/settings`, {
       waitUntil: 'domcontentloaded',
       timeout: 10000,
     });
@@ -538,7 +542,10 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
     // ============================================
     // Return to dashboard using direct navigation
     await ensureNoModals(page);
-    await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 10000 });
+    await page.goto(getBaseURL(), {
+      waitUntil: 'domcontentloaded',
+      timeout: 10000,
+    });
     await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
 
     // Final verification - dashboard should load

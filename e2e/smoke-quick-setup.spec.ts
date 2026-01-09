@@ -5,6 +5,10 @@ import {
   ensureNoModals,
 } from './fixtures';
 
+// Get base URL - use environment variable for deployed sites
+const getBaseURL = () =>
+  process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
+
 /**
  * Comprehensive smoke test that verifies the QUICK SETUP workflow
  * from first-time onboarding (completing Quick Setup) through complete application usage.
@@ -30,17 +34,23 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     // PHASE 1: ONBOARDING WITH QUICK SETUP
     // ============================================
     // Navigate to page first
-    await page.goto('/');
+    await page.goto(getBaseURL());
 
-    // Clear localStorage and all app state
-    await page.evaluate(() => {
+    // Unregister service workers and clear all app state
+    await page.evaluate(async () => {
+      // Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((r) => r.unregister()));
+      }
+      // Clear all storage
       localStorage.clear();
       sessionStorage.clear();
     });
 
     // Force a hard reload by navigating away and back
     await page.goto('about:blank');
-    await page.goto('/');
+    await page.goto(getBaseURL());
 
     // Wait for page to fully load
     await page.waitForLoadState('domcontentloaded');
@@ -272,15 +282,16 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
 
     // Add an item with expired date to test alert dismissal
     await ensureNoModals(page);
-    await page.goto('/inventory', {
-      waitUntil: 'domcontentloaded',
-      timeout: 10000,
+    // Use client-side navigation for SPAs (GitHub Pages doesn't serve /inventory directly)
+    await page.click('text=Inventory');
+    await expect(page.locator('h1:has-text("Inventory")')).toBeVisible({
+      timeout: 5000,
     });
-    await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
     await ensureNoModals(page);
-    await page.click('button:has-text("Add Item")');
+    // Language is still English at this point (before Phase 5 settings)
+    await page.getByRole('button', { name: 'Add Item' }).click();
     await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
+    await page.getByRole('button', { name: 'Custom Item' }).click();
     await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
 
     const pastDate = new Date();
@@ -460,7 +471,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     expect(dataPersisted.hasItems).toBe(true);
 
     // Verify settings persisted - navigate to settings
-    await page.goto('/settings', {
+    await page.goto(`${getBaseURL()}/settings`, {
       waitUntil: 'domcontentloaded',
       timeout: 10000,
     });
@@ -476,7 +487,10 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     // ============================================
     // Return to dashboard using direct navigation
     await ensureNoModals(page);
-    await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 10000 });
+    await page.goto(getBaseURL(), {
+      waitUntil: 'domcontentloaded',
+      timeout: 10000,
+    });
     await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
 
     // Final verification - dashboard should load
