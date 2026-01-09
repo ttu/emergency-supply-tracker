@@ -1,4 +1,4 @@
-import type { AppData, InventoryItem } from '@/shared/types';
+import type { AppData, InventoryItem, ProductTemplateId } from '@/shared/types';
 import {
   createItemId,
   createCategoryId,
@@ -15,7 +15,7 @@ const STORAGE_KEY = 'emergencySupplyTracker';
 /**
  * Checks if a value looks like a valid template ID (kebab-case).
  */
-function isTemplateId(value: string): boolean {
+export function isTemplateId(value: string): boolean {
   return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(value);
 }
 
@@ -27,10 +27,12 @@ function isTemplateId(value: string): boolean {
  * @param itemType - The current itemType value
  * @returns The template ID if valid, or CUSTOM_ITEM_TYPE if not
  */
-function normalizeItemType(itemType: string | undefined): string {
+function normalizeItemType(
+  itemType: string | undefined,
+): ProductTemplateId | 'custom' {
   // If itemType is already a valid template ID, use it
   if (itemType && isTemplateId(itemType)) {
-    return itemType;
+    return createProductTemplateId(itemType);
   }
 
   // Invalid or missing - use custom item type

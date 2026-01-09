@@ -111,7 +111,7 @@ export interface Category {
 export interface InventoryItem {
   id: ItemId;
   name: string;
-  itemType: string; // Template ID (e.g., "canned-fish") or "custom" for user-created items, used for i18n lookup
+  itemType: ProductTemplateId | 'custom'; // Template ID (e.g., "canned-fish") or "custom" for user-created items, used for i18n lookup
   categoryId: CategoryId;
   quantity: number;
   unit: Unit;

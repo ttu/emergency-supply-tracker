@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { InventoryItem, Category } from '@/shared/types';
-import { createCategoryId } from '@/shared/types';
+import type {
+  InventoryItem,
+  Category,
+  ProductTemplateId,
+} from '@/shared/types';
+import { createCategoryId, createProductTemplateId } from '@/shared/types';
 import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
 import { Button } from '@/shared/components/Button';
 import { calculateCaloriesFromWeight } from '@/shared/utils/calculations/calories';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
+import { isTemplateId } from '@/shared/utils/storage/localStorage';
 import styles from './ItemForm.module.css';
 
 export interface ItemFormProps {
@@ -145,9 +150,15 @@ export const ItemForm = ({
       return;
     }
 
+    const trimmedItemType = formData.itemType.trim();
+    const itemType: ProductTemplateId | 'custom' =
+      trimmedItemType && isTemplateId(trimmedItemType)
+        ? createProductTemplateId(trimmedItemType)
+        : CUSTOM_ITEM_TYPE;
+
     onSubmit({
       name: formData.name.trim(),
-      itemType: formData.itemType.trim() || CUSTOM_ITEM_TYPE,
+      itemType,
       categoryId: createCategoryId(formData.categoryId),
       quantity: parseFloat(formData.quantity),
       unit: formData.unit as

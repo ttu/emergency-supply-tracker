@@ -5,9 +5,14 @@ import type {
   Unit,
   ProductTemplateId,
 } from '@/shared/types';
-import { createItemId, createCategoryId } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 import { calculateRecommendedQuantity } from '@/features/household/utils/calculations';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
+import { isTemplateId } from '@/shared/utils/storage/localStorage';
 
 /**
  * Base input for creating an inventory item.
@@ -282,9 +287,14 @@ export class InventoryItemFactory {
    * @throws InventoryItemValidationError if validation fails
    */
   static createFromFormData(formData: CreateFromFormInput): InventoryItem {
+    const itemType: ProductTemplateId | 'custom' =
+      formData.itemType && isTemplateId(formData.itemType)
+        ? createProductTemplateId(formData.itemType)
+        : CUSTOM_ITEM_TYPE;
+
     return this.create({
       name: formData.name,
-      itemType: formData.itemType || CUSTOM_ITEM_TYPE,
+      itemType,
       categoryId: createCategoryId(formData.categoryId),
       quantity: formData.quantity,
       unit: formData.unit,
@@ -315,7 +325,9 @@ export class InventoryItemFactory {
    * @throws InventoryItemValidationError if validation fails
    */
   static createCustomItem(
-    input: Omit<CreateItemInput, 'itemType'> & { itemType?: string },
+    input: Omit<CreateItemInput, 'itemType'> & {
+      itemType?: ProductTemplateId | 'custom';
+    },
   ): InventoryItem {
     return this.create({
       ...input,
