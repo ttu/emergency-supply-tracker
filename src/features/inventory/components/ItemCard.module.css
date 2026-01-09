@@ -23,9 +23,8 @@
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.25rem;
   margin-bottom: 0.5rem;
 }
 
@@ -34,7 +33,11 @@
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
   margin: 0;
-  flex: 1;
+}
+
+.itemType {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
 }
 
 .body {
@@ -82,12 +85,6 @@
 
 .expirationDate {
   color: var(--color-text-secondary);
-}
-
-.recommended {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-left: 0.25rem;
 }
 
 .markedBadge {
