@@ -345,10 +345,9 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       expect(themeAttribute).toBe('dark');
     }
 
-    // Toggle advanced features
+    // Toggle advanced features - find checkbox via its label
     const advancedCheckbox = page
-      .locator('input[type="checkbox"]')
-      .filter({ hasText: /Calorie|Power|Water/i })
+      .locator('label:has-text(/Calorie|Power|Water/i) input[type="checkbox"]')
       .first();
     if (await advancedCheckbox.isVisible().catch(() => false)) {
       const initialState = await advancedCheckbox.isChecked();

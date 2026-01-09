@@ -195,7 +195,7 @@ For GitHub Actions or other CI systems, you can add this to your workflow:
 - **All major user actions are tested across both comprehensive test runs**
 - Quick Setup test: ~25-30 seconds (more comprehensive with multiple item edits, copy, disable/enable)
 - Manual Entry test: ~20 seconds
-- Test timeout is set to 2 minutes to accommodate all actions
+- Test timeout is set to 60 seconds (1 minute) by default, with individual tests setting 2 minute timeouts for comprehensive flows
 - Optional UI elements are checked conditionally (won't fail if not present)
 - Running both tests provides complete coverage of both critical user paths
 
