@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
@@ -84,7 +85,7 @@ vi.mock('@/features/alerts', () => ({
 }));
 
 // Re-render helper for tests that need to rerender with providers
-const rerenderWithProviders = (ui: React.ReactElement) => (
+const rerenderWithProviders = (ui: ReactElement) => (
   <SettingsProvider>
     <HouseholdProvider>
       <RecommendedItemsProvider>

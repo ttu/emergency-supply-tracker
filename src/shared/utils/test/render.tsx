@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { render, type RenderOptions } from '@testing-library/react';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
 import { SettingsProvider } from '@/features/settings';
@@ -10,7 +10,7 @@ import { RecommendedItemsProvider } from '@/features/templates';
  * Shared test wrapper that provides all necessary context providers.
  * Use this to render components that depend on app-level providers.
  */
-function AllProviders({ children }: { children: React.ReactNode }) {
+function AllProviders({ children }: { children: ReactNode }) {
   return (
     <SettingsProvider>
       <HouseholdProvider>
