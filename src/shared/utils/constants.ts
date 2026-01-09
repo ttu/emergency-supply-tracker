@@ -89,9 +89,9 @@ export const MS_PER_DAY =
 export const EXPIRING_SOON_DAYS_THRESHOLD = 30;
 
 /**
- * Days threshold for generating "expiring soon" alerts (more urgent).
+ * Days threshold for generating "expiring soon" alerts.
  */
-export const EXPIRING_SOON_ALERT_DAYS = 7;
+export const EXPIRING_SOON_ALERT_DAYS = 30;
 
 // =============================================================================
 // STATUS THRESHOLD CONSTANTS
