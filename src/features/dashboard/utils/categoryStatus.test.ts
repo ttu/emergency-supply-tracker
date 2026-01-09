@@ -813,7 +813,10 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       }),
     ];
 
-    const completionPercentage = randomPercentageLow();
+    // Use a fixed low percentage (25) that's strictly less than CRITICAL_PERCENTAGE_THRESHOLD (30)
+    // to ensure deterministic test behavior. randomPercentageLow() can return 30, which would
+    // not trigger the critical status check (completionPercentage < 30).
+    const completionPercentage = 25;
     const result = calculateCategoryStatus(
       foodCategory,
       items,
