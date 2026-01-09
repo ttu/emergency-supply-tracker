@@ -22,10 +22,8 @@ import {
   randomQuantityMedium,
   randomQuantityLarge,
   randomQuantityFloat,
-  randomQuantityFloatMinOne,
   randomLessThan,
   randomMoreThan,
-  randomPercentageLow,
   randomPercentageMid,
 } from '@/shared/utils/test/faker-helpers';
 
@@ -365,7 +363,9 @@ describe('calculateCategoryShortages', () => {
 
     it('should include water for food preparation in bottled-water recommendation', () => {
       // Items include pasta which requires 1L per kg for preparation
-      const pastaQuantity = randomQuantityFloatMinOne();
+      // Use a fixed value (2.0) instead of random to avoid floating-point precision issues
+      // that can cause Math.ceil() to round incorrectly (e.g., 86.9999999999 -> 86 instead of 87)
+      const pastaQuantity = 2.0;
       const items: InventoryItem[] = [
         createMockInventoryItem({
           id: '1',
@@ -744,7 +744,10 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       }),
     ];
 
-    const completionPercentage = randomPercentageLow();
+    // Use a fixed low percentage (25) that's strictly less than CRITICAL_PERCENTAGE_THRESHOLD (30)
+    // to ensure deterministic test behavior. randomPercentageLow() can return 30, which would
+    // not trigger the critical status check (completionPercentage < 30).
+    const completionPercentage = 25;
     const result = calculateCategoryStatus(
       waterCategory,
       items,
@@ -813,7 +816,10 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       }),
     ];
 
-    const completionPercentage = randomPercentageLow();
+    // Use a fixed low percentage (25) that's strictly less than CRITICAL_PERCENTAGE_THRESHOLD (30)
+    // to ensure deterministic test behavior. randomPercentageLow() can return 30, which would
+    // not trigger the critical status check (completionPercentage < 30).
+    const completionPercentage = 25;
     const result = calculateCategoryStatus(
       foodCategory,
       items,
@@ -1153,9 +1159,10 @@ describe('getCategoryDisplayStatus', () => {
     const needed = Math.ceil(
       DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
     );
-    // Use less than 30% of needed to guarantee 'critical' status
-    // (critical threshold is 30%)
-    const criticalPercentage = randomPercentageLow(); // 0-30%
+    // Use a fixed percentage (25%) that's strictly less than CRITICAL_PERCENTAGE_THRESHOLD (30%)
+    // to guarantee 'critical' status. randomPercentageLow() can return 30, which could result
+    // in exactly 30% completion, causing getStatusFromPercentage(30) to return 'warning' instead of 'critical'.
+    const criticalPercentage = 25; // Fixed value < 30% to ensure critical status
     const actual = Math.floor((needed * criticalPercentage) / 100);
 
     const items: InventoryItem[] = [

@@ -175,7 +175,8 @@ describe('water calculations', () => {
         }),
       ];
       const expected = pastaQuantity * 1 + riceQuantity * 1.5;
-      expect(calculateTotalWaterRequired(items)).toBe(expected);
+      // Use toBeCloseTo() to handle potential floating-point precision issues with random values
+      expect(calculateTotalWaterRequired(items)).toBeCloseTo(expected, 10);
     });
 
     it('ignores items without water requirements', () => {
@@ -196,7 +197,11 @@ describe('water calculations', () => {
           productTemplateId: 'pasta',
         }),
       ];
-      expect(calculateTotalWaterRequired(items)).toBe(pastaQuantity * 1);
+      // Use toBeCloseTo() to handle potential floating-point precision issues with random values
+      expect(calculateTotalWaterRequired(items)).toBeCloseTo(
+        pastaQuantity * 1,
+        10,
+      );
     });
   });
 
