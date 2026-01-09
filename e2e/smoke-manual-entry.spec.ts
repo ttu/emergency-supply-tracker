@@ -127,7 +127,12 @@ async function addCustomItem(page: Page) {
   await page.selectOption('select[name="category"]', 'food');
   await page.fill('input[name="quantity"]', '3');
   await page.selectOption('select[name="unit"]', 'pieces');
-  await page.check('input[type="checkbox"]');
+  // Check the "Never Expires" checkbox using its label text
+  const neverExpiresCheckbox = page
+    .locator('label')
+    .filter({ hasText: /Never Expires|Ei vanhene/i })
+    .locator('input[type="checkbox"]');
+  await neverExpiresCheckbox.check();
   await page.click('button[type="submit"]');
   await page
     .waitForSelector('[role="dialog"]', { state: 'hidden' })
@@ -250,12 +255,8 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
       timeout: 5000,
     });
 
-    // Should see low stock or critical alerts (items have small quantities for Family size)
-    // We check for alerts but don't assert - the expired item below guarantees alerts
-    await page
-      .getByText(/low|critical|insufficient|varastossa|kriittinen/i)
-      .isVisible()
-      .catch(() => false);
+    // Low stock alerts may appear due to insufficient quantities for Family size
+    // We don't assert on these - the expired item below guarantees alerts
 
     // Add expired item to ensure we have at least one alert
     await ensureNoModals(page);

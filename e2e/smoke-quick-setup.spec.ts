@@ -273,12 +273,8 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       timeout: 5000,
     });
 
-    // Should see low stock or critical alerts
-    // We check for alerts but don't assert - the expired item below guarantees alerts
-    await page
-      .getByText(/low|critical|insufficient|varastossa|kriittinen/i)
-      .isVisible()
-      .catch(() => false);
+    // Low stock alerts may appear due to insufficient quantities for Family size
+    // We don't assert on these - the expired item below guarantees alerts
 
     // Add an item with expired date to test alert dismissal
     await ensureNoModals(page);
