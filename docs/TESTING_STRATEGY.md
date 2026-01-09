@@ -1,8 +1,8 @@
 # Testing Strategy
 
-> **Version:** 1.0.0
-> **Last Updated:** 2025-12-28
-> **Source of Truth:** `vite.config.ts`, `playwright.config.ts`
+> **Version:** 1.1.0
+> **Last Updated:** 2025-01-23
+> **Source of Truth:** `vite.config.ts`, `playwright.config.ts`, `src/test/setup.ts`
 
 This document describes the testing approach for the Emergency Supply Tracker application.
 
@@ -445,6 +445,97 @@ const item = createMockInventoryItem({
   quantity: 5,
 });
 ```
+
+---
+
+## Debugging and Reproducing Test Failures
+
+### Faker Seed Management
+
+Our tests use **Faker.js** to generate random test data, which helps with property-based testing and catching edge cases. However, random data can make test failures hard to reproduce.
+
+**How it works:**
+
+- **Default behavior**: Each test run uses a random seed (0-999,999), generating different data each time
+- **Seed logging**: The seed is automatically logged to the console when tests run
+- **Reproducibility**: You can set a specific seed to reproduce exact test failures
+
+### Reproducing Test Failures
+
+When a test fails, you'll see output like this:
+
+```
+[Faker] Using seed: 123456 (set FAKER_SEED=123456 to reproduce)
+
+FAIL  src/features/household/factories/HouseholdConfigFactory.test.ts
+  ✗ creates a valid household config
+```
+
+**To reproduce the failure:**
+
+1. **Copy the seed** from the console output (e.g., `123456`)
+2. **Run tests with that seed**:
+
+```bash
+FAKER_SEED=123456 npm test
+```
+
+3. **The test will now use the exact same random values** that caused the failure
+
+### Setting a Fixed Seed for Debugging
+
+If you want to debug with consistent data:
+
+```bash
+# Use a specific seed for all tests
+FAKER_SEED=42 npm test
+
+# Or for a specific test file
+FAKER_SEED=42 npm test src/features/household/factories/HouseholdConfigFactory.test.ts
+```
+
+### Why Random Seeds?
+
+**Benefits:**
+
+- **Better coverage**: Different random values each run catch more edge cases
+- **Property-based testing**: Tests verify behavior across a wide range of inputs
+- **Reproducible**: When failures occur, you can reproduce them exactly
+
+**Trade-offs:**
+
+- Tests are non-deterministic by default (but reproducible when needed)
+- Some edge cases might only appear with specific random values
+
+### Best Practices
+
+1. **Don't rely on specific random values** - Tests should work with any valid random input
+2. **Use seed for debugging** - When a test fails, use the logged seed to reproduce
+3. **Fix flaky tests** - If a test fails with some seeds but not others, the test or code likely has a bug
+4. **CI considerations** - In CI, you might want to run tests with multiple seeds for better coverage:
+
+```bash
+# Example: Run tests with multiple seeds in CI
+for seed in 1 42 999 12345 999999; do
+  FAKER_SEED=$seed npm test || exit 1
+done
+```
+
+### Overriding Seed in Individual Tests
+
+If you need a specific seed for a particular test:
+
+```typescript
+import { faker } from '@faker-js/faker';
+
+it('tests with specific seed', () => {
+  faker.seed(123); // Override global seed for this test
+  const value = faker.number.int({ min: 1, max: 10 });
+  // ... test code
+});
+```
+
+**Note:** This only affects faker calls made after `faker.seed()` in that test.
 
 ---
 
