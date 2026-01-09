@@ -998,6 +998,89 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
   });
 });
 
+describe('calculateCategoryShortages - communication-info category', () => {
+  const household = createMockHousehold();
+
+  it('should track by item types instead of pieces for communication-info category', () => {
+    // Communication category has 2 items: battery-radio and hand-crank-radio
+    // Both have unit: 'pieces' but should track as "items" not "pieces"
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'communication-info',
+        quantity: 1,
+        unit: 'pieces',
+        productTemplateId: 'battery-radio',
+      }),
+    ];
+
+    const result = calculateCategoryShortages(
+      'communication-info',
+      items,
+      household,
+    );
+
+    // Should have 1 of 2 item types fulfilled
+    expect(result.totalActual).toBe(1);
+    expect(result.totalNeeded).toBe(2);
+    // primaryUnit should be undefined to signal "items" display
+    expect(result.primaryUnit).toBeUndefined();
+  });
+
+  it('should show all items fulfilled when both radio types are present', () => {
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'communication-info',
+        quantity: 1,
+        unit: 'pieces',
+        productTemplateId: 'battery-radio',
+      }),
+      createMockInventoryItem({
+        id: '2',
+        categoryId: 'communication-info',
+        quantity: 1,
+        unit: 'pieces',
+        productTemplateId: 'hand-crank-radio',
+      }),
+    ];
+
+    const result = calculateCategoryShortages(
+      'communication-info',
+      items,
+      household,
+    );
+
+    // Should have 2 of 2 item types fulfilled
+    expect(result.totalActual).toBe(2);
+    expect(result.totalNeeded).toBe(2);
+    expect(result.shortages.length).toBe(0);
+  });
+
+  it('should not count multiple of same item type as multiple fulfilled items', () => {
+    // Having 5 battery radios should still only count as 1 item type fulfilled
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'communication-info',
+        quantity: 5,
+        unit: 'pieces',
+        productTemplateId: 'battery-radio',
+      }),
+    ];
+
+    const result = calculateCategoryShortages(
+      'communication-info',
+      items,
+      household,
+    );
+
+    // Should still have 1 of 2 item types fulfilled (not 5 of 2)
+    expect(result.totalActual).toBe(1);
+    expect(result.totalNeeded).toBe(2);
+  });
+});
+
 describe('getCategoryDisplayStatus', () => {
   const household = createMockHousehold();
 
