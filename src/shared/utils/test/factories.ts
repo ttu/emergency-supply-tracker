@@ -18,6 +18,7 @@ import {
 } from '@/shared/types';
 import type { Alert } from '@/features/alerts/types';
 import { faker } from '@faker-js/faker';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 /**
  * Test data factories for creating mock data in tests
@@ -124,7 +125,7 @@ export function createMockProductTemplate(
 
 export function createMockAppData(overrides?: Partial<AppData>): AppData {
   return {
-    version: faker.system.semver(),
+    version: CURRENT_SCHEMA_VERSION,
     household: createMockHousehold(overrides?.household),
     settings: createMockSettings(overrides?.settings),
     customCategories:
@@ -157,6 +158,11 @@ export function createMockAppData(overrides?: Partial<AppData>): AppData {
     ...overrides,
   };
 }
+
+/**
+ * Alias for createMockAppData for consistency with other test utilities.
+ */
+export const createAppData = createMockAppData;
 
 export function createMockAlert(overrides?: Partial<Alert>): Alert {
   return {

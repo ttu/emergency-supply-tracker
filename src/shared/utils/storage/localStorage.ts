@@ -9,6 +9,13 @@ import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
 import { UserSettingsFactory } from '@/features/settings/factories/UserSettingsFactory';
 import { STANDARD_CATEGORIES } from '@/features/categories/data';
+import {
+  CURRENT_SCHEMA_VERSION,
+  migrateToCurrentVersion,
+  needsMigration,
+  isVersionSupported,
+  MigrationError,
+} from './migrations';
 
 const STORAGE_KEY = 'emergencySupplyTracker';
 
@@ -61,7 +68,7 @@ function normalizeItems(
 
 export function createDefaultAppData(): AppData {
   return {
-    version: '1.0.0',
+    version: CURRENT_SCHEMA_VERSION,
     household: {
       adults: 2,
       children: 0,
@@ -85,11 +92,20 @@ export function getAppData(): AppData | undefined {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rawData: any = JSON.parse(json);
 
+    // Check if version is supported before proceeding
+    const dataVersion = rawData.version || '1.0.0';
+    if (!isVersionSupported(dataVersion)) {
+      console.error(
+        `Data schema version ${dataVersion} is not supported. Data may be corrupted or from an incompatible version.`,
+      );
+      return undefined;
+    }
+
     // Normalize items: ensure itemType values are valid template IDs and cast IDs
     const normalizedItems = normalizeItems(rawData.items) ?? [];
 
     // Cast IDs to branded types
-    const data: AppData = {
+    let data: AppData = {
       ...rawData,
       items: normalizedItems,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,6 +123,28 @@ export function getAppData(): AppData | undefined {
         createProductTemplateId,
       ),
     };
+
+    // Apply migrations if needed
+    if (needsMigration(data)) {
+      try {
+        data = migrateToCurrentVersion(data);
+        // Save migrated data back to localStorage
+        saveAppData(data);
+        console.info(
+          `Data migrated from version ${dataVersion} to ${CURRENT_SCHEMA_VERSION}`,
+        );
+      } catch (error) {
+        if (error instanceof MigrationError) {
+          console.error(
+            `Migration failed from ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
+          );
+        } else {
+          console.error('Migration failed:', error);
+        }
+        // Return unmigrated data - app may still work with older schema
+        return data;
+      }
+    }
 
     return data;
   } catch (error) {
@@ -167,10 +205,12 @@ export function exportToJSON(data: AppData): string {
  * Parses and normalizes imported JSON data into AppData format.
  * Ensures required fields exist and sets onboardingCompleted to true
  * since imported data represents an already-configured setup.
+ * Applies schema migrations if the imported data is from an older version.
  *
  * @param json - JSON string containing app data to import
- * @returns Parsed and normalized AppData object
+ * @returns Parsed and normalized AppData object at current schema version
  * @throws Error if JSON parsing fails (invalid JSON format)
+ * @throws MigrationError if schema migration fails
  */
 export function importFromJSON(json: string): AppData {
   let data: Partial<AppData>;
@@ -180,6 +220,16 @@ export function importFromJSON(json: string): AppData {
   } catch (error) {
     console.error('Failed to parse import JSON:', error);
     throw error;
+  }
+
+  // Check if imported data version is supported
+  const importedVersion = data.version || '1.0.0';
+  if (!isVersionSupported(importedVersion)) {
+    throw new MigrationError(
+      `Imported data schema version ${importedVersion} is not supported.`,
+      importedVersion,
+      CURRENT_SCHEMA_VERSION,
+    );
   }
 
   // Ensure customCategories exists (only user's custom categories)
@@ -233,5 +283,14 @@ export function importFromJSON(json: string): AppData {
     data.settings.onboardingCompleted = true;
   }
 
-  return data as AppData;
+  // Apply migrations if imported data is from an older schema version
+  let appData = data as AppData;
+  if (needsMigration(appData)) {
+    appData = migrateToCurrentVersion(appData);
+  }
+
+  // Ensure version is set to current
+  appData.version = CURRENT_SCHEMA_VERSION;
+
+  return appData;
 }
