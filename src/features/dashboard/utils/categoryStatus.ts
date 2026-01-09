@@ -275,8 +275,11 @@ export function calculateCategoryShortages(
   });
 
   // If multiple different units, use item type counts instead
+  // Also use item type counts for communication-info category since each item type
+  // (battery radio, hand-crank radio) represents a distinct preparedness item
   const hasMixedUnits = uniqueUnits.size > 1;
-  if (hasMixedUnits) {
+  const trackByItemTypes = hasMixedUnits || categoryId === 'communication-info';
+  if (trackByItemTypes) {
     totalActual = itemTypesFulfilled;
     totalNeeded = totalItemTypes;
     primaryUnit = undefined; // Signal to show "items" instead of a specific unit
