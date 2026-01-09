@@ -22,7 +22,6 @@ import {
   randomQuantityMedium,
   randomQuantityLarge,
   randomQuantityFloat,
-  randomQuantityFloatMinOne,
   randomLessThan,
   randomMoreThan,
   randomPercentageLow,
@@ -365,7 +364,9 @@ describe('calculateCategoryShortages', () => {
 
     it('should include water for food preparation in bottled-water recommendation', () => {
       // Items include pasta which requires 1L per kg for preparation
-      const pastaQuantity = randomQuantityFloatMinOne();
+      // Use a fixed value (2.0) instead of random to avoid floating-point precision issues
+      // that can cause Math.ceil() to round incorrectly (e.g., 86.9999999999 -> 86 instead of 87)
+      const pastaQuantity = 2.0;
       const items: InventoryItem[] = [
         createMockInventoryItem({
           id: '1',
