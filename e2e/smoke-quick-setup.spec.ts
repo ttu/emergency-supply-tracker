@@ -256,10 +256,11 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
         }
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + 30);
-        await page.fill(
-          'input[type="date"]',
-          futureDate.toISOString().split('T')[0],
-        );
+        const futureYyyy = futureDate.getFullYear();
+        const futureMm = String(futureDate.getMonth() + 1).padStart(2, '0');
+        const futureDd = String(futureDate.getDate()).padStart(2, '0');
+        const futureDateString = `${futureYyyy}-${futureMm}-${futureDd}`;
+        await page.fill('input[type="date"]', futureDateString);
 
         await page.click('button[type="submit"]');
         await page
@@ -304,7 +305,10 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
 
     const pastDate = new Date();
     pastDate.setDate(pastDate.getDate() - 5);
-    const expiredDateString = pastDate.toISOString().split('T')[0];
+    const yyyy = pastDate.getFullYear();
+    const mm = String(pastDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(pastDate.getDate()).padStart(2, '0');
+    const expiredDateString = `${yyyy}-${mm}-${dd}`;
 
     await page.fill('input[name="name"]', 'Expired Alert Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -494,13 +498,25 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     expect(dataPersisted.items.length).toBeGreaterThan(0);
     expect(dataPersisted.hasItems).toBe(true);
 
-    // Verify settings persisted - navigate to settings
-    await page.goto(`${getBaseURL()}/settings`, {
+    // Verify settings persisted - navigate to settings using client-side navigation
+    // (Direct /settings URL can 404 in SPA deployments like GitHub Pages)
+    await page.goto(getBaseURL(), {
       waitUntil: 'domcontentloaded',
-      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+      timeout: TIMEOUTS.PAGE_NAVIGATION,
     });
     await page.waitForLoadState('domcontentloaded', {
-      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+      timeout: TIMEOUTS.PAGE_NAVIGATION,
+    });
+    // Use bilingual selector since language may be Finnish after Phase 5
+    await page.getByText(/Settings|Asetukset/i).click();
+    await page.waitForLoadState('domcontentloaded', {
+      timeout: TIMEOUTS.PAGE_NAVIGATION,
+    });
+    // Wait for settings page to be visible
+    await expect(
+      page.locator('h1:has-text(/Settings|Asetukset/i)'),
+    ).toBeVisible({
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
     const themeSelectAfterReload = page.locator('#theme-select');
     if (await themeSelectAfterReload.isVisible().catch(() => false)) {
