@@ -28,6 +28,12 @@ Each document references the source code files it documents:
 - Components: `src/components/`
 - Dependencies: `package.json`
 
+## Documentation Organization
+
+### Planning Documents
+
+Implementation plans, memos, and other planning documents should be placed in `docs/plans/` to keep them organized and separate from reference documentation.
+
 ## Keeping Documentation Updated
 
 When making changes to the codebase, update the corresponding documentation file to keep them in sync.

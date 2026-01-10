@@ -66,7 +66,7 @@ npm run build
 - Run a local commit to trigger the hook: `git commit -m "test"`
 - Skip hooks if needed: `git commit --no-verify`
 
-**Future**: A separate pre-push hook for full validation (`npm run validate`) is still planned as a separate improvement (see VALIDATION_PROGRESS.md).
+**Future**: A separate pre-push hook for full validation (`npm run validate`) is still planned as a separate improvement (see [VALIDATION_PROGRESS.md](./VALIDATION_PROGRESS.md)).
 
 ---
 
@@ -415,6 +415,6 @@ Track these to measure improvement:
 
 ## References
 
-- Full details: `docs/VALIDATION_IMPROVEMENTS.md`
+- Full details: [VALIDATION_IMPROVEMENTS.md](./VALIDATION_IMPROVEMENTS.md)
 - Testing strategy: `docs/TESTING_STRATEGY.md`
 - Code quality: `docs/CODE_QUALITY.md`

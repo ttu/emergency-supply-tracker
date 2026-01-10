@@ -349,6 +349,10 @@ The `docs/` folder contains up-to-date documentation that reflects the actual im
 
 > **Important:** When implementing new features or making changes, update the corresponding documentation in `docs/` to keep it in sync with the code. This includes updating types in DATA_SCHEMA.md, new components in COMPONENT_ARCHITECTURE.md, etc.
 
+### Documentation Organization
+
+> **Important:** When creating implementation plans, memos, or other planning documents, place them in `docs/plans/`. This keeps planning documents organized and separate from reference documentation.
+
 ### Original Specifications (DO NOT USE)
 
 > **Important:** Files in `docs/specifications/` contain the original pre-implementation specifications. These are outdated and should NOT be used unless explicitly asked. The implementation has diverged from these original specs.
