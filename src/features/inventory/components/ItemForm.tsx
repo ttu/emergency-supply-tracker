@@ -4,12 +4,16 @@ import type {
   InventoryItem,
   Category,
   ProductTemplateId,
+  Unit,
 } from '@/shared/types';
 import {
   createCategoryId,
   createProductTemplateId,
   createDateOnly,
+  isFoodCategory,
+  isPowerCategory,
 } from '@/shared/types';
+import { isValidUnit } from '@/shared/utils/validation/unitValidation';
 import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
 import { Button } from '@/shared/components/Button';
@@ -167,14 +171,7 @@ export const ItemForm = ({
       itemType,
       categoryId: createCategoryId(formData.categoryId),
       quantity: parseFloat(formData.quantity),
-      unit: formData.unit as
-        | 'pieces'
-        | 'liters'
-        | 'kilograms'
-        | 'cans'
-        | 'bottles'
-        | 'packages'
-        | 'boxes',
+      unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
       recommendedQuantity: formData.recommendedQuantity,
       neverExpires: formData.neverExpires,
       expirationDate: (() => {
@@ -242,15 +239,21 @@ export const ItemForm = ({
     icon: cat.icon,
   }));
 
-  const unitOptions = [
-    { value: 'pieces', label: t('pieces', { ns: 'units' }) },
-    { value: 'liters', label: t('liters', { ns: 'units' }) },
-    { value: 'kilograms', label: t('kilograms', { ns: 'units' }) },
-    { value: 'cans', label: t('cans', { ns: 'units' }) },
-    { value: 'bottles', label: t('bottles', { ns: 'units' }) },
-    { value: 'packages', label: t('packages', { ns: 'units' }) },
-    { value: 'boxes', label: t('boxes', { ns: 'units' }) },
-  ];
+  // Common units shown in the form (subset of VALID_UNITS for better UX)
+  const COMMON_UNITS: Unit[] = [
+    'pieces',
+    'liters',
+    'kilograms',
+    'cans',
+    'bottles',
+    'packages',
+    'boxes',
+  ] as const;
+
+  const unitOptions = COMMON_UNITS.map((unit) => ({
+    value: unit,
+    label: t(unit, { ns: 'units' }),
+  }));
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
@@ -320,7 +323,7 @@ export const ItemForm = ({
         </div>
       </div>
 
-      {formData.categoryId === 'food' && (
+      {isFoodCategory(formData.categoryId) && (
         <>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
@@ -369,7 +372,7 @@ export const ItemForm = ({
         </>
       )}
 
-      {formData.categoryId === 'light-power' && (
+      {isPowerCategory(formData.categoryId) && (
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <Input

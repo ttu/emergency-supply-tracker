@@ -121,7 +121,12 @@ export interface Category {
   isCustom: boolean;
 }
 
-// Inventory Item
+/**
+ * Inventory Item
+ *
+ * Represents a single item in the user's emergency supply inventory.
+ * Some properties are category-specific and should only be used for certain item types.
+ */
 export interface InventoryItem {
   id: ItemId;
   name: string;
@@ -136,11 +141,16 @@ export interface InventoryItem {
   location?: string;
   notes?: string;
   productTemplateId?: ProductTemplateId;
-  weightGrams?: number; // Weight per unit in grams (e.g., one can weighs 400g)
-  caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal)
-  capacityMah?: number; // Capacity in milliamp-hours (for powerbanks)
-  capacityWh?: number; // Capacity in watt-hours (for powerbanks)
-  requiresWaterLiters?: number; // Liters of water required per unit for preparation
+  /** @categorySpecific Food category only - Weight per unit in grams (e.g., one can weighs 400g) */
+  weightGrams?: number;
+  /** @categorySpecific Food category only - Calories per unit (e.g., one can has 200 kcal) */
+  caloriesPerUnit?: number;
+  /** @categorySpecific Light-power category only - Capacity in milliamp-hours (for powerbanks) */
+  capacityMah?: number;
+  /** @categorySpecific Light-power category only - Capacity in watt-hours (for powerbanks) */
+  capacityWh?: number;
+  /** @categorySpecific Food category only - Liters of water required per unit for preparation */
+  requiresWaterLiters?: number;
   markedAsEnough?: boolean; // If true, item is considered complete regardless of quantity vs recommendedQuantity
   createdAt: string;
   updatedAt: string;
@@ -235,4 +245,80 @@ export interface AppData {
   lastModified: string;
   lastBackupDate?: DateOnly; // ISO date of last export
   backupReminderDismissedUntil?: DateOnly; // ISO date (first of next month) - reminder hidden until this date
+}
+
+// Type guards for category-specific inventory items
+
+/**
+ * Type guard to check if an inventory item belongs to the food category.
+ * Food items may have weightGrams, caloriesPerUnit, and requiresWaterLiters properties.
+ *
+ * @param item - The inventory item to check
+ * @returns True if the item belongs to the food category
+ *
+ * @example
+ * ```typescript
+ * if (isFoodItem(item)) {
+ *   // TypeScript now knows item may have weightGrams, caloriesPerUnit, etc.
+ *   const calories = item.caloriesPerUnit ?? 0;
+ * }
+ * ```
+ */
+export function isFoodItem(item: InventoryItem): boolean {
+  return item.categoryId === 'food';
+}
+
+/**
+ * Type guard to check if an inventory item belongs to the light-power category.
+ * Power items may have capacityMah and capacityWh properties.
+ *
+ * @param item - The inventory item to check
+ * @returns True if the item belongs to the light-power category
+ *
+ * @example
+ * ```typescript
+ * if (isPowerItem(item)) {
+ *   // TypeScript now knows item may have capacityMah, capacityWh
+ *   const capacity = item.capacityWh ?? 0;
+ * }
+ * ```
+ */
+export function isPowerItem(item: InventoryItem): boolean {
+  return item.categoryId === 'light-power';
+}
+
+/**
+ * Helper function to check if a category ID string represents the food category.
+ * Useful when working with categoryId strings directly (e.g., in forms or calculations).
+ *
+ * @param categoryId - The category ID string to check
+ * @returns True if the category ID is 'food'
+ *
+ * @example
+ * ```typescript
+ * if (isFoodCategory(categoryId)) {
+ *   // Handle food category logic
+ * }
+ * ```
+ */
+export function isFoodCategory(categoryId: string): boolean {
+  return categoryId === 'food';
+}
+
+/**
+ * Helper function to check if a category ID string represents the light-power category.
+ * Useful when working with categoryId strings directly (e.g., in forms or calculations).
+ *
+ * @param categoryId - The category ID string to check
+ * @returns True if the category ID is 'light-power'
+ *
+ * @example
+ * ```typescript
+ * if (isPowerCategory(categoryId)) {
+ *   // Handle power category logic
+ * }
+ * ```
+ */
+export function isPowerCategory(categoryId: string): boolean {
+  return categoryId === 'light-power';
 }
