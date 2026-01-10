@@ -5,7 +5,7 @@ import { RecommendedItemsProvider } from '@/features/templates';
 import { InventoryProvider } from '@/features/inventory';
 
 interface AllProvidersProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 /**

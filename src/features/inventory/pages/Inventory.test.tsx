@@ -267,10 +267,7 @@ describe('Inventory Page', () => {
     const templateButton = templateButtons.find(
       (btn) =>
         btn.textContent?.includes('bottled-water') ||
-        btn
-          .closest('[data-testid]')
-          ?.getAttribute('data-testid')
-          ?.startsWith('template-'),
+        btn.closest('[data-testid]')?.dataset.testid?.startsWith('template-'),
     );
 
     // If we find a template button, click it

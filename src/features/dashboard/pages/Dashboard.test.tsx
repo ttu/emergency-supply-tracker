@@ -144,7 +144,7 @@ describe('Dashboard', () => {
     fireEvent.click(screen.getByText(/dashboard.viewInventory/i));
     expect(onNavigate).toHaveBeenCalledWith('inventory');
 
-    // Test Export Shopping List button - logs but doesn't navigate (TODO: implement export)
+    // Test Export Shopping List button - logs but doesn't navigate (export functionality to be implemented)
     fireEvent.click(screen.getByText(/dashboard.exportShoppingList/i));
     expect(consoleSpy).toHaveBeenCalledWith('Export shopping list');
 
