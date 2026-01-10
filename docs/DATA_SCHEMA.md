@@ -201,6 +201,7 @@ interface InventoryItem {
   unit: Unit; // Measurement unit
   recommendedQuantity: number; // Calculated recommended amount
   expirationDate?: string; // ISO date string (YYYY-MM-DD)
+  purchaseDate?: string; // ISO date string (YYYY-MM-DD)
   neverExpires?: boolean; // Item doesn't expire
   location?: string; // Storage location
   notes?: string; // User notes
@@ -222,6 +223,7 @@ interface InventoryItem {
 - `recommendedQuantity` is calculated based on household configuration and scaling rules
 - Items with `neverExpires: true` don't show expiration warnings
 - `expirationDate` should be omitted (not set to `null`) when not applicable - the app normalizes legacy `null` values during import
+- `purchaseDate` is optional and tracks when the item was purchased
 - `weightGrams` and `caloriesPerUnit` are used when calorie tracking is enabled
 - `capacityMah` and `capacityWh` are used for power bank tracking when power management is enabled
 - `requiresWaterLiters` tracks water needed for preparation (e.g., pasta, rice)

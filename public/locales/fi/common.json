@@ -355,6 +355,7 @@
     "waterForPreparation": "valmistukseen",
     "neverExpires": "Ei vanhene",
     "expirationDate": "Vanhenemispäivä",
+    "purchaseDate": "Ostopäivä",
     "location": "Sijainti",
     "notes": "Muistiinpanot",
     "errors": {

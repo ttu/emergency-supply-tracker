@@ -101,6 +101,10 @@ export function createMockInventoryItem(
       () => createDateOnly(faker.date.future().toISOString().split('T')[0]),
       { probability: 0.5 },
     ),
+    purchaseDate: faker.helpers.maybe(
+      () => createDateOnly(faker.date.past().toISOString().split('T')[0]),
+      { probability: 0.3 },
+    ),
     notes:
       faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.3 }) ||
       '',

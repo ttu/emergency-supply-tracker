@@ -355,6 +355,7 @@
     "waterForPreparation": "for preparation",
     "neverExpires": "Never Expires",
     "expirationDate": "Expiration Date",
+    "purchaseDate": "Purchase Date",
     "location": "Location",
     "notes": "Notes",
     "errors": {
