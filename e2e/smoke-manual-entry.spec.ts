@@ -516,12 +516,22 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
     expect(dataPersisted.hasWater).toBe(true);
     expect(dataPersisted.hasCustom).toBe(true);
 
-    // Verify settings persisted - navigate to settings
-    await page.goto(`${getBaseURL()}/settings`, {
+    // Verify settings persisted - navigate to settings using client-side navigation
+    // (Direct /settings URL can 404 in SPA deployments like GitHub Pages)
+    await page.goto(getBaseURL(), {
       waitUntil: 'domcontentloaded',
       timeout: 10000,
     });
     await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+    // Use bilingual selector since language may be Finnish after Phase 5
+    await page.getByText(/Settings|Asetukset/i).click();
+    await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+    // Wait for settings page to be visible
+    await expect(
+      page.locator('h1:has-text(/Settings|Asetukset/i)'),
+    ).toBeVisible({
+      timeout: 5000,
+    });
     const themeSelectAfterReload = page.locator('#theme-select');
     if (await themeSelectAfterReload.isVisible().catch(() => false)) {
       const themeValue = await themeSelectAfterReload.inputValue();
