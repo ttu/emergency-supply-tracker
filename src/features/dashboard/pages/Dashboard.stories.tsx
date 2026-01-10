@@ -12,11 +12,15 @@ const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',
   component: Dashboard,
   decorators: [
-    (Story) => (
-      <AllProviders>
-        <Story />
-      </AllProviders>
-    ),
+    (Story) => {
+      // Clean up localStorage before each story
+      localStorage.removeItem(STORAGE_KEY);
+      return (
+        <AllProviders>
+          <Story />
+        </AllProviders>
+      );
+    },
   ],
   parameters: {
     layout: 'fullscreen',
@@ -39,6 +43,8 @@ export const WithItems: Story = {
   render: () => <Dashboard />,
   decorators: [
     (Story) => {
+      // Clean up localStorage before setting up story data
+      localStorage.removeItem(STORAGE_KEY);
       // Set up some inventory items in localStorage
       const items = [
         createMockInventoryItem({
@@ -89,6 +95,8 @@ export const WithAlerts: Story = {
   render: () => <Dashboard />,
   decorators: [
     (Story) => {
+      // Clean up localStorage before setting up story data
+      localStorage.removeItem(STORAGE_KEY);
       // Set up inventory with items that will trigger alerts
       const items = [
         createMockInventoryItem({
@@ -151,6 +159,8 @@ export const WellPrepared: Story = {
   render: () => <Dashboard />,
   decorators: [
     (Story) => {
+      // Clean up localStorage before setting up story data
+      localStorage.removeItem(STORAGE_KEY);
       // Set up a well-stocked inventory
       const items = [
         createMockInventoryItem({
