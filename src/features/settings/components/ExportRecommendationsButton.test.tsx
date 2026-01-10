@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ExportRecommendationsButton } from './ExportRecommendationsButton';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 // Mock URL.createObjectURL and URL.revokeObjectURL
 const mockCreateObjectURL = vi.fn(() => 'blob:test-url');
@@ -23,7 +24,7 @@ describe('ExportRecommendationsButton', () => {
     mockExportRecommendedItems.mockReturnValue({
       meta: {
         name: 'Test Kit',
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         createdAt: '2025-01-01T00:00:00.000Z',
       },
       items: [],

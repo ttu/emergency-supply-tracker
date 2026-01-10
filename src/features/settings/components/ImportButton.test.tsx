@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { beforeEach, afterEach, vi, type Mock, type SpyInstance } from 'vitest';
 import { ImportButton } from './ImportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
@@ -63,7 +64,7 @@ describe('ImportButton', () => {
 
   it('should handle valid JSON import', async () => {
     const validData = {
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       household: { adults: 2, children: 0 },
       settings: { language: 'en' },
       items: [],
@@ -128,7 +129,7 @@ describe('ImportButton', () => {
 
   it('should not import when user cancels confirmation', async () => {
     const validData = {
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       household: { adults: 2, children: 0 },
       settings: { language: 'en' },
       items: [],
@@ -191,7 +192,7 @@ describe('ImportButton', () => {
 
   it('should reset file input after import', async () => {
     const validData = {
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       household: { adults: 2, children: 0 },
       settings: { language: 'en' },
       items: [],
@@ -267,7 +268,7 @@ describe('ImportButton', () => {
 
   it('should validate items is an array', async () => {
     const invalidItems = {
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       household: { adults: 2 },
       settings: { language: 'en' },
       items: 'not an array',

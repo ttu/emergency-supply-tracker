@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { beforeEach, afterEach, vi, type Mock, type SpyInstance } from 'vitest';
 import { ImportRecommendationsButton } from './ImportRecommendationsButton';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 // Mock useRecommendedItems hook
 const mockImportRecommendedItems = vi.fn();
@@ -21,7 +22,11 @@ const mockParseRecommendedItemsFile = parseRecommendedItemsFile as Mock;
 
 describe('ImportRecommendationsButton', () => {
   const validFile = {
-    meta: { name: 'Test', version: '1.0.0', createdAt: '2024-01-01' },
+    meta: {
+      name: 'Test',
+      version: CURRENT_SCHEMA_VERSION,
+      createdAt: '2024-01-01',
+    },
     items: [
       {
         id: 'test-1',
