@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
@@ -82,29 +82,19 @@ vi.mock('@/features/alerts', () => ({
     mockGenerateDashboardAlerts(...args),
 }));
 
-// Local renderWithProviders that doesn't import from @/test to avoid mock conflicts
-const renderWithProviders = (ui: ReactElement) => {
-  return render(
-    <SettingsProvider>
-      <HouseholdProvider>
-        <RecommendedItemsProvider>
-          <InventoryProvider>{ui}</InventoryProvider>
-        </RecommendedItemsProvider>
-      </HouseholdProvider>
-    </SettingsProvider>,
-  );
-};
-
-// Re-render helper for tests that need to rerender with providers
-const rerenderWithProviders = (ui: ReactElement) => (
+// Local provider wrapper - can't use @/test to avoid mock conflicts with vi.mock
+const TestProviders = ({ children }: { children: ReactNode }) => (
   <SettingsProvider>
     <HouseholdProvider>
       <RecommendedItemsProvider>
-        <InventoryProvider>{ui}</InventoryProvider>
+        <InventoryProvider>{children}</InventoryProvider>
       </RecommendedItemsProvider>
     </HouseholdProvider>
   </SettingsProvider>
 );
+
+const renderWithProviders = (ui: ReactElement) =>
+  render(ui, { wrapper: TestProviders });
 
 describe('Dashboard', () => {
   beforeEach(() => {
@@ -264,7 +254,11 @@ describe('Dashboard', () => {
     localStorage.setItem('inventory', JSON.stringify([item]));
 
     // Re-render to pick up changes
-    rerender(rerenderWithProviders(<Dashboard />));
+    rerender(
+      <TestProviders>
+        <Dashboard />
+      </TestProviders>,
+    );
 
     expect(screen.getByTestId('dashboard-header')).toBeInTheDocument();
   });
