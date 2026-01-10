@@ -179,7 +179,7 @@ export const ItemForm = ({
         if (formData.neverExpires) {
           return undefined;
         }
-        if (formData.expirationDate) {
+        if (formData.expirationDate && formData.expirationDate.trim()) {
           return createDateOnly(formData.expirationDate);
         }
         return undefined;
