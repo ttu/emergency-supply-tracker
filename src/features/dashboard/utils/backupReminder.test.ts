@@ -24,7 +24,8 @@ vi.mock('@/shared/utils/storage/localStorage');
 describe('shouldShowBackupReminder', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date('2025-02-15T12:00:00.000Z'));
+    // Use local date constructor to match implementation's local date handling
+    vi.setSystemTime(new Date(2025, 1, 15, 12));
   });
 
   afterEach(() => {
@@ -105,10 +106,13 @@ describe('shouldShowBackupReminder', () => {
   });
 
   it('should return true at exactly 30 days since last modification', () => {
+    // System time is set to Feb 15, 2025 12:00 local
+    // Last modified should be Jan 16, 2025 12:00 local (30 days ago)
+    const lastModifiedDate = new Date(2025, 0, 16, 12);
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
       lastBackupDate: createDateOnly('2025-01-01'), // 45 days ago
-      lastModified: '2025-01-16T12:00:00.000Z', // Modified exactly 30 days ago (after backup)
+      lastModified: lastModifiedDate.toISOString(), // Modified exactly 30 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(true);
   });

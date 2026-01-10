@@ -171,7 +171,11 @@ function calculateExpirationDate(
 
   const expDate = new Date();
   expDate.setMonth(expDate.getMonth() + defaultExpirationMonths);
-  const dateString = expDate.toISOString().split('T')[0];
+  // Use local date formatting to match backupReminder.ts and status.ts
+  const year = expDate.getFullYear();
+  const month = String(expDate.getMonth() + 1).padStart(2, '0');
+  const day = String(expDate.getDate()).padStart(2, '0');
+  const dateString = `${year}-${month}-${day}`;
   return createDateOnly(dateString);
 }
 
