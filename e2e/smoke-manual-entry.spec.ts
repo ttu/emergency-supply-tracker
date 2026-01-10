@@ -569,7 +569,9 @@ async function runManualEntryWorkflow(page: Page) {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
   // Wait for settings page to be visible
-  await expect(page.locator('h1:has-text(/Settings|Asetukset/i)')).toBeVisible({
+  await expect(
+    page.locator('h1').filter({ hasText: /Settings|Asetukset/i }),
+  ).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const themeSelectAfterReload = page.locator('#theme-select');

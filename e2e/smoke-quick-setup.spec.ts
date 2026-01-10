@@ -514,7 +514,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     });
     // Wait for settings page to be visible
     await expect(
-      page.locator('h1:has-text(/Settings|Asetukset/i)'),
+      page.locator('h1').filter({ hasText: /Settings|Asetukset/i }),
     ).toBeVisible({
       timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
