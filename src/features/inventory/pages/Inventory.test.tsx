@@ -13,6 +13,7 @@ import { Inventory } from './Inventory';
 import { calculateRecommendedQuantity } from '@/features/household';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from '@/features/dashboard';
+import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -359,7 +360,7 @@ describe('Inventory Page with items', () => {
       household: createMockHousehold({ children: 0 }),
       items: [mockItem, expiredItem, neverExpiresItem],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
   });
 
   afterEach(() => {
@@ -704,7 +705,7 @@ describe('Inventory Page - Mark as Enough', () => {
       household: createMockHousehold({ children: 0 }),
       items: [itemWithLowQuantity],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
   });
 
   afterEach(() => {

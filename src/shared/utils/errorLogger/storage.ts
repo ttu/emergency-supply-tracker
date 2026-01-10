@@ -4,7 +4,7 @@
 
 import type { ErrorLogData, LogEntry, LogLevel } from './types';
 
-const ERROR_LOG_STORAGE_KEY = 'emergencySupplyTracker_errorLogs';
+export const ERROR_LOG_STORAGE_KEY = 'emergencySupplyTracker_errorLogs';
 
 /**
  * Maximum number of log entries to store (to prevent localStorage bloat).

@@ -1,8 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Dashboard } from './Dashboard';
 import { AllProviders } from '@/shared/components/AllProviders';
-import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import {
+  createMockInventoryItem,
+  createMockAppData,
+} from '@/shared/utils/test/factories';
 import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
+import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',
@@ -70,7 +74,10 @@ export const WithItems: Story = {
           location: 'Closet',
         }),
       ];
-      localStorage.setItem('inventory', JSON.stringify(items));
+      const appData = createMockAppData({
+        items,
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
       return <Story />;
     },
@@ -129,7 +136,10 @@ export const WithAlerts: Story = {
           location: 'Medicine Cabinet',
         }),
       ];
-      localStorage.setItem('inventory', JSON.stringify(items));
+      const appData = createMockAppData({
+        items,
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
       return <Story />;
     },
@@ -186,7 +196,10 @@ export const WellPrepared: Story = {
           location: 'Bathroom',
         }),
       ];
-      localStorage.setItem('inventory', JSON.stringify(items));
+      const appData = createMockAppData({
+        items,
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
       return <Story />;
     },

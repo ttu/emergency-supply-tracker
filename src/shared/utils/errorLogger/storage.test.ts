@@ -6,6 +6,7 @@ import {
   getLogEntries,
   clearErrorLogs,
   getSessionInfo,
+  ERROR_LOG_STORAGE_KEY,
 } from './storage';
 import type { LogEntry } from './types';
 
@@ -54,7 +55,7 @@ describe('errorLogger storage', () => {
         sessionStart: session.start,
       });
 
-      const stored = localStorage.getItem('emergencySupplyTracker_errorLogs');
+      const stored = localStorage.getItem(ERROR_LOG_STORAGE_KEY);
       expect(stored).not.toBeNull();
 
       const parsed = JSON.parse(stored!);

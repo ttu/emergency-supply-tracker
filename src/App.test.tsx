@@ -7,6 +7,7 @@ import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
 import { ThemeApplier } from './components/ThemeApplier';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
+import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -38,7 +39,7 @@ const setupCompletedOnboarding = () => {
       onboardingCompleted: true,
     },
   });
-  localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 };
 
 // Helper to render App with all required providers
@@ -148,7 +149,7 @@ describe('App', () => {
         onboardingCompleted: false,
       },
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderApp();
 

@@ -5,6 +5,7 @@ import {
   type Locator,
 } from '@playwright/test';
 import { createMockAppData } from '../src/shared/utils/test/factories';
+import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 // Helper to wait for element count to change
 export async function waitForCountChange(
@@ -115,9 +116,12 @@ export const test = base.extend<{
       await page.goto('/');
       // Close any modals that might be open
       await closeAnyOpenModals(page);
-      await page.evaluate((data) => {
-        localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-      }, defaultAppData);
+      await page.evaluate(
+        ({ data, key }) => {
+          localStorage.setItem(key, JSON.stringify(data));
+        },
+        { data: defaultAppData, key: STORAGE_KEY },
+      );
       await page.reload({ waitUntil: 'domcontentloaded' });
       // Close any modals after reload
       await closeAnyOpenModals(page);

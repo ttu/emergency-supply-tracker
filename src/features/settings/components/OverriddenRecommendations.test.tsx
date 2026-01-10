@@ -9,6 +9,7 @@ import {
   createMockInventoryItem,
   createMockAppData,
 } from '@/shared/utils/test/factories';
+import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -61,7 +62,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -83,7 +84,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -105,7 +106,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -113,9 +114,7 @@ describe('OverriddenRecommendations', () => {
     await user.click(unmarkButton);
 
     // Check that the item is no longer marked as enough
-    const storedData = JSON.parse(
-      localStorage.getItem('emergencySupplyTracker') || '{}',
-    );
+    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     const updatedItem = storedData.items.find(
       (item: { id: string }) => item.id === 'item-1',
     );
@@ -144,7 +143,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem1, markedItem2],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -176,7 +175,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem1, markedItem2],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -184,9 +183,7 @@ describe('OverriddenRecommendations', () => {
     await user.click(unmarkAllButton);
 
     // Check that all items are no longer marked as enough
-    const storedData = JSON.parse(
-      localStorage.getItem('emergencySupplyTracker') || '{}',
-    );
+    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     storedData.items.forEach((item: { markedAsEnough?: boolean }) => {
       expect(item.markedAsEnough).toBe(false);
     });
@@ -205,7 +202,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderWithProviders(<OverriddenRecommendations />);
 
