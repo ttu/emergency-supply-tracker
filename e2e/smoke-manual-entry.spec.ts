@@ -269,7 +269,10 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
     // Language is still English at this point (before Phase 5 settings)
     await page.getByRole('button', { name: 'Add Item' }).click();
     await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.getByRole('button', { name: 'Custom Item' }).click();
+    // Use specific selector for the Custom Item button (has ➕ prefix)
+    await page
+      .getByRole('button', { name: /^➕ Custom Item$|^➕ Mukautettu$/ })
+      .click();
     await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
 
     const pastDate = new Date();
