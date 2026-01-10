@@ -33,8 +33,13 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
     try {
       fs.writeFileSync(SEED_FILE, String(seed), { flag: 'wx' });
       shouldLog = true;
-    } catch {
-      // File already exists, another project created it first
+    } catch (error) {
+      // File already exists (EEXIST), another project created it first
+      // This is expected in parallel test execution - ignore the error
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
+        // Re-throw unexpected errors
+        throw error;
+      }
     }
   } else if (fs.existsSync(SEED_FILE)) {
     // Reuse seed from earlier project in this test run
@@ -46,9 +51,15 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
     try {
       fs.writeFileSync(SEED_FILE, String(seed), { flag: 'wx' });
       shouldLog = true;
-    } catch {
-      // File already exists from another project, read their seed instead
-      seed = Number.parseInt(fs.readFileSync(SEED_FILE, 'utf-8'), 10);
+    } catch (error) {
+      // File already exists (EEXIST) from another project, read their seed instead
+      // This is expected in parallel test execution
+      if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+        seed = Number.parseInt(fs.readFileSync(SEED_FILE, 'utf-8'), 10);
+      } else {
+        // Re-throw unexpected errors
+        throw error;
+      }
     }
   }
 
@@ -71,7 +82,11 @@ export function teardown() {
     if (fs.existsSync(SEED_FILE)) {
       fs.unlinkSync(SEED_FILE);
     }
-  } catch {
-    // Ignore cleanup errors
+  } catch (error) {
+    // Ignore cleanup errors (file may already be deleted by another process)
+    // Log in development for debugging, but don't throw
+    if (process.env.NODE_ENV !== 'test' && !process.env.CI) {
+      console.warn('[Faker] Failed to cleanup seed file:', error);
+    }
   }
 }
