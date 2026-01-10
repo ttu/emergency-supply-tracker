@@ -29,12 +29,18 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
 
   // Check for explicit env var first
   if (envSeed) {
-    seed = Number.parseInt(envSeed, 10);
-    if (Number.isNaN(seed)) {
+    const parsedSeed = Number.parseInt(envSeed, 10);
+    if (
+      !Number.isInteger(parsedSeed) ||
+      Number.isNaN(parsedSeed) ||
+      parsedSeed < 0 ||
+      parsedSeed > 999999
+    ) {
       throw new Error(
-        `Invalid FAKER_SEED value: "${envSeed}". Must be a valid integer.`,
+        `[Faker] Invalid FAKER_SEED="${envSeed}". Expected an integer in range 0-999999.`,
       );
     }
+    seed = parsedSeed;
     // Log once when using explicit seed (first project to run)
     // Use exclusive flag to avoid race condition with parallel projects
     try {
