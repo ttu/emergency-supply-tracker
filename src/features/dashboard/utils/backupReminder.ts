@@ -1,4 +1,5 @@
 import type { AppData } from '@/shared/types';
+import { createDateOnly } from '@/shared/types';
 import { getAppData, saveAppData } from '@/shared/utils/storage/localStorage';
 import {
   BACKUP_REMINDER_DAYS_THRESHOLD,
@@ -22,7 +23,11 @@ export function shouldShowBackupReminder(
 
   // Check if reminder was dismissed for this month
   if (appData.backupReminderDismissedUntil) {
-    const dismissedUntil = new Date(appData.backupReminderDismissedUntil);
+    // Parse DateOnly as local date at midnight
+    const [year, month, day] = appData.backupReminderDismissedUntil
+      .split('-')
+      .map(Number);
+    const dismissedUntil = new Date(year, month - 1, day);
     if (now < dismissedUntil) {
       return false;
     }
@@ -33,11 +38,21 @@ export function shouldShowBackupReminder(
     return appData.items.length > 0;
   }
 
-  const lastBackup = new Date(appData.lastBackupDate);
+  // Parse DateOnly as local date at midnight
+  const [backupYear, backupMonth, backupDay] = appData.lastBackupDate
+    .split('-')
+    .map(Number);
   const lastModified = new Date(appData.lastModified);
 
   // Check if data was modified after the last backup
-  if (lastModified <= lastBackup) {
+  // Compare dates (not times) - set both to midnight for comparison
+  const lastBackupDateOnly = new Date(backupYear, backupMonth - 1, backupDay);
+  const lastModifiedDateOnly = new Date(
+    lastModified.getFullYear(),
+    lastModified.getMonth(),
+    lastModified.getDate(),
+  );
+  if (lastModifiedDateOnly <= lastBackupDateOnly) {
     return false;
   }
 
@@ -58,8 +73,13 @@ export function dismissBackupReminder(): void {
 
   const now = new Date();
   const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  // Format as YYYY-MM-DD using local date (not UTC)
+  const year = nextMonth.getFullYear();
+  const month = String(nextMonth.getMonth() + 1).padStart(2, '0');
+  const day = String(nextMonth.getDate()).padStart(2, '0');
+  const nextMonthDateOnly = `${year}-${month}-${day}`;
 
-  appData.backupReminderDismissedUntil = nextMonth.toISOString();
+  appData.backupReminderDismissedUntil = createDateOnly(nextMonthDateOnly);
   saveAppData(appData);
 }
 
@@ -71,6 +91,12 @@ export function recordBackupDate(): void {
   const appData = getAppData();
   if (!appData) return;
 
-  appData.lastBackupDate = new Date().toISOString();
+  const today = new Date();
+  // Format as YYYY-MM-DD using local date (not UTC)
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const todayDateOnly = `${year}-${month}-${day}`;
+  appData.lastBackupDate = createDateOnly(todayDateOnly);
   saveAppData(appData);
 }

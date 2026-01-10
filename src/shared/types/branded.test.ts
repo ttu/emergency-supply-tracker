@@ -4,8 +4,10 @@ import {
   createCategoryId,
   createProductTemplateId,
   createAlertId,
+  createDateOnly,
   isItemId,
   isCategoryId,
+  isDateOnly,
 } from './branded';
 
 describe('branded types', () => {
@@ -96,6 +98,156 @@ describe('branded types', () => {
 
     it('returns false for empty strings', () => {
       expect(isCategoryId('')).toBe(false);
+    });
+  });
+
+  describe('createDateOnly', () => {
+    it('creates a DateOnly from a valid date string', () => {
+      const date = createDateOnly('2025-03-20');
+      expect(date).toBe('2025-03-20');
+      // Type check: should be assignable to DateOnly
+      const dateOnly: string & { readonly __brand: 'DateOnly' } = date;
+      expect(dateOnly).toBe('2025-03-20');
+    });
+
+    it('creates a DateOnly for leap year dates', () => {
+      const date = createDateOnly('2024-02-29');
+      expect(date).toBe('2024-02-29');
+    });
+
+    it('creates a DateOnly for first day of year', () => {
+      const date = createDateOnly('2025-01-01');
+      expect(date).toBe('2025-01-01');
+    });
+
+    it('creates a DateOnly for last day of year', () => {
+      const date = createDateOnly('2025-12-31');
+      expect(date).toBe('2025-12-31');
+    });
+
+    it('throws error for invalid format (missing dashes)', () => {
+      expect(() => createDateOnly('20250320')).toThrow(
+        'Invalid date format: "20250320". Expected YYYY-MM-DD format.',
+      );
+    });
+
+    it('throws error for invalid format (wrong separator)', () => {
+      expect(() => createDateOnly('2025/03/20')).toThrow(
+        'Invalid date format: "2025/03/20". Expected YYYY-MM-DD format.',
+      );
+    });
+
+    it('throws error for invalid format (too short)', () => {
+      expect(() => createDateOnly('2025-03')).toThrow(
+        'Invalid date format: "2025-03". Expected YYYY-MM-DD format.',
+      );
+    });
+
+    it('throws error for invalid format (too long)', () => {
+      expect(() => createDateOnly('2025-03-20-12')).toThrow(
+        'Invalid date format: "2025-03-20-12". Expected YYYY-MM-DD format.',
+      );
+    });
+
+    it('throws error for invalid format (non-numeric)', () => {
+      expect(() => createDateOnly('2025-AB-20')).toThrow(
+        'Invalid date format: "2025-AB-20". Expected YYYY-MM-DD format.',
+      );
+    });
+
+    it('throws error for invalid date (invalid month)', () => {
+      expect(() => createDateOnly('2025-13-20')).toThrow(
+        'Invalid date: "2025-13-20". Date does not exist.',
+      );
+    });
+
+    it('throws error for invalid date (invalid day)', () => {
+      expect(() => createDateOnly('2025-02-30')).toThrow(
+        'Invalid date: "2025-02-30". Date does not exist.',
+      );
+    });
+
+    it('throws error for invalid date (non-leap year Feb 29)', () => {
+      expect(() => createDateOnly('2025-02-29')).toThrow(
+        'Invalid date: "2025-02-29". Date does not exist.',
+      );
+    });
+
+    it('throws error for invalid date (day 0)', () => {
+      expect(() => createDateOnly('2025-03-00')).toThrow(
+        'Invalid date: "2025-03-00". Date does not exist.',
+      );
+    });
+
+    it('throws error for invalid date (month 0)', () => {
+      expect(() => createDateOnly('2025-00-20')).toThrow(
+        'Invalid date: "2025-00-20". Date does not exist.',
+      );
+    });
+  });
+
+  describe('isDateOnly', () => {
+    it('returns true for valid DateOnly', () => {
+      const date = createDateOnly('2025-03-20');
+      expect(isDateOnly(date)).toBe(true);
+    });
+
+    it('returns true for valid date string in correct format', () => {
+      expect(isDateOnly('2025-12-31')).toBe(true);
+      expect(isDateOnly('2024-02-29')).toBe(true); // Leap year
+      expect(isDateOnly('2025-01-01')).toBe(true);
+    });
+
+    it('returns false for non-string values', () => {
+      expect(isDateOnly(null)).toBe(false);
+      expect(isDateOnly(undefined)).toBe(false);
+      expect(isDateOnly(123)).toBe(false);
+      expect(isDateOnly({})).toBe(false);
+      expect(isDateOnly([])).toBe(false);
+    });
+
+    it('returns false for invalid format (missing dashes)', () => {
+      expect(isDateOnly('20250320')).toBe(false);
+    });
+
+    it('returns false for invalid format (wrong separator)', () => {
+      expect(isDateOnly('2025/03/20')).toBe(false);
+    });
+
+    it('returns false for invalid format (too short)', () => {
+      expect(isDateOnly('2025-03')).toBe(false);
+    });
+
+    it('returns false for invalid format (too long)', () => {
+      expect(isDateOnly('2025-03-20-12')).toBe(false);
+    });
+
+    it('returns false for invalid format (non-numeric)', () => {
+      expect(isDateOnly('2025-AB-20')).toBe(false);
+    });
+
+    it('returns false for invalid date (invalid month)', () => {
+      expect(isDateOnly('2025-13-20')).toBe(false);
+    });
+
+    it('returns false for invalid date (invalid day)', () => {
+      expect(isDateOnly('2025-02-30')).toBe(false);
+    });
+
+    it('returns false for invalid date (non-leap year Feb 29)', () => {
+      expect(isDateOnly('2025-02-29')).toBe(false);
+    });
+
+    it('returns false for invalid date (day 0)', () => {
+      expect(isDateOnly('2025-03-00')).toBe(false);
+    });
+
+    it('returns false for invalid date (month 0)', () => {
+      expect(isDateOnly('2025-00-20')).toBe(false);
+    });
+
+    it('returns false for empty string', () => {
+      expect(isDateOnly('')).toBe(false);
     });
   });
 });

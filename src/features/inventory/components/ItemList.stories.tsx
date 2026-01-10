@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemList } from './ItemList';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
-import { createItemId, createCategoryId } from '@/shared/types';
+import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
 
 const meta = {
   title: 'Components/Inventory/ItemList',
@@ -17,9 +17,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const futureDate = new Date(
-  Date.now() + 365 * 24 * 60 * 60 * 1000,
-).toISOString();
+const futureDate = createDateOnly(
+  new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+);
 
 const sampleItems = [
   createMockInventoryItem({

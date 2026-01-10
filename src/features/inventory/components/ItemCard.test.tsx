@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ItemCard } from './ItemCard';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import { createDateOnly } from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -16,9 +17,11 @@ vi.mock('react-i18next', () => ({
 }));
 
 describe('ItemCard', () => {
-  const futureDate = new Date(
-    Date.now() + 365 * 24 * 60 * 60 * 1000,
-  ).toISOString();
+  const futureDate = createDateOnly(
+    new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0],
+  );
 
   const baseItem = createMockInventoryItem({
     id: '1',
@@ -57,18 +60,22 @@ describe('ItemCard', () => {
   });
 
   it('should show expiration warning for items expiring soon', () => {
-    const soonDate = new Date(
-      Date.now() + 10 * 24 * 60 * 60 * 1000,
-    ).toISOString();
+    const soonDate = createDateOnly(
+      new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0],
+    );
     const expiringItem = { ...baseItem, expirationDate: soonDate };
     render(<ItemCard item={expiringItem} />);
     expect(screen.getByText(/Expires in/)).toBeInTheDocument();
   });
 
   it('should show expired warning for expired items', () => {
-    const expiredDate = new Date(
-      Date.now() - 10 * 24 * 60 * 60 * 1000,
-    ).toISOString();
+    const expiredDate = createDateOnly(
+      new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0],
+    );
     const expiredItem = { ...baseItem, expirationDate: expiredDate };
     render(<ItemCard item={expiredItem} />);
     expect(screen.getByText(/inventory.expired/)).toBeInTheDocument();

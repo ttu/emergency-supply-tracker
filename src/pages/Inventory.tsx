@@ -152,10 +152,9 @@ export function Inventory({
         if (a.neverExpires && b.neverExpires) return 0;
         if (a.neverExpires) return 1;
         if (b.neverExpires) return -1;
-        return (
-          new Date(a.expirationDate!).getTime() -
-          new Date(b.expirationDate!).getTime()
-        );
+        // Compare date-only strings directly to avoid timezone issues
+        // Date-only strings (YYYY-MM-DD) can be compared lexicographically
+        return (a.expirationDate || '').localeCompare(b.expirationDate || '');
       default:
         return 0;
     }
