@@ -10,6 +10,18 @@ import {
 const getBaseURL = () =>
   process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
 
+// Timeout constants to avoid magic numbers
+const TIMEOUTS = {
+  SHORT_DELAY: 300,
+  MEDIUM_DELAY: 500,
+  LONG_DELAY: 1000,
+  PAGE_LOAD: 2000,
+  ELEMENT_VISIBLE: 5000,
+  PAGE_NAVIGATION: 10000,
+  DEPLOYED_SITE: 15000,
+  TEST_TIMEOUT: 120000, // 2 minutes
+} as const;
+
 // Helper functions to reduce cognitive complexity
 
 async function completeOnboarding(page: Page) {
@@ -34,21 +46,23 @@ async function completeOnboarding(page: Page) {
 
   // Wait for page to fully load
   await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(TIMEOUTS.PAGE_LOAD);
 
   // Welcome screen - increase timeout for deployed sites
   await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
-    timeout: 15000,
+    timeout: TIMEOUTS.DEPLOYED_SITE,
   });
   await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
 
   // Preset selection - choose "Family"
-  await expect(page.getByText(/Family|Perhe/i)).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText(/Family|Perhe/i)).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
   await page.getByRole('button', { name: /Family|Perhe/i }).click();
 
   // Household configuration
   await expect(page.locator('input[type="number"]').first()).toBeVisible({
-    timeout: 5000,
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const adultsInput = page.locator('input[type="number"]').first();
   const adultsValue = await adultsInput.inputValue();
@@ -60,14 +74,14 @@ async function completeOnboarding(page: Page) {
   // Quick Setup - Skip
   await expect(
     page.getByRole('button', { name: /Skip for now|Ohita toistaiseksi/i }),
-  ).toBeVisible({ timeout: 5000 });
+  ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
   await page
     .getByRole('button', { name: /Skip for now|Ohita toistaiseksi/i })
     .click();
 
   // Should navigate to Dashboard
   await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
-    timeout: 5000,
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 }
 
@@ -112,7 +126,7 @@ async function addItemFromTemplate(page: Page) {
     .catch(() => {});
 
   await expect(page.locator('text=/water/i').first()).toBeVisible({
-    timeout: 5000,
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 }
 
@@ -194,7 +208,7 @@ async function testRecommendedItems(page: Page) {
     await disableButton.click();
     await expect(missingItemsLocator).toHaveCount(
       Math.max(0, initialCount - 1),
-      { timeout: 3000 },
+      { timeout: TIMEOUTS.ELEMENT_VISIBLE },
     );
   }
 }
@@ -259,7 +273,7 @@ async function runManualEntryWorkflow(page: Page) {
 
   // Verify alerts appear (low stock alerts due to insufficient quantities for Family)
   await expect(page.locator('h2:has-text("Alerts")')).toBeVisible({
-    timeout: 5000,
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 
   // Low stock alerts may appear due to insufficient quantities for Family size
@@ -270,7 +284,7 @@ async function runManualEntryWorkflow(page: Page) {
   // Use client-side navigation for SPAs (GitHub Pages doesn't serve /inventory directly)
   await page.click('text=Inventory');
   await expect(page.locator('h1:has-text("Inventory")')).toBeVisible({
-    timeout: 5000,
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
   // Language is still English at this point (before Phase 5 settings)
@@ -308,20 +322,24 @@ async function runManualEntryWorkflow(page: Page) {
 
   // Verify expired alert appears
   await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
-    timeout: 5000,
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 
   // Dismiss alert
   const dismissButton = page
     .locator('.alert button, button:has-text("✕"), [aria-label*="dismiss" i]')
     .first();
-  await expect(dismissButton).toBeVisible({ timeout: 5000 });
+  await expect(dismissButton).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
   await dismissButton.click();
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
   // Verify alert is hidden
   const alertText = page.locator('.alert').getByText(/expired|vanhentunut/i);
-  await expect(alertText).not.toBeVisible({ timeout: 3000 });
+  await expect(alertText).not.toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
 
   // ============================================
   // PHASE 5: SETTINGS - ALL FEATURES
@@ -333,7 +351,7 @@ async function runManualEntryWorkflow(page: Page) {
   const languageSelect = page.locator('select').first();
   if (await languageSelect.isVisible().catch(() => false)) {
     await languageSelect.selectOption('fi');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
     // Verify language changed (check for Finnish text)
     const navText = await page.locator('nav').textContent();
     expect(navText).toBeTruthy();
@@ -366,7 +384,7 @@ async function runManualEntryWorkflow(page: Page) {
   });
   if (await presetButton.isVisible().catch(() => false)) {
     await presetButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
     // Verify household changed (Single Person = 1 adult)
     const householdAdultsInput = page.locator('input[type="number"]').first();
@@ -390,7 +408,7 @@ async function runManualEntryWorkflow(page: Page) {
   if (await caloriesInput.isVisible().catch(() => false)) {
     await caloriesInput.fill('2200');
     await caloriesInput.blur();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TIMEOUTS.SHORT_DELAY);
   }
 
   // View disabled recommendations (if section exists)
@@ -401,7 +419,7 @@ async function runManualEntryWorkflow(page: Page) {
   const enableButton = page.locator('button', { hasText: /^Enable$/ }).first();
   if (await enableButton.isVisible().catch(() => false)) {
     await enableButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
   }
 
   // View hidden alerts (if section exists)
@@ -416,7 +434,7 @@ async function runManualEntryWorkflow(page: Page) {
     .first();
   if (await reactivateButton.isVisible().catch(() => false)) {
     await reactivateButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
   }
 
   // ============================================
@@ -425,10 +443,12 @@ async function runManualEntryWorkflow(page: Page) {
   // Navigate to Dashboard after changing household to Single Person
   // Use first nav button (Dashboard is always first)
   await page.locator('nav button').first().click();
-  await expect(page.locator('h1').first()).toBeVisible({ timeout: 5000 });
+  await expect(page.locator('h1').first()).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
 
   // Wait a moment for alerts to recalculate
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
 
   // ============================================
   // PHASE 6: DATA MANAGEMENT
@@ -439,7 +459,7 @@ async function runManualEntryWorkflow(page: Page) {
   });
   if (await exportButton.isVisible().catch(() => false)) {
     await exportButton.click();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
   }
 
   // Export shopping list (if items need restocking)
@@ -450,7 +470,7 @@ async function runManualEntryWorkflow(page: Page) {
     const isEnabled = await shoppingListButton.isEnabled();
     if (isEnabled) {
       await shoppingListButton.click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
     }
   }
 
@@ -460,7 +480,7 @@ async function runManualEntryWorkflow(page: Page) {
   });
   if (await exportRecsButton.isVisible().catch(() => false)) {
     await exportRecsButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
   }
 
   // ============================================
@@ -475,25 +495,38 @@ async function runManualEntryWorkflow(page: Page) {
 
   // Navigate to Dashboard (first nav button)
   try {
-    await navButtons.first().click({ timeout: 5000 });
-    await page.waitForLoadState('domcontentloaded', { timeout: 5000 });
-    await expect(page.locator('h1').first()).toBeVisible({ timeout: 5000 });
+    await navButtons.first().click({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    await page.waitForLoadState('domcontentloaded', {
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
+    await expect(page.locator('h1').first()).toBeVisible({
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
   } catch {
     // Navigation might have issues, continue with persistence check
   }
 
   // Navigate to Inventory (second nav button)
   try {
-    await navButtons.nth(1).click({ timeout: 5000 });
-    await page.waitForLoadState('domcontentloaded', { timeout: 5000 });
-    await expect(page.locator('h1').first()).toBeVisible({ timeout: 5000 });
+    await navButtons.nth(1).click({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    await page.waitForLoadState('domcontentloaded', {
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
+    await expect(page.locator('h1').first()).toBeVisible({
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
   } catch {
     // Continue to persistence check
   }
 
   // Reload and verify persistence
-  await page.reload({ waitUntil: 'domcontentloaded', timeout: 10000 });
-  await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+  await page.reload({
+    waitUntil: 'domcontentloaded',
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
+  });
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
+  });
 
   // Verify data persisted - check localStorage
   const dataPersisted = await page.evaluate(() => {
@@ -525,15 +558,19 @@ async function runManualEntryWorkflow(page: Page) {
   // (Direct /settings URL can 404 in SPA deployments like GitHub Pages)
   await page.goto(getBaseURL(), {
     waitUntil: 'domcontentloaded',
-    timeout: 10000,
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
+  });
   // Use bilingual selector since language may be Finnish after Phase 5
   await page.getByText(/Settings|Asetukset/i).click();
-  await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
+  });
   // Wait for settings page to be visible
   await expect(page.locator('h1:has-text(/Settings|Asetukset/i)')).toBeVisible({
-    timeout: 5000,
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const themeSelectAfterReload = page.locator('#theme-select');
   if (await themeSelectAfterReload.isVisible().catch(() => false)) {
@@ -548,15 +585,17 @@ async function runManualEntryWorkflow(page: Page) {
   await ensureNoModals(page);
   await page.goto(getBaseURL(), {
     waitUntil: 'domcontentloaded',
-    timeout: 10000,
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
+  });
 
   // Final verification - dashboard should load
   // If it doesn't load immediately, that's okay - we've tested all major functionality
   const dashboardLoaded = await page
     .locator('h1:has-text("Dashboard")')
-    .isVisible({ timeout: 5000 })
+    .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
     .catch(() => false);
 
   // If dashboard loaded, verify sections
@@ -581,14 +620,14 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
   test('should test manual entry workflow: skip quick setup → manually add items → full features', async ({
     page,
   }) => {
-    test.setTimeout(120000); // 2 minutes for comprehensive test
+    test.setTimeout(TIMEOUTS.TEST_TIMEOUT);
     await runManualEntryWorkflow(page);
   });
 
   test('should test manual entry workflow on mobile: skip quick setup → manually add items → full features', async ({
     page,
   }) => {
-    test.setTimeout(120000); // 2 minutes for comprehensive test
+    test.setTimeout(TIMEOUTS.TEST_TIMEOUT);
     // Set mobile viewport explicitly
     await page.setViewportSize({ width: 375, height: 667 });
     await runManualEntryWorkflow(page);

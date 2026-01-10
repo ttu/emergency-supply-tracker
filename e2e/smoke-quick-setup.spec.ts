@@ -9,6 +9,18 @@ import {
 const getBaseURL = () =>
   process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
 
+// Timeout constants to avoid magic numbers
+const TIMEOUTS = {
+  SHORT_DELAY: 300,
+  MEDIUM_DELAY: 500,
+  LONG_DELAY: 1000,
+  PAGE_LOAD: 2000,
+  ELEMENT_VISIBLE: 5000,
+  PAGE_NAVIGATION: 10000,
+  DEPLOYED_SITE: 15000,
+  TEST_TIMEOUT: 120000, // 2 minutes
+} as const;
+
 /**
  * Comprehensive smoke test that verifies the QUICK SETUP workflow
  * from first-time onboarding (completing Quick Setup) through complete application usage.
@@ -28,7 +40,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
   test('should test quick setup workflow: add recommended items → edit quantities → full features', async ({
     page,
   }) => {
-    test.setTimeout(120000); // 2 minutes for comprehensive test
+    test.setTimeout(TIMEOUTS.TEST_TIMEOUT);
 
     // ============================================
     // PHASE 1: ONBOARDING WITH QUICK SETUP
@@ -54,23 +66,23 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
 
     // Wait for page to fully load
     await page.waitForLoadState('domcontentloaded');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(TIMEOUTS.PAGE_LOAD);
 
     // Welcome screen - increase timeout for deployed sites
     await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
-      timeout: 15000,
+      timeout: TIMEOUTS.DEPLOYED_SITE,
     });
     await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
 
     // Preset selection - choose "Family"
     await expect(page.getByText(/Family|Perhe/i)).toBeVisible({
-      timeout: 5000,
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
     await page.getByRole('button', { name: /Family|Perhe/i }).click();
 
     // Household configuration
     await expect(page.locator('input[type="number"]').first()).toBeVisible({
-      timeout: 5000,
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
     const adultsInput = page.locator('input[type="number"]').first();
     const adultsValue = await adultsInput.inputValue();
@@ -84,7 +96,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       page.getByRole('button', {
         name: /Add Recommended Items|Lisää suositellut/i,
       }),
-    ).toBeVisible({ timeout: 5000 });
+    ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
     await page
       .getByRole('button', {
         name: /Add Recommended Items|Lisää suositellut/i,
@@ -93,7 +105,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
 
     // Should navigate to Dashboard
     await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
-      timeout: 5000,
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
 
     // ============================================
@@ -128,7 +140,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     // Edit Item 1 - Add sufficient quantity (Water category)
     await ensureNoModals(page);
     await page.click('button:has-text("Water")');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
     const waterItems = page.locator(
       '[class*="itemCard"], [data-testid^="item-"]',
@@ -137,20 +149,20 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       await waterItems.first().click();
       await expect(
         page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-      ).toBeVisible({ timeout: 5000 });
+      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
       await page.fill('input[name="quantity"]', '50');
       await page.click('button[type="submit"]');
       await page
         .waitForSelector('[role="dialog"]', { state: 'hidden' })
         .catch(() => {});
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
     }
 
     // Edit Item 2 - Add LESS than recommended (Food category)
     // This will test the "insufficient quantity" scenario
     await ensureNoModals(page);
     await page.click('button:has-text("Food")');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
     const foodItems = page.locator(
       '[class*="itemCard"], [data-testid^="item-"]',
@@ -160,7 +172,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       await foodItems.first().click();
       await expect(
         page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-      ).toBeVisible({ timeout: 5000 });
+      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
 
       // Add LESS than recommended (e.g., 2 pieces for a Family)
       // This should trigger a recommendation
@@ -169,7 +181,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       await page
         .waitForSelector('[role="dialog"]', { state: 'hidden' })
         .catch(() => {});
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
       // Now DISABLE this recommendation (insufficient quantity)
       // Expand recommended items to see the insufficient item
@@ -179,14 +191,14 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       const disableButton = page.locator('button:has-text("×")').first();
       if (await disableButton.isVisible().catch(() => false)) {
         await disableButton.click();
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
       }
     }
 
     // Edit Item 3 - Add sufficient quantity (Medical category)
     await ensureNoModals(page);
     await page.click('button:has-text("Medical")');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
     const medicalItems = page.locator(
       '[class*="itemCard"], [data-testid^="item-"]',
@@ -195,13 +207,13 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       await medicalItems.first().click();
       await expect(
         page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-      ).toBeVisible({ timeout: 5000 });
+      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
       await page.fill('input[name="quantity"]', '10');
       await page.click('button[type="submit"]');
       await page
         .waitForSelector('[role="dialog"]', { state: 'hidden' })
         .catch(() => {});
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
     }
 
     // ============================================
@@ -210,7 +222,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     // Test copying an item (e.g., water with different expiration)
     await ensureNoModals(page);
     await page.click('button:has-text("Water")');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
     const waterItemsForCopy = page.locator(
       '[class*="itemCard"], [data-testid^="item-"]',
@@ -220,7 +232,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       await waterItemsForCopy.first().click();
       await expect(
         page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-      ).toBeVisible({ timeout: 5000 });
+      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
 
       // Look for Copy/Duplicate button
       const copyButton = page.locator('button', {
@@ -232,7 +244,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
         // Should open add form with pre-filled data
         await expect(
           page.locator('h2', { hasText: /Add Item|Lisää/i }),
-        ).toBeVisible({ timeout: 5000 });
+        ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
 
         // Modify the copied item (change quantity)
         await page.fill('input[name="quantity"]', '25');
@@ -253,7 +265,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
         await page
           .waitForSelector('[role="dialog"]', { state: 'hidden' })
           .catch(() => {});
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
       } else {
         // If no copy button, just close the dialog
         await page.keyboard.press('Escape');
@@ -270,7 +282,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
 
     // Verify alerts appear (low stock alerts due to insufficient quantities)
     await expect(page.locator('h2:has-text("Alerts")')).toBeVisible({
-      timeout: 5000,
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
 
     // Low stock alerts may appear due to insufficient quantities for Family size
@@ -281,7 +293,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     // Use client-side navigation for SPAs (GitHub Pages doesn't serve /inventory directly)
     await page.click('text=Inventory');
     await expect(page.locator('h1:has-text("Inventory")')).toBeVisible({
-      timeout: 5000,
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
     await ensureNoModals(page);
     // Language is still English at this point (before Phase 5 settings)
@@ -316,20 +328,24 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
 
     // Verify expired alert appears
     await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
-      timeout: 5000,
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
 
     // Dismiss alert
     const dismissButton = page
       .locator('.alert button, button:has-text("✕"), [aria-label*="dismiss" i]')
       .first();
-    await expect(dismissButton).toBeVisible({ timeout: 5000 });
+    await expect(dismissButton).toBeVisible({
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
     await dismissButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
     // Verify alert is hidden
     const alertText = page.locator('.alert').getByText(/expired|vanhentunut/i);
-    await expect(alertText).not.toBeVisible({ timeout: 3000 });
+    await expect(alertText).not.toBeVisible({
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
 
     // ============================================
     // PHASE 5: SETTINGS - ALL FEATURES
@@ -341,7 +357,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     const languageSelect = page.locator('select').first();
     if (await languageSelect.isVisible().catch(() => false)) {
       await languageSelect.selectOption('fi');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
       // Verify language changed (check for Finnish text)
       const navText = await page.locator('nav').textContent();
       expect(navText).toBeTruthy();
@@ -373,7 +389,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     // ============================================
     // Scroll down to find disabled recommendations section
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
     // Look for disabled recommendations section
     const disabledSection = page.locator('text=/Disabled Recommendations/i');
@@ -385,16 +401,18 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
 
       if (await enableButton.isVisible().catch(() => false)) {
         await enableButton.click();
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
         // Verify the button is gone (item was re-enabled)
-        await expect(enableButton).not.toBeVisible({ timeout: 3000 });
+        await expect(enableButton).not.toBeVisible({
+          timeout: TIMEOUTS.ELEMENT_VISIBLE,
+        });
       }
     }
 
     // Scroll back to top
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
     // Change household from Family to Single Person
     // This should reduce recommended quantities, making existing items sufficient
@@ -403,7 +421,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     });
     if (await presetButton.isVisible().catch(() => false)) {
       await presetButton.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
       // Verify household changed (Single Person = 1 adult)
       const householdAdultsInput = page.locator('input[type="number"]').first();
@@ -420,7 +438,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     });
     if (await exportButton.isVisible().catch(() => false)) {
       await exportButton.click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
     }
 
     // Export shopping list (if items need restocking)
@@ -431,7 +449,7 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
       const isEnabled = await shoppingListButton.isEnabled();
       if (isEnabled) {
         await shoppingListButton.click();
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
       }
     }
 
@@ -441,15 +459,20 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     });
     if (await exportRecsButton.isVisible().catch(() => false)) {
       await exportRecsButton.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
     }
 
     // ============================================
     // PHASE 7: NAVIGATION & PERSISTENCE
     // ============================================
     // Reload and verify persistence
-    await page.reload({ waitUntil: 'domcontentloaded', timeout: 10000 });
-    await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+    await page.reload({
+      waitUntil: 'domcontentloaded',
+      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+    });
+    await page.waitForLoadState('domcontentloaded', {
+      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+    });
 
     // Verify data persisted - check localStorage
     const dataPersisted = await page.evaluate(() => {
@@ -474,9 +497,11 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     // Verify settings persisted - navigate to settings
     await page.goto(`${getBaseURL()}/settings`, {
       waitUntil: 'domcontentloaded',
-      timeout: 10000,
+      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
     });
-    await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+    await page.waitForLoadState('domcontentloaded', {
+      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+    });
     const themeSelectAfterReload = page.locator('#theme-select');
     if (await themeSelectAfterReload.isVisible().catch(() => false)) {
       const themeValue = await themeSelectAfterReload.inputValue();
@@ -490,14 +515,16 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     await ensureNoModals(page);
     await page.goto(getBaseURL(), {
       waitUntil: 'domcontentloaded',
-      timeout: 10000,
+      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
     });
-    await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+    await page.waitForLoadState('domcontentloaded', {
+      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+    });
 
     // Final verification - dashboard should load
     const dashboardLoaded = await page
       .locator('h1:has-text("Dashboard")')
-      .isVisible({ timeout: 5000 })
+      .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
       .catch(() => false);
 
     // If dashboard loaded, verify sections
