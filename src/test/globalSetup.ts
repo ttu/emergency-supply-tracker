@@ -22,6 +22,11 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
   // Check for explicit env var first
   if (envSeed) {
     seed = Number.parseInt(envSeed, 10);
+    if (Number.isNaN(seed)) {
+      throw new Error(
+        `Invalid FAKER_SEED value: "${envSeed}". Must be a valid integer.`,
+      );
+    }
     // Log once when using explicit seed (first project to run)
     if (!fs.existsSync(SEED_FILE)) {
       fs.writeFileSync(SEED_FILE, String(seed));

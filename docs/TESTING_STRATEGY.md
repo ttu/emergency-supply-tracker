@@ -1,8 +1,8 @@
 # Testing Strategy
 
 > **Version:** 1.1.0
-> **Last Updated:** 2025-01-23
-> **Source of Truth:** `vite.config.ts`, `playwright.config.ts`, `src/test/setup.ts`
+> **Last Updated:** 2026-01-10
+> **Source of Truth:** `vite.config.ts`, `playwright.config.ts`, `src/test/globalSetup.ts`
 
 This document describes the testing approach for the Emergency Supply Tracker application.
 
@@ -464,7 +464,7 @@ Our tests use **Faker.js** to generate random test data, which helps with proper
 
 When a test fails, you'll see output like this:
 
-```
+```text
 [Faker] Using seed: 123456 (set FAKER_SEED=123456 to reproduce)
 
 FAIL  src/features/household/factories/HouseholdConfigFactory.test.ts
