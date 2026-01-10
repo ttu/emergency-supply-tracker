@@ -278,11 +278,15 @@ export class InventoryItemFactory {
       unit: formData.unit,
       recommendedQuantity: formData.recommendedQuantity,
       neverExpires: formData.neverExpires,
-      expirationDate: formData.neverExpires
-        ? undefined
-        : formData.expirationDate
-          ? createDateOnly(formData.expirationDate)
-          : undefined,
+      expirationDate: (() => {
+        if (formData.neverExpires) {
+          return undefined;
+        }
+        if (formData.expirationDate) {
+          return createDateOnly(formData.expirationDate);
+        }
+        return undefined;
+      })(),
       location: formData.location,
       notes: formData.notes,
       productTemplateId: formData.productTemplateId

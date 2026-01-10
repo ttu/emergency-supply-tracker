@@ -175,11 +175,15 @@ export const ItemForm = ({
         | 'boxes',
       recommendedQuantity: formData.recommendedQuantity,
       neverExpires: formData.neverExpires,
-      expirationDate: formData.neverExpires
-        ? undefined
-        : formData.expirationDate
-          ? createDateOnly(formData.expirationDate)
-          : undefined,
+      expirationDate: (() => {
+        if (formData.neverExpires) {
+          return undefined;
+        }
+        if (formData.expirationDate) {
+          return createDateOnly(formData.expirationDate);
+        }
+        return undefined;
+      })(),
       location: formData.location.trim() || undefined,
       notes: formData.notes.trim() || undefined,
       weightGrams: formData.weightGrams
