@@ -658,4 +658,4 @@ The application implements comprehensive accessibility features following WCAG 2
 - [DATA_SCHEMA.md](./DATA_SCHEMA.md) - Data structure definitions
 - [FUNCTIONAL_SPEC.md](./FUNCTIONAL_SPEC.md) - Functional requirements
 - [DESIGN_DOCS_INDEX.md](./DESIGN_DOCS_INDEX.md) - Design documents
-- [REFACTORING_QUICK_START.md](./REFACTORING_QUICK_START.md) - Feature slice migration guide
+- [REFACTORING_QUICK_START.md](./plans/REFACTORING_QUICK_START.md) - Feature slice migration guide
