@@ -60,6 +60,7 @@ export interface CreateFromFormInput {
   recommendedQuantity: number;
   neverExpires: boolean;
   expirationDate?: DateOnly;
+  purchaseDate?: DateOnly;
   location?: string;
   notes?: string;
   productTemplateId?: string;
@@ -291,6 +292,10 @@ export class InventoryItemFactory {
         }
         return undefined;
       })(),
+      purchaseDate:
+        formData.purchaseDate && formData.purchaseDate.trim()
+          ? createDateOnly(formData.purchaseDate)
+          : undefined,
       location: formData.location,
       notes: formData.notes,
       productTemplateId: formData.productTemplateId

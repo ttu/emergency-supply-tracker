@@ -131,6 +131,7 @@ export interface InventoryItem {
   unit: Unit;
   recommendedQuantity: number;
   expirationDate?: DateOnly;
+  purchaseDate?: DateOnly;
   neverExpires?: boolean;
   location?: string;
   notes?: string;
