@@ -14,65 +14,85 @@ const COUNTER_FILE = path.join(
 const EXPECTED_PROJECT_COUNT = 2;
 
 /**
+ * Validates and parses FAKER_SEED environment variable.
+ * @throws TypeError if seed is invalid
+ */
+function validateAndParseSeed(envSeed: string): number {
+  const parsedSeed = Number.parseInt(envSeed, 10);
+  if (
+    !Number.isInteger(parsedSeed) ||
+    Number.isNaN(parsedSeed) ||
+    parsedSeed < 0 ||
+    parsedSeed > 999999
+  ) {
+    throw new TypeError(
+      `[Faker] Invalid FAKER_SEED="${envSeed}". Expected an integer in range 0-999999.`,
+    );
+  }
+  return parsedSeed;
+}
+
+/**
+ * Attempts to write seed file atomically. Returns true if file was created.
+ * Handles EEXIST errors gracefully (expected in parallel execution).
+ */
+function tryWriteSeedFile(seed: number): boolean {
+  try {
+    fs.writeFileSync(SEED_FILE, String(seed), { flag: 'wx' });
+    return true;
+  } catch (error) {
+    // File already exists (EEXIST), another project created it first
+    // This is expected in parallel test execution - ignore the error
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
+      // Re-throw unexpected errors
+      throw error;
+    }
+    return false;
+  }
+}
+
+/**
+ * Reads seed from existing seed file.
+ */
+function readSeedFromFile(): number {
+  return Number.parseInt(fs.readFileSync(SEED_FILE, 'utf-8'), 10);
+}
+
+/**
+ * Generates a new random seed.
+ */
+function generateRandomSeed(): number {
+  return Math.floor(Math.random() * 1000000);
+}
+
+/**
  * Vitest global setup - runs once before all tests
  * Used to generate a single faker seed for the entire test run
  *
  * Uses a temp file to coordinate seed across multiple Vitest projects/workers.
  */
 export default function globalSetup({ provide }: GlobalSetupContext) {
-  let seed: number;
-
   const envSeed = process.env.FAKER_SEED;
   const isCI = Boolean(process.env.CI);
-  let shouldLog = false;
   const hasExplicitSeed = Boolean(envSeed);
+
+  let seed: number;
+  let shouldLog = false;
 
   // Check for explicit env var first
   if (envSeed) {
-    const parsedSeed = Number.parseInt(envSeed, 10);
-    if (
-      !Number.isInteger(parsedSeed) ||
-      Number.isNaN(parsedSeed) ||
-      parsedSeed < 0 ||
-      parsedSeed > 999999
-    ) {
-      throw new Error(
-        `[Faker] Invalid FAKER_SEED="${envSeed}". Expected an integer in range 0-999999.`,
-      );
-    }
-    seed = parsedSeed;
-    // Log once when using explicit seed (first project to run)
-    // Use exclusive flag to avoid race condition with parallel projects
-    try {
-      fs.writeFileSync(SEED_FILE, String(seed), { flag: 'wx' });
-      shouldLog = true;
-    } catch (error) {
-      // File already exists (EEXIST), another project created it first
-      // This is expected in parallel test execution - ignore the error
-      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
-        // Re-throw unexpected errors
-        throw error;
-      }
-    }
+    seed = validateAndParseSeed(envSeed);
+    shouldLog = tryWriteSeedFile(seed);
   } else if (fs.existsSync(SEED_FILE)) {
     // Reuse seed from earlier project in this test run
-    seed = Number.parseInt(fs.readFileSync(SEED_FILE, 'utf-8'), 10);
+    seed = readSeedFromFile();
   } else {
     // Generate new seed and save for other projects
-    // Use exclusive flag to avoid race condition with parallel projects
-    seed = Math.floor(Math.random() * 1000000);
-    try {
-      fs.writeFileSync(SEED_FILE, String(seed), { flag: 'wx' });
-      shouldLog = true;
-    } catch (error) {
-      // File already exists (EEXIST) from another project, read their seed instead
-      // This is expected in parallel test execution
-      if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
-        seed = Number.parseInt(fs.readFileSync(SEED_FILE, 'utf-8'), 10);
-      } else {
-        // Re-throw unexpected errors
-        throw error;
-      }
+    seed = generateRandomSeed();
+    shouldLog = tryWriteSeedFile(seed);
+    // If file already exists, another project created it - read their seed
+    if (!shouldLog) {
+      seed = readSeedFromFile();
     }
   }
 
