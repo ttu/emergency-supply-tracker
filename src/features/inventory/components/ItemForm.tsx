@@ -186,10 +186,9 @@ export const ItemForm = ({
         }
         return undefined;
       })(),
-      purchaseDate:
-        formData.purchaseDate && formData.purchaseDate.trim()
-          ? createDateOnly(formData.purchaseDate)
-          : undefined,
+      purchaseDate: formData.purchaseDate?.trim()
+        ? createDateOnly(formData.purchaseDate)
+        : undefined,
       location: formData.location.trim() || undefined,
       notes: formData.notes.trim() || undefined,
       weightGrams: formData.weightGrams

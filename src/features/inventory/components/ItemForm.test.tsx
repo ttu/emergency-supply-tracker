@@ -205,8 +205,62 @@ describe('ItemForm', () => {
         recommendedQuantity: 20,
         neverExpires: false,
         expirationDate: '2025-12-31',
+        purchaseDate: undefined,
         location: 'Pantry',
         notes: 'Test notes',
+        weightGrams: undefined,
+        caloriesPerUnit: undefined,
+        capacityMah: undefined,
+        capacityWh: undefined,
+      });
+    });
+  });
+
+  it('should submit form data with purchaseDate', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        defaultRecommendedQuantity={20}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+    const expirationDateInput = document.querySelector(
+      '#expirationDate',
+    ) as HTMLInputElement;
+    const purchaseDateInput = document.querySelector(
+      '#purchaseDate',
+    ) as HTMLInputElement;
+
+    fireEvent.change(nameInput, { target: { value: 'Test Item' } });
+    fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
+    fireEvent.change(quantityInput, { target: { value: '10' } });
+    fireEvent.change(expirationDateInput, { target: { value: '2025-12-31' } });
+    fireEvent.change(purchaseDateInput, { target: { value: '2024-11-15' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith({
+        name: 'Test Item',
+        itemType: 'custom',
+        categoryId: 'water-beverages',
+        quantity: 10,
+        unit: 'pieces',
+        recommendedQuantity: 20,
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+        purchaseDate: '2024-11-15',
+        location: undefined,
+        notes: undefined,
         weightGrams: undefined,
         caloriesPerUnit: undefined,
         capacityMah: undefined,

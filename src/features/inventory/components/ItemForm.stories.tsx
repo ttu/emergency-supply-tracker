@@ -19,12 +19,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const futureDate = createDateOnly(
-  new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-);
-const pastDate = createDateOnly(
-  new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-);
+// Use fixed dates for deterministic story rendering
+const futureDate = createDateOnly('2026-12-31');
+const pastDate = createDateOnly('2024-12-01');
 
 const sampleItem = createMockInventoryItem({
   id: createItemId('1'),
@@ -64,6 +61,18 @@ export const ItemWithNeverExpires: Story = {
       ...sampleItem,
       neverExpires: true,
       expirationDate: undefined,
+    },
+    categories: STANDARD_CATEGORIES,
+    onSubmit: () => {},
+    onCancel: () => {},
+  },
+};
+
+export const ItemWithoutPurchaseDate: Story = {
+  args: {
+    item: {
+      ...sampleItem,
+      purchaseDate: undefined,
     },
     categories: STANDARD_CATEGORIES,
     onSubmit: () => {},
