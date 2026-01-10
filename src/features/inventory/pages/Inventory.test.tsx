@@ -234,18 +234,16 @@ describe('Inventory Page', () => {
     // Verify form is displayed with expected fields
     expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
 
-    // Form fields should be present (use id selectors since the form uses id attributes)
-    const nameInput = document.getElementById('name') as HTMLInputElement;
+    // Form fields should be present (use Testing Library queries)
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
     expect(nameInput).toBeInTheDocument();
 
-    const quantityInput = document.getElementById(
-      'quantity',
-    ) as HTMLInputElement;
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
     expect(quantityInput).toBeInTheDocument();
 
     // Verify we can interact with form fields
     fireEvent.change(nameInput, { target: { value: 'Test Item' } });
-    expect(nameInput.value).toBe('Test Item');
+    expect(nameInput).toHaveValue('Test Item');
 
     fireEvent.change(quantityInput, { target: { value: '5' } });
     expect(quantityInput.value).toBe('5');
@@ -510,11 +508,9 @@ describe('Inventory Page with items', () => {
     });
 
     // Change quantity
-    const quantityInput = document.getElementById(
-      'quantity',
-    ) as HTMLInputElement;
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
     fireEvent.change(quantityInput, { target: { value: '15' } });
-    expect(quantityInput.value).toBe('15');
+    expect(quantityInput).toHaveValue(15);
 
     // Submit form
     const saveButton = screen.getByText('common.save');
@@ -534,22 +530,18 @@ describe('Inventory Page with items', () => {
     fireEvent.click(customItemButton);
 
     // Fill all required form fields
-    const nameInput = document.getElementById('name') as HTMLInputElement;
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
     fireEvent.change(nameInput, { target: { value: 'New Custom Item' } });
-    expect(nameInput.value).toBe('New Custom Item');
+    expect(nameInput).toHaveValue('New Custom Item');
 
-    const quantityInput = document.getElementById(
-      'quantity',
-    ) as HTMLInputElement;
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
     fireEvent.change(quantityInput, { target: { value: '5' } });
-    expect(quantityInput.value).toBe('5');
+    expect(quantityInput).toHaveValue(5);
 
     // Select category
-    const categorySelect = document.getElementById(
-      'categoryId',
-    ) as HTMLSelectElement;
+    const categorySelect = screen.getByLabelText(/itemForm\.category/i);
     fireEvent.change(categorySelect, { target: { value: 'food' } });
-    expect(categorySelect.value).toBe('food');
+    expect(categorySelect).toHaveValue('food');
 
     // Check "never expires" checkbox
     const neverExpiresCheckbox = screen.getByRole('checkbox');

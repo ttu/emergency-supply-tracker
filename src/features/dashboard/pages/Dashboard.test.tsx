@@ -1,16 +1,12 @@
-import type { ReactElement, ReactNode } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
-import { SettingsProvider } from '@/features/settings';
-import { HouseholdProvider } from '@/features/household';
-import { RecommendedItemsProvider } from '@/features/templates';
-import { InventoryProvider } from '@/features/inventory';
 import {
+  renderWithProviders,
   createMockInventoryItem,
   createMockAppData,
   createMockHousehold,
-} from '@/shared/utils/test/factories';
+} from '@/test';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -81,20 +77,6 @@ vi.mock('@/features/alerts', () => ({
   generateDashboardAlerts: (...args: unknown[]) =>
     mockGenerateDashboardAlerts(...args),
 }));
-
-// Local provider wrapper - can't use @/test to avoid mock conflicts with vi.mock
-const TestProviders = ({ children }: { children: ReactNode }) => (
-  <SettingsProvider>
-    <HouseholdProvider>
-      <RecommendedItemsProvider>
-        <InventoryProvider>{children}</InventoryProvider>
-      </RecommendedItemsProvider>
-    </HouseholdProvider>
-  </SettingsProvider>
-);
-
-const renderWithProviders = (ui: ReactElement) =>
-  render(ui, { wrapper: TestProviders });
 
 describe('Dashboard', () => {
   beforeEach(() => {
@@ -237,7 +219,7 @@ describe('Dashboard', () => {
   });
 
   it('should update when inventory changes', () => {
-    const { rerender } = renderWithProviders(<Dashboard />);
+    const { unmount } = renderWithProviders(<Dashboard />);
 
     // Add an item to inventory
     const item = createMockInventoryItem({
@@ -253,12 +235,9 @@ describe('Dashboard', () => {
 
     localStorage.setItem('inventory', JSON.stringify([item]));
 
-    // Re-render to pick up changes
-    rerender(
-      <TestProviders>
-        <Dashboard />
-      </TestProviders>,
-    );
+    // Remount to pick up changes
+    unmount();
+    renderWithProviders(<Dashboard />);
 
     expect(screen.getByTestId('dashboard-header')).toBeInTheDocument();
   });
