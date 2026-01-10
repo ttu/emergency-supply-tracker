@@ -112,6 +112,7 @@ export const WithAlerts: Story = {
           recommendedQuantity: 28,
           neverExpires: false,
           expirationDate: createDateOnly('2024-01-01'),
+          purchaseDate: createDateOnly('2023-12-15'),
           location: 'Pantry',
         }),
         createMockInventoryItem({
@@ -123,6 +124,7 @@ export const WithAlerts: Story = {
           recommendedQuantity: 20,
           neverExpires: false,
           expirationDate: createDateOnly('2026-12-31'),
+          purchaseDate: createDateOnly('2024-11-01'),
           location: 'Pantry',
         }),
         createMockInventoryItem({
@@ -135,6 +137,11 @@ export const WithAlerts: Story = {
           neverExpires: false,
           expirationDate: createDateOnly(
             new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split('T')[0],
+          ),
+          purchaseDate: createDateOnly(
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
               .toISOString()
               .split('T')[0],
           ),
