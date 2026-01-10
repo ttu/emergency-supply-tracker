@@ -171,7 +171,9 @@ async function verifyCustomItemExists(page: Page) {
 
 async function testRecommendedItems(page: Page) {
   await ensureNoModals(page);
-  await page.click('button:has-text("Water")');
+  // Use data-testid for language-agnostic category selection
+  // Water category ID is 'water-beverages'
+  await page.click('button[data-testid="category-water-beverages"]');
   await expandRecommendedItems(page);
 
   const addButton = page.locator('button:has-text("+")').first();
