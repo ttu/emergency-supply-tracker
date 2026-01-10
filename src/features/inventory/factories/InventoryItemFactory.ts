@@ -201,7 +201,7 @@ export class InventoryItemFactory {
       ...input,
       id: createItemId(crypto.randomUUID()),
       name: input.name.trim(),
-      categoryId: input.categoryId,
+      categoryId: createCategoryId(input.categoryId),
       createdAt: now,
       updatedAt: now,
       // Ensure expirationDate is undefined if neverExpires is true
