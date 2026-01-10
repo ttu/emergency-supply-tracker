@@ -1,27 +1,24 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import {
+  renderWithProviders,
+  screen,
+  fireEvent,
+  waitFor,
+  userEvent,
+  createMockInventoryItem,
+  createMockAppData,
+  createMockHousehold,
+} from '@/test';
 import { Inventory } from './Inventory';
 import { calculateRecommendedQuantity } from '@/features/household';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from '@/features/dashboard';
-import { renderWithProviders } from '@/shared/utils/test/render';
-import {
-  createMockInventoryItem,
-  createMockAppData,
-  createMockHousehold,
-} from '@/shared/utils/test/factories';
 
 // Mock i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: {
-      language: 'en',
-      changeLanguage: vi.fn(),
-    },
-  }),
-}));
+vi.mock('react-i18next', async () => {
+  const { defaultI18nMock } = await import('@/test/i18n');
+  return defaultI18nMock;
+});
 
 describe('Inventory Page', () => {
   beforeEach(() => {

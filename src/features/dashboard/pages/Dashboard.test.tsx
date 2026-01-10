@@ -1,12 +1,11 @@
 import type { ReactElement } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
 import { SettingsProvider } from '@/features/settings';
 import { HouseholdProvider } from '@/features/household';
 import { RecommendedItemsProvider } from '@/features/templates';
 import { InventoryProvider } from '@/features/inventory';
-import { renderWithProviders } from '@/shared/utils/test/render';
 import {
   createMockInventoryItem,
   createMockAppData,
@@ -14,11 +13,10 @@ import {
 } from '@/shared/utils/test/factories';
 
 // Mock i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
+vi.mock('react-i18next', async () => {
+  const { defaultI18nMock } = await import('@/test/i18n');
+  return defaultI18nMock;
+});
 
 // Mock dashboard feature components
 vi.mock('@/features/dashboard', async () => {
@@ -83,6 +81,19 @@ vi.mock('@/features/alerts', () => ({
   generateDashboardAlerts: (...args: unknown[]) =>
     mockGenerateDashboardAlerts(...args),
 }));
+
+// Local renderWithProviders that doesn't import from @/test to avoid mock conflicts
+const renderWithProviders = (ui: ReactElement) => {
+  return render(
+    <SettingsProvider>
+      <HouseholdProvider>
+        <RecommendedItemsProvider>
+          <InventoryProvider>{ui}</InventoryProvider>
+        </RecommendedItemsProvider>
+      </HouseholdProvider>
+    </SettingsProvider>,
+  );
+};
 
 // Re-render helper for tests that need to rerender with providers
 const rerenderWithProviders = (ui: ReactElement) => (

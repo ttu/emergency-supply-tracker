@@ -1,14 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen } from '@testing-library/react';
+import { renderWithProviders, screen } from '@/test';
 import { Settings } from './Settings';
-import { renderWithProviders } from '@/shared/utils/test/render';
 
 // Mock i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
+vi.mock('react-i18next', async () => {
+  const { defaultI18nMock } = await import('@/test/i18n');
+  return defaultI18nMock;
+});
 
 describe('Settings Page', () => {
   it('should render settings page', () => {
