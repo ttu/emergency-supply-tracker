@@ -3,11 +3,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Help } from './Help';
 
 // Mock i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
+vi.mock('react-i18next', async () => {
+  const { defaultI18nMock } = await import('@/test/i18n');
+  return defaultI18nMock;
+});
 
 describe('Help', () => {
   it('should render page title', () => {

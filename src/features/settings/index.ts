@@ -32,3 +32,6 @@ export {
   UserSettingsValidationError,
 } from './factories/UserSettingsFactory';
 export type { CreateUserSettingsInput } from './factories/UserSettingsFactory';
+
+// Pages
+export { Settings } from './pages/Settings';

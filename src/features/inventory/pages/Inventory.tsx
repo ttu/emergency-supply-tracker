@@ -179,7 +179,7 @@ export function Inventory({
   };
 
   const handleDeleteItem = (itemId: string) => {
-    if (window.confirm(t('inventory.confirmDelete'))) {
+    if (globalThis.confirm(t('inventory.confirmDelete'))) {
       deleteItem(createItemId(itemId));
       setShowAddModal(false);
       setEditingItem(undefined);
@@ -358,7 +358,7 @@ export function Inventory({
         <Modal
           isOpen={showAddModal}
           onClose={handleCancelForm}
-          onBack={!editingItem?.id ? handleBackToTemplateSelector : undefined}
+          onBack={editingItem?.id ? undefined : handleBackToTemplateSelector}
           title={
             editingItem?.id ? t('inventory.editItem') : t('inventory.addItem')
           }

@@ -6,6 +6,10 @@ export type {
   DashboardHeaderProps,
 } from './components';
 
+// Pages
+export { Dashboard } from './pages/Dashboard';
+export type { DashboardProps } from './pages/Dashboard';
+
 // Utils
 export {
   calculateCategoryShortages,
