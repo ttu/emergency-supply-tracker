@@ -120,7 +120,11 @@ async function addCustomItem(page: Page) {
   await ensureNoModals(page);
   await page.click('button:has-text("Add Item")');
   await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-  await page.click('button:has-text("Custom Item")');
+  // Use getByRole with accessible name for robust, language-agnostic selection
+  // Button has ➕ prefix: "➕ Custom Item" (English) or "➕ Mukautettu" (Finnish)
+  await page
+    .getByRole('button', { name: /^➕ Custom Item$|^➕ Mukautettu$/ })
+    .click();
   await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
 
   await page.fill('input[name="name"]', 'Custom Test Item');
