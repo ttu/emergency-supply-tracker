@@ -1,3 +1,4 @@
+import { type Page } from '@playwright/test';
 import {
   test,
   expect,
@@ -21,6 +22,414 @@ const TIMEOUTS = {
   TEST_TIMEOUT: 120000, // 2 minutes
 } as const;
 
+// Helper functions to reduce cognitive complexity
+
+async function completeQuickSetupOnboarding(page: Page) {
+  await page.goto(getBaseURL());
+
+  // Unregister service workers and clear all app state
+  await page.evaluate(async () => {
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((r) => r.unregister()));
+    }
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  await page.goto('about:blank');
+  await page.goto(getBaseURL());
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(TIMEOUTS.PAGE_LOAD);
+
+  await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
+    timeout: TIMEOUTS.DEPLOYED_SITE,
+  });
+  await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
+
+  await expect(page.getByText(/Family|Perhe/i)).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+  await page.getByRole('button', { name: /Family|Perhe/i }).click();
+
+  await expect(page.locator('input[type="number"]').first()).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+  const adultsInput = page.locator('input[type="number"]').first();
+  const adultsValue = await adultsInput.inputValue();
+  expect(Number.parseInt(adultsValue, 10)).toBeGreaterThan(0);
+
+  await page.getByRole('button', { name: /Save|Tallenna/i }).click();
+
+  await expect(
+    page.getByRole('button', {
+      name: /Add Recommended Items|Lisää suositellut/i,
+    }),
+  ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+  await page
+    .getByRole('button', {
+      name: /Add Recommended Items|Lisää suositellut/i,
+    })
+    .click();
+
+  await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+}
+
+async function verifyRecommendedItemsAdded(page: Page) {
+  await page.click('text=Inventory');
+  await expect(page.locator('button:has-text("Add Item")')).toBeVisible();
+  await expect(page.locator('button:has-text("Water")')).toBeVisible();
+
+  const itemsAdded = await page.evaluate(() => {
+    const data = localStorage.getItem('emergencySupplyTracker');
+    if (!data) return false;
+    try {
+      const appData = JSON.parse(data);
+      return appData.items && appData.items.length > 0;
+    } catch {
+      return false;
+    }
+  });
+  expect(itemsAdded).toBe(true);
+}
+
+async function editItemInCategory(
+  page: Page,
+  categoryButton: string,
+  quantity: string,
+) {
+  await ensureNoModals(page);
+  await page.click(`button:has-text("${categoryButton}")`);
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+
+  const items = page.locator('[class*="itemCard"], [data-testid^="item-"]');
+  if ((await items.count()) > 0) {
+    await items.first().click();
+    await expect(
+      page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
+    ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    await page.fill('input[name="quantity"]', quantity);
+    await page.click('button[type="submit"]');
+    await page
+      .waitForSelector('[role="dialog"]', { state: 'hidden' })
+      .catch(() => {});
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+  }
+}
+
+async function editFoodItemAndDisableRecommendation(page: Page) {
+  await ensureNoModals(page);
+  await page.click('button:has-text("Food")');
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+
+  const foodItems = page.locator('[class*="itemCard"], [data-testid^="item-"]');
+  if ((await foodItems.count()) > 0) {
+    await foodItems.first().click();
+    await expect(
+      page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
+    ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    await page.fill('input[name="quantity"]', '2');
+    await page.click('button[type="submit"]');
+    await page
+      .waitForSelector('[role="dialog"]', { state: 'hidden' })
+      .catch(() => {});
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+
+    await expandRecommendedItems(page);
+    const disableButton = page.locator('button:has-text("×")').first();
+    if (await disableButton.isVisible().catch(() => false)) {
+      await disableButton.click();
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+    }
+  }
+}
+
+async function testCopyItem(page: Page) {
+  await ensureNoModals(page);
+  await page.click('button:has-text("Water")');
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+
+  const waterItems = page.locator(
+    '[class*="itemCard"], [data-testid^="item-"]',
+  );
+  if ((await waterItems.count()) > 0) {
+    await waterItems.first().click();
+    await expect(
+      page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
+    ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+
+    const copyButton = page.locator('button', {
+      hasText: /Copy|Duplicate|Kopioi/i,
+    });
+    if (await copyButton.isVisible().catch(() => false)) {
+      await copyButton.click();
+      await expect(
+        page.locator('h2', { hasText: /Add Item|Lisää/i }),
+      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+
+      await page.fill('input[name="quantity"]', '25');
+      const expiresCheckbox = page.locator('input[type="checkbox"]');
+      if (await expiresCheckbox.isChecked()) {
+        await expiresCheckbox.uncheck();
+      }
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 30);
+      const futureYyyy = futureDate.getFullYear();
+      const futureMm = String(futureDate.getMonth() + 1).padStart(2, '0');
+      const futureDd = String(futureDate.getDate()).padStart(2, '0');
+      const futureDateString = `${futureYyyy}-${futureMm}-${futureDd}`;
+      await page.fill('input[type="date"]', futureDateString);
+
+      await page.click('button[type="submit"]');
+      await page
+        .waitForSelector('[role="dialog"]', { state: 'hidden' })
+        .catch(() => {});
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+    } else {
+      await page.keyboard.press('Escape');
+    }
+  }
+}
+
+async function testDashboardAlertsQuickSetup(page: Page) {
+  await page.click('text=Dashboard');
+  await page.waitForLoadState('networkidle');
+  await expect(page.locator('h2:has-text("Alerts")')).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+
+  await ensureNoModals(page);
+  await page.click('text=Inventory');
+  await expect(page.locator('h1:has-text("Inventory")')).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+  await ensureNoModals(page);
+  await page.getByRole('button', { name: 'Add Item' }).click();
+  await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+  await page.getByRole('button', { name: 'Custom Item' }).click();
+  await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+
+  const pastDate = new Date();
+  pastDate.setDate(pastDate.getDate() - 5);
+  const yyyy = pastDate.getFullYear();
+  const mm = String(pastDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(pastDate.getDate()).padStart(2, '0');
+  const expiredDateString = `${yyyy}-${mm}-${dd}`;
+
+  await page.fill('input[name="name"]', 'Expired Alert Item');
+  await page.selectOption('select[name="category"]', 'food');
+  await page.fill('input[name="quantity"]', '2');
+  await page.selectOption('select[name="unit"]', 'pieces');
+  const neverExpiresCheckbox = page
+    .locator('label')
+    .filter({ hasText: /Never Expires|Ei vanhene/i })
+    .locator('input[type="checkbox"]');
+  await neverExpiresCheckbox.uncheck();
+  await page.fill('input[type="date"]', expiredDateString);
+  await page.click('button[type="submit"]');
+  await page
+    .waitForSelector('[role="dialog"]', { state: 'hidden' })
+    .catch(() => {});
+
+  await page.click('text=Dashboard');
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+
+  const dismissButton = page
+    .locator('.alert button, button:has-text("✕"), [aria-label*="dismiss" i]')
+    .first();
+  await expect(dismissButton).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+  await dismissButton.click();
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+
+  const alertText = page.locator('.alert').getByText(/expired|vanhentunut/i);
+  await expect(alertText).not.toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+}
+
+async function testSettingsFeaturesQuickSetup(page: Page) {
+  await page.click('text=Settings');
+  await page.waitForLoadState('networkidle');
+
+  const languageSelect = page.locator('select').first();
+  if (await languageSelect.isVisible().catch(() => false)) {
+    await languageSelect.selectOption('fi');
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+    const navText = await page.locator('nav').textContent();
+    expect(navText).toBeTruthy();
+  }
+
+  const themeSelect = page.locator('#theme-select');
+  if (await themeSelect.isVisible().catch(() => false)) {
+    await themeSelect.selectOption('dark');
+    const themeAttribute = await page.evaluate(
+      () => document.documentElement.dataset.theme,
+    );
+    expect(themeAttribute).toBe('dark');
+  }
+
+  const advancedCheckbox = page
+    .locator('label:has-text(/Calorie|Power|Water/i) input[type="checkbox"]')
+    .first();
+  if (await advancedCheckbox.isVisible().catch(() => false)) {
+    const initialState = await advancedCheckbox.isChecked();
+    await advancedCheckbox.click();
+    const newState = await advancedCheckbox.isChecked();
+    expect(newState).toBe(!initialState);
+  }
+}
+
+async function reEnableDisabledRecommendation(page: Page) {
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+
+  const disabledSection = page.locator('text=/Disabled Recommendations/i');
+  if (await disabledSection.isVisible().catch(() => false)) {
+    const enableButton = page
+      .locator('button', { hasText: /^Enable$|^Ota käyttöön$/i })
+      .first();
+
+    if (await enableButton.isVisible().catch(() => false)) {
+      await enableButton.click();
+      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+      await expect(enableButton).not.toBeVisible({
+        timeout: TIMEOUTS.ELEMENT_VISIBLE,
+      });
+    }
+  }
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+}
+
+async function changeHouseholdToSinglePerson(page: Page) {
+  const presetButton = page.locator('button', {
+    hasText: /Single Person|Yksin/i,
+  });
+  if (await presetButton.isVisible().catch(() => false)) {
+    await presetButton.click();
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+    const householdAdultsInput = page.locator('input[type="number"]').first();
+    const adultsValue = await householdAdultsInput.inputValue();
+    expect(Number.parseInt(adultsValue, 10)).toBe(1);
+  }
+}
+
+async function testDataManagementQuickSetup(page: Page) {
+  const exportButton = page.locator('button', {
+    hasText: /Export Data|Vie tiedot/i,
+  });
+  if (await exportButton.isVisible().catch(() => false)) {
+    await exportButton.click();
+    await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
+  }
+
+  const shoppingListButton = page.locator('button', {
+    hasText: /Export Shopping List|Vie ostoslista/i,
+  });
+  if (await shoppingListButton.isVisible().catch(() => false)) {
+    const isEnabled = await shoppingListButton.isEnabled();
+    if (isEnabled) {
+      await shoppingListButton.click();
+      await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
+    }
+  }
+
+  const exportRecsButton = page.locator('button', {
+    hasText: /Export Recommendations/i,
+  });
+  if (await exportRecsButton.isVisible().catch(() => false)) {
+    await exportRecsButton.click();
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+  }
+}
+
+async function testPersistenceQuickSetup(page: Page) {
+  await page.reload({
+    waitUntil: 'domcontentloaded',
+    timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+  });
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+  });
+
+  const dataPersisted = await page.evaluate(() => {
+    const data = localStorage.getItem('emergencySupplyTracker');
+    if (!data) return { persisted: false, items: [] };
+    try {
+      const appData = JSON.parse(data);
+      return {
+        persisted: true,
+        items: appData.items || [],
+        hasItems: appData.items && appData.items.length > 0,
+      };
+    } catch {
+      return { persisted: false, items: [] };
+    }
+  });
+
+  expect(dataPersisted.persisted).toBe(true);
+  expect(dataPersisted.items.length).toBeGreaterThan(0);
+  expect(dataPersisted.hasItems).toBe(true);
+
+  await page.goto(getBaseURL(), {
+    waitUntil: 'domcontentloaded',
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
+  });
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
+  });
+  await page.getByText(/Settings|Asetukset/i).click();
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: TIMEOUTS.PAGE_NAVIGATION,
+  });
+  await expect(
+    page.locator('h1').filter({ hasText: /Settings|Asetukset/i }),
+  ).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+  const themeSelectAfterReload = page.locator('#theme-select');
+  if (await themeSelectAfterReload.isVisible().catch(() => false)) {
+    const themeValue = await themeSelectAfterReload.inputValue();
+    expect(themeValue).toBe('dark');
+  }
+}
+
+async function verifyFinalDashboardQuickSetup(page: Page) {
+  await ensureNoModals(page);
+  await page.goto(getBaseURL(), {
+    waitUntil: 'domcontentloaded',
+    timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+  });
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
+  });
+
+  const dashboardLoaded = await page
+    .locator('h1:has-text("Dashboard")')
+    .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
+    .catch(() => false);
+
+  if (dashboardLoaded) {
+    const quickActions = await page
+      .locator('text=Quick Actions')
+      .isVisible()
+      .catch(() => false);
+    const categoriesOverview = await page
+      .locator('text=Categories Overview')
+      .isVisible()
+      .catch(() => false);
+    expect(quickActions || categoriesOverview).toBe(true);
+  }
+}
+
 /**
  * Comprehensive smoke test that verifies the QUICK SETUP workflow
  * from first-time onboarding (completing Quick Setup) through complete application usage.
@@ -42,521 +451,37 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
   }) => {
     test.setTimeout(TIMEOUTS.TEST_TIMEOUT);
 
-    // ============================================
     // PHASE 1: ONBOARDING WITH QUICK SETUP
-    // ============================================
-    // Navigate to page first
-    await page.goto(getBaseURL());
+    await completeQuickSetupOnboarding(page);
 
-    // Unregister service workers and clear all app state
-    await page.evaluate(async () => {
-      // Unregister all service workers
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map((r) => r.unregister()));
-      }
-      // Clear all storage
-      localStorage.clear();
-      sessionStorage.clear();
-    });
-
-    // Force a hard reload by navigating away and back
-    await page.goto('about:blank');
-    await page.goto(getBaseURL());
-
-    // Wait for page to fully load
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForTimeout(TIMEOUTS.PAGE_LOAD);
-
-    // Welcome screen - increase timeout for deployed sites
-    await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
-      timeout: TIMEOUTS.DEPLOYED_SITE,
-    });
-    await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
-
-    // Preset selection - choose "Family"
-    await expect(page.getByText(/Family|Perhe/i)).toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-    await page.getByRole('button', { name: /Family|Perhe/i }).click();
-
-    // Household configuration
-    await expect(page.locator('input[type="number"]').first()).toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-    const adultsInput = page.locator('input[type="number"]').first();
-    const adultsValue = await adultsInput.inputValue();
-    expect(Number.parseInt(adultsValue, 10)).toBeGreaterThan(0);
-
-    // Submit form
-    await page.getByRole('button', { name: /Save|Tallenna/i }).click();
-
-    // Quick Setup - Add all recommended items
-    await expect(
-      page.getByRole('button', {
-        name: /Add Recommended Items|Lisää suositellut/i,
-      }),
-    ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
-    await page
-      .getByRole('button', {
-        name: /Add Recommended Items|Lisää suositellut/i,
-      })
-      .click();
-
-    // Should navigate to Dashboard
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-
-    // ============================================
     // PHASE 2: VERIFY RECOMMENDED ITEMS ADDED
-    // ============================================
-    // Navigate to Inventory to verify items were added
-    await page.click('text=Inventory');
-    await expect(page.locator('button:has-text("Add Item")')).toBeVisible();
+    await verifyRecommendedItemsAdded(page);
 
-    // Items were added (with quantity 0), verify categories are visible
-    await expect(page.locator('button:has-text("Water")')).toBeVisible();
-
-    // Verify in localStorage that items were added
-    const itemsAdded = await page.evaluate(() => {
-      const data = localStorage.getItem('emergencySupplyTracker');
-      if (!data) return false;
-      try {
-        const appData = JSON.parse(data);
-        return appData.items && appData.items.length > 0;
-      } catch {
-        return false;
-      }
-    });
-    expect(itemsAdded).toBe(true);
-
-    // ============================================
     // PHASE 3: EDIT MULTIPLE RECOMMENDED ITEMS
-    // ============================================
-    // After Quick Setup, items are added with quantity 0
-    // Edit multiple items to add different quantities
+    await editItemInCategory(page, 'Water', '50');
+    await editFoodItemAndDisableRecommendation(page);
+    await editItemInCategory(page, 'Medical', '10');
 
-    // Edit Item 1 - Add sufficient quantity (Water category)
-    await ensureNoModals(page);
-    await page.click('button:has-text("Water")');
-    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-
-    const waterItems = page.locator(
-      '[class*="itemCard"], [data-testid^="item-"]',
-    );
-    if ((await waterItems.count()) > 0) {
-      await waterItems.first().click();
-      await expect(
-        page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
-      await page.fill('input[name="quantity"]', '50');
-      await page.click('button[type="submit"]');
-      await page
-        .waitForSelector('[role="dialog"]', { state: 'hidden' })
-        .catch(() => {});
-      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-    }
-
-    // Edit Item 2 - Add LESS than recommended (Food category)
-    // This will test the "insufficient quantity" scenario
-    await ensureNoModals(page);
-    await page.click('button:has-text("Food")');
-    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-
-    const foodItems = page.locator(
-      '[class*="itemCard"], [data-testid^="item-"]',
-    );
-    if ((await foodItems.count()) > 0) {
-      // Click first food item
-      await foodItems.first().click();
-      await expect(
-        page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
-
-      // Add LESS than recommended (e.g., 2 pieces for a Family)
-      // This should trigger a recommendation
-      await page.fill('input[name="quantity"]', '2');
-      await page.click('button[type="submit"]');
-      await page
-        .waitForSelector('[role="dialog"]', { state: 'hidden' })
-        .catch(() => {});
-      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-
-      // Now DISABLE this recommendation (insufficient quantity)
-      // Expand recommended items to see the insufficient item
-      await expandRecommendedItems(page);
-
-      // Find the disable button (×) for the first recommended item
-      const disableButton = page.locator('button:has-text("×")').first();
-      if (await disableButton.isVisible().catch(() => false)) {
-        await disableButton.click();
-        await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-      }
-    }
-
-    // Edit Item 3 - Add sufficient quantity (Medical category)
-    await ensureNoModals(page);
-    await page.click('button:has-text("Medical")');
-    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-
-    const medicalItems = page.locator(
-      '[class*="itemCard"], [data-testid^="item-"]',
-    );
-    if ((await medicalItems.count()) > 0) {
-      await medicalItems.first().click();
-      await expect(
-        page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
-      await page.fill('input[name="quantity"]', '10');
-      await page.click('button[type="submit"]');
-      await page
-        .waitForSelector('[role="dialog"]', { state: 'hidden' })
-        .catch(() => {});
-      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-    }
-
-    // ============================================
     // PHASE 3B: TEST COPY/DUPLICATE ITEM
-    // ============================================
-    // Test copying an item (e.g., water with different expiration)
-    await ensureNoModals(page);
-    await page.click('button:has-text("Water")');
-    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+    await testCopyItem(page);
 
-    const waterItemsForCopy = page.locator(
-      '[class*="itemCard"], [data-testid^="item-"]',
-    );
-    if ((await waterItemsForCopy.count()) > 0) {
-      // Click the first water item to open edit form
-      await waterItemsForCopy.first().click();
-      await expect(
-        page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
-
-      // Look for Copy/Duplicate button
-      const copyButton = page.locator('button', {
-        hasText: /Copy|Duplicate|Kopioi/i,
-      });
-      if (await copyButton.isVisible().catch(() => false)) {
-        await copyButton.click();
-
-        // Should open add form with pre-filled data
-        await expect(
-          page.locator('h2', { hasText: /Add Item|Lisää/i }),
-        ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
-
-        // Modify the copied item (change quantity)
-        await page.fill('input[name="quantity"]', '25');
-
-        // Add expiration date to the copy
-        const expiresCheckbox = page.locator('input[type="checkbox"]');
-        if (await expiresCheckbox.isChecked()) {
-          await expiresCheckbox.uncheck();
-        }
-        const futureDate = new Date();
-        futureDate.setDate(futureDate.getDate() + 30);
-        const futureYyyy = futureDate.getFullYear();
-        const futureMm = String(futureDate.getMonth() + 1).padStart(2, '0');
-        const futureDd = String(futureDate.getDate()).padStart(2, '0');
-        const futureDateString = `${futureYyyy}-${futureMm}-${futureDd}`;
-        await page.fill('input[type="date"]', futureDateString);
-
-        await page.click('button[type="submit"]');
-        await page
-          .waitForSelector('[role="dialog"]', { state: 'hidden' })
-          .catch(() => {});
-        await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-      } else {
-        // If no copy button, just close the dialog
-        await page.keyboard.press('Escape');
-      }
-    }
-
-    // ============================================
     // PHASE 4: DASHBOARD ALERTS
-    // ============================================
-    // Navigate to Dashboard - should see alerts for insufficient quantities
-    // (Family needs more supplies, so items with qty 0 trigger alerts)
-    await page.click('text=Dashboard');
-    await page.waitForLoadState('networkidle');
+    await testDashboardAlertsQuickSetup(page);
 
-    // Verify alerts appear (low stock alerts due to insufficient quantities)
-    await expect(page.locator('h2:has-text("Alerts")')).toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-
-    // Low stock alerts may appear due to insufficient quantities for Family size
-    // We don't assert on these - the expired item below guarantees alerts
-
-    // Add an item with expired date to test alert dismissal
-    await ensureNoModals(page);
-    // Use client-side navigation for SPAs (GitHub Pages doesn't serve /inventory directly)
-    await page.click('text=Inventory');
-    await expect(page.locator('h1:has-text("Inventory")')).toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-    await ensureNoModals(page);
-    // Language is still English at this point (before Phase 5 settings)
-    await page.getByRole('button', { name: 'Add Item' }).click();
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.getByRole('button', { name: 'Custom Item' }).click();
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
-
-    const pastDate = new Date();
-    pastDate.setDate(pastDate.getDate() - 5);
-    const yyyy = pastDate.getFullYear();
-    const mm = String(pastDate.getMonth() + 1).padStart(2, '0');
-    const dd = String(pastDate.getDate()).padStart(2, '0');
-    const expiredDateString = `${yyyy}-${mm}-${dd}`;
-
-    await page.fill('input[name="name"]', 'Expired Alert Item');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '2');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    // Uncheck "Never Expires" checkbox using label-based selector
-    const neverExpiresCheckbox = page
-      .locator('label')
-      .filter({ hasText: /Never Expires|Ei vanhene/i })
-      .locator('input[type="checkbox"]');
-    await neverExpiresCheckbox.uncheck();
-    await page.fill('input[type="date"]', expiredDateString);
-    await page.click('button[type="submit"]');
-    await page
-      .waitForSelector('[role="dialog"]', { state: 'hidden' })
-      .catch(() => {});
-
-    // Navigate to Dashboard
-    await page.click('text=Dashboard');
-    await page.waitForLoadState('networkidle');
-
-    // Verify expired alert appears
-    await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-
-    // Dismiss alert
-    const dismissButton = page
-      .locator('.alert button, button:has-text("✕"), [aria-label*="dismiss" i]')
-      .first();
-    await expect(dismissButton).toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-    await dismissButton.click();
-    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-
-    // Verify alert is hidden
-    const alertText = page.locator('.alert').getByText(/expired|vanhentunut/i);
-    await expect(alertText).not.toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-
-    // ============================================
     // PHASE 5: SETTINGS - ALL FEATURES
-    // ============================================
-    await page.click('text=Settings');
-    await page.waitForLoadState('networkidle');
+    await testSettingsFeaturesQuickSetup(page);
 
-    // Change language
-    const languageSelect = page.locator('select').first();
-    if (await languageSelect.isVisible().catch(() => false)) {
-      await languageSelect.selectOption('fi');
-      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-      // Verify language changed (check for Finnish text)
-      const navText = await page.locator('nav').textContent();
-      expect(navText).toBeTruthy();
-    }
-
-    // Change theme
-    const themeSelect = page.locator('#theme-select');
-    if (await themeSelect.isVisible().catch(() => false)) {
-      await themeSelect.selectOption('dark');
-      const themeAttribute = await page.evaluate(
-        () => document.documentElement.dataset.theme,
-      );
-      expect(themeAttribute).toBe('dark');
-    }
-
-    // Toggle advanced features - find checkbox via its label
-    const advancedCheckbox = page
-      .locator('label:has-text(/Calorie|Power|Water/i) input[type="checkbox"]')
-      .first();
-    if (await advancedCheckbox.isVisible().catch(() => false)) {
-      const initialState = await advancedCheckbox.isChecked();
-      await advancedCheckbox.click();
-      const newState = await advancedCheckbox.isChecked();
-      expect(newState).toBe(!initialState);
-    }
-
-    // ============================================
     // PHASE 5B: RE-ENABLE DISABLED RECOMMENDATION
-    // ============================================
-    // Scroll down to find disabled recommendations section
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+    await reEnableDisabledRecommendation(page);
+    await changeHouseholdToSinglePerson(page);
 
-    // Look for disabled recommendations section
-    const disabledSection = page.locator('text=/Disabled Recommendations/i');
-    if (await disabledSection.isVisible().catch(() => false)) {
-      // Should have at least one disabled item (from earlier)
-      const enableButton = page
-        .locator('button', { hasText: /^Enable$|^Ota käyttöön$/i })
-        .first();
-
-      if (await enableButton.isVisible().catch(() => false)) {
-        await enableButton.click();
-        await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-
-        // Verify the button is gone (item was re-enabled)
-        await expect(enableButton).not.toBeVisible({
-          timeout: TIMEOUTS.ELEMENT_VISIBLE,
-        });
-      }
-    }
-
-    // Scroll back to top
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-
-    // Change household from Family to Single Person
-    // This should reduce recommended quantities, making existing items sufficient
-    const presetButton = page.locator('button', {
-      hasText: /Single Person|Yksin/i,
-    });
-    if (await presetButton.isVisible().catch(() => false)) {
-      await presetButton.click();
-      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-
-      // Verify household changed (Single Person = 1 adult)
-      const householdAdultsInput = page.locator('input[type="number"]').first();
-      const adultsValue = await householdAdultsInput.inputValue();
-      expect(Number.parseInt(adultsValue, 10)).toBe(1);
-    }
-
-    // ============================================
     // PHASE 6: DATA MANAGEMENT
-    // ============================================
-    // Export data
-    const exportButton = page.locator('button', {
-      hasText: /Export Data|Vie tiedot/i,
-    });
-    if (await exportButton.isVisible().catch(() => false)) {
-      await exportButton.click();
-      await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
-    }
+    await testDataManagementQuickSetup(page);
 
-    // Export shopping list (if items need restocking)
-    const shoppingListButton = page.locator('button', {
-      hasText: /Export Shopping List|Vie ostoslista/i,
-    });
-    if (await shoppingListButton.isVisible().catch(() => false)) {
-      const isEnabled = await shoppingListButton.isEnabled();
-      if (isEnabled) {
-        await shoppingListButton.click();
-        await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
-      }
-    }
-
-    // Export recommendations
-    const exportRecsButton = page.locator('button', {
-      hasText: /Export Recommendations/i,
-    });
-    if (await exportRecsButton.isVisible().catch(() => false)) {
-      await exportRecsButton.click();
-      await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-    }
-
-    // ============================================
     // PHASE 7: NAVIGATION & PERSISTENCE
-    // ============================================
-    // Reload and verify persistence
-    await page.reload({
-      waitUntil: 'domcontentloaded',
-      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
-    });
-    await page.waitForLoadState('domcontentloaded', {
-      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
-    });
+    await testPersistenceQuickSetup(page);
 
-    // Verify data persisted - check localStorage
-    const dataPersisted = await page.evaluate(() => {
-      const data = localStorage.getItem('emergencySupplyTracker');
-      if (!data) return { persisted: false, items: [] };
-      try {
-        const appData = JSON.parse(data);
-        return {
-          persisted: true,
-          items: appData.items || [],
-          hasItems: appData.items && appData.items.length > 0,
-        };
-      } catch {
-        return { persisted: false, items: [] };
-      }
-    });
-
-    expect(dataPersisted.persisted).toBe(true);
-    expect(dataPersisted.items.length).toBeGreaterThan(0);
-    expect(dataPersisted.hasItems).toBe(true);
-
-    // Verify settings persisted - navigate to settings using client-side navigation
-    // (Direct /settings URL can 404 in SPA deployments like GitHub Pages)
-    await page.goto(getBaseURL(), {
-      waitUntil: 'domcontentloaded',
-      timeout: TIMEOUTS.PAGE_NAVIGATION,
-    });
-    await page.waitForLoadState('domcontentloaded', {
-      timeout: TIMEOUTS.PAGE_NAVIGATION,
-    });
-    // Use bilingual selector since language may be Finnish after Phase 5
-    await page.getByText(/Settings|Asetukset/i).click();
-    await page.waitForLoadState('domcontentloaded', {
-      timeout: TIMEOUTS.PAGE_NAVIGATION,
-    });
-    // Wait for settings page to be visible
-    await expect(
-      page.locator('h1').filter({ hasText: /Settings|Asetukset/i }),
-    ).toBeVisible({
-      timeout: TIMEOUTS.ELEMENT_VISIBLE,
-    });
-    const themeSelectAfterReload = page.locator('#theme-select');
-    if (await themeSelectAfterReload.isVisible().catch(() => false)) {
-      const themeValue = await themeSelectAfterReload.inputValue();
-      expect(themeValue).toBe('dark');
-    }
-
-    // ============================================
     // PHASE 8: FINAL VERIFICATION
-    // ============================================
-    // Return to dashboard using direct navigation
-    await ensureNoModals(page);
-    await page.goto(getBaseURL(), {
-      waitUntil: 'domcontentloaded',
-      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
-    });
-    await page.waitForLoadState('domcontentloaded', {
-      timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
-    });
-
-    // Final verification - dashboard should load
-    const dashboardLoaded = await page
-      .locator('h1:has-text("Dashboard")')
-      .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
-      .catch(() => false);
-
-    // If dashboard loaded, verify sections
-    if (dashboardLoaded) {
-      const quickActions = await page
-        .locator('text=Quick Actions')
-        .isVisible()
-        .catch(() => false);
-      const categoriesOverview = await page
-        .locator('text=Categories Overview')
-        .isVisible()
-        .catch(() => false);
-      // At least one section should be visible
-      expect(quickActions || categoriesOverview).toBe(true);
-    }
-
-    // Test complete - all major user actions verified with Quick Setup flow!
+    await verifyFinalDashboardQuickSetup(page);
   });
 });
