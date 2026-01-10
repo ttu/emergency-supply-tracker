@@ -203,7 +203,12 @@ export interface RecommendedItemDefinition {
 // Localized names object for imported items (keyed by language code)
 export type LocalizedNames = Record<string, string>; // e.g., { en: "Water", fi: "Vesi", sv: "Vatten" }
 
-// Imported Recommended Item (supports inline translations for custom items)
+/**
+ * Imported Recommended Item (supports inline translations for custom items)
+ *
+ * Represents a recommended item imported from a custom recommendations file.
+ * Some properties are category-specific and should only be used for certain item types.
+ */
 export interface ImportedRecommendedItem {
   id: ProductTemplateId;
   i18nKey?: string; // Use built-in translation key (e.g., "products.bottled-water")
@@ -215,11 +220,17 @@ export interface ImportedRecommendedItem {
   scaleWithDays: boolean;
   requiresFreezer?: boolean;
   defaultExpirationMonths?: number;
+  /** @categorySpecific Food category only - Weight in grams per unit (e.g., 150g per can) */
   weightGramsPerUnit?: number;
+  /** @categorySpecific Food category only - Calories per 100g of weight */
   caloriesPer100g?: number;
+  /** @categorySpecific Food category only - Calories per unit (calculated or direct value) */
   caloriesPerUnit?: number;
+  /** @categorySpecific Light-power category only - Capacity in milliamp-hours */
   capacityMah?: number;
+  /** @categorySpecific Light-power category only - Capacity in watt-hours */
   capacityWh?: number;
+  /** @categorySpecific Food category only - Liters of water required per unit for preparation (must be > 0 if set) */
   requiresWaterLiters?: number;
 }
 
