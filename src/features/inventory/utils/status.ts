@@ -1,4 +1,5 @@
-import type { ItemStatus, InventoryItem } from '@/shared/types';
+import type { ItemStatus, InventoryItem, DateOnly } from '@/shared/types';
+import { createDateOnly } from '@/shared/types';
 import {
   MS_PER_DAY,
   EXPIRING_SOON_DAYS_THRESHOLD,
@@ -10,30 +11,61 @@ import {
 } from '@/shared/utils/constants';
 
 /**
+ * Get today's date as a DateOnly in local timezone.
+ * This ensures consistent date comparisons without timezone issues.
+ */
+function getTodayDateOnly(): DateOnly {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return createDateOnly(`${year}-${month}-${day}`);
+}
+
+/**
+ * Parse a DateOnly and return it as a Date object at local midnight.
+ * This ensures consistent date comparisons without timezone issues.
+ */
+function parseDateOnly(dateOnly: DateOnly): Date {
+  // Parse YYYY-MM-DD as local date (not UTC)
+  const [year, month, day] = dateOnly.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+/**
  * Calculate days until expiration for an item
  * Returns undefined if item never expires or has no expiration date
+ *
+ * Uses date-only comparison to avoid timezone issues.
  */
 export function getDaysUntilExpiration(
-  expirationDate?: string,
+  expirationDate?: DateOnly,
   neverExpires?: boolean,
 ): number | undefined {
   if (neverExpires || !expirationDate) return undefined;
 
-  const today = new Date();
-  const expiration = new Date(expirationDate);
-  const diffTime = expiration.getTime() - today.getTime();
+  const today = getTodayDateOnly();
+  const expiration = parseDateOnly(expirationDate);
+  const todayDate = parseDateOnly(today);
+  const diffTime = expiration.getTime() - todayDate.getTime();
   return Math.ceil(diffTime / MS_PER_DAY);
 }
 
 /**
  * Check if an item is expired
+ *
+ * Uses date-only comparison to avoid timezone issues.
  */
 export function isItemExpired(
-  expirationDate?: string,
+  expirationDate?: DateOnly,
   neverExpires?: boolean,
 ): boolean {
   if (neverExpires || !expirationDate) return false;
-  return new Date(expirationDate) < new Date();
+
+  const today = getTodayDateOnly();
+  const expiration = parseDateOnly(expirationDate);
+  const todayDate = parseDateOnly(today);
+  return expiration < todayDate;
 }
 
 /**
@@ -42,7 +74,7 @@ export function isItemExpired(
 export function getItemStatus(
   currentQuantity: number,
   recommendedQuantity: number,
-  expirationDate?: string,
+  expirationDate?: DateOnly,
   neverExpires?: boolean,
   markedAsEnough?: boolean,
 ): ItemStatus {

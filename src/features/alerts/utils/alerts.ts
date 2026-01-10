@@ -2,13 +2,13 @@ import type { InventoryItem, HouseholdConfig } from '@/shared/types';
 import { createAlertId } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
-  MS_PER_DAY,
   EXPIRING_SOON_ALERT_DAYS,
   CRITICALLY_LOW_STOCK_PERCENTAGE,
   LOW_STOCK_PERCENTAGE,
   CUSTOM_ITEM_TYPE,
 } from '@/shared/utils/constants';
 import { calculateWaterRequirements } from '@/shared/utils/calculations/water';
+import { getDaysUntilExpiration } from '@/features/inventory/utils/status';
 import type { Alert, AlertCounts, TranslationFunction } from '../types';
 import { ALERT_PRIORITY } from '../types';
 
@@ -43,23 +43,28 @@ function getTranslatedItemName(
 
 /**
  * Generate alerts for expired items
+ *
+ * Uses date-only comparison to avoid timezone issues.
  */
 function generateExpirationAlerts(
   items: InventoryItem[],
   t: TranslationFunction,
 ): Alert[] {
   const alerts: Alert[] = [];
-  const now = new Date();
 
   items.forEach((item) => {
     if (item.neverExpires || !item.expirationDate) {
       return;
     }
 
-    const expirationDate = new Date(item.expirationDate);
-    const daysUntilExpiration = Math.ceil(
-      (expirationDate.getTime() - now.getTime()) / MS_PER_DAY,
+    const daysUntilExpiration = getDaysUntilExpiration(
+      item.expirationDate,
+      item.neverExpires,
     );
+
+    if (daysUntilExpiration === undefined) {
+      return;
+    }
 
     if (daysUntilExpiration < 0) {
       alerts.push({

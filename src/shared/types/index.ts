@@ -1,13 +1,27 @@
 // Branded types - import first so they can be used in interfaces below
-import type { ItemId, CategoryId, ProductTemplateId, AlertId } from './branded';
-export type { ItemId, CategoryId, ProductTemplateId, AlertId } from './branded';
+import type {
+  ItemId,
+  CategoryId,
+  ProductTemplateId,
+  AlertId,
+  DateOnly,
+} from './branded';
+export type {
+  ItemId,
+  CategoryId,
+  ProductTemplateId,
+  AlertId,
+  DateOnly,
+} from './branded';
 export {
   createItemId,
   createCategoryId,
   createProductTemplateId,
   createAlertId,
+  createDateOnly,
   isItemId,
   isCategoryId,
+  isDateOnly,
 } from './branded';
 
 // Core types
@@ -116,7 +130,7 @@ export interface InventoryItem {
   quantity: number;
   unit: Unit;
   recommendedQuantity: number;
-  expirationDate?: string;
+  expirationDate?: DateOnly;
   neverExpires?: boolean;
   location?: string;
   notes?: string;
@@ -218,6 +232,6 @@ export interface AppData {
   disabledRecommendedItems: ProductTemplateId[]; // Product template IDs that have been disabled by the user
   customRecommendedItems?: RecommendedItemsFile | null; // Custom imported recommendations (null = use built-in)
   lastModified: string;
-  lastBackupDate?: string; // ISO date of last export
-  backupReminderDismissedUntil?: string; // ISO date (first of next month) - reminder hidden until this date
+  lastBackupDate?: DateOnly; // ISO date of last export
+  backupReminderDismissedUntil?: DateOnly; // ISO date (first of next month) - reminder hidden until this date
 }

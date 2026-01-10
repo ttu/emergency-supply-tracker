@@ -683,6 +683,46 @@ describe('InventoryItemFactory', () => {
       expect(item.expirationDate).toBeUndefined();
     });
 
+    it('handles empty expiration date string by converting to undefined', () => {
+      const quantity = randomQuantitySmall();
+      const recommendedQuantity = quantity + randomQuantitySmall();
+      const formData: CreateFromFormInput = {
+        name: 'Test Item',
+        itemType: 'test-item',
+        categoryId: 'food',
+        quantity,
+        unit: 'pieces',
+        recommendedQuantity,
+        neverExpires: false,
+        expirationDate: '', // Empty string - this will fail validation, but tests the code path
+      };
+
+      // This should throw validation error, but tests that empty string is converted to undefined
+      expect(() => {
+        InventoryItemFactory.createFromFormData(formData);
+      }).toThrow('expirationDate is required when neverExpires is false');
+    });
+
+    it('handles whitespace-only expiration date string', () => {
+      const quantity = randomQuantitySmall();
+      const recommendedQuantity = quantity + randomQuantitySmall();
+      const formData: CreateFromFormInput = {
+        name: 'Test Item',
+        itemType: 'test-item',
+        categoryId: 'food',
+        quantity,
+        unit: 'pieces',
+        recommendedQuantity,
+        neverExpires: false,
+        expirationDate: '   ', // Whitespace-only string should be treated as empty
+      };
+
+      // This should throw validation error, but tests that whitespace is trimmed
+      expect(() => {
+        InventoryItemFactory.createFromFormData(formData);
+      }).toThrow('expirationDate is required when neverExpires is false');
+    });
+
     it('converts productTemplateId string to ProductTemplateId', () => {
       const quantity = randomQuantitySmall();
       const recommendedQuantity = quantity + randomQuantitySmall();

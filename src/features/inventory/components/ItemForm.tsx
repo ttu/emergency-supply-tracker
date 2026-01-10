@@ -5,7 +5,11 @@ import type {
   Category,
   ProductTemplateId,
 } from '@/shared/types';
-import { createCategoryId, createProductTemplateId } from '@/shared/types';
+import {
+  createCategoryId,
+  createProductTemplateId,
+  createDateOnly,
+} from '@/shared/types';
 import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
 import { Button } from '@/shared/components/Button';
@@ -171,9 +175,15 @@ export const ItemForm = ({
         | 'boxes',
       recommendedQuantity: formData.recommendedQuantity,
       neverExpires: formData.neverExpires,
-      expirationDate: formData.neverExpires
-        ? undefined
-        : formData.expirationDate,
+      expirationDate: (() => {
+        if (formData.neverExpires) {
+          return undefined;
+        }
+        if (formData.expirationDate && formData.expirationDate.trim()) {
+          return createDateOnly(formData.expirationDate);
+        }
+        return undefined;
+      })(),
       location: formData.location.trim() || undefined,
       notes: formData.notes.trim() || undefined,
       weightGrams: formData.weightGrams

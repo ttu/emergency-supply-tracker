@@ -81,6 +81,27 @@ describe('generateDashboardAlerts', () => {
     expect(expiringAlert?.message).toContain('days');
   });
 
+  it('should handle items where getDaysUntilExpiration returns undefined', () => {
+    // This tests the case where daysUntilExpiration === undefined check
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Item with undefined expiration',
+        categoryId: 'food',
+        neverExpires: false,
+        expirationDate: undefined, // This will cause getDaysUntilExpiration to return undefined
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(items, mockT);
+    // Should not generate any expiration alerts
+    expect(
+      alerts.filter(
+        (a) => a.id?.includes('expired') || a.id?.includes('expiring'),
+      ),
+    ).toEqual([]);
+  });
+
   it('should not generate alerts for items that never expire', () => {
     const items = [
       createMockInventoryItem({

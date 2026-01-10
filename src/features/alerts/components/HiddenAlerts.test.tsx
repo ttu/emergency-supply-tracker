@@ -11,6 +11,7 @@ import {
   createMockInventoryItem,
   createMockHousehold,
 } from '@/shared/utils/test/factories';
+import { createDateOnly } from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -339,7 +340,9 @@ describe('HiddenAlerts', () => {
       quantity: 5,
       recommendedQuantity: 5,
       neverExpires: false,
-      expirationDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Yesterday
+      expirationDate: createDateOnly(
+        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      ), // Yesterday
     });
 
     renderWithContext(<HiddenAlerts />, {
