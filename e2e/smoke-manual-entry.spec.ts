@@ -283,7 +283,12 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '2');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.uncheck('input[type="checkbox"]');
+    // Uncheck "Never Expires" checkbox using label-based selector
+    const neverExpiresCheckbox = page
+      .locator('label')
+      .filter({ hasText: /Never Expires|Ei vanhene/i })
+      .locator('input[type="checkbox"]');
+    await neverExpiresCheckbox.uncheck();
     await page.fill('input[type="date"]', expiredDateString);
     await page.click('button[type="submit"]');
     await page
