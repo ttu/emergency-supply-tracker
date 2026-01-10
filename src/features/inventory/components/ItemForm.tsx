@@ -40,6 +40,7 @@ interface FormData {
   recommendedQuantity: number;
   neverExpires: boolean;
   expirationDate: string;
+  purchaseDate: string;
   location: string;
   notes: string;
   weightGrams: string;
@@ -108,6 +109,7 @@ export const ItemForm = ({
       item?.recommendedQuantity ?? defaultRecommendedQuantity,
     neverExpires: item?.neverExpires ?? false,
     expirationDate: item?.expirationDate || '',
+    purchaseDate: item?.purchaseDate || '',
     location: item?.location || '',
     notes: item?.notes || '',
     weightGrams: getDefaultWeight(),
@@ -184,6 +186,10 @@ export const ItemForm = ({
         }
         return undefined;
       })(),
+      purchaseDate:
+        formData.purchaseDate && formData.purchaseDate.trim()
+          ? createDateOnly(formData.purchaseDate)
+          : undefined,
       location: formData.location.trim() || undefined,
       notes: formData.notes.trim() || undefined,
       weightGrams: formData.weightGrams
@@ -418,6 +424,16 @@ export const ItemForm = ({
           />
         </div>
       )}
+
+      <div className={styles.formGroup}>
+        <Input
+          id="purchaseDate"
+          label={t('itemForm.purchaseDate')}
+          type="date"
+          value={formData.purchaseDate}
+          onChange={(e) => handleChange('purchaseDate', e.target.value)}
+        />
+      </div>
 
       <div className={styles.formGroup}>
         <Input

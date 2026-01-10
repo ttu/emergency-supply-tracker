@@ -22,6 +22,9 @@ type Story = StoryObj<typeof meta>;
 const futureDate = createDateOnly(
   new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
 );
+const pastDate = createDateOnly(
+  new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+);
 
 const sampleItem = createMockInventoryItem({
   id: createItemId('1'),
@@ -32,6 +35,7 @@ const sampleItem = createMockInventoryItem({
   recommendedQuantity: 28,
   neverExpires: false,
   expirationDate: futureDate,
+  purchaseDate: pastDate,
   location: 'Pantry',
   notes: 'Check expiration dates regularly',
 });
