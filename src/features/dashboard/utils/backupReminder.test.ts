@@ -16,6 +16,7 @@ import {
   createMockAppData,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
+import { createDateOnly } from '@/shared/types';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 
 vi.mock('@/shared/utils/storage/localStorage');
@@ -50,7 +51,7 @@ describe('shouldShowBackupReminder', () => {
   it('should return false when changes were made less than 30 days ago', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-02-01T12:00:00.000Z', // 14 days ago
+      lastBackupDate: createDateOnly('2025-02-01'), // 14 days ago
       lastModified: '2025-02-10T12:00:00.000Z', // Modified 5 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
@@ -59,7 +60,7 @@ describe('shouldShowBackupReminder', () => {
   it('should return true when changes were made more than 30 days ago', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastBackupDate: createDateOnly('2025-01-01'), // 45 days ago
       lastModified: '2025-01-10T12:00:00.000Z', // Modified 36 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(true);
@@ -68,7 +69,7 @@ describe('shouldShowBackupReminder', () => {
   it('should return false when backup was more than 30 days ago but data was not modified', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastBackupDate: createDateOnly('2025-01-01'), // 45 days ago
       lastModified: '2024-12-20T12:00:00.000Z', // Modified before backup
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
@@ -77,7 +78,7 @@ describe('shouldShowBackupReminder', () => {
   it('should return false when changes were made but less than 30 days ago', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastBackupDate: createDateOnly('2025-01-01'), // 45 days ago
       lastModified: '2025-02-10T12:00:00.000Z', // Modified 5 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
@@ -86,9 +87,9 @@ describe('shouldShowBackupReminder', () => {
   it('should return false when reminder was dismissed for current month', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastBackupDate: createDateOnly('2025-01-01'), // 45 days ago
       lastModified: '2025-01-10T12:00:00.000Z', // Modified 36 days ago (after backup)
-      backupReminderDismissedUntil: '2025-03-01T00:00:00.000Z', // Dismissed until next month
+      backupReminderDismissedUntil: createDateOnly('2025-03-01'), // Dismissed until next month
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
   });
@@ -96,9 +97,9 @@ describe('shouldShowBackupReminder', () => {
   it('should return true when dismissed date has passed', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastBackupDate: createDateOnly('2025-01-01'), // 45 days ago
       lastModified: '2025-01-10T12:00:00.000Z', // Modified 36 days ago (after backup)
-      backupReminderDismissedUntil: '2025-02-01T00:00:00.000Z', // Dismissed until Feb 1, now is Feb 15
+      backupReminderDismissedUntil: createDateOnly('2025-02-01'), // Dismissed until Feb 1, now is Feb 15
     });
     expect(shouldShowBackupReminder(appData)).toBe(true);
   });
@@ -106,7 +107,7 @@ describe('shouldShowBackupReminder', () => {
   it('should return true at exactly 30 days since last modification', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastBackupDate: createDateOnly('2025-01-01'), // 45 days ago
       lastModified: '2025-01-16T12:00:00.000Z', // Modified exactly 30 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(true);
@@ -115,18 +116,18 @@ describe('shouldShowBackupReminder', () => {
   it('should return false at 29 days since last modification', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-01T12:00:00.000Z', // 45 days ago
+      lastBackupDate: createDateOnly('2025-01-01'), // 45 days ago
       lastModified: '2025-01-17T12:00:00.000Z', // Modified 29 days ago (after backup)
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
   });
 
   it('should return false when lastModified equals lastBackupDate', () => {
-    const backupDate = '2025-01-01T12:00:00.000Z';
+    const backupDate = createDateOnly('2025-01-01');
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
       lastBackupDate: backupDate,
-      lastModified: backupDate, // Same as backup
+      lastModified: '2025-01-01T12:00:00.000Z', // Same day as backup
     });
     expect(shouldShowBackupReminder(appData)).toBe(false);
   });
@@ -172,10 +173,7 @@ describe('dismissBackupReminder', () => {
     const savedData = mockSaveAppData.mock.calls[0][0];
     // Verify the date is the first day of next month (March 2025)
     expect(savedData.backupReminderDismissedUntil).toBeDefined();
-    const dismissedDate = new Date(savedData.backupReminderDismissedUntil!);
-    expect(dismissedDate.getFullYear()).toBe(2025);
-    expect(dismissedDate.getMonth()).toBe(2); // March (0-indexed)
-    expect(dismissedDate.getDate()).toBe(1);
+    expect(savedData.backupReminderDismissedUntil).toBe('2025-03-01');
   });
 
   it('should not call saveAppData when appData is null', () => {
@@ -197,16 +195,13 @@ describe('dismissBackupReminder', () => {
     const savedData = mockSaveAppData.mock.calls[0][0];
     // Verify the date is the first day of January 2026
     expect(savedData.backupReminderDismissedUntil).toBeDefined();
-    const dismissedDate = new Date(savedData.backupReminderDismissedUntil!);
-    expect(dismissedDate.getFullYear()).toBe(2026);
-    expect(dismissedDate.getMonth()).toBe(0); // January (0-indexed)
-    expect(dismissedDate.getDate()).toBe(1);
+    expect(savedData.backupReminderDismissedUntil).toBe('2026-01-01');
   });
 
   it('should preserve existing appData fields', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      lastBackupDate: '2025-01-01T00:00:00.000Z',
+      lastBackupDate: createDateOnly('2025-01-01'),
     });
     mockGetAppData.mockReturnValue(appData);
 
@@ -214,7 +209,7 @@ describe('dismissBackupReminder', () => {
 
     const savedData = mockSaveAppData.mock.calls[0][0];
     expect(savedData.items).toEqual(appData.items);
-    expect(savedData.lastBackupDate).toBe('2025-01-01T00:00:00.000Z');
+    expect(savedData.lastBackupDate).toBe('2025-01-01');
   });
 });
 
@@ -244,7 +239,7 @@ describe('recordBackupDate', () => {
 
     expect(mockSaveAppData).toHaveBeenCalledTimes(1);
     const savedData = mockSaveAppData.mock.calls[0][0];
-    expect(savedData.lastBackupDate).toBe('2025-02-15T12:00:00.000Z');
+    expect(savedData.lastBackupDate).toBe('2025-02-15');
   });
 
   it('should not call saveAppData when appData is null', () => {
@@ -257,20 +252,20 @@ describe('recordBackupDate', () => {
 
   it('should overwrite existing lastBackupDate', () => {
     const appData = createMockAppData({
-      lastBackupDate: '2025-01-01T00:00:00.000Z',
+      lastBackupDate: createDateOnly('2025-01-01'),
     });
     mockGetAppData.mockReturnValue(appData);
 
     recordBackupDate();
 
     const savedData = mockSaveAppData.mock.calls[0][0];
-    expect(savedData.lastBackupDate).toBe('2025-02-15T12:00:00.000Z');
+    expect(savedData.lastBackupDate).toBe('2025-02-15');
   });
 
   it('should preserve existing appData fields', () => {
     const appData = createMockAppData({
       items: [createMockInventoryItem()],
-      backupReminderDismissedUntil: '2025-03-01T00:00:00.000Z',
+      backupReminderDismissedUntil: createDateOnly('2025-03-01'),
     });
     mockGetAppData.mockReturnValue(appData);
 
@@ -278,8 +273,6 @@ describe('recordBackupDate', () => {
 
     const savedData = mockSaveAppData.mock.calls[0][0];
     expect(savedData.items).toEqual(appData.items);
-    expect(savedData.backupReminderDismissedUntil).toBe(
-      '2025-03-01T00:00:00.000Z',
-    );
+    expect(savedData.backupReminderDismissedUntil).toBe('2025-03-01');
   });
 });

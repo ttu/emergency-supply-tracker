@@ -15,6 +15,7 @@ import {
   createCategoryId,
   createProductTemplateId,
   createAlertId,
+  createDateOnly,
 } from '@/shared/types';
 import type { Alert } from '@/features/alerts/types';
 import { faker } from '@faker-js/faker';
@@ -97,7 +98,7 @@ export function createMockInventoryItem(
       fractionDigits: 2,
     }),
     expirationDate: faker.helpers.maybe(
-      () => faker.date.future().toISOString().split('T')[0],
+      () => createDateOnly(faker.date.future().toISOString().split('T')[0]),
       { probability: 0.5 },
     ),
     notes:

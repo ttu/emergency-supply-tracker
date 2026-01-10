@@ -5,7 +5,7 @@ import { InventoryProvider } from '@/features/inventory';
 import { SettingsProvider } from '@/features/settings';
 import { RecommendedItemsProvider } from '@/features/templates';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
-import { createItemId, createCategoryId } from '@/shared/types';
+import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
 
 const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',
@@ -54,7 +54,7 @@ export const WithItems: Story = {
           unit: 'liters',
           recommendedQuantity: 28,
           neverExpires: false,
-          expirationDate: '2026-12-31',
+          expirationDate: createDateOnly('2026-12-31'),
           location: 'Pantry',
         }),
         createMockInventoryItem({
@@ -65,7 +65,7 @@ export const WithItems: Story = {
           unit: 'cans',
           recommendedQuantity: 20,
           neverExpires: false,
-          expirationDate: '2026-06-30',
+          expirationDate: createDateOnly('2026-06-30'),
           location: 'Pantry',
         }),
         createMockInventoryItem({
@@ -111,7 +111,7 @@ export const WithAlerts: Story = {
           unit: 'liters',
           recommendedQuantity: 28,
           neverExpires: false,
-          expirationDate: '2024-01-01',
+          expirationDate: createDateOnly('2024-01-01'),
           location: 'Pantry',
         }),
         createMockInventoryItem({
@@ -122,7 +122,7 @@ export const WithAlerts: Story = {
           unit: 'cans',
           recommendedQuantity: 20,
           neverExpires: false,
-          expirationDate: '2026-12-31',
+          expirationDate: createDateOnly('2026-12-31'),
           location: 'Pantry',
         }),
         createMockInventoryItem({
@@ -133,9 +133,11 @@ export const WithAlerts: Story = {
           unit: 'pieces',
           recommendedQuantity: 10,
           neverExpires: false,
-          expirationDate: new Date(
-            Date.now() + 5 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
+          expirationDate: createDateOnly(
+            new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split('T')[0],
+          ),
           location: 'Medicine Cabinet',
         }),
       ];
@@ -171,7 +173,7 @@ export const WellPrepared: Story = {
           unit: 'liters',
           recommendedQuantity: 28,
           neverExpires: false,
-          expirationDate: '2026-12-31',
+          expirationDate: createDateOnly('2026-12-31'),
           location: 'Pantry',
         }),
         createMockInventoryItem({
@@ -182,7 +184,7 @@ export const WellPrepared: Story = {
           unit: 'cans',
           recommendedQuantity: 20,
           neverExpires: false,
-          expirationDate: '2026-12-31',
+          expirationDate: createDateOnly('2026-12-31'),
           location: 'Pantry',
         }),
         createMockInventoryItem({

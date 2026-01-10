@@ -4,11 +4,13 @@ import type {
   RecommendedItemDefinition,
   Unit,
   ProductTemplateId,
+  DateOnly,
 } from '@/shared/types';
 import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createDateOnly,
 } from '@/shared/types';
 import { calculateRecommendedQuantity } from '@/features/household/utils/calculations';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
@@ -39,7 +41,7 @@ export interface CreateFromTemplateOptions {
   /**
    * Custom expiration date override
    */
-  expirationDate?: string;
+  expirationDate?: DateOnly;
   /**
    * Children requirement multiplier (defaults to 0.75)
    */
@@ -57,7 +59,7 @@ export interface CreateFromFormInput {
   unit: Unit;
   recommendedQuantity: number;
   neverExpires: boolean;
-  expirationDate?: string;
+  expirationDate?: DateOnly;
   location?: string;
   notes?: string;
   productTemplateId?: string;
@@ -158,18 +160,19 @@ function validateItemInput(input: CreateItemInput): void {
 
 /**
  * Calculates expiration date from defaultExpirationMonths.
- * Returns ISO date string (YYYY-MM-DD) or undefined.
+ * Returns DateOnly or undefined.
  */
 function calculateExpirationDate(
   defaultExpirationMonths?: number,
-): string | undefined {
+): DateOnly | undefined {
   if (!defaultExpirationMonths) {
     return undefined;
   }
 
   const expDate = new Date();
   expDate.setMonth(expDate.getMonth() + defaultExpirationMonths);
-  return expDate.toISOString().split('T')[0];
+  const dateString = expDate.toISOString().split('T')[0];
+  return createDateOnly(dateString);
 }
 
 /**
@@ -277,7 +280,9 @@ export class InventoryItemFactory {
       neverExpires: formData.neverExpires,
       expirationDate: formData.neverExpires
         ? undefined
-        : formData.expirationDate,
+        : formData.expirationDate
+          ? createDateOnly(formData.expirationDate)
+          : undefined,
       location: formData.location,
       notes: formData.notes,
       productTemplateId: formData.productTemplateId
