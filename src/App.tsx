@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trackAppLaunch } from '@/shared/utils/analytics';
-import { SettingsProvider, useSettings } from '@/features/settings';
+import { SettingsProvider, useSettings, Settings } from '@/features/settings';
 import { HouseholdProvider, useHousehold } from '@/features/household';
-import { InventoryProvider, useInventory } from '@/features/inventory';
+import {
+  InventoryProvider,
+  useInventory,
+  Inventory,
+} from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
 import { ThemeApplier } from './components/ThemeApplier';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { Navigation, PageType } from '@/shared/components/Navigation';
-import { Dashboard } from './pages/Dashboard';
-import { Inventory } from './pages/Inventory';
-import { Settings } from './pages/Settings';
-import { Help } from './pages/Help';
+import { Dashboard } from '@/features/dashboard';
+import { Help } from '@/features/help';
 import { Onboarding } from '@/features/onboarding';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import './App.css';

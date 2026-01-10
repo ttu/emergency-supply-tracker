@@ -204,7 +204,8 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   };
 
   const handleExportShoppingList = () => {
-    // TODO: Export shopping list based on low stock items
+    // Placeholder: Export shopping list functionality to be implemented
+    // Will export shopping list based on low stock items
     console.log('Export shopping list');
   };
 

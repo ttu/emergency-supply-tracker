@@ -1,46 +1,24 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { Inventory } from './Inventory';
 import {
-  HouseholdProvider,
-  calculateRecommendedQuantity,
-} from '@/features/household';
-import { InventoryProvider } from '@/features/inventory';
-import { SettingsProvider } from '@/features/settings';
-import {
-  RecommendedItemsProvider,
-  RECOMMENDED_ITEMS,
-} from '@/features/templates';
-import { calculateCategoryPreparedness } from '@/features/dashboard';
-import {
+  renderWithProviders,
+  screen,
+  fireEvent,
+  waitFor,
+  userEvent,
   createMockInventoryItem,
   createMockAppData,
   createMockHousehold,
-} from '@/shared/utils/test/factories';
+} from '@/test';
+import { Inventory } from './Inventory';
+import { calculateRecommendedQuantity } from '@/features/household';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
+import { calculateCategoryPreparedness } from '@/features/dashboard';
 
 // Mock i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: {
-      language: 'en',
-      changeLanguage: vi.fn(),
-    },
-  }),
-}));
-
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
-    <SettingsProvider>
-      <HouseholdProvider>
-        <RecommendedItemsProvider>
-          <InventoryProvider>{component}</InventoryProvider>
-        </RecommendedItemsProvider>
-      </HouseholdProvider>
-    </SettingsProvider>,
-  );
-};
+vi.mock('react-i18next', async () => {
+  const { defaultI18nMock } = await import('@/test/i18n');
+  return defaultI18nMock;
+});
 
 describe('Inventory Page', () => {
   beforeEach(() => {
@@ -256,21 +234,19 @@ describe('Inventory Page', () => {
     // Verify form is displayed with expected fields
     expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
 
-    // Form fields should be present (use id selectors since the form uses id attributes)
-    const nameInput = document.getElementById('name') as HTMLInputElement;
+    // Form fields should be present (use Testing Library queries)
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
     expect(nameInput).toBeInTheDocument();
 
-    const quantityInput = document.getElementById(
-      'quantity',
-    ) as HTMLInputElement;
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
     expect(quantityInput).toBeInTheDocument();
 
     // Verify we can interact with form fields
     fireEvent.change(nameInput, { target: { value: 'Test Item' } });
-    expect(nameInput.value).toBe('Test Item');
+    expect(nameInput).toHaveValue('Test Item');
 
     fireEvent.change(quantityInput, { target: { value: '5' } });
-    expect(quantityInput.value).toBe('5');
+    expect(quantityInput).toHaveValue(5);
 
     // Verify add button is present
     expect(screen.getByText('common.add')).toBeInTheDocument();
@@ -291,10 +267,7 @@ describe('Inventory Page', () => {
     const templateButton = templateButtons.find(
       (btn) =>
         btn.textContent?.includes('bottled-water') ||
-        btn
-          .closest('[data-testid]')
-          ?.getAttribute('data-testid')
-          ?.startsWith('template-'),
+        btn.closest('[data-testid]')?.dataset.testid?.startsWith('template-'),
     );
 
     // If we find a template button, click it
@@ -532,11 +505,9 @@ describe('Inventory Page with items', () => {
     });
 
     // Change quantity
-    const quantityInput = document.getElementById(
-      'quantity',
-    ) as HTMLInputElement;
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
     fireEvent.change(quantityInput, { target: { value: '15' } });
-    expect(quantityInput.value).toBe('15');
+    expect(quantityInput).toHaveValue(15);
 
     // Submit form
     const saveButton = screen.getByText('common.save');
@@ -556,22 +527,18 @@ describe('Inventory Page with items', () => {
     fireEvent.click(customItemButton);
 
     // Fill all required form fields
-    const nameInput = document.getElementById('name') as HTMLInputElement;
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
     fireEvent.change(nameInput, { target: { value: 'New Custom Item' } });
-    expect(nameInput.value).toBe('New Custom Item');
+    expect(nameInput).toHaveValue('New Custom Item');
 
-    const quantityInput = document.getElementById(
-      'quantity',
-    ) as HTMLInputElement;
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
     fireEvent.change(quantityInput, { target: { value: '5' } });
-    expect(quantityInput.value).toBe('5');
+    expect(quantityInput).toHaveValue(5);
 
     // Select category
-    const categorySelect = document.getElementById(
-      'categoryId',
-    ) as HTMLSelectElement;
+    const categorySelect = screen.getByLabelText(/itemForm\.category/i);
     fireEvent.change(categorySelect, { target: { value: 'food' } });
-    expect(categorySelect.value).toBe('food');
+    expect(categorySelect).toHaveValue('food');
 
     // Check "never expires" checkbox
     const neverExpiresCheckbox = screen.getByRole('checkbox');

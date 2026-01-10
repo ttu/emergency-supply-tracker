@@ -1,9 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Inventory, InventoryProps } from './Inventory';
-import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/features/inventory';
-import { SettingsProvider } from '@/features/settings';
-import { RecommendedItemsProvider } from '@/features/templates';
+import { AllProviders } from '@/shared/components/AllProviders';
 
 const meta: Meta<InventoryProps> = {
   title: 'Pages/Inventory',
@@ -13,15 +10,9 @@ const meta: Meta<InventoryProps> = {
   },
   decorators: [
     (Story) => (
-      <SettingsProvider>
-        <HouseholdProvider>
-          <RecommendedItemsProvider>
-            <InventoryProvider>
-              <Story />
-            </InventoryProvider>
-          </RecommendedItemsProvider>
-        </HouseholdProvider>
-      </SettingsProvider>
+      <AllProviders>
+        <Story />
+      </AllProviders>
     ),
   ],
 };

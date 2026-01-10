@@ -1,22 +1,18 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
-import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/features/inventory';
-import { SettingsProvider } from '@/features/settings';
-import { RecommendedItemsProvider } from '@/features/templates';
 import {
+  renderWithProviders,
   createMockInventoryItem,
   createMockAppData,
   createMockHousehold,
-} from '@/shared/utils/test/factories';
+} from '@/test';
 
 // Mock i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
+vi.mock('react-i18next', async () => {
+  const { defaultI18nMock } = await import('@/test/i18n');
+  return defaultI18nMock;
+});
 
 // Mock dashboard feature components
 vi.mock('@/features/dashboard', async () => {
@@ -81,18 +77,6 @@ vi.mock('@/features/alerts', () => ({
   generateDashboardAlerts: (...args: unknown[]) =>
     mockGenerateDashboardAlerts(...args),
 }));
-
-const renderWithProviders = (ui: React.ReactElement) => {
-  return render(
-    <SettingsProvider>
-      <HouseholdProvider>
-        <RecommendedItemsProvider>
-          <InventoryProvider>{ui}</InventoryProvider>
-        </RecommendedItemsProvider>
-      </HouseholdProvider>
-    </SettingsProvider>,
-  );
-};
 
 describe('Dashboard', () => {
   beforeEach(() => {
@@ -160,7 +144,7 @@ describe('Dashboard', () => {
     fireEvent.click(screen.getByText(/dashboard.viewInventory/i));
     expect(onNavigate).toHaveBeenCalledWith('inventory');
 
-    // Test Export Shopping List button - logs but doesn't navigate (TODO: implement export)
+    // Test Export Shopping List button - logs but doesn't navigate (export functionality to be implemented)
     fireEvent.click(screen.getByText(/dashboard.exportShoppingList/i));
     expect(consoleSpy).toHaveBeenCalledWith('Export shopping list');
 
@@ -235,9 +219,9 @@ describe('Dashboard', () => {
   });
 
   it('should update when inventory changes', () => {
-    const { rerender } = renderWithProviders(<Dashboard />);
+    const { unmount } = renderWithProviders(<Dashboard />);
 
-    // Add an item to inventory
+    // Add an item to inventory using the correct app data structure
     const item = createMockInventoryItem({
       id: '1',
       name: 'Water',
@@ -249,20 +233,14 @@ describe('Dashboard', () => {
       expirationDate: '2025-12-31',
     });
 
-    localStorage.setItem('inventory', JSON.stringify([item]));
+    const appData = createMockAppData({
+      items: [item],
+    });
+    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
 
-    // Re-render to pick up changes
-    rerender(
-      <SettingsProvider>
-        <HouseholdProvider>
-          <RecommendedItemsProvider>
-            <InventoryProvider>
-              <Dashboard />
-            </InventoryProvider>
-          </RecommendedItemsProvider>
-        </HouseholdProvider>
-      </SettingsProvider>,
-    );
+    // Remount to pick up changes
+    unmount();
+    renderWithProviders(<Dashboard />);
 
     expect(screen.getByTestId('dashboard-header')).toBeInTheDocument();
   });
