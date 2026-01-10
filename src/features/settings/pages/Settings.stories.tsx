@@ -1,9 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Settings } from './Settings';
-import { HouseholdProvider } from '@/features/household';
-import { SettingsProvider } from '@/features/settings';
-import { InventoryProvider } from '@/features/inventory';
-import { RecommendedItemsProvider } from '@/features/templates';
+import { AllProviders } from '@/shared/components/AllProviders';
 
 const meta = {
   title: 'Pages/Settings',
@@ -13,15 +10,9 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <SettingsProvider>
-        <HouseholdProvider>
-          <RecommendedItemsProvider>
-            <InventoryProvider>
-              <Story />
-            </InventoryProvider>
-          </RecommendedItemsProvider>
-        </HouseholdProvider>
-      </SettingsProvider>
+      <AllProviders>
+        <Story />
+      </AllProviders>
     ),
   ],
 } satisfies Meta<typeof Settings>;

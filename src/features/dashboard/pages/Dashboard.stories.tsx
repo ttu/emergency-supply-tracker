@@ -1,9 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Dashboard } from './Dashboard';
-import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/features/inventory';
-import { SettingsProvider } from '@/features/settings';
-import { RecommendedItemsProvider } from '@/features/templates';
+import { AllProviders } from '@/shared/components/AllProviders';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
 
@@ -12,15 +9,9 @@ const meta: Meta<typeof Dashboard> = {
   component: Dashboard,
   decorators: [
     (Story) => (
-      <SettingsProvider>
-        <HouseholdProvider>
-          <RecommendedItemsProvider>
-            <InventoryProvider>
-              <Story />
-            </InventoryProvider>
-          </RecommendedItemsProvider>
-        </HouseholdProvider>
-      </SettingsProvider>
+      <AllProviders>
+        <Story />
+      </AllProviders>
     ),
   ],
   parameters: {
@@ -82,15 +73,9 @@ export const WithItems: Story = {
       localStorage.setItem('inventory', JSON.stringify(items));
 
       return (
-        <SettingsProvider>
-          <HouseholdProvider>
-            <RecommendedItemsProvider>
-              <InventoryProvider>
-                <Story />
-              </InventoryProvider>
-            </RecommendedItemsProvider>
-          </HouseholdProvider>
-        </SettingsProvider>
+        <AllProviders>
+          <Story />
+        </AllProviders>
       );
     },
   ],
@@ -151,15 +136,9 @@ export const WithAlerts: Story = {
       localStorage.setItem('inventory', JSON.stringify(items));
 
       return (
-        <SettingsProvider>
-          <HouseholdProvider>
-            <RecommendedItemsProvider>
-              <InventoryProvider>
-                <Story />
-              </InventoryProvider>
-            </RecommendedItemsProvider>
-          </HouseholdProvider>
-        </SettingsProvider>
+        <AllProviders>
+          <Story />
+        </AllProviders>
       );
     },
   ],
@@ -218,15 +197,9 @@ export const WellPrepared: Story = {
       localStorage.setItem('inventory', JSON.stringify(items));
 
       return (
-        <SettingsProvider>
-          <HouseholdProvider>
-            <RecommendedItemsProvider>
-              <InventoryProvider>
-                <Story />
-              </InventoryProvider>
-            </RecommendedItemsProvider>
-          </HouseholdProvider>
-        </SettingsProvider>
+        <AllProviders>
+          <Story />
+        </AllProviders>
       );
     },
   ],
