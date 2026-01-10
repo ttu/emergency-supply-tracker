@@ -2,7 +2,6 @@
 
 This is a quick reference for developers working on the refactoring. For detailed information, see:
 
-- [REFACTORING_PLAN.md](./REFACTORING_PLAN.md) - Complete plan and strategy
 - [REFACTORING_FILE_MAPPING.md](./REFACTORING_FILE_MAPPING.md) - Detailed file mappings
 
 ## Setup Path Aliases
@@ -286,9 +285,5 @@ After migrating each feature:
 
 ## Questions?
 
-- See [REFACTORING_PLAN.md](./REFACTORING_PLAN.md) for detailed strategy
 - See [REFACTORING_FILE_MAPPING.md](./REFACTORING_FILE_MAPPING.md) for file locations
 - Check existing codebase for patterns
-
-
-

@@ -334,6 +334,3 @@ Use this checklist to track progress:
   - [ ] Update Storybook config (if needed)
   - [ ] Final test run
   - [ ] Code review
-
-
-
