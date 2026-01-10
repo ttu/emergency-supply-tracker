@@ -6,7 +6,7 @@ import type {
   Unit,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { isFoodCategory } from '@/shared/types';
+import { isFoodCategory, isFoodRecommendedItem } from '@/shared/types';
 import {
   calculateItemStatus,
   getStatusFromPercentage,
@@ -218,7 +218,7 @@ export function calculateCategoryShortages(
     );
 
     // Calculate calories for food items
-    if (isFood && recItem.caloriesPerUnit) {
+    if (isFoodRecommendedItem(recItem) && recItem.caloriesPerUnit) {
       // Get calories from inventory items (use template value as fallback)
       // Always use actual quantities, not inflated to recommended
       const itemCalories = matchingItems.reduce((sum, item) => {

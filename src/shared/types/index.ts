@@ -170,7 +170,12 @@ export interface ProductTemplate {
   updatedAt?: string;
 }
 
-// Recommended Item Definition
+/**
+ * Recommended Item Definition
+ *
+ * Represents a recommended emergency supply item based on 72tuntia.fi guidelines.
+ * Some properties are category-specific and should only be used for certain item types.
+ */
 export interface RecommendedItemDefinition {
   id: ProductTemplateId; // Recommended items are product templates
   i18nKey: string;
@@ -181,15 +186,18 @@ export interface RecommendedItemDefinition {
   scaleWithDays: boolean;
   requiresFreezer?: boolean;
   defaultExpirationMonths?: number;
-  // Weight and calorie tracking for food items
-  weightGramsPerUnit?: number; // Weight in grams per unit (e.g., 150g per can)
-  caloriesPer100g?: number; // Calories per 100g of weight
-  caloriesPerUnit?: number; // Calories per unit (calculated or direct value)
-  // Capacity for powerbanks
-  capacityMah?: number; // Capacity in milliamp-hours
-  capacityWh?: number; // Capacity in watt-hours
-  // Water requirement for preparation
-  requiresWaterLiters?: number; // Liters of water required per unit for preparation (must be > 0 if set)
+  /** @categorySpecific Food category only - Weight in grams per unit (e.g., 150g per can) */
+  weightGramsPerUnit?: number;
+  /** @categorySpecific Food category only - Calories per 100g of weight */
+  caloriesPer100g?: number;
+  /** @categorySpecific Food category only - Calories per unit (calculated or direct value) */
+  caloriesPerUnit?: number;
+  /** @categorySpecific Light-power category only - Capacity in milliamp-hours */
+  capacityMah?: number;
+  /** @categorySpecific Light-power category only - Capacity in watt-hours */
+  capacityWh?: number;
+  /** @categorySpecific Food category only - Liters of water required per unit for preparation (must be > 0 if set) */
+  requiresWaterLiters?: number;
 }
 
 // Localized names object for imported items (keyed by language code)
@@ -321,4 +329,48 @@ export function isFoodCategory(categoryId: string): boolean {
  */
 export function isPowerCategory(categoryId: string): boolean {
   return categoryId === 'light-power';
+}
+
+// Type guards for RecommendedItemDefinition
+
+/**
+ * Type guard to check if a recommended item belongs to the food category.
+ * Food items may have weightGramsPerUnit, caloriesPer100g, caloriesPerUnit, and requiresWaterLiters properties.
+ *
+ * @param item - The recommended item to check
+ * @returns True if the item belongs to the food category
+ *
+ * @example
+ * ```typescript
+ * if (isFoodRecommendedItem(item)) {
+ *   // TypeScript now knows item may have caloriesPerUnit, weightGramsPerUnit, etc.
+ *   const calories = item.caloriesPerUnit ?? 0;
+ * }
+ * ```
+ */
+export function isFoodRecommendedItem(
+  item: RecommendedItemDefinition,
+): boolean {
+  return item.category === 'food';
+}
+
+/**
+ * Type guard to check if a recommended item belongs to the light-power category.
+ * Power items may have capacityMah and capacityWh properties.
+ *
+ * @param item - The recommended item to check
+ * @returns True if the item belongs to the light-power category
+ *
+ * @example
+ * ```typescript
+ * if (isPowerRecommendedItem(item)) {
+ *   // TypeScript now knows item may have capacityMah, capacityWh
+ *   const capacity = item.capacityWh ?? 0;
+ * }
+ * ```
+ */
+export function isPowerRecommendedItem(
+  item: RecommendedItemDefinition,
+): boolean {
+  return item.category === 'light-power';
 }
