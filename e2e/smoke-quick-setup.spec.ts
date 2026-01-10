@@ -5,6 +5,7 @@ import {
   expandRecommendedItems,
   ensureNoModals,
 } from './fixtures';
+import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 // Get base URL - use environment variable for deployed sites
 const getBaseURL = () =>
@@ -82,8 +83,8 @@ async function verifyRecommendedItemsAdded(page: Page) {
   await expect(page.locator('button:has-text("Add Item")')).toBeVisible();
   await expect(page.locator('button:has-text("Water")')).toBeVisible();
 
-  const itemsAdded = await page.evaluate(() => {
-    const data = localStorage.getItem('emergencySupplyTracker');
+  const itemsAdded = await page.evaluate((key) => {
+    const data = localStorage.getItem(key);
     if (!data) return false;
     try {
       const appData = JSON.parse(data);
@@ -91,7 +92,7 @@ async function verifyRecommendedItemsAdded(page: Page) {
     } catch {
       return false;
     }
-  });
+  }, STORAGE_KEY);
   expect(itemsAdded).toBe(true);
 }
 
@@ -360,8 +361,8 @@ async function testPersistenceQuickSetup(page: Page) {
     timeout: TIMEOUTS.ELEMENT_VISIBLE * 2,
   });
 
-  const dataPersisted = await page.evaluate(() => {
-    const data = localStorage.getItem('emergencySupplyTracker');
+  const dataPersisted = await page.evaluate((key) => {
+    const data = localStorage.getItem(key);
     if (!data) return { persisted: false, items: [] };
     try {
       const appData = JSON.parse(data);
@@ -373,7 +374,7 @@ async function testPersistenceQuickSetup(page: Page) {
     } catch {
       return { persisted: false, items: [] };
     }
-  });
+  }, STORAGE_KEY);
 
   expect(dataPersisted.persisted).toBe(true);
   expect(dataPersisted.items.length).toBeGreaterThan(0);

@@ -4,6 +4,7 @@ import { SettingsProvider } from './provider';
 import { useSettings } from './hooks';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import * as urlLanguage from '@/shared/utils/urlLanguage';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 // Mock dependencies
 vi.mock('@/shared/utils/storage/localStorage');
@@ -26,7 +27,7 @@ describe('SettingsProvider', () => {
   it('initializes with default settings when no stored data', () => {
     vi.mocked(localStorage.getAppData).mockReturnValue(null);
     vi.mocked(localStorage.createDefaultAppData).mockReturnValue({
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       settings: {
         language: 'en',
         theme: 'ocean',
@@ -64,7 +65,7 @@ describe('SettingsProvider', () => {
 
   it('initializes with stored settings', () => {
     vi.mocked(localStorage.getAppData).mockReturnValue({
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       settings: {
         language: 'fi',
         theme: 'dark',
@@ -102,7 +103,7 @@ describe('SettingsProvider', () => {
 
   it('overrides stored language with URL language parameter', () => {
     vi.mocked(localStorage.getAppData).mockReturnValue({
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       settings: {
         language: 'en',
         theme: 'ocean',

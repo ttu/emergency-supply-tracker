@@ -17,7 +17,7 @@ import {
   MigrationError,
 } from './migrations';
 
-const STORAGE_KEY = 'emergencySupplyTracker';
+export const STORAGE_KEY = 'emergencySupplyTracker';
 
 /**
  * Checks if a value looks like a valid template ID (kebab-case).

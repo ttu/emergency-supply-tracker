@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, afterEach, vi, type SpyInstance } from 'vitest';
 import { RecommendationsStatus } from './RecommendationsStatus';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -77,7 +78,7 @@ describe('RecommendationsStatus', () => {
       recommendedItems: new Array(25).fill({}),
       customRecommendationsInfo: {
         name: 'My Custom Kit',
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         itemCount: 25,
       },
       isUsingCustomRecommendations: true,
@@ -101,7 +102,7 @@ describe('RecommendationsStatus', () => {
       recommendedItems: new Array(25).fill({}),
       customRecommendationsInfo: {
         name: 'My Custom Kit',
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         itemCount: 25,
       },
       isUsingCustomRecommendations: true,
@@ -127,7 +128,7 @@ describe('RecommendationsStatus', () => {
       recommendedItems: new Array(25).fill({}),
       customRecommendationsInfo: {
         name: 'My Custom Kit',
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         itemCount: 25,
       },
       isUsingCustomRecommendations: true,
@@ -163,7 +164,7 @@ describe('RecommendationsStatus', () => {
       recommendedItems: new Array(25).fill({}),
       customRecommendationsInfo: {
         name: 'My Custom Kit',
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         itemCount: 25,
       },
       isUsingCustomRecommendations: true,
@@ -198,7 +199,7 @@ describe('RecommendationsStatus', () => {
       recommendedItems: new Array(25).fill({}),
       customRecommendationsInfo: {
         name: 'My Custom Kit',
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         itemCount: 25,
       },
       isUsingCustomRecommendations: true,
@@ -231,7 +232,7 @@ describe('RecommendationsStatus', () => {
       recommendedItems: new Array(25).fill({}),
       customRecommendationsInfo: {
         name: 'My Custom Kit',
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         itemCount: 25,
       },
       isUsingCustomRecommendations: true,
@@ -270,7 +271,7 @@ describe('RecommendationsStatus', () => {
       recommendedItems: new Array(25).fill({}),
       customRecommendationsInfo: {
         name: 'My Custom Kit',
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         itemCount: 25,
       },
       isUsingCustomRecommendations: true,

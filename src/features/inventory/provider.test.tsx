@@ -6,13 +6,14 @@ import { useInventory } from './hooks/useInventory';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import * as analytics from '@/shared/utils/analytics';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
   getAppData: vi.fn(),
   saveAppData: vi.fn(),
   createDefaultAppData: vi.fn(() => ({
-    version: '1.0.0',
+    version: CURRENT_SCHEMA_VERSION,
     household: {
       adults: 2,
       children: 0,

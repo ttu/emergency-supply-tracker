@@ -3,6 +3,7 @@ import {
   createMockAppData,
   createMockProductTemplate,
 } from '../src/shared/utils/test/factories';
+import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 test.describe('Custom Product Templates', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -37,9 +38,12 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory and open template selector
@@ -80,9 +84,12 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
@@ -144,19 +151,22 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Reload again
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Custom template should still exist
-    const storedData = await page.evaluate(() => {
-      const data = localStorage.getItem('emergencySupplyTracker');
+    const storedData = await page.evaluate((key) => {
+      const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : null;
-    });
+    }, STORAGE_KEY);
 
     expect(storedData).toBeTruthy();
     expect(storedData.customTemplates).toBeDefined();
@@ -215,9 +225,12 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Export data
@@ -262,9 +275,12 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory and open template selector

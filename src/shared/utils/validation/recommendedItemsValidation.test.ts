@@ -8,6 +8,7 @@ import type {
   RecommendedItemsFile,
   ImportedRecommendedItem,
 } from '../../types';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 function createValidFile(
   overrides?: Partial<RecommendedItemsFile>,
@@ -15,7 +16,7 @@ function createValidFile(
   return {
     meta: {
       name: 'Test Kit',
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       createdAt: '2025-01-01T00:00:00.000Z',
       ...overrides?.meta,
     },

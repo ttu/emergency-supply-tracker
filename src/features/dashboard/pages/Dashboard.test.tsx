@@ -7,6 +7,7 @@ import {
   createMockAppData,
   createMockHousehold,
 } from '@/test';
+import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -169,7 +170,10 @@ describe('Dashboard', () => {
       neverExpires: true,
     });
 
-    localStorage.setItem('inventory', JSON.stringify([outOfStockItem]));
+    const appData = createMockAppData({
+      items: [outOfStockItem],
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderWithProviders(<Dashboard />);
     // Check that alerts section heading exists
@@ -191,7 +195,10 @@ describe('Dashboard', () => {
       neverExpires: true,
     });
 
-    localStorage.setItem('inventory', JSON.stringify([outOfStockItem]));
+    const appData = createMockAppData({
+      items: [outOfStockItem],
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     const { container } = renderWithProviders(<Dashboard />);
 
@@ -236,7 +243,7 @@ describe('Dashboard', () => {
     const appData = createMockAppData({
       items: [item],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     // Remount to pick up changes
     unmount();
@@ -281,7 +288,7 @@ describe('Dashboard', () => {
       items: [outOfStockItem],
       dismissedAlertIds: ['category-out-of-stock-water-beverages'],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderWithProviders(<Dashboard />);
 
@@ -309,7 +316,7 @@ describe('Dashboard', () => {
       ],
       // No lastBackupDate - this triggers the reminder when items exist
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     const { container } = renderWithProviders(<Dashboard />);
 
@@ -334,9 +341,7 @@ describe('Dashboard', () => {
     ).not.toBeInTheDocument();
 
     // Verify backupReminderDismissedUntil is set in localStorage
-    const updatedData = JSON.parse(
-      localStorage.getItem('emergencySupplyTracker') || '{}',
-    );
+    const updatedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     expect(updatedData.backupReminderDismissedUntil).toBeDefined();
   });
 
@@ -355,7 +360,7 @@ describe('Dashboard', () => {
         }),
       ],
     });
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     // Render Dashboard to trigger module load and constant initialization
     const { container } = renderWithProviders(<Dashboard />);
