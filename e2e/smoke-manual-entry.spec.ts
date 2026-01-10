@@ -5,6 +5,7 @@ import {
   expandRecommendedItems,
   ensureNoModals,
 } from './fixtures';
+import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 // Get base URL - use environment variable for deployed sites
 const getBaseURL = () =>
@@ -170,8 +171,8 @@ async function verifyCustomItemExists(page: Page) {
       .isVisible()
       .catch(() => false);
     if (!itemVisibleAfterFilter) {
-      const itemInStorage = await page.evaluate(() => {
-        const data = localStorage.getItem('emergencySupplyTracker');
+      const itemInStorage = await page.evaluate((key) => {
+        const data = localStorage.getItem(key);
         if (!data) return false;
         try {
           const appData = JSON.parse(data);
@@ -181,7 +182,7 @@ async function verifyCustomItemExists(page: Page) {
         } catch {
           return false;
         }
-      });
+      }, STORAGE_KEY);
       expect(itemInStorage).toBe(true);
     }
   }
@@ -457,8 +458,8 @@ async function testNavigationAndPersistence(page: Page) {
   });
 
   // Verify data persisted
-  const dataPersisted = await page.evaluate(() => {
-    const data = localStorage.getItem('emergencySupplyTracker');
+  const dataPersisted = await page.evaluate((key) => {
+    const data = localStorage.getItem(key);
     if (!data) return { persisted: false, items: [] };
     try {
       const appData = JSON.parse(data);
@@ -475,7 +476,7 @@ async function testNavigationAndPersistence(page: Page) {
     } catch {
       return { persisted: false, items: [] };
     }
-  });
+  }, STORAGE_KEY);
 
   expect(dataPersisted.persisted).toBe(true);
   expect(dataPersisted.items.length).toBeGreaterThan(0);

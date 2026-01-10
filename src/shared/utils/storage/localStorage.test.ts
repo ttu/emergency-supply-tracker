@@ -12,6 +12,7 @@ import {
   createMockCategory,
   createMockHousehold,
 } from '@/shared/utils/test/factories';
+import { CURRENT_SCHEMA_VERSION } from './migrations';
 
 describe('localStorage utilities', () => {
   beforeEach(() => {
@@ -22,7 +23,7 @@ describe('localStorage utilities', () => {
     it('creates default app data with correct structure', () => {
       const defaultData = createDefaultAppData();
 
-      expect(defaultData.version).toBe('1.0.0');
+      expect(defaultData.version).toBe(CURRENT_SCHEMA_VERSION);
       expect(defaultData.household).toBeDefined();
       expect(defaultData.household.adults).toBe(2);
       expect(defaultData.household.children).toBe(0);
@@ -210,7 +211,7 @@ describe('localStorage utilities', () => {
 
     it('sets neverExpires to true when expirationDate is null', () => {
       const dataWithNullExpiration = {
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         items: [
@@ -246,7 +247,7 @@ describe('localStorage utilities', () => {
 
     it('preserves valid template ID in itemType', () => {
       const dataWithTemplateId = {
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         items: [
@@ -270,7 +271,7 @@ describe('localStorage utilities', () => {
 
     it('sets itemType to custom when invalid template ID is provided', () => {
       const dataWithInvalidItemType = {
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         items: [
@@ -294,7 +295,7 @@ describe('localStorage utilities', () => {
 
     it('sets itemType to custom when itemType is missing', () => {
       const dataWithNoItemType = {
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         items: [
@@ -318,7 +319,7 @@ describe('localStorage utilities', () => {
 
     it('maps customCategories and customTemplates with createCategoryId and createProductTemplateId', () => {
       const dataWithCustoms = {
-        version: '1.0.0',
+        version: CURRENT_SCHEMA_VERSION,
         household: createMockHousehold({ children: 0 }),
         settings: { language: 'en', theme: 'light', highContrast: false },
         customCategories: [

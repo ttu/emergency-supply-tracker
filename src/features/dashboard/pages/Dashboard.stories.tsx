@@ -1,18 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Dashboard } from './Dashboard';
 import { AllProviders } from '@/shared/components/AllProviders';
-import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import {
+  createMockInventoryItem,
+  createMockAppData,
+} from '@/shared/utils/test/factories';
 import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
+import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',
   component: Dashboard,
   decorators: [
-    (Story) => (
-      <AllProviders>
-        <Story />
-      </AllProviders>
-    ),
+    (Story) => {
+      // Clean up localStorage before each story
+      localStorage.removeItem(STORAGE_KEY);
+      return (
+        <AllProviders>
+          <Story />
+        </AllProviders>
+      );
+    },
   ],
   parameters: {
     layout: 'fullscreen',
@@ -35,6 +43,8 @@ export const WithItems: Story = {
   render: () => <Dashboard />,
   decorators: [
     (Story) => {
+      // Clean up localStorage before setting up story data
+      localStorage.removeItem(STORAGE_KEY);
       // Set up some inventory items in localStorage
       const items = [
         createMockInventoryItem({
@@ -70,7 +80,10 @@ export const WithItems: Story = {
           location: 'Closet',
         }),
       ];
-      localStorage.setItem('inventory', JSON.stringify(items));
+      const appData = createMockAppData({
+        items,
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
       return <Story />;
     },
@@ -82,6 +95,8 @@ export const WithAlerts: Story = {
   render: () => <Dashboard />,
   decorators: [
     (Story) => {
+      // Clean up localStorage before setting up story data
+      localStorage.removeItem(STORAGE_KEY);
       // Set up inventory with items that will trigger alerts
       const items = [
         createMockInventoryItem({
@@ -129,7 +144,10 @@ export const WithAlerts: Story = {
           location: 'Medicine Cabinet',
         }),
       ];
-      localStorage.setItem('inventory', JSON.stringify(items));
+      const appData = createMockAppData({
+        items,
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
       return <Story />;
     },
@@ -141,6 +159,8 @@ export const WellPrepared: Story = {
   render: () => <Dashboard />,
   decorators: [
     (Story) => {
+      // Clean up localStorage before setting up story data
+      localStorage.removeItem(STORAGE_KEY);
       // Set up a well-stocked inventory
       const items = [
         createMockInventoryItem({
@@ -186,7 +206,10 @@ export const WellPrepared: Story = {
           location: 'Bathroom',
         }),
       ];
-      localStorage.setItem('inventory', JSON.stringify(items));
+      const appData = createMockAppData({
+        items,
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
       return <Story />;
     },

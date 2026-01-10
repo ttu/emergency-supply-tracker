@@ -5,13 +5,14 @@ import { useRecommendedItems } from '../hooks';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { RECOMMENDED_ITEMS } from '../data';
 import type { RecommendedItemsFile } from '@/shared/types';
+import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
   getAppData: vi.fn(),
   saveAppData: vi.fn(),
   createDefaultAppData: vi.fn(() => ({
-    version: '1.0.0',
+    version: CURRENT_SCHEMA_VERSION,
     household: {
       adults: 2,
       children: 0,
@@ -65,7 +66,7 @@ describe('RecommendedItemsProvider', () => {
   const validCustomFile: RecommendedItemsFile = {
     meta: {
       name: 'Custom Recommendations',
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       createdAt: '2024-01-01T00:00:00.000Z',
     },
     items: [
@@ -444,7 +445,7 @@ describe('RecommendedItemsProvider', () => {
 
     expect(info).toEqual({
       name: 'Custom Recommendations',
-      version: '1.0.0',
+      version: CURRENT_SCHEMA_VERSION,
       itemCount: 2,
     });
   });

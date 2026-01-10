@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures';
 import { createMockAppData } from '../src/shared/utils/test/factories';
+import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 test.describe('Onboarding Flow', () => {
   test('should show onboarding for first-time users', async ({ page }) => {
@@ -119,9 +120,12 @@ test.describe('Onboarding Flow', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Should go directly to Dashboard, not onboarding

@@ -3,6 +3,7 @@ import {
   createMockAppData,
   createMockInventoryItem,
 } from '../src/shared/utils/test/factories';
+import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 test.describe('Hidden Alerts Management', () => {
   test('should hide alert from dashboard', async ({ page }) => {
@@ -34,9 +35,12 @@ test.describe('Hidden Alerts Management', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Should see expired alert on dashboard
@@ -93,9 +97,12 @@ test.describe('Hidden Alerts Management', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Dismiss alert from dashboard
@@ -173,9 +180,12 @@ test.describe('Hidden Alerts Management', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Dismiss alert
@@ -251,9 +261,12 @@ test.describe('Hidden Alerts Management', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Dismiss all alerts (if multiple dismiss buttons exist)
@@ -330,9 +343,12 @@ test.describe('Hidden Alerts Management', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Dismiss alert

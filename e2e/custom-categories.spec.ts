@@ -3,6 +3,7 @@ import {
   createMockAppData,
   createMockCategory,
 } from '../src/shared/utils/test/factories';
+import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 test.describe('Custom Categories', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -35,9 +36,12 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
@@ -49,10 +53,10 @@ test.describe('Custom Categories', () => {
     await expect(page.locator('h1:has-text("Inventory")')).toBeVisible();
 
     // Verify custom category exists in data
-    const storedData = await page.evaluate(() => {
-      const data = localStorage.getItem('emergencySupplyTracker');
+    const storedData = await page.evaluate((key) => {
+      const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : null;
-    });
+    }, STORAGE_KEY);
     expect(storedData?.customCategories).toBeDefined();
     expect(storedData?.customCategories.length).toBeGreaterThan(0);
   });
@@ -81,9 +85,12 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
@@ -145,9 +152,12 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Reload again
@@ -155,10 +165,10 @@ test.describe('Custom Categories', () => {
 
     // Custom category should still exist
     // Verify by checking localStorage or trying to use it
-    const storedData = await page.evaluate(() => {
-      const data = localStorage.getItem('emergencySupplyTracker');
+    const storedData = await page.evaluate((key) => {
+      const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : null;
-    });
+    }, STORAGE_KEY);
 
     expect(storedData).toBeTruthy();
     expect(storedData.customCategories).toBeDefined();
@@ -202,9 +212,12 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Custom category should appear on dashboard
@@ -282,9 +295,12 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
@@ -337,9 +353,12 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate((data) => {
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
-    }, appData);
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Export data

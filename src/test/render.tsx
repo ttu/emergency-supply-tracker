@@ -15,6 +15,7 @@ import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ThemeApplier } from '@/components/ThemeApplier';
 import type { AppData } from '@/shared/types';
 import { createMockAppData } from '@/shared/utils/test/factories';
+import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 /**
  * Options for configuring which providers to include
@@ -137,7 +138,7 @@ export function renderWithProviders(
   // Setup localStorage if initial data provided
   if (didSetLocalStorage) {
     const data = createMockAppData(initialAppData);
-    localStorage.setItem('emergencySupplyTracker', JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }
 
   function AllProviders({ children }: { children: ReactNode }) {
@@ -164,7 +165,7 @@ export function renderWithProviders(
   const originalUnmount = result.unmount;
   result.unmount = () => {
     if (didSetLocalStorage) {
-      localStorage.removeItem('emergencySupplyTracker');
+      localStorage.removeItem(STORAGE_KEY);
     }
     return originalUnmount();
   };
