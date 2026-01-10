@@ -16,8 +16,9 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
   let seed: number;
 
   const envSeed = process.env.FAKER_SEED;
-  const isCI = process.env.CI === 'true';
+  const isCI = Boolean(process.env.CI);
   let shouldLog = false;
+  const hasExplicitSeed = Boolean(envSeed);
 
   // Check for explicit env var first
   if (envSeed) {
@@ -28,22 +29,31 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
       );
     }
     // Log once when using explicit seed (first project to run)
-    if (!fs.existsSync(SEED_FILE)) {
-      fs.writeFileSync(SEED_FILE, String(seed));
+    // Use exclusive flag to avoid race condition with parallel projects
+    try {
+      fs.writeFileSync(SEED_FILE, String(seed), { flag: 'wx' });
       shouldLog = true;
+    } catch {
+      // File already exists, another project created it first
     }
   } else if (fs.existsSync(SEED_FILE)) {
     // Reuse seed from earlier project in this test run
     seed = Number.parseInt(fs.readFileSync(SEED_FILE, 'utf-8'), 10);
   } else {
     // Generate new seed and save for other projects
+    // Use exclusive flag to avoid race condition with parallel projects
     seed = Math.floor(Math.random() * 1000000);
-    fs.writeFileSync(SEED_FILE, String(seed));
-    shouldLog = true;
+    try {
+      fs.writeFileSync(SEED_FILE, String(seed), { flag: 'wx' });
+      shouldLog = true;
+    } catch {
+      // File already exists from another project, read their seed instead
+      seed = Number.parseInt(fs.readFileSync(SEED_FILE, 'utf-8'), 10);
+    }
   }
 
-  // Log seed once at start of test run (not in CI unless explicit seed)
-  if (shouldLog && !isCI) {
+  // Log seed once at start of test run (not in CI unless explicit seed is set)
+  if (shouldLog && (!isCI || hasExplicitSeed)) {
     process.stderr.write(
       `\n[Faker] Using seed: ${seed} (set FAKER_SEED=${seed} to reproduce)\n\n`,
     );
