@@ -221,7 +221,7 @@ describe('Dashboard', () => {
   it('should update when inventory changes', () => {
     const { unmount } = renderWithProviders(<Dashboard />);
 
-    // Add an item to inventory
+    // Add an item to inventory using the correct app data structure
     const item = createMockInventoryItem({
       id: '1',
       name: 'Water',
@@ -233,7 +233,10 @@ describe('Dashboard', () => {
       expirationDate: '2025-12-31',
     });
 
-    localStorage.setItem('inventory', JSON.stringify([item]));
+    const appData = createMockAppData({
+      items: [item],
+    });
+    localStorage.setItem('emergencySupplyTracker', JSON.stringify(appData));
 
     // Remount to pick up changes
     unmount();

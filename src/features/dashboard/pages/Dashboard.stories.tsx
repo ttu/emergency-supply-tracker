@@ -72,11 +72,7 @@ export const WithItems: Story = {
       ];
       localStorage.setItem('inventory', JSON.stringify(items));
 
-      return (
-        <AllProviders>
-          <Story />
-        </AllProviders>
-      );
+      return <Story />;
     },
   ],
 };
@@ -135,11 +131,7 @@ export const WithAlerts: Story = {
       ];
       localStorage.setItem('inventory', JSON.stringify(items));
 
-      return (
-        <AllProviders>
-          <Story />
-        </AllProviders>
-      );
+      return <Story />;
     },
   ],
 };
@@ -196,11 +188,7 @@ export const WellPrepared: Story = {
       ];
       localStorage.setItem('inventory', JSON.stringify(items));
 
-      return (
-        <AllProviders>
-          <Story />
-        </AllProviders>
-      );
+      return <Story />;
     },
   ],
 };

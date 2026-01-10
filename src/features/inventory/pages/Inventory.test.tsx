@@ -246,7 +246,7 @@ describe('Inventory Page', () => {
     expect(nameInput).toHaveValue('Test Item');
 
     fireEvent.change(quantityInput, { target: { value: '5' } });
-    expect(quantityInput.value).toBe('5');
+    expect(quantityInput).toHaveValue(5);
 
     // Verify add button is present
     expect(screen.getByText('common.add')).toBeInTheDocument();
