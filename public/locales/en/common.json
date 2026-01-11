@@ -457,5 +457,11 @@
       "tip4": "Export your data regularly as a backup",
       "tip5": "Review and update your inventory at least once per season"
     }
+  },
+  "notifications": {
+    "itemAdded": "Item \"{{name}}\" added",
+    "itemUpdated": "Item \"{{name}}\" updated",
+    "itemDeleted": "Item \"{{name}}\" deleted",
+    "itemsBulkAdded": "{{count}} item(s) added"
   }
 }

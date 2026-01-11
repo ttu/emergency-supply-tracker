@@ -1,0 +1,38 @@
+.container {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  z-index: 1200;
+  max-width: min(400px, calc(100vw - var(--spacing-md) * 2));
+  pointer-events: none;
+}
+
+.notificationWrapper {
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out;
+  animation-fill-mode: both;
+  animation-delay: calc(var(--index) * 0.1s);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure notifications don't overlap on mobile */
+@media (max-width: 480px) {
+  .container {
+    bottom: var(--spacing-md);
+    max-width: calc(100vw - var(--spacing-md) * 2);
+  }
+}
