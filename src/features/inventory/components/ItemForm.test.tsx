@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ItemForm } from './ItemForm';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -44,14 +45,14 @@ describe('ItemForm', () => {
 
   it('should render form with item data for editing', () => {
     const item = createMockInventoryItem({
-      id: '1',
+      id: createItemId('1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 20,
       unit: 'liters',
       recommendedQuantity: 28,
       neverExpires: false,
-      expirationDate: '2025-12-31',
+      expirationDate: createDateOnly('2025-12-31'),
       location: 'Pantry',
       notes: 'Test notes',
     });
@@ -337,14 +338,14 @@ describe('ItemForm', () => {
 
   it('should call onCancel when cancel button is clicked (editing existing item)', () => {
     const existingItem = createMockInventoryItem({
-      id: '1',
+      id: createItemId('1'),
       name: 'Test Item',
-      categoryId: 'food',
+      categoryId: createCategoryId('food'),
       quantity: 5,
       unit: 'pieces',
       recommendedQuantity: 10,
       neverExpires: false,
-      expirationDate: '2025-12-31',
+      expirationDate: createDateOnly('2025-12-31'),
     });
 
     render(
@@ -589,9 +590,9 @@ describe('ItemForm', () => {
 
   it('should load existing capacity values when editing', () => {
     const powerItem = createMockInventoryItem({
-      id: '1',
+      id: createItemId('1'),
       name: 'Power Bank',
-      categoryId: 'light-power',
+      categoryId: createCategoryId('light-power'),
       quantity: 1,
       unit: 'pieces',
       neverExpires: true,

@@ -16,6 +16,7 @@ import {
 } from '@/features/inventory';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import type { InventoryItem } from '@/shared/types';
+import { createItemId, createCategoryId } from '@/shared/types';
 
 const createMockInventoryContext = (
   items: InventoryItem[] = [],
@@ -101,7 +102,7 @@ describe('ShoppingListExport', () => {
 
   it('should enable button when items need restocking', () => {
     const itemNeedingRestock = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
       quantity: 5,
       recommendedQuantity: 20,
@@ -116,12 +117,12 @@ describe('ShoppingListExport', () => {
   it('should show count of items needing restock', () => {
     const items = [
       createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         quantity: 5,
         recommendedQuantity: 20,
       }),
       createMockInventoryItem({
-        id: 'item-2',
+        id: createItemId('item-2'),
         quantity: 3,
         recommendedQuantity: 10,
       }),
@@ -146,9 +147,9 @@ describe('ShoppingListExport', () => {
 
   it('should export shopping list when button is clicked', () => {
     const itemNeedingRestock = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 5,
       recommendedQuantity: 20,
       unit: 'liters',
@@ -167,9 +168,9 @@ describe('ShoppingListExport', () => {
 
   it('should create blob with text content', () => {
     const itemNeedingRestock = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 5,
       recommendedQuantity: 20,
       unit: 'liters',
@@ -188,13 +189,13 @@ describe('ShoppingListExport', () => {
   it('should not include items that do not need restocking', () => {
     const items = [
       createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Needs Restock',
         quantity: 5,
         recommendedQuantity: 20,
       }),
       createMockInventoryItem({
-        id: 'item-2',
+        id: createItemId('item-2'),
         name: 'Fully Stocked',
         quantity: 20,
         recommendedQuantity: 20,
@@ -210,23 +211,23 @@ describe('ShoppingListExport', () => {
   it('should group items by category', () => {
     const items = [
       createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 5,
         recommendedQuantity: 20,
       }),
       createMockInventoryItem({
-        id: 'item-2',
+        id: createItemId('item-2'),
         name: 'Beans',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         quantity: 2,
         recommendedQuantity: 10,
       }),
       createMockInventoryItem({
-        id: 'item-3',
+        id: createItemId('item-3'),
         name: 'More Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 3,
         recommendedQuantity: 15,
       }),

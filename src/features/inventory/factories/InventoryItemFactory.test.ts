@@ -16,6 +16,8 @@ import {
   createCategoryId,
   createProductTemplateId,
   createItemId,
+  createDateOnly,
+  type ProductTemplateId,
 } from '@/shared/types';
 import {
   CUSTOM_ITEM_TYPE,
@@ -38,13 +40,13 @@ describe('InventoryItemFactory', () => {
     const quantity = randomQuantitySmall();
     validInput = {
       name: 'Test Item',
-      itemType: 'test-item',
+      itemType: createProductTemplateId('test-item'),
       categoryId: createCategoryId('food'),
       quantity,
       unit: 'pieces',
       recommendedQuantity: quantity + randomQuantitySmall(),
       neverExpires: false,
-      expirationDate: '2025-12-31',
+      expirationDate: createDateOnly('2025-12-31'),
     };
   });
 
@@ -59,7 +61,7 @@ describe('InventoryItemFactory', () => {
       expect(item.quantity).toBe(validInput.quantity);
       expect(item.unit).toBe('pieces');
       expect(item.recommendedQuantity).toBe(validInput.recommendedQuantity);
-      expect(item.expirationDate).toBe('2025-12-31');
+      expect(item.expirationDate).toBe(createDateOnly('2025-12-31'));
       expect(item.neverExpires).toBe(false);
       expect(item.createdAt).toBeDefined();
       expect(item.updatedAt).toBeDefined();
@@ -137,9 +139,9 @@ describe('InventoryItemFactory', () => {
 
     it('throws error when itemType is missing', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           itemType: undefined,
         });
       }).toThrow(InventoryItemValidationError);
@@ -149,6 +151,7 @@ describe('InventoryItemFactory', () => {
       expect(() => {
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           itemType: '',
         });
       }).toThrow(InventoryItemValidationError);
@@ -158,6 +161,7 @@ describe('InventoryItemFactory', () => {
       expect(() => {
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           itemType: '   ',
         });
       }).toThrow(InventoryItemValidationError);
@@ -165,9 +169,9 @@ describe('InventoryItemFactory', () => {
 
     it('throws error when categoryId is missing', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           categoryId: undefined,
         });
       }).toThrow(InventoryItemValidationError);
@@ -184,9 +188,9 @@ describe('InventoryItemFactory', () => {
 
     it('throws error when quantity is missing', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           quantity: undefined,
         });
       }).toThrow(InventoryItemValidationError);
@@ -194,9 +198,9 @@ describe('InventoryItemFactory', () => {
 
     it('throws error when quantity is undefined', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           quantity: undefined,
         });
       }).toThrow(InventoryItemValidationError);
@@ -213,9 +217,9 @@ describe('InventoryItemFactory', () => {
 
     it('throws error when unit is missing', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           unit: undefined,
         });
       }).toThrow(InventoryItemValidationError);
@@ -223,9 +227,9 @@ describe('InventoryItemFactory', () => {
 
     it('throws error when unit is undefined', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           unit: undefined,
         });
       }).toThrow(InventoryItemValidationError);
@@ -233,9 +237,9 @@ describe('InventoryItemFactory', () => {
 
     it('throws error when unit is invalid', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         InventoryItemFactory.create({
           ...validInput,
+          // @ts-expect-error - Testing invalid input
           unit: 'invalid-unit',
         });
       }).toThrow(InventoryItemValidationError);
@@ -256,7 +260,7 @@ describe('InventoryItemFactory', () => {
         InventoryItemFactory.create({
           ...validInput,
           neverExpires: true,
-          expirationDate: '2025-12-31',
+          expirationDate: createDateOnly('2025-12-31'),
         });
       }).toThrow(InventoryItemValidationError);
     });
@@ -325,7 +329,7 @@ describe('InventoryItemFactory', () => {
   describe('createFromTemplate', () => {
     it('creates item from template with calculated recommended quantity', () => {
       const template = createMockRecommendedItem({
-        id: 'water',
+        id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
         baseQuantity: 3,
@@ -356,7 +360,7 @@ describe('InventoryItemFactory', () => {
 
     it('calculates expiration date from defaultExpirationMonths', () => {
       const template = createMockRecommendedItem({
-        id: 'canned-food',
+        id: createProductTemplateId('canned-food'),
         i18nKey: 'products.canned-food',
         category: 'food',
         baseQuantity: 1,
@@ -375,7 +379,7 @@ describe('InventoryItemFactory', () => {
 
     it('uses provided name override', () => {
       const template = createMockRecommendedItem({
-        id: 'water',
+        id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
         baseQuantity: 3,
@@ -397,7 +401,7 @@ describe('InventoryItemFactory', () => {
 
     it('uses provided quantity override', () => {
       const template = createMockRecommendedItem({
-        id: 'water',
+        id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
         baseQuantity: 3,
@@ -420,7 +424,7 @@ describe('InventoryItemFactory', () => {
 
     it('uses provided expirationDate override', () => {
       const template = createMockRecommendedItem({
-        id: 'canned-food',
+        id: createProductTemplateId('canned-food'),
         i18nKey: 'products.canned-food',
         category: 'food',
         baseQuantity: 1,
@@ -430,7 +434,7 @@ describe('InventoryItemFactory', () => {
         defaultExpirationMonths: 12,
       });
 
-      const customDate = '2026-12-31';
+      const customDate = createDateOnly('2026-12-31');
       const item = InventoryItemFactory.createFromTemplate(
         template,
         household,
@@ -444,7 +448,7 @@ describe('InventoryItemFactory', () => {
 
     it('copies template properties (weightGrams, caloriesPerUnit, etc.)', () => {
       const template = createMockRecommendedItem({
-        id: 'canned-food',
+        id: createProductTemplateId('canned-food'),
         i18nKey: 'products.canned-food',
         category: 'food',
         baseQuantity: 1,
@@ -469,7 +473,7 @@ describe('InventoryItemFactory', () => {
 
     it('handles template without scaling', () => {
       const template = createMockRecommendedItem({
-        id: 'flashlight',
+        id: createProductTemplateId('flashlight'),
         i18nKey: 'products.flashlight',
         category: 'light-power',
         baseQuantity: 1,
@@ -485,7 +489,7 @@ describe('InventoryItemFactory', () => {
 
     it('uses custom childrenMultiplier', () => {
       const template = createMockRecommendedItem({
-        id: 'water',
+        id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
         baseQuantity: 3,
@@ -515,7 +519,7 @@ describe('InventoryItemFactory', () => {
   describe('createDraftFromTemplate', () => {
     it('creates draft item with empty id and timestamps', () => {
       const template = createMockRecommendedItem({
-        id: 'water',
+        id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
         baseQuantity: 3,
@@ -548,7 +552,7 @@ describe('InventoryItemFactory', () => {
 
     it('creates draft with same data as createFromTemplate except id/timestamps', () => {
       const template = createMockRecommendedItem({
-        id: 'flashlight',
+        id: createProductTemplateId('flashlight'),
         i18nKey: 'products.flashlight',
         category: 'light-power',
         baseQuantity: 1,
@@ -583,7 +587,7 @@ describe('InventoryItemFactory', () => {
 
     it('respects options like createFromTemplate', () => {
       const template = createMockRecommendedItem({
-        id: 'water',
+        id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
         baseQuantity: 3,
@@ -622,7 +626,7 @@ describe('InventoryItemFactory', () => {
         unit: 'pieces',
         recommendedQuantity,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
         location: 'Pantry',
         notes: 'Test notes',
         weightGrams,
@@ -637,7 +641,7 @@ describe('InventoryItemFactory', () => {
       expect(item.quantity).toBe(quantity);
       expect(item.unit).toBe('pieces');
       expect(item.recommendedQuantity).toBe(recommendedQuantity);
-      expect(item.expirationDate).toBe('2025-12-31');
+      expect(item.expirationDate).toBe(createDateOnly('2025-12-31'));
       expect(item.neverExpires).toBe(false);
       expect(item.location).toBe('Pantry');
       expect(item.notes).toBe('Test notes');
@@ -674,7 +678,7 @@ describe('InventoryItemFactory', () => {
         unit: 'pieces',
         recommendedQuantity,
         neverExpires: true,
-        expirationDate: '2025-12-31', // Should be ignored
+        expirationDate: createDateOnly('2025-12-31'), // Should be ignored
       };
 
       const item = InventoryItemFactory.createFromFormData(formData);
@@ -694,6 +698,7 @@ describe('InventoryItemFactory', () => {
         unit: 'pieces',
         recommendedQuantity,
         neverExpires: false,
+        // @ts-expect-error - Testing invalid input (empty string)
         expirationDate: '', // Empty string - this will fail validation, but tests the code path
       };
 
@@ -714,6 +719,7 @@ describe('InventoryItemFactory', () => {
         unit: 'pieces',
         recommendedQuantity,
         neverExpires: false,
+        // @ts-expect-error - Testing invalid input (whitespace-only string)
         expirationDate: '   ', // Whitespace-only string should be treated as empty
       };
 
@@ -768,9 +774,12 @@ describe('InventoryItemFactory', () => {
     it('allows custom itemType override', () => {
       const quantity = randomQuantitySmall();
       const recommendedQuantity = quantity + randomQuantitySmall();
-      const input: Omit<CreateItemInput, 'itemType'> & { itemType?: string } = {
+      const input: Omit<CreateItemInput, 'itemType'> & {
+        itemType?: ProductTemplateId | 'custom';
+      } = {
         name: 'Custom Item',
-        itemType: 'custom-type',
+        // @ts-expect-error - Testing custom string behavior
+        itemType: 'custom-type', // Testing custom string behavior
         categoryId: createCategoryId('food'),
         quantity,
         unit: 'pieces',

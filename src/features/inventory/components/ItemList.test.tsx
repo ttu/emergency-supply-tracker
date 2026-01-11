@@ -2,6 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ItemList } from './ItemList';
 import type { InventoryItem } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+  createDateOnly,
+} from '@/shared/types';
 
 // Mock ItemCard component
 vi.mock('./ItemCard', () => ({
@@ -29,23 +35,23 @@ describe('ItemList', () => {
   const now = new Date().toISOString();
   const sampleItems: InventoryItem[] = [
     {
-      id: '1',
+      id: createItemId('1'),
       name: 'Item 1',
-      itemType: 'bottled-water',
-      categoryId: 'water-beverages',
+      itemType: createProductTemplateId('bottled-water'),
+      categoryId: createCategoryId('water-beverages'),
       quantity: 10,
       unit: 'liters',
       recommendedQuantity: 20,
       neverExpires: false,
-      expirationDate: '2026-12-31',
+      expirationDate: createDateOnly('2026-12-31'),
       createdAt: now,
       updatedAt: now,
     },
     {
-      id: '2',
+      id: createItemId('2'),
       name: 'Item 2',
-      itemType: 'canned-food',
-      categoryId: 'food',
+      itemType: createProductTemplateId('canned-food'),
+      categoryId: createCategoryId('food'),
       quantity: 5,
       unit: 'cans',
       recommendedQuantity: 10,

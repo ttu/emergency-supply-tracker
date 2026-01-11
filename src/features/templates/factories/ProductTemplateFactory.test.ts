@@ -96,10 +96,10 @@ describe('ProductTemplateFactory', () => {
 
     it('throws error when defaultUnit is invalid', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         ProductTemplateFactory.createCustom({
           name: 'Test',
           category: 'food',
+          // @ts-expect-error - Testing invalid input
           defaultUnit: 'invalid-unit',
           isCustom: true,
           isBuiltIn: false,
@@ -109,11 +109,11 @@ describe('ProductTemplateFactory', () => {
 
     it('throws error when kind is invalid', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         ProductTemplateFactory.createCustom({
           name: 'Test',
           category: 'food',
           defaultUnit: 'pieces',
+          // @ts-expect-error - Testing invalid input
           kind: 'invalid-kind',
           isCustom: true,
           isBuiltIn: false,

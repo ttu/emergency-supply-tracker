@@ -13,6 +13,7 @@ import {
   createMockHousehold,
 } from '@/shared/utils/test/factories';
 import { CURRENT_SCHEMA_VERSION } from './migrations';
+import { createCategoryId } from '@/shared/types';
 
 describe('localStorage utilities', () => {
   beforeEach(() => {
@@ -93,7 +94,9 @@ describe('localStorage utilities', () => {
 
     it('imports data from JSON with customCategories', () => {
       const mockData = createMockAppData({
-        customCategories: [createMockCategory({ id: 'custom-1' })],
+        customCategories: [
+          createMockCategory({ id: createCategoryId('custom-1') }),
+        ],
       });
       const json = JSON.stringify(mockData);
       const imported = importFromJSON(json);
@@ -106,7 +109,9 @@ describe('localStorage utilities', () => {
 
     it('imports data from exported JSON with exportMetadata', () => {
       const mockData = createMockAppData({
-        customCategories: [createMockCategory({ id: 'custom-1' })],
+        customCategories: [
+          createMockCategory({ id: createCategoryId('custom-1') }),
+        ],
       });
       // Export the data (which adds exportMetadata)
       const exportedJson = exportToJSON(mockData);

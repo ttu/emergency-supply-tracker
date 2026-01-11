@@ -174,8 +174,8 @@ describe('CategoryFactory', () => {
 
     it('throws error when standardCategoryId is invalid', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         CategoryFactory.createStandard({
+          // @ts-expect-error - Testing invalid input
           standardCategoryId: 'invalid-category',
           name: 'Invalid',
         });

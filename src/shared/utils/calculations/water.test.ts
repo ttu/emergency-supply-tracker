@@ -13,6 +13,11 @@ import {
   createMockHousehold,
 } from '@/shared/utils/test/factories';
 import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
+import {
   DAILY_WATER_PER_PERSON,
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
@@ -71,9 +76,9 @@ describe('water calculations', () => {
   describe('getWaterRequirementPerUnit', () => {
     it('returns 0 for items without water requirement', () => {
       const item = createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Crackers',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         unit: 'packages',
       });
       expect(getWaterRequirementPerUnit(item)).toBe(0);
@@ -86,9 +91,9 @@ describe('water calculations', () => {
         fractionDigits: 1,
       });
       const item = createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Instant Noodles',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         unit: 'packages',
         requiresWaterLiters: waterReq,
       });
@@ -108,22 +113,22 @@ describe('water calculations', () => {
 
     it('returns template water requirement for items with productTemplateId', () => {
       const item = createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'My Pasta',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         unit: 'kilograms',
-        productTemplateId: 'pasta',
+        productTemplateId: createProductTemplateId('pasta'),
       });
       expect(getWaterRequirementPerUnit(item)).toBe(1);
     });
 
     it('returns template water requirement for items with matching itemType', () => {
       const item = createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'My Rice',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         unit: 'kilograms',
-        itemType: 'Rice',
+        itemType: createProductTemplateId('rice'),
       });
       expect(getWaterRequirementPerUnit(item)).toBe(1.5);
     });
@@ -135,11 +140,11 @@ describe('water calculations', () => {
         fractionDigits: 1,
       });
       const item = createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'My Pasta',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         unit: 'kilograms',
-        productTemplateId: 'pasta',
+        productTemplateId: createProductTemplateId('pasta'),
         requiresWaterLiters: customWaterReq, // Custom value overrides template's 1
       });
       expect(getWaterRequirementPerUnit(item)).toBe(customWaterReq);
@@ -156,22 +161,22 @@ describe('water calculations', () => {
       const riceQuantity = randomQuantityFloat();
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Pasta',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'pasta', // 1 L/kg
+          productTemplateId: createProductTemplateId('pasta'), // 1 L/kg
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Rice',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: riceQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'rice', // 1.5 L/kg
+          productTemplateId: createProductTemplateId('rice'), // 1.5 L/kg
         }),
       ];
       const expected = pastaQuantity * 1 + riceQuantity * 1.5;
@@ -183,18 +188,18 @@ describe('water calculations', () => {
       const pastaQuantity = randomQuantityFloat();
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Crackers',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           unit: 'packages',
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Pasta',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
-          productTemplateId: 'pasta',
+          productTemplateId: createProductTemplateId('pasta'),
         }),
       ];
       // Use toBeCloseTo() to handle potential floating-point precision issues with random values
@@ -215,20 +220,20 @@ describe('water calculations', () => {
       const water2 = randomQuantitySmall();
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Bottled Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: water1,
           unit: 'liters',
-          productTemplateId: 'bottled-water',
+          productTemplateId: createProductTemplateId('bottled-water'),
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Tap Water Container',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: water2,
           unit: 'liters',
-          itemType: 'Bottled Water',
+          itemType: createProductTemplateId('bottled-water'),
         }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(water1 + water2);
@@ -238,19 +243,19 @@ describe('water calculations', () => {
       const waterQuantity = randomQuantitySmall();
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Bottled Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: waterQuantity,
           unit: 'liters',
-          productTemplateId: 'bottled-water',
+          productTemplateId: createProductTemplateId('bottled-water'),
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Long Life Milk',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           unit: 'liters',
-          productTemplateId: 'long-life-milk',
+          productTemplateId: createProductTemplateId('long-life-milk'),
         }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(waterQuantity);
@@ -259,13 +264,13 @@ describe('water calculations', () => {
     it('ignores water items in wrong category', () => {
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Bottled Water',
-          categoryId: 'food', // Wrong category
+          categoryId: createCategoryId('food'), // Wrong category
           quantity: 10,
           unit: 'liters',
           recommendedQuantity: 9,
-          productTemplateId: 'bottled-water',
+          productTemplateId: createProductTemplateId('bottled-water'),
         }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(0);
@@ -274,13 +279,13 @@ describe('water calculations', () => {
     it('ignores water items not in liters', () => {
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Bottled Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: 10,
           unit: 'bottles', // Not liters
           recommendedQuantity: 9,
-          productTemplateId: 'bottled-water',
+          productTemplateId: createProductTemplateId('bottled-water'),
         }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(0);
@@ -291,9 +296,9 @@ describe('water calculations', () => {
     it('returns correct values when no water required', () => {
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Crackers',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           unit: 'packages',
         }),
       ];
@@ -309,22 +314,22 @@ describe('water calculations', () => {
       const waterQuantity = pastaQuantity * 1 + randomQuantitySmall(); // More than needed
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Bottled Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: waterQuantity,
           unit: 'liters',
           recommendedQuantity: randomQuantitySmall(),
-          productTemplateId: 'bottled-water',
+          productTemplateId: createProductTemplateId('bottled-water'),
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Pasta',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'pasta', // 1 L/kg
+          productTemplateId: createProductTemplateId('pasta'), // 1 L/kg
         }),
       ];
       const result = calculateWaterRequirements(items);
@@ -350,22 +355,22 @@ describe('water calculations', () => {
       }); // Less than needed
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Bottled Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           quantity: waterQuantity,
           unit: 'liters',
           recommendedQuantity: randomQuantitySmall(),
-          productTemplateId: 'bottled-water',
+          productTemplateId: createProductTemplateId('bottled-water'),
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'Pasta',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'pasta', // 1 L/kg
+          productTemplateId: createProductTemplateId('pasta'), // 1 L/kg
         }),
       ];
       const result = calculateWaterRequirements(items);
@@ -382,22 +387,22 @@ describe('water calculations', () => {
       const riceQuantity = randomQuantityFloat();
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'My Pasta',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'pasta',
+          productTemplateId: createProductTemplateId('pasta'),
         }),
         createMockInventoryItem({
-          id: '2',
+          id: createItemId('2'),
           name: 'My Rice',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: riceQuantity,
           unit: 'kilograms',
           recommendedQuantity: randomQuantityFloat(),
-          productTemplateId: 'rice',
+          productTemplateId: createProductTemplateId('rice'),
         }),
       ];
       const result = calculateWaterRequirements(items);
@@ -480,12 +485,12 @@ describe('water calculations', () => {
       const household = createMockHousehold({ children: 0 });
       const items = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Pasta',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
-          productTemplateId: 'pasta', // 1 L/kg
+          productTemplateId: createProductTemplateId('pasta'), // 1 L/kg
         }),
       ];
       const result = calculateTotalWaterNeeds(
