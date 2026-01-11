@@ -201,7 +201,7 @@ export class InventoryItemFactory {
       ...input,
       id: createItemId(crypto.randomUUID()),
       name: input.name.trim(),
-      categoryId: createCategoryId(input.categoryId as string),
+      categoryId: createCategoryId(input.categoryId),
       createdAt: now,
       updatedAt: now,
       // Ensure expirationDate is undefined if neverExpires is true
@@ -299,7 +299,7 @@ export class InventoryItemFactory {
       location: formData.location,
       notes: formData.notes,
       productTemplateId: formData.productTemplateId
-        ? (formData.productTemplateId as ProductTemplateId)
+        ? createProductTemplateId(formData.productTemplateId)
         : undefined,
       weightGrams: formData.weightGrams,
       caloriesPerUnit: formData.caloriesPerUnit,
