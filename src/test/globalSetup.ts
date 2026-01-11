@@ -40,12 +40,9 @@ const EXPECTED_PROJECT_COUNT = (() => {
  */
 function validateAndParseSeed(envSeed: string): number {
   const parsedSeed = Number.parseInt(envSeed, 10);
-  if (
-    !Number.isInteger(parsedSeed) ||
-    Number.isNaN(parsedSeed) ||
-    parsedSeed < 0 ||
-    parsedSeed > 999999
-  ) {
+  const isValidSeed =
+    Number.isInteger(parsedSeed) && parsedSeed >= 0 && parsedSeed <= 999999;
+  if (!isValidSeed) {
     throw new TypeError(
       `[Faker] Invalid FAKER_SEED="${envSeed}". Expected an integer in range 0-999999.`,
     );
@@ -140,12 +137,12 @@ function handleImplicitSeed(): { seed: number; shouldLog: boolean } {
 
   // Generate new seed and save for other projects
   const seed = generateRandomSeed();
-  const shouldLog = tryWriteSeedFile(seed);
+  const wasCreated = tryWriteSeedFile(seed);
+
   // If file already exists, another project created it - read their seed
-  if (shouldLog) {
-    return { seed, shouldLog: true };
-  }
-  return { seed: readSeedFromFile(), shouldLog: false };
+  return wasCreated
+    ? { seed, shouldLog: true }
+    : { seed: readSeedFromFile(), shouldLog: false };
 }
 
 /**
@@ -154,7 +151,7 @@ function handleImplicitSeed(): { seed: number; shouldLog: boolean } {
  *
  * Uses a temp file to coordinate seed across multiple Vitest projects/workers.
  */
-export default function globalSetup({ provide }: GlobalSetupContext) {
+export default function globalSetup({ provide }: GlobalSetupContext): void {
   const envSeed = process.env.FAKER_SEED;
   const isCI = Boolean(process.env.CI);
   const hasExplicitSeed = Boolean(envSeed);
@@ -226,12 +223,13 @@ function writeIncrementedCounter(current: number): number | null {
     return next;
   } catch {
     // Write or rename failed - clean up temp file if it exists
-    try {
-      if (fs.existsSync(tempFile)) {
+    // Ignore cleanup errors silently
+    if (fs.existsSync(tempFile)) {
+      try {
         fs.unlinkSync(tempFile);
+      } catch {
+        // Cleanup is best-effort
       }
-    } catch {
-      // Ignore cleanup errors
     }
     return null;
   }
@@ -330,26 +328,18 @@ function performCleanup(): void {
 }
 
 /**
- * Checks if cleanup should be performed based on completion count.
- */
-function shouldPerformCleanup(completedCount: number): boolean {
-  return completedCount >= EXPECTED_PROJECT_COUNT;
-}
-
-/**
  * Cleanup: remove seed file after test run
  * Coordinates across multiple projects to only delete when the last project finishes.
  */
-export function teardown() {
+export function teardown(): void {
   try {
     // Increment the completion counter atomically
     const completedCount = incrementCounter();
 
     // Only the last project should delete the seed file
-    if (shouldPerformCleanup(completedCount)) {
+    if (completedCount >= EXPECTED_PROJECT_COUNT) {
       performCleanup();
     }
-    // If not the last project, leave SEED_FILE intact for other projects
   } catch (error) {
     // Ignore teardown errors - they shouldn't fail tests
     // Log in development for debugging
