@@ -21,11 +21,14 @@ export function DisabledRecommendations() {
         if (!item) return null;
         return {
           id: item.id,
-          name: t(item.i18nKey.replace('products.', ''), { ns: 'products' }),
+          name: t(item.i18nKey.replace(/^(products\.|custom\.)/, ''), {
+            ns: 'products',
+          }),
           category: t(item.category, { ns: 'categories' }),
         };
       })
-      .filter((item): item is NonNullable<typeof item> => item !== null);
+      .filter((item): item is NonNullable<typeof item> => item !== null)
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [disabledRecommendedItems, t]);
 
   if (disabledItems.length === 0) {

@@ -36,14 +36,18 @@ export function OverriddenRecommendations() {
 
         return {
           id: item.id,
-          name: t(recommendedItem.i18nKey.replace('products.', ''), {
-            ns: 'products',
-          }),
+          name: t(
+            recommendedItem.i18nKey.replace(/^(products\.|custom\.)/, ''),
+            {
+              ns: 'products',
+            },
+          ),
           category: t(recommendedItem.category, { ns: 'categories' }),
           inventoryItem: item,
         };
       })
-      .filter((item) => item !== null);
+      .filter((item) => item !== null)
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [items, t]);
 
   const handleUnmark = (itemId: ItemId) => {

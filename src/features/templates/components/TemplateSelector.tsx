@@ -25,15 +25,24 @@ export const TemplateSelector = ({
   const [selectedCategoryId, setSelectedCategoryId] =
     useState<string>(initialCategoryId);
 
-  const filteredTemplates = templates.filter((template) => {
-    // i18nKey is like 'products.bottled-water', extract the key part
-    const key = template.i18nKey.replace('products.', '');
-    const templateName = t(key, { ns: 'products' }).toLowerCase();
-    const matchesSearch = templateName.includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      !selectedCategoryId || template.category === selectedCategoryId;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredTemplates = templates
+    .filter((template) => {
+      // i18nKey is like 'products.bottled-water', extract the key part
+      const key = template.i18nKey.replace(/^(products\.|custom\.)/, '');
+      const templateName = t(key, { ns: 'products' }).toLowerCase();
+      const matchesSearch = templateName.includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        !selectedCategoryId || template.category === selectedCategoryId;
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      // Get translated names for sorting
+      const keyA = a.i18nKey.replace(/^(products\.|custom\.)/, '');
+      const keyB = b.i18nKey.replace(/^(products\.|custom\.)/, '');
+      const nameA = t(keyA, { ns: 'products' });
+      const nameB = t(keyB, { ns: 'products' });
+      return nameA.localeCompare(nameB);
+    });
 
   const categoryOptions = [
     { value: '', label: t('inventory.allCategories') },
