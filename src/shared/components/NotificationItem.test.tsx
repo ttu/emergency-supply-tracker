@@ -70,7 +70,8 @@ describe('NotificationItem', () => {
     const user = userEvent.setup();
     render(<NotificationItem message="Test message" onClose={onClose} />);
 
-    const closeButton = screen.getByLabelText('accessibility.closeModal');
+    // Query by accessible name (works with both translation key and fallback text)
+    const closeButton = screen.getByRole('button', { name: /close/i });
     await user.click(closeButton);
 
     expect(onClose).toHaveBeenCalledTimes(1);
