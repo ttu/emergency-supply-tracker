@@ -1,17 +1,33 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import crypto from 'node:crypto';
 import type { GlobalSetupContext } from 'vitest/node';
 
-// File to store seed for this test run (unique per process tree)
-const SEED_FILE = path.join(os.tmpdir(), `.vitest-faker-seed-${process.ppid}`);
+// Generate a unique scope based on the repository directory to avoid collisions
+// across different repos or parallel runs from the same parent process
+const RUN_SCOPE = crypto
+  .createHash('sha256')
+  .update(process.cwd())
+  .digest('hex')
+  .slice(0, 12);
+
+// File to store seed for this test run (scoped by repo and process tree)
+const SEED_FILE = path.join(
+  os.tmpdir(),
+  `.vitest-faker-seed-${RUN_SCOPE}-${process.ppid}`,
+);
 // File to track project completion count for coordinated teardown
 const COUNTER_FILE = path.join(
   os.tmpdir(),
-  `.vitest-faker-counter-${process.ppid}`,
+  `.vitest-faker-counter-${RUN_SCOPE}-${process.ppid}`,
 );
 // Expected number of projects (unit + storybook)
-const EXPECTED_PROJECT_COUNT = 2;
+// Can be overridden via VITEST_PROJECT_COUNT env var
+const EXPECTED_PROJECT_COUNT = Number.parseInt(
+  process.env.VITEST_PROJECT_COUNT ?? '2',
+  10,
+);
 
 /**
  * Validates and parses FAKER_SEED environment variable.
@@ -82,7 +98,18 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
   // Check for explicit env var first
   if (envSeed) {
     seed = validateAndParseSeed(envSeed);
-    shouldLog = tryWriteSeedFile(seed);
+    // Ensure the shared file matches the explicit seed (avoid stale/collision mismatch)
+    // Explicit seed should dominate to maintain consistency across projects
+    if (fs.existsSync(SEED_FILE)) {
+      const existing = readSeedFromFile();
+      if (existing !== seed) {
+        // Overwrite with explicit seed to ensure all projects use the same seed
+        fs.writeFileSync(SEED_FILE, String(seed), { flag: 'w' });
+        shouldLog = true;
+      }
+    } else {
+      shouldLog = tryWriteSeedFile(seed);
+    }
   } else if (fs.existsSync(SEED_FILE)) {
     // Reuse seed from earlier project in this test run
     seed = readSeedFromFile();
