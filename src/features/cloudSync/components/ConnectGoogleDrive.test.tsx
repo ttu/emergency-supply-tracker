@@ -1,10 +1,11 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ConnectGoogleDrive } from './ConnectGoogleDrive';
 import { CloudSyncContext } from '../context';
 import type { CloudSyncContextValue, CloudSyncState } from '../types';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
@@ -23,10 +24,10 @@ const createMockContext = (
   overrides: Partial<CloudSyncContextValue> = {},
 ): CloudSyncContextValue => ({
   state: { ...defaultState, ...state },
-  connect: jest.fn().mockResolvedValue(undefined),
-  disconnect: jest.fn().mockResolvedValue(undefined),
-  syncNow: jest.fn(),
-  clearError: jest.fn(),
+  connect: vi.fn().mockResolvedValue(undefined),
+  disconnect: vi.fn().mockResolvedValue(undefined),
+  syncNow: vi.fn(),
+  clearError: vi.fn(),
   ...overrides,
 });
 
@@ -40,7 +41,7 @@ const renderWithContext = (contextValue: CloudSyncContextValue) => {
 
 describe('ConnectGoogleDrive', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('when disconnected', () => {
@@ -60,7 +61,7 @@ describe('ConnectGoogleDrive', () => {
 
     it('should call connect when clicked', async () => {
       const user = userEvent.setup();
-      const mockConnect = jest.fn().mockResolvedValue(undefined);
+      const mockConnect = vi.fn().mockResolvedValue(undefined);
 
       renderWithContext(createMockContext({}, { connect: mockConnect }));
 
@@ -75,7 +76,7 @@ describe('ConnectGoogleDrive', () => {
       const connectPromise = new Promise<void>((resolve) => {
         resolveConnect = resolve;
       });
-      const mockConnect = jest.fn().mockReturnValue(connectPromise);
+      const mockConnect = vi.fn().mockReturnValue(connectPromise);
 
       renderWithContext(createMockContext({}, { connect: mockConnect }));
 
@@ -99,7 +100,7 @@ describe('ConnectGoogleDrive', () => {
       const connectPromise = new Promise<void>((resolve) => {
         resolveConnect = resolve;
       });
-      const mockConnect = jest.fn().mockReturnValue(connectPromise);
+      const mockConnect = vi.fn().mockReturnValue(connectPromise);
 
       renderWithContext(createMockContext({}, { connect: mockConnect }));
 
@@ -138,7 +139,7 @@ describe('ConnectGoogleDrive', () => {
 
     it('should show confirmation dialog on disconnect', async () => {
       const user = userEvent.setup();
-      const mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(false);
+      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
 
       renderWithContext(
         createMockContext({ state: 'connected', provider: 'google-drive' }),
@@ -153,8 +154,8 @@ describe('ConnectGoogleDrive', () => {
 
     it('should call disconnect when confirmed', async () => {
       const user = userEvent.setup();
-      const mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(true);
-      const mockDisconnect = jest.fn().mockResolvedValue(undefined);
+      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+      const mockDisconnect = vi.fn().mockResolvedValue(undefined);
 
       renderWithContext(
         createMockContext(
@@ -172,8 +173,8 @@ describe('ConnectGoogleDrive', () => {
 
     it('should not call disconnect when cancelled', async () => {
       const user = userEvent.setup();
-      const mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(false);
-      const mockDisconnect = jest.fn().mockResolvedValue(undefined);
+      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+      const mockDisconnect = vi.fn().mockResolvedValue(undefined);
 
       renderWithContext(
         createMockContext(
@@ -191,12 +192,12 @@ describe('ConnectGoogleDrive', () => {
 
     it('should show disconnecting text during disconnect', async () => {
       const user = userEvent.setup();
-      const mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(true);
+      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
       let resolveDisconnect: () => void;
       const disconnectPromise = new Promise<void>((resolve) => {
         resolveDisconnect = resolve;
       });
-      const mockDisconnect = jest.fn().mockReturnValue(disconnectPromise);
+      const mockDisconnect = vi.fn().mockReturnValue(disconnectPromise);
 
       renderWithContext(
         createMockContext(
