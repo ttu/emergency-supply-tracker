@@ -211,16 +211,28 @@ function readCounterValue(): number | null {
 }
 
 /**
- * Increments the counter value and writes it back to file.
+ * Increments the counter value and writes it back to file atomically.
+ * Uses a temporary file and atomic rename to prevent race conditions.
  * Returns the new counter value, or null if write failed.
  */
 function writeIncrementedCounter(current: number): number | null {
   const next = current + 1;
+  const tempFile = `${COUNTER_FILE}.${process.pid}.tmp`;
   try {
-    fs.writeFileSync(COUNTER_FILE, String(next), { flag: 'w' });
+    // Write to temporary file first
+    fs.writeFileSync(tempFile, String(next), { flag: 'w' });
+    // Atomically rename temp file over the counter file
+    fs.renameSync(tempFile, COUNTER_FILE);
     return next;
   } catch {
-    // Write failed (file might have been deleted)
+    // Write or rename failed - clean up temp file if it exists
+    try {
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+    } catch {
+      // Ignore cleanup errors
+    }
     return null;
   }
 }
