@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import styles from './NotificationItem.module.css';
 
 export interface NotificationItemProps {
-  message: string;
-  variant?: 'success' | 'error' | 'info';
-  duration?: number;
-  onClose: () => void;
+  readonly message: string;
+  readonly variant?: 'success' | 'error' | 'info';
+  readonly duration?: number;
+  readonly onClose: () => void;
 }
 
 /**
@@ -19,7 +19,7 @@ export function NotificationItem({
   variant = 'success',
   duration = 3000,
   onClose,
-}: NotificationItemProps) {
+}: Readonly<NotificationItemProps>) {
   const { t } = useTranslation();
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -37,10 +37,16 @@ export function NotificationItem({
     };
   }, [duration, onClose]);
 
-  const icon = variant === 'success' ? '✓' : variant === 'error' ? '✕' : 'ℹ';
+  const getIcon = (): string => {
+    if (variant === 'success') return '✓';
+    if (variant === 'error') return '✕';
+    return 'ℹ';
+  };
+
+  const icon = getIcon();
 
   return (
-    <div
+    <output
       className={`${styles.notification} ${styles[variant]}`}
       role="status"
       aria-live="polite"
@@ -58,6 +64,6 @@ export function NotificationItem({
       >
         ×
       </button>
-    </div>
+    </output>
   );
 }

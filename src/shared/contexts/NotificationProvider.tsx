@@ -1,9 +1,15 @@
-import { useState, useCallback, ReactNode } from 'react';
+import { useState, useCallback, useMemo, ReactNode } from 'react';
 import { NotificationContext } from './NotificationContext';
 import type { Notification, NotificationVariant } from './NotificationContext';
 
-export function NotificationProvider({ children }: { children: ReactNode }) {
+export function NotificationProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const handleAutoDismiss = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
 
   const showNotification = useCallback(
     (
@@ -24,11 +30,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       // Auto-dismiss if duration > 0
       if (duration > 0) {
         setTimeout(() => {
-          setNotifications((prev) => prev.filter((n) => n.id !== id));
+          handleAutoDismiss(id);
         }, duration);
       }
     },
-    [],
+    [handleAutoDismiss],
   );
 
   const removeNotification = useCallback((id: string) => {
@@ -39,15 +45,18 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setNotifications([]);
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      notifications,
+      showNotification,
+      removeNotification,
+      clearAll,
+    }),
+    [notifications, showNotification, removeNotification, clearAll],
+  );
+
   return (
-    <NotificationContext.Provider
-      value={{
-        notifications,
-        showNotification,
-        removeNotification,
-        clearAll,
-      }}
-    >
+    <NotificationContext.Provider value={contextValue}>
       {children}
     </NotificationContext.Provider>
   );
