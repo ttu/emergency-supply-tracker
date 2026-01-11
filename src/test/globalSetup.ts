@@ -84,6 +84,70 @@ function generateRandomSeed(): number {
 }
 
 /**
+ * Attempts to claim the log file to ensure we only log once per run.
+ * Returns true if this process should log.
+ */
+function tryClaimLogFile(): boolean {
+  const LOG_FILE = path.join(
+    os.tmpdir(),
+    `.vitest-faker-seed-log-${RUN_SCOPE}-${process.pid}`,
+  );
+  try {
+    fs.writeFileSync(LOG_FILE, '', { flag: 'wx' });
+    return true;
+  } catch {
+    // Another project already logged, don't log again
+    return false;
+  }
+}
+
+/**
+ * Handles explicit seed from environment variable.
+ * Returns the seed and whether it should be logged.
+ */
+function handleExplicitSeed(envSeed: string): {
+  seed: number;
+  shouldLog: boolean;
+} {
+  const seed = validateAndParseSeed(envSeed);
+  // Ensure the shared file matches the explicit seed (avoid stale/collision mismatch)
+  // Explicit seed should dominate to maintain consistency across projects
+  if (!fs.existsSync(SEED_FILE)) {
+    return { seed, shouldLog: tryWriteSeedFile(seed) };
+  }
+
+  const existing = readSeedFromFile();
+  if (existing === seed) {
+    // File exists and matches - still log once for explicit seeds
+    return { seed, shouldLog: tryClaimLogFile() };
+  }
+
+  // Overwrite with explicit seed to ensure all projects use the same seed
+  fs.writeFileSync(SEED_FILE, String(seed), { flag: 'w' });
+  return { seed, shouldLog: true };
+}
+
+/**
+ * Handles seed when no explicit seed is provided.
+ * Returns the seed and whether it should be logged.
+ */
+function handleImplicitSeed(): { seed: number; shouldLog: boolean } {
+  if (fs.existsSync(SEED_FILE)) {
+    // Reuse seed from earlier project in this test run
+    return { seed: readSeedFromFile(), shouldLog: false };
+  }
+
+  // Generate new seed and save for other projects
+  const seed = generateRandomSeed();
+  const shouldLog = tryWriteSeedFile(seed);
+  // If file already exists, another project created it - read their seed
+  if (shouldLog) {
+    return { seed, shouldLog: true };
+  }
+  return { seed: readSeedFromFile(), shouldLog: false };
+}
+
+/**
  * Vitest global setup - runs once before all tests
  * Used to generate a single faker seed for the entire test run
  *
@@ -94,50 +158,9 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
   const isCI = Boolean(process.env.CI);
   const hasExplicitSeed = Boolean(envSeed);
 
-  let seed: number;
-  let shouldLog = false;
-
-  // Check for explicit env var first
-  if (envSeed) {
-    seed = validateAndParseSeed(envSeed);
-    // Ensure the shared file matches the explicit seed (avoid stale/collision mismatch)
-    // Explicit seed should dominate to maintain consistency across projects
-    if (fs.existsSync(SEED_FILE)) {
-      const existing = readSeedFromFile();
-      if (existing !== seed) {
-        // Overwrite with explicit seed to ensure all projects use the same seed
-        fs.writeFileSync(SEED_FILE, String(seed), { flag: 'w' });
-        shouldLog = true;
-      } else {
-        // File exists and matches - still log once for explicit seeds
-        // Use a separate log marker file to ensure we only log once
-        const LOG_FILE = path.join(
-          os.tmpdir(),
-          `.vitest-faker-seed-log-${RUN_SCOPE}-${process.pid}`,
-        );
-        try {
-          fs.writeFileSync(LOG_FILE, '', { flag: 'wx' });
-          shouldLog = true;
-        } catch {
-          // Another project already logged, don't log again
-          shouldLog = false;
-        }
-      }
-    } else {
-      shouldLog = tryWriteSeedFile(seed);
-    }
-  } else if (fs.existsSync(SEED_FILE)) {
-    // Reuse seed from earlier project in this test run
-    seed = readSeedFromFile();
-  } else {
-    // Generate new seed and save for other projects
-    seed = generateRandomSeed();
-    shouldLog = tryWriteSeedFile(seed);
-    // If file already exists, another project created it - read their seed
-    if (!shouldLog) {
-      seed = readSeedFromFile();
-    }
-  }
+  const { seed, shouldLog } = envSeed
+    ? handleExplicitSeed(envSeed)
+    : handleImplicitSeed();
 
   // Log seed once at start of test run (not in CI unless explicit seed is set)
   if (shouldLog && (!isCI || hasExplicitSeed)) {
@@ -148,6 +171,81 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
 
   // Provide seed to all workers via Vitest's provide mechanism
   provide('fakerSeed', seed);
+}
+
+/**
+ * Attempts to create a new counter file atomically.
+ * Returns the counter value (1) if successful, null if file already exists.
+ */
+function tryCreateCounterFile(): number | null {
+  try {
+    fs.writeFileSync(COUNTER_FILE, '1', { flag: 'wx' });
+    return 1;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+      return null; // File exists, need to read and increment
+    }
+    throw error; // Unexpected error
+  }
+}
+
+/**
+ * Reads the current counter value from file.
+ * Returns the counter value, or null if file is invalid/corrupted.
+ */
+function readCounterValue(): number | null {
+  try {
+    const content = fs.readFileSync(COUNTER_FILE, 'utf-8').trim();
+    const current = Number.parseInt(content, 10);
+    if (Number.isNaN(current) || current < 1) {
+      // Invalid counter, reset to 1
+      fs.writeFileSync(COUNTER_FILE, '1', { flag: 'w' });
+      return 1;
+    }
+    return current;
+  } catch {
+    // File was deleted or corrupted
+    return null;
+  }
+}
+
+/**
+ * Increments the counter value and writes it back to file.
+ * Returns the new counter value, or null if write failed.
+ */
+function writeIncrementedCounter(current: number): number | null {
+  const next = current + 1;
+  try {
+    fs.writeFileSync(COUNTER_FILE, String(next), { flag: 'w' });
+    return next;
+  } catch {
+    // Write failed (file might have been deleted)
+    return null;
+  }
+}
+
+/**
+ * Handles the case when counter file already exists.
+ * Reads, validates, increments, and writes back.
+ * Returns the new counter value, or null if operation failed.
+ */
+function handleExistingCounterFile(): number | null {
+  const current = readCounterValue();
+  if (current === null) {
+    return null; // File invalid or corrupted, retry
+  }
+  return writeIncrementedCounter(current);
+}
+
+/**
+ * Performs a brief delay for exponential backoff.
+ */
+function delay(attempts: number): void {
+  const delayMs = Math.min(5 * attempts, 50);
+  const start = Date.now();
+  while (Date.now() - start < delayMs) {
+    // Busy wait (acceptable for short delays in test teardown)
+  }
 }
 
 /**
@@ -163,64 +261,65 @@ function incrementCounter(): number {
 
   while (attempts < maxAttempts) {
     try {
-      // Try to create counter file with exclusive flag (atomic creation)
-      try {
-        fs.writeFileSync(COUNTER_FILE, '1', { flag: 'wx' });
-        return 1;
-      } catch (error) {
-        // File exists, need to read and increment
-        if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
-          // Read current value
-          let current: number;
-          try {
-            const content = fs.readFileSync(COUNTER_FILE, 'utf-8').trim();
-            current = Number.parseInt(content, 10);
-            if (Number.isNaN(current) || current < 1) {
-              // Invalid counter, reset to 1
-              fs.writeFileSync(COUNTER_FILE, '1', { flag: 'w' });
-              return 1;
-            }
-          } catch {
-            // File was deleted or corrupted, retry from beginning
-            attempts++;
-            continue;
-          }
-
-          // Increment and write back
-          // Note: This read-modify-write isn't fully atomic, but the retry
-          // mechanism and >= check in teardown() handle race conditions gracefully
-          const next = current + 1;
-          try {
-            fs.writeFileSync(COUNTER_FILE, String(next), { flag: 'w' });
-            return next;
-          } catch {
-            // Write failed (file might have been deleted), retry
-            attempts++;
-            continue;
-          }
-        }
-        // Unexpected error, retry
-        attempts++;
-        continue;
+      const newCounter = tryCreateCounterFile();
+      if (newCounter !== null) {
+        return newCounter;
       }
+
+      // File exists, need to read and increment
+      const incremented = handleExistingCounterFile();
+      if (incremented !== null) {
+        return incremented;
+      }
+
+      // Operation failed, retry
+      attempts++;
+      delay(attempts);
     } catch {
       attempts++;
       if (attempts >= maxAttempts) {
         // After max attempts, assume we're the last one
-        // This is a fallback to prevent hanging
         return EXPECTED_PROJECT_COUNT;
       }
-      // Brief delay before retry (exponential backoff)
-      // Use synchronous sleep for Node.js compatibility
-      const delay = Math.min(5 * attempts, 50);
-      const start = Date.now();
-      while (Date.now() - start < delay) {
-        // Busy wait (acceptable for short delays in test teardown)
-      }
+      delay(attempts);
     }
   }
+
   // Fallback: assume we're the last project to prevent hanging
   return EXPECTED_PROJECT_COUNT;
+}
+
+/**
+ * Safely removes a file if it exists.
+ * Logs warnings in development but never throws.
+ */
+function safeUnlink(filePath: string, fileDescription: string): void {
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch (error) {
+    // Log but don't throw - cleanup errors shouldn't fail tests
+    if (process.env.NODE_ENV !== 'test' && !process.env.CI) {
+      console.warn(`[Faker] Failed to cleanup ${fileDescription}:`, error);
+    }
+  }
+}
+
+/**
+ * Performs cleanup of seed and counter files.
+ * Only called when this is the last project to finish.
+ */
+function performCleanup(): void {
+  safeUnlink(SEED_FILE, 'seed file');
+  safeUnlink(COUNTER_FILE, 'counter file');
+}
+
+/**
+ * Checks if cleanup should be performed based on completion count.
+ */
+function shouldPerformCleanup(completedCount: number): boolean {
+  return completedCount >= EXPECTED_PROJECT_COUNT;
 }
 
 /**
@@ -233,29 +332,8 @@ export function teardown() {
     const completedCount = incrementCounter();
 
     // Only the last project should delete the seed file
-    if (completedCount >= EXPECTED_PROJECT_COUNT) {
-      // Clean up both seed file and counter file
-      try {
-        if (fs.existsSync(SEED_FILE)) {
-          fs.unlinkSync(SEED_FILE);
-        }
-      } catch (error) {
-        // Log but don't throw - cleanup errors shouldn't fail tests
-        if (process.env.NODE_ENV !== 'test' && !process.env.CI) {
-          console.warn('[Faker] Failed to cleanup seed file:', error);
-        }
-      }
-
-      try {
-        if (fs.existsSync(COUNTER_FILE)) {
-          fs.unlinkSync(COUNTER_FILE);
-        }
-      } catch (error) {
-        // Log but don't throw - cleanup errors shouldn't fail tests
-        if (process.env.NODE_ENV !== 'test' && !process.env.CI) {
-          console.warn('[Faker] Failed to cleanup counter file:', error);
-        }
-      }
+    if (shouldPerformCleanup(completedCount)) {
+      performCleanup();
     }
     // If not the last project, leave SEED_FILE intact for other projects
   } catch (error) {
