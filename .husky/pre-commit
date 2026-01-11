@@ -4,8 +4,8 @@ set -e
 # Format and lint staged files
 npx lint-staged
 
-# Type-check (catches type errors early)
-npm run type-check
+# Type-check all files (source, tests, stories - catches type errors early)
+npm run type-check:all
 
 # Run tests (frequent feedback for agents)
 npm test

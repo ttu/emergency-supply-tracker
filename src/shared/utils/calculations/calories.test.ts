@@ -10,6 +10,7 @@ import {
   formatCalories,
 } from './calories';
 import type { RecommendedItemDefinition } from '@/shared/types';
+import { createProductTemplateId } from '@/shared/types';
 
 describe('calculateCaloriesFromWeight', () => {
   it('calculates calories from weight and caloriesPer100g', () => {
@@ -53,7 +54,7 @@ describe('calculateTotalCalories', () => {
 describe('getTemplateWeightPerUnit', () => {
   it('returns weightGramsPerUnit when present', () => {
     const template: RecommendedItemDefinition = {
-      id: 'test',
+      id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'food',
       baseQuantity: 1,
@@ -67,7 +68,7 @@ describe('getTemplateWeightPerUnit', () => {
 
   it('returns undefined when no weight data', () => {
     const template: RecommendedItemDefinition = {
-      id: 'test',
+      id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'tools-supplies',
       baseQuantity: 1,
@@ -82,7 +83,7 @@ describe('getTemplateWeightPerUnit', () => {
 describe('getTemplateCaloriesPerUnit', () => {
   it('calculates from weightGramsPerUnit and caloriesPer100g when both present', () => {
     const template: RecommendedItemDefinition = {
-      id: 'test',
+      id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'food',
       baseQuantity: 1,
@@ -98,7 +99,7 @@ describe('getTemplateCaloriesPerUnit', () => {
 
   it('returns caloriesPerUnit when weight data not available', () => {
     const template: RecommendedItemDefinition = {
-      id: 'test',
+      id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'food',
       baseQuantity: 1,
@@ -112,7 +113,7 @@ describe('getTemplateCaloriesPerUnit', () => {
 
   it('returns undefined when no calorie data available', () => {
     const template: RecommendedItemDefinition = {
-      id: 'test',
+      id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'tools-supplies',
       baseQuantity: 1,

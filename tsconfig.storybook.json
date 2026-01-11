@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["@storybook/react", "@storybook/addon-docs"]
+  },
+  "include": [
+    "src",
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx",
+    "src/css-modules.d.ts"
+  ],
+  "exclude": []
+}

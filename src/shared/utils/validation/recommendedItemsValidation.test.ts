@@ -8,6 +8,7 @@ import type {
   RecommendedItemsFile,
   ImportedRecommendedItem,
 } from '../../types';
+import { createProductTemplateId } from '../../types';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 function createValidFile(
@@ -22,7 +23,7 @@ function createValidFile(
     },
     items: overrides?.items ?? [
       {
-        id: 'test-item',
+        id: createProductTemplateId('test-item'),
         names: { en: 'Test Item' },
         category: 'food',
         baseQuantity: 1,
@@ -38,7 +39,7 @@ function createValidItem(
   overrides?: Partial<ImportedRecommendedItem>,
 ): ImportedRecommendedItem {
   return {
-    id: 'test-item',
+    id: createProductTemplateId('test-item'),
     names: { en: 'Test Item' },
     category: 'food',
     baseQuantity: 1,
@@ -80,7 +81,7 @@ describe('validateRecommendedItemsFile', () => {
       const file = createValidFile({
         items: [
           {
-            id: 'bottled-water',
+            id: createProductTemplateId('bottled-water'),
             i18nKey: 'products.bottled-water',
             category: 'water-beverages',
             baseQuantity: 3,
@@ -111,7 +112,12 @@ describe('validateRecommendedItemsFile', () => {
 
       categories.forEach((category) => {
         const file = createValidFile({
-          items: [createValidItem({ id: `item-${category}`, category })],
+          items: [
+            createValidItem({
+              id: createProductTemplateId(`item-${category}`),
+              category,
+            }),
+          ],
         });
         const result = validateRecommendedItemsFile(file);
         expect(result.valid).toBe(true);
@@ -141,7 +147,12 @@ describe('validateRecommendedItemsFile', () => {
 
       units.forEach((unit) => {
         const file = createValidFile({
-          items: [createValidItem({ id: `item-${unit}`, unit })],
+          items: [
+            createValidItem({
+              id: createProductTemplateId(`item-${unit}`),
+              unit,
+            }),
+          ],
         });
         const result = validateRecommendedItemsFile(file);
         expect(result.valid).toBe(true);
@@ -152,7 +163,7 @@ describe('validateRecommendedItemsFile', () => {
       const file = createValidFile({
         items: [
           {
-            id: 'complete-item',
+            id: createProductTemplateId('complete-item'),
             names: {
               en: 'Complete Item',
               fi: 'Täydellinen tuote',
@@ -182,7 +193,7 @@ describe('validateRecommendedItemsFile', () => {
       const file = createValidFile({
         items: [
           {
-            id: 'multi-lang-item',
+            id: createProductTemplateId('multi-lang-item'),
             names: {
               en: 'Water',
               fi: 'Vesi',
@@ -246,7 +257,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects missing meta.name', () => {
       const file = createValidFile();
-      delete (file.meta as Record<string, unknown>).name;
+      delete (file.meta as unknown as Record<string, unknown>).name;
       const result = validateRecommendedItemsFile(file);
 
       expect(result.valid).toBe(false);
@@ -268,7 +279,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects missing meta.version', () => {
       const file = createValidFile();
-      delete (file.meta as Record<string, unknown>).version;
+      delete (file.meta as unknown as Record<string, unknown>).version;
       const result = validateRecommendedItemsFile(file);
 
       expect(result.valid).toBe(false);
@@ -279,7 +290,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects missing meta.createdAt', () => {
       const file = createValidFile();
-      delete (file.meta as Record<string, unknown>).createdAt;
+      delete (file.meta as unknown as Record<string, unknown>).createdAt;
       const result = validateRecommendedItemsFile(file);
 
       expect(result.valid).toBe(false);
@@ -290,7 +301,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects invalid meta.language', () => {
       const file = createValidFile();
-      (file.meta as Record<string, unknown>).language = 'de';
+      (file.meta as unknown as Record<string, unknown>).language = 'de';
       const result = validateRecommendedItemsFile(file);
 
       expect(result.valid).toBe(false);
@@ -303,7 +314,7 @@ describe('validateRecommendedItemsFile', () => {
   describe('items validation', () => {
     it('rejects non-array items', () => {
       const file = createValidFile();
-      (file as Record<string, unknown>).items = 'not-array';
+      (file as unknown as Record<string, unknown>).items = 'not-array';
       const result = validateRecommendedItemsFile(file);
 
       expect(result.valid).toBe(false);
@@ -324,7 +335,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects item without id', () => {
       const item = createValidItem();
-      delete (item as Record<string, unknown>).id;
+      delete (item as unknown as Record<string, unknown>).id;
       const file = createValidFile({ items: [item] });
       const result = validateRecommendedItemsFile(file);
 
@@ -336,7 +347,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects item without names.en or i18nKey', () => {
       const item = createValidItem();
-      delete (item as Record<string, unknown>).names;
+      delete (item as unknown as Record<string, unknown>).names;
       const file = createValidFile({ items: [item] });
       const result = validateRecommendedItemsFile(file);
 
@@ -350,7 +361,7 @@ describe('validateRecommendedItemsFile', () => {
       const file = createValidFile({
         items: [
           {
-            id: 'no-english',
+            id: createProductTemplateId('no-english'),
             names: { fi: 'Suomeksi' }, // missing 'en'
             category: 'food',
             baseQuantity: 1,
@@ -372,7 +383,7 @@ describe('validateRecommendedItemsFile', () => {
       const file = createValidFile({
         items: [
           {
-            id: 'invalid-names',
+            id: createProductTemplateId('invalid-names'),
             names: 'not an object' as unknown as Record<string, string>,
             category: 'food',
             baseQuantity: 1,
@@ -428,7 +439,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects non-boolean scaleWithPeople', () => {
       const item = createValidItem();
-      (item as Record<string, unknown>).scaleWithPeople = 'yes';
+      (item as unknown as Record<string, unknown>).scaleWithPeople = 'yes';
       const file = createValidFile({ items: [item] });
       const result = validateRecommendedItemsFile(file);
 
@@ -440,7 +451,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects non-boolean scaleWithDays', () => {
       const item = createValidItem();
-      (item as Record<string, unknown>).scaleWithDays = 1;
+      (item as unknown as Record<string, unknown>).scaleWithDays = 1;
       const file = createValidFile({ items: [item] });
       const result = validateRecommendedItemsFile(file);
 
@@ -453,8 +464,8 @@ describe('validateRecommendedItemsFile', () => {
     it('detects duplicate item IDs', () => {
       const file = createValidFile({
         items: [
-          createValidItem({ id: 'duplicate-id' }),
-          createValidItem({ id: 'duplicate-id' }),
+          createValidItem({ id: createProductTemplateId('duplicate-id') }),
+          createValidItem({ id: createProductTemplateId('duplicate-id') }),
         ],
       });
       const result = validateRecommendedItemsFile(file);
@@ -467,7 +478,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects non-object item in array', () => {
       const file = createValidFile();
-      (file as Record<string, unknown>).items = [
+      (file as unknown as Record<string, unknown>).items = [
         'not-an-object',
         createValidItem(),
       ];
@@ -483,7 +494,7 @@ describe('validateRecommendedItemsFile', () => {
       const file = createValidFile({
         items: [
           {
-            id: 'empty-i18n',
+            id: createProductTemplateId('empty-i18n'),
             i18nKey: '   ', // empty after trim
             category: 'food',
             baseQuantity: 1,
@@ -565,7 +576,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('warns about invalid requiresFreezer (non-boolean)', () => {
       const item = createValidItem();
-      (item as Record<string, unknown>).requiresFreezer = 'yes';
+      (item as unknown as Record<string, unknown>).requiresFreezer = 'yes';
       const file = createValidFile({ items: [item] });
       const result = validateRecommendedItemsFile(file);
 
@@ -642,7 +653,7 @@ describe('validateRecommendedItemsFile', () => {
       const file = createValidFile({
         items: [
           {
-            id: 'empty-name',
+            id: createProductTemplateId('empty-name'),
             names: { en: 'Valid', fi: '   ' }, // empty Finnish name
             category: 'food',
             baseQuantity: 1,
@@ -756,7 +767,7 @@ describe('convertToRecommendedItemDefinitions', () => {
   it('converts items with i18nKey', () => {
     const items: ImportedRecommendedItem[] = [
       {
-        id: 'bottled-water',
+        id: createProductTemplateId('bottled-water'),
         i18nKey: 'products.bottled-water',
         category: 'water-beverages',
         baseQuantity: 3,
@@ -775,7 +786,7 @@ describe('convertToRecommendedItemDefinitions', () => {
   it('creates synthetic i18nKey for items with names only', () => {
     const items: ImportedRecommendedItem[] = [
       {
-        id: 'custom-item',
+        id: createProductTemplateId('custom-item'),
         names: { en: 'Custom Item', fi: 'Mukautettu' },
         category: 'food',
         baseQuantity: 1,
@@ -793,7 +804,7 @@ describe('convertToRecommendedItemDefinitions', () => {
   it('preserves all optional fields', () => {
     const items: ImportedRecommendedItem[] = [
       {
-        id: 'complete-item',
+        id: createProductTemplateId('complete-item'),
         names: { en: 'Complete Item' },
         category: 'food',
         baseQuantity: 2,

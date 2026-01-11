@@ -4,10 +4,16 @@ import {
   calculateCategoryPreparedness,
 } from './preparedness';
 import type { CategoryStatusSummary } from './categoryStatus';
+import type { InventoryItem } from '@/shared/types';
 import {
   createMockHousehold,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 
 describe('calculatePreparednessScoreFromCategoryStatuses', () => {
   it('should return 0 when no categories', () => {
@@ -239,7 +245,7 @@ describe('calculatePreparednessScore', () => {
   });
 
   it('should return 0 when no items exist', () => {
-    const items = [];
+    const items: InventoryItem[] = [];
     const score = calculatePreparednessScore(items, baseHousehold);
     expect(score).toBe(0);
   });
@@ -247,10 +253,10 @@ describe('calculatePreparednessScore', () => {
   it('should return a score between 0 and 100', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
-        productTemplateId: 'water',
+        categoryId: createCategoryId('water'),
+        productTemplateId: createProductTemplateId('water'),
       }),
     ];
     const score = calculatePreparednessScore(items, baseHousehold);
@@ -266,10 +272,10 @@ describe('calculatePreparednessScore', () => {
 
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
-        productTemplateId: 'water',
+        categoryId: createCategoryId('water'),
+        productTemplateId: createProductTemplateId('water'),
       }),
     ];
 
@@ -306,12 +312,12 @@ describe('calculatePreparednessScore', () => {
   it('should cap item score at 100%', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 100, // Needed for capping test (100/50 = 200%, should cap at 100%)
         recommendedQuantity: 50, // Needed for capping test
-        productTemplateId: 'water',
+        productTemplateId: createProductTemplateId('water'),
       }),
     ];
 
@@ -331,11 +337,11 @@ describe('calculatePreparednessScore', () => {
 
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 10,
-        productTemplateId: 'water',
+        productTemplateId: createProductTemplateId('water'),
       }),
     ];
 
@@ -356,11 +362,11 @@ describe('calculatePreparednessScore', () => {
 
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 10,
-        productTemplateId: 'water',
+        productTemplateId: createProductTemplateId('water'),
       }),
     ];
 
@@ -383,22 +389,22 @@ describe('calculatePreparednessScore', () => {
     // We'll use a custom item that matches a recommended item that doesn't scale with people
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'test-item',
-        categoryId: 'tools',
+        categoryId: createCategoryId('tools'),
         quantity: 5,
-        productTemplateId: 'test-item',
+        productTemplateId: createProductTemplateId('test-item'),
       }),
     ];
 
     // Create a custom recommended items list with one that doesn't scale with people
     const customRecommendedItems = [
       {
-        id: 'test-item',
+        id: createProductTemplateId('test-item'),
         i18nKey: 'test.item',
-        category: 'tools' as const,
+        category: 'tools-supplies' as const,
         baseQuantity: 10,
-        unit: 'pcs' as const,
+        unit: 'pieces' as const,
         scaleWithPeople: false, // Doesn't scale with people
         scaleWithDays: false, // Doesn't scale with days
       },
@@ -432,9 +438,9 @@ describe('calculateCategoryPreparedness', () => {
   it('should return 100 for category with items but no recommendations', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Custom Item',
-        categoryId: 'custom',
+        categoryId: createCategoryId('custom'),
         recommendedQuantity: 0, // No recommendations
       }),
     ];
@@ -445,10 +451,10 @@ describe('calculateCategoryPreparedness', () => {
   it('should return valid score for water category', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
-        productTemplateId: 'water',
+        categoryId: createCategoryId('water'),
+        productTemplateId: createProductTemplateId('water'),
       }),
     ];
     const score = calculateCategoryPreparedness('water', items, baseHousehold);
@@ -459,15 +465,15 @@ describe('calculateCategoryPreparedness', () => {
   it('should calculate scores independently per category', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
-        productTemplateId: 'water',
+        categoryId: createCategoryId('water'),
+        productTemplateId: createProductTemplateId('water'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Canned Food',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
       }),
     ];
 
@@ -507,20 +513,20 @@ describe('calculateCategoryPreparedness', () => {
     // These items exist for the category but all get skipped, triggering maxScore === 0
     const customRecommendedItems = [
       {
-        id: 'test-water-1',
+        id: createProductTemplateId('test-water-1'),
         i18nKey: 'test.water1',
         category: 'water-beverages' as const,
         baseQuantity: 1,
-        unit: 'l' as const,
+        unit: 'liters' as const,
         scaleWithPeople: true, // Will be 0 when people = 0
         scaleWithDays: false,
       },
       {
-        id: 'test-water-2',
+        id: createProductTemplateId('test-water-2'),
         i18nKey: 'test.water2',
         category: 'water-beverages' as const,
         baseQuantity: 2,
-        unit: 'l' as const,
+        unit: 'liters' as const,
         scaleWithPeople: true, // Will be 0 when people = 0
         scaleWithDays: false,
       },
@@ -554,11 +560,11 @@ describe('calculateCategoryPreparedness', () => {
     // These items exist for the category but all get skipped, triggering maxScore === 0
     const customRecommendedItems = [
       {
-        id: 'test-water-1',
+        id: createProductTemplateId('test-water-1'),
         i18nKey: 'test.water1',
         category: 'water-beverages' as const,
         baseQuantity: 1,
-        unit: 'l' as const,
+        unit: 'liters' as const,
         scaleWithPeople: true, // Will be 0 when people = 0
         scaleWithDays: true, // Will be 0 when days = 0
       },

@@ -6,7 +6,7 @@ import {
   createMockProductTemplate,
   createMockAppData,
 } from './factories';
-import { VALID_THEMES } from '@/shared/types';
+import { VALID_THEMES, createProductTemplateId } from '@/shared/types';
 
 describe('factories', () => {
   describe('createMockHousehold', () => {
@@ -77,7 +77,7 @@ describe('factories', () => {
       const template = createMockProductTemplate();
       expect(template.id).toBeDefined();
       expect(typeof template.name).toBe('string');
-      expect(template.name.length).toBeGreaterThan(0);
+      expect(template.name?.length ?? 0).toBeGreaterThan(0);
       expect(typeof template.category).toBe('string');
       expect(typeof template.defaultUnit).toBe('string');
       expect(typeof template.isBuiltIn).toBe('boolean');
@@ -86,10 +86,10 @@ describe('factories', () => {
 
     it('applies overrides', () => {
       const template = createMockProductTemplate({
-        id: 'custom-id',
+        id: createProductTemplateId('custom-id'),
         isBuiltIn: true,
       });
-      expect(template.id).toBe('custom-id');
+      expect(template.id).toBe(createProductTemplateId('custom-id'));
       expect(template.isBuiltIn).toBe(true);
     });
   });

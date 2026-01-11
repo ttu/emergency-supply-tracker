@@ -11,6 +11,12 @@ import {
   createMockHousehold,
 } from '@/shared/utils/test/factories';
 import {
+  createItemId,
+  createCategoryId,
+  createDateOnly,
+  createProductTemplateId,
+} from '@/shared/types';
+import {
   DAILY_WATER_PER_PERSON,
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
@@ -29,7 +35,7 @@ import {
 
 describe('calculateCategoryStatus', () => {
   const waterCategory = createMockCategory({
-    id: 'water',
+    id: createCategoryId('water'),
     name: 'Water',
     icon: '💧',
   });
@@ -39,7 +45,7 @@ describe('calculateCategoryStatus', () => {
     const result = calculateCategoryStatus(waterCategory, items, 0);
 
     expect(result).toEqual({
-      categoryId: 'water',
+      categoryId: createCategoryId('water'),
       itemCount: 0,
       status: 'critical',
       completionPercentage: 0,
@@ -80,34 +86,34 @@ describe('calculateCategoryStatus', () => {
   it('should count items by status correctly', () => {
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 0,
-        unit: 'gallons',
+        unit: 'liters', // 'gallons' is not a valid unit
         recommendedQuantity: 28,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Water Bottles',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 10,
         unit: 'bottles',
         recommendedQuantity: 24,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '3',
+        id: createItemId('3'),
         name: 'Water Purification',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 5,
-        unit: 'tablets',
+        unit: 'pieces', // 'tablets' is not a valid unit
         recommendedQuantity: 5,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -123,11 +129,11 @@ describe('calculateCategoryStatus', () => {
   it('should override to critical if any items are critical', () => {
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 0,
-        unit: 'gallons',
+        unit: 'liters', // 'gallons' is not a valid unit
         recommendedQuantity: 28,
         neverExpires: true,
       }),
@@ -141,24 +147,24 @@ describe('calculateCategoryStatus', () => {
   it('should only count items from the specified category', () => {
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 28,
-        unit: 'gallons',
+        unit: 'liters', // 'gallons' is not a valid unit
         recommendedQuantity: 28,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Food',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         quantity: 10,
         unit: 'cans',
         recommendedQuantity: 10,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -169,9 +175,21 @@ describe('calculateCategoryStatus', () => {
 
 describe('calculateAllCategoryStatuses', () => {
   const categories = [
-    createMockCategory({ id: 'water', name: 'Water', icon: '💧' }),
-    createMockCategory({ id: 'food', name: 'Food', icon: '🥫' }),
-    createMockCategory({ id: 'medical', name: 'Medical', icon: '⚕️' }),
+    createMockCategory({
+      id: createCategoryId('water'),
+      name: 'Water',
+      icon: '💧',
+    }),
+    createMockCategory({
+      id: createCategoryId('food'),
+      name: 'Food',
+      icon: '🥫',
+    }),
+    createMockCategory({
+      id: createCategoryId('medical'),
+      name: 'Medical',
+      icon: '⚕️',
+    }),
   ];
 
   it('should calculate status for all categories', () => {
@@ -368,15 +386,15 @@ describe('calculateCategoryShortages', () => {
       const pastaQuantity = 2.0;
       const items: InventoryItem[] = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Pasta',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
           recommendedQuantity: 1,
-          productTemplateId: 'pasta', // 1 L/kg water requirement
+          productTemplateId: createProductTemplateId('pasta'), // 1 L/kg water requirement
           neverExpires: false,
-          expirationDate: '2025-12-31',
+          expirationDate: createDateOnly('2025-12-31'),
         }),
       ];
 
@@ -409,12 +427,12 @@ describe('calculateCategoryShortages', () => {
     it('should not add preparation water when no food requires water', () => {
       const items: InventoryItem[] = [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Crackers',
-          categoryId: 'food',
+          categoryId: createCategoryId('food'),
           unit: 'packages',
           neverExpires: false,
-          expirationDate: '2025-12-31',
+          expirationDate: createDateOnly('2025-12-31'),
         }),
       ];
 
@@ -454,15 +472,15 @@ describe('calculateCategoryShortages', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Bottled Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: actual,
         unit: 'liters',
         recommendedQuantity: needed,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -490,37 +508,37 @@ describe('calculateCategoryShortages', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Bottled Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: waterNeeded,
         unit: 'liters',
         recommendedQuantity: waterNeeded,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Long Life Milk',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: milkNeeded,
         unit: 'liters',
         recommendedQuantity: milkNeeded,
-        productTemplateId: 'long-life-milk',
+        productTemplateId: createProductTemplateId('long-life-milk'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '3',
+        id: createItemId('3'),
         name: 'Long Life Juice',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: juiceNeeded,
         unit: 'liters',
         recommendedQuantity: juiceNeeded,
-        productTemplateId: 'long-life-juice',
+        productTemplateId: createProductTemplateId('long-life-juice'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -545,16 +563,16 @@ describe('calculateCategoryShortages', () => {
   it('should sort shortages by missing amount descending', () => {
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'water-beverages',
+        id: createItemId('1'),
+        categoryId: createCategoryId('water-beverages'),
         quantity: 50, // missing 4
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
-        id: '2',
-        categoryId: 'water-beverages',
+        id: createItemId('2'),
+        categoryId: createCategoryId('water-beverages'),
         quantity: 0, // missing all
-        productTemplateId: 'long-life-milk',
+        productTemplateId: createProductTemplateId('long-life-milk'),
       }),
     ];
 
@@ -580,17 +598,17 @@ describe('calculateCategoryShortages', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'food',
+        id: createItemId('1'),
+        categoryId: createCategoryId('food'),
         quantity: soupQuantity,
-        productTemplateId: 'canned-soup',
+        productTemplateId: createProductTemplateId('canned-soup'),
         caloriesPerUnit: soupCalories,
       }),
       createMockInventoryItem({
-        id: '2',
-        categoryId: 'food',
+        id: createItemId('2'),
+        categoryId: createCategoryId('food'),
         quantity: pastaQuantity,
-        productTemplateId: 'pasta',
+        productTemplateId: createProductTemplateId('pasta'),
         caloriesPerUnit: pastaCalories,
       }),
     ];
@@ -625,10 +643,10 @@ describe('calculateCategoryShortages', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'food',
+        id: createItemId('1'),
+        categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: 'rice',
+        productTemplateId: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -644,10 +662,10 @@ describe('calculateCategoryShortages', () => {
   it('should not return calorie data for non-food categories', () => {
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'water-beverages',
+        id: createItemId('1'),
+        categoryId: createCategoryId('water-beverages'),
         quantity: 54,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -665,13 +683,13 @@ describe('calculateCategoryShortages', () => {
 
 describe('calculateCategoryStatus - inventory-based status', () => {
   const waterCategory = createMockCategory({
-    id: 'water-beverages',
+    id: createCategoryId('water-beverages'),
     name: 'Water & Beverages',
     icon: '💧',
   });
 
   const foodCategory = createMockCategory({
-    id: 'food',
+    id: createCategoryId('food'),
     name: 'Food',
     icon: '🥫',
   });
@@ -694,15 +712,15 @@ describe('calculateCategoryStatus - inventory-based status', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Bottled Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: actual,
         unit: 'liters',
         recommendedQuantity: needed,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -732,15 +750,15 @@ describe('calculateCategoryStatus - inventory-based status', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Bottled Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: actual,
         unit: 'liters',
         recommendedQuantity: needed,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -771,10 +789,10 @@ describe('calculateCategoryStatus - inventory-based status', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'food',
+        id: createItemId('1'),
+        categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: 'rice',
+        productTemplateId: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -808,10 +826,10 @@ describe('calculateCategoryStatus - inventory-based status', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'food',
+        id: createItemId('1'),
+        categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: 'rice',
+        productTemplateId: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -953,10 +971,10 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'water-beverages',
+        id: createItemId('1'),
+        categoryId: createCategoryId('water-beverages'),
         quantity: actual,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -978,10 +996,10 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'water-beverages',
+        id: createItemId('1'),
+        categoryId: createCategoryId('water-beverages'),
         quantity,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -1006,11 +1024,11 @@ describe('calculateCategoryShortages - communication-info category', () => {
     // Both have unit: 'pieces' but should track as "items" not "pieces"
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'communication-info',
+        id: createItemId('1'),
+        categoryId: createCategoryId('communication-info'),
         quantity: 1,
         unit: 'pieces',
-        productTemplateId: 'battery-radio',
+        productTemplateId: createProductTemplateId('battery-radio'),
       }),
     ];
 
@@ -1030,18 +1048,18 @@ describe('calculateCategoryShortages - communication-info category', () => {
   it('should show all items fulfilled when both radio types are present', () => {
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'communication-info',
+        id: createItemId('1'),
+        categoryId: createCategoryId('communication-info'),
         quantity: 1,
         unit: 'pieces',
-        productTemplateId: 'battery-radio',
+        productTemplateId: createProductTemplateId('battery-radio'),
       }),
       createMockInventoryItem({
-        id: '2',
-        categoryId: 'communication-info',
+        id: createItemId('2'),
+        categoryId: createCategoryId('communication-info'),
         quantity: 1,
         unit: 'pieces',
-        productTemplateId: 'hand-crank-radio',
+        productTemplateId: createProductTemplateId('hand-crank-radio'),
       }),
     ];
 
@@ -1061,11 +1079,11 @@ describe('calculateCategoryShortages - communication-info category', () => {
     // Having 5 battery radios should still only count as 1 item type fulfilled
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'communication-info',
+        id: createItemId('1'),
+        categoryId: createCategoryId('communication-info'),
         quantity: 5,
         unit: 'pieces',
-        productTemplateId: 'battery-radio',
+        productTemplateId: createProductTemplateId('battery-radio'),
       }),
     ];
 
@@ -1089,10 +1107,10 @@ describe('getCategoryDisplayStatus', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'water-beverages',
+        id: createItemId('1'),
+        categoryId: createCategoryId('water-beverages'),
         quantity,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -1129,10 +1147,10 @@ describe('getCategoryDisplayStatus', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'food',
+        id: createItemId('1'),
+        categoryId: createCategoryId('food'),
         quantity,
-        productTemplateId: 'rice',
+        productTemplateId: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -1149,10 +1167,10 @@ describe('getCategoryDisplayStatus', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'water-beverages',
+        id: createItemId('1'),
+        categoryId: createCategoryId('water-beverages'),
         quantity,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -1182,15 +1200,15 @@ describe('getCategoryDisplayStatus', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Bottled Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: actual,
         unit: 'liters',
         recommendedQuantity: waterNeeded,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -1218,10 +1236,10 @@ describe('getCategoryDisplayStatus', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'food',
+        id: createItemId('1'),
+        categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: 'rice',
+        productTemplateId: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -1248,10 +1266,10 @@ describe('getCategoryDisplayStatus', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'food',
+        id: createItemId('1'),
+        categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: 'rice',
+        productTemplateId: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -1280,10 +1298,10 @@ describe('getCategoryDisplayStatus', () => {
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
-        categoryId: 'water-beverages',
+        id: createItemId('1'),
+        categoryId: createCategoryId('water-beverages'),
         quantity: actual,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
     ];
 

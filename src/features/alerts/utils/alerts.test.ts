@@ -5,6 +5,14 @@ import {
   createMockHousehold,
   createMockAlert,
 } from '@/shared/utils/test/factories';
+import type { InventoryItem } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createDateOnly,
+  createProductTemplateId,
+  createAlertId,
+} from '@/shared/types';
 
 // Mock translation function
 const mockT = (key: string, options?: Record<string, string | number>) => {
@@ -44,16 +52,18 @@ describe('generateDashboardAlerts', () => {
   it('should generate expired item alerts', () => {
     const items: InventoryItem[] = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Expired Water',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         neverExpires: false,
-        expirationDate: '2024-12-01',
+        expirationDate: createDateOnly('2024-12-01'),
       }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
-    const expiredAlert = alerts.find((a) => a.id === 'expired-1');
+    const expiredAlert = alerts.find(
+      (a) => a.id === createAlertId('expired-1'),
+    );
 
     expect(expiredAlert).toBeDefined();
     expect(expiredAlert?.type).toBe('critical');
@@ -64,16 +74,18 @@ describe('generateDashboardAlerts', () => {
   it('should generate expiring soon alerts', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Expiring Water',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         neverExpires: false,
-        expirationDate: '2025-01-05', // 4 days from test date
+        expirationDate: createDateOnly('2025-01-05'), // 4 days from test date
       }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT);
-    const expiringAlert = alerts.find((a) => a.id === 'expiring-soon-1');
+    const expiringAlert = alerts.find(
+      (a) => a.id === createAlertId('expiring-soon-1'),
+    );
 
     expect(expiringAlert).toBeDefined();
     expect(expiringAlert?.type).toBe('warning');
@@ -85,9 +97,9 @@ describe('generateDashboardAlerts', () => {
     // This tests the case where daysUntilExpiration === undefined check
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Item with undefined expiration',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         neverExpires: false,
         expirationDate: undefined, // This will cause getDaysUntilExpiration to return undefined
       }),
@@ -105,9 +117,9 @@ describe('generateDashboardAlerts', () => {
   it('should not generate alerts for items that never expire', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Salt',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         neverExpires: true,
       }),
     ];
@@ -123,14 +135,14 @@ describe('generateDashboardAlerts', () => {
   it('should generate category out of stock alerts', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 0,
-        unit: 'gallons',
+        unit: 'liters', // Using 'liters' instead of invalid 'gallons'
         recommendedQuantity: 28,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -147,14 +159,14 @@ describe('generateDashboardAlerts', () => {
   it('should generate category critically low stock alerts', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 5,
-        unit: 'gallons',
+        unit: 'liters', // Using 'liters' instead of invalid 'gallons'
         recommendedQuantity: 28, // 5/28 = 17.8% < 25%
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -172,14 +184,14 @@ describe('generateDashboardAlerts', () => {
   it('should generate category low stock warning alerts', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 10,
-        unit: 'gallons',
+        unit: 'liters', // Using 'liters' instead of invalid 'gallons'
         recommendedQuantity: 28, // 10/28 = 35.7% (between 25% and 50%)
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -195,14 +207,14 @@ describe('generateDashboardAlerts', () => {
   it('should not generate stock alerts when category quantity is adequate', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 28,
-        unit: 'gallons',
+        unit: 'liters', // Using 'liters' instead of invalid 'gallons'
         recommendedQuantity: 28,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -215,20 +227,20 @@ describe('generateDashboardAlerts', () => {
   it('should sort alerts by priority (critical first, then warning)', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Warning Item',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         neverExpires: false,
-        expirationDate: '2025-01-05',
+        expirationDate: createDateOnly('2025-01-05'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Critical Item',
-        categoryId: 'water',
+        categoryId: createCategoryId('water'),
         quantity: 0, // Out of stock for critical alert
         recommendedQuantity: 28,
         neverExpires: false,
-        expirationDate: '2024-12-01',
+        expirationDate: createDateOnly('2024-12-01'),
       }),
     ];
 
@@ -252,12 +264,12 @@ describe('generateDashboardAlerts', () => {
   it('should handle items with no recommended quantity', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Custom Item',
-        categoryId: 'custom',
+        categoryId: createCategoryId('custom'),
         recommendedQuantity: 0, // No recommended quantity
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -271,24 +283,24 @@ describe('generateDashboardAlerts', () => {
   it('should aggregate multiple items in same category for stock alerts', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Bottled Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 5,
         unit: 'liters',
         recommendedQuantity: 20,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Juice',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 10,
         unit: 'liters',
         recommendedQuantity: 15,
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -307,10 +319,26 @@ describe('generateDashboardAlerts', () => {
 describe('countAlerts', () => {
   it('should count alerts correctly by type', () => {
     const alerts = [
-      createMockAlert({ id: '1', type: 'critical', message: 'Test 1' }),
-      createMockAlert({ id: '2', type: 'critical', message: 'Test 2' }),
-      createMockAlert({ id: '3', type: 'warning', message: 'Test 3' }),
-      createMockAlert({ id: '4', type: 'info', message: 'Test 4' }),
+      createMockAlert({
+        id: createAlertId('1'),
+        type: 'critical',
+        message: 'Test 1',
+      }),
+      createMockAlert({
+        id: createAlertId('2'),
+        type: 'critical',
+        message: 'Test 2',
+      }),
+      createMockAlert({
+        id: createAlertId('3'),
+        type: 'warning',
+        message: 'Test 3',
+      }),
+      createMockAlert({
+        id: createAlertId('4'),
+        type: 'info',
+        message: 'Test 4',
+      }),
     ];
 
     const counts = countAlerts(alerts);
@@ -337,9 +365,21 @@ describe('countAlerts', () => {
 
   it('should handle all critical alerts', () => {
     const alerts = [
-      createMockAlert({ id: '1', type: 'critical', message: 'Test 1' }),
-      createMockAlert({ id: '2', type: 'critical', message: 'Test 2' }),
-      createMockAlert({ id: '3', type: 'critical', message: 'Test 3' }),
+      createMockAlert({
+        id: createAlertId('1'),
+        type: 'critical',
+        message: 'Test 1',
+      }),
+      createMockAlert({
+        id: createAlertId('2'),
+        type: 'critical',
+        message: 'Test 2',
+      }),
+      createMockAlert({
+        id: createAlertId('3'),
+        type: 'critical',
+        message: 'Test 3',
+      }),
     ];
 
     const counts = countAlerts(alerts);
@@ -366,32 +406,32 @@ describe('water shortage alerts', () => {
   it('should generate water shortage alert when food requires more water than available', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Bottled Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 5,
         unit: 'liters',
         recommendedQuantity: 18,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Pasta',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         quantity: 10,
         unit: 'kilograms',
         recommendedQuantity: 1,
-        productTemplateId: 'pasta', // 1.0 L/kg water requirement
+        productTemplateId: createProductTemplateId('pasta'), // 1.0 L/kg water requirement
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
     const waterAlert = alerts.find(
-      (a) => a.id === 'water-shortage-preparation',
+      (a) => a.id === createAlertId('water-shortage-preparation'),
     );
 
     expect(waterAlert).toBeDefined();
@@ -403,32 +443,32 @@ describe('water shortage alerts', () => {
   it('should not generate water shortage alert when enough water available', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Bottled Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 50,
         unit: 'liters',
         recommendedQuantity: 18,
-        productTemplateId: 'bottled-water',
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Pasta',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         quantity: 5,
         unit: 'kilograms',
         recommendedQuantity: 1,
-        productTemplateId: 'pasta', // 1.0 L/kg water requirement = 5L needed
+        productTemplateId: createProductTemplateId('pasta'), // 1.0 L/kg water requirement = 5L needed
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
     const waterAlert = alerts.find(
-      (a) => a.id === 'water-shortage-preparation',
+      (a) => a.id === createAlertId('water-shortage-preparation'),
     );
 
     expect(waterAlert).toBeUndefined();
@@ -437,17 +477,17 @@ describe('water shortage alerts', () => {
   it('should not generate water shortage alert when no food requires water', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Crackers',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT, mockHousehold);
     const waterAlert = alerts.find(
-      (a) => a.id === 'water-shortage-preparation',
+      (a) => a.id === createAlertId('water-shortage-preparation'),
     );
 
     expect(waterAlert).toBeUndefined();
@@ -456,18 +496,18 @@ describe('water shortage alerts', () => {
   it('should not generate water shortage alert when household is not provided', () => {
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Pasta',
-        categoryId: 'food',
-        productTemplateId: 'pasta',
+        categoryId: createCategoryId('food'),
+        productTemplateId: createProductTemplateId('pasta'),
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
     const alerts = generateDashboardAlerts(items, mockT); // No household
     const waterAlert = alerts.find(
-      (a) => a.id === 'water-shortage-preparation',
+      (a) => a.id === createAlertId('water-shortage-preparation'),
     );
 
     expect(waterAlert).toBeUndefined();
@@ -497,17 +537,17 @@ describe('food category calorie-based alerts', () => {
     // So we need 6000/3600 = 1.67 kg, but let's say we have 2 kg = 7200 calories (enough)
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Rice',
-        categoryId: 'food',
-        itemType: 'rice', // Set itemType to match recommended item ID
-        productTemplateId: 'rice',
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('rice'), // Set itemType to match recommended item ID
+        productTemplateId: createProductTemplateId('rice'),
         quantity: 2, // 2 kg
         recommendedQuantity: 10, // Low quantity percentage (2/10 = 20%)
         caloriesPerUnit: 3600, // 3600 calories per kg
         unit: 'kilograms',
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -531,17 +571,17 @@ describe('food category calorie-based alerts', () => {
     // e.g., 0.4 kg of rice = 0.4 * 3600 = 1440 calories (24% of needed, below 25% critical threshold)
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Rice',
-        categoryId: 'food',
-        itemType: 'rice', // Set itemType to match recommended item ID
-        productTemplateId: 'rice',
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('rice'), // Set itemType to match recommended item ID
+        productTemplateId: createProductTemplateId('rice'),
         quantity: 0.4, // 0.4 kg = 1440 calories (24% of 6000)
         recommendedQuantity: 10,
         caloriesPerUnit: 3600, // 3600 calories per kg
         unit: 'kilograms',
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -573,30 +613,30 @@ describe('food category calorie-based alerts', () => {
     // Create multiple items with total calories = 40% of needed
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Rice',
-        categoryId: 'food',
-        itemType: 'rice', // Set itemType to match recommended item ID
-        productTemplateId: 'rice',
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('rice'), // Set itemType to match recommended item ID
+        productTemplateId: createProductTemplateId('rice'),
         quantity: 1, // 1 kg = 3600 calories
         recommendedQuantity: 5,
         caloriesPerUnit: 3600,
         unit: 'kilograms',
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
       createMockInventoryItem({
-        id: '2',
+        id: createItemId('2'),
         name: 'Pasta',
-        categoryId: 'food',
-        itemType: 'pasta', // Set itemType to match recommended item ID
-        productTemplateId: 'pasta',
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('pasta'), // Set itemType to match recommended item ID
+        productTemplateId: createProductTemplateId('pasta'),
         quantity: 1, // 1 kg = 1200 calories (but pasta has 3500 per kg, let me fix this)
         recommendedQuantity: 3,
         caloriesPerUnit: 1200, // Actually pasta is 3500 per kg, but let's use 1200 for this test
         unit: 'kilograms',
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
@@ -616,16 +656,16 @@ describe('food category calorie-based alerts', () => {
     // Without household, should fall back to quantity-based calculation
     const items = [
       createMockInventoryItem({
-        id: '1',
+        id: createItemId('1'),
         name: 'Rice',
-        categoryId: 'food',
-        productTemplateId: 'rice',
+        categoryId: createCategoryId('food'),
+        productTemplateId: createProductTemplateId('rice'),
         quantity: 2,
         recommendedQuantity: 10, // 2/10 = 20% (critically low)
         caloriesPerUnit: 3600,
         unit: 'kilograms',
         neverExpires: false,
-        expirationDate: '2025-12-31',
+        expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 

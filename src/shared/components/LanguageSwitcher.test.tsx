@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import type { ReactNode } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ReactNode } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import {
   SettingsContext,
@@ -29,7 +29,11 @@ const createMockSettingsContext = (
     language: 'en',
     theme: 'light',
     highContrast: false,
-    advancedFeatures: {},
+    advancedFeatures: {
+      calorieTracking: false,
+      powerManagement: false,
+      waterTracking: false,
+    },
   },
   updateSettings: vi.fn(),
   ...overrides,

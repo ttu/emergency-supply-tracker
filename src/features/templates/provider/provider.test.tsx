@@ -6,6 +6,7 @@ import * as localStorage from '@/shared/utils/storage/localStorage';
 import { RECOMMENDED_ITEMS } from '../data';
 import type { RecommendedItemsFile } from '@/shared/types';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
+import { createProductTemplateId } from '@/shared/types';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
@@ -71,7 +72,7 @@ describe('RecommendedItemsProvider', () => {
     },
     items: [
       {
-        id: 'custom-item-1',
+        id: createProductTemplateId('custom-item-1'),
         i18nKey: 'custom.item1',
         category: 'food',
         unit: 'pieces',
@@ -80,7 +81,7 @@ describe('RecommendedItemsProvider', () => {
         scaleWithDays: true,
       },
       {
-        id: 'custom-item-2',
+        id: createProductTemplateId('custom-item-2'),
         names: { en: 'Water Bottle', fi: 'Vesipullo' },
         category: 'water-beverages',
         unit: 'liters',
@@ -129,9 +130,9 @@ describe('RecommendedItemsProvider', () => {
   });
 
   it('should import valid recommendations file', async () => {
-    let importFn: (
-      file: RecommendedItemsFile,
-    ) => ReturnType<typeof useRecommendedItems>['importRecommendedItems'];
+    let importFn!: ReturnType<
+      typeof useRecommendedItems
+    >['importRecommendedItems'];
 
     render(
       <RecommendedItemsProvider>
@@ -157,9 +158,9 @@ describe('RecommendedItemsProvider', () => {
   });
 
   it('should reject invalid recommendations file', () => {
-    let importFn: typeof useRecommendedItems extends () => infer R
-      ? R['importRecommendedItems']
-      : never;
+    let importFn!: ReturnType<
+      typeof useRecommendedItems
+    >['importRecommendedItems'];
 
     render(
       <RecommendedItemsProvider>
@@ -302,8 +303,8 @@ describe('RecommendedItemsProvider', () => {
         customRecommendedItems: validCustomFile,
       });
 
-      let getItemNameFn: ReturnType<typeof useRecommendedItems>['getItemName'];
-      let items: ReturnType<typeof useRecommendedItems>['recommendedItems'];
+      let getItemNameFn!: ReturnType<typeof useRecommendedItems>['getItemName'];
+      let items!: ReturnType<typeof useRecommendedItems>['recommendedItems'];
 
       render(
         <RecommendedItemsProvider>
@@ -316,7 +317,9 @@ describe('RecommendedItemsProvider', () => {
         </RecommendedItemsProvider>,
       );
 
-      const waterItem = items.find((i) => i.id === 'custom-item-2');
+      const waterItem = items.find(
+        (i) => i.id === createProductTemplateId('custom-item-2'),
+      );
       expect(getItemNameFn(waterItem!, 'en')).toBe('Water Bottle');
       expect(getItemNameFn(waterItem!, 'fi')).toBe('Vesipullo');
     });
@@ -326,8 +329,8 @@ describe('RecommendedItemsProvider', () => {
         customRecommendedItems: validCustomFile,
       });
 
-      let getItemNameFn: ReturnType<typeof useRecommendedItems>['getItemName'];
-      let items: ReturnType<typeof useRecommendedItems>['recommendedItems'];
+      let getItemNameFn!: ReturnType<typeof useRecommendedItems>['getItemName'];
+      let items!: ReturnType<typeof useRecommendedItems>['recommendedItems'];
 
       render(
         <RecommendedItemsProvider>
@@ -340,14 +343,16 @@ describe('RecommendedItemsProvider', () => {
         </RecommendedItemsProvider>,
       );
 
-      const waterItem = items.find((i) => i.id === 'custom-item-2');
+      const waterItem = items.find(
+        (i) => i.id === createProductTemplateId('custom-item-2'),
+      );
       // Request German, should fall back to English
       expect(getItemNameFn(waterItem!, 'de')).toBe('Water Bottle');
     });
 
     it('should return i18nKey without prefix for items with i18nKey', () => {
-      let getItemNameFn: ReturnType<typeof useRecommendedItems>['getItemName'];
-      let items: ReturnType<typeof useRecommendedItems>['recommendedItems'];
+      let getItemNameFn!: ReturnType<typeof useRecommendedItems>['getItemName'];
+      let items!: ReturnType<typeof useRecommendedItems>['recommendedItems'];
 
       render(
         <RecommendedItemsProvider>
@@ -370,7 +375,7 @@ describe('RecommendedItemsProvider', () => {
     });
 
     it('should return item ID as fallback', () => {
-      let getItemNameFn: ReturnType<typeof useRecommendedItems>['getItemName'];
+      let getItemNameFn!: ReturnType<typeof useRecommendedItems>['getItemName'];
 
       render(
         <RecommendedItemsProvider>
@@ -384,7 +389,7 @@ describe('RecommendedItemsProvider', () => {
 
       // Item with no i18nKey and no names
       const itemWithNoName = {
-        id: 'test-item-id',
+        id: createProductTemplateId('test-item-id'),
         category: 'food' as const,
         unit: 'pieces' as const,
         baseQuantity: 1,
@@ -396,7 +401,7 @@ describe('RecommendedItemsProvider', () => {
     });
 
     it('should handle items with names directly on the item (import preview)', () => {
-      let getItemNameFn: ReturnType<typeof useRecommendedItems>['getItemName'];
+      let getItemNameFn!: ReturnType<typeof useRecommendedItems>['getItemName'];
 
       render(
         <RecommendedItemsProvider>
@@ -410,7 +415,7 @@ describe('RecommendedItemsProvider', () => {
 
       // Item with names directly (like during import preview before stored)
       const itemWithInlineNames = {
-        id: 'preview-item',
+        id: createProductTemplateId('preview-item'),
         names: { en: 'Preview Item', fi: 'Esikatselu' },
         category: 'food' as const,
         unit: 'pieces' as const,
@@ -429,7 +434,7 @@ describe('RecommendedItemsProvider', () => {
       customRecommendedItems: validCustomFile,
     });
 
-    let info: ReturnType<
+    let info!: ReturnType<
       typeof useRecommendedItems
     >['customRecommendationsInfo'];
 

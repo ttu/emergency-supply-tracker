@@ -25,7 +25,7 @@ describe('SettingsProvider', () => {
   });
 
   it('initializes with default settings when no stored data', () => {
-    vi.mocked(localStorage.getAppData).mockReturnValue(null);
+    vi.mocked(localStorage.getAppData).mockReturnValue(undefined);
     vi.mocked(localStorage.createDefaultAppData).mockReturnValue({
       version: CURRENT_SCHEMA_VERSION,
       settings: {
@@ -51,7 +51,7 @@ describe('SettingsProvider', () => {
       disabledRecommendedItems: [],
       lastModified: new Date().toISOString(),
     });
-    vi.mocked(urlLanguage.getLanguageFromUrl).mockReturnValue(null);
+    vi.mocked(urlLanguage.getLanguageFromUrl).mockReturnValue(undefined);
     vi.mocked(urlLanguage.clearLanguageFromUrl).mockImplementation(() => {});
 
     const { getByTestId } = render(
@@ -89,7 +89,7 @@ describe('SettingsProvider', () => {
       disabledRecommendedItems: [],
       lastModified: new Date().toISOString(),
     });
-    vi.mocked(urlLanguage.getLanguageFromUrl).mockReturnValue(null);
+    vi.mocked(urlLanguage.getLanguageFromUrl).mockReturnValue(undefined);
     vi.mocked(urlLanguage.clearLanguageFromUrl).mockImplementation(() => {});
 
     const { getByTestId } = render(

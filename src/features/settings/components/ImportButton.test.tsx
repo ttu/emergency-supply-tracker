@@ -1,5 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { beforeEach, afterEach, vi, type Mock, type SpyInstance } from 'vitest';
+import {
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+  type MockInstance,
+} from 'vitest';
 import { ImportButton } from './ImportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
@@ -14,12 +20,12 @@ describe('ImportButton', () => {
   const mockImportFromJSON = localStorage.importFromJSON as Mock;
   const mockSaveAppData = localStorage.saveAppData as Mock;
 
-  let consoleErrorSpy: SpyInstance;
+  let consoleErrorSpy: MockInstance;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    global.alert = vi.fn();
-    global.confirm = vi.fn(() => true);
+    globalThis.alert = vi.fn();
+    globalThis.confirm = vi.fn(() => true);
     // Suppress console.error output from expected error handling in tests
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     // Mock window.location.reload to prevent jsdom navigation errors
@@ -87,14 +93,14 @@ describe('ImportButton', () => {
 
     await waitFor(() => {
       expect(mockImportFromJSON).toHaveBeenCalled();
-      expect(global.confirm).toHaveBeenCalledWith(
+      expect(globalThis.confirm).toHaveBeenCalledWith(
         'settings.import.confirmOverwrite',
       );
     });
 
     await waitFor(() => {
       expect(mockSaveAppData).toHaveBeenCalledWith(validData);
-      expect(global.alert).toHaveBeenCalledWith('settings.import.success');
+      expect(globalThis.alert).toHaveBeenCalledWith('settings.import.success');
       expect(onImportSuccess).toHaveBeenCalled();
       // Note: window.location.reload is called but difficult to mock in jsdom
     });
@@ -119,7 +125,7 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(global.alert).toHaveBeenCalledWith(
+      expect(globalThis.alert).toHaveBeenCalledWith(
         'settings.import.invalidFormat',
       );
     });
@@ -137,7 +143,7 @@ describe('ImportButton', () => {
     };
 
     mockImportFromJSON.mockReturnValue(validData);
-    (global.confirm as Mock).mockReturnValue(false);
+    (globalThis.confirm as Mock).mockReturnValue(false);
 
     render(<ImportButton />);
 
@@ -151,7 +157,7 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(global.confirm).toHaveBeenCalled();
+      expect(globalThis.confirm).toHaveBeenCalled();
     });
 
     expect(mockSaveAppData).not.toHaveBeenCalled();
@@ -174,7 +180,7 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(global.alert).toHaveBeenCalledWith('settings.import.error');
+      expect(globalThis.alert).toHaveBeenCalledWith('settings.import.error');
     });
   });
 
@@ -241,7 +247,7 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(global.alert).toHaveBeenCalledWith(
+      expect(globalThis.alert).toHaveBeenCalledWith(
         'settings.import.invalidFormat',
       );
     });
@@ -260,7 +266,7 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(global.alert).toHaveBeenCalledWith(
+      expect(globalThis.alert).toHaveBeenCalledWith(
         'settings.import.invalidFormat',
       );
     });
@@ -289,7 +295,7 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(global.alert).toHaveBeenCalledWith(
+      expect(globalThis.alert).toHaveBeenCalledWith(
         'settings.import.invalidFormat',
       );
     });

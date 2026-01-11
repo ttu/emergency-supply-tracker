@@ -10,6 +10,11 @@ import {
   createMockAppData,
 } from '@/shared/utils/test/factories';
 import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -73,12 +78,12 @@ describe('OverriddenRecommendations', () => {
 
   it('renders list of overridden items', () => {
     const markedItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Candles',
-      itemType: 'candles',
-      categoryId: 'cooking-heat',
+      itemType: createProductTemplateId('candles'),
+      categoryId: createCategoryId('cooking-heat'),
       markedAsEnough: true,
-      productTemplateId: 'candles',
+      productTemplateId: createProductTemplateId('candles'),
     });
 
     const appData = createMockAppData({
@@ -95,12 +100,12 @@ describe('OverriddenRecommendations', () => {
   it('calls updateItem when unmark button is clicked', async () => {
     const user = userEvent.setup();
     const markedItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Candles',
-      itemType: 'candles',
-      categoryId: 'cooking-heat',
+      itemType: createProductTemplateId('candles'),
+      categoryId: createCategoryId('cooking-heat'),
       markedAsEnough: true,
-      productTemplateId: 'candles',
+      productTemplateId: createProductTemplateId('candles'),
     });
 
     const appData = createMockAppData({
@@ -123,21 +128,21 @@ describe('OverriddenRecommendations', () => {
 
   it('shows unmark all button when multiple items are overridden', () => {
     const markedItem1 = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Candles',
-      itemType: 'candles',
-      categoryId: 'cooking-heat',
+      itemType: createProductTemplateId('candles'),
+      categoryId: createCategoryId('cooking-heat'),
       markedAsEnough: true,
-      productTemplateId: 'candles',
+      productTemplateId: createProductTemplateId('candles'),
     });
 
     const markedItem2 = createMockInventoryItem({
-      id: 'item-2',
+      id: createItemId('item-2'),
       name: 'Flashlight',
-      itemType: 'flashlight',
-      categoryId: 'light-power',
+      itemType: createProductTemplateId('flashlight'),
+      categoryId: createCategoryId('light-power'),
       markedAsEnough: true,
-      productTemplateId: 'flashlight',
+      productTemplateId: createProductTemplateId('flashlight'),
     });
 
     const appData = createMockAppData({
@@ -155,21 +160,21 @@ describe('OverriddenRecommendations', () => {
   it('unmarks all items when unmark all button is clicked', async () => {
     const user = userEvent.setup();
     const markedItem1 = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Candles',
-      itemType: 'candles',
-      categoryId: 'cooking-heat',
+      itemType: createProductTemplateId('candles'),
+      categoryId: createCategoryId('cooking-heat'),
       markedAsEnough: true,
-      productTemplateId: 'candles',
+      productTemplateId: createProductTemplateId('candles'),
     });
 
     const markedItem2 = createMockInventoryItem({
-      id: 'item-2',
+      id: createItemId('item-2'),
       name: 'Flashlight',
-      itemType: 'flashlight',
-      categoryId: 'light-power',
+      itemType: createProductTemplateId('flashlight'),
+      categoryId: createCategoryId('light-power'),
       markedAsEnough: true,
-      productTemplateId: 'flashlight',
+      productTemplateId: createProductTemplateId('flashlight'),
     });
 
     const appData = createMockAppData({
@@ -191,10 +196,10 @@ describe('OverriddenRecommendations', () => {
 
   it('shows item name when no matching recommended item is found', () => {
     const markedItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Custom Item',
       itemType: 'custom',
-      categoryId: 'food',
+      categoryId: createCategoryId('food'),
       markedAsEnough: true,
       // No productTemplateId
     });

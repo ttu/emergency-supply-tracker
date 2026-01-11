@@ -14,6 +14,12 @@ import { calculateRecommendedQuantity } from '@/features/household';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from '@/features/dashboard';
 import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+  createDateOnly,
+} from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -268,7 +274,9 @@ describe('Inventory Page', () => {
     const templateButton = templateButtons.find(
       (btn) =>
         btn.textContent?.includes('bottled-water') ||
-        btn.closest('[data-testid]')?.dataset.testid?.startsWith('template-'),
+        (
+          btn.closest('[data-testid]') as HTMLElement | null
+        )?.dataset.testid?.startsWith('template-'),
     );
 
     // If we find a template button, click it
@@ -319,35 +327,39 @@ describe('Inventory Page', () => {
  */
 describe('Inventory Page with items', () => {
   const mockItem = createMockInventoryItem({
-    id: 'test-item-1',
+    id: createItemId('test-item-1'),
     name: 'Test Water',
-    itemType: 'bottled-water',
-    categoryId: 'water-beverages',
+    itemType: createProductTemplateId('bottled-water'),
+    categoryId: createCategoryId('water-beverages'),
     quantity: 10, // Used in sorting test
     recommendedQuantity: 20,
-    expirationDate: new Date(
-      Date.now() + 30 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-    productTemplateId: 'bottled-water',
+    expirationDate: createDateOnly(
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0],
+    ),
+    productTemplateId: createProductTemplateId('bottled-water'),
   });
 
   const expiredItem = createMockInventoryItem({
-    id: 'test-item-2',
+    id: createItemId('test-item-2'),
     name: 'Expired Food',
-    itemType: 'canned-soup',
-    categoryId: 'food',
+    itemType: createProductTemplateId('canned-soup'),
+    categoryId: createCategoryId('food'),
     quantity: 5, // Used in sorting test
-    expirationDate: new Date(
-      Date.now() - 30 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-    productTemplateId: 'canned-soup',
+    expirationDate: createDateOnly(
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0],
+    ),
+    productTemplateId: createProductTemplateId('canned-soup'),
   });
 
   const neverExpiresItem = createMockInventoryItem({
-    id: 'test-item-3',
+    id: createItemId('test-item-3'),
     name: 'Batteries',
-    itemType: 'batteries',
-    categoryId: 'lighting-power',
+    itemType: createProductTemplateId('batteries'),
+    categoryId: createCategoryId('light-power'),
     quantity: 20, // Used in sorting test (highest)
     recommendedQuantity: 10,
     neverExpires: true,
@@ -644,21 +656,21 @@ describe('Template to InventoryItem conversion', () => {
 
     // Item WITH productTemplateId (the fix)
     const itemWithTemplateId = createMockInventoryItem({
-      id: '1',
+      id: createItemId('1'),
       name: 'Bottled Water',
-      itemType: 'bottled-water',
-      categoryId: 'water-beverages',
+      itemType: createProductTemplateId('bottled-water'),
+      categoryId: createCategoryId('water-beverages'),
       quantity: expectedQuantity, // Needed for calculation
       recommendedQuantity: expectedQuantity, // Needed for calculation
-      productTemplateId: 'bottled-water', // This enables matching
+      productTemplateId: createProductTemplateId('bottled-water'), // This enables matching
     });
 
     // Item WITHOUT productTemplateId (the bug)
     const itemWithoutTemplateId = createMockInventoryItem({
-      id: '2',
+      id: createItemId('2'),
       name: 'Bottled Water',
       itemType: 'custom',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: expectedQuantity, // Needed for calculation
       recommendedQuantity: expectedQuantity, // Needed for calculation
       // productTemplateId is missing - this was the bug
@@ -687,16 +699,16 @@ describe('Template to InventoryItem conversion', () => {
 
 describe('Inventory Page - Mark as Enough', () => {
   const itemWithLowQuantity = createMockInventoryItem({
-    id: 'test-item-mark',
+    id: createItemId('test-item-mark'),
     name: 'Test Candles',
-    itemType: 'candles',
-    categoryId: 'cooking-heat', // Candles are in cooking-heat category
+    itemType: createProductTemplateId('candles'),
+    categoryId: createCategoryId('cooking-heat'), // Candles are in cooking-heat category
     quantity: 4,
     unit: 'pieces',
     recommendedQuantity: 10,
     neverExpires: true,
     markedAsEnough: false,
-    productTemplateId: 'candles', // Match the recommended item
+    productTemplateId: createProductTemplateId('candles'), // Match the recommended item
   });
 
   beforeEach(() => {

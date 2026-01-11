@@ -96,7 +96,9 @@ describe('HouseholdPresetSelector', () => {
     const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
-    const familyPreset = screen.getByText('Family').closest('[role="button"]');
+    const familyPreset = screen
+      .getByText('Family')
+      .closest('[role="button"]') as HTMLElement;
     familyPreset?.focus();
     await user.keyboard('{Enter}');
 
@@ -112,7 +114,9 @@ describe('HouseholdPresetSelector', () => {
     const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
-    const couplePreset = screen.getByText('Couple').closest('[role="button"]');
+    const couplePreset = screen
+      .getByText('Couple')
+      .closest('[role="button"]') as HTMLElement;
     couplePreset?.focus();
     await user.keyboard(' ');
 
@@ -128,7 +132,9 @@ describe('HouseholdPresetSelector', () => {
     const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
-    const customPreset = screen.getByText('Custom').closest('[role="button"]');
+    const customPreset = screen
+      .getByText('Custom')
+      .closest('[role="button"]') as HTMLElement;
     customPreset?.focus();
     await user.keyboard('{Enter}');
 
@@ -144,7 +150,9 @@ describe('HouseholdPresetSelector', () => {
     const onSelectPreset = vi.fn();
     render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
 
-    const customPreset = screen.getByText('Custom').closest('[role="button"]');
+    const customPreset = screen
+      .getByText('Custom')
+      .closest('[role="button"]') as HTMLElement;
     customPreset?.focus();
     await user.keyboard(' ');
 

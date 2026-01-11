@@ -7,6 +7,12 @@ import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import * as analytics from '@/shared/utils/analytics';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+  createAlertId,
+} from '@/shared/types';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
@@ -44,10 +50,12 @@ vi.mock('@/shared/utils/analytics', () => ({
 
 // Mock crypto.randomUUID
 const mockUUID = 'test-uuid-123';
-Object.defineProperty(global, 'crypto', {
+Object.defineProperty(globalThis, 'crypto', {
   value: {
     randomUUID: vi.fn(() => mockUUID),
   },
+  writable: true,
+  configurable: true,
 });
 
 // Test component that uses the context
@@ -75,8 +83,8 @@ function TestComponent({
         onClick={() =>
           context.addItem({
             name: 'Test Item',
-            itemType: 'test',
-            categoryId: 'food',
+            itemType: 'custom',
+            categoryId: createCategoryId('food'),
             quantity: 5,
             unit: 'pieces',
             recommendedQuantity: 10,
@@ -86,19 +94,27 @@ function TestComponent({
       >
         Add Item
       </button>
-      <button onClick={() => context.dismissAlert('alert-1')}>
+      <button onClick={() => context.dismissAlert(createAlertId('alert-1'))}>
         Dismiss Alert
       </button>
-      <button onClick={() => context.reactivateAlert('alert-1')}>
+      <button onClick={() => context.reactivateAlert(createAlertId('alert-1'))}>
         Reactivate Alert
       </button>
       <button onClick={() => context.reactivateAllAlerts()}>
         Reactivate All
       </button>
-      <button onClick={() => context.disableRecommendedItem('item-1')}>
+      <button
+        onClick={() =>
+          context.disableRecommendedItem(createProductTemplateId('item-1'))
+        }
+      >
         Disable Recommended
       </button>
-      <button onClick={() => context.enableRecommendedItem('item-1')}>
+      <button
+        onClick={() =>
+          context.enableRecommendedItem(createProductTemplateId('item-1'))
+        }
+      >
         Enable Recommended
       </button>
       <button onClick={() => context.enableAllRecommendedItems()}>
@@ -119,7 +135,10 @@ describe('InventoryProvider', () => {
 
   it('should provide items from localStorage', () => {
     const existingItems = [
-      createMockInventoryItem({ id: 'existing-1', name: 'Existing Item' }),
+      createMockInventoryItem({
+        id: createItemId('existing-1'),
+        name: 'Existing Item',
+      }),
     ];
     mockGetAppData.mockReturnValue({
       items: existingItems,
@@ -173,7 +192,7 @@ describe('InventoryProvider', () => {
 
   it('should update item correctly', async () => {
     const existingItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Original Name',
     });
     mockGetAppData.mockReturnValue({
@@ -183,7 +202,7 @@ describe('InventoryProvider', () => {
     });
 
     let updateItemFn: (
-      id: string,
+      id: ReturnType<typeof createItemId>,
       updates: Partial<typeof existingItem>,
     ) => void;
 
@@ -198,7 +217,7 @@ describe('InventoryProvider', () => {
     );
 
     act(() => {
-      updateItemFn('item-1', { name: 'Updated Name' });
+      updateItemFn(createItemId('item-1'), { name: 'Updated Name' });
     });
 
     await waitFor(() => {
@@ -208,9 +227,9 @@ describe('InventoryProvider', () => {
 
   it('should delete item correctly', async () => {
     const existingItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'To Delete',
-      categoryId: 'food',
+      categoryId: createCategoryId('food'),
     });
     mockGetAppData.mockReturnValue({
       items: [existingItem],
@@ -218,7 +237,7 @@ describe('InventoryProvider', () => {
       disabledRecommendedItems: [],
     });
 
-    let deleteItemFn: (id: string) => void;
+    let deleteItemFn: (id: ReturnType<typeof createItemId>) => void;
 
     render(
       <InventoryProvider>
@@ -233,7 +252,7 @@ describe('InventoryProvider', () => {
     expect(screen.getByTestId('items-count')).toHaveTextContent('1');
 
     act(() => {
-      deleteItemFn('item-1');
+      deleteItemFn(createItemId('item-1'));
     });
 
     expect(screen.getByTestId('items-count')).toHaveTextContent('0');
@@ -261,8 +280,8 @@ describe('InventoryProvider', () => {
     );
 
     const newItems = [
-      createMockInventoryItem({ id: 'bulk-1', name: 'Bulk 1' }),
-      createMockInventoryItem({ id: 'bulk-2', name: 'Bulk 2' }),
+      createMockInventoryItem({ id: createItemId('bulk-1'), name: 'Bulk 1' }),
+      createMockInventoryItem({ id: createItemId('bulk-2'), name: 'Bulk 2' }),
     ];
 
     act(() => {
