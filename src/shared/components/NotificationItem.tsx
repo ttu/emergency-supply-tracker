@@ -53,8 +53,9 @@ export function NotificationItem({
   const icon = getIcon();
 
   return (
-    <output
+    <div
       className={`${styles.notification} ${styles[variant]}`}
+      role="status"
       aria-live="polite"
       aria-atomic="true"
     >
@@ -70,6 +71,6 @@ export function NotificationItem({
       >
         ×
       </button>
-    </output>
+    </div>
   );
 }

@@ -151,7 +151,7 @@ describe('NotificationItem', () => {
     const onClose = vi.fn();
     render(<NotificationItem message="Test message" onClose={onClose} />);
 
-    // output element has implicit role="status", so we can find it by role
+    // div with role="status" for live region announcements
     const notification = screen.getByRole('status');
     expect(notification).toHaveAttribute('aria-live', 'polite');
     expect(notification).toHaveAttribute('aria-atomic', 'true');
