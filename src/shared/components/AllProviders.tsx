@@ -5,6 +5,7 @@ import { ThemeApplier } from '@/components/ThemeApplier';
 import { HouseholdProvider } from '@/features/household';
 import { RecommendedItemsProvider } from '@/features/templates';
 import { InventoryProvider } from '@/features/inventory';
+import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 
 interface AllProvidersProps {
   readonly children: ReactNode;
@@ -19,9 +20,11 @@ interface AllProvidersProps {
  * 3. ThemeApplier - Applies theme CSS variables (requires SettingsProvider)
  * 4. HouseholdProvider - Provides household configuration
  * 5. RecommendedItemsProvider - Provides recommended item definitions
- * 6. InventoryProvider - Provides inventory items and categories (innermost)
+ * 6. NotificationProvider - Provides notification context (must wrap InventoryProvider)
+ * 7. InventoryProvider - Provides inventory items and categories (innermost)
  *
- * Used by main.tsx, App.tsx, Storybook stories, and test utilities to provide consistent context.
+ * Used by Storybook stories and test utilities to provide consistent context.
+ * Note: App.tsx has its own provider setup that matches this order.
  */
 export function AllProviders({ children }: AllProvidersProps) {
   return (
@@ -30,7 +33,9 @@ export function AllProviders({ children }: AllProvidersProps) {
         <ThemeApplier>
           <HouseholdProvider>
             <RecommendedItemsProvider>
-              <InventoryProvider>{children}</InventoryProvider>
+              <NotificationProvider>
+                <InventoryProvider>{children}</InventoryProvider>
+              </NotificationProvider>
             </RecommendedItemsProvider>
           </HouseholdProvider>
         </ThemeApplier>
