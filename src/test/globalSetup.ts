@@ -1,10 +1,17 @@
-import type { GlobalSetupContext } from 'vitest/node';
 import {
   resolveFakerSeed,
   logSeed,
   incrementCounter,
   cleanupSeedFiles,
 } from './fakerSeed';
+
+// Type for globalSetup context - provides mechanism to share data with test workers
+interface GlobalSetupContext {
+  provide: <T extends keyof import('vitest').ProvidedContext>(
+    key: T,
+    value: import('vitest').ProvidedContext[T],
+  ) => void;
+}
 
 // Expected number of projects (unit + storybook)
 // Can be overridden via VITEST_PROJECT_COUNT env var
