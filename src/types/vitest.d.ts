@@ -13,7 +13,7 @@ declare module 'vitest/node' {
    * Provides mechanism to share data with test workers via the provide method.
    */
   export interface GlobalSetupContext {
-    provide: <T extends keyof ProvidedContext>(
+    provide: <T extends keyof ProvidedContext & string>(
       key: T,
       value: ProvidedContext[T],
     ) => void;
