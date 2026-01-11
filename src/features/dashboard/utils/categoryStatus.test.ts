@@ -1234,6 +1234,36 @@ describe('getCategoryDisplayStatus', () => {
     );
   });
 
+  it('should calculate completionPercentage based on calories for food category', () => {
+    // Calculate needed calories based on household
+    const peopleMultiplier =
+      household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+      household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
+    const neededCalories =
+      peopleMultiplier * household.supplyDurationDays * 2000;
+    // Create items with exactly 50% of needed calories
+    const targetPercentage = 50;
+    const targetCalories = (neededCalories * targetPercentage) / 100;
+    const riceQuantity = targetCalories / 3600; // 3600 cal per unit of rice
+
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: '1',
+        categoryId: 'food',
+        quantity: riceQuantity,
+        productTemplateId: 'rice',
+        caloriesPerUnit: 3600,
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus('food', items, household);
+
+    // The completionPercentage should reflect calorie-based progress, not item count
+    expect(result.completionPercentage).toBe(targetPercentage);
+    expect(result.totalActualCalories).toBeCloseTo(targetCalories, 0);
+    expect(result.totalNeededCalories).toBeCloseTo(neededCalories, 0);
+  });
+
   it('should return critical when not enough inventory', () => {
     // Calculate needed water based on household
     const peopleMultiplier =
