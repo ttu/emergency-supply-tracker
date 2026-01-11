@@ -1,4 +1,5 @@
 import type { RecommendedItemDefinition } from '@/shared/types';
+import { isFoodRecommendedItem } from '@/shared/types';
 import {
   CALORIE_BASE_WEIGHT_GRAMS,
   GRAMS_TO_KG_THRESHOLD,
@@ -40,21 +41,29 @@ export function calculateTotalCalories(
 /**
  * Get default weight per unit from a template
  * Returns undefined if template has no weight data
+ * Only food items have weight data
  */
 export function getTemplateWeightPerUnit(
   template: RecommendedItemDefinition,
 ): number | undefined {
-  return template.weightGramsPerUnit;
+  return isFoodRecommendedItem(template)
+    ? template.weightGramsPerUnit
+    : undefined;
 }
 
 /**
  * Get default calories per unit from a template
  * If template has caloriesPer100g and weightGramsPerUnit, calculates from those
  * Otherwise returns the direct caloriesPerUnit value
+ * Only food items have calorie data
  */
 export function getTemplateCaloriesPerUnit(
   template: RecommendedItemDefinition,
 ): number | undefined {
+  if (!isFoodRecommendedItem(template)) {
+    return undefined;
+  }
+
   // If both weight and caloriesPer100g are available, calculate
   if (template.weightGramsPerUnit && template.caloriesPer100g) {
     return calculateCaloriesFromWeight(

@@ -1,5 +1,5 @@
 import type { InventoryItem, HouseholdConfig } from '@/shared/types';
-import { createAlertId } from '@/shared/types';
+import { createAlertId, isFoodCategory } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   EXPIRING_SOON_ALERT_DAYS,
@@ -90,6 +90,100 @@ function generateExpirationAlerts(
 }
 
 /**
+ * Calculate percentage and stock status for food category using calorie-based calculation.
+ */
+function calculateFoodCategoryStatus(
+  categoryId: string,
+  items: InventoryItem[],
+  household: HouseholdConfig,
+): { percentOfRecommended: number; hasEnough: boolean } {
+  const shortageInfo = calculateCategoryShortages(categoryId, items, household);
+
+  const hasEnough =
+    (shortageInfo.totalActualCalories ?? 0) >=
+    (shortageInfo.totalNeededCalories ?? 0);
+
+  const percentOfRecommended =
+    shortageInfo.totalNeededCalories && shortageInfo.totalNeededCalories > 0
+      ? ((shortageInfo.totalActualCalories ?? 0) /
+          shortageInfo.totalNeededCalories) *
+        100
+      : 100;
+
+  return { percentOfRecommended, hasEnough };
+}
+
+/**
+ * Calculate percentage and stock status for non-food categories using quantity-based calculation.
+ */
+function calculateNonFoodCategoryStatus(categoryItems: InventoryItem[]): {
+  percentOfRecommended: number;
+  hasEnough: boolean;
+} {
+  let totalQuantity = 0;
+  let totalRecommended = 0;
+
+  categoryItems.forEach((item) => {
+    totalQuantity += item.quantity;
+    totalRecommended += item.recommendedQuantity;
+  });
+
+  const percentOfRecommended =
+    totalRecommended > 0 ? (totalQuantity / totalRecommended) * 100 : 100;
+  const hasEnough = totalQuantity >= totalRecommended;
+
+  return { percentOfRecommended, hasEnough };
+}
+
+/**
+ * Generate alerts for a single category based on stock status.
+ */
+function generateCategoryAlerts(
+  category: { id: string; standardCategoryId?: string },
+  categoryItems: InventoryItem[],
+  percentOfRecommended: number,
+  isFood: boolean,
+  t: TranslationFunction,
+): Alert[] {
+  const alerts: Alert[] = [];
+  const categoryName = t(category.id, { ns: 'categories' });
+
+  // Check for out of stock (quantity/calories = 0)
+  const isOutOfStock = isFood
+    ? false // For food, we check calories above, so if hasEnough is false but calories > 0, it's just low
+    : categoryItems.every((item) => item.quantity === 0);
+
+  if (isOutOfStock) {
+    alerts.push({
+      id: createAlertId(`category-out-of-stock-${category.id}`),
+      type: 'critical',
+      message: t('alerts.stock.outOfStock'),
+      itemName: categoryName,
+    });
+  } else if (percentOfRecommended < CRITICALLY_LOW_STOCK_PERCENTAGE) {
+    alerts.push({
+      id: createAlertId(`category-critically-low-${category.id}`),
+      type: 'critical',
+      message: t('alerts.stock.criticallyLow', {
+        percent: Math.round(percentOfRecommended),
+      }),
+      itemName: categoryName,
+    });
+  } else if (percentOfRecommended < LOW_STOCK_PERCENTAGE) {
+    alerts.push({
+      id: createAlertId(`category-low-stock-${category.id}`),
+      type: 'warning',
+      message: t('alerts.stock.runningLow', {
+        percent: Math.round(percentOfRecommended),
+      }),
+      itemName: categoryName,
+    });
+  }
+
+  return alerts;
+}
+
+/**
  * Generate alerts for categories with low stock (aggregated by category)
  * For food category, uses calorie-based calculations instead of quantity-based.
  */
@@ -110,88 +204,31 @@ function generateCategoryStockAlerts(
       return;
     }
 
-    const isFoodCategory = category.id === 'food';
-    let percentOfRecommended: number;
-    let hasEnough = false;
+    const isFood = category.standardCategoryId
+      ? isFoodCategory(category.standardCategoryId)
+      : isFoodCategory(category.id as string);
 
-    // For food category, use calorie-based calculation if household is available
-    if (isFoodCategory && household) {
-      const shortageInfo = calculateCategoryShortages(
-        category.id,
-        items,
-        household,
-      );
-
-      // Check if we have enough calories
-      hasEnough =
-        (shortageInfo.totalActualCalories ?? 0) >=
-        (shortageInfo.totalNeededCalories ?? 0);
-
-      if (
-        shortageInfo.totalNeededCalories &&
-        shortageInfo.totalNeededCalories > 0
-      ) {
-        percentOfRecommended =
-          ((shortageInfo.totalActualCalories ?? 0) /
-            shortageInfo.totalNeededCalories) *
-          100;
-      } else {
-        percentOfRecommended = 100;
-      }
-    } else {
-      // For non-food categories, use quantity-based calculation
-      let totalQuantity = 0;
-      let totalRecommended = 0;
-
-      categoryItems.forEach((item) => {
-        totalQuantity += item.quantity;
-        totalRecommended += item.recommendedQuantity;
-      });
-
-      percentOfRecommended =
-        totalRecommended > 0 ? (totalQuantity / totalRecommended) * 100 : 100;
-      hasEnough = totalQuantity >= totalRecommended;
-    }
-
-    // Translate category name
-    const categoryName = t(category.id, { ns: 'categories' });
+    // Calculate status based on category type
+    const { percentOfRecommended, hasEnough } =
+      isFood && household
+        ? calculateFoodCategoryStatus(category.id, items, household)
+        : calculateNonFoodCategoryStatus(categoryItems);
 
     // Don't generate alerts if we have enough (for food: enough calories, for others: enough quantity)
     if (hasEnough) {
       return;
     }
 
-    // Check for out of stock (quantity/calories = 0)
-    const isOutOfStock = isFoodCategory
-      ? false // For food, we check calories above, so if hasEnough is false but calories > 0, it's just low
-      : categoryItems.every((item) => item.quantity === 0);
-
-    if (isOutOfStock) {
-      alerts.push({
-        id: createAlertId(`category-out-of-stock-${category.id}`),
-        type: 'critical',
-        message: t('alerts.stock.outOfStock'),
-        itemName: categoryName,
-      });
-    } else if (percentOfRecommended < CRITICALLY_LOW_STOCK_PERCENTAGE) {
-      alerts.push({
-        id: createAlertId(`category-critically-low-${category.id}`),
-        type: 'critical',
-        message: t('alerts.stock.criticallyLow', {
-          percent: Math.round(percentOfRecommended),
-        }),
-        itemName: categoryName,
-      });
-    } else if (percentOfRecommended < LOW_STOCK_PERCENTAGE) {
-      alerts.push({
-        id: createAlertId(`category-low-stock-${category.id}`),
-        type: 'warning',
-        message: t('alerts.stock.runningLow', {
-          percent: Math.round(percentOfRecommended),
-        }),
-        itemName: categoryName,
-      });
-    }
+    // Generate alerts for this category
+    alerts.push(
+      ...generateCategoryAlerts(
+        category,
+        categoryItems,
+        percentOfRecommended,
+        isFood,
+        t,
+      ),
+    );
   });
 
   return alerts;

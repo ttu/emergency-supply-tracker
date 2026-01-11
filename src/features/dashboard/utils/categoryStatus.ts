@@ -6,6 +6,7 @@ import type {
   Unit,
   RecommendedItemDefinition,
 } from '@/shared/types';
+import { isFoodCategory, isFoodRecommendedItem } from '@/shared/types';
 import {
   calculateItemStatus,
   getStatusFromPercentage,
@@ -77,7 +78,7 @@ function hasEnoughInventory(
     totalNeededCalories?: number;
   },
 ): boolean {
-  if (categoryId === 'food') {
+  if (isFoodCategory(categoryId)) {
     return (
       (shortageInfo.totalActualCalories ?? 0) >=
       (shortageInfo.totalNeededCalories ?? 0)
@@ -150,13 +151,13 @@ export function calculateCategoryShortages(
   let totalItemTypes = 0;
 
   // Calorie tracking for food category
-  const isFoodCategory = categoryId === 'food';
+  const isFood = isFoodCategory(categoryId);
   let totalActualCalories = 0;
   let totalNeededCalories = 0;
 
   // For food category, calculate needed calories based on people and days
   // Children use the configurable multiplier for calorie requirements
-  if (isFoodCategory) {
+  if (isFood) {
     totalNeededCalories =
       dailyCalories * peopleMultiplier * household.supplyDurationDays;
   }
@@ -217,7 +218,7 @@ export function calculateCategoryShortages(
     );
 
     // Calculate calories for food items
-    if (isFoodCategory && recItem.caloriesPerUnit) {
+    if (isFoodRecommendedItem(recItem) && recItem.caloriesPerUnit) {
       // Get calories from inventory items (use template value as fallback)
       // Always use actual quantities, not inflated to recommended
       const itemCalories = matchingItems.reduce((sum, item) => {
@@ -289,7 +290,7 @@ export function calculateCategoryShortages(
   shortages.sort((a, b) => b.missing - a.missing);
 
   // Return with calorie data for food category
-  if (isFoodCategory) {
+  if (isFood) {
     const missingCalories = Math.max(
       0,
       totalNeededCalories - totalActualCalories,
@@ -486,10 +487,10 @@ export function getCategoryDisplayStatus(
   const hasEnough = hasEnoughInventory(categoryId, shortageInfo);
 
   // For food category, calculate percentage based on calories instead of quantity
-  const isFoodCategory = categoryId === 'food';
+  const isFood = isFoodCategory(categoryId);
   let effectivePercentage = calculatedPercentage;
 
-  if (isFoodCategory && shortageInfo.totalNeededCalories) {
+  if (isFood && shortageInfo.totalNeededCalories) {
     const caloriePercentage = Math.round(
       ((shortageInfo.totalActualCalories ?? 0) /
         shortageInfo.totalNeededCalories) *
