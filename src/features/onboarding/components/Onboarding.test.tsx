@@ -40,6 +40,8 @@ vi.mock('react-i18next', () => ({
         'actions.cancel': 'Cancel',
         'quickSetup.addItems': 'Add Selected Items',
         'quickSetup.skip': 'Skip',
+        'quickSetup.showDetails': 'Show Details',
+        'quickSetup.hideDetails': 'Hide Details',
       };
       return translations[key] || key;
     },
@@ -225,6 +227,19 @@ describe('Onboarding', () => {
     await waitFor(() => {
       expect(screen.getByText('Add Selected Items')).toBeInTheDocument();
     });
+
+    // Select some items first (button is disabled when no items selected)
+    const showDetailsButton = screen.getByText('Show Details');
+    await user.click(showDetailsButton);
+
+    // Select first item
+    const checkboxes = screen.getAllByRole('checkbox');
+    const firstItemCheckbox = checkboxes.find((cb) =>
+      cb.getAttribute('id')?.startsWith('item-'),
+    );
+    if (firstItemCheckbox) {
+      await user.click(firstItemCheckbox);
+    }
 
     const addItemsButton = screen.getByText('Add Selected Items');
     await user.click(addItemsButton);

@@ -46,10 +46,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
     setCurrentStep('quickSetup');
   };
 
-  const handleAddItems = (
-    selectedItemIds: Set<string>,
-    ownedItemIds: Set<string>,
-  ) => {
+  const handleAddItems = (selectedItemIds: Set<string>) => {
     if (!householdConfig) return;
 
     // Calculate and create inventory items from selected recommended items
@@ -67,26 +64,10 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       // Translate item name
       const itemName = t(item.i18nKey.replace('products.', ''));
 
-      // Calculate recommended quantity
-      let quantity = item.baseQuantity;
-      if (item.scaleWithPeople) {
-        const totalPeople = householdConfig.adults + householdConfig.children;
-        quantity *= totalPeople;
-      }
-      if (item.scaleWithDays) {
-        quantity *= householdConfig.supplyDurationDays;
-      }
-      const recommendedQuantity = Math.ceil(quantity);
-
-      // If item is marked as owned, use recommended quantity, otherwise 0
-      const initialQuantity = ownedItemIds.has(item.id)
-        ? recommendedQuantity
-        : 0;
-
-      // Create item using factory
+      // Create item using factory - all items start with quantity 0
       return InventoryItemFactory.createFromTemplate(item, householdConfig, {
         name: itemName,
-        quantity: initialQuantity,
+        quantity: 0,
       });
     });
 

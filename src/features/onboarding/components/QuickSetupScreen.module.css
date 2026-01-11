@@ -226,28 +226,6 @@
   white-space: nowrap;
 }
 
-.ownedCheckbox {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  cursor: pointer;
-  user-select: none;
-}
-
-.ownedCheckbox input[type='checkbox'] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color: var(--color-success);
-  flex-shrink: 0;
-}
-
-.ownedLabel {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-}
-
 .info {
   background-color: var(--color-info-alpha);
   border-radius: var(--radius-md);
@@ -319,10 +297,6 @@
 
   .itemRight {
     width: 100%;
-    justify-content: space-between;
-  }
-
-  .ownedCheckbox {
-    margin-left: auto;
+    justify-content: flex-end;
   }
 }
