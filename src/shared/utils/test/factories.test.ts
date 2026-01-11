@@ -6,8 +6,7 @@ import {
   createMockProductTemplate,
   createMockAppData,
 } from './factories';
-import { VALID_THEMES } from '@/shared/types';
-import { createProductTemplateId } from '@/shared/types';
+import { VALID_THEMES, createProductTemplateId } from '@/shared/types';
 
 describe('factories', () => {
   describe('createMockHousehold', () => {

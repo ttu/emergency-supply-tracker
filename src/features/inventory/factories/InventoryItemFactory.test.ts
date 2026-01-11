@@ -5,20 +5,20 @@ import {
   type CreateItemInput,
   type CreateFromFormInput,
 } from './InventoryItemFactory';
-import type { HouseholdConfig } from '@/shared/types';
+import {
+  createCategoryId,
+  createProductTemplateId,
+  createItemId,
+  createDateOnly,
+  type HouseholdConfig,
+  type ProductTemplateId,
+} from '@/shared/types';
 import {
   createMockHousehold,
   createMockRecommendedItem,
 } from '@/shared/utils/test/factories';
 import { randomQuantitySmall } from '@/shared/utils/test/faker-helpers';
 import { faker } from '@faker-js/faker';
-import {
-  createCategoryId,
-  createProductTemplateId,
-  createItemId,
-  createDateOnly,
-  type ProductTemplateId,
-} from '@/shared/types';
 import {
   CUSTOM_ITEM_TYPE,
   CHILDREN_REQUIREMENT_MULTIPLIER,
