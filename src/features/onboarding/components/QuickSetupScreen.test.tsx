@@ -16,13 +16,19 @@ vi.mock('react-i18next', () => ({
           'quickSetup.itemsCount': 'Items',
           'quickSetup.categoriesCount': 'Categories',
           'quickSetup.days': 'Days',
+          'quickSetup.selectedItems': 'Selected',
+          'quickSetup.ownedItems': 'Owned',
           'quickSetup.showDetails': 'Show Details',
           'quickSetup.hideDetails': 'Hide Details',
+          'quickSetup.selectAll': 'Select All',
+          'quickSetup.deselectAll': 'Deselect All',
+          'quickSetup.selectItem': 'Select {{item}}',
+          'quickSetup.markAsOwned': 'Mark as owned',
           'quickSetup.info':
             'These items are recommended based on your household configuration.',
           'quickSetup.noFreezer': 'Frozen items have been excluded.',
           'quickSetup.skip': 'Skip',
-          'quickSetup.addItems': 'Add Items',
+          'quickSetup.addItems': 'Add Selected Items',
         },
         categories: {
           'water-beverages': 'Water & Beverages',
@@ -124,8 +130,8 @@ describe('QuickSetupScreen', () => {
       />,
     );
 
-    expect(screen.getByText('Items')).toBeInTheDocument();
-    expect(screen.getByText('Categories')).toBeInTheDocument();
+    expect(screen.getByText('Selected')).toBeInTheDocument();
+    expect(screen.getByText('Owned')).toBeInTheDocument();
     expect(screen.getByText('Days')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument(); // supply days
   });
@@ -171,7 +177,7 @@ describe('QuickSetupScreen', () => {
     expect(screen.getByText('Show Details')).toBeInTheDocument();
   });
 
-  it('calls onAddItems when Add Items button is clicked', async () => {
+  it('calls onAddItems when Add Selected Items button is clicked', async () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
@@ -183,10 +189,12 @@ describe('QuickSetupScreen', () => {
       />,
     );
 
-    const addButton = screen.getByText('Add Items');
+    const addButton = screen.getByText('Add Selected Items');
     await user.click(addButton);
 
     expect(onAddItems).toHaveBeenCalledTimes(1);
+    // Verify it's called with Set objects
+    expect(onAddItems).toHaveBeenCalledWith(expect.any(Set), expect.any(Set));
   });
 
   it('calls onSkip when Skip button is clicked', async () => {
@@ -308,5 +316,240 @@ describe('QuickSetupScreen', () => {
 
     // Verify translated unit names are shown (not raw keys like "units.liters")
     expect(screen.queryByText('units.liters')).not.toBeInTheDocument();
+  });
+
+  it('shows checkboxes for items when details are shown', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // Checkboxes should be present for items
+    const checkboxes = screen.getAllByRole('checkbox');
+    expect(checkboxes.length).toBeGreaterThan(0);
+  });
+
+  it('allows selecting and deselecting items', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // Get first item checkbox
+    const checkboxes = screen.getAllByRole('checkbox');
+    const firstItemCheckbox = checkboxes.find((cb) =>
+      cb.getAttribute('id')?.startsWith('item-'),
+    );
+    expect(firstItemCheckbox).toBeInTheDocument();
+    expect(firstItemCheckbox).toBeChecked(); // All items selected by default
+
+    // Uncheck the item
+    await user.click(firstItemCheckbox!);
+    expect(firstItemCheckbox).not.toBeChecked();
+  });
+
+  it('shows "Mark as owned" checkbox for selected items', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // "Mark as owned" checkboxes should be visible for selected items
+    const ownedCheckboxes = screen.getAllByText('Mark as owned');
+    expect(ownedCheckboxes.length).toBeGreaterThan(0);
+  });
+
+  it('allows marking items as owned', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // Find an "owned" checkbox (not the item selection checkbox)
+    const allCheckboxes = screen.getAllByRole('checkbox');
+    const ownedCheckbox = Array.from(allCheckboxes).find((cb) => {
+      const label = cb.closest('label');
+      return label?.textContent?.includes('Mark as owned');
+    });
+
+    expect(ownedCheckbox).toBeInTheDocument();
+    expect(ownedCheckbox).not.toBeChecked();
+
+    // Mark as owned
+    await user.click(ownedCheckbox!);
+    expect(ownedCheckbox).toBeChecked();
+  });
+
+  it('shows Select All button when details are shown', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    expect(screen.getByText('Deselect All')).toBeInTheDocument();
+  });
+
+  it('allows selecting all items with Select All button', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // First, deselect an item
+    const checkboxes = screen.getAllByRole('checkbox');
+    const firstItemCheckbox = checkboxes.find((cb) =>
+      cb.getAttribute('id')?.startsWith('item-'),
+    );
+    await user.click(firstItemCheckbox!);
+    expect(firstItemCheckbox).not.toBeChecked();
+
+    // Then click Select All
+    const selectAllButton = screen.getByText('Select All');
+    await user.click(selectAllButton);
+
+    // Item should be selected again
+    expect(firstItemCheckbox).toBeChecked();
+  });
+
+  it('allows deselecting all items with Deselect All button', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // Click Deselect All
+    const deselectAllButton = screen.getByText('Deselect All');
+    await user.click(deselectAllButton);
+
+    // All item checkboxes should be unchecked
+    const checkboxes = screen.getAllByRole('checkbox');
+    const itemCheckboxes = checkboxes.filter((cb) =>
+      cb.getAttribute('id')?.startsWith('item-'),
+    );
+    itemCheckboxes.forEach((checkbox) => {
+      expect(checkbox).not.toBeChecked();
+    });
+  });
+
+  it('disables Add Items button when no items are selected', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // Deselect all items
+    const deselectAllButton = screen.getByText('Deselect All');
+    await user.click(deselectAllButton);
+
+    // Add Items button should be disabled
+    const addButton = screen.getByText('Add Selected Items');
+    expect(addButton).toBeDisabled();
+  });
+
+  it('passes selected and owned item IDs to onAddItems', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    render(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
+    const toggleButton = screen.getByText('Show Details');
+    await user.click(toggleButton);
+
+    // Mark an item as owned
+    const allCheckboxes = screen.getAllByRole('checkbox');
+    const ownedCheckbox = Array.from(allCheckboxes).find((cb) => {
+      const label = cb.closest('label');
+      return label?.textContent?.includes('Mark as owned');
+    });
+    await user.click(ownedCheckbox!);
+
+    // Click Add Items
+    const addButton = screen.getByText('Add Selected Items');
+    await user.click(addButton);
+
+    expect(onAddItems).toHaveBeenCalledTimes(1);
+    const [selectedIds, ownedIds] = onAddItems.mock.calls[0];
+    expect(selectedIds).toBeInstanceOf(Set);
+    expect(ownedIds).toBeInstanceOf(Set);
+    expect(selectedIds.size).toBeGreaterThan(0);
+    expect(ownedIds.size).toBeGreaterThan(0);
   });
 });

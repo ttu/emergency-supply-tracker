@@ -38,7 +38,7 @@ vi.mock('react-i18next', () => ({
         'household.useFreezer': 'I want to use my freezer',
         'actions.save': 'Save',
         'actions.cancel': 'Cancel',
-        'quickSetup.addItems': 'Add Items',
+        'quickSetup.addItems': 'Add Selected Items',
         'quickSetup.skip': 'Skip',
       };
       return translations[key] || key;
@@ -223,10 +223,10 @@ describe('Onboarding', () => {
     await user.click(continueButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Add Items')).toBeInTheDocument();
+      expect(screen.getByText('Add Selected Items')).toBeInTheDocument();
     });
 
-    const addItemsButton = screen.getByText('Add Items');
+    const addItemsButton = screen.getByText('Add Selected Items');
     await user.click(addItemsButton);
 
     expect(onComplete).toHaveBeenCalledWith(
@@ -240,7 +240,7 @@ describe('Onboarding', () => {
         expect.objectContaining({
           id: expect.any(String),
           categoryId: expect.any(String),
-          quantity: 0,
+          quantity: expect.any(Number), // Can be 0 or recommendedQuantity
           recommendedQuantity: expect.any(Number),
         }),
       ]),

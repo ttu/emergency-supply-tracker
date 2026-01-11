@@ -7,7 +7,7 @@ import styles from './QuickSetupScreen.module.css';
 
 export interface QuickSetupScreenProps {
   household: HouseholdConfig;
-  onAddItems: () => void;
+  onAddItems: (selectedItemIds: Set<string>, ownedItemIds: Set<string>) => void;
   onSkip: () => void;
 }
 
@@ -27,6 +27,14 @@ export const QuickSetupScreen = ({
     }
     return true;
   });
+
+  // Initialize all items as selected by default
+  const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(() => {
+    return new Set(itemsToAdd.map((item) => item.id));
+  });
+  const [ownedItemIds, setOwnedItemIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   // Calculate recommended quantity for an item
   const calculateQuantity = (item: (typeof RECOMMENDED_ITEMS)[0]): number => {
@@ -74,8 +82,59 @@ export const QuickSetupScreen = ({
     });
   });
 
-  const totalItems = itemsToAdd.length;
-  const totalCategories = Object.keys(itemsByCategory).length;
+  const selectedCount = selectedItemIds.size;
+  const ownedCount = ownedItemIds.size;
+
+  const handleItemToggle = (itemId: string) => {
+    setSelectedItemIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+        // Also remove from owned if it was owned
+        setOwnedItemIds((prevOwned) => {
+          const nextOwned = new Set(prevOwned);
+          nextOwned.delete(itemId);
+          return nextOwned;
+        });
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
+  };
+
+  const handleOwnedToggle = (itemId: string, isOwned: boolean) => {
+    setOwnedItemIds((prev) => {
+      const next = new Set(prev);
+      if (isOwned) {
+        next.add(itemId);
+        // Ensure item is selected if marking as owned
+        setSelectedItemIds((prevSelected) => {
+          const nextSelected = new Set(prevSelected);
+          nextSelected.add(itemId);
+          return nextSelected;
+        });
+      } else {
+        next.delete(itemId);
+      }
+      return next;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItemIds.size === itemsToAdd.length) {
+      // Deselect all
+      setSelectedItemIds(new Set());
+      setOwnedItemIds(new Set());
+    } else {
+      // Select all
+      setSelectedItemIds(new Set(itemsToAdd.map((item) => item.id)));
+    }
+  };
+
+  const handleAddItems = () => {
+    onAddItems(selectedItemIds, ownedItemIds);
+  };
 
   return (
     <div className={styles.container}>
@@ -86,15 +145,15 @@ export const QuickSetupScreen = ({
         <div className={styles.summaryCard}>
           <div className={styles.summary}>
             <div className={styles.summaryItem}>
-              <div className={styles.summaryNumber}>{totalItems}</div>
+              <div className={styles.summaryNumber}>{selectedCount}</div>
               <div className={styles.summaryLabel}>
-                {t('quickSetup.itemsCount')}
+                {t('quickSetup.selectedItems')}
               </div>
             </div>
             <div className={styles.summaryItem}>
-              <div className={styles.summaryNumber}>{totalCategories}</div>
+              <div className={styles.summaryNumber}>{ownedCount}</div>
               <div className={styles.summaryLabel}>
-                {t('quickSetup.categoriesCount')}
+                {t('quickSetup.ownedItems')}
               </div>
             </div>
             <div className={styles.summaryItem}>
@@ -117,6 +176,17 @@ export const QuickSetupScreen = ({
 
           {showDetails && (
             <div className={styles.details}>
+              <div className={styles.selectAllContainer}>
+                <button
+                  type="button"
+                  className={styles.selectAllButton}
+                  onClick={handleSelectAll}
+                >
+                  {selectedItemIds.size === itemsToAdd.length
+                    ? t('quickSetup.deselectAll')
+                    : t('quickSetup.selectAll')}
+                </button>
+              </div>
               {Object.entries(itemsByCategory).map(([categoryId, items]) => (
                 <div key={categoryId} className={styles.categoryGroup}>
                   <h3 className={styles.categoryTitle}>
@@ -126,15 +196,50 @@ export const QuickSetupScreen = ({
                     {items.map((item) => {
                       // Normalize i18nKey to extract the key part (removes 'products.' or 'custom.' prefix)
                       const productKey = normalizeI18nKey(item.i18nKey);
+                      const isSelected = selectedItemIds.has(item.id);
+                      const isOwned = ownedItemIds.has(item.id);
                       return (
                         <li key={item.id} className={styles.item}>
-                          <span className={styles.itemName}>
-                            {t(productKey, { ns: 'products' })}
-                          </span>
-                          <span className={styles.itemQuantity}>
-                            {calculateQuantity(item)}{' '}
-                            {t(item.unit, { ns: 'units' })}
-                          </span>
+                          <div className={styles.itemCheckbox}>
+                            <input
+                              type="checkbox"
+                              id={`item-${item.id}`}
+                              checked={isSelected}
+                              onChange={() => handleItemToggle(item.id)}
+                              aria-label={t('quickSetup.selectItem', {
+                                item: t(productKey, { ns: 'products' }),
+                              })}
+                            />
+                            <label
+                              htmlFor={`item-${item.id}`}
+                              className={styles.itemName}
+                            >
+                              {t(productKey, { ns: 'products' })}
+                            </label>
+                          </div>
+                          <div className={styles.itemRight}>
+                            <span className={styles.itemQuantity}>
+                              {calculateQuantity(item)}{' '}
+                              {t(item.unit, { ns: 'units' })}
+                            </span>
+                            {isSelected && (
+                              <label className={styles.ownedCheckbox}>
+                                <input
+                                  type="checkbox"
+                                  checked={isOwned}
+                                  onChange={(e) =>
+                                    handleOwnedToggle(item.id, e.target.checked)
+                                  }
+                                  aria-label={t('quickSetup.markAsOwned', {
+                                    item: t(productKey, { ns: 'products' }),
+                                  })}
+                                />
+                                <span className={styles.ownedLabel}>
+                                  {t('quickSetup.markAsOwned')}
+                                </span>
+                              </label>
+                            )}
+                          </div>
                         </li>
                       );
                     })}
@@ -156,7 +261,11 @@ export const QuickSetupScreen = ({
           <Button variant="secondary" onClick={onSkip}>
             {t('quickSetup.skip')}
           </Button>
-          <Button variant="primary" onClick={onAddItems}>
+          <Button
+            variant="primary"
+            onClick={handleAddItems}
+            disabled={selectedCount === 0}
+          >
             {t('quickSetup.addItems')}
           </Button>
         </div>

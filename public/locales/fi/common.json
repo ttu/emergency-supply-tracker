@@ -380,12 +380,18 @@
     "itemsCount": "Tuotetta",
     "categoriesCount": "Kategoriaa",
     "days": "Päivää",
+    "selectedItems": "Valittu",
+    "ownedItems": "Omistettu",
     "showDetails": "Näytä tuotetiedot",
     "hideDetails": "Piilota tuotetiedot",
-    "info": "Tuotteet lisätään määrällä 0. Voit päivittää määriä kun täydennät varastoa.",
+    "selectAll": "Valitse kaikki",
+    "deselectAll": "Poista valinnat",
+    "selectItem": "Valitse {{item}}",
+    "markAsOwned": "Merkitse omistetuksi",
+    "info": "Valitse lisättävät tuotteet. Merkitse tuotteet omistetuiksi, jos sinulla on ne jo - ne lisätään suositellulla määrällä.",
     "noFreezer": "Pakasteet jätetty pois (pakastinta ei valittu)",
     "skip": "Ohita toistaiseksi",
-    "addItems": "Lisää suositellut tuotteet"
+    "addItems": "Lisää valitut tuotteet"
   },
   "accessibility": {
     "skipToContent": "Siirry pääsisältöön",

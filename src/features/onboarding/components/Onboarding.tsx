@@ -46,11 +46,18 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
     setCurrentStep('quickSetup');
   };
 
-  const handleAddItems = () => {
+  const handleAddItems = (
+    selectedItemIds: Set<string>,
+    ownedItemIds: Set<string>,
+  ) => {
     if (!householdConfig) return;
 
-    // Calculate and create inventory items from recommended items
+    // Calculate and create inventory items from selected recommended items
     const items: InventoryItem[] = RECOMMENDED_ITEMS.filter((item) => {
+      // Only include selected items
+      if (!selectedItemIds.has(item.id)) {
+        return false;
+      }
       // Skip frozen items if not using freezer
       if (item.requiresFreezer && !householdConfig.useFreezer) {
         return false;
@@ -60,10 +67,26 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       // Translate item name
       const itemName = t(item.i18nKey.replace('products.', ''));
 
+      // Calculate recommended quantity
+      let quantity = item.baseQuantity;
+      if (item.scaleWithPeople) {
+        const totalPeople = householdConfig.adults + householdConfig.children;
+        quantity *= totalPeople;
+      }
+      if (item.scaleWithDays) {
+        quantity *= householdConfig.supplyDurationDays;
+      }
+      const recommendedQuantity = Math.ceil(quantity);
+
+      // If item is marked as owned, use recommended quantity, otherwise 0
+      const initialQuantity = ownedItemIds.has(item.id)
+        ? recommendedQuantity
+        : 0;
+
       // Create item using factory
       return InventoryItemFactory.createFromTemplate(item, householdConfig, {
         name: itemName,
-        quantity: 0, // Start with 0, user needs to add them
+        quantity: initialQuantity,
       });
     });
 
