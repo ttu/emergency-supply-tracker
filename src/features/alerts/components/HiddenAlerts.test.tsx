@@ -11,7 +11,12 @@ import {
   createMockInventoryItem,
   createMockHousehold,
 } from '@/shared/utils/test/factories';
-import { createDateOnly } from '@/shared/types';
+import {
+  createDateOnly,
+  createItemId,
+  createCategoryId,
+  createAlertId,
+} from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -108,9 +113,9 @@ describe('HiddenAlerts', () => {
   it('should show hidden alerts when there are dismissed alert IDs matching actual alerts', () => {
     // Create an item that is out of stock to generate a category-level critical alert
     const outOfStockItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       recommendedQuantity: 10,
     });
@@ -118,7 +123,9 @@ describe('HiddenAlerts', () => {
     renderWithContext(<HiddenAlerts />, {
       items: [outOfStockItem],
       // Category-level alert ID format
-      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+      dismissedAlertIds: [
+        createAlertId('category-out-of-stock-water-beverages'),
+      ],
     });
 
     // Should show description with count instead of empty message
@@ -132,16 +139,18 @@ describe('HiddenAlerts', () => {
 
   it('should show critical alert with correct icon', () => {
     const outOfStockItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       recommendedQuantity: 10,
     });
 
     renderWithContext(<HiddenAlerts />, {
       items: [outOfStockItem],
-      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+      dismissedAlertIds: [
+        createAlertId('category-out-of-stock-water-beverages'),
+      ],
     });
 
     // Critical alerts show warning emoji
@@ -151,9 +160,9 @@ describe('HiddenAlerts', () => {
   it('should show warning alert with correct icon', () => {
     // Create item with 30% stock to trigger low-stock warning (below 50% threshold)
     const lowStockItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 3,
       recommendedQuantity: 10,
       neverExpires: true,
@@ -161,7 +170,7 @@ describe('HiddenAlerts', () => {
 
     renderWithContext(<HiddenAlerts />, {
       items: [lowStockItem],
-      dismissedAlertIds: ['category-low-stock-water-beverages'],
+      dismissedAlertIds: [createAlertId('category-low-stock-water-beverages')],
     });
 
     // Warning alerts show lightning emoji
@@ -169,17 +178,18 @@ describe('HiddenAlerts', () => {
   });
 
   it('should call reactivateAlert when clicking reactivate button', () => {
+    const alertId = createAlertId('category-out-of-stock-water-beverages');
     const outOfStockItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       recommendedQuantity: 10,
     });
 
     renderWithContext(<HiddenAlerts />, {
       items: [outOfStockItem],
-      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+      dismissedAlertIds: [alertId],
     });
 
     const reactivateButton = screen.getByText(
@@ -187,23 +197,23 @@ describe('HiddenAlerts', () => {
     );
     fireEvent.click(reactivateButton);
 
-    expect(mockReactivateAlert).toHaveBeenCalledWith(
-      'category-out-of-stock-water-beverages',
-    );
+    expect(mockReactivateAlert).toHaveBeenCalledWith(alertId);
   });
 
   it('should not show reactivate all button with only one hidden alert', () => {
     const outOfStockItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       recommendedQuantity: 10,
     });
 
     renderWithContext(<HiddenAlerts />, {
       items: [outOfStockItem],
-      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+      dismissedAlertIds: [
+        createAlertId('category-out-of-stock-water-beverages'),
+      ],
     });
 
     expect(
@@ -214,16 +224,16 @@ describe('HiddenAlerts', () => {
   it('should show reactivate all button with multiple hidden alerts', () => {
     const items = [
       createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 0,
         recommendedQuantity: 10,
       }),
       createMockInventoryItem({
-        id: 'item-2',
+        id: createItemId('item-2'),
         name: 'Food',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         quantity: 0,
         recommendedQuantity: 10,
         // Food category uses calorie-based alerts, so with 0 calories it generates
@@ -234,8 +244,8 @@ describe('HiddenAlerts', () => {
     renderWithContext(<HiddenAlerts />, {
       items,
       dismissedAlertIds: [
-        'category-out-of-stock-water-beverages',
-        'category-critically-low-food', // Food category uses calorie-based alerts
+        createAlertId('category-out-of-stock-water-beverages'),
+        createAlertId('category-critically-low-food'), // Food category uses calorie-based alerts
       ],
     });
 
@@ -247,16 +257,16 @@ describe('HiddenAlerts', () => {
   it('should call reactivateAllAlerts when clicking reactivate all button', () => {
     const items = [
       createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Water',
-        categoryId: 'water-beverages',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 0,
         recommendedQuantity: 10,
       }),
       createMockInventoryItem({
-        id: 'item-2',
+        id: createItemId('item-2'),
         name: 'Food',
-        categoryId: 'food',
+        categoryId: createCategoryId('food'),
         quantity: 0,
         recommendedQuantity: 10,
         // Food category uses calorie-based alerts, so with 0 calories it generates
@@ -267,8 +277,8 @@ describe('HiddenAlerts', () => {
     renderWithContext(<HiddenAlerts />, {
       items,
       dismissedAlertIds: [
-        'category-out-of-stock-water-beverages',
-        'category-critically-low-food', // Food category uses calorie-based alerts
+        createAlertId('category-out-of-stock-water-beverages'),
+        createAlertId('category-critically-low-food'), // Food category uses calorie-based alerts
       ],
     });
 
@@ -282,16 +292,18 @@ describe('HiddenAlerts', () => {
 
   it('should show category name in alert for category-level alerts', () => {
     const outOfStockItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Bottled Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       recommendedQuantity: 10,
     });
 
     renderWithContext(<HiddenAlerts />, {
       items: [outOfStockItem],
-      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+      dismissedAlertIds: [
+        createAlertId('category-out-of-stock-water-beverages'),
+      ],
     });
 
     // Category name is displayed (from STANDARD_CATEGORIES)
@@ -300,16 +312,18 @@ describe('HiddenAlerts', () => {
 
   it('should render alerts list with proper role', () => {
     const outOfStockItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       recommendedQuantity: 10,
     });
 
     renderWithContext(<HiddenAlerts />, {
       items: [outOfStockItem],
-      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+      dismissedAlertIds: [
+        createAlertId('category-out-of-stock-water-beverages'),
+      ],
     });
 
     expect(screen.getByRole('list')).toBeInTheDocument();
@@ -318,9 +332,9 @@ describe('HiddenAlerts', () => {
   it('should only show alerts that are both dismissed AND still relevant', () => {
     // Item with full stock - no alert should be generated
     const fullyStockedItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 10,
       recommendedQuantity: 10,
       neverExpires: true,
@@ -329,7 +343,9 @@ describe('HiddenAlerts', () => {
     renderWithContext(<HiddenAlerts />, {
       items: [fullyStockedItem],
       // This dismissed ID doesn't match any current alert since item is fully stocked
-      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+      dismissedAlertIds: [
+        createAlertId('category-out-of-stock-water-beverages'),
+      ],
     });
 
     // Should show empty message since there are no relevant alerts
@@ -338,9 +354,9 @@ describe('HiddenAlerts', () => {
 
   it('should show expired item alert with item name', () => {
     const expiredItem = createMockInventoryItem({
-      id: 'item-1',
+      id: createItemId('item-1'),
       name: 'Canned Food',
-      categoryId: 'food',
+      categoryId: createCategoryId('food'),
       quantity: 5,
       recommendedQuantity: 5,
       neverExpires: false,
@@ -351,7 +367,7 @@ describe('HiddenAlerts', () => {
 
     renderWithContext(<HiddenAlerts />, {
       items: [expiredItem],
-      dismissedAlertIds: ['expired-item-1'],
+      dismissedAlertIds: [createAlertId('expired-item-1')],
     });
 
     expect(screen.getByText('Canned Food:')).toBeInTheDocument();

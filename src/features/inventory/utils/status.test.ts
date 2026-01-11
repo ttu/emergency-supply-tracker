@@ -7,6 +7,7 @@ import {
   getStatusFromScore,
   getStatusVariant,
 } from './status';
+import { createDateOnly } from '@/shared/types';
 
 describe('getItemStatus', () => {
   it('returns critical when quantity is 0', () => {
@@ -24,28 +25,36 @@ describe('getItemStatus', () => {
   it('returns critical when expired', () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDateOnly = yesterday.toISOString().split('T')[0];
+    const yesterdayDateOnly = createDateOnly(
+      yesterday.toISOString().split('T')[0],
+    );
     expect(getItemStatus(10, 10, yesterdayDateOnly)).toBe('critical');
   });
 
   it('returns warning when expiring within 30 days', () => {
     const in20Days = new Date();
     in20Days.setDate(in20Days.getDate() + 20);
-    const in20DaysDateOnly = in20Days.toISOString().split('T')[0];
+    const in20DaysDateOnly = createDateOnly(
+      in20Days.toISOString().split('T')[0],
+    );
     expect(getItemStatus(10, 10, in20DaysDateOnly)).toBe('warning');
   });
 
   it('ignores expiration when neverExpires is true', () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDateOnly = yesterday.toISOString().split('T')[0];
+    const yesterdayDateOnly = createDateOnly(
+      yesterday.toISOString().split('T')[0],
+    );
     expect(getItemStatus(10, 10, yesterdayDateOnly, true)).toBe('ok');
   });
 });
 
 describe('getDaysUntilExpiration', () => {
   it('returns undefined when neverExpires is true', () => {
-    expect(getDaysUntilExpiration('2025-12-31', true)).toBeUndefined();
+    expect(
+      getDaysUntilExpiration(createDateOnly('2025-12-31'), true),
+    ).toBeUndefined();
   });
 
   it('returns undefined when no expiration date', () => {
@@ -55,20 +64,20 @@ describe('getDaysUntilExpiration', () => {
   it('returns positive days for future date', () => {
     const future = new Date();
     future.setDate(future.getDate() + 10);
-    const futureDateOnly = future.toISOString().split('T')[0];
+    const futureDateOnly = createDateOnly(future.toISOString().split('T')[0]);
     expect(getDaysUntilExpiration(futureDateOnly, false)).toBe(10);
   });
 
   it('returns negative days for past date', () => {
     const past = new Date();
     past.setDate(past.getDate() - 5);
-    const pastDateOnly = past.toISOString().split('T')[0];
+    const pastDateOnly = createDateOnly(past.toISOString().split('T')[0]);
     expect(getDaysUntilExpiration(pastDateOnly, false)).toBe(-5);
   });
 
   it('returns 0 for today', () => {
     const today = new Date();
-    const todayDateOnly = today.toISOString().split('T')[0];
+    const todayDateOnly = createDateOnly(today.toISOString().split('T')[0]);
     expect(getDaysUntilExpiration(todayDateOnly, false)).toBe(0);
   });
 
@@ -76,7 +85,9 @@ describe('getDaysUntilExpiration', () => {
     // Test with explicit date-only string to ensure timezone doesn't affect comparison
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowDateOnly = tomorrow.toISOString().split('T')[0];
+    const tomorrowDateOnly = createDateOnly(
+      tomorrow.toISOString().split('T')[0],
+    );
     expect(getDaysUntilExpiration(tomorrowDateOnly, false)).toBe(1);
   });
 });
@@ -85,7 +96,7 @@ describe('isItemExpired', () => {
   it('returns false when neverExpires is true', () => {
     const past = new Date();
     past.setDate(past.getDate() - 5);
-    const pastDateOnly = past.toISOString().split('T')[0];
+    const pastDateOnly = createDateOnly(past.toISOString().split('T')[0]);
     expect(isItemExpired(pastDateOnly, true)).toBe(false);
   });
 
@@ -96,20 +107,20 @@ describe('isItemExpired', () => {
   it('returns true for past date', () => {
     const past = new Date();
     past.setDate(past.getDate() - 1);
-    const pastDateOnly = past.toISOString().split('T')[0];
+    const pastDateOnly = createDateOnly(past.toISOString().split('T')[0]);
     expect(isItemExpired(pastDateOnly, false)).toBe(true);
   });
 
   it('returns false for future date', () => {
     const future = new Date();
     future.setDate(future.getDate() + 10);
-    const futureDateOnly = future.toISOString().split('T')[0];
+    const futureDateOnly = createDateOnly(future.toISOString().split('T')[0]);
     expect(isItemExpired(futureDateOnly, false)).toBe(false);
   });
 
   it('returns false for today (not expired yet)', () => {
     const today = new Date();
-    const todayDateOnly = today.toISOString().split('T')[0];
+    const todayDateOnly = createDateOnly(today.toISOString().split('T')[0]);
     expect(isItemExpired(todayDateOnly, false)).toBe(false);
   });
 
@@ -117,7 +128,9 @@ describe('isItemExpired', () => {
     // Test with explicit date-only string to ensure timezone doesn't affect comparison
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDateOnly = yesterday.toISOString().split('T')[0];
+    const yesterdayDateOnly = createDateOnly(
+      yesterday.toISOString().split('T')[0],
+    );
     expect(isItemExpired(yesterdayDateOnly, false)).toBe(true);
   });
 });

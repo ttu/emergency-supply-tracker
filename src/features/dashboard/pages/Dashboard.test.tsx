@@ -8,6 +8,12 @@ import {
   createMockHousehold,
 } from '@/test';
 import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import {
+  createItemId,
+  createCategoryId,
+  createDateOnly,
+  createAlertId,
+} from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -49,7 +55,9 @@ vi.mock('@/features/dashboard', async () => {
   };
 });
 
-const mockGenerateDashboardAlerts = vi.fn(() => []);
+const mockGenerateDashboardAlerts = vi.fn<
+  () => Array<{ id: string; type: string; message: string; itemName?: string }>
+>(() => []);
 
 vi.mock('@/features/alerts', () => ({
   AlertBanner: ({
@@ -75,8 +83,7 @@ vi.mock('@/features/alerts', () => ({
       ))}
     </div>
   ),
-  generateDashboardAlerts: (...args: unknown[]) =>
-    mockGenerateDashboardAlerts(...args),
+  generateDashboardAlerts: () => mockGenerateDashboardAlerts(),
 }));
 
 describe('Dashboard', () => {
@@ -132,7 +139,7 @@ describe('Dashboard', () => {
 
   it('should handle quick action clicks', () => {
     const onNavigate = vi.fn();
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation();
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     renderWithProviders(<Dashboard onNavigate={onNavigate} />);
 
     // Test Add Items button - should navigate to inventory with modal open
@@ -161,11 +168,11 @@ describe('Dashboard', () => {
     // Test that alerts section appears when there are alerts
     // We need to test with an out-of-stock item (quantity = 0) which definitely triggers an alert
     const outOfStockItem = createMockInventoryItem({
-      id: '1',
+      id: createItemId('1'),
       name: 'Out of Stock Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      unit: 'gallons',
+      unit: 'liters', // 'gallons' is not a valid unit
       recommendedQuantity: 28,
       neverExpires: true,
     });
@@ -186,11 +193,11 @@ describe('Dashboard', () => {
   it('should allow dismissing alerts', () => {
     // Test the dismiss functionality with a simple check
     const outOfStockItem = createMockInventoryItem({
-      id: '1',
+      id: createItemId('1'),
       name: 'Out of Stock Item',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      unit: 'gallons',
+      unit: 'liters', // 'gallons' is not a valid unit
       recommendedQuantity: 28,
       neverExpires: true,
     });
@@ -230,14 +237,14 @@ describe('Dashboard', () => {
 
     // Add an item to inventory using the correct app data structure
     const item = createMockInventoryItem({
-      id: '1',
+      id: createItemId('1'),
       name: 'Water',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 28,
-      unit: 'gallons',
+      unit: 'liters', // 'gallons' is not a valid unit
       recommendedQuantity: 28,
       neverExpires: false,
-      expirationDate: '2025-12-31',
+      expirationDate: createDateOnly('2025-12-31'),
     });
 
     const appData = createMockAppData({
@@ -266,8 +273,8 @@ describe('Dashboard', () => {
     // Mock generateDashboardAlerts to return an alert that's dismissed
     mockGenerateDashboardAlerts.mockReturnValue([
       {
-        id: 'category-out-of-stock-water-beverages',
-        type: 'critical',
+        id: createAlertId('category-out-of-stock-water-beverages'),
+        type: 'critical' as const,
         message: 'No items in stock',
         itemName: 'Water & Beverages',
       },
@@ -275,18 +282,20 @@ describe('Dashboard', () => {
 
     // Set up app data with an out-of-stock item and dismissed alert
     const outOfStockItem = createMockInventoryItem({
-      id: '1',
+      id: createItemId('1'),
       name: 'Out of Stock Item',
-      categoryId: 'water-beverages',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      unit: 'gallons',
+      unit: 'liters', // 'gallons' is not a valid unit
       recommendedQuantity: 28,
       neverExpires: true,
     });
 
     const appData = createMockAppData({
       items: [outOfStockItem],
-      dismissedAlertIds: ['category-out-of-stock-water-beverages'],
+      dismissedAlertIds: [
+        createAlertId('category-out-of-stock-water-beverages'),
+      ],
     });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
@@ -308,9 +317,9 @@ describe('Dashboard', () => {
       household: createMockHousehold({ children: 0, supplyDurationDays: 7 }),
       items: [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           neverExpires: true,
         }),
       ],
@@ -353,9 +362,9 @@ describe('Dashboard', () => {
     const appData = createMockAppData({
       items: [
         createMockInventoryItem({
-          id: '1',
+          id: createItemId('1'),
           name: 'Water',
-          categoryId: 'water-beverages',
+          categoryId: createCategoryId('water-beverages'),
           neverExpires: true,
         }),
       ],

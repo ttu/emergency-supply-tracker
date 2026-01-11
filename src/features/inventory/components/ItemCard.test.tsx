@@ -2,7 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ItemCard } from './ItemCard';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
-import { createDateOnly } from '@/shared/types';
+import {
+  createDateOnly,
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -24,10 +29,10 @@ describe('ItemCard', () => {
   );
 
   const baseItem = createMockInventoryItem({
-    id: '1',
+    id: createItemId('1'),
     name: 'Bottled Water',
-    itemType: 'bottled-water',
-    categoryId: 'water-beverages',
+    itemType: createProductTemplateId('bottled-water'),
+    categoryId: createCategoryId('water-beverages'),
     quantity: 20,
     unit: 'liters',
     recommendedQuantity: 28,
@@ -134,7 +139,7 @@ describe('ItemCard', () => {
   it('should display capacity in mAh when provided', () => {
     const powerItem = createMockInventoryItem({
       ...baseItem,
-      categoryId: 'light-power',
+      categoryId: createCategoryId('light-power'),
       name: 'Power Bank',
       capacityMah: 10000,
     });
@@ -146,7 +151,7 @@ describe('ItemCard', () => {
   it('should display capacity in Wh when provided', () => {
     const powerItem = createMockInventoryItem({
       ...baseItem,
-      categoryId: 'light-power',
+      categoryId: createCategoryId('light-power'),
       name: 'Power Bank',
       capacityWh: 37,
     });
@@ -158,7 +163,7 @@ describe('ItemCard', () => {
   it('should display both mAh and Wh when both are provided', () => {
     const powerItem = createMockInventoryItem({
       ...baseItem,
-      categoryId: 'light-power',
+      categoryId: createCategoryId('light-power'),
       name: 'Power Bank',
       capacityMah: 20000,
       capacityWh: 74,
@@ -172,7 +177,7 @@ describe('ItemCard', () => {
   it('should not display capacity when not provided', () => {
     const itemWithoutCapacity = createMockInventoryItem({
       ...baseItem,
-      categoryId: 'light-power',
+      categoryId: createCategoryId('light-power'),
       name: 'Flashlight',
     });
     render(<ItemCard item={itemWithoutCapacity} />);

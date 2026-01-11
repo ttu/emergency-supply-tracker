@@ -7,6 +7,7 @@ import {
   createMockHousehold,
   createMockRecommendedItem,
 } from '@/shared/utils/test/factories';
+import { createProductTemplateId } from '@/shared/types';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
@@ -28,7 +29,7 @@ describe('calculateRecommendedQuantity', () => {
   it('scales with people and days', () => {
     const baseQuantity = 3; // 3 liters per person per day
     const item = createMockRecommendedItem({
-      id: 'water',
+      id: createProductTemplateId('water'),
       i18nKey: 'products.water',
       category: 'water-beverages',
       baseQuantity,
@@ -46,7 +47,7 @@ describe('calculateRecommendedQuantity', () => {
   it('does not scale when flags are false', () => {
     const baseQuantity = 1;
     const item = createMockRecommendedItem({
-      id: 'flashlight',
+      id: createProductTemplateId('flashlight'),
       i18nKey: 'products.flashlight',
       category: 'light-power',
       baseQuantity,

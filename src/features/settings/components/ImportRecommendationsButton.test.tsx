@@ -1,5 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { beforeEach, afterEach, vi, type Mock, type SpyInstance } from 'vitest';
+import {
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+  type MockInstance,
+} from 'vitest';
 import { ImportRecommendationsButton } from './ImportRecommendationsButton';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
@@ -40,7 +46,7 @@ describe('ImportRecommendationsButton', () => {
     ],
   };
 
-  let consoleErrorSpy: SpyInstance;
+  let consoleErrorSpy: MockInstance;
 
   beforeEach(() => {
     vi.clearAllMocks();

@@ -16,7 +16,7 @@ import {
   createMockAppData,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
-import { createDateOnly } from '@/shared/types';
+import { createDateOnly, createItemId } from '@/shared/types';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 
 vi.mock('@/shared/utils/storage/localStorage');
@@ -139,9 +139,9 @@ describe('shouldShowBackupReminder', () => {
   it('should handle multiple items correctly', () => {
     const appData = createMockAppData({
       items: [
-        createMockInventoryItem({ id: '1', name: 'Item 1' }),
-        createMockInventoryItem({ id: '2', name: 'Item 2' }),
-        createMockInventoryItem({ id: '3', name: 'Item 3' }),
+        createMockInventoryItem({ id: createItemId('1'), name: 'Item 1' }),
+        createMockInventoryItem({ id: createItemId('2'), name: 'Item 2' }),
+        createMockInventoryItem({ id: createItemId('3'), name: 'Item 3' }),
       ],
       lastBackupDate: undefined,
     });

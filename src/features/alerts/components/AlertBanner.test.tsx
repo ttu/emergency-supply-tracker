@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AlertBanner } from './AlertBanner';
+import { createAlertId } from '@/shared/types';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -27,7 +28,7 @@ describe('AlertBanner', () => {
       <AlertBanner
         alerts={[
           {
-            id: '1',
+            id: createAlertId('1'),
             type: 'warning',
             message: 'Running low on stock',
           },
@@ -43,7 +44,7 @@ describe('AlertBanner', () => {
       <AlertBanner
         alerts={[
           {
-            id: '1',
+            id: createAlertId('1'),
             type: 'critical',
             message: 'Item has expired',
             itemName: 'Bottled Water',
@@ -61,13 +62,13 @@ describe('AlertBanner', () => {
       <AlertBanner
         alerts={[
           {
-            id: '1',
+            id: createAlertId('1'),
             type: 'critical',
             message: 'Item has expired',
             itemName: 'First Aid Kit',
           },
           {
-            id: '2',
+            id: createAlertId('2'),
             type: 'warning',
             message: 'Running low',
             itemName: 'Batteries',
@@ -83,12 +84,13 @@ describe('AlertBanner', () => {
   it('calls onDismiss when dismiss button is clicked', async () => {
     const user = userEvent.setup();
     const onDismiss = vi.fn();
+    const alertId = createAlertId('1');
 
     render(
       <AlertBanner
         alerts={[
           {
-            id: '1',
+            id: alertId,
             type: 'info',
             message: 'Test alert',
           },
@@ -100,7 +102,7 @@ describe('AlertBanner', () => {
     const dismissButton = screen.getByRole('button', { name: 'Dismiss' });
     await user.click(dismissButton);
 
-    expect(onDismiss).toHaveBeenCalledWith('1');
+    expect(onDismiss).toHaveBeenCalledWith(alertId);
   });
 
   it('does not render dismiss button when onDismiss is not provided', () => {
@@ -108,7 +110,7 @@ describe('AlertBanner', () => {
       <AlertBanner
         alerts={[
           {
-            id: '1',
+            id: createAlertId('1'),
             type: 'info',
             message: 'Test alert',
           },

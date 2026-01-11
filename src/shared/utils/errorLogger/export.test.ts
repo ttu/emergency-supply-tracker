@@ -5,7 +5,7 @@ import {
   beforeEach,
   afterEach,
   vi,
-  type SpyInstance,
+  type MockInstance,
 } from 'vitest';
 import {
   generateDebugExport,
@@ -16,8 +16,8 @@ import {
 import { info, error } from './logger';
 
 describe('errorLogger export', () => {
-  let consoleInfoSpy: SpyInstance;
-  let consoleErrorSpy: SpyInstance;
+  let consoleInfoSpy: MockInstance;
+  let consoleErrorSpy: MockInstance;
 
   beforeEach(() => {
     localStorage.clear();
@@ -72,8 +72,8 @@ describe('errorLogger export', () => {
       const mockCreateObjectURL = vi.fn().mockReturnValue('blob:test');
       const mockRevokeObjectURL = vi.fn();
 
-      global.URL.createObjectURL = mockCreateObjectURL;
-      global.URL.revokeObjectURL = mockRevokeObjectURL;
+      globalThis.URL.createObjectURL = mockCreateObjectURL;
+      globalThis.URL.revokeObjectURL = mockRevokeObjectURL;
 
       // Create a real anchor element but mock its click
       const originalCreateElement = document.createElement.bind(document);

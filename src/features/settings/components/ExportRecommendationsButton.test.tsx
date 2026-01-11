@@ -6,8 +6,8 @@ import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 // Mock URL.createObjectURL and URL.revokeObjectURL
 const mockCreateObjectURL = vi.fn(() => 'blob:test-url');
 const mockRevokeObjectURL = vi.fn();
-global.URL.createObjectURL = mockCreateObjectURL;
-global.URL.revokeObjectURL = mockRevokeObjectURL;
+globalThis.URL.createObjectURL = mockCreateObjectURL;
+globalThis.URL.revokeObjectURL = mockRevokeObjectURL;
 
 // Mock useRecommendedItems hook
 const mockExportRecommendedItems = vi.fn();

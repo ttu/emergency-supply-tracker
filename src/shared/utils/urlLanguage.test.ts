@@ -5,7 +5,7 @@ import {
   beforeEach,
   afterEach,
   vi,
-  type SpyInstance,
+  type MockInstance,
 } from 'vitest';
 import {
   extractLanguageFromSearch,
@@ -104,7 +104,7 @@ describe('urlLanguage', () => {
 
   describe('clearLanguageFromUrl', () => {
     let originalSearch: string;
-    let replaceStateSpy: SpyInstance;
+    let replaceStateSpy: MockInstance;
 
     beforeEach(() => {
       originalSearch = globalThis.location.search;

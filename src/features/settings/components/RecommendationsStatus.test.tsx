@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, afterEach, vi, type SpyInstance } from 'vitest';
+import { beforeEach, afterEach, vi, type MockInstance } from 'vitest';
 import { RecommendationsStatus } from './RecommendationsStatus';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
@@ -24,7 +24,7 @@ vi.mock('@/features/templates', () => ({
 }));
 
 describe('RecommendationsStatus', () => {
-  let consoleErrorSpy: SpyInstance;
+  let consoleErrorSpy: MockInstance;
 
   beforeEach(() => {
     vi.clearAllMocks();

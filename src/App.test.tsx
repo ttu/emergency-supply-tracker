@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import App from './App';
 import { createMockAppData } from '@/shared/utils/test/factories';
 import { SettingsProvider } from '@/features/settings';
@@ -18,14 +19,14 @@ vi.mock('react-i18next', () => ({
       changeLanguage: vi.fn(),
     },
   }),
-  withTranslation: () => (Component: React.ComponentType) => {
-    const WrappedComponent = (props: Record<string, unknown>) => {
-      const t = (key: string) => key;
-      return <Component {...props} t={t} />;
-    };
-    WrappedComponent.displayName = `withTranslation(${Component.displayName || Component.name || 'Component'})`;
-    return WrappedComponent;
-  },
+  withTranslation:
+    () => (Component: React.ComponentType<Record<string, unknown>>) => {
+      const WrappedComponent = (props: Record<string, unknown>) => {
+        return <Component {...props} />;
+      };
+      WrappedComponent.displayName = `withTranslation(${Component.displayName || Component.name || 'Component'})`;
+      return WrappedComponent;
+    },
 }));
 
 // Helper to set up localStorage with onboarding completed
@@ -35,10 +36,9 @@ const setupCompletedOnboarding = () => {
       language: 'en',
       theme: 'light',
       highContrast: false,
-      advancedFeatures: {},
       onboardingCompleted: true,
     },
-  });
+  } as Parameters<typeof createMockAppData>[0]);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 };
 
@@ -145,10 +145,9 @@ describe('App', () => {
         language: 'en',
         theme: 'light',
         highContrast: false,
-        advancedFeatures: {},
         onboardingCompleted: false,
       },
-    });
+    } as Parameters<typeof createMockAppData>[0]);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
 
     renderApp();

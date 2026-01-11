@@ -81,6 +81,8 @@ describe('UserSettingsFactory', () => {
       const input: CreateUserSettingsInput = {
         advancedFeatures: {
           calorieTracking: true,
+          powerManagement: false,
+          waterTracking: false,
         },
       };
 
@@ -93,8 +95,8 @@ describe('UserSettingsFactory', () => {
 
     it('throws error when language is invalid', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         UserSettingsFactory.create({
+          // @ts-expect-error - Testing invalid input
           language: 'invalid',
         });
       }).toThrow(UserSettingsValidationError);
@@ -102,8 +104,8 @@ describe('UserSettingsFactory', () => {
 
     it('throws error when theme is invalid', () => {
       expect(() => {
-        // @ts-expect-error - Testing invalid input
         UserSettingsFactory.create({
+          // @ts-expect-error - Testing invalid input
           theme: 'invalid',
         });
       }).toThrow(UserSettingsValidationError);

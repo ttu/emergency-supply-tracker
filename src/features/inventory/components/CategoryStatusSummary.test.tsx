@@ -6,6 +6,11 @@ import {
   CategoryShortage,
 } from './CategoryStatusSummary';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -899,10 +904,10 @@ describe('CategoryStatusSummary', () => {
       const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Candles',
-        itemType: 'candles',
-        categoryId: 'light-power',
+        itemType: createProductTemplateId('candles'),
+        categoryId: createCategoryId('light-power'),
         quantity: 4,
         recommendedQuantity: 10,
         markedAsEnough: false,
@@ -938,10 +943,10 @@ describe('CategoryStatusSummary', () => {
     it('does not show mark as enough button when item is already marked', () => {
       const shortage = createShortage('candles', 4, 10);
       const markedItem = createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Candles',
-        itemType: 'candles',
-        categoryId: 'light-power',
+        itemType: createProductTemplateId('candles'),
+        categoryId: createCategoryId('light-power'),
         quantity: 4,
         recommendedQuantity: 10,
         markedAsEnough: true,
@@ -969,10 +974,10 @@ describe('CategoryStatusSummary', () => {
     it('does not show mark as enough button when quantity is zero', () => {
       const shortage = createShortage('candles', 0, 10);
       const zeroQuantityItem = createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Candles',
-        itemType: 'candles',
-        categoryId: 'light-power',
+        itemType: createProductTemplateId('candles'),
+        categoryId: createCategoryId('light-power'),
         quantity: 0,
         recommendedQuantity: 10,
         markedAsEnough: false,
@@ -1002,10 +1007,10 @@ describe('CategoryStatusSummary', () => {
       const onMarkAsEnough = vi.fn();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Candles',
-        itemType: 'candles',
-        categoryId: 'light-power',
+        itemType: createProductTemplateId('candles'),
+        categoryId: createCategoryId('light-power'),
         quantity: 4,
         recommendedQuantity: 10,
         markedAsEnough: false,
@@ -1037,18 +1042,18 @@ describe('CategoryStatusSummary', () => {
       await user.click(markButton);
 
       expect(onMarkAsEnough).toHaveBeenCalledTimes(1);
-      expect(onMarkAsEnough).toHaveBeenCalledWith('item-1');
+      expect(onMarkAsEnough).toHaveBeenCalledWith(createItemId('item-1'));
     });
 
     it('matches items by productTemplateId', async () => {
       const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Candles',
         itemType: 'custom',
-        productTemplateId: 'candles',
-        categoryId: 'light-power',
+        productTemplateId: createProductTemplateId('candles'),
+        categoryId: createCategoryId('light-power'),
         quantity: 4,
         recommendedQuantity: 10,
         markedAsEnough: false,
@@ -1083,10 +1088,10 @@ describe('CategoryStatusSummary', () => {
       const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
-        id: 'item-1',
+        id: createItemId('item-1'),
         name: 'Candles',
         itemType: 'custom',
-        categoryId: 'light-power',
+        categoryId: createCategoryId('light-power'),
         quantity: 4,
         recommendedQuantity: 10,
         markedAsEnough: false,
