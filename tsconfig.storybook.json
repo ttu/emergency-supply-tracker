@@ -9,5 +9,5 @@
     "src/**/*.stories.tsx",
     "src/css-modules.d.ts"
   ],
-  "exclude": []
+  "exclude": ["src/test/fakerSeed.ts", "src/test/globalSetup.ts"]
 }
