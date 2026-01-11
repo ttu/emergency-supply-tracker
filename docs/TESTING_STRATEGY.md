@@ -1,7 +1,7 @@
 # Testing Strategy
 
 > **Version:** 1.1.0
-> **Last Updated:** 2026-01-23
+> **Last Updated:** 2026-01-11
 > **Source of Truth:** `vite.config.ts`, `playwright.config.ts`, `src/test/globalSetup.ts`
 
 This document describes the testing approach for the Emergency Supply Tracker application.

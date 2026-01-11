@@ -19,18 +19,23 @@ const FILE_PREFIX = path.join(
 );
 
 export const SEED_FILE = `${FILE_PREFIX}-seed`;
-export const COUNTER_FILE = `${FILE_PREFIX}-counter`;
 export const LOG_FILE = `${FILE_PREFIX}-log`;
 
 /**
  * Validates and parses a seed string.
+ * Strictly validates that the input is a non-negative integer string (no decimals, no suffixes).
  * @throws TypeError if seed is invalid
  */
 export function validateAndParseSeed(seedString: string): number {
-  const parsedSeed = Number.parseInt(seedString, 10);
-  const isValidSeed =
-    Number.isInteger(parsedSeed) && parsedSeed >= 0 && parsedSeed <= 999999;
-  if (!isValidSeed) {
+  const trimmed = seedString.trim();
+  // Strict validation: only digits, 1-6 chars, no decimals or suffixes
+  if (!/^\d{1,6}$/.test(trimmed)) {
+    throw new TypeError(
+      `[Faker] Invalid FAKER_SEED="${seedString}". Expected an integer in range 0-999999.`,
+    );
+  }
+  const parsedSeed = Number(trimmed);
+  if (parsedSeed > 999999) {
     throw new TypeError(
       `[Faker] Invalid FAKER_SEED="${seedString}". Expected an integer in range 0-999999.`,
     );
@@ -150,125 +155,38 @@ export function logSeed(
   }
 }
 
-// --- Counter management for coordinated teardown ---
+// --- Counter management for coordinated teardown (token files) ---
+
+// Directory for counter token files - avoids read-modify-write race conditions
+const COUNTER_DIR = `${FILE_PREFIX}-counter.d`;
 
 /**
- * Attempts to create a new counter file atomically.
- * Returns the counter value (1) if successful, null if file already exists.
- */
-function tryCreateCounterFile(): number | null {
-  try {
-    fs.writeFileSync(COUNTER_FILE, '1', { flag: 'wx' });
-    return 1;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
-      return null;
-    }
-    throw error;
-  }
-}
-
-/**
- * Reads the current counter value from file.
- * Returns the counter value, or null if file is invalid/corrupted.
- */
-function readCounterValue(): number | null {
-  try {
-    const content = fs.readFileSync(COUNTER_FILE, 'utf-8').trim();
-    const current = Number.parseInt(content, 10);
-    if (Number.isNaN(current) || current < 1) {
-      fs.writeFileSync(COUNTER_FILE, '1', { flag: 'w' });
-      return 1;
-    }
-    return current;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Increments the counter value and writes it back to file atomically.
- * Uses a temporary file and atomic rename to prevent race conditions.
- * Returns the new counter value, or null if write failed.
- */
-function writeIncrementedCounter(current: number): number | null {
-  const next = current + 1;
-  const tempFile = `${COUNTER_FILE}.${process.pid}.tmp`;
-  try {
-    fs.writeFileSync(tempFile, String(next), { flag: 'w' });
-    fs.renameSync(tempFile, COUNTER_FILE);
-    return next;
-  } catch {
-    if (fs.existsSync(tempFile)) {
-      try {
-        fs.unlinkSync(tempFile);
-      } catch {
-        // Cleanup is best-effort
-      }
-    }
-    return null;
-  }
-}
-
-/**
- * Handles the case when counter file already exists.
- * Reads, validates, increments, and writes back.
- * Returns the new counter value, or null if operation failed.
- */
-function handleExistingCounterFile(): number | null {
-  const current = readCounterValue();
-  if (current === null) {
-    return null;
-  }
-  return writeIncrementedCounter(current);
-}
-
-/**
- * Performs a brief delay for exponential backoff.
- */
-function delay(attempts: number): void {
-  const delayMs = Math.min(5 * attempts, 50);
-  const start = Date.now();
-  while (Date.now() - start < delayMs) {
-    // Busy wait (acceptable for short delays in test teardown)
-  }
-}
-
-/**
- * Atomically increments the project completion counter.
- * Returns the new counter value after increment.
+ * Atomically increments the project completion counter using token files.
+ * Each project creates a unique token file in a directory. The count is
+ * determined by the number of files in the directory.
  *
- * Uses retry logic with exponential backoff to handle race conditions
- * when multiple projects complete simultaneously.
+ * This approach is race-condition free because each project creates its own
+ * unique file using atomic file creation (O_CREAT|O_EXCL via 'wx' flag).
  */
 export function incrementCounter(expectedProjectCount: number): number {
-  let attempts = 0;
-  const maxAttempts = 20;
+  try {
+    // Create counter directory if it doesn't exist
+    fs.mkdirSync(COUNTER_DIR, { recursive: true });
 
-  while (attempts < maxAttempts) {
-    try {
-      const newCounter = tryCreateCounterFile();
-      if (newCounter !== null) {
-        return newCounter;
-      }
+    // Create a unique token file for this project
+    const tokenFile = path.join(
+      COUNTER_DIR,
+      `${process.pid}-${crypto.randomUUID()}`,
+    );
+    fs.writeFileSync(tokenFile, '', { flag: 'wx' });
 
-      const incremented = handleExistingCounterFile();
-      if (incremented !== null) {
-        return incremented;
-      }
-
-      attempts++;
-      delay(attempts);
-    } catch {
-      attempts++;
-      if (attempts >= maxAttempts) {
-        return expectedProjectCount;
-      }
-      delay(attempts);
-    }
+    // Count token files to determine completion count
+    const count = fs.readdirSync(COUNTER_DIR).length;
+    return Math.min(count, expectedProjectCount);
+  } catch {
+    // If counting fails, be conservative: report "done" to avoid blocking cleanup
+    return expectedProjectCount;
   }
-
-  return expectedProjectCount;
 }
 
 /**
@@ -288,10 +206,18 @@ function safeUnlink(filePath: string, fileDescription: string): void {
 }
 
 /**
- * Performs cleanup of seed, counter, and log files.
+ * Performs cleanup of seed, counter directory, and log files.
  */
 export function cleanupSeedFiles(): void {
   safeUnlink(SEED_FILE, 'seed file');
-  safeUnlink(COUNTER_FILE, 'counter file');
   safeUnlink(LOG_FILE, 'log file');
+
+  // Remove counter directory and all token files
+  try {
+    if (fs.existsSync(COUNTER_DIR)) {
+      fs.rmSync(COUNTER_DIR, { recursive: true, force: true });
+    }
+  } catch {
+    // Cleanup is best-effort
+  }
 }
