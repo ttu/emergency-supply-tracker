@@ -473,3 +473,165 @@ describe('water shortage alerts', () => {
     expect(waterAlert).toBeUndefined();
   });
 });
+
+describe('food category calorie-based alerts', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-01-01'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should not generate food alert when calories are sufficient even if quantity is low', () => {
+    // Create a household that needs 6000 calories (1 adult * 2000 * 3 days)
+    const household = createMockHousehold({
+      adults: 1,
+      children: 0,
+      supplyDurationDays: 3,
+    });
+
+    // Create one high-calorie item that provides all needed calories
+    // e.g., 1 kg of rice = 3600 calories per kg, but we need 6000
+    // So we need 6000/3600 = 1.67 kg, but let's say we have 2 kg = 7200 calories (enough)
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Rice',
+        categoryId: 'food',
+        itemType: 'rice', // Set itemType to match recommended item ID
+        productTemplateId: 'rice',
+        quantity: 2, // 2 kg
+        recommendedQuantity: 10, // Low quantity percentage (2/10 = 20%)
+        caloriesPerUnit: 3600, // 3600 calories per kg
+        unit: 'kilograms',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    // Total calories: 2 * 3600 = 7200, which is more than needed (6000)
+    const alerts = generateDashboardAlerts(items, mockT, household);
+    const foodAlerts = alerts.filter((a) => a.id?.includes('food'));
+
+    // Should not generate food alerts because calories are sufficient
+    expect(foodAlerts).toHaveLength(0);
+  });
+
+  it('should generate food alert when calories are insufficient', () => {
+    // Create a household that needs 6000 calories (1 adult * 2000 * 3 days)
+    const household = createMockHousehold({
+      adults: 1,
+      children: 0,
+      supplyDurationDays: 3,
+    });
+
+    // Create one item with insufficient calories
+    // e.g., 0.5 kg of rice = 0.5 * 3600 = 1800 calories (30% of needed)
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Rice',
+        categoryId: 'food',
+        itemType: 'rice', // Set itemType to match recommended item ID
+        productTemplateId: 'rice',
+        quantity: 0.5, // 0.5 kg
+        recommendedQuantity: 10,
+        caloriesPerUnit: 3600, // 3600 calories per kg
+        unit: 'kilograms',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    // Total calories: 0.5 * 3600 = 1800, which is 30% of needed (6000)
+    const alerts = generateDashboardAlerts(items, mockT, household);
+    const foodAlert = alerts.find((a) =>
+      a.id?.includes('category-critically-low-food'),
+    );
+
+    expect(foodAlert).toBeDefined();
+    expect(foodAlert?.type).toBe('critical');
+    expect(foodAlert?.message).toContain('Critically low');
+    expect(foodAlert?.message).toContain('30%'); // 1800/6000 = 30%
+  });
+
+  it('should generate food alert based on calories when multiple items exist', () => {
+    // Create a household that needs 12000 calories (2 adults * 2000 * 3 days)
+    const household = createMockHousehold({
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 3,
+    });
+
+    // Create multiple items with total calories = 40% of needed
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Rice',
+        categoryId: 'food',
+        itemType: 'rice', // Set itemType to match recommended item ID
+        productTemplateId: 'rice',
+        quantity: 1, // 1 kg = 3600 calories
+        recommendedQuantity: 5,
+        caloriesPerUnit: 3600,
+        unit: 'kilograms',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+      createMockInventoryItem({
+        id: '2',
+        name: 'Pasta',
+        categoryId: 'food',
+        itemType: 'pasta', // Set itemType to match recommended item ID
+        productTemplateId: 'pasta',
+        quantity: 1, // 1 kg = 1200 calories (but pasta has 3500 per kg, let me fix this)
+        recommendedQuantity: 3,
+        caloriesPerUnit: 1200, // Actually pasta is 3500 per kg, but let's use 1200 for this test
+        unit: 'kilograms',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    // Total calories: 3600 + 1200 = 4800, which is 40% of needed (12000)
+    const alerts = generateDashboardAlerts(items, mockT, household);
+    const foodAlert = alerts.find((a) =>
+      a.id?.includes('category-low-stock-food'),
+    );
+
+    expect(foodAlert).toBeDefined();
+    expect(foodAlert?.type).toBe('warning');
+    expect(foodAlert?.message).toContain('Running low');
+    expect(foodAlert?.message).toContain('40%'); // 4800/12000 = 40%
+  });
+
+  it('should use quantity-based calculation for food when household is not provided', () => {
+    // Without household, should fall back to quantity-based calculation
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Rice',
+        categoryId: 'food',
+        productTemplateId: 'rice',
+        quantity: 2,
+        recommendedQuantity: 10, // 2/10 = 20% (critically low)
+        caloriesPerUnit: 3600,
+        unit: 'kilograms',
+        neverExpires: false,
+        expirationDate: '2025-12-31',
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(items, mockT); // No household
+    const foodAlert = alerts.find((a) =>
+      a.id?.includes('category-critically-low-food'),
+    );
+
+    expect(foodAlert).toBeDefined();
+    expect(foodAlert?.type).toBe('critical');
+    expect(foodAlert?.message).toContain('Critically low');
+    expect(foodAlert?.message).toContain('20%'); // Based on quantity, not calories
+  });
+});

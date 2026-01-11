@@ -9,6 +9,7 @@ import {
 } from '@/shared/utils/constants';
 import { calculateWaterRequirements } from '@/shared/utils/calculations/water';
 import { getDaysUntilExpiration } from '@/features/inventory/utils/status';
+import { calculateCategoryShortages } from '@/features/dashboard/utils/categoryStatus';
 import type { Alert, AlertCounts, TranslationFunction } from '../types';
 import { ALERT_PRIORITY } from '../types';
 
@@ -90,10 +91,12 @@ function generateExpirationAlerts(
 
 /**
  * Generate alerts for categories with low stock (aggregated by category)
+ * For food category, uses calorie-based calculations instead of quantity-based.
  */
 function generateCategoryStockAlerts(
   items: InventoryItem[],
   t: TranslationFunction,
+  household?: HouseholdConfig,
 ): Alert[] {
   const alerts: Alert[] = [];
 
@@ -107,22 +110,63 @@ function generateCategoryStockAlerts(
       return;
     }
 
-    // Calculate total quantity vs total recommended for the category
-    let totalQuantity = 0;
-    let totalRecommended = 0;
+    const isFoodCategory = category.id === 'food';
+    let percentOfRecommended: number;
+    let hasEnough = false;
 
-    categoryItems.forEach((item) => {
-      totalQuantity += item.quantity;
-      totalRecommended += item.recommendedQuantity;
-    });
+    // For food category, use calorie-based calculation if household is available
+    if (isFoodCategory && household) {
+      const shortageInfo = calculateCategoryShortages(
+        category.id,
+        items,
+        household,
+      );
 
-    const percentOfRecommended =
-      totalRecommended > 0 ? (totalQuantity / totalRecommended) * 100 : 100;
+      // Check if we have enough calories
+      hasEnough =
+        (shortageInfo.totalActualCalories ?? 0) >=
+        (shortageInfo.totalNeededCalories ?? 0);
+
+      if (
+        shortageInfo.totalNeededCalories &&
+        shortageInfo.totalNeededCalories > 0
+      ) {
+        percentOfRecommended =
+          ((shortageInfo.totalActualCalories ?? 0) /
+            shortageInfo.totalNeededCalories) *
+          100;
+      } else {
+        percentOfRecommended = 100;
+      }
+    } else {
+      // For non-food categories, use quantity-based calculation
+      let totalQuantity = 0;
+      let totalRecommended = 0;
+
+      categoryItems.forEach((item) => {
+        totalQuantity += item.quantity;
+        totalRecommended += item.recommendedQuantity;
+      });
+
+      percentOfRecommended =
+        totalRecommended > 0 ? (totalQuantity / totalRecommended) * 100 : 100;
+      hasEnough = totalQuantity >= totalRecommended;
+    }
 
     // Translate category name
     const categoryName = t(category.id, { ns: 'categories' });
 
-    if (totalQuantity === 0) {
+    // Don't generate alerts if we have enough (for food: enough calories, for others: enough quantity)
+    if (hasEnough) {
+      return;
+    }
+
+    // Check for out of stock (quantity/calories = 0)
+    const isOutOfStock = isFoodCategory
+      ? false // For food, we check calories above, so if hasEnough is false but calories > 0, it's just low
+      : categoryItems.every((item) => item.quantity === 0);
+
+    if (isOutOfStock) {
       alerts.push({
         id: createAlertId(`category-out-of-stock-${category.id}`),
         type: 'critical',
@@ -195,7 +239,7 @@ export function generateDashboardAlerts(
   household?: HouseholdConfig,
 ): Alert[] {
   const expirationAlerts = generateExpirationAlerts(items, t);
-  const categoryStockAlerts = generateCategoryStockAlerts(items, t);
+  const categoryStockAlerts = generateCategoryStockAlerts(items, t, household);
   const waterShortageAlerts = generateWaterShortageAlerts(items, household, t);
 
   // Combine alerts (removed item-level critical alerts as they're now covered by category alerts)
