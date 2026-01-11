@@ -22,6 +22,11 @@ const COUNTER_FILE = path.join(
   os.tmpdir(),
   `.vitest-faker-counter-${RUN_SCOPE}-${process.pid}`,
 );
+// File to ensure we only log the seed once per run (even with explicit FAKER_SEED)
+const LOG_FILE = path.join(
+  os.tmpdir(),
+  `.vitest-faker-seed-log-${RUN_SCOPE}-${process.pid}`,
+);
 // Expected number of projects (unit + storybook)
 // Can be overridden via VITEST_PROJECT_COUNT env var
 const EXPECTED_PROJECT_COUNT = (() => {
@@ -88,10 +93,6 @@ function generateRandomSeed(): number {
  * Returns true if this process should log.
  */
 function tryClaimLogFile(): boolean {
-  const LOG_FILE = path.join(
-    os.tmpdir(),
-    `.vitest-faker-seed-log-${RUN_SCOPE}-${process.pid}`,
-  );
   try {
     fs.writeFileSync(LOG_FILE, '', { flag: 'wx' });
     return true;
@@ -307,12 +308,13 @@ function safeUnlink(filePath: string, fileDescription: string): void {
 }
 
 /**
- * Performs cleanup of seed and counter files.
+ * Performs cleanup of seed, counter, and log files.
  * Only called when this is the last project to finish.
  */
 function performCleanup(): void {
   safeUnlink(SEED_FILE, 'seed file');
   safeUnlink(COUNTER_FILE, 'counter file');
+  safeUnlink(LOG_FILE, 'log file');
 }
 
 /**
