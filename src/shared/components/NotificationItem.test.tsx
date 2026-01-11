@@ -1,10 +1,14 @@
 /// <reference types="@testing-library/jest-dom" />
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NotificationItem } from './NotificationItem';
 
 describe('NotificationItem', () => {
+  // Ensure timers are always restored after each test to avoid leaks
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   it('renders notification with message', () => {
     const onClose = vi.fn();
     render(<NotificationItem message="Test message" onClose={onClose} />);
@@ -101,40 +105,46 @@ describe('NotificationItem', () => {
 
   it('does not auto-dismiss when duration is 0', () => {
     vi.useFakeTimers();
-    const onClose = vi.fn();
-    render(
-      <NotificationItem
-        message="Test message"
-        duration={0}
-        onClose={onClose}
-      />,
-    );
+    try {
+      const onClose = vi.fn();
+      render(
+        <NotificationItem
+          message="Test message"
+          duration={0}
+          onClose={onClose}
+        />,
+      );
 
-    expect(screen.getByText('Test message')).toBeInTheDocument();
+      expect(screen.getByText('Test message')).toBeInTheDocument();
 
-    vi.advanceTimersByTime(5000);
+      vi.advanceTimersByTime(5000);
 
-    expect(onClose).not.toHaveBeenCalled();
-    vi.useRealTimers();
+      expect(onClose).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('cleans up timeout on unmount', () => {
     vi.useFakeTimers();
-    const onClose = vi.fn();
-    const { unmount } = render(
-      <NotificationItem
-        message="Test message"
-        duration={1000}
-        onClose={onClose}
-      />,
-    );
+    try {
+      const onClose = vi.fn();
+      const { unmount } = render(
+        <NotificationItem
+          message="Test message"
+          duration={1000}
+          onClose={onClose}
+        />,
+      );
 
-    unmount();
+      unmount();
 
-    vi.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
 
-    expect(onClose).not.toHaveBeenCalled();
-    vi.useRealTimers();
+      expect(onClose).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('has proper accessibility attributes', () => {
