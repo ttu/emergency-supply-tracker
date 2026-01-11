@@ -20,7 +20,7 @@ vi.mock('react-i18next', () => ({
         'household.errors.supplyDaysMin': 'At least {{min}} day is required',
         'household.errors.supplyDaysMax': 'Maximum {{max}} days allowed',
         'actions.save': 'Save',
-        'actions.cancel': 'Cancel',
+        'actions.back': 'Back',
       };
       let result = translations[key] || key;
       if (params) {
@@ -155,23 +155,23 @@ describe('HouseholdForm', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders cancel button when onCancel is provided', () => {
+  it('renders back button when onBack is provided', () => {
     const onSubmit = vi.fn();
-    const onCancel = vi.fn();
-    render(<HouseholdForm onSubmit={onSubmit} onCancel={onCancel} />);
+    const onBack = vi.fn();
+    render(<HouseholdForm onSubmit={onSubmit} onBack={onBack} />);
 
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
   });
 
-  it('calls onCancel when cancel button is clicked', async () => {
+  it('calls onBack when back button is clicked', async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    const onCancel = vi.fn();
-    render(<HouseholdForm onSubmit={onSubmit} onCancel={onCancel} />);
+    const onBack = vi.fn();
+    render(<HouseholdForm onSubmit={onSubmit} onBack={onBack} />);
 
-    const cancelButton = screen.getByRole('button', { name: 'Cancel' });
-    await user.click(cancelButton);
+    const backButton = screen.getByRole('button', { name: 'Back' });
+    await user.click(backButton);
 
-    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onBack).toHaveBeenCalledTimes(1);
   });
 });

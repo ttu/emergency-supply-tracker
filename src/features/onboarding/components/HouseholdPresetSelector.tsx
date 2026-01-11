@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/shared/components/Card';
+import { Button } from '@/shared/components/Button';
 import styles from './HouseholdPresetSelector.module.css';
 
 export interface HouseholdPreset {
@@ -11,6 +12,7 @@ export interface HouseholdPreset {
 export interface HouseholdPresetSelectorProps {
   selectedPreset?: string;
   onSelectPreset: (preset: HouseholdPreset) => void;
+  onBack?: () => void;
 }
 
 const PRESETS: HouseholdPreset[] = [
@@ -22,6 +24,7 @@ const PRESETS: HouseholdPreset[] = [
 export function HouseholdPresetSelector({
   selectedPreset,
   onSelectPreset,
+  onBack,
 }: HouseholdPresetSelectorProps) {
   const { t } = useTranslation();
 
@@ -89,6 +92,14 @@ export function HouseholdPresetSelector({
             </div>
           </Card>
         </div>
+
+        {onBack && (
+          <div className={styles.actions}>
+            <Button type="button" variant="secondary" onClick={onBack}>
+              {t('actions.back')}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
