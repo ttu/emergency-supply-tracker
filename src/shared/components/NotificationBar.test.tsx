@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NotificationBar } from './NotificationBar';
@@ -28,15 +28,6 @@ function TestComponent() {
 }
 
 describe('NotificationBar', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.runOnlyPendingTimers();
-    vi.useRealTimers();
-  });
-
   it('renders nothing when there are no notifications', () => {
     render(
       <NotificationProvider>
@@ -47,8 +38,8 @@ describe('NotificationBar', () => {
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
-  it.skip('displays a single notification', async () => {
-    const user = userEvent.setup({ delay: null });
+  it('displays a single notification', async () => {
+    const user = userEvent.setup();
     render(
       <NotificationProvider>
         <TestComponent />
@@ -59,18 +50,12 @@ describe('NotificationBar', () => {
       screen.getByRole('button', { name: /show notification/i }),
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Test notification')).toBeInTheDocument();
-    });
-
+    expect(await screen.findByText('Test notification')).toBeInTheDocument();
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it.skip('displays multiple notifications stacked', async () => {
-    const user = userEvent.setup({
-      delay: null,
-      advanceTimers: vi.advanceTimersByTime,
-    });
+  it('displays multiple notifications stacked', async () => {
+    const user = userEvent.setup();
     render(
       <NotificationProvider>
         <TestComponent />
@@ -78,20 +63,18 @@ describe('NotificationBar', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /show multiple/i }));
-    vi.advanceTimersByTime(500);
 
-    await waitFor(() => {
-      expect(screen.getByText('First')).toBeInTheDocument();
-      expect(screen.getByText('Second')).toBeInTheDocument();
-      expect(screen.getByText('Third')).toBeInTheDocument();
-    });
+    // Wait for all notifications to appear
+    await screen.findByText('First');
+    await screen.findByText('Second');
+    await screen.findByText('Third');
 
     const notifications = screen.getAllByRole('status');
     expect(notifications).toHaveLength(3);
   });
 
-  it.skip('allows dismissing notifications manually', async () => {
-    const user = userEvent.setup({ delay: null });
+  it('allows dismissing notifications manually', async () => {
+    const user = userEvent.setup();
     render(
       <NotificationProvider>
         <TestComponent />
@@ -102,13 +85,10 @@ describe('NotificationBar', () => {
       screen.getByRole('button', { name: /show notification/i }),
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Test notification')).toBeInTheDocument();
-    });
+    await screen.findByText('Test notification');
 
-    const closeButton = screen.getByRole('button', {
-      name: /close notification/i,
-    });
+    // The close button uses the translation key "accessibility.closeModal"
+    const closeButton = screen.getByLabelText('accessibility.closeModal');
     await user.click(closeButton);
 
     await waitFor(() => {
@@ -116,8 +96,50 @@ describe('NotificationBar', () => {
     });
   });
 
-  it.skip('auto-dismisses notifications after duration', async () => {
-    const user = userEvent.setup({ delay: null });
+  it('auto-dismisses notifications after duration', async () => {
+    // Use real timers with shorter duration for faster test
+    function ShortDurationComponent() {
+      const { showNotification } = useNotification();
+      return (
+        <div>
+          <button
+            onClick={() =>
+              showNotification('Test notification', 'success', 500)
+            }
+          >
+            Show Notification
+          </button>
+          <NotificationBar />
+        </div>
+      );
+    }
+
+    const user = userEvent.setup();
+    render(
+      <NotificationProvider>
+        <ShortDurationComponent />
+      </NotificationProvider>,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: /show notification/i }),
+    );
+
+    // Wait for notification to appear
+    await screen.findByText('Test notification');
+    expect(screen.getByText('Test notification')).toBeInTheDocument();
+
+    // Wait for auto-dismiss (500ms duration)
+    await waitFor(
+      () => {
+        expect(screen.queryByText('Test notification')).not.toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
+  });
+
+  it('has proper accessibility attributes', async () => {
+    const user = userEvent.setup();
     render(
       <NotificationProvider>
         <TestComponent />
@@ -128,42 +150,22 @@ describe('NotificationBar', () => {
       screen.getByRole('button', { name: /show notification/i }),
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Test notification')).toBeInTheDocument();
-    });
+    // Wait for notification to appear first
+    await screen.findByText('Test notification');
 
-    // Fast-forward time by 3 seconds (default duration)
-    vi.advanceTimersByTime(3000);
+    // Check that NotificationBar container has proper accessibility attributes
+    // The container div has aria-live="polite" and aria-atomic="false"
+    const notificationBarContainer = document.querySelector(
+      '[aria-live="polite"][aria-atomic="false"]',
+    );
+    expect(notificationBarContainer).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(screen.queryByText('Test notification')).not.toBeInTheDocument();
-    });
+    // Also verify notification is visible with role="status"
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it.skip('has proper accessibility attributes', async () => {
-    const user = userEvent.setup({ delay: null });
-    render(
-      <NotificationProvider>
-        <TestComponent />
-      </NotificationProvider>,
-    );
-
-    await user.click(
-      screen.getByRole('button', { name: /show notification/i }),
-    );
-
-    await waitFor(() => {
-      const container = screen.getByRole('region', { name: '' });
-      expect(container).toHaveAttribute('aria-live', 'polite');
-      expect(container).toHaveAttribute('aria-atomic', 'false');
-    });
-  });
-
-  it.skip('displays different notification variants correctly', async () => {
-    const user = userEvent.setup({
-      delay: null,
-      advanceTimers: vi.advanceTimersByTime,
-    });
+  it('displays different notification variants correctly', async () => {
+    const user = userEvent.setup();
 
     function VariantTestComponent() {
       const { showNotification } = useNotification();
@@ -187,25 +189,27 @@ describe('NotificationBar', () => {
       </NotificationProvider>,
     );
 
+    // Click all buttons
     await user.click(screen.getByRole('button', { name: /success/i }));
-    vi.advanceTimersByTime(0);
-    await waitFor(() => {
-      expect(screen.getByText('Success')).toBeInTheDocument();
-    });
-
     await user.click(screen.getByRole('button', { name: /info/i }));
-    vi.advanceTimersByTime(0);
-    await waitFor(() => {
-      expect(screen.getByText('Info')).toBeInTheDocument();
-    });
-
     await user.click(screen.getByRole('button', { name: /error/i }));
-    vi.advanceTimersByTime(0);
-    await waitFor(() => {
-      expect(screen.getByText('Error')).toBeInTheDocument();
-    });
 
-    const notifications = screen.getAllByRole('status');
-    expect(notifications).toHaveLength(3);
+    // Wait for all notifications to appear - find by role and check text content
+    await waitFor(() => {
+      const notifications = screen.getAllByRole('status');
+      expect(notifications).toHaveLength(3);
+
+      // Check that each notification contains the expected text
+      const notificationTexts = notifications.map((n) => n.textContent);
+      expect(notificationTexts.some((text) => text?.includes('Success'))).toBe(
+        true,
+      );
+      expect(notificationTexts.some((text) => text?.includes('Info'))).toBe(
+        true,
+      );
+      expect(notificationTexts.some((text) => text?.includes('Error'))).toBe(
+        true,
+      );
+    });
   });
 });
