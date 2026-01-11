@@ -50,7 +50,7 @@ test.describe('Onboarding Flow', () => {
     // Step 4: Quick Setup
     await expect(
       page.getByRole('button', {
-        name: /Add Recommended Items|Lisää suositellut/i,
+        name: /Add Selected Items|Lisää valitut/i,
       }),
     ).toBeVisible({ timeout: 5000 });
     await expect(
@@ -68,9 +68,7 @@ test.describe('Onboarding Flow', () => {
     });
   });
 
-  test('should add all recommended items during quick setup', async ({
-    page,
-  }) => {
+  test('should add selected items during quick setup', async ({ page }) => {
     // Clear localStorage
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
@@ -81,10 +79,24 @@ test.describe('Onboarding Flow', () => {
     await page.getByRole('button', { name: /Single Person|Yksin/i }).click();
     await page.getByRole('button', { name: /Save|Tallenna/i }).click();
 
-    // Click "Add Recommended Items"
+    // Select some items first (button is disabled when no items selected)
+    // Show details to access item checkboxes
+    const showDetailsButton = page.getByRole('button', {
+      name: /Show item details|Näytä tuotetiedot/i,
+    });
+    await showDetailsButton.click({ timeout: 5000 });
+
+    // Wait for checkboxes to appear and select first item
+    const firstCheckbox = page
+      .locator('input[type="checkbox"][id^="item-"]')
+      .first();
+    await firstCheckbox.waitFor({ state: 'visible', timeout: 5000 });
+    await firstCheckbox.click();
+
+    // Click "Add Selected Items"
     await page
       .getByRole('button', {
-        name: /Add Recommended Items|Lisää suositellut/i,
+        name: /Add Selected Items|Lisää valitut/i,
       })
       .click();
 

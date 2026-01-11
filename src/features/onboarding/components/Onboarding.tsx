@@ -46,11 +46,15 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
     setCurrentStep('quickSetup');
   };
 
-  const handleAddItems = () => {
+  const handleAddItems = (selectedItemIds: Set<string>) => {
     if (!householdConfig) return;
 
-    // Calculate and create inventory items from recommended items
+    // Calculate and create inventory items from selected recommended items
     const items: InventoryItem[] = RECOMMENDED_ITEMS.filter((item) => {
+      // Only include selected items
+      if (!selectedItemIds.has(item.id)) {
+        return false;
+      }
       // Skip frozen items if not using freezer
       if (item.requiresFreezer && !householdConfig.useFreezer) {
         return false;
@@ -60,10 +64,10 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       // Translate item name
       const itemName = t(item.i18nKey.replace('products.', ''));
 
-      // Create item using factory
+      // Create item using factory - all items start with quantity 0
       return InventoryItemFactory.createFromTemplate(item, householdConfig, {
         name: itemName,
-        quantity: 0, // Start with 0, user needs to add them
+        quantity: 0,
       });
     });
 

@@ -380,12 +380,18 @@
     "itemsCount": "Items",
     "categoriesCount": "Categories",
     "days": "Days",
+    "selectedItems": "Selected",
+    "ownedItems": "Owned",
     "showDetails": "Show item details",
     "hideDetails": "Hide item details",
-    "info": "Items will be added with quantity 0. You can update quantities as you stock up.",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "selectItem": "Select {{item}}",
+    "markAsOwned": "Mark as owned",
+    "info": "Select items to add to your inventory. Mark items as owned if you already have them - they'll be added with the recommended quantity.",
     "noFreezer": "Frozen items excluded (no freezer selected)",
     "skip": "Skip for now",
-    "addItems": "Add Recommended Items"
+    "addItems": "Add Selected Items"
   },
   "accessibility": {
     "skipToContent": "Skip to main content",
