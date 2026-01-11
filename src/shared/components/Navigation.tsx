@@ -52,6 +52,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
           <button
             key={item.page}
             role="tab"
+            data-testid={`nav-${item.page}`}
             onClick={() => onNavigate(item.page)}
             className={`${styles.navButton} ${
               currentPage === item.page ? styles.active : ''

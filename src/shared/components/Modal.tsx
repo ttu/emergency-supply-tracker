@@ -101,6 +101,7 @@ export function Modal({
               className={styles.backButton}
               onClick={onBack}
               aria-label={t('accessibility.goBack')}
+              data-testid="modal-back-button"
             >
               ←
             </button>
@@ -115,6 +116,7 @@ export function Modal({
             className={styles.closeButton}
             onClick={onClose}
             aria-label={t('accessibility.closeModal')}
+            data-testid="modal-close-button"
           >
             ×
           </button>

@@ -23,7 +23,7 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
   };
 
   return (
-    <main className={styles.container}>
+    <main className={styles.container} data-testid="onboarding-welcome">
       <div className={styles.content}>
         <header className={styles.header}>
           <h1 className={styles.title}>{t('app.title')}</h1>
@@ -125,7 +125,12 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
         </section>
 
         <div className={styles.actions}>
-          <Button onClick={onContinue} size="large" fullWidth>
+          <Button
+            onClick={onContinue}
+            size="large"
+            fullWidth
+            data-testid="get-started-button"
+          >
             {t('landing.getStarted')}
           </Button>
         </div>

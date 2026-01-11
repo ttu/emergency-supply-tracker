@@ -38,6 +38,7 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
       }}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
+      data-testid={`item-card-${item.id}`}
     >
       <div className={styles.header}>
         <h3 className={styles.name}>{item.name}</h3>
