@@ -67,6 +67,25 @@ async function completeQuickSetupOnboarding(page: Page) {
       name: /Add Selected Items|Lisää valitut/i,
     }),
   ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+
+  // Select items first (button is disabled when no items selected)
+  // Show details to access item checkboxes
+  const showDetailsButton = page.getByRole('button', {
+    name: /Show item details|Näytä tuotetiedot/i,
+  });
+  await showDetailsButton.click({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+
+  // Wait for checkboxes to appear and select first item
+  const firstCheckbox = page
+    .locator('input[type="checkbox"][id^="item-"]')
+    .first();
+  await firstCheckbox.waitFor({
+    state: 'visible',
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+  await firstCheckbox.click();
+
+  // Now click Add Selected Items (button should be enabled)
   await page
     .getByRole('button', {
       name: /Add Selected Items|Lisää valitut/i,
