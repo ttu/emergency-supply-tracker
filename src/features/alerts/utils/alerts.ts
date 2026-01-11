@@ -1,5 +1,5 @@
 import type { InventoryItem, HouseholdConfig } from '@/shared/types';
-import { createAlertId } from '@/shared/types';
+import { createAlertId, isFoodCategory } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
   EXPIRING_SOON_ALERT_DAYS,
@@ -110,12 +110,14 @@ function generateCategoryStockAlerts(
       return;
     }
 
-    const isFoodCategory = category.id === 'food';
+    const isFood = category.standardCategoryId
+      ? isFoodCategory(category.standardCategoryId)
+      : isFoodCategory(category.id as string);
     let percentOfRecommended: number;
     let hasEnough = false;
 
     // For food category, use calorie-based calculation if household is available
-    if (isFoodCategory && household) {
+    if (isFood && household) {
       const shortageInfo = calculateCategoryShortages(
         category.id,
         items,
@@ -162,7 +164,7 @@ function generateCategoryStockAlerts(
     }
 
     // Check for out of stock (quantity/calories = 0)
-    const isOutOfStock = isFoodCategory
+    const isOutOfStock = isFood
       ? false // For food, we check calories above, so if hasEnough is false but calories > 0, it's just low
       : categoryItems.every((item) => item.quantity === 0);
 

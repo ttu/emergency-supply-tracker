@@ -487,10 +487,10 @@ export function getCategoryDisplayStatus(
   const hasEnough = hasEnoughInventory(categoryId, shortageInfo);
 
   // For food category, calculate percentage based on calories instead of quantity
-  const isFoodCategory = categoryId === 'food';
+  const isFood = isFoodCategory(categoryId);
   let effectivePercentage = calculatedPercentage;
 
-  if (isFoodCategory && shortageInfo.totalNeededCalories) {
+  if (isFood && shortageInfo.totalNeededCalories) {
     const caloriePercentage = Math.round(
       ((shortageInfo.totalActualCalories ?? 0) /
         shortageInfo.totalNeededCalories) *
