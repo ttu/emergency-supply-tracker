@@ -647,7 +647,7 @@ describe('Template to InventoryItem conversion', () => {
 
     // Calculate expected quantity based on household
     const template = RECOMMENDED_ITEMS.find(
-      (item) => item.id === createProductTemplateId('bottled-water'),
+      (item) => item.id === 'bottled-water',
     );
     if (!template) {
       throw new Error('Template not found');
