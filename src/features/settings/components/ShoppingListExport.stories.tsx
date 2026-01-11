@@ -1,15 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ShoppingListExport } from './ShoppingListExport';
 import { InventoryProvider } from '@/features/inventory';
+import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 
 const meta = {
   title: 'Settings/ShoppingListExport',
   component: ShoppingListExport,
   decorators: [
     (Story) => (
-      <InventoryProvider>
-        <Story />
-      </InventoryProvider>
+      <NotificationProvider>
+        <InventoryProvider>
+          <Story />
+        </InventoryProvider>
+      </NotificationProvider>
     ),
   ],
 } satisfies Meta<typeof ShoppingListExport>;
