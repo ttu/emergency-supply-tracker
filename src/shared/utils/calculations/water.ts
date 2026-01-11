@@ -4,6 +4,7 @@
  */
 
 import type { InventoryItem, HouseholdConfig } from '@/shared/types';
+import { isFoodRecommendedItem } from '@/shared/types';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
@@ -79,7 +80,9 @@ export function getWaterRequirementPerUnit(item: InventoryItem): number {
       (rec) => rec.id === item.productTemplateId,
     );
     if (
-      template?.requiresWaterLiters !== undefined &&
+      template &&
+      isFoodRecommendedItem(template) &&
+      template.requiresWaterLiters !== undefined &&
       template.requiresWaterLiters > 0
     ) {
       return template.requiresWaterLiters;
@@ -93,7 +96,9 @@ export function getWaterRequirementPerUnit(item: InventoryItem): number {
       (rec) => rec.id === itemTypeNormalized,
     );
     if (
-      template?.requiresWaterLiters !== undefined &&
+      template &&
+      isFoodRecommendedItem(template) &&
+      template.requiresWaterLiters !== undefined &&
       template.requiresWaterLiters > 0
     ) {
       return template.requiresWaterLiters;

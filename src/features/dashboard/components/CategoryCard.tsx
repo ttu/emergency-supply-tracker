@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { StandardCategoryId, ItemStatus, Unit } from '@/shared/types';
+import { isFoodCategory } from '@/shared/types';
 import type { CategoryShortage } from '../utils/categoryStatus';
 import { getStatusVariant } from '@/features/inventory';
 import { Badge } from '@/shared/components/Badge';
@@ -39,12 +40,12 @@ export const CategoryCard = ({
 
   const categoryName = t(categoryId, { ns: 'categories' });
 
-  const isFoodCategory = categoryId === 'food';
+  const isFood = isFoodCategory(categoryId);
 
   // Format shortage summary - show calories for food, items for others
   const getShortageText = (): string | undefined => {
     // For food category, show missing calories
-    if (isFoodCategory && missingCalories && missingCalories > 0) {
+    if (isFood && missingCalories && missingCalories > 0) {
       return t('dashboard.category.missingCalories', {
         count: Math.round(missingCalories),
       });
@@ -78,7 +79,7 @@ export const CategoryCard = ({
   // Format progress text - calories for food, units for others
   const getProgressText = (): string | undefined => {
     // For food category, show calories
-    if (isFoodCategory && totalNeededCalories && totalNeededCalories > 0) {
+    if (isFood && totalNeededCalories && totalNeededCalories > 0) {
       const actualKcal = Math.round((totalActualCalories ?? 0) / 1000);
       const neededKcal = Math.round(totalNeededCalories / 1000);
       return `${actualKcal} / ${neededKcal} ${t('dashboard.category.kcal')}`;

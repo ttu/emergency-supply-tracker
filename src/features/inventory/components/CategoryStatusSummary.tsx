@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/shared/components/Badge';
 import type { ItemStatus, Unit, InventoryItem } from '@/shared/types';
+import { isFoodCategory } from '@/shared/types';
 import { getStatusVariant } from '../utils/status';
 import styles from './CategoryStatusSummary.module.css';
 
@@ -61,13 +62,13 @@ export const CategoryStatusSummary = ({
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
   const categoryName = t(categoryId, { ns: 'categories' });
-  const isFoodCategory = categoryId === 'food';
+  const isFood = isFoodCategory(categoryId);
   const isWaterCategory = categoryId === 'water-beverages';
 
   // Format progress text - calories for food, units for others
   const getProgressText = (): string => {
     // For food category, show calories (values are already in kcal)
-    if (isFoodCategory && totalNeededCalories && totalNeededCalories > 0) {
+    if (isFood && totalNeededCalories && totalNeededCalories > 0) {
       const actualKcal = Math.round(totalActualCalories ?? 0);
       const neededKcal = Math.round(totalNeededCalories);
       return `${actualKcal} / ${neededKcal} ${t('dashboard.category.kcal')}`;
@@ -258,7 +259,7 @@ export const CategoryStatusSummary = ({
             )}
           </div>
         )}
-        {isFoodCategory && missingCalories && missingCalories > 0 && (
+        {isFood && missingCalories && missingCalories > 0 && (
           <div className={styles.missingCalories}>
             {t('dashboard.category.recommendedCalories', {
               count: Math.round(missingCalories),

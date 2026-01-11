@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { InventoryItem } from '@/shared/types';
+import { isFoodItem } from '@/shared/types';
 import { isItemExpired, getDaysUntilExpiration } from '../utils/status';
 import { getWaterRequirementPerUnit } from '@/shared/utils/calculations/water';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
@@ -77,13 +78,13 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
           </div>
         )}
 
-        {item.categoryId === 'food' && item.caloriesPerUnit && (
+        {isFoodItem(item) && item.caloriesPerUnit && (
           <div className={styles.calories}>
             🔥 {Math.round(item.quantity * item.caloriesPerUnit)} kcal
           </div>
         )}
 
-        {item.categoryId === 'food' && getWaterRequirementPerUnit(item) > 0 && (
+        {isFoodItem(item) && getWaterRequirementPerUnit(item) > 0 && (
           <div className={styles.waterRequirement}>
             💧 {(item.quantity * getWaterRequirementPerUnit(item)).toFixed(1)}L{' '}
             {t('itemForm.waterForPreparation')}
