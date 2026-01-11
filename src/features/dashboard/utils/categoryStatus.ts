@@ -485,16 +485,29 @@ export function getCategoryDisplayStatus(
   // Check if inventory meets the minimum requirements
   const hasEnough = hasEnoughInventory(categoryId, shortageInfo);
 
+  // For food category, calculate percentage based on calories instead of quantity
+  const isFoodCategory = categoryId === 'food';
+  let effectivePercentage = calculatedPercentage;
+
+  if (isFoodCategory && shortageInfo.totalNeededCalories) {
+    const caloriePercentage = Math.round(
+      ((shortageInfo.totalActualCalories ?? 0) /
+        shortageInfo.totalNeededCalories) *
+        100,
+    );
+    effectivePercentage = caloriePercentage;
+  }
+
   // Determine status: if we have enough inventory, the status should be OK
   // regardless of optional recommended items
   const status: ItemStatus = hasEnough
     ? 'ok'
-    : getStatusFromPercentage(calculatedPercentage);
+    : getStatusFromPercentage(effectivePercentage);
 
   // Cap percentage at 100: exact 100 when enough, otherwise capped
   const completionPercentage = hasEnough
     ? 100
-    : Math.min(calculatedPercentage, 100);
+    : Math.min(effectivePercentage, 100);
 
   return {
     status,
