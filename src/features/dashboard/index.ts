@@ -17,6 +17,7 @@ export {
   calculateAllCategoryStatuses,
   getCategoryDisplayStatus,
   calculatePreparednessScore,
+  calculatePreparednessScoreFromCategoryStatuses,
   calculateCategoryPreparedness,
   shouldShowBackupReminder,
   dismissBackupReminder,

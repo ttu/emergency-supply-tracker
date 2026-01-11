@@ -13,6 +13,7 @@ export type {
 
 export {
   calculatePreparednessScore,
+  calculatePreparednessScoreFromCategoryStatuses,
   calculateCategoryPreparedness,
 } from './preparedness';
 
