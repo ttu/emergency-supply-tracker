@@ -15,7 +15,7 @@ export function NotificationBar() {
   }
 
   return (
-    <div className={styles.container} aria-live="polite" aria-atomic="false">
+    <div className={styles.container}>
       {notifications.map((notification, index) => (
         <div
           key={notification.id}

@@ -154,15 +154,12 @@ describe('NotificationBar', () => {
     // Wait for notification to appear first
     await screen.findByText('Test notification');
 
-    // Check that NotificationBar container has proper accessibility attributes
-    // The container div has aria-live="polite" and aria-atomic="false"
-    const notificationBarContainer = document.querySelector(
-      '[aria-live="polite"][aria-atomic="false"]',
-    );
-    expect(notificationBarContainer).toBeInTheDocument();
-
-    // Also verify notification is visible with role="status"
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    // Check that NotificationItem has proper accessibility attributes
+    // Each NotificationItem has aria-live="polite" and aria-atomic="true"
+    const notificationItem = screen.getByRole('status');
+    expect(notificationItem).toBeInTheDocument();
+    expect(notificationItem).toHaveAttribute('aria-live', 'polite');
+    expect(notificationItem).toHaveAttribute('aria-atomic', 'true');
   });
 
   it('displays different notification variants correctly', async () => {
