@@ -212,4 +212,26 @@ describe('NotificationBar', () => {
       );
     });
   });
+
+  it('renders notifications with correct index styling', async () => {
+    const user = userEvent.setup();
+    render(
+      <NotificationProvider>
+        <TestComponent />
+      </NotificationProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /show multiple/i }));
+
+    // Wait for all notifications to appear
+    await screen.findByText('First');
+    await screen.findByText('Second');
+    await screen.findByText('Third');
+
+    // Check that notification wrappers have index styling
+    const wrappers = document.querySelectorAll(
+      '[class*="notificationWrapper"]',
+    );
+    expect(wrappers.length).toBe(3);
+  });
 });

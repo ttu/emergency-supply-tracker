@@ -48,7 +48,6 @@ export function NotificationItem({
   return (
     <output
       className={`${styles.notification} ${styles[variant]}`}
-      role="status"
       aria-live="polite"
       aria-atomic="true"
     >
