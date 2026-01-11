@@ -15,19 +15,19 @@ const RUN_SCOPE = crypto
 // File to store seed for this test run (scoped by repo and process tree)
 const SEED_FILE = path.join(
   os.tmpdir(),
-  `.vitest-faker-seed-${RUN_SCOPE}-${process.ppid}`,
+  `.vitest-faker-seed-${RUN_SCOPE}-${process.pid}`,
 );
 // File to track project completion count for coordinated teardown
 const COUNTER_FILE = path.join(
   os.tmpdir(),
-  `.vitest-faker-counter-${RUN_SCOPE}-${process.ppid}`,
+  `.vitest-faker-counter-${RUN_SCOPE}-${process.pid}`,
 );
 // Expected number of projects (unit + storybook)
 // Can be overridden via VITEST_PROJECT_COUNT env var
-const EXPECTED_PROJECT_COUNT = Number.parseInt(
-  process.env.VITEST_PROJECT_COUNT ?? '2',
-  10,
-);
+const EXPECTED_PROJECT_COUNT = (() => {
+  const parsed = Number.parseInt(process.env.VITEST_PROJECT_COUNT ?? '2', 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 2;
+})();
 
 /**
  * Validates and parses FAKER_SEED environment variable.
@@ -69,9 +69,11 @@ function tryWriteSeedFile(seed: number): boolean {
 
 /**
  * Reads seed from existing seed file.
+ * Validates the seed to ensure it's a valid integer.
  */
 function readSeedFromFile(): number {
-  return Number.parseInt(fs.readFileSync(SEED_FILE, 'utf-8'), 10);
+  const content = fs.readFileSync(SEED_FILE, 'utf-8').trim();
+  return validateAndParseSeed(content);
 }
 
 /**
@@ -106,6 +108,20 @@ export default function globalSetup({ provide }: GlobalSetupContext) {
         // Overwrite with explicit seed to ensure all projects use the same seed
         fs.writeFileSync(SEED_FILE, String(seed), { flag: 'w' });
         shouldLog = true;
+      } else {
+        // File exists and matches - still log once for explicit seeds
+        // Use a separate log marker file to ensure we only log once
+        const LOG_FILE = path.join(
+          os.tmpdir(),
+          `.vitest-faker-seed-log-${RUN_SCOPE}-${process.pid}`,
+        );
+        try {
+          fs.writeFileSync(LOG_FILE, '', { flag: 'wx' });
+          shouldLog = true;
+        } catch {
+          // Another project already logged, don't log again
+          shouldLog = false;
+        }
       }
     } else {
       shouldLog = tryWriteSeedFile(seed);
