@@ -1,11 +1,235 @@
 import {
   calculatePreparednessScore,
+  calculatePreparednessScoreFromCategoryStatuses,
   calculateCategoryPreparedness,
 } from './preparedness';
+import type { CategoryStatusSummary } from './categoryStatus';
 import {
   createMockHousehold,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
+
+describe('calculatePreparednessScoreFromCategoryStatuses', () => {
+  it('should return 0 when no categories', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(0);
+  });
+
+  it('should return 0 when all categories are critical', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'food',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(0);
+  });
+
+  it('should return 50 when half categories are ok', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'food',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(50);
+  });
+
+  it('should return 100 when all categories are ok', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'food',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(100);
+  });
+
+  it('should round correctly for 2 out of 9 categories', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'food',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'cooking',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'light',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'communication',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'medical',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'hygiene',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'tools',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'cash',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    // 2 out of 9 = 22.22%, rounded to 22%
+    expect(score).toBe(22);
+  });
+});
 
 describe('calculatePreparednessScore', () => {
   const baseHousehold = createMockHousehold({
@@ -95,6 +319,101 @@ describe('calculatePreparednessScore', () => {
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);
   });
+
+  it('should handle zero recommended quantity without division by zero', () => {
+    // Create a household with 0 people to trigger zero recommended quantity
+    const zeroPeopleHousehold = createMockHousehold({
+      adults: 0,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 14,
+    });
+
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Water',
+        categoryId: 'water',
+        quantity: 10,
+        productTemplateId: 'water',
+      }),
+    ];
+
+    // Should return 0 (not NaN or Infinity) when recommended quantity is 0
+    const score = calculatePreparednessScore(items, zeroPeopleHousehold);
+    expect(score).toBe(0);
+    expect(Number.isFinite(score)).toBe(true);
+  });
+
+  it('should handle maxPossibleScore === 0 when all items are skipped', () => {
+    // Create a household with 0 people and 0 days to ensure all items are skipped
+    const zeroHousehold = createMockHousehold({
+      adults: 0,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 0,
+    });
+
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Water',
+        categoryId: 'water',
+        quantity: 10,
+        productTemplateId: 'water',
+      }),
+    ];
+
+    // Should return 0 when maxPossibleScore is 0 (all items skipped)
+    const score = calculatePreparednessScore(items, zeroHousehold);
+    expect(score).toBe(0);
+    expect(Number.isFinite(score)).toBe(true);
+  });
+
+  it('should skip items with zero recommended quantity but calculate others', () => {
+    // Create a household with 0 people - items that scale with people will have 0 recommended quantity
+    const zeroPeopleHousehold = createMockHousehold({
+      adults: 0,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 14,
+    });
+
+    // Add an item that doesn't scale with people (should still work)
+    // We'll use a custom item that matches a recommended item that doesn't scale with people
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'test-item',
+        categoryId: 'tools',
+        quantity: 5,
+        productTemplateId: 'test-item',
+      }),
+    ];
+
+    // Create a custom recommended items list with one that doesn't scale with people
+    const customRecommendedItems = [
+      {
+        id: 'test-item',
+        i18nKey: 'test.item',
+        category: 'tools' as const,
+        baseQuantity: 10,
+        unit: 'pcs' as const,
+        scaleWithPeople: false, // Doesn't scale with people
+        scaleWithDays: false, // Doesn't scale with days
+      },
+    ];
+
+    const score = calculatePreparednessScore(
+      items,
+      zeroPeopleHousehold,
+      customRecommendedItems,
+    );
+    // Should calculate score based on the item that doesn't scale with people
+    expect(score).toBeGreaterThanOrEqual(0);
+    expect(score).toBeLessThanOrEqual(100);
+    expect(Number.isFinite(score)).toBe(true);
+  });
 });
 
 describe('calculateCategoryPreparedness', () => {
@@ -168,5 +487,92 @@ describe('calculateCategoryPreparedness', () => {
     expect(waterScore).toBeLessThanOrEqual(100);
     expect(foodScore).toBeGreaterThanOrEqual(0);
     expect(foodScore).toBeLessThanOrEqual(100);
+  });
+
+  it('should handle zero recommended quantity in category without division by zero', () => {
+    // Create a household with 0 people to trigger zero recommended quantity
+    const zeroPeopleHousehold = createMockHousehold({
+      adults: 0,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 14,
+    });
+
+    // Use a category with no items to test the zero recommended quantity path
+    // When items exist but all recommended items are skipped, it returns 100 (DEFAULT_FULL_PREPAREDNESS)
+    // So we need to test with no items to hit the maxScore === 0 path
+    const items: ReturnType<typeof createMockInventoryItem>[] = [];
+
+    // Create custom recommended items that will all be skipped due to zero quantity
+    // These items exist for the category but all get skipped, triggering maxScore === 0
+    const customRecommendedItems = [
+      {
+        id: 'test-water-1',
+        i18nKey: 'test.water1',
+        category: 'water-beverages' as const,
+        baseQuantity: 1,
+        unit: 'l' as const,
+        scaleWithPeople: true, // Will be 0 when people = 0
+        scaleWithDays: false,
+      },
+      {
+        id: 'test-water-2',
+        i18nKey: 'test.water2',
+        category: 'water-beverages' as const,
+        baseQuantity: 2,
+        unit: 'l' as const,
+        scaleWithPeople: true, // Will be 0 when people = 0
+        scaleWithDays: false,
+      },
+    ];
+
+    // Should return 0 (not NaN or Infinity) when maxScore is 0 (all items skipped)
+    const score = calculateCategoryPreparedness(
+      'water-beverages',
+      items,
+      zeroPeopleHousehold,
+      [],
+      customRecommendedItems,
+    );
+    expect(score).toBe(0);
+    expect(Number.isFinite(score)).toBe(true);
+  });
+
+  it('should handle maxScore === 0 when all category items are skipped', () => {
+    // Create a household with 0 people and 0 days to ensure all items are skipped
+    const zeroHousehold = createMockHousehold({
+      adults: 0,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 0,
+    });
+
+    // Use a category with no items to test the maxScore === 0 path
+    const items: ReturnType<typeof createMockInventoryItem>[] = [];
+
+    // Create custom recommended items that will all be skipped
+    // These items exist for the category but all get skipped, triggering maxScore === 0
+    const customRecommendedItems = [
+      {
+        id: 'test-water-1',
+        i18nKey: 'test.water1',
+        category: 'water-beverages' as const,
+        baseQuantity: 1,
+        unit: 'l' as const,
+        scaleWithPeople: true, // Will be 0 when people = 0
+        scaleWithDays: true, // Will be 0 when days = 0
+      },
+    ];
+
+    // Should return 0 when maxScore is 0 (all items skipped)
+    const score = calculateCategoryPreparedness(
+      'water-beverages',
+      items,
+      zeroHousehold,
+      [],
+      customRecommendedItems,
+    );
+    expect(score).toBe(0);
+    expect(Number.isFinite(score)).toBe(true);
   });
 });

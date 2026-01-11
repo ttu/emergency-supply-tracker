@@ -11,11 +11,33 @@ import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
-import type { CategoryCalculationOptions } from './categoryStatus';
+import type {
+  CategoryCalculationOptions,
+  CategoryStatusSummary,
+} from './categoryStatus';
+
+/**
+ * Calculate overall preparedness score (0-100) based on category statuses.
+ * Score is calculated as: (number of OK categories / total categories) * 100
+ */
+export function calculatePreparednessScoreFromCategoryStatuses(
+  categoryStatuses: CategoryStatusSummary[],
+): number {
+  if (categoryStatuses.length === 0) {
+    return 0;
+  }
+
+  const okCategories = categoryStatuses.filter(
+    (status) => status.status === 'ok',
+  ).length;
+
+  return Math.round((okCategories / categoryStatuses.length) * 100);
+}
 
 /**
  * Calculate overall preparedness score (0-100)
  * based on how many recommended items the user has
+ * @deprecated Use calculatePreparednessScoreFromCategoryStatuses instead
  */
 export function calculatePreparednessScore(
   items: InventoryItem[],
@@ -60,6 +82,11 @@ export function calculatePreparednessScore(
   recommendedForHousehold.forEach((recItem) => {
     const recommendedQty = recommendedQuantities.get(recItem.id) || 0;
 
+    // Skip items with zero recommended quantity to avoid division by zero
+    if (recommendedQty === 0) {
+      return;
+    }
+
     // Find matching inventory items by productTemplateId or name only
     // (not by category, to avoid double-counting items across multiple recommended items)
     const matchingItems = items.filter(
@@ -80,6 +107,11 @@ export function calculatePreparednessScore(
     totalScore += itemScore;
     maxPossibleScore += MAX_ITEM_SCORE;
   });
+
+  // Avoid division by zero if no items contributed to the score
+  if (maxPossibleScore === 0) {
+    return 0;
+  }
 
   return Math.round((totalScore / maxPossibleScore) * MAX_ITEM_SCORE);
 }
@@ -131,6 +163,11 @@ export function calculateCategoryPreparedness(
       recommendedQty *= household.supplyDurationDays;
     }
 
+    // Skip items with zero recommended quantity to avoid division by zero
+    if (recommendedQty === 0) {
+      return;
+    }
+
     const matchingItems = categoryItems.filter(
       (item) =>
         item.productTemplateId === recItem.id || item.name === recItem.id,
@@ -148,6 +185,11 @@ export function calculateCategoryPreparedness(
     totalScore += score;
     maxScore += MAX_ITEM_SCORE;
   });
+
+  // Avoid division by zero if no items contributed to the score
+  if (maxScore === 0) {
+    return 0;
+  }
 
   return Math.round((totalScore / maxScore) * MAX_ITEM_SCORE);
 }
