@@ -44,6 +44,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    globalSetup: './src/test/globalSetup.ts',
     setupFiles: ['./src/test/setup.ts', './src/test/a11y-setup.ts'],
     exclude: ['**/node_modules/**', '**/e2e/**'],
     coverage: {
