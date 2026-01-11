@@ -13,6 +13,13 @@ export interface TemplateSelectorProps {
   initialCategoryId?: string;
 }
 
+/**
+ * Normalize i18n key by removing 'products.' or 'custom.' prefix
+ */
+const normalizeI18nKey = (i18nKey: string): string => {
+  return i18nKey.replace(/^(products\.|custom\.)/, '');
+};
+
 export const TemplateSelector = ({
   templates,
   categories,
@@ -27,8 +34,8 @@ export const TemplateSelector = ({
 
   const filteredTemplates = templates
     .filter((template) => {
-      // i18nKey is like 'products.bottled-water', extract the key part
-      const key = template.i18nKey.replace(/^(products\.|custom\.)/, '');
+      // Normalize i18nKey to extract the key part (removes 'products.' or 'custom.' prefix)
+      const key = normalizeI18nKey(template.i18nKey);
       const templateName = t(key, { ns: 'products' }).toLowerCase();
       const matchesSearch = templateName.includes(searchQuery.toLowerCase());
       const matchesCategory =
@@ -37,8 +44,8 @@ export const TemplateSelector = ({
     })
     .sort((a, b) => {
       // Get translated names for sorting
-      const keyA = a.i18nKey.replace(/^(products\.|custom\.)/, '');
-      const keyB = b.i18nKey.replace(/^(products\.|custom\.)/, '');
+      const keyA = normalizeI18nKey(a.i18nKey);
+      const keyB = normalizeI18nKey(b.i18nKey);
       const nameA = t(keyA, { ns: 'products' });
       const nameB = t(keyB, { ns: 'products' });
       return nameA.localeCompare(nameB);
@@ -105,7 +112,7 @@ export const TemplateSelector = ({
                 <div className={styles.templateIcon}>{category?.icon}</div>
                 <div className={styles.templateInfo}>
                   <h3 className={styles.templateName}>
-                    {t(template.i18nKey.replace('products.', ''), {
+                    {t(normalizeI18nKey(template.i18nKey), {
                       ns: 'products',
                     })}
                   </h3>
