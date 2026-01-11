@@ -7,7 +7,7 @@ import styles from './QuickSetupScreen.module.css';
 
 export interface QuickSetupScreenProps {
   household: HouseholdConfig;
-  onAddItems: () => void;
+  onAddItems: (selectedItemIds: Set<string>) => void;
   onSkip: () => void;
 }
 
@@ -27,6 +27,11 @@ export const QuickSetupScreen = ({
     }
     return true;
   });
+
+  // Items are unchecked by default
+  const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   // Calculate recommended quantity for an item
   const calculateQuantity = (item: (typeof RECOMMENDED_ITEMS)[0]): number => {
@@ -74,8 +79,33 @@ export const QuickSetupScreen = ({
     });
   });
 
-  const totalItems = itemsToAdd.length;
-  const totalCategories = Object.keys(itemsByCategory).length;
+  const selectedCount = selectedItemIds.size;
+
+  const handleItemToggle = (itemId: string) => {
+    setSelectedItemIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItemIds.size === itemsToAdd.length) {
+      // Deselect all
+      setSelectedItemIds(new Set());
+    } else {
+      // Select all
+      setSelectedItemIds(new Set(itemsToAdd.map((item) => item.id)));
+    }
+  };
+
+  const handleAddItems = () => {
+    onAddItems(selectedItemIds);
+  };
 
   return (
     <div className={styles.container}>
@@ -86,15 +116,15 @@ export const QuickSetupScreen = ({
         <div className={styles.summaryCard}>
           <div className={styles.summary}>
             <div className={styles.summaryItem}>
-              <div className={styles.summaryNumber}>{totalItems}</div>
+              <div className={styles.summaryNumber}>{selectedCount}</div>
               <div className={styles.summaryLabel}>
-                {t('quickSetup.itemsCount')}
+                {t('quickSetup.selectedItems')}
               </div>
             </div>
             <div className={styles.summaryItem}>
-              <div className={styles.summaryNumber}>{totalCategories}</div>
+              <div className={styles.summaryNumber}>{itemsToAdd.length}</div>
               <div className={styles.summaryLabel}>
-                {t('quickSetup.categoriesCount')}
+                {t('quickSetup.itemsCount')}
               </div>
             </div>
             <div className={styles.summaryItem}>
@@ -117,6 +147,18 @@ export const QuickSetupScreen = ({
 
           {showDetails && (
             <div className={styles.details}>
+              <div className={styles.selectAllContainer}>
+                <button
+                  type="button"
+                  className={styles.selectAllButton}
+                  onClick={handleSelectAll}
+                >
+                  {selectedItemIds.size === itemsToAdd.length &&
+                  itemsToAdd.length > 0
+                    ? t('quickSetup.deselectAll')
+                    : t('quickSetup.selectAll')}
+                </button>
+              </div>
               {Object.entries(itemsByCategory).map(([categoryId, items]) => (
                 <div key={categoryId} className={styles.categoryGroup}>
                   <h3 className={styles.categoryTitle}>
@@ -126,15 +168,32 @@ export const QuickSetupScreen = ({
                     {items.map((item) => {
                       // Normalize i18nKey to extract the key part (removes 'products.' or 'custom.' prefix)
                       const productKey = normalizeI18nKey(item.i18nKey);
+                      const isSelected = selectedItemIds.has(item.id);
                       return (
                         <li key={item.id} className={styles.item}>
-                          <span className={styles.itemName}>
-                            {t(productKey, { ns: 'products' })}
-                          </span>
-                          <span className={styles.itemQuantity}>
-                            {calculateQuantity(item)}{' '}
-                            {t(item.unit, { ns: 'units' })}
-                          </span>
+                          <div className={styles.itemCheckbox}>
+                            <input
+                              type="checkbox"
+                              id={`item-${item.id}`}
+                              checked={isSelected}
+                              onChange={() => handleItemToggle(item.id)}
+                              aria-label={t('quickSetup.selectItem', {
+                                item: t(productKey, { ns: 'products' }),
+                              })}
+                            />
+                            <label
+                              htmlFor={`item-${item.id}`}
+                              className={styles.itemName}
+                            >
+                              {t(productKey, { ns: 'products' })}
+                            </label>
+                          </div>
+                          <div className={styles.itemRight}>
+                            <span className={styles.itemQuantity}>
+                              {calculateQuantity(item)}{' '}
+                              {t(item.unit, { ns: 'units' })}
+                            </span>
+                          </div>
                         </li>
                       );
                     })}
@@ -156,7 +215,11 @@ export const QuickSetupScreen = ({
           <Button variant="secondary" onClick={onSkip}>
             {t('quickSetup.skip')}
           </Button>
-          <Button variant="primary" onClick={onAddItems}>
+          <Button
+            variant="primary"
+            onClick={handleAddItems}
+            disabled={selectedCount === 0}
+          >
             {t('quickSetup.addItems')}
           </Button>
         </div>

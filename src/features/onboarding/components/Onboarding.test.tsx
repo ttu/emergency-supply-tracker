@@ -38,8 +38,10 @@ vi.mock('react-i18next', () => ({
         'household.useFreezer': 'I want to use my freezer',
         'actions.save': 'Save',
         'actions.cancel': 'Cancel',
-        'quickSetup.addItems': 'Add Items',
+        'quickSetup.addItems': 'Add Selected Items',
         'quickSetup.skip': 'Skip',
+        'quickSetup.showDetails': 'Show Details',
+        'quickSetup.hideDetails': 'Hide Details',
       };
       return translations[key] || key;
     },
@@ -223,10 +225,23 @@ describe('Onboarding', () => {
     await user.click(continueButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Add Items')).toBeInTheDocument();
+      expect(screen.getByText('Add Selected Items')).toBeInTheDocument();
     });
 
-    const addItemsButton = screen.getByText('Add Items');
+    // Select some items first (button is disabled when no items selected)
+    const showDetailsButton = screen.getByText('Show Details');
+    await user.click(showDetailsButton);
+
+    // Select first item
+    const checkboxes = screen.getAllByRole('checkbox');
+    const firstItemCheckbox = checkboxes.find((cb) =>
+      cb.getAttribute('id')?.startsWith('item-'),
+    );
+    if (firstItemCheckbox) {
+      await user.click(firstItemCheckbox);
+    }
+
+    const addItemsButton = screen.getByText('Add Selected Items');
     await user.click(addItemsButton);
 
     expect(onComplete).toHaveBeenCalledWith(
@@ -240,7 +255,7 @@ describe('Onboarding', () => {
         expect.objectContaining({
           id: expect.any(String),
           categoryId: expect.any(String),
-          quantity: 0,
+          quantity: expect.any(Number), // Can be 0 or recommendedQuantity
           recommendedQuantity: expect.any(Number),
         }),
       ]),
