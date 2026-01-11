@@ -1,11 +1,235 @@
 import {
   calculatePreparednessScore,
+  calculatePreparednessScoreFromCategoryStatuses,
   calculateCategoryPreparedness,
 } from './preparedness';
+import type { CategoryStatusSummary } from './categoryStatus';
 import {
   createMockHousehold,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
+
+describe('calculatePreparednessScoreFromCategoryStatuses', () => {
+  it('should return 0 when no categories', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(0);
+  });
+
+  it('should return 0 when all categories are critical', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'food',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(0);
+  });
+
+  it('should return 50 when half categories are ok', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'food',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(50);
+  });
+
+  it('should return 100 when all categories are ok', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'food',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(100);
+  });
+
+  it('should round correctly for 2 out of 9 categories', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'food',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'cooking',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'light',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'communication',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'medical',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'hygiene',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'tools',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+      {
+        categoryId: 'cash',
+        status: 'critical',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    // 2 out of 9 = 22.22%, rounded to 22%
+    expect(score).toBe(22);
+  });
+});
 
 describe('calculatePreparednessScore', () => {
   const baseHousehold = createMockHousehold({

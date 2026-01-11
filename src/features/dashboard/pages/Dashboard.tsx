@@ -14,7 +14,7 @@ import {
 import {
   DashboardHeader,
   CategoryGrid,
-  calculatePreparednessScore,
+  calculatePreparednessScoreFromCategoryStatuses,
   calculateCategoryPreparedness,
   calculateAllCategoryStatuses,
   shouldShowBackupReminder,
@@ -72,12 +72,6 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
     ],
   );
 
-  // Calculate overall preparedness score
-  const preparednessScore = useMemo(
-    () => calculatePreparednessScore(items, household, recommendedItems),
-    [items, household, recommendedItems],
-  );
-
   // Calculate per-category preparedness
   const categoryPreparedness = useMemo(() => {
     const map = new Map<string, number>();
@@ -121,6 +115,12 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
       recommendedItems,
       calculationOptions,
     ],
+  );
+
+  // Calculate overall preparedness score based on category statuses
+  const preparednessScore = useMemo(
+    () => calculatePreparednessScoreFromCategoryStatuses(categoryStatuses),
+    [categoryStatuses],
   );
 
   // Generate alerts (including water shortage alerts)

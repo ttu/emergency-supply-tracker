@@ -11,11 +11,33 @@ import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
-import type { CategoryCalculationOptions } from './categoryStatus';
+import type {
+  CategoryCalculationOptions,
+  CategoryStatusSummary,
+} from './categoryStatus';
+
+/**
+ * Calculate overall preparedness score (0-100) based on category statuses.
+ * Score is calculated as: (number of OK categories / total categories) * 100
+ */
+export function calculatePreparednessScoreFromCategoryStatuses(
+  categoryStatuses: CategoryStatusSummary[],
+): number {
+  if (categoryStatuses.length === 0) {
+    return 0;
+  }
+
+  const okCategories = categoryStatuses.filter(
+    (status) => status.status === 'ok',
+  ).length;
+
+  return Math.round((okCategories / categoryStatuses.length) * 100);
+}
 
 /**
  * Calculate overall preparedness score (0-100)
  * based on how many recommended items the user has
+ * @deprecated Use calculatePreparednessScoreFromCategoryStatuses instead
  */
 export function calculatePreparednessScore(
   items: InventoryItem[],
