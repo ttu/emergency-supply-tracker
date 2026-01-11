@@ -95,6 +95,31 @@ describe('calculatePreparednessScore', () => {
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);
   });
+
+  it('should handle zero recommended quantity without division by zero', () => {
+    // Create a household with 0 people to trigger zero recommended quantity
+    const zeroPeopleHousehold = createMockHousehold({
+      adults: 0,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 14,
+    });
+
+    const items = [
+      createMockInventoryItem({
+        id: '1',
+        name: 'Water',
+        categoryId: 'water',
+        quantity: 10,
+        productTemplateId: 'water',
+      }),
+    ];
+
+    // Should return 0 (not NaN or Infinity) when recommended quantity is 0
+    const score = calculatePreparednessScore(items, zeroPeopleHousehold);
+    expect(score).toBe(0);
+    expect(Number.isFinite(score)).toBe(true);
+  });
 });
 
 describe('calculateCategoryPreparedness', () => {

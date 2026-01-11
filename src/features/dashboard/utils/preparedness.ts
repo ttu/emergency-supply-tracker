@@ -60,6 +60,11 @@ export function calculatePreparednessScore(
   recommendedForHousehold.forEach((recItem) => {
     const recommendedQty = recommendedQuantities.get(recItem.id) || 0;
 
+    // Skip items with zero recommended quantity to avoid division by zero
+    if (recommendedQty === 0) {
+      return;
+    }
+
     // Find matching inventory items by productTemplateId or name only
     // (not by category, to avoid double-counting items across multiple recommended items)
     const matchingItems = items.filter(
@@ -80,6 +85,11 @@ export function calculatePreparednessScore(
     totalScore += itemScore;
     maxPossibleScore += MAX_ITEM_SCORE;
   });
+
+  // Avoid division by zero if no items contributed to the score
+  if (maxPossibleScore === 0) {
+    return 0;
+  }
 
   return Math.round((totalScore / maxPossibleScore) * MAX_ITEM_SCORE);
 }
@@ -131,6 +141,11 @@ export function calculateCategoryPreparedness(
       recommendedQty *= household.supplyDurationDays;
     }
 
+    // Skip items with zero recommended quantity to avoid division by zero
+    if (recommendedQty === 0) {
+      return;
+    }
+
     const matchingItems = categoryItems.filter(
       (item) =>
         item.productTemplateId === recItem.id || item.name === recItem.id,
@@ -148,6 +163,11 @@ export function calculateCategoryPreparedness(
     totalScore += score;
     maxScore += MAX_ITEM_SCORE;
   });
+
+  // Avoid division by zero if no items contributed to the score
+  if (maxScore === 0) {
+    return 0;
+  }
 
   return Math.round((totalScore / maxScore) * MAX_ITEM_SCORE);
 }
