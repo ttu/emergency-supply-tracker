@@ -54,7 +54,9 @@
 }
 
 .closeButton:focus-visible {
-  outline: 2px solid white;
+  outline: 2px solid currentColor;
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+  /* Add contrasting box-shadow for visibility on all backgrounds */
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.3);
 }
