@@ -1,16 +1,17 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { CloudSyncStatus } from './CloudSyncStatus';
 import { CloudSyncContext } from '../context';
 import type { CloudSyncContextValue, CloudSyncState } from '../types';
 
-const mockTranslation = jest.fn((key: string, params?: object) => {
+const mockTranslation = vi.fn((key: string, params?: object) => {
   if (params) {
     return `${key} ${JSON.stringify(params)}`;
   }
   return key;
 });
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: mockTranslation,
     i18n: { language: 'en' },
@@ -29,10 +30,10 @@ const createMockContext = (
   state: Partial<CloudSyncState> = {},
 ): CloudSyncContextValue => ({
   state: { ...defaultState, ...state },
-  connect: jest.fn(),
-  disconnect: jest.fn(),
-  syncNow: jest.fn(),
-  clearError: jest.fn(),
+  connect: vi.fn(),
+  disconnect: vi.fn(),
+  syncNow: vi.fn(),
+  clearError: vi.fn(),
 });
 
 const renderWithContext = (
@@ -47,7 +48,7 @@ const renderWithContext = (
 
 describe('CloudSyncStatus', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('status text', () => {
