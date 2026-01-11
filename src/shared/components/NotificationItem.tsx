@@ -22,11 +22,18 @@ export function NotificationItem({
 }: Readonly<NotificationItemProps>) {
   const { t } = useTranslation();
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onCloseRef = useRef(onClose);
 
+  // Update the ref whenever onClose changes
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Auto-dismiss timer - only depends on duration to avoid resetting
   useEffect(() => {
     if (duration > 0) {
       timeoutRef.current = setTimeout(() => {
-        onClose();
+        onCloseRef.current();
       }, duration);
     }
 
@@ -35,7 +42,7 @@ export function NotificationItem({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [duration, onClose]);
+  }, [duration]);
 
   const getIcon = (): string => {
     if (variant === 'success') return '✓';
