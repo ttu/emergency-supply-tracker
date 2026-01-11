@@ -226,6 +226,8 @@ describe('HiddenAlerts', () => {
         categoryId: 'food',
         quantity: 0,
         recommendedQuantity: 10,
+        // Food category uses calorie-based alerts, so with 0 calories it generates
+        // category-critically-low-food, not category-out-of-stock-food
       }),
     ];
 
@@ -233,7 +235,7 @@ describe('HiddenAlerts', () => {
       items,
       dismissedAlertIds: [
         'category-out-of-stock-water-beverages',
-        'category-out-of-stock-food',
+        'category-critically-low-food', // Food category uses calorie-based alerts
       ],
     });
 
@@ -257,6 +259,8 @@ describe('HiddenAlerts', () => {
         categoryId: 'food',
         quantity: 0,
         recommendedQuantity: 10,
+        // Food category uses calorie-based alerts, so with 0 calories it generates
+        // category-critically-low-food, not category-out-of-stock-food
       }),
     ];
 
@@ -264,7 +268,7 @@ describe('HiddenAlerts', () => {
       items,
       dismissedAlertIds: [
         'category-out-of-stock-water-beverages',
-        'category-out-of-stock-food',
+        'category-critically-low-food', // Food category uses calorie-based alerts
       ],
     });
 
