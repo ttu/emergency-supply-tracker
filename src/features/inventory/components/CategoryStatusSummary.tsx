@@ -114,7 +114,23 @@ export const CategoryStatusSummary = ({
 
   const getVisibleShortages = (): CategoryShortage[] => {
     if (isExpanded) {
-      return shortages;
+      // Sort shortages alphabetically by translated name
+      return [...shortages].sort((a, b) => {
+        // Get translated names for comparison
+        let nameA = resolveItemName?.(a.itemId, a.itemName);
+        if (!nameA) {
+          nameA = t(a.itemName.replace(/^(products\.|custom\.)/, ''), {
+            ns: 'products',
+          });
+        }
+        let nameB = resolveItemName?.(b.itemId, b.itemName);
+        if (!nameB) {
+          nameB = t(b.itemName.replace(/^(products\.|custom\.)/, ''), {
+            ns: 'products',
+          });
+        }
+        return nameA.localeCompare(nameB);
+      });
     }
     return [];
   };

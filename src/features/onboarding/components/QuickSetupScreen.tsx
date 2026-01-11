@@ -44,6 +44,13 @@ export const QuickSetupScreen = ({
     return Math.ceil(quantity);
   };
 
+  /**
+   * Normalize i18n key by removing 'products.' or 'custom.' prefix
+   */
+  const normalizeI18nKey = (i18nKey: string): string => {
+    return i18nKey.replace(/^(products\.|custom\.)/, '');
+  };
+
   // Group items by category
   const itemsByCategory = itemsToAdd.reduce(
     (acc, item) => {
@@ -55,6 +62,17 @@ export const QuickSetupScreen = ({
     },
     {} as Record<string, typeof itemsToAdd>,
   );
+
+  // Sort items within each category alphabetically by translated name
+  Object.keys(itemsByCategory).forEach((categoryId) => {
+    itemsByCategory[categoryId].sort((a, b) => {
+      const keyA = normalizeI18nKey(a.i18nKey);
+      const keyB = normalizeI18nKey(b.i18nKey);
+      const nameA = t(keyA, { ns: 'products' });
+      const nameB = t(keyB, { ns: 'products' });
+      return nameA.localeCompare(nameB);
+    });
+  });
 
   const totalItems = itemsToAdd.length;
   const totalCategories = Object.keys(itemsByCategory).length;
@@ -106,8 +124,8 @@ export const QuickSetupScreen = ({
                   </h3>
                   <ul className={styles.itemList}>
                     {items.map((item) => {
-                      // i18nKey is like 'products.bottled-water', extract the key part
-                      const productKey = item.i18nKey.replace('products.', '');
+                      // Normalize i18nKey to extract the key part (removes 'products.' or 'custom.' prefix)
+                      const productKey = normalizeI18nKey(item.i18nKey);
                       return (
                         <li key={item.id} className={styles.item}>
                           <span className={styles.itemName}>
