@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode, useCallback } from 'react';
+import { useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type {
   InventoryItem,
@@ -25,18 +25,13 @@ import { useNotification } from '@/shared/hooks/useNotification';
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
-  // Optional notification support - gracefully handle if NotificationProvider is not present
-  let showNotification: (
-    message: string,
-    variant?: 'success' | 'error' | 'info',
-  ) => void;
-  try {
-    const notification = useNotification();
-    showNotification = notification.showNotification;
-  } catch {
-    // NotificationProvider not available (e.g., in tests without it)
-    showNotification = () => {};
-  }
+  // Call useNotification unconditionally at top level (Rules of Hooks)
+  const notification = useNotification();
+  // Defensively derive showNotification with fallback, memoized to avoid dependency issues
+  const showNotification = useMemo(
+    () => notification?.showNotification ?? (() => {}),
+    [notification?.showNotification],
+  );
   const [items, setItems] = useState<InventoryItem[]>(() => {
     const data = getAppData();
     return data?.items || [];

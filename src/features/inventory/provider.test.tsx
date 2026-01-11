@@ -3,6 +3,7 @@ import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InventoryProvider } from './provider';
 import { useInventory } from './hooks/useInventory';
+import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import * as analytics from '@/shared/utils/analytics';
@@ -147,9 +148,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('items-count')).toHaveTextContent('1');
@@ -159,13 +162,15 @@ describe('InventoryProvider', () => {
     let contextCategories: unknown[];
 
     render(
-      <InventoryProvider>
-        <TestComponent
-          onContextReady={(ctx) => {
-            contextCategories = ctx.categories;
-          }}
-        />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              contextCategories = ctx.categories;
+            }}
+          />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(contextCategories!).toBeDefined();
@@ -177,9 +182,11 @@ describe('InventoryProvider', () => {
     mockGetAppData.mockReturnValue(null);
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('items-count')).toHaveTextContent('0');
@@ -207,13 +214,15 @@ describe('InventoryProvider', () => {
     ) => void;
 
     render(
-      <InventoryProvider>
-        <TestComponent
-          onContextReady={(ctx) => {
-            updateItemFn = ctx.updateItem;
-          }}
-        />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              updateItemFn = ctx.updateItem;
+            }}
+          />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     act(() => {
@@ -240,13 +249,15 @@ describe('InventoryProvider', () => {
     let deleteItemFn: (id: ReturnType<typeof createItemId>) => void;
 
     render(
-      <InventoryProvider>
-        <TestComponent
-          onContextReady={(ctx) => {
-            deleteItemFn = ctx.deleteItem;
-          }}
-        />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              deleteItemFn = ctx.deleteItem;
+            }}
+          />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('items-count')).toHaveTextContent('1');
@@ -270,13 +281,15 @@ describe('InventoryProvider', () => {
     ) => void;
 
     render(
-      <InventoryProvider>
-        <TestComponent
-          onContextReady={(ctx) => {
-            addItemsFn = ctx.addItems;
-          }}
-        />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              addItemsFn = ctx.addItems;
+            }}
+          />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     const newItems = [
@@ -301,9 +314,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('dismissed-count')).toHaveTextContent('0');
@@ -322,9 +337,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     await user.click(screen.getByText('Dismiss Alert'));
@@ -342,9 +359,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('dismissed-count')).toHaveTextContent('1');
@@ -363,9 +382,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('dismissed-count')).toHaveTextContent('3');
@@ -384,9 +405,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('disabled-count')).toHaveTextContent('0');
@@ -405,9 +428,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     await user.click(screen.getByText('Disable Recommended'));
@@ -425,9 +450,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('disabled-count')).toHaveTextContent('1');
@@ -446,9 +473,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('disabled-count')).toHaveTextContent('3');
@@ -463,9 +492,11 @@ describe('InventoryProvider', () => {
     mockGetAppData.mockReturnValue(null);
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     await user.click(screen.getByText('Add Item'));
@@ -483,9 +514,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('dismissed-count')).toHaveTextContent('2');
@@ -499,9 +532,11 @@ describe('InventoryProvider', () => {
     });
 
     render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>,
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('disabled-count')).toHaveTextContent('3');

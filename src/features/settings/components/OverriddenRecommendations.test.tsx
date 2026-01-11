@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { OverriddenRecommendations } from './OverriddenRecommendations';
 import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
+import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { SettingsProvider } from '@/features/settings';
 import {
   createMockInventoryItem,
@@ -48,7 +49,9 @@ const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <SettingsProvider>
       <HouseholdProvider>
-        <InventoryProvider>{component}</InventoryProvider>
+        <NotificationProvider>
+          <InventoryProvider>{component}</InventoryProvider>
+        </NotificationProvider>
       </HouseholdProvider>
     </SettingsProvider>,
   );

@@ -151,7 +151,7 @@ export function renderWithProviders(
     if (recommendedItems)
       wrapped = <RecommendedItemsProvider>{wrapped}</RecommendedItemsProvider>;
     if (household) wrapped = <HouseholdProvider>{wrapped}</HouseholdProvider>;
-    // NotificationProvider must wrap InventoryProvider since InventoryProvider uses useNotification
+    // NotificationProvider must always wrap InventoryProvider since InventoryProvider uses useNotification
     // Always include NotificationProvider in test utilities to ensure useNotification hook has a provider
     wrapped = <NotificationProvider>{wrapped}</NotificationProvider>;
     if (themeApplier) wrapped = <ThemeApplier>{wrapped}</ThemeApplier>;
