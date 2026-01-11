@@ -1,24 +1,25 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { CloudSyncSection } from './CloudSyncSection';
 import { CloudSyncContext } from '../context';
 import type { CloudSyncContextValue, CloudSyncState } from '../types';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
 // Mock child components to simplify testing
-jest.mock('./CloudSyncStatus', () => ({
+vi.mock('./CloudSyncStatus', () => ({
   CloudSyncStatus: () => <div data-testid="cloud-sync-status">Status</div>,
 }));
 
-jest.mock('./CloudSyncButton', () => ({
+vi.mock('./CloudSyncButton', () => ({
   CloudSyncButton: () => <div data-testid="cloud-sync-button">Button</div>,
 }));
 
-jest.mock('./ConnectGoogleDrive', () => ({
+vi.mock('./ConnectGoogleDrive', () => ({
   ConnectGoogleDrive: () => (
     <div data-testid="connect-google-drive">Connect</div>
   ),
@@ -36,10 +37,10 @@ const createMockContext = (
   state: Partial<CloudSyncState> = {},
 ): CloudSyncContextValue => ({
   state: { ...defaultState, ...state },
-  connect: jest.fn(),
-  disconnect: jest.fn(),
-  syncNow: jest.fn(),
-  clearError: jest.fn(),
+  connect: vi.fn(),
+  disconnect: vi.fn(),
+  syncNow: vi.fn(),
+  clearError: vi.fn(),
 });
 
 const renderWithContext = (contextValue: CloudSyncContextValue) => {
@@ -52,7 +53,7 @@ const renderWithContext = (contextValue: CloudSyncContextValue) => {
 
 describe('CloudSyncSection', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should always render CloudSyncStatus', () => {

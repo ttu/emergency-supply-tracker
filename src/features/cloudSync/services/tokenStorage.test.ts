@@ -1,3 +1,4 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   storeTokens,
   getStoredTokens,
@@ -20,7 +21,7 @@ const mockValidTokens: StoredTokens = {
 describe('tokenStorage', () => {
   beforeEach(() => {
     localStorage.clear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('storeTokens', () => {
@@ -32,8 +33,10 @@ describe('tokenStorage', () => {
     });
 
     it('should handle localStorage errors gracefully', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      const mockSetItem = jest
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const mockSetItem = vi
         .spyOn(Storage.prototype, 'setItem')
         .mockImplementation(() => {
           throw new Error('QuotaExceeded');
@@ -67,7 +70,9 @@ describe('tokenStorage', () => {
     });
 
     it('should return null for invalid JSON', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       localStorage.setItem(TOKEN_STORAGE_KEY, 'invalid json');
 
       const result = getStoredTokens();
@@ -79,7 +84,7 @@ describe('tokenStorage', () => {
     });
 
     it('should return null and clear tokens for invalid structure - missing accessToken', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const invalidTokens = { refreshToken: 'test', expiresAt: 123 };
       localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(invalidTokens));
 
@@ -95,7 +100,7 @@ describe('tokenStorage', () => {
     });
 
     it('should return null and clear tokens for invalid structure - wrong accessToken type', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const invalidTokens = {
         accessToken: 123,
         provider: 'google-drive',
@@ -111,7 +116,7 @@ describe('tokenStorage', () => {
     });
 
     it('should return null and clear tokens for invalid structure - missing provider', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const invalidTokens = {
         accessToken: 'token',
         expiresAt: Date.now(),
@@ -126,7 +131,7 @@ describe('tokenStorage', () => {
     });
 
     it('should return null and clear tokens for invalid structure - missing expiresAt', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const invalidTokens = {
         accessToken: 'token',
         provider: 'google-drive',
@@ -151,8 +156,10 @@ describe('tokenStorage', () => {
     });
 
     it('should handle localStorage errors gracefully', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      const mockRemoveItem = jest
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const mockRemoveItem = vi
         .spyOn(Storage.prototype, 'removeItem')
         .mockImplementation(() => {
           throw new Error('Access denied');
