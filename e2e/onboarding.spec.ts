@@ -50,7 +50,7 @@ test.describe('Onboarding Flow', () => {
     // Step 4: Quick Setup
     await expect(
       page.getByRole('button', {
-        name: /Add Recommended Items|Lisää suositellut/i,
+        name: /Add Selected Items|Lisää valitut/i,
       }),
     ).toBeVisible({ timeout: 5000 });
     await expect(
@@ -84,7 +84,7 @@ test.describe('Onboarding Flow', () => {
     // Click "Add Recommended Items"
     await page
       .getByRole('button', {
-        name: /Add Recommended Items|Lisää suositellut/i,
+        name: /Add Selected Items|Lisää valitut/i,
       })
       .click();
 

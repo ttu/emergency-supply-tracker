@@ -64,12 +64,12 @@ async function completeQuickSetupOnboarding(page: Page) {
 
   await expect(
     page.getByRole('button', {
-      name: /Add Recommended Items|Lisää suositellut/i,
+      name: /Add Selected Items|Lisää valitut/i,
     }),
   ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
   await page
     .getByRole('button', {
-      name: /Add Recommended Items|Lisää suositellut/i,
+      name: /Add Selected Items|Lisää valitut/i,
     })
     .click();
 
