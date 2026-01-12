@@ -10,8 +10,8 @@ import {
 import type { CloudStorageProvider } from '../types';
 
 // Mock GoogleDriveService to avoid loading actual Google API
-vi.mock('./googleDrive', () => ({
-  GoogleDriveService: vi.fn().mockImplementation(() => ({
+vi.mock('./googleDrive', () => {
+  const mockInstance = {
     providerId: 'google-drive',
     connect: vi.fn(),
     disconnect: vi.fn(),
@@ -21,8 +21,22 @@ vi.mock('./googleDrive', () => ({
     download: vi.fn(),
     getFileMetadata: vi.fn(),
     findSyncFile: vi.fn(),
-  })),
-}));
+  };
+
+  return {
+    GoogleDriveService: class {
+      providerId = mockInstance.providerId;
+      connect = mockInstance.connect;
+      disconnect = mockInstance.disconnect;
+      isConnected = mockInstance.isConnected;
+      getAccessToken = mockInstance.getAccessToken;
+      upload = mockInstance.upload;
+      download = mockInstance.download;
+      getFileMetadata = mockInstance.getFileMetadata;
+      findSyncFile = mockInstance.findSyncFile;
+    },
+  };
+});
 
 describe('cloudStorageProvider', () => {
   beforeEach(() => {
