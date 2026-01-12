@@ -95,7 +95,12 @@ export function HouseholdPresetSelector({
 
         {onBack && (
           <div className={styles.actions}>
-            <Button type="button" variant="secondary" onClick={onBack}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onBack}
+              data-testid="preset-back-button"
+            >
               {t('actions.back')}
             </Button>
           </div>

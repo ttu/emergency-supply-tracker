@@ -66,7 +66,7 @@ describe('Onboarding', () => {
       </SettingsProvider>,
     );
 
-    expect(screen.getByText('Get Started')).toBeInTheDocument();
+    expect(screen.getByTestId('get-started-button')).toBeInTheDocument();
   });
 
   it('progresses from welcome to preset selection', async () => {
@@ -78,11 +78,11 @@ describe('Onboarding', () => {
       </SettingsProvider>,
     );
 
-    const getStartedButton = screen.getByText('Get Started');
+    const getStartedButton = screen.getByTestId('get-started-button');
     await user.click(getStartedButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
   });
 
@@ -96,21 +96,19 @@ describe('Onboarding', () => {
     );
 
     // Welcome -> Preset
-    const getStartedButton = screen.getByText('Get Started');
+    const getStartedButton = screen.getByTestId('get-started-button');
     await user.click(getStartedButton);
 
     // Preset -> Household
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
 
-    const singlePreset = screen.getByText('Single Person').closest('div');
-    if (singlePreset) {
-      await user.click(singlePreset);
-    }
+    const singlePreset = screen.getByTestId('preset-single');
+    await user.click(singlePreset);
 
     await waitFor(() => {
-      expect(screen.getByText('Save')).toBeInTheDocument();
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
     });
   });
 
@@ -124,19 +122,19 @@ describe('Onboarding', () => {
     );
 
     // Welcome -> Preset
-    const getStartedButton = screen.getByText('Get Started');
+    const getStartedButton = screen.getByTestId('get-started-button');
     await user.click(getStartedButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
 
     // Preset -> Welcome (back button)
-    const backButton = screen.getByText('Back');
+    const backButton = screen.getByTestId('preset-back-button');
     await user.click(backButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Get Started')).toBeInTheDocument();
+      expect(screen.getByTestId('get-started-button')).toBeInTheDocument();
     });
   });
 
@@ -150,29 +148,27 @@ describe('Onboarding', () => {
     );
 
     // Welcome -> Preset
-    const getStartedButton = screen.getByText('Get Started');
+    const getStartedButton = screen.getByTestId('get-started-button');
     await user.click(getStartedButton);
 
     // Preset -> Household
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
 
-    const singlePreset = screen.getByText('Single Person').closest('div');
-    if (singlePreset) {
-      await user.click(singlePreset);
-    }
+    const singlePreset = screen.getByTestId('preset-single');
+    await user.click(singlePreset);
 
     await waitFor(() => {
-      expect(screen.getByText('Back')).toBeInTheDocument();
+      expect(screen.getByTestId('household-back-button')).toBeInTheDocument();
     });
 
     // Household -> Preset
-    const backButton = screen.getByText('Back');
+    const backButton = screen.getByTestId('household-back-button');
     await user.click(backButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
   });
 
@@ -186,36 +182,33 @@ describe('Onboarding', () => {
     );
 
     // Navigate to quick setup
-    const getStartedButton = screen.getByText('Get Started');
+    const getStartedButton = screen.getByTestId('get-started-button');
     await user.click(getStartedButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
 
-    const singlePreset = screen.getByText('Single Person').closest('div');
-    if (singlePreset) {
-      await user.click(singlePreset);
-    }
+    const singlePreset = screen.getByTestId('preset-single');
+    await user.click(singlePreset);
 
     await waitFor(() => {
-      expect(screen.getByText('Save')).toBeInTheDocument();
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
     });
 
-    const continueButton = screen.getByText('Save');
+    const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Skip')).toBeInTheDocument();
+      expect(screen.getByTestId('skip-quick-setup-button')).toBeInTheDocument();
     });
 
     // Quick Setup -> Household (back button)
-    const backButtons = screen.getAllByText('Back');
-    // The first Back button should be the one that goes back to household
-    await user.click(backButtons[0]);
+    const backButton = screen.getByTestId('quick-setup-back-button');
+    await user.click(backButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Save')).toBeInTheDocument();
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
     });
   });
 
@@ -229,30 +222,28 @@ describe('Onboarding', () => {
     );
 
     // Navigate to quick setup
-    const getStartedButton = screen.getByText('Get Started');
+    const getStartedButton = screen.getByTestId('get-started-button');
     await user.click(getStartedButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
 
-    const singlePreset = screen.getByText('Single Person').closest('div');
-    if (singlePreset) {
-      await user.click(singlePreset);
-    }
+    const singlePreset = screen.getByTestId('preset-single');
+    await user.click(singlePreset);
 
     await waitFor(() => {
-      expect(screen.getByText('Save')).toBeInTheDocument();
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
     });
 
-    const continueButton = screen.getByText('Save');
+    const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Skip')).toBeInTheDocument();
+      expect(screen.getByTestId('skip-quick-setup-button')).toBeInTheDocument();
     });
 
-    const skipButton = screen.getByText('Skip');
+    const skipButton = screen.getByTestId('skip-quick-setup-button');
     await user.click(skipButton);
 
     expect(onComplete).toHaveBeenCalledWith(
@@ -276,31 +267,29 @@ describe('Onboarding', () => {
     );
 
     // Navigate to quick setup
-    const getStartedButton = screen.getByText('Get Started');
+    const getStartedButton = screen.getByTestId('get-started-button');
     await user.click(getStartedButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
 
-    const singlePreset = screen.getByText('Single Person').closest('div');
-    if (singlePreset) {
-      await user.click(singlePreset);
-    }
+    const singlePreset = screen.getByTestId('preset-single');
+    await user.click(singlePreset);
 
     await waitFor(() => {
-      expect(screen.getByText('Save')).toBeInTheDocument();
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
     });
 
-    const continueButton = screen.getByText('Save');
+    const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Add Selected Items')).toBeInTheDocument();
+      expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
     });
 
     // Select some items first (button is disabled when no items selected)
-    const showDetailsButton = screen.getByText('Show Details');
+    const showDetailsButton = screen.getByTestId('show-details-button');
     await user.click(showDetailsButton);
 
     // Select first item
@@ -312,7 +301,7 @@ describe('Onboarding', () => {
       await user.click(firstItemCheckbox);
     }
 
-    const addItemsButton = screen.getByText('Add Selected Items');
+    const addItemsButton = screen.getByTestId('add-items-button');
     await user.click(addItemsButton);
 
     expect(onComplete).toHaveBeenCalledWith(
@@ -455,20 +444,18 @@ describe('Onboarding', () => {
     );
 
     // Navigate to household form
-    const getStartedButton = screen.getByText('Get Started');
+    const getStartedButton = screen.getByTestId('get-started-button');
     await user.click(getStartedButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Single Person')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
     });
 
-    const singlePreset = screen.getByText('Single Person').closest('div');
-    if (singlePreset) {
-      await user.click(singlePreset);
-    }
+    const singlePreset = screen.getByTestId('preset-single');
+    await user.click(singlePreset);
 
     await waitFor(() => {
-      expect(screen.getByText('Save')).toBeInTheDocument();
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
     });
 
     // Ensure freezer checkbox is unchecked (to test filtering)
@@ -484,15 +471,15 @@ describe('Onboarding', () => {
     }
 
     // Submit form
-    const continueButton = screen.getByText('Save');
+    const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Add Selected Items')).toBeInTheDocument();
+      expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
     });
 
     // Show details and select a frozen item (if available in the list)
-    const showDetailsButton = screen.getByText('Show Details');
+    const showDetailsButton = screen.getByTestId('show-details-button');
     await user.click(showDetailsButton);
 
     // Try to find and select a frozen item (frozen-vegetables, frozen-meat, or frozen-meals)
@@ -520,7 +507,7 @@ describe('Onboarding', () => {
       await user.click(nonFrozenCheckbox);
     }
 
-    const addItemsButton = screen.getByText('Add Selected Items');
+    const addItemsButton = screen.getByTestId('add-items-button');
     await user.click(addItemsButton);
 
     // Verify onComplete was called
