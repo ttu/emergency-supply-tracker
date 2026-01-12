@@ -37,7 +37,7 @@ vi.mock('react-i18next', () => ({
         'household.supplyDays': 'Supply Days',
         'household.useFreezer': 'I want to use my freezer',
         'actions.save': 'Save',
-        'actions.cancel': 'Cancel',
+        'actions.back': 'Back',
         'quickSetup.addItems': 'Add Selected Items',
         'quickSetup.skip': 'Skip',
         'quickSetup.showDetails': 'Show Details',
@@ -138,11 +138,11 @@ describe('Onboarding', () => {
     }
 
     await waitFor(() => {
-      expect(screen.getByText('Cancel')).toBeInTheDocument();
+      expect(screen.getByText('Back')).toBeInTheDocument();
     });
 
     // Household -> Preset
-    const backButton = screen.getByText('Cancel');
+    const backButton = screen.getByText('Back');
     await user.click(backButton);
 
     await waitFor(() => {

@@ -47,15 +47,15 @@ export const WithInitialData: Story = {
   },
 };
 
-export const WithCancel: Story = {
+export const WithBack: Story = {
   args: {
     onSubmit: (data) => {
       console.log('Form submitted:', data);
       alert(`Submitted: ${JSON.stringify(data, null, 2)}`);
     },
-    onCancel: () => {
-      console.log('Form cancelled');
-      alert('Form cancelled');
+    onBack: () => {
+      console.log('Back button clicked');
+      alert('Back button clicked');
     },
   },
 };
