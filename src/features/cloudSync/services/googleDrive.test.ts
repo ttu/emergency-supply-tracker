@@ -409,33 +409,8 @@ class TestableGoogleDriveService implements CloudStorageProvider {
   }
 }
 
-// Extend Window type for tests
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        oauth2: {
-          initTokenClient: (config: {
-            client_id: string;
-            scope: string;
-            callback: (response: {
-              access_token?: string;
-              expires_in?: number;
-              error?: string;
-              error_description?: string;
-            }) => void;
-            error_callback?: (error: {
-              type: string;
-              message?: string;
-            }) => void;
-          }) => {
-            requestAccessToken: (options?: { prompt?: string }) => void;
-          };
-        };
-      };
-    };
-  }
-}
+// Note: Window.google is already declared in googleDrive.ts
+// We use type assertions in the test code instead of redeclaring
 
 describe('GoogleDriveService', () => {
   let service: TestableGoogleDriveService;
@@ -470,7 +445,18 @@ describe('GoogleDriveService', () => {
     });
 
     // Setup window.google mock
-    (window as Window).google = {
+    // Use type assertion to avoid interface declaration conflicts
+    (
+      window as Window & {
+        google?: {
+          accounts: {
+            oauth2: {
+              initTokenClient: typeof mockInitTokenClient;
+            };
+          };
+        };
+      }
+    ).google = {
       accounts: {
         oauth2: {
           initTokenClient: mockInitTokenClient,
@@ -719,27 +705,25 @@ describe('GoogleDriveService', () => {
 
     it('should try to reconnect when tokens expired', async () => {
       let callCount = 0;
-      (tokenStorage.getTokensForProvider as Mock).mockImplementation(
-        () => {
-          callCount++;
-          if (callCount === 1) {
-            // First call: expired tokens
-            return {
-              accessToken: 'expired',
-              expiresAt: Date.now() - 1000,
-              provider: 'google-drive',
-              refreshToken: null,
-            };
-          }
-          // After reconnect: new tokens
+      (tokenStorage.getTokensForProvider as Mock).mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          // First call: expired tokens
           return {
-            accessToken: 'new-token',
-            expiresAt: Date.now() + 3600000,
+            accessToken: 'expired',
+            expiresAt: Date.now() - 1000,
             provider: 'google-drive',
             refreshToken: null,
           };
-        },
-      );
+        }
+        // After reconnect: new tokens
+        return {
+          accessToken: 'new-token',
+          expiresAt: Date.now() + 3600000,
+          provider: 'google-drive',
+          refreshToken: null,
+        };
+      });
       (tokenStorage.areTokensExpired as Mock)
         .mockReturnValueOnce(true)
         .mockReturnValue(false);
@@ -1014,13 +998,12 @@ describe('GoogleDriveService', () => {
         json: () => Promise.resolve({ error: { message: 'Token expired' } }),
       });
 
-      try {
-        await service.getFileMetadata('file-id');
-        fail('Expected error to be thrown');
-      } catch (error) {
-        expect(error).toBeInstanceOf(CloudSyncError);
-        expect((error as CloudSyncError).code).toBe('TOKEN_EXPIRED');
-      }
+      await expect(service.getFileMetadata('file-id')).rejects.toThrow(
+        CloudSyncError,
+      );
+      await expect(service.getFileMetadata('file-id')).rejects.toMatchObject({
+        code: 'TOKEN_EXPIRED',
+      });
     });
 
     it('should throw PERMISSION_DENIED on 403', async () => {
@@ -1030,13 +1013,12 @@ describe('GoogleDriveService', () => {
         json: () => Promise.resolve({ error: { message: 'Access denied' } }),
       });
 
-      try {
-        await service.getFileMetadata('file-id');
-        fail('Expected error to be thrown');
-      } catch (error) {
-        expect(error).toBeInstanceOf(CloudSyncError);
-        expect((error as CloudSyncError).code).toBe('PERMISSION_DENIED');
-      }
+      await expect(service.getFileMetadata('file-id')).rejects.toThrow(
+        CloudSyncError,
+      );
+      await expect(service.getFileMetadata('file-id')).rejects.toMatchObject({
+        code: 'PERMISSION_DENIED',
+      });
     });
 
     it('should throw QUOTA_EXCEEDED on 507', async () => {
@@ -1046,13 +1028,12 @@ describe('GoogleDriveService', () => {
         json: () => Promise.resolve({ error: { message: 'Storage full' } }),
       });
 
-      try {
-        await service.getFileMetadata('file-id');
-        fail('Expected error to be thrown');
-      } catch (error) {
-        expect(error).toBeInstanceOf(CloudSyncError);
-        expect((error as CloudSyncError).code).toBe('QUOTA_EXCEEDED');
-      }
+      await expect(service.getFileMetadata('file-id')).rejects.toThrow(
+        CloudSyncError,
+      );
+      await expect(service.getFileMetadata('file-id')).rejects.toMatchObject({
+        code: 'QUOTA_EXCEEDED',
+      });
     });
 
     it('should throw UNKNOWN on other status codes', async () => {
@@ -1062,13 +1043,12 @@ describe('GoogleDriveService', () => {
         json: () => Promise.resolve({}),
       });
 
-      try {
-        await service.getFileMetadata('file-id');
-        fail('Expected error to be thrown');
-      } catch (error) {
-        expect(error).toBeInstanceOf(CloudSyncError);
-        expect((error as CloudSyncError).code).toBe('UNKNOWN');
-      }
+      await expect(service.getFileMetadata('file-id')).rejects.toThrow(
+        CloudSyncError,
+      );
+      await expect(service.getFileMetadata('file-id')).rejects.toMatchObject({
+        code: 'UNKNOWN',
+      });
     });
   });
 });

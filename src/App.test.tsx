@@ -27,6 +27,15 @@ vi.mock('react-i18next', () => ({
     },
 }));
 
+// Mock cloudSync services to avoid initializing Google Drive in tests
+vi.mock('@/features/cloudSync/services', () => ({
+  initializeProviders: vi.fn(),
+  getProvider: vi.fn(() => null),
+  getAvailableProviders: vi.fn(() => []),
+  isProviderAvailable: vi.fn(() => false),
+  resetProviders: vi.fn(),
+}));
+
 // Helper to set up localStorage with onboarding completed (use saveAppData for root/inventory set shape)
 const setupCompletedOnboarding = () => {
   const appData = createMockAppData({
