@@ -19,7 +19,7 @@ export function CloudSyncSection() {
     (state.state === 'error' && state.provider !== null);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="section-cloud-sync">
       <CloudSyncStatus />
 
       <div className={styles.divider} />
