@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Modal } from './Modal';
 
@@ -76,6 +76,26 @@ describe('Modal', () => {
     );
 
     await user.click(screen.getByText('Modal content'));
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('does not call onClose when clicking inside modal and releasing outside', () => {
+    const { container } = render(
+      <Modal isOpen={true} onClose={onClose} title="Test Modal">
+        <p>Modal content</p>
+      </Modal>,
+    );
+
+    const modalContent = screen.getByText('Modal content');
+    const overlay = container.querySelector('[class*="overlay"]');
+
+    // Simulate mousedown inside modal, then mouseup on overlay
+    fireEvent.mouseDown(modalContent);
+    if (overlay) {
+      fireEvent.mouseUp(overlay);
+    }
+
+    // Modal should not close because mousedown happened inside
     expect(onClose).not.toHaveBeenCalled();
   });
 
