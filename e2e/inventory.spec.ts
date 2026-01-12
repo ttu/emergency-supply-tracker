@@ -60,8 +60,10 @@ test.describe('Inventory Management', () => {
     // Save the item
     await page.getByTestId('save-item-button').click();
 
-    // Verify item appears in inventory
-    await expect(page.locator('text=Custom Flashlight')).toBeVisible();
+    // Verify item appears in inventory - use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Custom Flashlight/i }),
+    ).toBeVisible();
   });
 
   test('should edit existing item', async ({ page }) => {
@@ -81,7 +83,10 @@ test.describe('Inventory Management', () => {
     await page.getByTestId('save-item-button').click();
 
     // Wait for item to appear and click on the card to edit
-    await page.click('text=Test Item');
+    // Use getByRole to target item card button specifically (not notification)
+    const itemCardButton = page.getByRole('button', { name: /Test Item/i });
+    await expect(itemCardButton).toBeVisible();
+    await itemCardButton.click();
 
     // Wait for form to appear and update quantity
     await page.waitForSelector('input[name="quantity"]');
@@ -90,8 +95,10 @@ test.describe('Inventory Management', () => {
     // Save changes
     await page.getByTestId('save-item-button').click();
 
-    // Verify changes are saved (item still visible)
-    await expect(page.locator('text=Test Item')).toBeVisible();
+    // Verify changes are saved (item still visible) - use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Test Item/i }),
+    ).toBeVisible();
   });
 
   test('should delete item', async ({ page }) => {
@@ -111,7 +118,12 @@ test.describe('Inventory Management', () => {
     await page.getByTestId('save-item-button').click();
 
     // Wait for item to appear and click on it to open edit mode
-    await page.click('text=Item to Delete');
+    // Use getByRole to target item card button specifically (not notification)
+    const itemCardButton = page.getByRole('button', {
+      name: /Item to Delete/i,
+    });
+    await expect(itemCardButton).toBeVisible();
+    await itemCardButton.click();
 
     // Wait for delete button to appear in the modal
     const deleteButton = page.getByTestId('delete-item-button');
@@ -124,7 +136,10 @@ test.describe('Inventory Management', () => {
     await deleteButton.click();
 
     // Verify item is removed
-    await expect(page.locator('text=Item to Delete')).not.toBeVisible();
+    // Use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Item to Delete/i }),
+    ).not.toBeVisible();
   });
 
   test('should filter items by category', async ({ page }) => {
@@ -144,7 +159,10 @@ test.describe('Inventory Management', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    await expect(page.locator('text=Food Item')).toBeVisible();
+    // Use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Food Item/i }),
+    ).toBeVisible();
 
     // Add water item
     await page.getByTestId('add-item-button').click();
@@ -159,20 +177,32 @@ test.describe('Inventory Management', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    await expect(page.locator('text=Water Item')).toBeVisible();
+    // Use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Water Item/i }),
+    ).toBeVisible();
 
     // Filter by Food category
     await page.getByTestId('category-food').click();
 
-    // Food item should be visible
-    await expect(page.locator('text=Food Item')).toBeVisible();
+    // Food item should be visible - use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Food Item/i }),
+    ).toBeVisible();
     // Water item should not be visible
-    await expect(page.locator('text=Water Item')).not.toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Water Item/i }),
+    ).not.toBeVisible();
 
     // Click All to show all items again
     await page.getByTestId('category-all').click();
-    await expect(page.locator('text=Food Item')).toBeVisible();
-    await expect(page.locator('text=Water Item')).toBeVisible();
+    // Use getByRole to target item card buttons specifically
+    await expect(
+      page.getByRole('button', { name: /Food Item/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Water Item/i }),
+    ).toBeVisible();
   });
 
   test('should search items', async ({ page }) => {
@@ -206,14 +236,22 @@ test.describe('Inventory Management', () => {
     // Search for "Searchable"
     await page.fill('input[placeholder*="Search"]', 'Searchable');
 
-    // Only matching item should be visible
-    await expect(page.locator('text=Searchable Item A')).toBeVisible();
-    await expect(page.locator('text=Different Item B')).not.toBeVisible();
+    // Only matching item should be visible - use getByRole to target item card buttons specifically
+    await expect(
+      page.getByRole('button', { name: /Searchable Item A/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Different Item B/i }),
+    ).not.toBeVisible();
 
-    // Clear search
+    // Clear search - use getByRole to target item card buttons specifically
     await page.fill('input[placeholder*="Search"]', '');
-    await expect(page.locator('text=Searchable Item A')).toBeVisible();
-    await expect(page.locator('text=Different Item B')).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Searchable Item A/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Different Item B/i }),
+    ).toBeVisible();
   });
 
   test('should display translated template names and categories', async ({
@@ -345,11 +383,17 @@ test.describe('Inventory Management', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Wait for item to appear
-    await expect(page.locator('text=Test Edit Item')).toBeVisible();
+    // Wait for item to appear - use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Test Edit Item/i }),
+    ).toBeVisible();
 
-    // Click to edit the item
-    await page.click('text=Test Edit Item');
+    // Click to edit the item - use getByRole to target item card button specifically
+    const editItemButton = page.getByRole('button', {
+      name: /Test Edit Item/i,
+    });
+    await expect(editItemButton).toBeVisible();
+    await editItemButton.click();
 
     // When editing existing item, should show both Save and Cancel buttons
     await expect(page.getByTestId('save-item-button')).toBeVisible();

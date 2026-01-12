@@ -106,7 +106,10 @@ test.describe('Data Management', () => {
     await page.getByTestId('nav-inventory').click();
 
     // Verify imported item is visible
-    await expect(page.locator('text=Imported Item')).toBeVisible();
+    // Use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Imported Item/i }),
+    ).toBeVisible();
   });
 
   test('should export shopping list', async ({ page }) => {
@@ -165,7 +168,10 @@ test.describe('Data Management', () => {
     await page.getByTestId('save-item-button').click();
 
     // Verify item exists before clear
-    await expect(page.locator('text=Item to Clear')).toBeVisible();
+    // Use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Item to Clear/i }),
+    ).toBeVisible();
 
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();

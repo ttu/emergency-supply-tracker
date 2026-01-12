@@ -209,7 +209,10 @@ async function testRecommendedItems(page: Page) {
 }
 
 async function editCustomItemIfVisible(page: Page) {
-  const customItemLocator = page.locator('text=Custom Test Item');
+  // Use getByRole to target item card button specifically
+  const customItemLocator = page.getByRole('button', {
+    name: /Custom Test Item/i,
+  });
   const canEdit = await customItemLocator.isVisible().catch(() => false);
   if (canEdit) {
     await customItemLocator.click();
@@ -269,7 +272,9 @@ async function testDashboardAlerts(page: Page) {
   // Navigate to Dashboard and verify/dismiss alert
   await page.getByTestId('nav-dashboard').click();
   await page.waitForLoadState('networkidle');
-  await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
+  // Scope to alerts section to avoid notifications
+  const alertsSection = page.getByTestId('alerts-section');
+  await expect(alertsSection.getByText(/expired|vanhentunut/i)).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 

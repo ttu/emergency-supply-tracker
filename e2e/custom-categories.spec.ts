@@ -112,8 +112,9 @@ test.describe('Custom Categories', () => {
       .allTextContents();
 
     // If custom category is in options, select it
-    if (categoryOptions.some((opt) => opt.includes('Pets'))) {
-      await categorySelect.selectOption({ label: /Pets/i });
+    const petsOption = categoryOptions.find((opt) => opt.includes('Pets'));
+    if (petsOption) {
+      await categorySelect.selectOption({ label: petsOption });
     } else {
       // Fallback to a standard category
       await categorySelect.selectOption('food');
@@ -124,8 +125,8 @@ test.describe('Custom Categories', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Item should be added
-    await expect(page.locator('text=Pet Food')).toBeVisible();
+    // Item should be added - use getByRole to target item card button specifically
+    await expect(page.getByRole('button', { name: /Pet Food/i })).toBeVisible();
   });
 
   test('should persist custom categories after reload', async ({ page }) => {
@@ -318,8 +319,13 @@ test.describe('Custom Categories', () => {
       if (tabVisible) {
         await customCategoryTab.click();
         // Should see only items in that category
-        await expect(page.locator('text=Special Item 1')).toBeVisible();
-        await expect(page.locator('text=Food Item')).not.toBeVisible();
+        // Use getByRole to target item card buttons specifically
+        await expect(
+          page.getByRole('button', { name: /Special Item 1/i }),
+        ).toBeVisible();
+        await expect(
+          page.getByRole('button', { name: /Food Item/i }),
+        ).not.toBeVisible();
       }
     }
   });
