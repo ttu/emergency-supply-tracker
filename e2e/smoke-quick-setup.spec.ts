@@ -252,7 +252,9 @@ async function testDashboardAlertsQuickSetup(page: Page) {
 
   await page.getByTestId('nav-dashboard').click();
   await page.waitForLoadState('networkidle');
-  await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
+  // Scope to alerts section to avoid notifications
+  const alertsSection = page.getByTestId('alerts-section');
+  await expect(alertsSection.getByText(/expired|vanhentunut/i)).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 

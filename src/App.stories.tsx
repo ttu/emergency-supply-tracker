@@ -3,6 +3,7 @@ import App from './App';
 import { SettingsProvider } from '@/features/settings';
 import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
+import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 
 const meta = {
   title: 'App/Shell',
@@ -15,9 +16,11 @@ const meta = {
     (Story) => (
       <SettingsProvider>
         <HouseholdProvider>
-          <InventoryProvider>
-            <Story />
-          </InventoryProvider>
+          <NotificationProvider>
+            <InventoryProvider>
+              <Story />
+            </InventoryProvider>
+          </NotificationProvider>
         </HouseholdProvider>
       </SettingsProvider>
     ),

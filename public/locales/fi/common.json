@@ -458,5 +458,11 @@
       "tip4": "Vie tietosi säännöllisesti varmuuskopioksi",
       "tip5": "Tarkista ja päivitä varastosi vähintään kerran kaudessa"
     }
+  },
+  "notifications": {
+    "itemAdded": "Tuote \"{{name}}\" lisätty",
+    "itemUpdated": "Tuote \"{{name}}\" päivitetty",
+    "itemDeleted": "Tuote \"{{name}}\" poistettu",
+    "itemsBulkAdded": "{{count}} tuotetta lisätty"
   }
 }

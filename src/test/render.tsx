@@ -11,6 +11,7 @@ import { SettingsProvider } from '@/features/settings';
 import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
+import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ThemeApplier } from '@/components/ThemeApplier';
 import type { AppData } from '@/shared/types';
@@ -145,11 +146,14 @@ export function renderWithProviders(
     let wrapped: ReactNode = children;
 
     // Build provider tree from inside out (reverse order of nesting)
-    // Order matches AllProviders.tsx: ErrorBoundary > Settings > ThemeApplier > Household > RecommendedItems > Inventory
+    // Order matches App.tsx: ErrorBoundary > Settings > ThemeApplier > NotificationProvider > Household > RecommendedItems > Inventory
     if (inventory) wrapped = <InventoryProvider>{wrapped}</InventoryProvider>;
     if (recommendedItems)
       wrapped = <RecommendedItemsProvider>{wrapped}</RecommendedItemsProvider>;
     if (household) wrapped = <HouseholdProvider>{wrapped}</HouseholdProvider>;
+    // NotificationProvider must always wrap InventoryProvider since InventoryProvider uses useNotification
+    // Always include NotificationProvider in test utilities to ensure useNotification hook has a provider
+    wrapped = <NotificationProvider>{wrapped}</NotificationProvider>;
     if (themeApplier) wrapped = <ThemeApplier>{wrapped}</ThemeApplier>;
     if (settings) wrapped = <SettingsProvider>{wrapped}</SettingsProvider>;
     if (errorBoundary) wrapped = <ErrorBoundary>{wrapped}</ErrorBoundary>;

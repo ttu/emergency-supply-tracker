@@ -28,8 +28,10 @@ test.describe('Item Expiration Tracking', () => {
 
     await page.getByTestId('save-item-button').click();
 
-    // Verify item was added
-    await expect(page.locator('text=Expiring Item')).toBeVisible();
+    // Verify item was added - use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Expiring Item/i }),
+    ).toBeVisible();
   });
 
   test('should show expiring soon alert for items expiring within 30 days', async ({
@@ -96,8 +98,9 @@ test.describe('Item Expiration Tracking', () => {
     // Navigate to Dashboard
     await page.getByTestId('nav-dashboard').click();
 
-    // Should show expired alert
-    await expect(page.locator('text=/expired|vanhentunut/i')).toBeVisible({
+    // Should show expired alert - scope to alerts section to avoid notifications
+    const alertsSection = page.getByTestId('alerts-section');
+    await expect(alertsSection.getByText(/expired|vanhentunut/i)).toBeVisible({
       timeout: 5000,
     });
   });
@@ -125,7 +128,9 @@ test.describe('Item Expiration Tracking', () => {
 
     // Should not show expiration alerts for this item
     // (Other items might have alerts, but this one shouldn't)
-    const alerts = page.locator(
+    // Scope to alerts section to avoid notifications
+    const alertsSection = page.getByTestId('alerts-section');
+    const alerts = alertsSection.locator(
       'text=/expiring|expired|vanhenee|vanhentunut/i',
     );
     const alertCount = await alerts.count();
@@ -152,8 +157,12 @@ test.describe('Item Expiration Tracking', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Edit the item
-    await page.click('text=Item to Update');
+    // Edit the item - use getByRole to target item card button specifically
+    const itemCardButton = page.getByRole('button', {
+      name: /Item to Update/i,
+    });
+    await expect(itemCardButton).toBeVisible();
+    await itemCardButton.click();
     await page.waitForSelector('input[name="quantity"]');
 
     // Uncheck neverExpires and set expiration
@@ -166,7 +175,10 @@ test.describe('Item Expiration Tracking', () => {
     await page.getByTestId('save-item-button').click();
 
     // Verify item still exists
-    await expect(page.locator('text=Item to Update')).toBeVisible();
+    // Use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Item to Update/i }),
+    ).toBeVisible();
   });
 
   test('should show expiration date on item card', async ({ page }) => {
@@ -191,8 +203,12 @@ test.describe('Item Expiration Tracking', () => {
     // Item card should show expiration date (format may vary)
     // Format depends on locale (toLocaleDateString), so just check for date-like content
     // Look for the expiration emoji and date format
-    const itemCard = page.locator('text=Item With Date').locator('..');
-    await expect(itemCard).toBeVisible();
+    // Use getByRole to find the item card button, then get its parent
+    const itemCardButton = page.getByRole('button', {
+      name: /Item With Date/i,
+    });
+    await expect(itemCardButton).toBeVisible();
+    const itemCard = itemCardButton.locator('..');
 
     // Date is formatted using toLocaleDateString, so format varies by locale
     // The expiration section shows an emoji (📅) and formatted date
