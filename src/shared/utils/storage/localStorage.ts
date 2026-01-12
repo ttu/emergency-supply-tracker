@@ -1,4 +1,10 @@
-import type { AppData, InventoryItem, ProductTemplateId } from '@/shared/types';
+import type {
+  AppData,
+  InventoryItem,
+  ProductTemplateId,
+  Category,
+  ProductTemplate,
+} from '@/shared/types';
 import {
   createItemId,
   createCategoryId,
@@ -89,39 +95,69 @@ export function getAppData(): AppData | undefined {
   try {
     const json = localStorage.getItem(STORAGE_KEY);
     if (!json) return undefined;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rawData: any = JSON.parse(json);
 
-    // Check if version is supported before proceeding
-    const dataVersion = rawData.version || '1.0.0';
-    if (!isVersionSupported(dataVersion)) {
-      console.error(
-        `Data schema version ${dataVersion} is not supported. Data may be corrupted or from an incompatible version.`,
-      );
+    // Parse JSON - use unknown instead of any for type safety
+    let rawData: unknown;
+    try {
+      rawData = JSON.parse(json);
+    } catch (parseError) {
+      console.error('Failed to parse JSON from localStorage:', parseError);
       return undefined;
     }
 
+    // Check if version is supported before proceeding
+    if (
+      typeof rawData === 'object' &&
+      rawData !== null &&
+      'version' in rawData &&
+      typeof rawData.version === 'string'
+    ) {
+      const dataVersion = rawData.version;
+      if (!isVersionSupported(dataVersion)) {
+        console.error(
+          `Data schema version ${dataVersion} is not supported. Data may be corrupted or from an incompatible version.`,
+        );
+        return undefined;
+      }
+    }
+
     // Normalize items: ensure itemType values are valid template IDs and cast IDs
-    const normalizedItems = normalizeItems(rawData.items) ?? [];
+    const normalizedItems =
+      normalizeItems(
+        (rawData as { items?: unknown }).items as InventoryItem[] | undefined,
+      ) ?? [];
 
     // Cast IDs to branded types
     let data: AppData = {
-      ...rawData,
+      ...(rawData as AppData),
       items: normalizedItems,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      customCategories: (rawData.customCategories || []).map((cat: any) => ({
-        ...cat,
-        id: createCategoryId(cat.id as string),
+      customCategories: (
+        (
+          rawData as {
+            customCategories?: Array<{ id: string; [key: string]: unknown }>;
+          }
+        ).customCategories || []
+      ).map((cat) => ({
+        ...(cat as unknown as Category),
+        id: createCategoryId(cat.id),
       })),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      customTemplates: (rawData.customTemplates || []).map((template: any) => ({
-        ...template,
-        id: createProductTemplateId(template.id as string),
+      customTemplates: (
+        (
+          rawData as {
+            customTemplates?: Array<{ id: string; [key: string]: unknown }>;
+          }
+        ).customTemplates || []
+      ).map((template) => ({
+        ...(template as unknown as ProductTemplate),
+        id: createProductTemplateId(template.id),
       })),
-      dismissedAlertIds: (rawData.dismissedAlertIds || []).map(createAlertId),
-      disabledRecommendedItems: (rawData.disabledRecommendedItems || []).map(
-        createProductTemplateId,
-      ),
+      dismissedAlertIds: (
+        (rawData as { dismissedAlertIds?: string[] }).dismissedAlertIds || []
+      ).map(createAlertId),
+      disabledRecommendedItems: (
+        (rawData as { disabledRecommendedItems?: string[] })
+          .disabledRecommendedItems || []
+      ).map(createProductTemplateId),
     };
 
     // Apply migrations if needed
@@ -131,7 +167,7 @@ export function getAppData(): AppData | undefined {
         // Save migrated data back to localStorage
         saveAppData(data);
         console.info(
-          `Data migrated from version ${dataVersion} to ${CURRENT_SCHEMA_VERSION}`,
+          `Data migrated from version ${data.version} to ${CURRENT_SCHEMA_VERSION}`,
         );
       } catch (error) {
         if (error instanceof MigrationError) {
@@ -213,8 +249,8 @@ export function exportToJSON(data: AppData): string {
  * @throws MigrationError if schema migration fails
  */
 export function importFromJSON(json: string): AppData {
+  // Parse JSON - use unknown instead of any for type safety
   let data: Partial<AppData>;
-
   try {
     data = JSON.parse(json) as Partial<AppData>;
   } catch (error) {
