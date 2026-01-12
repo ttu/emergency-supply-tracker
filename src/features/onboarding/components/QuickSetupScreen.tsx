@@ -155,6 +155,7 @@ export const QuickSetupScreen = ({
                   type="button"
                   className={styles.selectAllButton}
                   onClick={handleSelectAll}
+                  data-testid="select-all-button"
                 >
                   {selectedItemIds.size === itemsToAdd.length &&
                   itemsToAdd.length > 0
