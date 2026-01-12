@@ -44,13 +44,7 @@ export function NotificationItem({
     };
   }, [duration]);
 
-  const getIcon = (): string => {
-    if (variant === 'success') return '✓';
-    if (variant === 'error') return '✕';
-    return 'ℹ';
-  };
-
-  const icon = getIcon();
+  const icon = variant === 'success' ? '✓' : variant === 'error' ? '✕' : 'ℹ';
 
   return (
     <output
