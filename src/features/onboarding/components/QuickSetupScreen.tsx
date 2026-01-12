@@ -9,12 +9,14 @@ export interface QuickSetupScreenProps {
   household: HouseholdConfig;
   onAddItems: (selectedItemIds: Set<string>) => void;
   onSkip: () => void;
+  onBack?: () => void;
 }
 
 export const QuickSetupScreen = ({
   household,
   onAddItems,
   onSkip,
+  onBack,
 }: QuickSetupScreenProps) => {
   const { t } = useTranslation(['common', 'categories', 'products', 'units']);
   const [showDetails, setShowDetails] = useState(false);
@@ -212,7 +214,13 @@ export const QuickSetupScreen = ({
         </div>
 
         <div className={styles.actions}>
+          {onBack && (
+            <Button type="button" variant="secondary" onClick={onBack}>
+              {t('actions.back')}
+            </Button>
+          )}
           <Button
+            type="button"
             variant="secondary"
             onClick={onSkip}
             data-testid="skip-quick-setup-button"
@@ -220,6 +228,7 @@ export const QuickSetupScreen = ({
             {t('quickSetup.skip')}
           </Button>
           <Button
+            type="button"
             variant="primary"
             onClick={handleAddItems}
             disabled={selectedCount === 0}

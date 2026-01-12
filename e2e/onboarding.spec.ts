@@ -179,8 +179,8 @@ test.describe('Onboarding Flow', () => {
     await page.getByTestId('preset-single').click();
     await expect(page.getByTestId('onboarding-household-form')).toBeVisible();
 
-    // Go back to Preset (button is "Cancel")
-    await page.getByTestId('household-cancel-button').click();
+    // Go back to Preset (button is "Back")
+    await page.getByRole('button', { name: /Back|Takaisin/i }).click();
     await expect(page.getByTestId('onboarding-preset-selector')).toBeVisible();
   });
 });

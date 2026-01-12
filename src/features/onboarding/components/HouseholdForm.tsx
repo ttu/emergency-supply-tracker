@@ -20,13 +20,13 @@ export interface HouseholdData {
 export interface HouseholdFormProps {
   initialData?: Partial<HouseholdData>;
   onSubmit: (data: HouseholdData) => void;
-  onCancel?: () => void;
+  onBack?: () => void;
 }
 
 export function HouseholdForm({
   initialData,
   onSubmit,
-  onCancel,
+  onBack,
 }: HouseholdFormProps) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<HouseholdData>({
@@ -180,14 +180,14 @@ export function HouseholdForm({
           </div>
 
           <div className={styles.actions}>
-            {onCancel && (
+            {onBack && (
               <Button
                 type="button"
                 variant="secondary"
-                onClick={onCancel}
-                data-testid="household-cancel-button"
+                onClick={onBack}
+                data-testid="household-back-button"
               >
-                {t('actions.cancel')}
+                {t('actions.back')}
               </Button>
             )}
             <Button

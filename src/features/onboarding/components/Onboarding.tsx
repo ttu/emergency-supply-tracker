@@ -102,6 +102,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
         <HouseholdPresetSelector
           selectedPreset={selectedPreset?.id}
           onSelectPreset={handlePresetSelect}
+          onBack={() => setCurrentStep('welcome')}
         />
       )}
 
@@ -118,7 +119,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
               : undefined
           }
           onSubmit={handleHouseholdSubmit}
-          onCancel={() => setCurrentStep('preset')}
+          onBack={() => setCurrentStep('preset')}
         />
       )}
 
@@ -127,6 +128,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
           household={householdConfig}
           onAddItems={handleAddItems}
           onSkip={handleSkip}
+          onBack={() => setCurrentStep('household')}
         />
       )}
     </>
