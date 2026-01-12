@@ -8,7 +8,7 @@ test.describe('Advanced Features', () => {
   test('should enable calorie tracking and show calorie data', async ({
     page,
   }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Advanced features checkboxes might be in a section or might not be visible
     // Check if there are any checkboxes in the settings page
@@ -42,7 +42,7 @@ test.describe('Advanced Features', () => {
   test('should enable water tracking and show water preparation needs', async ({
     page,
   }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
@@ -74,7 +74,7 @@ test.describe('Advanced Features', () => {
   test('should enable power management and show power data', async ({
     page,
   }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
@@ -106,7 +106,7 @@ test.describe('Advanced Features', () => {
   test('should persist advanced features settings after reload', async ({
     page,
   }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
@@ -134,7 +134,7 @@ test.describe('Advanced Features', () => {
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Verify settings persisted
-      await page.click('text=Settings');
+      await page.getByTestId('nav-settings').click();
       await page.waitForLoadState('networkidle');
       const checkboxAfterReload = page
         .locator('input[type="checkbox"]')
@@ -147,7 +147,7 @@ test.describe('Advanced Features', () => {
   test('should disable advanced features and hide related data', async ({
     page,
   }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');

@@ -108,7 +108,7 @@ export const QuickSetupScreen = ({
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="onboarding-quick-setup">
       <div className={styles.content}>
         <h1 className={styles.title}>{t('quickSetup.title')}</h1>
         <p className={styles.subtitle}>{t('quickSetup.subtitle')}</p>
@@ -212,13 +212,18 @@ export const QuickSetupScreen = ({
         </div>
 
         <div className={styles.actions}>
-          <Button variant="secondary" onClick={onSkip}>
+          <Button
+            variant="secondary"
+            onClick={onSkip}
+            data-testid="skip-quick-setup-button"
+          >
             {t('quickSetup.skip')}
           </Button>
           <Button
             variant="primary"
             onClick={handleAddItems}
             disabled={selectedCount === 0}
+            data-testid="add-items-button"
           >
             {t('quickSetup.addItems')}
           </Button>

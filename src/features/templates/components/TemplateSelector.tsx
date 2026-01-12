@@ -65,7 +65,7 @@ export const TemplateSelector = ({
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="template-selector">
       <div className={styles.filters}>
         <Input
           id="template-search"
@@ -74,6 +74,7 @@ export const TemplateSelector = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           aria-label={t('templateSelector.searchLabel')}
+          data-testid="template-search-input"
         />
         <Select
           id="template-category"
@@ -81,6 +82,7 @@ export const TemplateSelector = ({
           options={categoryOptions}
           onChange={(e) => setSelectedCategoryId(e.target.value)}
           aria-label={t('templateSelector.categoryLabel')}
+          data-testid="template-category-select"
         />
       </div>
 
@@ -88,6 +90,7 @@ export const TemplateSelector = ({
         type="button"
         className={styles.customItemButton}
         onClick={onSelectCustom}
+        data-testid="custom-item-button"
       >
         ➕ {t('itemForm.customItem')}
       </button>
@@ -108,6 +111,7 @@ export const TemplateSelector = ({
                 type="button"
                 className={styles.templateCard}
                 onClick={() => handleTemplateClick(template)}
+                data-testid={`template-card-${template.id}`}
               >
                 <div className={styles.templateIcon}>{category?.icon}</div>
                 <div className={styles.templateInfo}>

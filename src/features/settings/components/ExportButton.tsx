@@ -31,7 +31,11 @@ export function ExportButton() {
 
   return (
     <div className={styles.container}>
-      <Button variant="secondary" onClick={handleExport}>
+      <Button
+        variant="secondary"
+        onClick={handleExport}
+        data-testid="export-data-button"
+      >
         {t('settings.export.button')}
       </Button>
       <p className={styles.description}>{t('settings.export.description')}</p>

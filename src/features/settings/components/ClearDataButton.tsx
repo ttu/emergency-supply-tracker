@@ -19,7 +19,11 @@ export function ClearDataButton() {
 
   return (
     <div className={styles.container}>
-      <Button variant="danger" onClick={handleClear}>
+      <Button
+        variant="danger"
+        onClick={handleClear}
+        data-testid="clear-data-button"
+      >
         {t('settings.clearData.button')}
       </Button>
       <p className={styles.warning}>{t('settings.clearData.warning')}</p>

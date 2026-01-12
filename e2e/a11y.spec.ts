@@ -89,11 +89,12 @@ test.describe('Accessibility', () => {
   test('Item form modal should have no accessibility violations', async ({
     page,
   }) => {
-    await page.goto('/inventory');
-    await page.waitForLoadState('networkidle');
+    // Navigate to inventory using navigation to ensure app is fully loaded
+    await page.getByTestId('nav-inventory').click();
+    await expect(page.getByTestId('page-inventory')).toBeVisible();
 
     // Open the add item modal
-    await page.click('button:has-text("Add Item")');
+    await page.getByTestId('add-item-button').click();
     await page.waitForSelector('[role="dialog"]', { state: 'visible' });
 
     const accessibilityScanResults = await new AxeBuilder({ page })

@@ -70,7 +70,7 @@ export function Help() {
   ];
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="page-help">
       <header className={styles.header}>
         <h1>{t('help.title')}</h1>
         <p className={styles.subtitle}>{t('help.subtitle')}</p>

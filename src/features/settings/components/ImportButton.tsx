@@ -81,8 +81,13 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
         onChange={handleFileChange}
         className={styles.fileInput}
         aria-label={t('settings.import.button')}
+        data-testid="import-data-file-input"
       />
-      <Button variant="secondary" onClick={handleClick}>
+      <Button
+        variant="secondary"
+        onClick={handleClick}
+        data-testid="import-data-button"
+      >
         {t('settings.import.button')}
       </Button>
       <p className={styles.description}>{t('settings.import.description')}</p>
