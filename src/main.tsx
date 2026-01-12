@@ -3,11 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import './i18n/config';
 import App from './App.tsx';
-import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/features/inventory';
-import { SettingsProvider } from '@/features/settings';
-import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
-import { ThemeApplier } from './components/ThemeApplier';
+import { AllProviders } from '@/shared/components/AllProviders';
 import * as serviceWorker from '@/shared/utils/serviceWorker';
 
 createRoot(document.getElementById('root')!).render(
@@ -17,17 +13,9 @@ createRoot(document.getElementById('root')!).render(
         <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>
       }
     >
-      <ErrorBoundary>
-        <SettingsProvider>
-          <ThemeApplier>
-            <HouseholdProvider>
-              <InventoryProvider>
-                <App />
-              </InventoryProvider>
-            </HouseholdProvider>
-          </ThemeApplier>
-        </SettingsProvider>
-      </ErrorBoundary>
+      <AllProviders>
+        <App />
+      </AllProviders>
     </Suspense>
   </StrictMode>,
 );

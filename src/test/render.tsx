@@ -145,7 +145,7 @@ export function renderWithProviders(
     let wrapped: ReactNode = children;
 
     // Build provider tree from inside out (reverse order of nesting)
-    // Order matches App.tsx: ErrorBoundary > Settings > ThemeApplier > Household > RecommendedItems > Inventory
+    // Order matches AllProviders.tsx: ErrorBoundary > Settings > ThemeApplier > Household > RecommendedItems > Inventory
     if (inventory) wrapped = <InventoryProvider>{wrapped}</InventoryProvider>;
     if (recommendedItems)
       wrapped = <RecommendedItemsProvider>{wrapped}</RecommendedItemsProvider>;
