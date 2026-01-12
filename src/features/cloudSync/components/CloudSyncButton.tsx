@@ -43,16 +43,21 @@ export function CloudSyncButton() {
   const isLoading = state.state === 'syncing';
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="cloud-sync-button">
       <Button
         variant="primary"
         onClick={handleSync}
         disabled={isDisabled}
         aria-busy={isLoading}
+        data-testid="cloud-sync-button-trigger"
       >
         {isLoading ? t('cloudSync.button.syncing') : t('cloudSync.button.sync')}
       </Button>
-      {lastResult && <p className={styles.result}>{lastResult}</p>}
+      {lastResult && (
+        <p className={styles.result} data-testid="cloud-sync-result">
+          {lastResult}
+        </p>
+      )}
       <p className={styles.description}>{t('cloudSync.button.description')}</p>
     </div>
   );
