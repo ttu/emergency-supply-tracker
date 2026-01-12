@@ -223,7 +223,12 @@ Each provider calls `saveAppData()` which:
 1. **Read-Modify-Write Pattern**: Always read current data, merge changes, then write back
 2. **Debounce Saves**: Use debouncing for auto-save operations to reduce write frequency
 3. **Error Handling**: Handle `QuotaExceededError` gracefully
-4. **Validation**: Validate data structure before writing (using zod schemas)
+4. **Validation**: Validate data structure before writing using type guards and runtime checks:
+   - Use `unknown` type for parsed JSON (type-safe alternative to `any`)
+   - Check version support with `isVersionSupported()` before processing
+   - Use type guards to verify data structure before accessing properties
+   - Cast to branded types (ItemId, CategoryId, etc.) after validation
+   - See `src/shared/utils/storage/localStorage.ts` for implementation examples
 
 ### Default Data
 
