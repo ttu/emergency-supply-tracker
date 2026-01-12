@@ -36,7 +36,7 @@ export const AlertBanner = ({ alerts, onDismiss }: AlertBannerProps) => {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="alerts-section">
       <h2 className={styles.title}>{t('dashboard.alerts.title')}</h2>
       <div className={styles.alerts}>
         {alerts.map((alert) => (

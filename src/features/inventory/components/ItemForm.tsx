@@ -256,7 +256,11 @@ export const ItemForm = ({
   }));
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form
+      className={styles.form}
+      onSubmit={handleSubmit}
+      data-testid="item-form"
+    >
       {formData.itemType && (
         <div className={styles.formGroup}>
           <label className={styles.label}>{t('itemForm.itemType')}</label>
@@ -461,11 +465,16 @@ export const ItemForm = ({
       </div>
 
       <div className={styles.actions}>
-        <Button type="submit" variant="primary">
+        <Button type="submit" variant="primary" data-testid="save-item-button">
           {item?.id ? t('common.save') : t('common.add')}
         </Button>
         {item?.id && (
-          <Button type="button" variant="secondary" onClick={onCancel}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onCancel}
+            data-testid="cancel-item-button"
+          >
             {t('common.cancel')}
           </Button>
         )}

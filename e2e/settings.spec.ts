@@ -12,16 +12,16 @@ test.describe('Settings', () => {
   });
 
   test('should display settings page', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
-    // Verify settings sections are visible
-    await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
-    await expect(page.locator('text=Appearance')).toBeVisible();
-    await expect(page.locator('text=Household Configuration')).toBeVisible();
+    // Verify settings page is visible
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-appearance')).toBeVisible();
+    await expect(page.getByTestId('section-household')).toBeVisible();
   });
 
   test('should change language', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find language selector
     const languageSelect = page.locator('select').first();
@@ -31,13 +31,12 @@ test.describe('Settings', () => {
 
     // Wait for language change to apply by waiting for Finnish text to appear
     // Finnish for "Dashboard" is "Näkymä"
-    await expect(page.locator('nav button:has-text("Näkymä")')).toBeVisible({
+    await expect(page.getByTestId('nav-dashboard')).toContainText('Näkymä', {
       timeout: 5000,
     });
 
     // Navigate to different page to see translated content
-    const firstNavButton = page.locator('nav button').first();
-    await firstNavButton.click();
+    await page.getByTestId('nav-dashboard').click();
 
     // Check if navigation changed to Finnish
     // (This assumes navigation labels change with language)
@@ -47,7 +46,7 @@ test.describe('Settings', () => {
   });
 
   test('should update household configuration', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find household inputs
     const adultsInput = page.locator('input[type="number"]').first();
@@ -55,19 +54,18 @@ test.describe('Settings', () => {
 
     // Values should be saved to localStorage automatically
     // Navigate away and back to verify persistence
-    await page.click('text=Dashboard');
-    await page.click('text=Settings');
+    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('nav-settings').click();
 
     // Verify value persisted
     await expect(adultsInput).toHaveValue('3');
   });
 
   test('should use household presets', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Click a preset button (e.g., "Family")
-    const presetButton = page.locator('button', { hasText: 'Family' });
-    await presetButton.click();
+    await page.getByTestId('preset-family').click();
 
     // Household values should be updated
     const adultsInput = page.locator('input[type="number"]').first();
@@ -78,7 +76,7 @@ test.describe('Settings', () => {
   });
 
   test('should toggle advanced features', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find and toggle a feature checkbox
     const featureCheckbox = page.locator('input[type="checkbox"]').first();
@@ -93,7 +91,7 @@ test.describe('Settings', () => {
   });
 
   test('should navigate to GitHub from About section', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find GitHub link
     const githubLink = page.locator('a[href*="github"]');
@@ -104,14 +102,15 @@ test.describe('Settings', () => {
   });
 
   test('should display disabled recommendations section', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Verify disabled recommendations section exists
     await expect(
-      page.locator('h2:has-text("Disabled Recommendations")'),
+      page.getByTestId('section-disabled-recommendations'),
     ).toBeVisible();
 
     // Should show empty message when no items are disabled
+    // Note: Using text locator here since empty state message is dynamic content
     await expect(
       page.locator('text=No disabled recommendations'),
     ).toBeVisible();
@@ -121,12 +120,12 @@ test.describe('Settings', () => {
     page,
   }) => {
     // First, disable an item from inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -148,11 +147,11 @@ test.describe('Settings', () => {
     });
 
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Should see the Disabled Recommendations section with the item
     await expect(
-      page.locator('h2:has-text("Disabled Recommendations")'),
+      page.getByTestId('section-disabled-recommendations'),
     ).toBeVisible();
 
     // The disabled item should appear in the list
@@ -168,12 +167,12 @@ test.describe('Settings', () => {
     page,
   }) => {
     // First, disable an item from inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -198,7 +197,7 @@ test.describe('Settings', () => {
     expect(afterDisableCount).toBe(initialCount - 1);
 
     // Navigate to Settings and re-enable the item
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Click Enable button (not Enable All)
     const enableButton = page
@@ -207,8 +206,8 @@ test.describe('Settings', () => {
     await enableButton.click();
 
     // Navigate back to inventory
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items again
     await expandRecommendedItems(page);
@@ -224,12 +223,12 @@ test.describe('Settings', () => {
     page,
   }) => {
     // First, disable multiple items from inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -254,7 +253,7 @@ test.describe('Settings', () => {
     });
 
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Should see Enable All button
     const enableAllButton = page.locator(
@@ -266,8 +265,8 @@ test.describe('Settings', () => {
     await enableAllButton.click();
 
     // Navigate back to inventory
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items again
     await expandRecommendedItems(page);

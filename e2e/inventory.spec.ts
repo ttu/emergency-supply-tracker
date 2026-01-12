@@ -13,23 +13,17 @@ test.describe('Inventory Management', () => {
 
   test('should add item from template', async ({ page }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Click "Add Item" button
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-
-    // Wait for template selector to appear
-    await expect(page.locator('text=Select Item')).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Search for water
-    await page.fill('input[placeholder*="Search"]', 'water');
+    await page.getByTestId('template-search-input').fill('water');
 
     // Wait for search results to filter - wait for the water template to be visible
-    const waterTemplate = page
-      .locator('button[type="button"]')
-      .filter({ hasText: /water/i })
-      .first();
+    const waterTemplate = page.getByTestId('template-card-bottled-water');
     await expect(waterTemplate).toBeVisible();
     await waterTemplate.click();
 
@@ -37,7 +31,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '24');
 
     // Save the item
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Verify item with "water" appears in inventory
     await expect(page.locator('text=/water/i').first()).toBeVisible();
@@ -45,21 +39,15 @@ test.describe('Inventory Management', () => {
 
   test('should add custom item', async ({ page }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Click "Add Item" to open template selector
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-
-    // Wait for template selector modal
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Click "Custom Item" button in template selector
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
-
-    // Wait for Add Item form modal to appear
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Fill in the form
     await page.fill('input[name="name"]', 'Custom Flashlight');
@@ -70,7 +58,7 @@ test.describe('Inventory Management', () => {
     await page.check('input[type="checkbox"]'); // Never Expires
 
     // Save the item
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Verify item appears in inventory
     await expect(page.locator('text=Custom Flashlight')).toBeVisible();
@@ -78,11 +66,11 @@ test.describe('Inventory Management', () => {
 
   test('should edit existing item', async ({ page }) => {
     // Navigate to Inventory and add an item first
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Test Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -90,7 +78,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Wait for item to appear and click on the card to edit
     await page.click('text=Test Item');
@@ -100,7 +88,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '8');
 
     // Save changes
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Verify changes are saved (item still visible)
     await expect(page.locator('text=Test Item')).toBeVisible();
@@ -108,11 +96,11 @@ test.describe('Inventory Management', () => {
 
   test('should delete item', async ({ page }) => {
     // Navigate to Inventory and add an item first
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Item to Delete');
     await page.selectOption('select[name="category"]', 'food');
@@ -120,13 +108,13 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Wait for item to appear and click on it to open edit mode
     await page.click('text=Item to Delete');
 
     // Wait for delete button to appear in the modal
-    const deleteButton = page.locator('button', { hasText: 'Delete' });
+    const deleteButton = page.getByTestId('delete-item-button');
     await expect(deleteButton).toBeVisible();
 
     // Set up dialog handler before clicking delete
@@ -141,40 +129,40 @@ test.describe('Inventory Management', () => {
 
   test('should filter items by category', async ({ page }) => {
     // Navigate to Inventory and add items in different categories
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Add food item
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Food Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     await expect(page.locator('text=Food Item')).toBeVisible();
 
     // Add water item
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Water Item');
     await page.selectOption('select[name="category"]', 'water-beverages');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'liters');
     // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     await expect(page.locator('text=Water Item')).toBeVisible();
 
     // Filter by Food category
-    await page.click('button:has-text("Food")');
+    await page.getByTestId('category-food').click();
 
     // Food item should be visible
     await expect(page.locator('text=Food Item')).toBeVisible();
@@ -182,38 +170,38 @@ test.describe('Inventory Management', () => {
     await expect(page.locator('text=Water Item')).not.toBeVisible();
 
     // Click All to show all items again
-    await page.click('button:has-text("All")');
+    await page.getByTestId('category-all').click();
     await expect(page.locator('text=Food Item')).toBeVisible();
     await expect(page.locator('text=Water Item')).toBeVisible();
   });
 
   test('should search items', async ({ page }) => {
     // Navigate to Inventory and add items
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Searchable Item A');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Different Item B');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Search for "Searchable"
     await page.fill('input[placeholder*="Search"]', 'Searchable');
@@ -232,14 +220,11 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Click "Add Item" button
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-
-    // Wait for template selector to appear
-    await expect(page.locator('text=Select Item')).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Verify template names are translated (not showing translation keys)
     // Should see "Bottled Water" not "products.bottled-water"
@@ -266,7 +251,7 @@ test.describe('Inventory Management', () => {
     );
 
     // Click on a template and verify form has translated categories
-    await page.click('text=Bottled Water');
+    await page.getByTestId('template-card-bottled-water').click();
 
     // Wait for form
     await page.waitForSelector('select[name="category"]');
@@ -298,17 +283,17 @@ test.describe('Inventory Management', () => {
 
   test('should show item type when adding from template', async ({ page }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Open template selector and select a template
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Click on Bottled Water template
-    await page.click('button:has-text("Bottled Water")');
+    await page.getByTestId('template-card-bottled-water').click();
 
     // Wait for form modal to open
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Should show item type label
     await expect(page.locator('label:has-text("Item Type")')).toBeVisible();
@@ -322,35 +307,35 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Open template selector
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Click Custom Item
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Click back button (←)
-    await page.click('button[aria-label="Go back"]');
+    await page.getByTestId('modal-back-button').click();
 
     // Should be back at template selector
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
   });
 
   test('should show cancel button only when editing existing item', async ({
     page,
   }) => {
     // Navigate to Inventory and add an item first
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // When adding new item, should only have submit button visible
-    const submitButton = page.locator('button[type="submit"]');
+    const submitButton = page.getByTestId('save-item-button');
     await expect(submitButton).toBeVisible();
 
     // Fill in and save item
@@ -358,7 +343,7 @@ test.describe('Inventory Management', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Wait for item to appear
     await expect(page.locator('text=Test Edit Item')).toBeVisible();
@@ -367,39 +352,37 @@ test.describe('Inventory Management', () => {
     await page.click('text=Test Edit Item');
 
     // When editing existing item, should show both Save and Cancel buttons
-    // Verify we have a secondary variant button (Cancel button uses secondary variant)
-    await expect(page.locator('button[type="submit"]')).toBeVisible();
-    // Check for a button with common.cancel text
-    await expect(page.locator('button', { hasText: /cancel/i })).toBeVisible();
+    await expect(page.getByTestId('save-item-button')).toBeVisible();
+    await expect(page.getByTestId('cancel-item-button')).toBeVisible();
   });
 
   test('should show custom item option in template selector', async ({
     page,
   }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Open template selector
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Should see Custom Item button with dashed border style
-    const customItemButton = page.locator('button:has-text("Custom Item")');
+    const customItemButton = page.getByTestId('custom-item-button');
     await expect(customItemButton).toBeVisible();
 
     // Click it to open custom item form
     await customItemButton.click();
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await expect(page.getByTestId('item-form')).toBeVisible();
   });
 
   test('should show recommended items with action buttons when viewing a category', async ({
     page,
   }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Click on Water category to see category status
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -413,13 +396,13 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
 
     // Click on Water category
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -432,7 +415,7 @@ test.describe('Inventory Management', () => {
     await addButton.click();
 
     // Should open the item form modal
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // The form should have quantity 0 and item data pre-filled
     const quantityInput = page.locator('input[name="quantity"]');
@@ -443,13 +426,13 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
 
     // Click on Water category
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);

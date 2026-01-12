@@ -302,11 +302,15 @@ export function Inventory({
   );
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="page-inventory">
       <header className={styles.header}>
         <h1>{t('navigation.inventory')}</h1>
         <div className={styles.headerActions}>
-          <Button variant="primary" onClick={() => setShowTemplateModal(true)}>
+          <Button
+            variant="primary"
+            onClick={() => setShowTemplateModal(true)}
+            data-testid="add-item-button"
+          >
             {t('inventory.addFromTemplate')}
           </Button>
         </div>
@@ -375,12 +379,17 @@ export function Inventory({
           />
           {editingItem?.id && (
             <div className={styles.deleteSection}>
-              <Button variant="secondary" onClick={handleCopyItem}>
+              <Button
+                variant="secondary"
+                onClick={handleCopyItem}
+                data-testid="copy-item-button"
+              >
                 {t('common.copy')}
               </Button>
               <Button
                 variant="danger"
                 onClick={() => handleDeleteItem(editingItem.id)}
+                data-testid="delete-item-button"
               >
                 {t('common.delete')}
               </Button>

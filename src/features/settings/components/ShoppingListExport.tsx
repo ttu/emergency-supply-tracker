@@ -88,6 +88,7 @@ export function ShoppingListExport() {
         variant="secondary"
         onClick={handleExport}
         disabled={itemsToRestock.length === 0}
+        data-testid="export-shopping-list-button"
       >
         {t('settings.shoppingList.button')}
       </Button>

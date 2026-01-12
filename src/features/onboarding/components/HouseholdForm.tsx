@@ -101,9 +101,13 @@ export function HouseholdForm({
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="onboarding-household-form">
       <div className={styles.content}>
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form
+          onSubmit={handleSubmit}
+          className={styles.form}
+          data-testid="household-form"
+        >
           <h2 className={styles.title}>{t('household.title')}</h2>
           <p className={styles.subtitle}>{t('household.formSubtitle')}</p>
 
@@ -177,11 +181,20 @@ export function HouseholdForm({
 
           <div className={styles.actions}>
             {onCancel && (
-              <Button type="button" variant="secondary" onClick={onCancel}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={onCancel}
+                data-testid="household-cancel-button"
+              >
                 {t('actions.cancel')}
               </Button>
             )}
-            <Button type="submit" variant="primary">
+            <Button
+              type="submit"
+              variant="primary"
+              data-testid="household-save-button"
+            >
               {t('actions.save')}
             </Button>
           </div>

@@ -26,7 +26,7 @@ export function HouseholdPresetSelector({
   const { t } = useTranslation();
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="onboarding-preset-selector">
       <div className={styles.content}>
         <h2 className={styles.title}>{t('household.title')}</h2>
         <p className={styles.description}>{t('household.description')}</p>
@@ -47,6 +47,7 @@ export function HouseholdPresetSelector({
                   onSelectPreset(preset);
                 }
               }}
+              data-testid={`preset-${preset.id}`}
             >
               <div className={styles.presetContent}>
                 <h3 className={styles.presetTitle}>
@@ -76,6 +77,7 @@ export function HouseholdPresetSelector({
                 onSelectPreset({ id: 'custom', adults: 1, children: 0 });
               }
             }}
+            data-testid="preset-custom"
           >
             <div className={styles.presetContent}>
               <h3 className={styles.presetTitle}>

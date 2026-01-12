@@ -210,7 +210,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   };
 
   return (
-    <div className={styles.dashboard}>
+    <div className={styles.dashboard} data-testid="page-dashboard">
       <DashboardHeader
         preparednessScore={preparednessScore}
         householdSize={household.adults + household.children}
@@ -240,23 +240,38 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
       )}
 
       {/* Quick Actions */}
-      <section className={styles.quickActions}>
+      <section className={styles.quickActions} data-testid="quick-actions">
         <h2 className={styles.sectionTitle}>{t('dashboard.quickActions')}</h2>
         <div className={styles.actionsGrid}>
-          <Button variant="primary" onClick={handleAddItems}>
+          <Button
+            variant="primary"
+            onClick={handleAddItems}
+            data-testid="quick-add-items"
+          >
             ➕ {t('dashboard.addItems')}
           </Button>
-          <Button variant="secondary" onClick={handleViewInventory}>
+          <Button
+            variant="secondary"
+            onClick={handleViewInventory}
+            data-testid="quick-view-inventory"
+          >
             📋 {t('dashboard.viewInventory')}
           </Button>
-          <Button variant="secondary" onClick={handleExportShoppingList}>
+          <Button
+            variant="secondary"
+            onClick={handleExportShoppingList}
+            data-testid="quick-export-shopping-list"
+          >
             🛒 {t('dashboard.exportShoppingList')}
           </Button>
         </div>
       </section>
 
       {/* Categories Overview */}
-      <section className={styles.categoriesSection}>
+      <section
+        className={styles.categoriesSection}
+        data-testid="categories-overview"
+      >
         <h2 className={styles.sectionTitle}>
           {t('dashboard.categoriesOverview')}
         </h2>

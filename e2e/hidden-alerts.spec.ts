@@ -113,7 +113,7 @@ test.describe('Hidden Alerts Management', () => {
     await dismissButton.click();
 
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Should see hidden alerts section (use heading to avoid multiple matches)
     await expect(
@@ -196,7 +196,7 @@ test.describe('Hidden Alerts Management', () => {
     await dismissButton.click();
 
     // Go to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find and click reactivate button
     const reactivateButton = page
@@ -210,7 +210,7 @@ test.describe('Hidden Alerts Management', () => {
       await reactivateButton.click();
 
       // Navigate back to Dashboard
-      await page.click('text=Dashboard');
+      await page.getByTestId('nav-dashboard').click();
 
       // Alert should be visible again (might take a moment)
       await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
@@ -219,7 +219,7 @@ test.describe('Hidden Alerts Management', () => {
     } else {
       // If button not found, test might need adjustment
       // Verify we're on settings page
-      await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+      await expect(page.getByTestId('page-settings')).toBeVisible();
     }
   });
 
@@ -291,7 +291,7 @@ test.describe('Hidden Alerts Management', () => {
     }
 
     // Go to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find "Show All Alerts" or "Reactivate All" button
     const reactivateAllButton = page.locator('button', {
@@ -305,7 +305,7 @@ test.describe('Hidden Alerts Management', () => {
       await reactivateAllButton.click();
 
       // Navigate back to Dashboard
-      await page.click('text=Dashboard');
+      await page.getByTestId('nav-dashboard').click();
 
       // Alerts should be visible again
       await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
@@ -391,7 +391,7 @@ test.describe('Hidden Alerts Management', () => {
     expect(alertVisible).toBe(false);
 
     // Go to Settings and verify it's in hidden alerts
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
     await page.waitForLoadState('networkidle');
 
     // Check if hidden alerts section shows the alert
@@ -407,7 +407,7 @@ test.describe('Hidden Alerts Management', () => {
       ).toBeVisible();
     } else {
       // Verify we're on settings page
-      await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+      await expect(page.getByTestId('page-settings')).toBeVisible();
     }
   });
 });

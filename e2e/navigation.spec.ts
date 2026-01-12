@@ -7,63 +7,63 @@ test.describe('Navigation', () => {
 
   test('should navigate between pages', async ({ page }) => {
     // Start on Dashboard
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
+    await expect(page.getByTestId('page-dashboard')).toBeVisible();
 
     // Navigate to Inventory
-    await page.click('text=Inventory');
-    await expect(page.locator('button', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await expect(page.getByTestId('add-item-button')).toBeVisible();
 
     // Navigate to Settings
-    await page.click('text=Settings');
-    await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+    await page.getByTestId('nav-settings').click();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
 
     // Navigate to Help
-    await page.click('text=Help');
-    await expect(page.locator('h1', { hasText: 'Help' })).toBeVisible();
+    await page.getByTestId('nav-help').click();
+    await expect(page.getByTestId('page-help')).toBeVisible();
 
     // Navigate back to Dashboard
-    await page.click('text=Dashboard');
-    await expect(page.locator('text=Quick Actions')).toBeVisible();
+    await page.getByTestId('nav-dashboard').click();
+    await expect(page.getByTestId('quick-actions')).toBeVisible();
   });
 
   test('should show active navigation state', async ({ page }) => {
     // Dashboard should be active initially
-    const dashboardNav = page.locator('nav button:has-text("Dashboard")');
+    const dashboardNav = page.getByTestId('nav-dashboard');
     await expect(dashboardNav).toHaveAttribute('aria-current', 'page');
 
     // Navigate to Inventory
-    await page.click('text=Inventory');
-    const inventoryNav = page.locator('nav button:has-text("Inventory")');
+    await page.getByTestId('nav-inventory').click();
+    const inventoryNav = page.getByTestId('nav-inventory');
     await expect(inventoryNav).toHaveAttribute('aria-current', 'page');
     await expect(dashboardNav).not.toHaveAttribute('aria-current', 'page');
 
     // Navigate to Settings
-    await page.click('text=Settings');
-    const settingsNav = page.locator('nav button:has-text("Settings")');
+    await page.getByTestId('nav-settings').click();
+    const settingsNav = page.getByTestId('nav-settings');
     await expect(settingsNav).toHaveAttribute('aria-current', 'page');
     await expect(inventoryNav).not.toHaveAttribute('aria-current', 'page');
   });
 
   test('should persist data across page navigation', async ({ page }) => {
     // Add item on Inventory page
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Persistent Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Navigate away to Settings
-    await page.click('text=Settings');
-    await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+    await page.getByTestId('nav-settings').click();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
 
     // Navigate back to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Verify item still exists
     await expect(page.locator('text=Persistent Item')).toBeVisible();
@@ -77,10 +77,10 @@ test.describe('Navigation', () => {
     await expect(page.locator('nav')).toBeVisible();
 
     // Navigate to different pages
-    await page.click('text=Inventory');
-    await expect(page.locator('button', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await expect(page.getByTestId('add-item-button')).toBeVisible();
 
-    await page.click('text=Settings');
-    await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+    await page.getByTestId('nav-settings').click();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
   });
 });
