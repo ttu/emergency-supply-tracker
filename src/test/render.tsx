@@ -8,6 +8,7 @@
 import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement, ReactNode } from 'react';
 import { SettingsProvider } from '@/features/settings';
+import { CloudSyncProvider } from '@/features/cloudSync';
 import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
@@ -46,6 +47,12 @@ export interface ProviderOptions {
    * @default true
    */
   inventory?: boolean;
+
+  /**
+   * Include CloudSyncProvider (cloud sync functionality)
+   * @default true
+   */
+  cloudSync?: boolean;
 
   /**
    * Include ErrorBoundary wrapper
@@ -87,7 +94,7 @@ export interface RenderWithProvidersOptions extends Omit<
 /**
  * Renders a component with the app's provider hierarchy
  *
- * By default, includes: SettingsProvider, HouseholdProvider,
+ * By default, includes: SettingsProvider, CloudSyncProvider, HouseholdProvider,
  * RecommendedItemsProvider, and InventoryProvider.
  *
  * @example
@@ -130,6 +137,7 @@ export function renderWithProviders(
     household = true,
     recommendedItems = true,
     inventory = true,
+    cloudSync = true,
     errorBoundary = false,
     themeApplier = false,
   } = providers;
@@ -147,7 +155,7 @@ export function renderWithProviders(
     let wrapped: ReactNode = children;
 
     // Build provider tree from inside out (reverse order of nesting)
-    // Order matches App.tsx: ErrorBoundary > Settings > ThemeApplier > NotificationProvider > Household > RecommendedItems > Inventory > InventorySet
+    // Order matches App.tsx: ErrorBoundary > Settings > CloudSync > ThemeApplier > NotificationProvider > Household > RecommendedItems > Inventory > InventorySet
     if (inventory) wrapped = <InventoryProvider>{wrapped}</InventoryProvider>;
     if (recommendedItems)
       wrapped = <RecommendedItemsProvider>{wrapped}</RecommendedItemsProvider>;
@@ -156,6 +164,7 @@ export function renderWithProviders(
     // Always include NotificationProvider in test utilities to ensure useNotification hook has a provider
     wrapped = <NotificationProvider>{wrapped}</NotificationProvider>;
     if (themeApplier) wrapped = <ThemeApplier>{wrapped}</ThemeApplier>;
+    if (cloudSync) wrapped = <CloudSyncProvider>{wrapped}</CloudSyncProvider>;
     if (settings) wrapped = <SettingsProvider>{wrapped}</SettingsProvider>;
     if (errorBoundary) wrapped = <ErrorBoundary>{wrapped}</ErrorBoundary>;
 
@@ -267,6 +276,7 @@ export function renderWithAllProviders(
     ...options,
     providers: {
       settings: true,
+      cloudSync: true,
       household: true,
       recommendedItems: true,
       inventory: true,
