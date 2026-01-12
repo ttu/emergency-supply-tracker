@@ -43,7 +43,7 @@ export function ConnectGoogleDrive() {
 
   if (isConnected) {
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid="connect-google-drive">
         <div className={styles.connectedInfo}>
           <span className={styles.providerIcon}>
             <GoogleDriveIcon />
@@ -56,6 +56,7 @@ export function ConnectGoogleDrive() {
           variant="secondary"
           onClick={handleDisconnect}
           disabled={isDisconnecting || state.state === 'syncing'}
+          data-testid="cloud-sync-disconnect-button"
         >
           {isDisconnecting
             ? t('cloudSync.disconnect.disconnecting')
@@ -66,12 +67,13 @@ export function ConnectGoogleDrive() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="connect-google-drive">
       <Button
         variant="secondary"
         onClick={handleConnect}
         disabled={isConnecting}
         className={styles.googleButton}
+        data-testid="cloud-sync-connect-button"
       >
         <GoogleDriveIcon />
         <span>

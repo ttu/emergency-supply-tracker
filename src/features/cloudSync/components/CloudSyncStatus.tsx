@@ -53,20 +53,34 @@ export function CloudSyncStatus() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="cloud-sync-status">
       <div className={styles.statusRow}>
-        <span className={`${styles.indicator} ${getStatusClass()}`} />
-        <span className={styles.statusText}>{getStatusText()}</span>
+        <span
+          className={`${styles.indicator} ${getStatusClass()}`}
+          data-testid="cloud-sync-status-indicator"
+        />
+        <span
+          className={styles.statusText}
+          data-testid="cloud-sync-status-text"
+        >
+          {getStatusText()}
+        </span>
         {state.provider && (
-          <span className={styles.provider}>
+          <span className={styles.provider} data-testid="cloud-sync-provider">
             ({t(`cloudSync.providers.${state.provider}`)})
           </span>
         )}
       </div>
       {state.state !== 'disconnected' && (
-        <p className={styles.lastSync}>{formatLastSync()}</p>
+        <p className={styles.lastSync} data-testid="cloud-sync-last-sync">
+          {formatLastSync()}
+        </p>
       )}
-      {state.error && <p className={styles.errorMessage}>{state.error}</p>}
+      {state.error && (
+        <p className={styles.errorMessage} data-testid="cloud-sync-error">
+          {state.error}
+        </p>
+      )}
     </div>
   );
 }
