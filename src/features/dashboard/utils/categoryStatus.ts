@@ -146,9 +146,10 @@ export function calculateCategoryShortages(
   let totalActual = 0;
   let totalNeeded = 0;
 
-  // Track item types fulfilled for mixed-unit categories
-  let itemTypesFulfilled = 0;
+  // Track item types for mixed-unit categories
   let totalItemTypes = 0;
+  // Track weighted fulfillment for mixed units (to match percentage calculation)
+  let weightedFulfillment = 0;
 
   // Calorie tracking for food category
   const isFood = isFoodCategory(categoryId);
@@ -235,11 +236,13 @@ export function calculateCategoryShortages(
     // Track unique units and item types
     uniqueUnits.add(recItem.unit);
     totalItemTypes++;
-    // Item is fulfilled if quantity is enough OR if marked as enough
-    // (markedAsEnough means user considers their actual quantity sufficient)
-    if (actualQty >= recommendedQty || hasMarkedAsEnough) {
-      itemTypesFulfilled++;
-    }
+    // Calculate weighted fulfillment (0-1) for this item type
+    // This matches the logic in calculateCategoryPreparedness
+    const fulfillmentRatio =
+      hasMarkedAsEnough || recommendedQty === 0
+        ? 1
+        : Math.min(actualQty / recommendedQty, 1);
+    weightedFulfillment += fulfillmentRatio;
 
     // Track unit frequency
     unitCounts.set(
@@ -281,7 +284,9 @@ export function calculateCategoryShortages(
   const hasMixedUnits = uniqueUnits.size > 1;
   const trackByItemTypes = hasMixedUnits || categoryId === 'communication-info';
   if (trackByItemTypes) {
-    totalActual = itemTypesFulfilled;
+    // Use weighted fulfillment to match the percentage calculation
+    // This ensures the progress bar and item count are consistent
+    totalActual = weightedFulfillment;
     totalNeeded = totalItemTypes;
     primaryUnit = undefined; // Signal to show "items" instead of a specific unit
   }
