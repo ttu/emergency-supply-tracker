@@ -165,9 +165,10 @@ describe('NotificationBar', () => {
     await screen.findByTestId('notification-bar');
 
     // Check that NotificationItem has proper accessibility attributes
-    // Each NotificationItem has aria-live="polite" and aria-atomic="true"
+    // output element has implicit role="status" and aria-live="polite" and aria-atomic="true"
     const notificationItem = screen.getByTestId('notification-item-success');
     expect(notificationItem).toBeInTheDocument();
+    expect(notificationItem.tagName.toLowerCase()).toBe('output');
     expect(notificationItem).toHaveAttribute('aria-live', 'polite');
     expect(notificationItem).toHaveAttribute('aria-atomic', 'true');
   });

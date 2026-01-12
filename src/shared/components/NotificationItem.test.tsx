@@ -173,10 +173,12 @@ describe('NotificationItem', () => {
     const onClose = vi.fn();
     render(<NotificationItem message="Test message" onClose={onClose} />);
 
-    // div with role="status" for live region announcements
+    // output element has implicit role="status" for live region announcements
     const notification = screen.getByTestId('notification-item-success');
-    expect(notification).toHaveAttribute('role', 'status');
+    expect(notification.tagName.toLowerCase()).toBe('output');
     expect(notification).toHaveAttribute('aria-live', 'polite');
     expect(notification).toHaveAttribute('aria-atomic', 'true');
+    // Verify output element is accessible via its implicit role
+    expect(screen.getByRole('status')).toBe(notification);
   });
 });
