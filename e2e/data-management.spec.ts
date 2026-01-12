@@ -127,9 +127,7 @@ test.describe('Data Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Verify Export Shopping List button is visible and enabled
-    const exportButton = page.locator('button', {
-      hasText: 'Export Shopping List',
-    });
+    const exportButton = page.getByTestId('export-shopping-list-button');
     await expect(exportButton).toBeVisible();
     await expect(exportButton).toBeEnabled();
 
@@ -266,9 +264,7 @@ test.describe('Data Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Verify Export Recommendations button is visible
-    const exportButton = page.locator('button', {
-      hasText: 'Export Recommendations',
-    });
+    const exportButton = page.getByTestId('export-recommendations-button');
     await expect(exportButton).toBeVisible();
 
     // Click Export Recommendations button

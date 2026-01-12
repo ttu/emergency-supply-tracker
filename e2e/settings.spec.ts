@@ -16,8 +16,8 @@ test.describe('Settings', () => {
 
     // Verify settings page is visible
     await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.locator('text=Appearance')).toBeVisible();
-    await expect(page.locator('text=Household Configuration')).toBeVisible();
+    await expect(page.getByTestId('section-appearance')).toBeVisible();
+    await expect(page.getByTestId('section-household')).toBeVisible();
   });
 
   test('should change language', async ({ page }) => {
@@ -65,8 +65,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Click a preset button (e.g., "Family")
-    const presetButton = page.locator('button', { hasText: 'Family' });
-    await presetButton.click();
+    await page.getByTestId('preset-family').click();
 
     // Household values should be updated
     const adultsInput = page.locator('input[type="number"]').first();
@@ -107,10 +106,11 @@ test.describe('Settings', () => {
 
     // Verify disabled recommendations section exists
     await expect(
-      page.locator('h2:has-text("Disabled Recommendations")'),
+      page.getByTestId('section-disabled-recommendations'),
     ).toBeVisible();
 
     // Should show empty message when no items are disabled
+    // Note: Using text locator here since empty state message is dynamic content
     await expect(
       page.locator('text=No disabled recommendations'),
     ).toBeVisible();
@@ -151,7 +151,7 @@ test.describe('Settings', () => {
 
     // Should see the Disabled Recommendations section with the item
     await expect(
-      page.locator('h2:has-text("Disabled Recommendations")'),
+      page.getByTestId('section-disabled-recommendations'),
     ).toBeVisible();
 
     // The disabled item should appear in the list

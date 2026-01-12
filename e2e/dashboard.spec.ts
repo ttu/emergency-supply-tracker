@@ -10,10 +10,10 @@ test.describe('Dashboard', () => {
     await expect(page.getByTestId('page-dashboard')).toBeVisible();
 
     // Verify quick actions section
-    await expect(page.locator('text=Quick Actions')).toBeVisible();
+    await expect(page.getByTestId('quick-actions')).toBeVisible();
 
     // Verify categories overview
-    await expect(page.locator('text=Categories Overview')).toBeVisible();
+    await expect(page.getByTestId('categories-overview')).toBeVisible();
   });
 
   test('should show category cards', async ({ page }) => {
@@ -73,12 +73,11 @@ test.describe('Dashboard', () => {
 
   test('should navigate via quick action buttons', async ({ page }) => {
     // Verify Quick Actions section is visible
-    await expect(page.locator('text=Quick Actions')).toBeVisible();
+    await expect(page.getByTestId('quick-actions')).toBeVisible();
 
     // Test "Add Items" button - should navigate to Inventory and open template selector
-    const addItemsButton = page.locator('button', { hasText: 'Add Items' });
-    await expect(addItemsButton).toBeVisible();
-    await addItemsButton.click();
+    await expect(page.getByTestId('quick-add-items')).toBeVisible();
+    await page.getByTestId('quick-add-items').click();
 
     // Should be on Inventory page with template selector modal open
     await expect(page.getByTestId('template-selector')).toBeVisible();
@@ -90,11 +89,8 @@ test.describe('Dashboard', () => {
     await page.getByTestId('nav-dashboard').click();
 
     // Test "View Inventory" button
-    const viewInventoryButton = page.locator('button', {
-      hasText: 'View Inventory',
-    });
-    await expect(viewInventoryButton).toBeVisible();
-    await viewInventoryButton.click();
+    await expect(page.getByTestId('quick-view-inventory')).toBeVisible();
+    await page.getByTestId('quick-view-inventory').click();
 
     // Should navigate to Inventory page
     await expect(page.getByTestId('add-item-button')).toBeVisible();
@@ -103,10 +99,7 @@ test.describe('Dashboard', () => {
     await page.getByTestId('nav-dashboard').click();
 
     // Test "Export Shopping List" button is visible
-    const exportButton = page.locator('button', {
-      hasText: 'Export Shopping List',
-    });
-    await expect(exportButton).toBeVisible();
+    await expect(page.getByTestId('quick-export-shopping-list')).toBeVisible();
 
     // Note: We don't click export as it's a download action
     // The presence of the button validates it's wired up

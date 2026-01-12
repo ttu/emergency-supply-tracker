@@ -23,7 +23,7 @@ test.describe('Navigation', () => {
 
     // Navigate back to Dashboard
     await page.getByTestId('nav-dashboard').click();
-    await expect(page.locator('text=Quick Actions')).toBeVisible();
+    await expect(page.getByTestId('quick-actions')).toBeVisible();
   });
 
   test('should show active navigation state', async ({ page }) => {

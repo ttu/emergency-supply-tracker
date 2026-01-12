@@ -30,7 +30,11 @@ export function ExportRecommendationsButton() {
 
   return (
     <div className={styles.container}>
-      <Button variant="secondary" onClick={handleExport}>
+      <Button
+        variant="secondary"
+        onClick={handleExport}
+        data-testid="export-recommendations-button"
+      >
         {t('settings.recommendations.export.button')}
       </Button>
       <p className={styles.description}>

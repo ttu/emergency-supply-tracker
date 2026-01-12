@@ -30,7 +30,7 @@ export function Settings() {
 
       <div className={styles.content}>
         {/* Appearance Settings */}
-        <section className={styles.section}>
+        <section className={styles.section} data-testid="section-appearance">
           <h2 className={styles.sectionTitle}>
             {t('settings.sections.appearance')}
           </h2>
@@ -41,7 +41,7 @@ export function Settings() {
         </section>
 
         {/* Household Configuration */}
-        <section className={styles.section}>
+        <section className={styles.section} data-testid="section-household">
           <h2 className={styles.sectionTitle}>
             {t('settings.sections.household')}
           </h2>
@@ -49,7 +49,7 @@ export function Settings() {
         </section>
 
         {/* Nutrition & Requirements */}
-        <section className={styles.section}>
+        <section className={styles.section} data-testid="section-nutrition">
           <h2 className={styles.sectionTitle}>
             {t('settings.sections.nutrition')}
           </h2>
@@ -57,7 +57,7 @@ export function Settings() {
         </section>
 
         {/* Hidden Alerts */}
-        <section className={styles.section}>
+        <section className={styles.section} data-testid="section-hidden-alerts">
           <h2 className={styles.sectionTitle}>
             {t('settings.sections.hiddenAlerts')}
           </h2>
@@ -65,7 +65,10 @@ export function Settings() {
         </section>
 
         {/* Disabled Recommendations */}
-        <section className={styles.section}>
+        <section
+          className={styles.section}
+          data-testid="section-disabled-recommendations"
+        >
           <h2 className={styles.sectionTitle}>
             {t('settings.sections.disabledRecommendations')}
           </h2>
@@ -73,7 +76,10 @@ export function Settings() {
         </section>
 
         {/* Overridden Recommendations */}
-        <section className={styles.section}>
+        <section
+          className={styles.section}
+          data-testid="section-overridden-recommendations"
+        >
           <h2 className={styles.sectionTitle}>
             {t('settings.sections.overriddenRecommendations')}
           </h2>
@@ -81,7 +87,10 @@ export function Settings() {
         </section>
 
         {/* Recommended Items */}
-        <section className={styles.section}>
+        <section
+          className={styles.section}
+          data-testid="section-recommended-items"
+        >
           <h2 className={styles.sectionTitle}>
             {t('settings.sections.recommendedItems')}
           </h2>
@@ -93,7 +102,10 @@ export function Settings() {
         </section>
 
         {/* Data Management */}
-        <section className={styles.section}>
+        <section
+          className={styles.section}
+          data-testid="section-data-management"
+        >
           <h2 className={styles.sectionTitle}>
             {t('settings.sections.dataManagement')}
           </h2>

@@ -22,13 +22,25 @@ export function HouseholdForm() {
           {t('settings.household.presets.label')}
         </p>
         <div className={styles.presetButtons}>
-          <Button variant="secondary" onClick={() => setPreset('single')}>
+          <Button
+            variant="secondary"
+            onClick={() => setPreset('single')}
+            data-testid="preset-single"
+          >
             {t('settings.household.presets.single')}
           </Button>
-          <Button variant="secondary" onClick={() => setPreset('couple')}>
+          <Button
+            variant="secondary"
+            onClick={() => setPreset('couple')}
+            data-testid="preset-couple"
+          >
             {t('settings.household.presets.couple')}
           </Button>
-          <Button variant="secondary" onClick={() => setPreset('family')}>
+          <Button
+            variant="secondary"
+            onClick={() => setPreset('family')}
+            data-testid="preset-family"
+          >
             {t('settings.household.presets.family')}
           </Button>
         </div>

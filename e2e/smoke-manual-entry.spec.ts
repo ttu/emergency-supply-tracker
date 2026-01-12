@@ -86,11 +86,11 @@ async function completeOnboarding(page: Page) {
 
 async function testDashboardInteractions(page: Page) {
   // Verify dashboard elements
-  await expect(page.locator('text=Quick Actions')).toBeVisible();
-  await expect(page.locator('text=Categories Overview')).toBeVisible();
+  await expect(page.getByTestId('quick-actions')).toBeVisible();
+  await expect(page.getByTestId('categories-overview')).toBeVisible();
 
   // Test quick action - Add Items
-  const addItemsButton = page.locator('button', { hasText: 'Add Items' });
+  const addItemsButton = page.getByTestId('quick-add-items');
   if (await addItemsButton.isVisible().catch(() => false)) {
     await addItemsButton.click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
@@ -321,9 +321,7 @@ async function testSettingsFeatures(page: Page) {
   }
 
   // Change household from Family to Single Person
-  const presetButton = page.locator('button', {
-    hasText: /Single Person|Yksin/i,
-  });
+  const presetButton = page.getByTestId('preset-single');
   if (await presetButton.isVisible().catch(() => false)) {
     await presetButton.click();
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
@@ -387,9 +385,7 @@ async function testDataManagement(page: Page) {
   }
 
   // Export shopping list (if items need restocking)
-  const shoppingListButton = page.locator('button', {
-    hasText: /Export Shopping List|Vie ostoslista/i,
-  });
+  const shoppingListButton = page.getByTestId('export-shopping-list-button');
   if (await shoppingListButton.isVisible().catch(() => false)) {
     const isEnabled = await shoppingListButton.isEnabled();
     if (isEnabled) {
@@ -399,9 +395,7 @@ async function testDataManagement(page: Page) {
   }
 
   // Export recommendations
-  const exportRecsButton = page.locator('button', {
-    hasText: /Export Recommendations/i,
-  });
+  const exportRecsButton = page.getByTestId('export-recommendations-button');
   if (await exportRecsButton.isVisible().catch(() => false)) {
     await exportRecsButton.click();
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
@@ -481,13 +475,11 @@ async function testNavigationAndPersistence(page: Page) {
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await page.getByText(/Settings|Asetukset/i).click();
+  await page.getByTestId('nav-settings').click();
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await expect(
-    page.locator('h1').filter({ hasText: /Settings|Asetukset/i }),
-  ).toBeVisible({
+  await expect(page.getByTestId('page-settings')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const themeSelectAfterReload = page.locator('#theme-select');
@@ -514,11 +506,11 @@ async function verifyFinalDashboard(page: Page) {
 
   if (dashboardLoaded) {
     const quickActions = await page
-      .locator('text=Quick Actions')
+      .getByTestId('quick-actions')
       .isVisible()
       .catch(() => false);
     const categoriesOverview = await page
-      .locator('text=Categories Overview')
+      .getByTestId('categories-overview')
       .isVisible()
       .catch(() => false);
     expect(quickActions || categoriesOverview).toBe(true);

@@ -307,7 +307,7 @@ async function reEnableDisabledRecommendation(page: Page) {
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
-  const disabledSection = page.locator('text=/Disabled Recommendations/i');
+  const disabledSection = page.getByTestId('section-disabled-recommendations');
   if (await disabledSection.isVisible().catch(() => false)) {
     const enableButton = page
       .locator('button', { hasText: /^Enable$|^Ota käyttöön$/i })
@@ -327,9 +327,7 @@ async function reEnableDisabledRecommendation(page: Page) {
 }
 
 async function changeHouseholdToSinglePerson(page: Page) {
-  const presetButton = page.locator('button', {
-    hasText: /Single Person|Yksin/i,
-  });
+  const presetButton = page.getByTestId('preset-single');
   if (await presetButton.isVisible().catch(() => false)) {
     await presetButton.click();
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
@@ -346,9 +344,7 @@ async function testDataManagementQuickSetup(page: Page) {
     await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
   }
 
-  const shoppingListButton = page.locator('button', {
-    hasText: /Export Shopping List|Vie ostoslista/i,
-  });
+  const shoppingListButton = page.getByTestId('export-shopping-list-button');
   if (await shoppingListButton.isVisible().catch(() => false)) {
     const isEnabled = await shoppingListButton.isEnabled();
     if (isEnabled) {
@@ -357,9 +353,7 @@ async function testDataManagementQuickSetup(page: Page) {
     }
   }
 
-  const exportRecsButton = page.locator('button', {
-    hasText: /Export Recommendations/i,
-  });
+  const exportRecsButton = page.getByTestId('export-recommendations-button');
   if (await exportRecsButton.isVisible().catch(() => false)) {
     await exportRecsButton.click();
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
@@ -401,13 +395,11 @@ async function testPersistenceQuickSetup(page: Page) {
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await page.getByText(/Settings|Asetukset/i).click();
+  await page.getByTestId('nav-settings').click();
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await expect(
-    page.locator('h1').filter({ hasText: /Settings|Asetukset/i }),
-  ).toBeVisible({
+  await expect(page.getByTestId('page-settings')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const themeSelectAfterReload = page.locator('#theme-select');
@@ -434,11 +426,11 @@ async function verifyFinalDashboardQuickSetup(page: Page) {
 
   if (dashboardLoaded) {
     const quickActions = await page
-      .locator('text=Quick Actions')
+      .getByTestId('quick-actions')
       .isVisible()
       .catch(() => false);
     const categoriesOverview = await page
-      .locator('text=Categories Overview')
+      .getByTestId('categories-overview')
       .isVisible()
       .catch(() => false);
     expect(quickActions || categoriesOverview).toBe(true);
