@@ -19,17 +19,6 @@ export type {
   CreateFromFormInput,
 } from './factories/InventoryItemFactory';
 
-// Utils
-export {
-  getDaysUntilExpiration,
-  isItemExpired,
-  getItemStatus,
-  calculateItemStatus,
-  getStatusFromPercentage,
-  getStatusFromScore,
-  getStatusVariant,
-} from './utils';
-
 // Components
 export {
   ItemCard,

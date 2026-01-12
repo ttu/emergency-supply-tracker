@@ -10,7 +10,7 @@ import { isFoodCategory, isFoodRecommendedItem } from '@/shared/types';
 import {
   calculateItemStatus,
   getStatusFromPercentage,
-} from '@/features/inventory';
+} from '@/shared/utils/calculations/itemStatus';
 import { calculateTotalWaterRequired } from '@/shared/utils/calculations/water';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from './preparedness';

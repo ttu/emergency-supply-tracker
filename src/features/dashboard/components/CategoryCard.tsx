@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import type { StandardCategoryId, ItemStatus, Unit } from '@/shared/types';
 import { isFoodCategory } from '@/shared/types';
 import type { CategoryShortage } from '../utils/categoryStatus';
-import { getStatusVariant } from '@/features/inventory';
+import { getStatusVariant } from '@/shared/utils/calculations/itemStatus';
 import { Badge } from '@/shared/components/Badge';
 import styles from './CategoryCard.module.css';
 

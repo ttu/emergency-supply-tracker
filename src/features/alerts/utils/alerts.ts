@@ -8,7 +8,7 @@ import {
   CUSTOM_ITEM_TYPE,
 } from '@/shared/utils/constants';
 import { calculateWaterRequirements } from '@/shared/utils/calculations/water';
-import { getDaysUntilExpiration } from '@/features/inventory/utils/status';
+import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { calculateCategoryShortages } from '@/features/dashboard/utils/categoryStatus';
 import type { Alert, AlertCounts, TranslationFunction } from '../types';
 import { ALERT_PRIORITY } from '../types';

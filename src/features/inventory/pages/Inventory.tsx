@@ -1,9 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  useHousehold,
-  calculateHouseholdMultiplier,
-} from '@/features/household';
+import { useHousehold } from '@/features/household';
+import { calculateHouseholdMultiplier } from '@/shared/utils/calculations/recommendedQuantity';
 import {
   useInventory,
   CategoryNav,
@@ -11,8 +9,8 @@ import {
   ItemList,
   ItemForm,
   CategoryStatusSummary,
-  calculateItemStatus,
 } from '@/features/inventory';
+import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
 import { useSettings } from '@/features/settings';
 import { useRecommendedItems, TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
