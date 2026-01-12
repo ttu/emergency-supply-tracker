@@ -141,6 +141,7 @@ export const QuickSetupScreen = ({
             className={styles.toggleButton}
             onClick={() => setShowDetails(!showDetails)}
             aria-expanded={showDetails}
+            data-testid="show-details-button"
           >
             {showDetails
               ? t('quickSetup.hideDetails')
@@ -154,6 +155,7 @@ export const QuickSetupScreen = ({
                   type="button"
                   className={styles.selectAllButton}
                   onClick={handleSelectAll}
+                  data-testid="select-all-button"
                 >
                   {selectedItemIds.size === itemsToAdd.length &&
                   itemsToAdd.length > 0
@@ -215,7 +217,12 @@ export const QuickSetupScreen = ({
 
         <div className={styles.actions}>
           {onBack && (
-            <Button type="button" variant="secondary" onClick={onBack}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onBack}
+              data-testid="quick-setup-back-button"
+            >
               {t('actions.back')}
             </Button>
           )}
