@@ -1,19 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import App from './App';
 import { createMockAppData } from '@/shared/utils/test/factories';
-import { SettingsProvider } from '@/features/settings';
-import { HouseholdProvider } from '@/features/household';
-import { InventoryProvider } from '@/features/inventory';
-import { ThemeApplier } from './components/ThemeApplier';
-import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
+import { renderWithProviders } from '@/test/render';
 import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 // Mock i18next
+const mockT = (key: string) => key;
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: mockT,
     i18n: {
       language: 'en',
       changeLanguage: vi.fn(),
@@ -22,7 +20,7 @@ vi.mock('react-i18next', () => ({
   withTranslation:
     () => (Component: React.ComponentType<Record<string, unknown>>) => {
       const WrappedComponent = (props: Record<string, unknown>) => {
-        return <Component {...props} />;
+        return <Component {...props} t={mockT} />;
       };
       WrappedComponent.displayName = `withTranslation(${Component.displayName || Component.name || 'Component'})`;
       return WrappedComponent;
@@ -44,19 +42,12 @@ const setupCompletedOnboarding = () => {
 
 // Helper to render App with all required providers
 const renderApp = () => {
-  return render(
-    <ErrorBoundary>
-      <SettingsProvider>
-        <ThemeApplier>
-          <HouseholdProvider>
-            <InventoryProvider>
-              <App />
-            </InventoryProvider>
-          </HouseholdProvider>
-        </ThemeApplier>
-      </SettingsProvider>
-    </ErrorBoundary>,
-  );
+  return renderWithProviders(<App />, {
+    providers: {
+      errorBoundary: true,
+      themeApplier: true,
+    },
+  });
 };
 
 describe('App', () => {
