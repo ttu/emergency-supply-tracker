@@ -49,6 +49,19 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
   const handleAddItems = (selectedItemIds: Set<string>) => {
     if (!householdConfig) return;
 
+    // Calculate total available items (after filtering for freezer requirements)
+    const availableItems = RECOMMENDED_ITEMS.filter((item) => {
+      // Skip frozen items if not using freezer
+      if (item.requiresFreezer && !householdConfig.useFreezer) {
+        return false;
+      }
+      return true;
+    });
+
+    // Determine quantity: 0 if all items are selected, 1 if some are selected
+    const allItemsSelected = selectedItemIds.size === availableItems.length;
+    const quantity = allItemsSelected ? 0 : 1;
+
     // Calculate and create inventory items from selected recommended items
     const items: InventoryItem[] = RECOMMENDED_ITEMS.filter((item) => {
       // Only include selected items
@@ -64,10 +77,10 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       // Translate item name
       const itemName = t(item.i18nKey.replace('products.', ''));
 
-      // Create item using factory - all items start with quantity 0
+      // Create item using factory with determined quantity
       return InventoryItemFactory.createFromTemplate(item, householdConfig, {
         name: itemName,
-        quantity: 0,
+        quantity,
       });
     });
 

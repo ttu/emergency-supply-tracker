@@ -42,6 +42,8 @@ vi.mock('react-i18next', () => ({
         'quickSetup.skip': 'Skip',
         'quickSetup.showDetails': 'Show Details',
         'quickSetup.hideDetails': 'Hide Details',
+        'quickSetup.selectAll': 'Select All',
+        'quickSetup.deselectAll': 'Deselect All',
       };
       return translations[key] || key;
     },
@@ -260,5 +262,117 @@ describe('Onboarding', () => {
         }),
       ]),
     );
+  });
+
+  it('adds preselected items with quantity 1 when some items are selected', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <SettingsProvider>
+        <Onboarding onComplete={onComplete} />
+      </SettingsProvider>,
+    );
+
+    // Navigate to quick setup
+    const getStartedButton = screen.getByText('Get Started');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Single Person')).toBeInTheDocument();
+    });
+
+    const singlePreset = screen.getByText('Single Person').closest('div');
+    if (singlePreset) {
+      await user.click(singlePreset);
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText('Save')).toBeInTheDocument();
+    });
+
+    const continueButton = screen.getByText('Save');
+    await user.click(continueButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Add Selected Items')).toBeInTheDocument();
+    });
+
+    // Show details and select one item (not all)
+    const showDetailsButton = screen.getByText('Show Details');
+    await user.click(showDetailsButton);
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    const itemCheckboxes = checkboxes.filter((cb) =>
+      cb.getAttribute('id')?.startsWith('item-'),
+    );
+
+    // Select only the first item (some, but not all)
+    if (itemCheckboxes.length > 0) {
+      await user.click(itemCheckboxes[0]);
+    }
+
+    const addItemsButton = screen.getByText('Add Selected Items');
+    await user.click(addItemsButton);
+
+    // Verify items were added with quantity 1
+    expect(onComplete).toHaveBeenCalled();
+    const [, items] = onComplete.mock.calls[0];
+    expect(items.length).toBeGreaterThan(0);
+    items.forEach((item: { quantity: number }) => {
+      expect(item.quantity).toBe(1);
+    });
+  });
+
+  it('adds preselected items with quantity 0 when all items are selected', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <SettingsProvider>
+        <Onboarding onComplete={onComplete} />
+      </SettingsProvider>,
+    );
+
+    // Navigate to quick setup
+    const getStartedButton = screen.getByText('Get Started');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Single Person')).toBeInTheDocument();
+    });
+
+    const singlePreset = screen.getByText('Single Person').closest('div');
+    if (singlePreset) {
+      await user.click(singlePreset);
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText('Save')).toBeInTheDocument();
+    });
+
+    const continueButton = screen.getByText('Save');
+    await user.click(continueButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Add Selected Items')).toBeInTheDocument();
+    });
+
+    // Show details and select all items
+    const showDetailsButton = screen.getByText('Show Details');
+    await user.click(showDetailsButton);
+
+    // Click "Select All" button
+    const selectAllButton = screen.getByText('Select All');
+    await user.click(selectAllButton);
+
+    const addItemsButton = screen.getByText('Add Selected Items');
+    await user.click(addItemsButton);
+
+    // Verify items were added with quantity 0
+    expect(onComplete).toHaveBeenCalled();
+    const [, items] = onComplete.mock.calls[0];
+    expect(items.length).toBeGreaterThan(0);
+    items.forEach((item: { quantity: number }) => {
+      expect(item.quantity).toBe(0);
+    });
   });
 });
