@@ -13,10 +13,16 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
   getAppData: vi.fn(),
   saveAppData: vi.fn(),
 }));
-const mockLocalStorage = localStorage as { getAppData: Mock; saveAppData: Mock };
+const mockLocalStorage = localStorage as unknown as {
+  getAppData: Mock;
+  saveAppData: Mock;
+};
 
-// Store reference to original initializeProviders
-const originalInitializeProviders = cloudStorageProvider.initializeProviders;
+// Mock cloudSync services to use the mock implementations
+vi.mock('./services', async () => {
+  const mockServices = await vi.importActual('./__mocks__/services');
+  return mockServices;
+});
 
 // Test component that exposes the hook
 function TestConsumer({
@@ -55,6 +61,7 @@ describe('CloudSyncProvider', () => {
   });
 
   let mockProvider: ICloudStorageProvider;
+  let initializeProvidersSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     window.localStorage.clear();
@@ -66,16 +73,15 @@ describe('CloudSyncProvider', () => {
     cloudStorageProvider.registerProvider('google-drive', () => mockProvider);
     mockLocalStorage.getAppData.mockReturnValue(null);
 
-    // Override initializeProviders to be a no-op since we register our own provider
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (cloudStorageProvider as any).initializeProviders = () => {};
+    // Spy on initializeProviders and make it a no-op since we register our own provider
+    initializeProvidersSpy = vi
+      .spyOn(cloudStorageProvider, 'initializeProviders')
+      .mockImplementation(() => {});
   });
 
   afterEach(() => {
     // Restore original initializeProviders
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (cloudStorageProvider as any).initializeProviders =
-      originalInitializeProviders;
+    initializeProvidersSpy.mockRestore();
     vi.clearAllMocks();
   });
 
@@ -172,9 +178,7 @@ describe('CloudSyncProvider', () => {
 
     it('should find existing sync file on connect', async () => {
       const user = userEvent.setup();
-      (mockProvider.findSyncFile as Mock).mockResolvedValue(
-        'existing-file-id',
-      );
+      (mockProvider.findSyncFile as Mock).mockResolvedValue('existing-file-id');
 
       render(
         <CloudSyncProvider>
@@ -240,7 +244,13 @@ describe('CloudSyncProvider', () => {
 
     it('should handle CloudSyncError with specific message', async () => {
       const user = userEvent.setup();
-      const { CloudSyncError } = await vi.importActual('./types');
+      const { CloudSyncError } = (await vi.importActual('./types')) as {
+        CloudSyncError: new (
+          message: string,
+          code: string,
+          isRetryable?: boolean,
+        ) => Error;
+      };
       (mockProvider.connect as Mock).mockRejectedValue(
         new CloudSyncError('User cancelled', 'AUTH_CANCELLED'),
       );
@@ -286,7 +296,9 @@ describe('CloudSyncProvider', () => {
 
     it('should handle disconnect error gracefully', async () => {
       const user = userEvent.setup();
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       (mockProvider.disconnect as Mock).mockRejectedValue(
         new Error('Disconnect failed'),
       );
@@ -413,9 +425,7 @@ describe('CloudSyncProvider', () => {
       };
 
       mockLocalStorage.getAppData.mockReturnValue(localData);
-      (mockProvider.findSyncFile as Mock).mockResolvedValue(
-        'remote-file-id',
-      );
+      (mockProvider.findSyncFile as Mock).mockResolvedValue('remote-file-id');
       (mockProvider.getFileMetadata as Mock).mockResolvedValue({
         id: 'remote-file-id',
         name: 'test.json',
@@ -426,7 +436,9 @@ describe('CloudSyncProvider', () => {
       );
 
       // Spy on console.error to suppress jsdom "not implemented" error for location.reload
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       render(
         <CloudSyncProvider>
@@ -491,9 +503,7 @@ describe('CloudSyncProvider', () => {
       };
 
       mockLocalStorage.getAppData.mockReturnValue(localData);
-      (mockProvider.findSyncFile as Mock).mockResolvedValue(
-        'remote-file-id',
-      );
+      (mockProvider.findSyncFile as Mock).mockResolvedValue('remote-file-id');
       (mockProvider.getFileMetadata as Mock).mockResolvedValue({
         id: 'remote-file-id',
         name: 'test.json',
@@ -589,9 +599,7 @@ describe('CloudSyncProvider', () => {
       mockLocalStorage.getAppData.mockReturnValue(localData);
 
       // No initial remoteFileId but findSyncFile returns one
-      (mockProvider.findSyncFile as Mock).mockResolvedValue(
-        'found-file-id',
-      );
+      (mockProvider.findSyncFile as Mock).mockResolvedValue('found-file-id');
       (mockProvider.getFileMetadata as Mock).mockResolvedValue({
         id: 'found-file-id',
         name: 'test.json',
@@ -602,7 +610,9 @@ describe('CloudSyncProvider', () => {
       );
 
       // Spy on console.error to suppress jsdom "not implemented" error for location.reload
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       render(
         <CloudSyncProvider>
