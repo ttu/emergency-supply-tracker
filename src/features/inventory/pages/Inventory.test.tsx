@@ -10,7 +10,7 @@ import {
   createMockHousehold,
 } from '@/test';
 import { Inventory } from './Inventory';
-import { calculateRecommendedQuantity } from '@/features/household';
+import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from '@/features/dashboard';
 import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';

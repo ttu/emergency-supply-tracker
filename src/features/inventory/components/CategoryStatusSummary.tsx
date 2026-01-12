@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Badge } from '@/shared/components/Badge';
 import type { ItemStatus, Unit, InventoryItem } from '@/shared/types';
 import { isFoodCategory } from '@/shared/types';
-import { getStatusVariant } from '../utils/status';
+import { getStatusVariant } from '@/shared/utils/calculations/itemStatus';
 import styles from './CategoryStatusSummary.module.css';
 
 export interface CategoryShortage {

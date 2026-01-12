@@ -2,7 +2,7 @@
 
 > **Version:** 2.0.0  
 > **Last Updated:** 2025-01-23  
-> **Source of Truth:** `src/features/`, `src/shared/`, `src/pages/`
+> **Source of Truth:** `src/features/`, `src/shared/`
 
 This document describes the complete architecture of the Emergency Supply Tracker application, including the layered architecture, feature slice organization, component structure, and data flow.
 
@@ -124,10 +124,7 @@ src/
 │   ├── types/             # Shared TypeScript types
 │   └── contexts/          # Shared contexts (if any)
 │
-└── pages/                 # Page components (compose features)
-    ├── Dashboard.tsx
-    ├── Inventory.tsx
-    └── Settings.tsx
+└── [No pages/ directory]   # Pages are in features/*/pages/
 ```
 
 ### Feature Structure Template
@@ -232,7 +229,7 @@ interface UserSettings {
 
 ### 2. Business Logic Layer (Pure Functions)
 
-**Location:** `src/shared/utils/`, `src/features/*/utils/`
+**Location:** `src/shared/utils/calculations/`, `src/features/*/utils/`
 
 **What it is:**
 
@@ -240,21 +237,36 @@ interface UserSettings {
 - Operate on anemic domain models
 - Stateless calculations
 
+**Business Logic Location Pattern:**
+
+- **Cross-feature utilities** (used by 2+ features) → `src/shared/utils/calculations/`
+  - `calculateRecommendedQuantity()` - used by inventory, onboarding, dashboard
+  - `calculateHouseholdMultiplier()` - used by inventory, dashboard
+  - `calculateItemStatus()` - used by inventory, dashboard, alerts
+  - `getStatusFromPercentage()` - used by inventory, dashboard
+  - `getDaysUntilExpiration()` - used by inventory, alerts
+  - Water calculations, calorie calculations
+
+- **Feature-specific utilities** (used by single feature) → `src/features/{feature}/utils/`
+  - Dashboard: `calculatePreparednessScore()`, `calculateCategoryStatus()`, `backupReminder()`
+  - Inventory: (status calculations moved to shared, but feature-specific logic stays)
+  - Alerts: alert generation logic
+
 **Key Functions:**
 
 ```typescript
-// Calculations
+// Cross-feature calculations (shared/utils/calculations/)
 calculateRecommendedQuantity(item, household): number
-calculateItemStatus(item): ItemStatus
-calculatePreparednessScore(items, household): number
 calculateHouseholdMultiplier(household): number
-
-// Status
+calculateItemStatus(item): ItemStatus
 getItemStatus(quantity, recommended, expiration): ItemStatus
+getStatusFromPercentage(percentage): ItemStatus
+getDaysUntilExpiration(expirationDate): number | undefined
 isItemExpired(expirationDate): boolean
 
-// Validation
-validateRecommendedItems(file): ValidationResult
+// Feature-specific calculations (features/*/utils/)
+calculatePreparednessScore(items, household): number  // Dashboard
+calculateCategoryStatus(category, items, ...): CategoryStatusSummary  // Dashboard
 ```
 
 **Connections:**
@@ -302,7 +314,7 @@ validateRecommendedItems(file): ValidationResult
 
 ### 4. UI Layer (React Components)
 
-**Location:** `src/pages/`, `src/features/*/components/`, `src/shared/components/`
+**Location:** `src/features/*/pages/`, `src/features/*/components/`, `src/shared/components/`
 
 **What it is:**
 
@@ -322,20 +334,20 @@ App
     ├── Navigation
     └── [Page Content]
         │
-        ├── Dashboard (/)
+        ├── Dashboard (features/dashboard/pages/Dashboard.tsx)
         │   ├── DashboardHeader
         │   ├── AlertBanner
         │   └── CategoryGrid
         │       └── CategoryCard[]
         │
-        ├── Inventory (/inventory)
+        ├── Inventory (features/inventory/pages/Inventory.tsx)
         │   ├── CategoryNav
         │   ├── FilterBar
         │   ├── CategoryStatusSummary
         │   └── ItemList
         │       └── ItemCard[]
         │
-        └── Settings (/settings)
+        └── Settings (features/settings/pages/Settings.tsx)
             ├── HouseholdForm
             ├── NutritionSettings
             ├── LanguageSelector

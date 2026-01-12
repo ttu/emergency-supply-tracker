@@ -12,7 +12,7 @@ import {
   createProductTemplateId,
   createDateOnly,
 } from '@/shared/types';
-import { calculateRecommendedQuantity } from '@/features/household/utils/calculations';
+import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { isTemplateId } from '@/shared/utils/storage/localStorage';
 import { isValidUnit } from '@/shared/utils/validation/unitValidation';

@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import type { InventoryItem } from '@/shared/types';
 import { isFoodItem } from '@/shared/types';
-import { isItemExpired, getDaysUntilExpiration } from '../utils/status';
+import {
+  isItemExpired,
+  getDaysUntilExpiration,
+} from '@/shared/utils/calculations/itemStatus';
 import { getWaterRequirementPerUnit } from '@/shared/utils/calculations/water';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 import styles from './ItemCard.module.css';
