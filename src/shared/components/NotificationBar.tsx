@@ -15,7 +15,7 @@ export function NotificationBar() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="notification-bar">
       {notifications.map((notification, index) => (
         <div
           key={notification.id}

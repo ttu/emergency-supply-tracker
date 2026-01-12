@@ -13,7 +13,10 @@ describe('NotificationItem', () => {
     const onClose = vi.fn();
     render(<NotificationItem message="Test message" onClose={onClose} />);
 
-    expect(screen.getByText('Test message')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-item-success')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-message')).toHaveTextContent(
+      'Test message',
+    );
   });
 
   it('renders success variant with correct icon', () => {
@@ -26,7 +29,10 @@ describe('NotificationItem', () => {
       />,
     );
 
-    expect(screen.getByText('Success message')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-item-success')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-message')).toHaveTextContent(
+      'Success message',
+    );
     const icon = screen.getByText('✓');
     expect(icon).toBeInTheDocument();
   });
@@ -41,7 +47,10 @@ describe('NotificationItem', () => {
       />,
     );
 
-    expect(screen.getByText('Error message')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-item-error')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-message')).toHaveTextContent(
+      'Error message',
+    );
     const icon = screen.getByText('✕');
     expect(icon).toBeInTheDocument();
   });
@@ -56,7 +65,10 @@ describe('NotificationItem', () => {
       />,
     );
 
-    expect(screen.getByText('Info message')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-item-info')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-message')).toHaveTextContent(
+      'Info message',
+    );
     const icon = screen.getByText('ℹ');
     expect(icon).toBeInTheDocument();
   });
@@ -65,6 +77,7 @@ describe('NotificationItem', () => {
     const onClose = vi.fn();
     render(<NotificationItem message="Default message" onClose={onClose} />);
 
+    expect(screen.getByTestId('notification-item-success')).toBeInTheDocument();
     const icon = screen.getByText('✓');
     expect(icon).toBeInTheDocument();
   });
@@ -74,8 +87,7 @@ describe('NotificationItem', () => {
     const user = userEvent.setup();
     render(<NotificationItem message="Test message" onClose={onClose} />);
 
-    // Query by accessible name (works with both translation key and fallback text)
-    const closeButton = screen.getByRole('button', { name: /close/i });
+    const closeButton = screen.getByTestId('notification-close-button');
     await user.click(closeButton);
 
     expect(onClose).toHaveBeenCalledTimes(1);
@@ -93,7 +105,12 @@ describe('NotificationItem', () => {
         />,
       );
 
-      expect(screen.getByText('Test message')).toBeInTheDocument();
+      expect(
+        screen.getByTestId('notification-item-success'),
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('notification-message')).toHaveTextContent(
+        'Test message',
+      );
 
       vi.advanceTimersByTime(1000);
 
@@ -115,7 +132,12 @@ describe('NotificationItem', () => {
         />,
       );
 
-      expect(screen.getByText('Test message')).toBeInTheDocument();
+      expect(
+        screen.getByTestId('notification-item-success'),
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('notification-message')).toHaveTextContent(
+        'Test message',
+      );
 
       vi.advanceTimersByTime(5000);
 
@@ -152,7 +174,8 @@ describe('NotificationItem', () => {
     render(<NotificationItem message="Test message" onClose={onClose} />);
 
     // div with role="status" for live region announcements
-    const notification = screen.getByRole('status');
+    const notification = screen.getByTestId('notification-item-success');
+    expect(notification).toHaveAttribute('role', 'status');
     expect(notification).toHaveAttribute('aria-live', 'polite');
     expect(notification).toHaveAttribute('aria-atomic', 'true');
   });

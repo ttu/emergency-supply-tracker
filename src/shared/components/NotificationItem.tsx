@@ -58,16 +58,20 @@ export function NotificationItem({
       role="status"
       aria-live="polite"
       aria-atomic="true"
+      data-testid={`notification-item-${variant}`}
     >
       <span className={styles.icon} aria-hidden="true">
         {icon}
       </span>
-      <span className={styles.message}>{message}</span>
+      <span className={styles.message} data-testid="notification-message">
+        {message}
+      </span>
       <button
         type="button"
         className={styles.closeButton}
         onClick={onClose}
         aria-label={t('accessibility.closeModal', 'Close notification')}
+        data-testid="notification-close-button"
       >
         ×
       </button>

@@ -36,7 +36,7 @@ describe('NotificationBar', () => {
       </NotificationProvider>,
     );
 
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('notification-bar')).not.toBeInTheDocument();
   });
 
   it('displays a single notification', async () => {
@@ -51,8 +51,11 @@ describe('NotificationBar', () => {
       screen.getByRole('button', { name: /show notification/i }),
     );
 
-    expect(await screen.findByText('Test notification')).toBeInTheDocument();
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(await screen.findByTestId('notification-bar')).toBeInTheDocument();
+    expect(await screen.findByTestId('notification-message')).toHaveTextContent(
+      'Test notification',
+    );
+    expect(screen.getByTestId('notification-item-success')).toBeInTheDocument();
   });
 
   it('displays multiple notifications stacked', async () => {
@@ -66,11 +69,16 @@ describe('NotificationBar', () => {
     await user.click(screen.getByRole('button', { name: /show multiple/i }));
 
     // Wait for all notifications to appear
-    await screen.findByText('First');
-    await screen.findByText('Second');
-    await screen.findByText('Third');
+    await screen.findByTestId('notification-bar');
+    const messages = await screen.findAllByTestId('notification-message');
+    expect(messages).toHaveLength(3);
+    expect(messages[0]).toHaveTextContent('First');
+    expect(messages[1]).toHaveTextContent('Second');
+    expect(messages[2]).toHaveTextContent('Third');
 
-    const notifications = screen.getAllByRole('status');
+    const notifications = screen.getAllByTestId(
+      /notification-item-(success|info|error)/,
+    );
     expect(notifications).toHaveLength(3);
   });
 
@@ -86,14 +94,12 @@ describe('NotificationBar', () => {
       screen.getByRole('button', { name: /show notification/i }),
     );
 
-    await screen.findByText('Test notification');
-
-    // The close button uses the translation key "accessibility.closeModal"
-    const closeButton = screen.getByLabelText('accessibility.closeModal');
+    await screen.findByTestId('notification-bar');
+    const closeButton = screen.getByTestId('notification-close-button');
     await user.click(closeButton);
 
     await waitFor(() => {
-      expect(screen.queryByText('Test notification')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('notification-bar')).not.toBeInTheDocument();
     });
   });
 
@@ -127,13 +133,17 @@ describe('NotificationBar', () => {
     );
 
     // Wait for notification to appear
-    await screen.findByText('Test notification');
-    expect(screen.getByText('Test notification')).toBeInTheDocument();
+    await screen.findByTestId('notification-bar');
+    expect(screen.getByTestId('notification-message')).toHaveTextContent(
+      'Test notification',
+    );
 
     // Wait for auto-dismiss (500ms duration)
     await waitFor(
       () => {
-        expect(screen.queryByText('Test notification')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId('notification-bar'),
+        ).not.toBeInTheDocument();
       },
       { timeout: 2000 },
     );
@@ -152,11 +162,11 @@ describe('NotificationBar', () => {
     );
 
     // Wait for notification to appear first
-    await screen.findByText('Test notification');
+    await screen.findByTestId('notification-bar');
 
     // Check that NotificationItem has proper accessibility attributes
     // Each NotificationItem has aria-live="polite" and aria-atomic="true"
-    const notificationItem = screen.getByRole('status');
+    const notificationItem = screen.getByTestId('notification-item-success');
     expect(notificationItem).toBeInTheDocument();
     expect(notificationItem).toHaveAttribute('aria-live', 'polite');
     expect(notificationItem).toHaveAttribute('aria-atomic', 'true');
@@ -192,23 +202,27 @@ describe('NotificationBar', () => {
     await user.click(screen.getByRole('button', { name: /info/i }));
     await user.click(screen.getByRole('button', { name: /error/i }));
 
-    // Wait for all notifications to appear - find by role and check text content
+    // Wait for all notifications to appear - find by data-testid and check variants
     await waitFor(() => {
-      const notifications = screen.getAllByRole('status');
-      expect(notifications).toHaveLength(3);
-
-      // Check that each notification contains the expected text
-      const notificationTexts = notifications.map((n) => n.textContent);
-      expect(notificationTexts.some((text) => text?.includes('Success'))).toBe(
-        true,
-      );
-      expect(notificationTexts.some((text) => text?.includes('Info'))).toBe(
-        true,
-      );
-      expect(notificationTexts.some((text) => text?.includes('Error'))).toBe(
-        true,
-      );
+      expect(
+        screen.getByTestId('notification-item-success'),
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('notification-item-info')).toBeInTheDocument();
+      expect(screen.getByTestId('notification-item-error')).toBeInTheDocument();
     });
+
+    // Check that each notification contains the expected text
+    const messages = screen.getAllByTestId('notification-message');
+    expect(messages).toHaveLength(3);
+    expect(messages.some((msg) => msg.textContent?.includes('Success'))).toBe(
+      true,
+    );
+    expect(messages.some((msg) => msg.textContent?.includes('Info'))).toBe(
+      true,
+    );
+    expect(messages.some((msg) => msg.textContent?.includes('Error'))).toBe(
+      true,
+    );
   });
 
   it('renders notifications with correct index styling', async () => {
@@ -222,9 +236,9 @@ describe('NotificationBar', () => {
     await user.click(screen.getByRole('button', { name: /show multiple/i }));
 
     // Wait for all notifications to appear
-    await screen.findByText('First');
-    await screen.findByText('Second');
-    await screen.findByText('Third');
+    await screen.findByTestId('notification-bar');
+    const messages = await screen.findAllByTestId('notification-message');
+    expect(messages).toHaveLength(3);
 
     // Check that notification wrappers have index styling
     const wrappers = document.querySelectorAll(
