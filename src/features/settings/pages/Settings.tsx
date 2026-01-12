@@ -23,7 +23,7 @@ export function Settings() {
   const { t } = useTranslation();
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="page-settings">
       <header className={styles.header}>
         <h1>{t('navigation.settings')}</h1>
       </header>

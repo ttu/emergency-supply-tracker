@@ -47,15 +47,15 @@ test.describe('Custom Product Templates', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory and open template selector
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Note: Custom templates might not be integrated into TemplateSelector yet
     // TemplateSelector currently only shows RecommendedItemDefinition (built-in templates)
     // Custom ProductTemplate support may be a future enhancement
     // This test verifies the data structure supports custom templates
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
   });
 
   test('should allow adding item from custom template', async ({ page }) => {
@@ -93,9 +93,9 @@ test.describe('Custom Product Templates', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Note: Custom templates might not appear in TemplateSelector
     // If they don't appear, use Custom Item instead
@@ -107,11 +107,11 @@ test.describe('Custom Product Templates', () => {
     if (customTemplateVisible) {
       await page.click('text=My Custom Product');
       // Form should be pre-filled with template data
-      await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+      await expect(page.getByTestId('item-form')).toBeVisible();
     } else {
       // Fallback: Use Custom Item button
-      await page.click('button:has-text("Custom Item")');
-      await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+      await page.getByTestId('custom-item-button').click();
+      await expect(page.getByTestId('item-form')).toBeVisible();
       await page.fill('input[name="name"]', 'My Custom Product');
       await page.selectOption('select[name="category"]', 'food');
     }
@@ -119,7 +119,7 @@ test.describe('Custom Product Templates', () => {
     // Submit form
     await page.fill('input[name="quantity"]', '5');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Item should be added
     await expect(page.locator('text=My Custom Product')).toBeVisible();
@@ -176,18 +176,18 @@ test.describe('Custom Product Templates', () => {
 
   test('should allow creating custom template from item', async ({ page }) => {
     // Add a custom item first
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Template Source Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Item should be added
     await expect(page.locator('text=Template Source Item')).toBeVisible();
@@ -234,10 +234,8 @@ test.describe('Custom Product Templates', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Export data
-    await page.click('text=Settings');
-    const exportButton = page.locator('button', {
-      hasText: /Export Data|Vie tiedot/i,
-    });
+    await page.getByTestId('nav-settings').click();
+    const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible();
     await exportButton.click();
 
@@ -284,16 +282,14 @@ test.describe('Custom Product Templates', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory and open template selector
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
 
     // Note: Custom templates might not be integrated into TemplateSelector
     // This test verifies the data structure supports custom templates
     // If custom templates appear, they should be searchable
-    const searchInput = page.locator(
-      '#template-search, input[type="search"], input[placeholder*="search" i]',
-    );
+    const searchInput = page.getByTestId('template-search-input');
     const searchVisible = await searchInput.isVisible().catch(() => false);
 
     if (searchVisible) {
@@ -303,9 +299,7 @@ test.describe('Custom Product Templates', () => {
       expect(searchVisible).toBe(true);
     } else {
       // Template selector is visible
-      await expect(
-        page.locator('h2', { hasText: 'Select Item' }),
-      ).toBeVisible();
+      await expect(page.getByTestId('template-selector')).toBeVisible();
     }
   });
 });

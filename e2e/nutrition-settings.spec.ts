@@ -6,7 +6,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should change daily calories per person', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find daily calories input
     const caloriesInput = page.locator('#daily-calories');
@@ -22,7 +22,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should change daily water per person', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find daily water input
     const waterInput = page.locator('#daily-water');
@@ -38,7 +38,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should change children requirement percentage', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find children percentage input
     const childrenInput = page.locator('#children-percentage');
@@ -54,7 +54,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should persist nutrition settings after reload', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Change all nutrition settings
     const caloriesInput = page.locator('#daily-calories');
@@ -75,7 +75,7 @@ test.describe('Nutrition Settings', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Verify settings persisted
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
     await page.waitForLoadState('networkidle');
 
     expect(await page.locator('#daily-calories').inputValue()).toBe('2200');
@@ -84,7 +84,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should clamp values to valid ranges', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     const caloriesInput = page.locator('#daily-calories');
     const waterInput = page.locator('#daily-water');
@@ -118,7 +118,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should reset to defaults', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Change values
     const caloriesInput = page.locator('#daily-calories');

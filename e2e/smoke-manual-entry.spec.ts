@@ -50,19 +50,19 @@ async function completeOnboarding(page: Page) {
   await page.waitForTimeout(TIMEOUTS.PAGE_LOAD);
 
   // Welcome screen - increase timeout for deployed sites
-  await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
+  await expect(page.getByTestId('onboarding-welcome')).toBeVisible({
     timeout: TIMEOUTS.DEPLOYED_SITE,
   });
-  await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
+  await page.getByTestId('get-started-button').click();
 
   // Preset selection - choose "Family"
-  await expect(page.getByText(/Family|Perhe/i)).toBeVisible({
+  await expect(page.getByTestId('onboarding-preset-selector')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
-  await page.getByRole('button', { name: /Family|Perhe/i }).click();
+  await page.getByTestId('preset-family').click();
 
   // Household configuration
-  await expect(page.locator('input[type="number"]').first()).toBeVisible({
+  await expect(page.getByTestId('onboarding-household-form')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const adultsInput = page.locator('input[type="number"]').first();
@@ -70,18 +70,16 @@ async function completeOnboarding(page: Page) {
   expect(Number.parseInt(adultsValue, 10)).toBeGreaterThan(0);
 
   // Submit form
-  await page.getByRole('button', { name: /Save|Tallenna/i }).click();
+  await page.getByTestId('household-save-button').click();
 
   // Quick Setup - Skip
-  await expect(
-    page.getByRole('button', { name: /Skip for now|Ohita toistaiseksi/i }),
-  ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
-  await page
-    .getByRole('button', { name: /Skip for now|Ohita toistaiseksi/i })
-    .click();
+  await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+  await page.getByTestId('skip-quick-setup-button').click();
 
   // Should navigate to Dashboard
-  await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
+  await expect(page.getByTestId('page-dashboard')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 }
@@ -95,24 +93,24 @@ async function testDashboardInteractions(page: Page) {
   const addItemsButton = page.locator('button', { hasText: 'Add Items' });
   if (await addItemsButton.isVisible().catch(() => false)) {
     await addItemsButton.click();
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.keyboard.press('Escape');
   }
 
   // Test category card click
-  const foodCategoryCard = page.locator('[data-testid="category-food"]');
+  const foodCategoryCard = page.getByTestId('category-food');
   if (await foodCategoryCard.isVisible().catch(() => false)) {
     await foodCategoryCard.click();
-    await expect(page.locator('h1:has-text("Inventory")')).toBeVisible();
-    await page.click('text=Dashboard');
+    await expect(page.getByTestId('page-inventory')).toBeVisible();
+    await page.getByTestId('nav-dashboard').click();
   }
 }
 
 async function addItemFromTemplate(page: Page) {
-  await page.click('button:has-text("Add Item")');
-  await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+  await page.getByTestId('add-item-button').click();
+  await expect(page.getByTestId('template-selector')).toBeVisible();
 
-  await page.fill('input[placeholder*="Search"]', 'water');
+  await page.getByTestId('template-search-input').fill('water');
   const waterTemplate = page
     .locator('button[type="button"]')
     .filter({ hasText: /water/i })
@@ -121,7 +119,7 @@ async function addItemFromTemplate(page: Page) {
   await waterTemplate.click();
 
   await page.fill('input[name="quantity"]', '5');
-  await page.click('button[type="submit"]');
+  await page.getByTestId('save-item-button').click();
   await page
     .waitForSelector('[role="dialog"]', { state: 'hidden' })
     .catch(() => {});
@@ -133,14 +131,10 @@ async function addItemFromTemplate(page: Page) {
 
 async function addCustomItem(page: Page) {
   await ensureNoModals(page);
-  await page.click('button:has-text("Add Item")');
-  await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-  // Use getByRole with accessible name for robust, language-agnostic selection
-  // Button has ➕ prefix: "➕ Custom Item" (English) or "➕ Mukautettu" (Finnish)
-  await page
-    .getByRole('button', { name: /^➕ Custom Item$|^➕ Mukautettu$/ })
-    .click();
-  await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+  await page.getByTestId('add-item-button').click();
+  await expect(page.getByTestId('template-selector')).toBeVisible();
+  await page.getByTestId('custom-item-button').click();
+  await expect(page.getByTestId('item-form')).toBeVisible();
 
   await page.fill('input[name="name"]', 'Custom Test Item');
   await page.selectOption('select[name="category"]', 'food');
@@ -152,7 +146,7 @@ async function addCustomItem(page: Page) {
     .filter({ hasText: /Never Expires|Ei vanhene/i })
     .locator('input[type="checkbox"]');
   await neverExpiresCheckbox.check();
-  await page.click('button[type="submit"]');
+  await page.getByTestId('save-item-button').click();
   await page
     .waitForSelector('[role="dialog"]', { state: 'hidden' })
     .catch(() => {});
@@ -165,7 +159,7 @@ async function verifyCustomItemExists(page: Page) {
     .catch(() => false);
 
   if (!customItemVisible) {
-    await page.click('button:has-text("Food")');
+    await page.getByTestId('category-food').click();
     const itemVisibleAfterFilter = await page
       .locator('text=Custom Test Item')
       .isVisible()
@@ -192,13 +186,13 @@ async function testRecommendedItems(page: Page) {
   await ensureNoModals(page);
   // Use data-testid for language-agnostic category selection
   // Water category ID is 'water-beverages'
-  await page.click('button[data-testid="category-water-beverages"]');
+  await page.getByTestId('category-water-beverages').click();
   await expandRecommendedItems(page);
 
   const addButton = page.locator('button:has-text("+")').first();
   if (await addButton.isVisible().catch(() => false)) {
     await addButton.click();
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.keyboard.press('Escape');
   }
 
@@ -221,7 +215,7 @@ async function editCustomItemIfVisible(page: Page) {
     await customItemLocator.click();
     await page.waitForSelector('input[name="quantity"]');
     await page.fill('input[name="quantity"]', '8');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
     await page
       .waitForSelector('[role="dialog"]', { state: 'hidden' })
       .catch(() => {});
@@ -230,27 +224,25 @@ async function editCustomItemIfVisible(page: Page) {
 
 async function testDashboardAlerts(page: Page) {
   // Navigate to Dashboard - should see alerts for insufficient quantities
-  await page.click('text=Dashboard');
+  await page.getByTestId('nav-dashboard').click();
   await page.waitForLoadState('networkidle');
 
   // Verify alerts appear
-  await expect(page.locator('h2:has-text("Alerts")')).toBeVisible({
+  await expect(page.getByTestId('alerts-section')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 
   // Add expired item to ensure we have at least one alert
   await ensureNoModals(page);
-  await page.click('text=Inventory');
-  await expect(page.locator('h1:has-text("Inventory")')).toBeVisible({
+  await page.getByTestId('nav-inventory').click();
+  await expect(page.getByTestId('page-inventory')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
-  await page.getByRole('button', { name: 'Add Item' }).click();
-  await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-  await page
-    .getByRole('button', { name: /^➕ Custom Item$|^➕ Mukautettu$/ })
-    .click();
-  await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+  await page.getByTestId('add-item-button').click();
+  await expect(page.getByTestId('template-selector')).toBeVisible();
+  await page.getByTestId('custom-item-button').click();
+  await expect(page.getByTestId('item-form')).toBeVisible();
 
   const pastDate = new Date();
   pastDate.setDate(pastDate.getDate() - 5);
@@ -269,13 +261,13 @@ async function testDashboardAlerts(page: Page) {
     .locator('input[type="checkbox"]');
   await neverExpiresCheckbox.uncheck();
   await page.fill('input[type="date"]', expiredDateString);
-  await page.click('button[type="submit"]');
+  await page.getByTestId('save-item-button').click();
   await page
     .waitForSelector('[role="dialog"]', { state: 'hidden' })
     .catch(() => {});
 
   // Navigate to Dashboard and verify/dismiss alert
-  await page.click('text=Dashboard');
+  await page.getByTestId('nav-dashboard').click();
   await page.waitForLoadState('networkidle');
   await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
@@ -297,7 +289,7 @@ async function testDashboardAlerts(page: Page) {
 }
 
 async function testSettingsFeatures(page: Page) {
-  await page.click('text=Settings');
+  await page.getByTestId('nav-settings').click();
   await page.waitForLoadState('networkidle');
 
   // Change language
@@ -388,9 +380,7 @@ async function verifyAlertsDisappearAfterHouseholdChange(page: Page) {
 
 async function testDataManagement(page: Page) {
   // Export data
-  const exportButton = page.locator('button', {
-    hasText: /Export Data|Vie tiedot/i,
-  });
+  const exportButton = page.getByTestId('export-data-button');
   if (await exportButton.isVisible().catch(() => false)) {
     await exportButton.click();
     await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
@@ -518,7 +508,7 @@ async function verifyFinalDashboard(page: Page) {
   });
 
   const dashboardLoaded = await page
-    .locator('h1:has-text("Dashboard")')
+    .getByTestId('page-dashboard')
     .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
     .catch(() => false);
 
@@ -559,8 +549,8 @@ async function runManualEntryWorkflow(page: Page) {
   await testDashboardInteractions(page);
 
   // PHASE 3: INVENTORY MANAGEMENT
-  await page.click('text=Inventory');
-  await expect(page.locator('button:has-text("Add Item")')).toBeVisible();
+  await page.getByTestId('nav-inventory').click();
+  await expect(page.getByTestId('add-item-button')).toBeVisible();
   await ensureNoModals(page);
 
   await addItemFromTemplate(page);
@@ -569,7 +559,7 @@ async function runManualEntryWorkflow(page: Page) {
   await editCustomItemIfVisible(page);
 
   // Filter and search
-  await page.click('button:has-text("Food")');
+  await page.getByTestId('category-food').click();
   await page.fill('input[placeholder*="Search"]', 'Custom');
   await page.fill('input[placeholder*="Search"]', '');
   await testRecommendedItems(page);

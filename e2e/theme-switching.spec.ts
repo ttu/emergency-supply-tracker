@@ -6,7 +6,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should change theme in settings', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find theme selector
     const themeSelect = page.locator('#theme-select');
@@ -23,7 +23,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should persist theme after page reload', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Change theme to midnight
     const themeSelect = page.locator('#theme-select');
@@ -49,7 +49,7 @@ test.describe('Theme Switching', () => {
     expect(themeAttribute).toBe('midnight');
 
     // Verify theme selector shows correct value
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
     await page.waitForLoadState('networkidle');
     const themeSelectAfterReload = page.locator('#theme-select');
     // Wait for selector to be visible and have the value
@@ -60,7 +60,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should apply theme immediately without reload', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     const themeSelect = page.locator('#theme-select');
 
@@ -87,7 +87,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should toggle high contrast mode', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Find high contrast checkbox
     const highContrastCheckbox = page.locator('#high-contrast-toggle');
@@ -109,7 +109,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should persist high contrast mode after reload', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     const highContrastCheckbox = page.locator('#high-contrast-toggle');
     const initialState = await highContrastCheckbox.isChecked();
@@ -123,7 +123,7 @@ test.describe('Theme Switching', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Verify high contrast persisted
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
     const highContrastCheckboxAfterReload = page.locator(
       '#high-contrast-toggle',
     );
@@ -132,26 +132,26 @@ test.describe('Theme Switching', () => {
   });
 
   test('should apply theme to all pages', async ({ page }) => {
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Change theme to forest
     const themeSelect = page.locator('#theme-select');
     await themeSelect.selectOption('forest');
 
     // Navigate to different pages and verify theme persists
-    await page.click('text=Dashboard');
+    await page.getByTestId('nav-dashboard').click();
     let themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('forest');
 
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
     themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('forest');
 
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
     themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );

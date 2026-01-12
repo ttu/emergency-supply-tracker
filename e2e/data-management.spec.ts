@@ -7,23 +7,23 @@ test.describe('Data Management', () => {
 
   test('should export data', async ({ page }) => {
     // Add some test data first
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Export Test Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Verify Export Data button is visible
-    const exportButton = page.locator('button', { hasText: 'Export Data' });
+    const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible();
 
     // Set up dialog handler to catch any error dialogs
@@ -46,7 +46,7 @@ test.describe('Data Management', () => {
 
   test('should import data', async ({ page }) => {
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Create test data file with all required fields
     const testData = {
@@ -91,8 +91,8 @@ test.describe('Data Management', () => {
       });
     });
 
-    // Set file input (use aria-label to distinguish from Import Recommendations)
-    const fileInput = page.getByLabel('Import Data');
+    // Set file input using data-testid
+    const fileInput = page.getByTestId('import-data-file-input');
     await fileInput.setInputFiles({
       name: 'test-import.json',
       mimeType: 'application/json',
@@ -103,7 +103,7 @@ test.describe('Data Management', () => {
     await page.waitForLoadState('networkidle');
 
     // Navigate to Inventory to verify import
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Verify imported item is visible
     await expect(page.locator('text=Imported Item')).toBeVisible();
@@ -111,20 +111,20 @@ test.describe('Data Management', () => {
 
   test('should export shopping list', async ({ page }) => {
     // Add item that needs restocking (quantity 0 = definitely needs restocking)
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Out of Stock Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '0'); // Zero quantity needs restocking
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Verify Export Shopping List button is visible and enabled
     const exportButton = page.locator('button', {
@@ -154,26 +154,26 @@ test.describe('Data Management', () => {
 
   test('should clear all data', async ({ page }) => {
     // Add some test data
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Item to Clear');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Verify item exists before clear
     await expect(page.locator('text=Item to Clear')).toBeVisible();
 
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
-    // Verify Clear All Data button is visible
-    const clearButton = page.locator('button', { hasText: 'Clear All Data' });
+    // Verify Clear All Data button is visible using data-testid
+    const clearButton = page.getByTestId('clear-data-button');
     await expect(clearButton).toBeVisible();
 
     // Note: The clear functionality uses window.confirm dialogs which are hard to test in Playwright
@@ -186,7 +186,7 @@ test.describe('Data Management', () => {
 
   test('should import custom recommendations', async ({ page }) => {
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Wait for settings page to fully load - verify the main heading appears
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
@@ -263,7 +263,7 @@ test.describe('Data Management', () => {
 
   test('should export recommendations', async ({ page }) => {
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Verify Export Recommendations button is visible
     const exportButton = page.locator('button', {
@@ -281,7 +281,7 @@ test.describe('Data Management', () => {
 
   test('should reset to default recommendations', async ({ page }) => {
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // First import custom recommendations to enable reset
     const customRecommendations = {
@@ -348,7 +348,7 @@ test.describe('Data Management', () => {
     page,
   }) => {
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Import custom recommendations with multi-language names
     const customRecommendations = {
@@ -393,15 +393,13 @@ test.describe('Data Management', () => {
     await expect(page.getByText('1 item')).toBeVisible();
 
     // Navigate to Inventory and select Water & Beverages category
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Wait for inventory page to load
-    await expect(
-      page.getByRole('heading', { name: 'Inventory' }),
-    ).toBeVisible();
+    await expect(page.getByTestId('page-inventory')).toBeVisible();
 
     // Click on Water & Beverages category tab
-    await page.click('button:has-text("Water")');
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items to see the custom recommendation
     await expandRecommendedItems(page);
@@ -412,12 +410,12 @@ test.describe('Data Management', () => {
     });
 
     // Switch to Finnish
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
     await page.selectOption('#language-select', 'fi');
 
-    // Navigate back to Inventory
-    await page.click('text=Varasto'); // Finnish for Inventory
-    await page.click('button:has-text("Vesi")'); // Finnish for Water
+    // Navigate back to Inventory using testid (works regardless of language)
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('category-water-beverages').click();
 
     // Expand recommended items again (in Finnish, use "Suositeltu:" instead of "Recommended:")
     await expect(page.locator('text=Suositeltu:')).toBeVisible();
@@ -440,7 +438,7 @@ test.describe('Data Management', () => {
 
   test('should reject invalid recommendations file', async ({ page }) => {
     // Navigate to Settings
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
 
     // Create invalid recommendations file (missing required fields)
     const invalidRecommendations = {

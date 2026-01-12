@@ -45,12 +45,12 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Note: Custom categories might not be fully integrated into UI navigation yet
     // This test verifies the data structure supports custom categories
     // Custom categories are stored and can be used when creating items
-    await expect(page.locator('h1:has-text("Inventory")')).toBeVisible();
+    await expect(page.getByTestId('page-inventory')).toBeVisible();
 
     // Verify custom category exists in data
     const storedData = await page.evaluate((key) => {
@@ -94,14 +94,14 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Click on custom category (if visible in navigation)
     // Or add item and select custom category
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Fill form
     await page.fill('input[name="name"]', 'Pet Food');
@@ -122,7 +122,7 @@ test.describe('Custom Categories', () => {
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Item should be added
     await expect(page.locator('text=Pet Food')).toBeVisible();
@@ -222,10 +222,7 @@ test.describe('Custom Categories', () => {
 
     // Custom category should appear on dashboard
     // Dashboard shows category cards, custom categories should be included
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
-
-    // Verify dashboard loaded successfully
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
+    await expect(page.getByTestId('page-dashboard')).toBeVisible();
 
     // Category might be shown as a card or in a list
     // This is a soft check - custom categories are supported in the data model
@@ -243,7 +240,7 @@ test.describe('Custom Categories', () => {
     } else {
       // Custom category not visible in UI (integration may be pending)
       // Verify dashboard loaded successfully as fallback
-      await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
+      await expect(page.getByTestId('page-dashboard')).toBeVisible();
     }
   });
 
@@ -304,7 +301,7 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Try to filter by custom category
     // Custom categories should appear in category navigation
@@ -362,7 +359,7 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Export data
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
     const exportButton = page.locator('button', {
       hasText: /Export Data|Vie tiedot/i,
     });

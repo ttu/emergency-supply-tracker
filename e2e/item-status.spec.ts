@@ -8,11 +8,11 @@ test.describe('Item Status Indicators', () => {
   test('should show OK status for item with sufficient quantity', async ({
     page,
   }) => {
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity >= recommended
     await page.fill('input[name="name"]', 'OK Status Item');
@@ -22,7 +22,7 @@ test.describe('Item Status Indicators', () => {
     // recommendedQuantity is auto-calculated, but we'll set it manually if needed
     // For now, assume 10 is >= recommended
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Item card should show OK status (checkmark icon or green indicator)
     const itemCard = page.locator('text=OK Status Item').locator('..');
@@ -44,11 +44,11 @@ test.describe('Item Status Indicators', () => {
   test('should show Warning status for item with low quantity', async ({
     page,
   }) => {
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity < 50% of recommended
     // Set quantity to 2, but recommended will be higher
@@ -58,7 +58,7 @@ test.describe('Item Status Indicators', () => {
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity will be auto-calculated (likely > 4 for 2 adults, 3 days)
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Item should show warning status
     const itemCard = page.locator('text=Warning Status Item').locator('..');
@@ -91,11 +91,11 @@ test.describe('Item Status Indicators', () => {
   test('should show Critical status for item with zero quantity', async ({
     page,
   }) => {
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity = 0
     await page.fill('input[name="name"]', 'Critical Status Item');
@@ -103,26 +103,26 @@ test.describe('Item Status Indicators', () => {
     await page.fill('input[name="quantity"]', '0');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Item should show critical status
     const itemCard = page.locator('text=Critical Status Item').locator('..');
     await expect(itemCard).toBeVisible();
 
     // Critical items should trigger alerts on dashboard
-    await page.click('text=Dashboard');
-    await expect(page.locator('h2:has-text("Alerts")')).toBeVisible({
+    await page.getByTestId('nav-dashboard').click();
+    await expect(page.getByTestId('alerts-section')).toBeVisible({
       timeout: 5000,
     });
   });
 
   test('should show Critical status for expired item', async ({ page }) => {
     // Add expired item
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Expired Critical Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -131,10 +131,10 @@ test.describe('Item Status Indicators', () => {
     await page.uncheck('input[type="checkbox"]');
     // Set expiration date in the past
     await page.fill('input[type="date"]', '2024-01-01');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard
-    await page.click('text=Dashboard');
+    await page.getByTestId('nav-dashboard').click();
 
     // Should show critical alert for expired item
     await expect(page.locator('text=/expired|vanhentunut/i')).toBeVisible({
@@ -144,24 +144,24 @@ test.describe('Item Status Indicators', () => {
 
   test('should update status when quantity changes', async ({ page }) => {
     // Add item with low quantity
-    await page.click('text=Inventory');
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Status Update Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '2'); // Low quantity
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Edit item to increase quantity
     await page.click('text=Status Update Item');
     await page.waitForSelector('input[name="quantity"]');
     await page.fill('input[name="quantity"]', '20'); // Higher quantity
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Item should still be visible (status updated)
     await expect(page.locator('text=Status Update Item')).toBeVisible();
@@ -169,34 +169,34 @@ test.describe('Item Status Indicators', () => {
 
   test('should show status in category summary', async ({ page }) => {
     // Add items with different statuses
-    await page.click('text=Inventory');
+    await page.getByTestId('nav-inventory').click();
 
     // Add OK item
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'OK Food Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '10');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Add Critical item
-    await page.click('button:has-text("Add Item")');
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-    await page.click('button:has-text("Custom Item")');
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+    await page.getByTestId('custom-item-button').click();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Critical Food Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '0');
     await page.selectOption('select[name="unit"]', 'pieces');
     await page.check('input[type="checkbox"]');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard
-    await page.click('text=Dashboard');
+    await page.getByTestId('nav-dashboard').click();
 
     // Food category card should show status (critical due to zero quantity item)
     const foodCategoryCard = page.locator('[data-testid="category-food"]');

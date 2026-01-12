@@ -60,7 +60,7 @@ test.describe('Onboarding Flow', () => {
     await page.getByTestId('skip-quick-setup-button').click();
 
     // Should navigate to Dashboard after completion
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
+    await expect(page.getByTestId('page-dashboard')).toBeVisible({
       timeout: 5000,
     });
   });
@@ -94,7 +94,7 @@ test.describe('Onboarding Flow', () => {
     await page.getByTestId('add-items-button').click();
 
     // Should navigate to Dashboard
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
+    await expect(page.getByTestId('page-dashboard')).toBeVisible({
       timeout: 5000,
     });
 
@@ -134,7 +134,7 @@ test.describe('Onboarding Flow', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Should go directly to Dashboard, not onboarding
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
+    await expect(page.getByTestId('page-dashboard')).toBeVisible();
     await expect(page.getByTestId('onboarding-welcome')).not.toBeVisible();
   });
 

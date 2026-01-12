@@ -43,30 +43,29 @@ async function completeQuickSetupOnboarding(page: Page) {
   await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(TIMEOUTS.PAGE_LOAD);
 
-  await expect(page.getByText(/Get Started|Aloita/i)).toBeVisible({
+  await expect(page.getByTestId('onboarding-welcome')).toBeVisible({
     timeout: TIMEOUTS.DEPLOYED_SITE,
   });
-  await page.getByRole('button', { name: /Get Started|Aloita/i }).click();
+  await page.getByTestId('get-started-button').click();
 
-  await expect(page.getByText(/Family|Perhe/i)).toBeVisible({
+  await expect(page.getByTestId('onboarding-preset-selector')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
-  await page.getByRole('button', { name: /Family|Perhe/i }).click();
+  await page.getByTestId('preset-family').click();
 
-  await expect(page.locator('input[type="number"]').first()).toBeVisible({
+  await expect(page.getByTestId('onboarding-household-form')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const adultsInput = page.locator('input[type="number"]').first();
   const adultsValue = await adultsInput.inputValue();
   expect(Number.parseInt(adultsValue, 10)).toBeGreaterThan(0);
 
-  await page.getByRole('button', { name: /Save|Tallenna/i }).click();
+  await page.getByTestId('household-save-button').click();
 
-  await expect(
-    page.getByRole('button', {
-      name: /Add Selected Items|Lisää valitut/i,
-    }),
-  ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+  await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
+    timeout: TIMEOUTS.ELEMENT_VISIBLE,
+  });
+  await expect(page.getByTestId('add-items-button')).toBeVisible();
 
   // Select items first (button is disabled when no items selected)
   // Show details to access item checkboxes
@@ -86,21 +85,17 @@ async function completeQuickSetupOnboarding(page: Page) {
   await firstCheckbox.click();
 
   // Now click Add Selected Items (button should be enabled)
-  await page
-    .getByRole('button', {
-      name: /Add Selected Items|Lisää valitut/i,
-    })
-    .click();
+  await page.getByTestId('add-items-button').click();
 
-  await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible({
+  await expect(page.getByTestId('page-dashboard')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 }
 
 async function verifyRecommendedItemsAdded(page: Page) {
-  await page.click('text=Inventory');
-  await expect(page.locator('button:has-text("Add Item")')).toBeVisible();
-  await expect(page.locator('button:has-text("Water")')).toBeVisible();
+  await page.getByTestId('nav-inventory').click();
+  await expect(page.getByTestId('add-item-button')).toBeVisible();
+  await expect(page.getByTestId('category-water-beverages')).toBeVisible();
 
   const itemsAdded = await page.evaluate((key) => {
     const data = localStorage.getItem(key);
@@ -117,21 +112,23 @@ async function verifyRecommendedItemsAdded(page: Page) {
 
 async function editItemInCategory(
   page: Page,
-  categoryButton: string,
+  categoryId: string,
   quantity: string,
 ) {
   await ensureNoModals(page);
-  await page.click(`button:has-text("${categoryButton}")`);
+  await page.getByTestId(`category-${categoryId}`).click();
   await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
-  const items = page.locator('[class*="itemCard"], [data-testid^="item-"]');
+  const items = page.locator(
+    '[class*="itemCard"], [data-testid^="item-card-"]',
+  );
   if ((await items.count()) > 0) {
     await items.first().click();
-    await expect(
-      page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-    ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    await expect(page.getByTestId('item-form')).toBeVisible({
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
     await page.fill('input[name="quantity"]', quantity);
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
     await page
       .waitForSelector('[role="dialog"]', { state: 'hidden' })
       .catch(() => {});
@@ -141,17 +138,19 @@ async function editItemInCategory(
 
 async function editFoodItemAndDisableRecommendation(page: Page) {
   await ensureNoModals(page);
-  await page.click('button:has-text("Food")');
+  await page.getByTestId('category-food').click();
   await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
-  const foodItems = page.locator('[class*="itemCard"], [data-testid^="item-"]');
+  const foodItems = page.locator(
+    '[class*="itemCard"], [data-testid^="item-card-"]',
+  );
   if ((await foodItems.count()) > 0) {
     await foodItems.first().click();
-    await expect(
-      page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-    ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    await expect(page.getByTestId('item-form')).toBeVisible({
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
     await page.fill('input[name="quantity"]', '2');
-    await page.click('button[type="submit"]');
+    await page.getByTestId('save-item-button').click();
     await page
       .waitForSelector('[role="dialog"]', { state: 'hidden' })
       .catch(() => {});
@@ -168,26 +167,24 @@ async function editFoodItemAndDisableRecommendation(page: Page) {
 
 async function testCopyItem(page: Page) {
   await ensureNoModals(page);
-  await page.click('button:has-text("Water")');
+  await page.getByTestId('category-water-beverages').click();
   await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
   const waterItems = page.locator(
-    '[class*="itemCard"], [data-testid^="item-"]',
+    '[class*="itemCard"], [data-testid^="item-card-"]',
   );
   if ((await waterItems.count()) > 0) {
     await waterItems.first().click();
-    await expect(
-      page.locator('h2', { hasText: /Edit Item|Muokkaa/ }),
-    ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
-
-    const copyButton = page.locator('button', {
-      hasText: /Copy|Duplicate|Kopioi/i,
+    await expect(page.getByTestId('item-form')).toBeVisible({
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
     });
+
+    const copyButton = page.getByTestId('copy-item-button');
     if (await copyButton.isVisible().catch(() => false)) {
       await copyButton.click();
-      await expect(
-        page.locator('h2', { hasText: /Add Item|Lisää/i }),
-      ).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+      await expect(page.getByTestId('item-form')).toBeVisible({
+        timeout: TIMEOUTS.ELEMENT_VISIBLE,
+      });
 
       await page.fill('input[name="quantity"]', '25');
       const expiresCheckbox = page.locator('input[type="checkbox"]');
@@ -202,7 +199,7 @@ async function testCopyItem(page: Page) {
       const futureDateString = `${futureYyyy}-${futureMm}-${futureDd}`;
       await page.fill('input[type="date"]', futureDateString);
 
-      await page.click('button[type="submit"]');
+      await page.getByTestId('save-item-button').click();
       await page
         .waitForSelector('[role="dialog"]', { state: 'hidden' })
         .catch(() => {});
@@ -214,22 +211,22 @@ async function testCopyItem(page: Page) {
 }
 
 async function testDashboardAlertsQuickSetup(page: Page) {
-  await page.click('text=Dashboard');
+  await page.getByTestId('nav-dashboard').click();
   await page.waitForLoadState('networkidle');
-  await expect(page.locator('h2:has-text("Alerts")')).toBeVisible({
+  await expect(page.getByTestId('alerts-section')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 
   await ensureNoModals(page);
-  await page.click('text=Inventory');
-  await expect(page.locator('h1:has-text("Inventory")')).toBeVisible({
+  await page.getByTestId('nav-inventory').click();
+  await expect(page.getByTestId('page-inventory')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
-  await page.getByRole('button', { name: 'Add Item' }).click();
-  await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
-  await page.getByRole('button', { name: 'Custom Item' }).click();
-  await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+  await page.getByTestId('add-item-button').click();
+  await expect(page.getByTestId('template-selector')).toBeVisible();
+  await page.getByTestId('custom-item-button').click();
+  await expect(page.getByTestId('item-form')).toBeVisible();
 
   const pastDate = new Date();
   pastDate.setDate(pastDate.getDate() - 5);
@@ -248,12 +245,12 @@ async function testDashboardAlertsQuickSetup(page: Page) {
     .locator('input[type="checkbox"]');
   await neverExpiresCheckbox.uncheck();
   await page.fill('input[type="date"]', expiredDateString);
-  await page.click('button[type="submit"]');
+  await page.getByTestId('save-item-button').click();
   await page
     .waitForSelector('[role="dialog"]', { state: 'hidden' })
     .catch(() => {});
 
-  await page.click('text=Dashboard');
+  await page.getByTestId('nav-dashboard').click();
   await page.waitForLoadState('networkidle');
   await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
@@ -275,7 +272,7 @@ async function testDashboardAlertsQuickSetup(page: Page) {
 }
 
 async function testSettingsFeaturesQuickSetup(page: Page) {
-  await page.click('text=Settings');
+  await page.getByTestId('nav-settings').click();
   await page.waitForLoadState('networkidle');
 
   const languageSelect = page.locator('select').first();
@@ -343,9 +340,7 @@ async function changeHouseholdToSinglePerson(page: Page) {
 }
 
 async function testDataManagementQuickSetup(page: Page) {
-  const exportButton = page.locator('button', {
-    hasText: /Export Data|Vie tiedot/i,
-  });
+  const exportButton = page.getByTestId('export-data-button');
   if (await exportButton.isVisible().catch(() => false)) {
     await exportButton.click();
     await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
@@ -433,7 +428,7 @@ async function verifyFinalDashboardQuickSetup(page: Page) {
   });
 
   const dashboardLoaded = await page
-    .locator('h1:has-text("Dashboard")')
+    .getByTestId('page-dashboard')
     .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
     .catch(() => false);
 
@@ -478,9 +473,9 @@ test.describe('Smoke Test - Quick Setup Flow', () => {
     await verifyRecommendedItemsAdded(page);
 
     // PHASE 3: EDIT MULTIPLE RECOMMENDED ITEMS
-    await editItemInCategory(page, 'Water', '50');
+    await editItemInCategory(page, 'water-beverages', '50');
     await editFoodItemAndDisableRecommendation(page);
-    await editItemInCategory(page, 'Medical', '10');
+    await editItemInCategory(page, 'medical-health', '10');
 
     // PHASE 3B: TEST COPY/DUPLICATE ITEM
     await testCopyItem(page);

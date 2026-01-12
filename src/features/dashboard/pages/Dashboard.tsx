@@ -210,7 +210,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   };
 
   return (
-    <div className={styles.dashboard}>
+    <div className={styles.dashboard} data-testid="page-dashboard">
       <DashboardHeader
         preparednessScore={preparednessScore}
         householdSize={household.adults + household.children}

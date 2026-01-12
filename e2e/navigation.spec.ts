@@ -7,7 +7,7 @@ test.describe('Navigation', () => {
 
   test('should navigate between pages', async ({ page }) => {
     // Start on Dashboard
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
+    await expect(page.getByTestId('page-dashboard')).toBeVisible();
 
     // Navigate to Inventory
     await page.getByTestId('nav-inventory').click();
@@ -15,11 +15,11 @@ test.describe('Navigation', () => {
 
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
-    await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
 
     // Navigate to Help
     await page.getByTestId('nav-help').click();
-    await expect(page.locator('h1', { hasText: 'Help' })).toBeVisible();
+    await expect(page.getByTestId('page-help')).toBeVisible();
 
     // Navigate back to Dashboard
     await page.getByTestId('nav-dashboard').click();
@@ -48,9 +48,9 @@ test.describe('Navigation', () => {
     // Add item on Inventory page
     await page.getByTestId('nav-inventory').click();
     await page.getByTestId('add-item-button').click();
-    await expect(page.locator('h2', { hasText: 'Select Item' })).toBeVisible();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
-    await expect(page.locator('h2', { hasText: 'Add Item' })).toBeVisible();
+    await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Persistent Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
@@ -60,7 +60,7 @@ test.describe('Navigation', () => {
 
     // Navigate away to Settings
     await page.getByTestId('nav-settings').click();
-    await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
 
     // Navigate back to Inventory
     await page.getByTestId('nav-inventory').click();
@@ -81,6 +81,6 @@ test.describe('Navigation', () => {
     await expect(page.getByTestId('add-item-button')).toBeVisible();
 
     await page.getByTestId('nav-settings').click();
-    await expect(page.locator('h1:has-text("Settings")')).toBeVisible();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
   });
 });

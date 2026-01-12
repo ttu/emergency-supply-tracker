@@ -221,7 +221,7 @@ test.describe('Backup Reminder', () => {
     });
 
     // Export data (this should record backup date)
-    await page.click('text=Settings');
+    await page.getByTestId('nav-settings').click();
     const exportButton = page.locator('button', {
       hasText: /Export Data|Vie tiedot/i,
     });
@@ -232,7 +232,7 @@ test.describe('Backup Reminder', () => {
     await page.waitForTimeout(1000);
 
     // Navigate back to Dashboard
-    await page.click('text=Dashboard');
+    await page.getByTestId('nav-dashboard').click();
     await page.waitForLoadState('networkidle');
 
     // Reminder should be gone (backup date was recorded)
@@ -297,6 +297,6 @@ test.describe('Backup Reminder', () => {
     });
 
     // Should be in the alerts section
-    await expect(page.locator('h2:has-text("Alerts")')).toBeVisible();
+    await expect(page.getByTestId('alerts-section')).toBeVisible();
   });
 });
