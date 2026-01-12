@@ -18,26 +18,26 @@ interface AllProvidersProps {
  * 1. ErrorBoundary - Catches React errors
  * 2. SettingsProvider - Provides settings context (theme, language, etc.)
  * 3. ThemeApplier - Applies theme CSS variables (requires SettingsProvider)
- * 4. HouseholdProvider - Provides household configuration
- * 5. RecommendedItemsProvider - Provides recommended item definitions
- * 6. NotificationProvider - Provides notification context (must wrap InventoryProvider)
+ * 4. NotificationProvider - Provides notification context (must wrap InventoryProvider)
+ * 5. HouseholdProvider - Provides household configuration
+ * 6. RecommendedItemsProvider - Provides recommended item definitions
  * 7. InventoryProvider - Provides inventory items and categories (innermost)
  *
  * Used by Storybook stories and test utilities to provide consistent context.
- * Note: App.tsx has its own provider setup that matches this order.
+ * Note: This order matches App.tsx for consistency.
  */
 export function AllProviders({ children }: AllProvidersProps) {
   return (
     <ErrorBoundary>
       <SettingsProvider>
         <ThemeApplier>
-          <HouseholdProvider>
-            <RecommendedItemsProvider>
-              <NotificationProvider>
+          <NotificationProvider>
+            <HouseholdProvider>
+              <RecommendedItemsProvider>
                 <InventoryProvider>{children}</InventoryProvider>
-              </NotificationProvider>
-            </RecommendedItemsProvider>
-          </HouseholdProvider>
+              </RecommendedItemsProvider>
+            </HouseholdProvider>
+          </NotificationProvider>
         </ThemeApplier>
       </SettingsProvider>
     </ErrorBoundary>
