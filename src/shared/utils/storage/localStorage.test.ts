@@ -12,7 +12,7 @@ import {
   createMockCategory,
   createMockHousehold,
 } from '@/shared/utils/test/factories';
-import { CURRENT_SCHEMA_VERSION } from './migrations';
+import { CURRENT_SCHEMA_VERSION, MigrationError } from './migrations';
 import { createCategoryId } from '@/shared/types';
 
 describe('localStorage utilities', () => {
@@ -425,6 +425,204 @@ describe('localStorage utilities', () => {
       );
 
       consoleSpy.mockRestore();
+    });
+
+    it('handles unsupported version in getAppData', () => {
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const unsupportedData = {
+        version: '0.9.0', // Unsupported version
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 7,
+          useFreezer: false,
+        },
+        settings: {
+          language: 'en',
+          theme: 'light',
+          highContrast: false,
+          advancedFeatures: {
+            calorieTracking: false,
+            powerManagement: false,
+            waterTracking: false,
+          },
+        },
+        customCategories: [],
+        items: [],
+        customTemplates: [],
+        dismissedAlertIds: [],
+        disabledRecommendedItems: [],
+        lastModified: new Date().toISOString(),
+      };
+      localStorage.setItem(
+        'emergencySupplyTracker',
+        JSON.stringify(unsupportedData),
+      );
+
+      const result = getAppData();
+
+      expect(result).toBeUndefined();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/Data schema version .* is not supported/),
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('handles migration failure with MigrationError in getAppData', async () => {
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      // Create data that needs migration but will fail
+      const oldData = createMockAppData({ version: '1.0.0' });
+      localStorage.setItem('emergencySupplyTracker', JSON.stringify(oldData));
+
+      // Import migrations module and mock functions
+      const migrations = await import('./migrations');
+      const needsMigrationSpy = vi
+        .spyOn(migrations, 'needsMigration')
+        .mockReturnValue(true);
+      const migrateSpy = vi
+        .spyOn(migrations, 'migrateToCurrentVersion')
+        .mockImplementation(() => {
+          throw new MigrationError(
+            'Migration failed',
+            '1.0.0',
+            CURRENT_SCHEMA_VERSION,
+          );
+        });
+
+      const result = getAppData();
+
+      // Should return the unmigrated data
+      expect(result).toBeDefined();
+      expect(result?.version).toBe('1.0.0');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /Migration failed from .* to .*: Migration failed/,
+        ),
+      );
+
+      needsMigrationSpy.mockRestore();
+      migrateSpy.mockRestore();
+      consoleSpy.mockRestore();
+    });
+
+    it('handles migration failure with generic error in getAppData', async () => {
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      const oldData = createMockAppData({ version: '1.0.0' });
+      localStorage.setItem('emergencySupplyTracker', JSON.stringify(oldData));
+
+      // Import migrations module and mock functions
+      const migrations = await import('./migrations');
+      const needsMigrationSpy = vi
+        .spyOn(migrations, 'needsMigration')
+        .mockReturnValue(true);
+      const migrateSpy = vi
+        .spyOn(migrations, 'migrateToCurrentVersion')
+        .mockImplementation(() => {
+          throw new Error('Generic migration error');
+        });
+
+      const result = getAppData();
+
+      // Should return the unmigrated data
+      expect(result).toBeDefined();
+      expect(result?.version).toBe('1.0.0');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Migration failed:',
+        expect.any(Error),
+      );
+
+      needsMigrationSpy.mockRestore();
+      migrateSpy.mockRestore();
+      consoleSpy.mockRestore();
+    });
+
+    it('handles unsupported version in importFromJSON', () => {
+      const unsupportedData = {
+        version: '0.9.0', // Unsupported version
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 7,
+          useFreezer: false,
+        },
+        settings: {
+          language: 'en',
+          theme: 'light',
+          highContrast: false,
+          advancedFeatures: {
+            calorieTracking: false,
+            powerManagement: false,
+            waterTracking: false,
+          },
+        },
+        customCategories: [],
+        items: [],
+        customTemplates: [],
+        dismissedAlertIds: [],
+        disabledRecommendedItems: [],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(unsupportedData);
+
+      try {
+        importFromJSON(json);
+        expect.fail('Should have thrown MigrationError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(MigrationError);
+        expect((error as Error).message).toContain('is not supported');
+      }
+    });
+
+    it('applies migration in importFromJSON when data needs migration', async () => {
+      // Create data with an older version that needs migration
+      const oldData = {
+        version: '1.0.0',
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 7,
+          useFreezer: false,
+        },
+        settings: {
+          language: 'en',
+          theme: 'light',
+          highContrast: false,
+          advancedFeatures: {
+            calorieTracking: false,
+            powerManagement: false,
+            waterTracking: false,
+          },
+        },
+        customCategories: [],
+        items: [],
+        customTemplates: [],
+        dismissedAlertIds: [],
+        disabledRecommendedItems: [],
+        lastModified: new Date().toISOString(),
+      };
+      const json = JSON.stringify(oldData);
+
+      // Mock needsMigration to return true to trigger migration path
+      const migrations = await import('./migrations');
+      const needsMigrationSpy = vi
+        .spyOn(migrations, 'needsMigration')
+        .mockReturnValue(true);
+
+      const result = importFromJSON(json);
+
+      // Should have migrated to current version
+      expect(result.version).toBe(CURRENT_SCHEMA_VERSION);
+
+      needsMigrationSpy.mockRestore();
     });
   });
 });
