@@ -114,6 +114,32 @@ describe('Onboarding', () => {
     });
   });
 
+  it('allows going back from preset to welcome', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <SettingsProvider>
+        <Onboarding onComplete={onComplete} />
+      </SettingsProvider>,
+    );
+
+    // Welcome -> Preset
+    const getStartedButton = screen.getByText('Get Started');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Single Person')).toBeInTheDocument();
+    });
+
+    // Preset -> Welcome (back button)
+    const backButton = screen.getByText('Back');
+    await user.click(backButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Get Started')).toBeInTheDocument();
+    });
+  });
+
   it('allows going back from household form to preset', async () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
@@ -147,6 +173,49 @@ describe('Onboarding', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Single Person')).toBeInTheDocument();
+    });
+  });
+
+  it('allows going back from quick setup to household', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <SettingsProvider>
+        <Onboarding onComplete={onComplete} />
+      </SettingsProvider>,
+    );
+
+    // Navigate to quick setup
+    const getStartedButton = screen.getByText('Get Started');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Single Person')).toBeInTheDocument();
+    });
+
+    const singlePreset = screen.getByText('Single Person').closest('div');
+    if (singlePreset) {
+      await user.click(singlePreset);
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText('Save')).toBeInTheDocument();
+    });
+
+    const continueButton = screen.getByText('Save');
+    await user.click(continueButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Skip')).toBeInTheDocument();
+    });
+
+    // Quick Setup -> Household (back button)
+    const backButtons = screen.getAllByText('Back');
+    // The first Back button should be the one that goes back to household
+    await user.click(backButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Save')).toBeInTheDocument();
     });
   });
 
@@ -373,6 +442,109 @@ describe('Onboarding', () => {
     expect(items.length).toBeGreaterThan(0);
     items.forEach((item: { quantity: number }) => {
       expect(item.quantity).toBe(0);
+    });
+  });
+
+  it('filters out frozen items when household does not use freezer', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <SettingsProvider>
+        <Onboarding onComplete={onComplete} />
+      </SettingsProvider>,
+    );
+
+    // Navigate to household form
+    const getStartedButton = screen.getByText('Get Started');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Single Person')).toBeInTheDocument();
+    });
+
+    const singlePreset = screen.getByText('Single Person').closest('div');
+    if (singlePreset) {
+      await user.click(singlePreset);
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText('Save')).toBeInTheDocument();
+    });
+
+    // Ensure freezer checkbox is unchecked (to test filtering)
+    const freezerCheckbox = screen.getByLabelText(
+      /I want to use my freezer/i,
+    ) as HTMLInputElement;
+    // If it's checked, uncheck it; if it's not checked, leave it as is
+    if (freezerCheckbox.checked) {
+      await user.click(freezerCheckbox);
+      await waitFor(() => {
+        expect(freezerCheckbox).not.toBeChecked();
+      });
+    }
+
+    // Submit form
+    const continueButton = screen.getByText('Save');
+    await user.click(continueButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Add Selected Items')).toBeInTheDocument();
+    });
+
+    // Show details and select a frozen item (if available in the list)
+    const showDetailsButton = screen.getByText('Show Details');
+    await user.click(showDetailsButton);
+
+    // Try to find and select a frozen item (frozen-vegetables, frozen-meat, or frozen-meals)
+    const checkboxes = screen.getAllByRole('checkbox');
+    for (const checkbox of checkboxes) {
+      const id = checkbox.getAttribute('id');
+      if (
+        id &&
+        (id.includes('frozen-vegetables') ||
+          id.includes('frozen-meat') ||
+          id.includes('frozen-meals'))
+      ) {
+        await user.click(checkbox);
+        break;
+      }
+    }
+
+    // Also select a non-frozen item to ensure we have at least one item
+    const nonFrozenCheckbox = checkboxes.find(
+      (cb) =>
+        cb.getAttribute('id')?.startsWith('item-') &&
+        !cb.getAttribute('id')?.includes('frozen-'),
+    );
+    if (nonFrozenCheckbox) {
+      await user.click(nonFrozenCheckbox);
+    }
+
+    const addItemsButton = screen.getByText('Add Selected Items');
+    await user.click(addItemsButton);
+
+    // Verify onComplete was called
+    expect(onComplete).toHaveBeenCalled();
+
+    // Get the items that were passed to onComplete
+    const callArgs = onComplete.mock.calls[0];
+    const items = callArgs[1] as Array<{ id: string }>;
+
+    // Verify that no frozen items are included
+    const frozenItemIds = items
+      .map((item) => item.id)
+      .filter(
+        (id) =>
+          id.includes('frozen-vegetables') ||
+          id.includes('frozen-meat') ||
+          id.includes('frozen-meals'),
+      );
+
+    expect(frozenItemIds).toHaveLength(0);
+
+    // Verify that household config has useFreezer: false
+    expect(callArgs[0]).toMatchObject({
+      useFreezer: false,
     });
   });
 });
