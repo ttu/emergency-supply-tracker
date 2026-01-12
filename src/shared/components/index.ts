@@ -7,5 +7,6 @@ export { Input } from './Input';
 export { LanguageSwitcher } from './LanguageSwitcher';
 export { Modal } from './Modal';
 export { Navigation } from './Navigation';
+export { NotificationBar } from './NotificationBar';
 export { Select } from './Select';
 export { Tooltip } from './Tooltip';

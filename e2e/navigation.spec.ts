@@ -66,7 +66,10 @@ test.describe('Navigation', () => {
     await page.getByTestId('nav-inventory').click();
 
     // Verify item still exists
-    await expect(page.locator('text=Persistent Item')).toBeVisible();
+    // Use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Persistent Item/i }),
+    ).toBeVisible();
   });
 
   test('should work on mobile viewport', async ({ page }) => {

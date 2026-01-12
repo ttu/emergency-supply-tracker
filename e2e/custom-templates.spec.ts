@@ -105,7 +105,12 @@ test.describe('Custom Product Templates', () => {
       .catch(() => false);
 
     if (customTemplateVisible) {
-      await page.click('text=My Custom Product');
+      // Use getByRole to target item card button specifically (not notification)
+      const itemCardButton = page.getByRole('button', {
+        name: /My Custom Product/i,
+      });
+      await expect(itemCardButton).toBeVisible();
+      await itemCardButton.click();
       // Form should be pre-filled with template data
       await expect(page.getByTestId('item-form')).toBeVisible();
     } else {
@@ -121,8 +126,10 @@ test.describe('Custom Product Templates', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Item should be added
-    await expect(page.locator('text=My Custom Product')).toBeVisible();
+    // Item should be added - use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /My Custom Product/i }),
+    ).toBeVisible();
   });
 
   test('should persist custom templates after reload', async ({ page }) => {
@@ -190,7 +197,10 @@ test.describe('Custom Product Templates', () => {
     await page.getByTestId('save-item-button').click();
 
     // Item should be added
-    await expect(page.locator('text=Template Source Item')).toBeVisible();
+    // Use getByRole to target item card button specifically
+    await expect(
+      page.getByRole('button', { name: /Template Source Item/i }),
+    ).toBeVisible();
 
     // Note: "Save as Template" functionality might be in item detail view
     // or might not be implemented yet. This test verifies the item can be created.
