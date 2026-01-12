@@ -55,6 +55,29 @@ describe('localStorage utilities', () => {
     expect(loaded).toEqual(mockData);
   });
 
+  it('handles data with empty customCategories array', () => {
+    const mockData = createMockAppData({
+      customCategories: [],
+    });
+    saveAppData(mockData);
+    const loaded = getAppData();
+    expect(loaded?.customCategories).toEqual([]);
+  });
+
+  it('handles data with customCategories that need ID casting', () => {
+    const mockData = createMockAppData({
+      customCategories: [
+        createMockCategory({ id: createCategoryId('test-cat-1') }),
+        createMockCategory({ id: createCategoryId('test-cat-2') }),
+      ],
+    });
+    saveAppData(mockData);
+    const loaded = getAppData();
+    expect(loaded?.customCategories).toHaveLength(2);
+    expect(loaded?.customCategories[0].id).toBe('test-cat-1');
+    expect(loaded?.customCategories[1].id).toBe('test-cat-2');
+  });
+
   it('returns undefined when no data exists', () => {
     expect(getAppData()).toBeUndefined();
   });
