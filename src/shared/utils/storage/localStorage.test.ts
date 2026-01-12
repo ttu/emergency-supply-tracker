@@ -394,5 +394,37 @@ describe('localStorage utilities', () => {
       setItemSpy.mockRestore();
       consoleSpy.mockRestore();
     });
+
+    it('handles invalid JSON gracefully', () => {
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      localStorage.setItem('emergencySupplyTracker', '{ invalid json }');
+
+      const result = getAppData();
+
+      expect(result).toBeUndefined();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to parse JSON from localStorage:',
+        expect.any(Error),
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('handles invalid JSON in importFromJSON', () => {
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const invalidJson = '{ invalid json }';
+
+      expect(() => importFromJSON(invalidJson)).toThrow();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to parse import JSON:',
+        expect.any(Error),
+      );
+
+      consoleSpy.mockRestore();
+    });
   });
 });
