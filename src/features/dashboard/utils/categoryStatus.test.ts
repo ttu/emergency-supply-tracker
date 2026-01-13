@@ -128,7 +128,6 @@ describe('calculateCategoryStatus', () => {
         quantity: 0,
         unit: 'liters', // 'gallons' is not a valid unit
         itemType: createProductTemplateId('bottled-water'),
-        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -139,7 +138,6 @@ describe('calculateCategoryStatus', () => {
         quantity: 10,
         unit: 'bottles',
         itemType: createProductTemplateId('long-life-milk'),
-        productTemplateId: createProductTemplateId('long-life-milk'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -179,7 +177,6 @@ describe('calculateCategoryStatus', () => {
         quantity: 0,
         unit: 'liters', // 'gallons' is not a valid unit
         itemType: createProductTemplateId('bottled-water'),
-        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: true,
       }),
     ];
@@ -205,7 +202,6 @@ describe('calculateCategoryStatus', () => {
         quantity: 28,
         unit: 'liters', // 'gallons' is not a valid unit
         itemType: createProductTemplateId('bottled-water'),
-        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -216,7 +212,6 @@ describe('calculateCategoryStatus', () => {
         quantity: 10,
         unit: 'cans',
         itemType: createProductTemplateId('canned-soup'),
-        productTemplateId: createProductTemplateId('canned-soup'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -476,7 +471,7 @@ describe('calculateCategoryShortages', () => {
           categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
-          productTemplateId: createProductTemplateId('pasta'), // 1 L/kg water requirement
+          itemType: createProductTemplateId('pasta'), // 1 L/kg water requirement
           neverExpires: false,
           expirationDate: createDateOnly('2025-12-31'),
         }),
@@ -566,7 +561,6 @@ describe('calculateCategoryShortages', () => {
         quantity: actual,
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
-        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -604,7 +598,6 @@ describe('calculateCategoryShortages', () => {
         quantity: waterNeeded,
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
-        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -615,7 +608,6 @@ describe('calculateCategoryShortages', () => {
         quantity: milkNeeded,
         unit: 'liters',
         itemType: createProductTemplateId('long-life-milk'),
-        productTemplateId: createProductTemplateId('long-life-milk'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -626,7 +618,6 @@ describe('calculateCategoryShortages', () => {
         quantity: juiceNeeded,
         unit: 'liters',
         itemType: createProductTemplateId('long-life-juice'),
-        productTemplateId: createProductTemplateId('long-life-juice'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -664,13 +655,13 @@ describe('calculateCategoryShortages', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
         quantity: 50, // missing 4
-        productTemplateId: createProductTemplateId('bottled-water'),
+        itemType: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('water-beverages'),
         quantity: 0, // missing all
-        productTemplateId: createProductTemplateId('long-life-milk'),
+        itemType: createProductTemplateId('long-life-milk'),
       }),
     ];
 
@@ -701,14 +692,14 @@ describe('calculateCategoryShortages', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('food'),
         quantity: soupQuantity,
-        productTemplateId: createProductTemplateId('canned-soup'),
+        itemType: createProductTemplateId('canned-soup'),
         caloriesPerUnit: soupCalories,
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('food'),
         quantity: pastaQuantity,
-        productTemplateId: createProductTemplateId('pasta'),
+        itemType: createProductTemplateId('pasta'),
         caloriesPerUnit: pastaCalories,
       }),
     ];
@@ -752,7 +743,7 @@ describe('calculateCategoryShortages', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: createProductTemplateId('rice'),
+        itemType: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -777,7 +768,7 @@ describe('calculateCategoryShortages', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
         quantity: 54,
-        productTemplateId: createProductTemplateId('bottled-water'),
+        itemType: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -832,7 +823,6 @@ describe('calculateCategoryStatus - inventory-based status', () => {
         quantity: actual,
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
-        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -872,7 +862,6 @@ describe('calculateCategoryStatus - inventory-based status', () => {
         quantity: actual,
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
-        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -910,7 +899,7 @@ describe('calculateCategoryStatus - inventory-based status', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: createProductTemplateId('rice'),
+        itemType: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -950,7 +939,7 @@ describe('calculateCategoryStatus - inventory-based status', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: createProductTemplateId('rice'),
+        itemType: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -993,14 +982,14 @@ describe('calculateCategoryStatus - inventory-based status', () => {
         categoryId: createCategoryId('cash-documents'),
         quantity: 300, // 100% of 300 euros
         unit: 'euros',
-        productTemplateId: createProductTemplateId('cash'),
+        itemType: createProductTemplateId('cash'),
       }),
       createMockInventoryItem({
         id: createItemId('docs-1'),
         categoryId: createCategoryId('cash-documents'),
         quantity: 1, // 100% of 1 sets
         unit: 'sets',
-        productTemplateId: createProductTemplateId('document-copies'),
+        itemType: createProductTemplateId('document-copies'),
       }),
       // contact-list is missing (0/1)
     ];
@@ -1144,7 +1133,7 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
         quantity: actual,
-        productTemplateId: createProductTemplateId('bottled-water'),
+        itemType: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -1170,7 +1159,7 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
         quantity,
-        productTemplateId: createProductTemplateId('bottled-water'),
+        itemType: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -1200,7 +1189,7 @@ describe('calculateCategoryShortages - communication-info category', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 1,
         unit: 'pieces',
-        productTemplateId: createProductTemplateId('battery-radio'),
+        itemType: createProductTemplateId('battery-radio'),
       }),
     ];
 
@@ -1226,14 +1215,14 @@ describe('calculateCategoryShortages - communication-info category', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 1,
         unit: 'pieces',
-        productTemplateId: createProductTemplateId('battery-radio'),
+        itemType: createProductTemplateId('battery-radio'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('communication-info'),
         quantity: 1,
         unit: 'pieces',
-        productTemplateId: createProductTemplateId('hand-crank-radio'),
+        itemType: createProductTemplateId('hand-crank-radio'),
       }),
     ];
 
@@ -1259,7 +1248,7 @@ describe('calculateCategoryShortages - communication-info category', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 5,
         unit: 'pieces',
-        productTemplateId: createProductTemplateId('battery-radio'),
+        itemType: createProductTemplateId('battery-radio'),
       }),
     ];
 
@@ -1290,7 +1279,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 2,
         unit: 'pieces',
-        // No productTemplateId - this is a custom item
+        // itemType is 'custom' - this is a custom item
       });
 
       const result = calculateCategoryShortages(
@@ -1354,16 +1343,15 @@ describe('calculateCategoryShortages - item matching logic', () => {
     });
   });
 
-  describe('items should match by productTemplateId', () => {
-    it('should match item with productTemplateId even if name differs', () => {
+  describe('items should match by itemType', () => {
+    it('should match item with itemType even if name differs', () => {
       const item = createMockInventoryItem({
         id: createItemId('item-1'),
         name: 'My Custom Battery Radio', // Different name
-        itemType: createProductTemplateId('battery-radio'),
+        itemType: createProductTemplateId('battery-radio'), // This enables matching
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Not enough, so it appears in shortages
         unit: 'pieces',
-        productTemplateId: createProductTemplateId('battery-radio'), // This enables matching
       });
 
       const result = calculateCategoryShortages(
@@ -1374,7 +1362,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         [],
       );
 
-      // Should match by productTemplateId (even though quantity is 0)
+      // Should match by itemType (even though quantity is 0)
       const batteryRadioShortage = result.shortages.find(
         (s) => s.itemId === 'battery-radio',
       );
@@ -1385,21 +1373,21 @@ describe('calculateCategoryShortages - item matching logic', () => {
       expect(result.totalActual).toBe(0);
     });
 
-    it('should match multiple items with same productTemplateId and sum quantities', () => {
+    it('should match multiple items with same itemType and sum quantities', () => {
       const items = [
         createMockInventoryItem({
           id: createItemId('item-1'),
           name: 'Radio 1',
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
-          productTemplateId: createProductTemplateId('battery-radio'),
+          itemType: createProductTemplateId('battery-radio'),
         }),
         createMockInventoryItem({
           id: createItemId('item-2'),
           name: 'Radio 2',
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
-          productTemplateId: createProductTemplateId('battery-radio'),
+          itemType: createProductTemplateId('battery-radio'),
         }),
       ];
 
@@ -1429,7 +1417,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         name: 'My Radio',
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Has 0, needs 1
-        productTemplateId: createProductTemplateId('battery-radio'),
+        itemType: createProductTemplateId('battery-radio'),
       });
 
       const result = calculateCategoryShortages(
@@ -1460,7 +1448,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Not enough, so it appears in shortages
         unit: 'pieces',
-        // No productTemplateId, but itemType matches
+        // itemType matches
       });
 
       const result = calculateCategoryShortages(
@@ -1490,7 +1478,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Not enough, so it appears in shortages
         unit: 'pieces',
-        // No productTemplateId
+        // itemType is 'custom'
       });
 
       const result = calculateCategoryShortages(
@@ -1553,16 +1541,15 @@ describe('calculateCategoryShortages - item matching logic', () => {
   });
 
   describe('matching priority and edge cases', () => {
-    it('should prioritize productTemplateId over name matching', () => {
-      // Item with productTemplateId for one item but name matching another
+    it('should match by itemType, not by name', () => {
+      // Item with itemType for one item but name matching another
       const item = createMockInventoryItem({
         id: createItemId('item-1'),
         name: 'Battery Radio', // Name would match 'battery-radio' if not custom
-        itemType: 'custom',
+        itemType: createProductTemplateId('hand-crank-radio'), // But itemType matches different item
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Not enough, so it appears in shortages
         unit: 'pieces',
-        productTemplateId: createProductTemplateId('hand-crank-radio'), // But productTemplateId matches different item
       });
 
       const result = calculateCategoryShortages(
@@ -1573,7 +1560,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         [],
       );
 
-      // Should match hand-crank-radio by productTemplateId
+      // Should match hand-crank-radio by itemType
       const handCrankShortage = result.shortages.find(
         (s) => s.itemId === 'hand-crank-radio',
       );
@@ -1626,7 +1613,6 @@ describe('calculateCategoryShortages - item matching logic', () => {
         unit: 'pieces',
         // Needs 2, has 1
         markedAsEnough: true, // But marked as enough
-        productTemplateId: createProductTemplateId('battery-radio'),
       });
 
       const result = calculateCategoryShortages(
@@ -1657,7 +1643,7 @@ describe('getCategoryDisplayStatus', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
         quantity,
-        productTemplateId: createProductTemplateId('bottled-water'),
+        itemType: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -1701,7 +1687,7 @@ describe('getCategoryDisplayStatus', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('food'),
         quantity,
-        productTemplateId: createProductTemplateId('rice'),
+        itemType: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -1727,7 +1713,7 @@ describe('getCategoryDisplayStatus', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
         quantity,
-        productTemplateId: createProductTemplateId('bottled-water'),
+        itemType: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -1765,7 +1751,6 @@ describe('getCategoryDisplayStatus', () => {
         quantity: actual,
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
-        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -1800,7 +1785,7 @@ describe('getCategoryDisplayStatus', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: createProductTemplateId('rice'),
+        itemType: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -1836,7 +1821,7 @@ describe('getCategoryDisplayStatus', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('food'),
         quantity: riceQuantity,
-        productTemplateId: createProductTemplateId('rice'),
+        itemType: createProductTemplateId('rice'),
         caloriesPerUnit: 3600,
       }),
     ];
@@ -1874,7 +1859,7 @@ describe('getCategoryDisplayStatus', () => {
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
         quantity: actual,
-        productTemplateId: createProductTemplateId('bottled-water'),
+        itemType: createProductTemplateId('bottled-water'),
       }),
     ];
 
@@ -1910,14 +1895,14 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('cash-documents'),
           quantity: 150, // 50% of 300 euros
           unit: 'euros',
-          productTemplateId: createProductTemplateId('cash'),
+          itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
           quantity: 1, // 100% of 1 sets
           unit: 'sets',
-          productTemplateId: createProductTemplateId('document-copies'),
+          itemType: createProductTemplateId('document-copies'),
         }),
         // contact-list is missing (0/1)
       ];
@@ -1946,14 +1931,14 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('cash-documents'),
           quantity: 100, // 33% of 300 euros
           unit: 'euros',
-          productTemplateId: createProductTemplateId('cash'),
+          itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
           quantity: 1, // 100% of 1 sets
           unit: 'sets',
-          productTemplateId: createProductTemplateId('document-copies'),
+          itemType: createProductTemplateId('document-copies'),
         }),
       ];
 
@@ -1983,21 +1968,21 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('cash-documents'),
           quantity: 300, // 100% of 300 euros
           unit: 'euros',
-          productTemplateId: createProductTemplateId('cash'),
+          itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
           quantity: 1, // 100% of 1 sets
           unit: 'sets',
-          productTemplateId: createProductTemplateId('document-copies'),
+          itemType: createProductTemplateId('document-copies'),
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('cash-documents'),
           quantity: 1, // 100% of 1 pieces
           unit: 'pieces',
-          productTemplateId: createProductTemplateId('contact-list'),
+          itemType: createProductTemplateId('contact-list'),
         }),
       ];
 
@@ -2025,7 +2010,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('cash-documents'),
           quantity: 150, // 50% of 300 euros
           unit: 'euros',
-          productTemplateId: createProductTemplateId('cash'),
+          itemType: createProductTemplateId('cash'),
           markedAsEnough: true,
         }),
         createMockInventoryItem({
@@ -2033,7 +2018,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('cash-documents'),
           quantity: 0, // 0% of 1 sets
           unit: 'sets',
-          productTemplateId: createProductTemplateId('document-copies'),
+          itemType: createProductTemplateId('document-copies'),
           markedAsEnough: true,
         }),
         // contact-list is missing (0/1)
@@ -2063,21 +2048,21 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('cash-documents'),
           quantity: 0,
           unit: 'euros',
-          productTemplateId: createProductTemplateId('cash'),
+          itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
           quantity: 0,
           unit: 'sets',
-          productTemplateId: createProductTemplateId('document-copies'),
+          itemType: createProductTemplateId('document-copies'),
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('cash-documents'),
           quantity: 0,
           unit: 'pieces',
-          productTemplateId: createProductTemplateId('contact-list'),
+          itemType: createProductTemplateId('contact-list'),
         }),
       ];
 
@@ -2103,14 +2088,14 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('cash-documents'),
           quantity: 150, // 50% of 300
           unit: 'euros',
-          productTemplateId: createProductTemplateId('cash'),
+          itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
           quantity: 1, // 100% of 1
           unit: 'sets',
-          productTemplateId: createProductTemplateId('document-copies'),
+          itemType: createProductTemplateId('document-copies'),
         }),
       ];
 
@@ -2149,7 +2134,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          productTemplateId: createProductTemplateId('battery-radio'),
+          itemType: createProductTemplateId('battery-radio'),
         }),
       ];
 
@@ -2176,7 +2161,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          productTemplateId: createProductTemplateId('battery-radio'),
+          itemType: createProductTemplateId('battery-radio'),
         }),
       ];
 
@@ -2224,14 +2209,14 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 150, // 50% of 300
         unit: 'euros',
-        productTemplateId: createProductTemplateId('cash'),
+        itemType: createProductTemplateId('cash'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('cash-documents'),
         quantity: 1, // 100% of 1
         unit: 'sets',
-        productTemplateId: createProductTemplateId('document-copies'),
+        itemType: createProductTemplateId('document-copies'),
       }),
     ];
 
@@ -2260,14 +2245,14 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 300, // 100% of 300 euros
         unit: 'euros',
-        productTemplateId: createProductTemplateId('cash'),
+        itemType: createProductTemplateId('cash'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('cash-documents'),
         quantity: 1, // 100% of 1 sets
         unit: 'sets',
-        productTemplateId: createProductTemplateId('document-copies'),
+        itemType: createProductTemplateId('document-copies'),
       }),
       // contact-list is missing (0/1)
     ];
@@ -2301,7 +2286,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 300, // 100% of recommended 300 euros
         unit: 'euros',
-        productTemplateId: createProductTemplateId('cash'),
+        itemType: createProductTemplateId('cash'),
       }),
       createMockInventoryItem({
         id: createItemId('docs-1'),
@@ -2309,7 +2294,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 1, // 100% of recommended 1 sets
         unit: 'sets',
-        productTemplateId: createProductTemplateId('document-copies'),
+        itemType: createProductTemplateId('document-copies'),
       }),
       // Emergency Contact List is missing (0/1 pieces)
     ];
@@ -2344,7 +2329,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 300,
         unit: 'euros',
-        // Missing productTemplateId - won't match 'cash' recommended item
+        // itemType is 'custom' - won't match 'cash' recommended item
       }),
       createMockInventoryItem({
         id: createItemId('docs-1'),
@@ -2352,7 +2337,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 1,
         unit: 'sets',
-        // Missing productTemplateId - won't match 'document-copies' recommended item
+        // itemType is 'custom' - won't match 'document-copies' recommended item
       }),
     ];
 
@@ -2419,7 +2404,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
             categoryId: createCategoryId('cash-documents'),
             quantity: testCase.cash,
             unit: 'euros',
-            productTemplateId: createProductTemplateId('cash'),
+            itemType: createProductTemplateId('cash'),
           }),
         );
       }
@@ -2430,7 +2415,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
             categoryId: createCategoryId('cash-documents'),
             quantity: testCase.documents,
             unit: 'sets',
-            productTemplateId: createProductTemplateId('document-copies'),
+            itemType: createProductTemplateId('document-copies'),
           }),
         );
       }
@@ -2441,7 +2426,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
             categoryId: createCategoryId('cash-documents'),
             quantity: testCase.contactList,
             unit: 'pieces',
-            productTemplateId: createProductTemplateId('contact-list'),
+            itemType: createProductTemplateId('contact-list'),
           }),
         );
       }
@@ -2471,7 +2456,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 50, // Less than recommended, but marked as enough
         unit: 'euros',
-        productTemplateId: createProductTemplateId('cash'),
+        itemType: createProductTemplateId('cash'),
         markedAsEnough: true,
       }),
       createMockInventoryItem({
@@ -2479,7 +2464,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 0, // None, but marked as enough
         unit: 'sets',
-        productTemplateId: createProductTemplateId('document-copies'),
+        itemType: createProductTemplateId('document-copies'),
         markedAsEnough: true,
       }),
       createMockInventoryItem({
@@ -2487,7 +2472,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: 0, // None, but marked as enough
         unit: 'pieces',
-        productTemplateId: createProductTemplateId('contact-list'),
+        itemType: createProductTemplateId('contact-list'),
         markedAsEnough: true,
       }),
     ];

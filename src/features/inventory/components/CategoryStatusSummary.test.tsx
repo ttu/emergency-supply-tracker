@@ -1054,14 +1054,13 @@ describe('CategoryStatusSummary', () => {
       expect(onMarkAsEnough).toHaveBeenCalledWith(createItemId('item-1'));
     });
 
-    it('matches items by productTemplateId', async () => {
+    it('matches items by itemType', async () => {
       const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
         id: createItemId('item-1'),
         name: 'Candles',
-        itemType: 'custom',
-        productTemplateId: createProductTemplateId('candles'),
+        itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
         quantity: 4,
 
@@ -1132,14 +1131,13 @@ describe('CategoryStatusSummary', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('matches items by productTemplateId even if name differs', async () => {
+    it('matches items by itemType even if name differs', async () => {
       const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
         id: createItemId('item-1'),
-        name: 'My Custom Candles', // Different name, but has productTemplateId
-        itemType: createProductTemplateId('candles'),
-        productTemplateId: createProductTemplateId('candles'), // This enables matching
+        name: 'My Custom Candles', // Different name, but has itemType
+        itemType: createProductTemplateId('candles'), // This enables matching
         categoryId: createCategoryId('light-power'),
         quantity: 4,
 
@@ -1166,7 +1164,7 @@ describe('CategoryStatusSummary', () => {
       });
       await user.click(expandButton);
 
-      // Items with productTemplateId should match, so "Mark as enough" button should appear
+      // Items with matching itemType should match, so "Mark as enough" button should appear
       expect(
         screen.getByRole('button', { name: 'Mark as enough' }),
       ).toBeInTheDocument();

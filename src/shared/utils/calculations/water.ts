@@ -74,27 +74,9 @@ export function getWaterRequirementPerUnit(item: InventoryItem): number {
     return item.requiresWaterLiters;
   }
 
-  // Look up the template value
-  if (item.productTemplateId) {
-    const template = RECOMMENDED_ITEMS.find(
-      (rec) => rec.id === item.productTemplateId,
-    );
-    if (
-      template &&
-      isFoodRecommendedItem(template) &&
-      template.requiresWaterLiters !== undefined &&
-      template.requiresWaterLiters > 0
-    ) {
-      return template.requiresWaterLiters;
-    }
-  }
-
-  // Also try matching by item type (normalized to kebab-case)
-  if (item.itemType) {
-    const itemTypeNormalized = item.itemType.toLowerCase().replace(/\s+/g, '-');
-    const template = RECOMMENDED_ITEMS.find(
-      (rec) => rec.id === itemTypeNormalized,
-    );
+  // Look up the template value by itemType
+  if (item.itemType && item.itemType !== 'custom') {
+    const template = RECOMMENDED_ITEMS.find((rec) => rec.id === item.itemType);
     if (
       template &&
       isFoodRecommendedItem(template) &&
@@ -130,9 +112,9 @@ export function calculateTotalWaterAvailable(items: InventoryItem[]): number {
         return false;
       }
 
-      // Only count items that are bottled water (by template ID, item type, or name)
+      // Only count items that are bottled water (by item type or name)
       const isBottledWater =
-        item.productTemplateId === 'bottled-water' ||
+        item.itemType === 'bottled-water' ||
         item.itemType?.toLowerCase().includes('water') ||
         item.name.toLowerCase().includes('water');
 

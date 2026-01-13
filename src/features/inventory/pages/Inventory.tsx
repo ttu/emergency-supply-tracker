@@ -202,10 +202,8 @@ export function Inventory({
   const handleEditItem = (item: InventoryItem) => {
     setEditingItem(item);
     // If item has a template, set it so weight/calorie calculations work
-    if (item.productTemplateId) {
-      const template = recommendedItems.find(
-        (t) => t.id === item.productTemplateId,
-      );
+    if (item.itemType && item.itemType !== 'custom') {
+      const template = recommendedItems.find((t) => t.id === item.itemType);
       setSelectedTemplate(template);
     } else {
       setSelectedTemplate(undefined);

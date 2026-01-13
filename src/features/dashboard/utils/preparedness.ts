@@ -86,15 +86,12 @@ export function calculatePreparednessScore(
       return;
     }
 
-    // Find matching inventory items by productTemplateId or itemType only
+    // Find matching inventory items by itemType only
     // (not by category, to avoid double-counting items across multiple recommended items)
     // Note: We don't match by name to avoid false matches with user-typed names
     const matchingItems = items.filter((item) => {
-      // Direct template ID match (most reliable)
-      if (item.productTemplateId === recItem.id) return true;
       // itemType is stored as template ID when created from template
-      if (item.itemType === recItem.id) return true;
-      return false;
+      return item.itemType === recItem.id;
     });
 
     const totalQty = matchingItems.reduce(
@@ -173,11 +170,8 @@ export function calculateCategoryPreparedness(
 
     // Note: We don't match by name to avoid false matches with user-typed names
     const matchingItems = categoryItems.filter((item) => {
-      // Direct template ID match (most reliable)
-      if (item.productTemplateId === recItem.id) return true;
       // itemType is stored as template ID when created from template
-      if (item.itemType === recItem.id) return true;
-      return false;
+      return item.itemType === recItem.id;
     });
 
     const actualQty = matchingItems.reduce(

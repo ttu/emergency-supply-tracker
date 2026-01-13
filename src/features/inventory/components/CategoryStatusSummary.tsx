@@ -154,10 +154,9 @@ export const CategoryStatusSummary = ({
 
     const shortageItemId = shortage.itemId.toLowerCase();
     return items.filter((item) => {
-      // Match by productTemplateId, itemType, or normalized name
+      // Match by itemType or normalized name
       // Note: Custom items (itemType === 'custom') should NOT match by name to avoid
       // false matches with recommended items
-      const itemTemplateId = item.productTemplateId?.toLowerCase() || '';
       const itemType = item.itemType?.toLowerCase() || '';
 
       const isCustomItem = item.itemType === 'custom';
@@ -165,7 +164,6 @@ export const CategoryStatusSummary = ({
         ? ''
         : item.name.toLowerCase().split(' ').join('-');
       const matches =
-        itemTemplateId === shortageItemId ||
         itemType === shortageItemId ||
         (!isCustomItem && normalizedName === shortageItemId);
 

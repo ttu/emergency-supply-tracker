@@ -322,7 +322,7 @@ describe('Inventory Page', () => {
 });
 
 /**
- * Unit test to verify that items created from templates include productTemplateId.
+ * Unit test to verify that items created from templates use itemType correctly.
  * This validates the fix for the Categories Overview not showing status correctly.
  */
 describe('Inventory Page with items', () => {
@@ -338,7 +338,6 @@ describe('Inventory Page with items', () => {
         .toISOString()
         .split('T')[0],
     ),
-    productTemplateId: createProductTemplateId('bottled-water'),
   });
 
   const expiredItem = createMockInventoryItem({
@@ -352,7 +351,6 @@ describe('Inventory Page with items', () => {
         .toISOString()
         .split('T')[0],
     ),
-    productTemplateId: createProductTemplateId('canned-soup'),
   });
 
   const neverExpiresItem = createMockInventoryItem({
@@ -565,7 +563,7 @@ describe('Inventory Page with items', () => {
 });
 
 describe('Template to InventoryItem conversion', () => {
-  it('should include productTemplateId when creating item from template', () => {
+  it('should set itemType when creating item from template', () => {
     const template = RECOMMENDED_ITEMS.find(
       (item) => item.id === 'bottled-water',
     );
@@ -578,7 +576,6 @@ describe('Template to InventoryItem conversion', () => {
     const newItem = {
       name: 'Bottled Water', // translated name
       itemType: createProductTemplateId(template.id),
-      productTemplateId: createProductTemplateId(template.id),
       categoryId: template.category,
       quantity: 0,
       unit: template.unit,
@@ -592,8 +589,8 @@ describe('Template to InventoryItem conversion', () => {
       caloriesPerUnit: template.caloriesPerUnit,
     };
 
-    // Verify productTemplateId is set correctly
-    expect(newItem.productTemplateId).toBe('bottled-water');
+    // Verify itemType is set correctly
+    expect(newItem.itemType).toBe('bottled-water');
     expect(newItem.categoryId).toBe('water-beverages');
     // Water items don't have calories
     expect(newItem.caloriesPerUnit).toBeUndefined();
@@ -612,7 +609,6 @@ describe('Template to InventoryItem conversion', () => {
     const newItem = {
       name: 'Canned Soup',
       itemType: createProductTemplateId(template.id),
-      productTemplateId: createProductTemplateId(template.id),
       categoryId: template.category,
       quantity: 0,
       unit: template.unit,
@@ -627,12 +623,12 @@ describe('Template to InventoryItem conversion', () => {
     };
 
     // Verify food item has calories
-    expect(newItem.productTemplateId).toBe('canned-soup');
+    expect(newItem.itemType).toBe('canned-soup');
     expect(newItem.categoryId).toBe('food');
     expect(newItem.caloriesPerUnit).toBe(200); // 200 kcal per can
   });
 
-  it('should match items with productTemplateId in preparedness calculation', () => {
+  it('should match items with itemType in preparedness calculation', () => {
     const household = createMockHousehold({ children: 0 });
 
     // Calculate expected quantity based on household
@@ -644,27 +640,26 @@ describe('Template to InventoryItem conversion', () => {
     }
     const expectedQuantity = calculateRecommendedQuantity(template, household);
 
-    // Item WITH productTemplateId (the fix)
+    // Item WITH itemType (the fix)
     const itemWithTemplateId = createMockInventoryItem({
       id: createItemId('1'),
       name: 'Bottled Water',
-      itemType: createProductTemplateId('bottled-water'),
-      productTemplateId: createProductTemplateId('bottled-water'), // This enables matching
+      itemType: createProductTemplateId('bottled-water'), // This enables matching
       categoryId: createCategoryId('water-beverages'),
       quantity: expectedQuantity, // Needed for calculation
     });
 
-    // Item WITHOUT productTemplateId (the bug)
+    // Item with itemType 'custom' (won't match by template ID)
     const itemWithoutTemplateId = createMockInventoryItem({
       id: createItemId('2'),
       name: 'Bottled Water',
       itemType: 'custom',
       categoryId: createCategoryId('water-beverages'),
       quantity: expectedQuantity, // Needed for calculation
-      // productTemplateId is missing - this was the bug
+      // itemType is 'custom' - this won't match by template ID
     });
 
-    const scoreWithTemplateId = calculateCategoryPreparedness(
+    const scoreWithItemType = calculateCategoryPreparedness(
       'water-beverages',
       [itemWithTemplateId],
       household,
@@ -672,7 +667,7 @@ describe('Template to InventoryItem conversion', () => {
       [],
     );
 
-    const scoreWithoutTemplateId = calculateCategoryPreparedness(
+    const scoreWithoutItemType = calculateCategoryPreparedness(
       'water-beverages',
       [itemWithoutTemplateId],
       household,
@@ -680,12 +675,12 @@ describe('Template to InventoryItem conversion', () => {
       [],
     );
 
-    // With productTemplateId, the item matches and contributes to the score
-    expect(scoreWithTemplateId).toBeGreaterThan(0);
+    // With itemType matching template ID, the item matches and contributes to the score
+    expect(scoreWithItemType).toBeGreaterThan(0);
 
-    // Without productTemplateId, the item doesn't match (unless name matches exactly)
+    // Without matching itemType, the item doesn't match (unless name matches exactly)
     // The score will be 0 because 'Bottled Water' !== 'bottled-water'
-    expect(scoreWithoutTemplateId).toBe(0);
+    expect(scoreWithoutItemType).toBe(0);
   });
 });
 
@@ -693,14 +688,12 @@ describe('Inventory Page - Mark as Enough', () => {
   const itemWithLowQuantity = createMockInventoryItem({
     id: createItemId('test-item-mark'),
     name: 'Test Candles',
-    itemType: createProductTemplateId('candles'),
+    itemType: createProductTemplateId('candles'), // Match the recommended item
     categoryId: createCategoryId('cooking-heat'), // Candles are in cooking-heat category
     quantity: 4,
     unit: 'pieces',
-
     neverExpires: true,
     markedAsEnough: false,
-    productTemplateId: createProductTemplateId('candles'), // Match the recommended item
   });
 
   beforeEach(() => {
