@@ -1139,7 +1139,10 @@ describe('calculateCategoryShortages - item matching logic', () => {
         { name: 'First Aid Kit', recommendedId: 'first-aid-kit' },
       ];
 
-      testCases.forEach(({ name, recommendedId }) => {
+      const testCustomItemDoesNotMatch = (
+        name: string,
+        recommendedId: string,
+      ) => {
         const customItem = createMockInventoryItem({
           id: createItemId(`item-${recommendedId}`),
           name,
@@ -1163,6 +1166,10 @@ describe('calculateCategoryShortages - item matching logic', () => {
         if (shortage) {
           expect(shortage.actual).toBe(0);
         }
+      };
+
+      testCases.forEach(({ name, recommendedId }) => {
+        testCustomItemDoesNotMatch(name, recommendedId);
       });
     });
   });
@@ -1323,7 +1330,10 @@ describe('calculateCategoryShortages - item matching logic', () => {
         { name: 'Hand Crank Radio', expectedMatch: 'hand-crank-radio' },
       ];
 
-      testCases.forEach(({ name, expectedMatch }) => {
+      const testNameVariationMatches = (
+        name: string,
+        expectedMatch: string,
+      ) => {
         const item = createMockInventoryItem({
           id: createItemId(`item-${expectedMatch}`),
           name,
@@ -1346,6 +1356,10 @@ describe('calculateCategoryShortages - item matching logic', () => {
         expect(shortage).toBeDefined();
         expect(shortage!.actual).toBe(0); // Matched but quantity is 0
         expect(result.totalActual).toBe(0);
+      };
+
+      testCases.forEach(({ name, expectedMatch }) => {
+        testNameVariationMatches(name, expectedMatch);
       });
     });
   });
