@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemList } from './ItemList';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
+import { AllProviders } from '@/shared/components/AllProviders';
 
 const meta = {
   title: 'Components/Inventory/ItemList',
@@ -9,6 +10,13 @@ const meta = {
   parameters: {
     layout: 'padded',
   },
+  decorators: [
+    (Story) => (
+      <AllProviders>
+        <Story />
+      </AllProviders>
+    ),
+  ],
   argTypes: {
     onItemClick: { action: 'item clicked' },
   },
