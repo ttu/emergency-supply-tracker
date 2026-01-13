@@ -148,14 +148,14 @@ export const CategoryStatusSummary = ({
       const itemTemplateId = item.productTemplateId?.toLowerCase() || '';
       const itemType = item.itemType?.toLowerCase() || '';
 
-      const normalizedName =
-        item.itemType !== 'custom'
-          ? item.name.toLowerCase().split(' ').join('-')
-          : '';
+      const isCustomItem = item.itemType === 'custom';
+      const normalizedName = isCustomItem
+        ? ''
+        : item.name.toLowerCase().split(' ').join('-');
       const matches =
         itemTemplateId === shortageItemId ||
         itemType === shortageItemId ||
-        (item.itemType !== 'custom' && normalizedName === shortageItemId);
+        (!isCustomItem && normalizedName === shortageItemId);
 
       if (!matches) return false;
 

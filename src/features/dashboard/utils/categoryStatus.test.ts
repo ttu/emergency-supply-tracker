@@ -1160,9 +1160,9 @@ describe('calculateCategoryShortages - item matching logic', () => {
         );
 
         // Custom item should NOT match, so recommended item should still be in shortages
-        const shortage = result.shortages.find(
-          (s) => s.itemId === recommendedId,
-        );
+        const shortageById = (shortages: typeof result.shortages, id: string) =>
+          shortages.find((s) => s.itemId === id);
+        const shortage = shortageById(result.shortages, recommendedId);
         if (shortage) {
           expect(shortage.actual).toBe(0);
         }
@@ -1350,9 +1350,9 @@ describe('calculateCategoryShortages - item matching logic', () => {
           household,
         );
 
-        const shortage = result.shortages.find(
-          (s) => s.itemId === expectedMatch,
-        );
+        const shortageById = (shortages: typeof result.shortages, id: string) =>
+          shortages.find((s) => s.itemId === id);
+        const shortage = shortageById(result.shortages, expectedMatch);
         expect(shortage).toBeDefined();
         expect(shortage!.actual).toBe(0); // Matched but quantity is 0
         expect(result.totalActual).toBe(0);
