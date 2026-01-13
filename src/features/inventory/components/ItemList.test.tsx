@@ -41,7 +41,7 @@ describe('ItemList', () => {
       categoryId: createCategoryId('water-beverages'),
       quantity: 10,
       unit: 'liters',
-      recommendedQuantity: 20,
+
       neverExpires: false,
       expirationDate: createDateOnly('2026-12-31'),
       createdAt: now,
@@ -54,7 +54,7 @@ describe('ItemList', () => {
       categoryId: createCategoryId('food'),
       quantity: 5,
       unit: 'cans',
-      recommendedQuantity: 10,
+
       neverExpires: true,
       createdAt: now,
       updatedAt: now,

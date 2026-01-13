@@ -7,6 +7,7 @@ import {
   type InventoryContextValue,
 } from '@/features/inventory';
 import { HouseholdContext, HouseholdContextValue } from '@/features/household';
+import { RecommendedItemsProvider } from '@/features/templates';
 import {
   createMockInventoryItem,
   createMockHousehold,
@@ -16,6 +17,7 @@ import {
   createItemId,
   createCategoryId,
   createAlertId,
+  createProductTemplateId,
 } from '@/shared/types';
 
 // Mock i18next
@@ -92,9 +94,11 @@ const renderWithContext = (
   const householdContext = createMockHouseholdContext(householdOverrides);
   return render(
     <HouseholdContext.Provider value={householdContext}>
-      <InventoryContext.Provider value={inventoryContext}>
-        {component}
-      </InventoryContext.Provider>
+      <RecommendedItemsProvider>
+        <InventoryContext.Provider value={inventoryContext}>
+          {component}
+        </InventoryContext.Provider>
+      </RecommendedItemsProvider>
     </HouseholdContext.Provider>,
   );
 };
@@ -117,7 +121,8 @@ describe('HiddenAlerts', () => {
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      recommendedQuantity: 10,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
     });
 
     renderWithContext(<HiddenAlerts />, {
@@ -143,7 +148,8 @@ describe('HiddenAlerts', () => {
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      recommendedQuantity: 10,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
     });
 
     renderWithContext(<HiddenAlerts />, {
@@ -158,20 +164,66 @@ describe('HiddenAlerts', () => {
   });
 
   it('should show warning alert with correct icon', () => {
-    // Create item with 30% stock to trigger low-stock warning (below 50% threshold)
-    const lowStockItem = createMockInventoryItem({
-      id: createItemId('item-1'),
-      name: 'Water',
-      categoryId: createCategoryId('water-beverages'),
-      quantity: 3,
-      recommendedQuantity: 10,
-      neverExpires: true,
+    // Use a specific household: 1 adult, 3 days = 9L needed (3L per day)
+    // For water-beverages, we need water (9L), milk (2L), and juice (2L) = 13L total
+    // With 1L of water and 0L milk/juice, we have 1L out of 13L = 7.7% (below 50% threshold for warning)
+    const household = createMockHousehold({
+      adults: 1,
+      children: 0,
+      supplyDurationDays: 3,
     });
 
-    renderWithContext(<HiddenAlerts />, {
-      items: [lowStockItem],
-      dismissedAlertIds: [createAlertId('category-low-stock-water-beverages')],
-    });
+    // Create items with low stock to trigger warning (not critical)
+    // Total needed: 13L (9L water + 2L milk + 2L juice)
+    // For warning alert: need between 25% and 50% = 3.25L to 6.5L
+    // Use 5L total = 38.5% (between 25% and 50%, so warning threshold)
+    // Water: 5L out of 9L needed
+    // Milk: 0L out of 2L needed
+    // Juice: 0L out of 2L needed
+    // Total: 5L out of 13L = 38.5% (warning threshold, not critical)
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Water',
+        categoryId: createCategoryId('water-beverages'),
+        quantity: 5, // 5L out of 9L needed
+        unit: 'liters',
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
+        neverExpires: true,
+      }),
+      createMockInventoryItem({
+        id: createItemId('item-2'),
+        name: 'Milk',
+        categoryId: createCategoryId('water-beverages'),
+        quantity: 0, // 0L out of 2L needed
+        unit: 'liters',
+        itemType: createProductTemplateId('long-life-milk'),
+        productTemplateId: createProductTemplateId('long-life-milk'),
+        neverExpires: true,
+      }),
+      createMockInventoryItem({
+        id: createItemId('item-3'),
+        name: 'Juice',
+        categoryId: createCategoryId('water-beverages'),
+        quantity: 0, // 0L out of 2L needed
+        unit: 'liters',
+        itemType: createProductTemplateId('long-life-juice'),
+        productTemplateId: createProductTemplateId('long-life-juice'),
+        neverExpires: true,
+      }),
+    ];
+
+    renderWithContext(
+      <HiddenAlerts />,
+      {
+        items,
+        dismissedAlertIds: [
+          createAlertId('category-low-stock-water-beverages'),
+        ],
+      },
+      { household },
+    );
 
     // Warning alerts show lightning emoji
     expect(screen.getByText('⚡')).toBeInTheDocument();
@@ -184,7 +236,8 @@ describe('HiddenAlerts', () => {
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      recommendedQuantity: 10,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
     });
 
     renderWithContext(<HiddenAlerts />, {
@@ -206,7 +259,8 @@ describe('HiddenAlerts', () => {
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      recommendedQuantity: 10,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
     });
 
     renderWithContext(<HiddenAlerts />, {
@@ -228,14 +282,16 @@ describe('HiddenAlerts', () => {
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
         quantity: 0,
-        recommendedQuantity: 10,
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         name: 'Food',
         categoryId: createCategoryId('food'),
         quantity: 0,
-        recommendedQuantity: 10,
+        itemType: createProductTemplateId('canned-soup'),
+        productTemplateId: createProductTemplateId('canned-soup'),
         // Food category uses calorie-based alerts, so with 0 calories it generates
         // category-critically-low-food, not category-out-of-stock-food
       }),
@@ -261,14 +317,16 @@ describe('HiddenAlerts', () => {
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
         quantity: 0,
-        recommendedQuantity: 10,
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         name: 'Food',
         categoryId: createCategoryId('food'),
         quantity: 0,
-        recommendedQuantity: 10,
+        itemType: createProductTemplateId('canned-soup'),
+        productTemplateId: createProductTemplateId('canned-soup'),
         // Food category uses calorie-based alerts, so with 0 calories it generates
         // category-critically-low-food, not category-out-of-stock-food
       }),
@@ -296,7 +354,8 @@ describe('HiddenAlerts', () => {
       name: 'Bottled Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      recommendedQuantity: 10,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
     });
 
     renderWithContext(<HiddenAlerts />, {
@@ -316,7 +375,8 @@ describe('HiddenAlerts', () => {
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
-      recommendedQuantity: 10,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
     });
 
     renderWithContext(<HiddenAlerts />, {
@@ -336,7 +396,8 @@ describe('HiddenAlerts', () => {
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 10,
-      recommendedQuantity: 10,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
       neverExpires: true,
     });
 
@@ -358,7 +419,8 @@ describe('HiddenAlerts', () => {
       name: 'Canned Food',
       categoryId: createCategoryId('food'),
       quantity: 5,
-      recommendedQuantity: 5,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
       neverExpires: false,
       expirationDate: createDateOnly(
         new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0],

@@ -28,7 +28,7 @@ const sampleItems = [
     categoryId: createCategoryId('water-beverages'),
     quantity: 20,
     unit: 'liters',
-    recommendedQuantity: 28,
+
     neverExpires: false,
     expirationDate: futureDate,
     location: 'Pantry',
@@ -39,7 +39,7 @@ const sampleItems = [
     categoryId: createCategoryId('food'),
     quantity: 5,
     unit: 'cans',
-    recommendedQuantity: 20,
+
     neverExpires: false,
     expirationDate: futureDate,
     location: 'Pantry',
@@ -50,7 +50,7 @@ const sampleItems = [
     categoryId: createCategoryId('medical-health'),
     quantity: 1,
     unit: 'pieces',
-    recommendedQuantity: 1,
+
     neverExpires: true,
     location: 'Bathroom',
   }),

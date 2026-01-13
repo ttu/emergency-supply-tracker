@@ -65,8 +65,8 @@ describe('factories', () => {
       expect(typeof item.quantity).toBe('number');
       expect(item.quantity).toBeGreaterThanOrEqual(0);
       expect(typeof item.unit).toBe('string');
-      expect(typeof item.recommendedQuantity).toBe('number');
-      expect(item.recommendedQuantity).toBeGreaterThanOrEqual(0);
+      // recommendedQuantity is no longer stored in InventoryItem
+      // It is calculated dynamically from recommended items
       expect(typeof item.createdAt).toBe('string');
       expect(typeof item.updatedAt).toBe('string');
     });

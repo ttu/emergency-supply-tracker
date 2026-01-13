@@ -3,7 +3,6 @@ import type {
   HouseholdConfig,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   MAX_ITEM_SCORE,
   DEFAULT_FULL_PREPAREDNESS,
@@ -42,7 +41,7 @@ export function calculatePreparednessScoreFromCategoryStatuses(
 export function calculatePreparednessScore(
   items: InventoryItem[],
   household: HouseholdConfig,
-  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
+  recommendedItems: RecommendedItemDefinition[],
 ): number {
   // Get recommended items for this household
   const recommendedForHousehold = recommendedItems.filter((item) => {
@@ -128,7 +127,7 @@ export function calculateCategoryPreparedness(
   items: InventoryItem[],
   household: HouseholdConfig,
   disabledRecommendedItems: string[] = [],
-  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
+  recommendedItems: RecommendedItemDefinition[],
   options: CategoryCalculationOptions = {},
 ): number {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);

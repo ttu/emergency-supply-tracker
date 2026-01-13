@@ -199,7 +199,6 @@ interface InventoryItem {
   categoryId: string; // Category reference
   quantity: number; // Current quantity owned
   unit: Unit; // Measurement unit
-  recommendedQuantity: number; // Calculated recommended amount
   expirationDate?: string; // ISO date string (YYYY-MM-DD)
   purchaseDate?: string; // ISO date string (YYYY-MM-DD)
   neverExpires?: boolean; // Item doesn't expire
@@ -220,7 +219,7 @@ interface InventoryItem {
 
 - **Optional Properties**: All optional properties use `undefined` when not set (TypeScript convention). In JSON, `undefined` properties are omitted entirely.
 - `itemType` is required: use template ID (e.g., "canned-fish") for items from templates, or "custom" for user-created items
-- `recommendedQuantity` is calculated based on household configuration and scaling rules
+- **Recommended quantity is calculated dynamically at runtime** from recommended items based on household configuration and scaling rules. It is not stored in the inventory item. Use `getRecommendedQuantityForItem()` utility function to calculate it.
 - Items with `neverExpires: true` don't show expiration warnings
 - `expirationDate` should be omitted (not set to `null`) when not applicable - the app normalizes legacy `null` values during import
 - `purchaseDate` is optional and tracks when the item was purchased

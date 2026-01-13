@@ -4,6 +4,11 @@ import { Badge } from '@/shared/components/Badge';
 import type { ItemStatus, Unit, InventoryItem } from '@/shared/types';
 import { isFoodCategory } from '@/shared/types';
 import { getStatusVariant } from '@/shared/utils/calculations/itemStatus';
+import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
+import { useHousehold } from '@/features/household';
+import { useRecommendedItems } from '@/features/templates';
+import { useSettings } from '@/features/settings';
+import { CHILDREN_REQUIREMENT_MULTIPLIER } from '@/shared/utils/constants';
 import styles from './CategoryStatusSummary.module.css';
 
 export interface CategoryShortage {
@@ -60,6 +65,13 @@ export const CategoryStatusSummary = ({
   resolveItemName,
 }: CategoryStatusSummaryProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
+  const { household } = useHousehold();
+  const { recommendedItems } = useRecommendedItems();
+  const { settings } = useSettings();
+
+  const childrenMultiplier = settings.childrenRequirementPercentage
+    ? settings.childrenRequirementPercentage / 100
+    : CHILDREN_REQUIREMENT_MULTIPLIER;
 
   const categoryName = t(categoryId, { ns: 'categories' });
   const isFood = isFoodCategory(categoryId);
@@ -159,11 +171,20 @@ export const CategoryStatusSummary = ({
 
       if (!matches) return false;
 
+      // Calculate recommended quantity for this item
+      const recommendedQuantity = getRecommendedQuantityForItem(
+        item,
+        household,
+        recommendedItems,
+        childrenMultiplier,
+      );
+
       // Can be marked as enough if: not already marked, has quantity > 0, quantity < recommendedQuantity
       return (
         !item.markedAsEnough &&
         item.quantity > 0 &&
-        item.quantity < item.recommendedQuantity
+        recommendedQuantity > 0 &&
+        item.quantity < recommendedQuantity
       );
     });
   };

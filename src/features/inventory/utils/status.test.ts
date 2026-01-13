@@ -199,68 +199,67 @@ describe('calculateMissingQuantity', () => {
     categoryId: createCategoryId('tools-supplies'),
     quantity: 1,
     unit: 'pieces',
-    recommendedQuantity: 10,
     neverExpires: true,
     expirationDate: undefined,
   });
+  const baseRecommendedQuantity = 10;
 
   describe('returns missing quantity for quantity-based warnings', () => {
     it('returns missing quantity when status is warning due to low quantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 4, // Less than 50% of 10 (warning threshold is 5)
-        recommendedQuantity: 10,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(6); // 10 - 4 = 6
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(6); // 10 - 4 = 6
     });
 
     it('returns missing quantity when status is critical due to zero quantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 0,
-        recommendedQuantity: 10,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(10); // 10 - 0 = 10
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(10); // 10 - 0 = 10
     });
 
     it('returns correct missing quantity for rope example (1 meter, 10 recommended)', () => {
       const ropeItem = createMockInventoryItem({
         ...baseItem,
         quantity: 1,
-        recommendedQuantity: 10,
         unit: 'meters',
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(ropeItem)).toBe(9); // 10 - 1 = 9
+      expect(calculateMissingQuantity(ropeItem, baseRecommendedQuantity)).toBe(
+        9,
+      ); // 10 - 1 = 9
     });
 
     it('returns correct missing quantity for rope example (2 meters, 10 recommended)', () => {
       const ropeItem = createMockInventoryItem({
         ...baseItem,
         quantity: 2,
-        recommendedQuantity: 10,
         unit: 'meters',
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(ropeItem)).toBe(8); // 10 - 2 = 8
+      expect(calculateMissingQuantity(ropeItem, baseRecommendedQuantity)).toBe(
+        8,
+      ); // 10 - 2 = 8
     });
 
     it('returns correct missing quantity for toilet paper (1 roll, 3 recommended)', () => {
       const tpItem = createMockInventoryItem({
         ...baseItem,
         quantity: 1,
-        recommendedQuantity: 3,
         unit: 'rolls',
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(tpItem)).toBe(2); // 3 - 1 = 2
+      expect(calculateMissingQuantity(tpItem, 3)).toBe(2); // 3 - 1 = 2
     });
   });
 
@@ -269,33 +268,30 @@ describe('calculateMissingQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 10,
-        recommendedQuantity: 10,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
     });
 
     it('returns 0 when quantity equals recommendedQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 10,
-        recommendedQuantity: 10,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
     });
 
     it('returns 0 when quantity exceeds recommendedQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 15,
-        recommendedQuantity: 10,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
     });
 
     it('returns 0 when status is warning due to expiration (not quantity)', () => {
@@ -307,11 +303,10 @@ describe('calculateMissingQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 30, // More than recommended (10)
-        recommendedQuantity: 10,
         expirationDate: soonDate,
         neverExpires: false,
       });
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
     });
 
     it('returns 0 when status is critical due to expiration (not quantity)', () => {
@@ -323,45 +318,41 @@ describe('calculateMissingQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 30, // More than recommended (10)
-        recommendedQuantity: 10,
         expirationDate: expiredDate,
         neverExpires: false,
       });
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
     });
 
     it('returns 0 when marked as enough', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 1,
-        recommendedQuantity: 10,
         markedAsEnough: true,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
     });
 
     it('returns 0 when recommendedQuantity is 0', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 1,
-        recommendedQuantity: 0,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, 0)).toBe(0);
     });
 
     it('returns 0 when recommendedQuantity is negative (edge case)', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 1,
-        recommendedQuantity: -1,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, -1)).toBe(0);
     });
   });
 
@@ -370,22 +361,20 @@ describe('calculateMissingQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 2.5,
-        recommendedQuantity: 10,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(7.5); // 10 - 2.5 = 7.5
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(7.5); // 10 - 2.5 = 7.5
     });
 
     it('returns 0 when missing quantity would be negative (quantity > recommended)', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 15,
-        recommendedQuantity: 10,
         neverExpires: true,
         expirationDate: undefined,
       });
-      expect(calculateMissingQuantity(item)).toBe(0); // Math.max(0, 10 - 15) = 0
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0); // Math.max(0, 10 - 15) = 0
     });
 
     it('handles items expiring in exactly 30 days (boundary)', () => {
@@ -397,12 +386,11 @@ describe('calculateMissingQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 1,
-        recommendedQuantity: 10,
         expirationDate: in30DaysDateOnly,
         neverExpires: false,
       });
       // Status should be warning due to expiration, not quantity
-      expect(calculateMissingQuantity(item)).toBe(0);
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
     });
 
     it('handles items expiring in 31 days (not expiring soon)', () => {
@@ -414,16 +402,16 @@ describe('calculateMissingQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: 1,
-        recommendedQuantity: 10,
         expirationDate: in31DaysDateOnly,
         neverExpires: false,
       });
       // Status should be warning due to quantity, not expiration
-      expect(calculateMissingQuantity(item)).toBe(9);
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(9);
     });
   });
 
   describe('calculateTotalMissingQuantity', () => {
+    const baseRecommendedQuantity = 10;
     const baseItem = createMockInventoryItem({
       id: createItemId('1'),
       name: 'Rope',
@@ -431,7 +419,6 @@ describe('calculateMissingQuantity', () => {
       categoryId: createCategoryId('tools-supplies'),
       quantity: 2,
       unit: 'meters',
-      recommendedQuantity: 10,
       neverExpires: true,
       expirationDate: undefined,
       productTemplateId: createProductTemplateId('rope'),
@@ -451,8 +438,12 @@ describe('calculateMissingQuantity', () => {
       const allItems = [item1, item2];
 
       // Total: 2 + 1 = 3, recommended: 10, missing: 7
-      expect(calculateTotalMissingQuantity(item1, allItems)).toBe(7);
-      expect(calculateTotalMissingQuantity(item2, allItems)).toBe(7);
+      expect(
+        calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
+      ).toBe(7);
+      expect(
+        calculateTotalMissingQuantity(item2, allItems, baseRecommendedQuantity),
+      ).toBe(7);
     });
 
     it('returns same missing quantity for all items of same type', () => {
@@ -469,8 +460,16 @@ describe('calculateMissingQuantity', () => {
       const allItems = [item1, item2];
 
       // Both should show same total missing (7 meters)
-      const missing1 = calculateTotalMissingQuantity(item1, allItems);
-      const missing2 = calculateTotalMissingQuantity(item2, allItems);
+      const missing1 = calculateTotalMissingQuantity(
+        item1,
+        allItems,
+        baseRecommendedQuantity,
+      );
+      const missing2 = calculateTotalMissingQuantity(
+        item2,
+        allItems,
+        baseRecommendedQuantity,
+      );
       expect(missing1).toBe(7);
       expect(missing2).toBe(7);
       expect(missing1).toBe(missing2);
@@ -492,7 +491,9 @@ describe('calculateMissingQuantity', () => {
       const allItems = [item1, item2];
 
       // Only item1 counts: 2, recommended: 10, missing: 8
-      expect(calculateTotalMissingQuantity(item1, allItems)).toBe(8);
+      expect(
+        calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
+      ).toBe(8);
     });
 
     it('returns 0 when total quantity meets recommendation', () => {
@@ -509,7 +510,9 @@ describe('calculateMissingQuantity', () => {
       const allItems = [item1, item2];
 
       // Total: 5 + 5 = 10, recommended: 10, missing: 0
-      expect(calculateTotalMissingQuantity(item1, allItems)).toBe(0);
+      expect(
+        calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
+      ).toBe(0);
     });
 
     it('returns 0 when no quantity issue (expiration takes precedence)', () => {
@@ -535,7 +538,9 @@ describe('calculateMissingQuantity', () => {
       const allItems = [item1, item2];
 
       // Status is warning due to expiration, not quantity
-      expect(calculateTotalMissingQuantity(item1, allItems)).toBe(0);
+      expect(
+        calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
+      ).toBe(0);
     });
 
     it('matches items by productTemplateId', () => {
@@ -559,17 +564,20 @@ describe('calculateMissingQuantity', () => {
         id: createItemId('3'),
         quantity: 5,
         productTemplateId: bucketTemplateId, // Different type
-        recommendedQuantity: 1, // Different recommended quantity
       });
       const allItems = [item1, item2, item3];
 
       // Should only match item1 and item2 (both rope)
       // Total: 1 + 2 = 3, recommended: 10, missing: 7
-      expect(calculateTotalMissingQuantity(item1, allItems)).toBe(7);
-      expect(calculateTotalMissingQuantity(item2, allItems)).toBe(7);
+      expect(
+        calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
+      ).toBe(7);
+      expect(
+        calculateTotalMissingQuantity(item2, allItems, baseRecommendedQuantity),
+      ).toBe(7);
       // item3 has no matches, so falls back to individual calculation
       // item3: quantity 5, recommended 1, but 5 > 1, so no quantity issue, returns 0
-      expect(calculateTotalMissingQuantity(item3, allItems)).toBe(0);
+      expect(calculateTotalMissingQuantity(item3, allItems, 1)).toBe(0);
     });
 
     it('matches items by itemType when productTemplateId not available', () => {
@@ -590,7 +598,9 @@ describe('calculateMissingQuantity', () => {
       const allItems = [item1, item2];
 
       // Should match by itemType
-      expect(calculateTotalMissingQuantity(item1, allItems)).toBe(7);
+      expect(
+        calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
+      ).toBe(7);
     });
 
     it('falls back to individual calculation when no matching items found', () => {
@@ -611,7 +621,11 @@ describe('calculateMissingQuantity', () => {
       // item1 has no matches, should fall back to individual calculation
       // Individual: 10 - 1 = 9, but status check might return 0
       // Actually, let's check - if item1 has quantity issue, it should show individual missing
-      const missing = calculateTotalMissingQuantity(item1, allItems);
+      const missing = calculateTotalMissingQuantity(
+        item1,
+        allItems,
+        baseRecommendedQuantity,
+      );
       // Since no matches, it falls back to calculateMissingQuantity
       // which should return 9 if there's a quantity issue
       expect(missing).toBeGreaterThanOrEqual(0);
@@ -626,7 +640,9 @@ describe('calculateMissingQuantity', () => {
       const allItems = [item];
 
       // Single item: 10 - 1 = 9
-      expect(calculateTotalMissingQuantity(item, allItems)).toBe(9);
+      expect(
+        calculateTotalMissingQuantity(item, allItems, baseRecommendedQuantity),
+      ).toBe(9);
     });
   });
 });

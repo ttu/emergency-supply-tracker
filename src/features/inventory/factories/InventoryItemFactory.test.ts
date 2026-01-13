@@ -19,10 +19,7 @@ import {
 } from '@/shared/utils/test/factories';
 import { randomQuantitySmall } from '@/shared/utils/test/faker-helpers';
 import { faker } from '@faker-js/faker';
-import {
-  CUSTOM_ITEM_TYPE,
-  CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '@/shared/utils/constants';
+import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 
 // Mock crypto.randomUUID
 const mockUUID = 'test-uuid-123';
@@ -44,7 +41,6 @@ describe('InventoryItemFactory', () => {
       categoryId: createCategoryId('food'),
       quantity,
       unit: 'pieces',
-      recommendedQuantity: quantity + randomQuantitySmall(),
       neverExpires: false,
       expirationDate: createDateOnly('2025-12-31'),
     };
@@ -60,7 +56,7 @@ describe('InventoryItemFactory', () => {
       expect(item.categoryId).toBe(validInput.categoryId);
       expect(item.quantity).toBe(validInput.quantity);
       expect(item.unit).toBe('pieces');
-      expect(item.recommendedQuantity).toBe(validInput.recommendedQuantity);
+      // recommendedQuantity is no longer stored, calculated dynamically
       expect(item.expirationDate).toBe(createDateOnly('2025-12-31'));
       expect(item.neverExpires).toBe(false);
       expect(item.createdAt).toBeDefined();
@@ -206,14 +202,8 @@ describe('InventoryItemFactory', () => {
       }).toThrow(InventoryItemValidationError);
     });
 
-    it('throws error when recommendedQuantity is negative', () => {
-      expect(() => {
-        InventoryItemFactory.create({
-          ...validInput,
-          recommendedQuantity: -1,
-        });
-      }).toThrow(InventoryItemValidationError);
-    });
+    // recommendedQuantity is no longer stored in InventoryItem
+    // It is calculated dynamically from recommended items
 
     it('throws error when unit is missing', () => {
       expect(() => {
@@ -314,20 +304,19 @@ describe('InventoryItemFactory', () => {
       const item = InventoryItemFactory.create({
         ...validInput,
         quantity: 0,
-        recommendedQuantity: 0,
         weightGrams: 0,
         caloriesPerUnit: 0,
       });
 
       expect(item.quantity).toBe(0);
-      expect(item.recommendedQuantity).toBe(0);
+      // recommendedQuantity is no longer stored, calculated dynamically
       expect(item.weightGrams).toBe(0);
       expect(item.caloriesPerUnit).toBe(0);
     });
   });
 
   describe('createFromTemplate', () => {
-    it('creates item from template with calculated recommended quantity', () => {
+    it('creates item from template without storing recommended quantity', () => {
       const template = createMockRecommendedItem({
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
@@ -345,14 +334,7 @@ describe('InventoryItemFactory', () => {
       expect(item.categoryId).toBe(createCategoryId('water-beverages'));
       expect(item.quantity).toBe(0); // Default
       expect(item.unit).toBe('liters');
-      // Calculate expected: baseQuantity * (adults * 1 + children * CHILDREN_REQUIREMENT_MULTIPLIER) * days
-      const expected = Math.ceil(
-        3 *
-          (household.adults * 1 +
-            household.children * CHILDREN_REQUIREMENT_MULTIPLIER) *
-          household.supplyDurationDays,
-      );
-      expect(item.recommendedQuantity).toBe(expected);
+      // recommendedQuantity is no longer stored, calculated dynamically at runtime
       expect(item.productTemplateId).toBe(template.id);
       expect(item.neverExpires).toBe(true); // No defaultExpirationMonths
       expect(item.expirationDate).toBeUndefined();
@@ -484,10 +466,11 @@ describe('InventoryItemFactory', () => {
 
       const item = InventoryItemFactory.createFromTemplate(template, household);
 
-      expect(item.recommendedQuantity).toBe(1);
+      // recommendedQuantity is no longer stored, calculated dynamically
+      expect(item.productTemplateId).toBe(template.id);
     });
 
-    it('uses custom childrenMultiplier', () => {
+    it('uses custom childrenMultiplier option (stored for future use)', () => {
       const template = createMockRecommendedItem({
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
@@ -506,13 +489,9 @@ describe('InventoryItemFactory', () => {
         },
       );
 
-      // Calculate expected: baseQuantity * (adults * 1 + children * customMultiplier) * days
-      const expected = Math.ceil(
-        3 *
-          (household.adults * 1 + household.children * 0.5) *
-          household.supplyDurationDays,
-      );
-      expect(item.recommendedQuantity).toBe(expected);
+      // recommendedQuantity is no longer stored, calculated dynamically
+      // childrenMultiplier option is kept for API compatibility
+      expect(item.productTemplateId).toBe(template.id);
     });
   });
 
@@ -542,12 +521,7 @@ describe('InventoryItemFactory', () => {
       expect(draft.name).toBe('products.water');
       expect(draft.itemType).toBe('water');
       expect(draft.categoryId).toBe(createCategoryId('water-beverages'));
-      // Same calculation as createFromTemplate
-      const fullItem = InventoryItemFactory.createFromTemplate(
-        template,
-        household,
-      );
-      expect(draft.recommendedQuantity).toBe(fullItem.recommendedQuantity);
+      // recommendedQuantity is no longer stored, calculated dynamically
     });
 
     it('creates draft with same data as createFromTemplate except id/timestamps', () => {
@@ -576,7 +550,7 @@ describe('InventoryItemFactory', () => {
       expect(draft.categoryId).toBe(fullItem.categoryId);
       expect(draft.quantity).toBe(fullItem.quantity);
       expect(draft.unit).toBe(fullItem.unit);
-      expect(draft.recommendedQuantity).toBe(fullItem.recommendedQuantity);
+      // recommendedQuantity is no longer stored, calculated dynamically
 
       // But id/timestamps should be different
       expect(draft.id).not.toBe(fullItem.id);
@@ -615,7 +589,6 @@ describe('InventoryItemFactory', () => {
   describe('createFromFormData', () => {
     it('creates item from form data', () => {
       const quantity = randomQuantitySmall();
-      const recommendedQuantity = quantity + randomQuantitySmall();
       const weightGrams = faker.number.int({ min: 50, max: 500 });
       const caloriesPerUnit = faker.number.int({ min: 100, max: 500 });
       const formData: CreateFromFormInput = {
@@ -624,7 +597,6 @@ describe('InventoryItemFactory', () => {
         categoryId: 'food',
         quantity,
         unit: 'pieces',
-        recommendedQuantity,
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
         location: 'Pantry',
@@ -640,7 +612,7 @@ describe('InventoryItemFactory', () => {
       expect(item.categoryId).toBe(createCategoryId('food'));
       expect(item.quantity).toBe(quantity);
       expect(item.unit).toBe('pieces');
-      expect(item.recommendedQuantity).toBe(recommendedQuantity);
+      // recommendedQuantity is no longer stored, calculated dynamically
       expect(item.expirationDate).toBe(createDateOnly('2025-12-31'));
       expect(item.neverExpires).toBe(false);
       expect(item.location).toBe('Pantry');
@@ -651,14 +623,12 @@ describe('InventoryItemFactory', () => {
 
     it('uses CUSTOM_ITEM_TYPE when itemType is empty', () => {
       const quantity = randomQuantitySmall();
-      const recommendedQuantity = quantity + randomQuantitySmall();
       const formData: CreateFromFormInput = {
         name: 'Custom Item',
         itemType: '',
         categoryId: 'food',
         quantity,
         unit: 'pieces',
-        recommendedQuantity,
         neverExpires: true,
       };
 
@@ -669,14 +639,12 @@ describe('InventoryItemFactory', () => {
 
     it('handles neverExpires=true correctly', () => {
       const quantity = randomQuantitySmall();
-      const recommendedQuantity = quantity + randomQuantitySmall();
       const formData: CreateFromFormInput = {
         name: 'Test Item',
         itemType: 'test-item',
         categoryId: 'food',
         quantity,
         unit: 'pieces',
-        recommendedQuantity,
         neverExpires: true,
         expirationDate: createDateOnly('2025-12-31'), // Should be ignored
       };
@@ -689,14 +657,12 @@ describe('InventoryItemFactory', () => {
 
     it('handles empty expiration date string by converting to undefined', () => {
       const quantity = randomQuantitySmall();
-      const recommendedQuantity = quantity + randomQuantitySmall();
       const formData: CreateFromFormInput = {
         name: 'Test Item',
         itemType: 'test-item',
         categoryId: 'food',
         quantity,
         unit: 'pieces',
-        recommendedQuantity,
         neverExpires: false,
         // @ts-expect-error - Testing invalid input (empty string)
         expirationDate: '', // Empty string - this will fail validation, but tests the code path
@@ -710,14 +676,12 @@ describe('InventoryItemFactory', () => {
 
     it('handles whitespace-only expiration date string', () => {
       const quantity = randomQuantitySmall();
-      const recommendedQuantity = quantity + randomQuantitySmall();
       const formData: CreateFromFormInput = {
         name: 'Test Item',
         itemType: 'test-item',
         categoryId: 'food',
         quantity,
         unit: 'pieces',
-        recommendedQuantity,
         neverExpires: false,
         // @ts-expect-error - Testing invalid input (whitespace-only string)
         expirationDate: '   ', // Whitespace-only string should be treated as empty
@@ -731,14 +695,12 @@ describe('InventoryItemFactory', () => {
 
     it('converts productTemplateId string to ProductTemplateId', () => {
       const quantity = randomQuantitySmall();
-      const recommendedQuantity = quantity + randomQuantitySmall();
       const formData: CreateFromFormInput = {
         name: 'Test Item',
         itemType: 'test-item',
         categoryId: 'food',
         quantity,
         unit: 'pieces',
-        recommendedQuantity,
         neverExpires: true,
         productTemplateId: 'template-1',
       };
@@ -755,13 +717,11 @@ describe('InventoryItemFactory', () => {
   describe('createCustomItem', () => {
     it('creates custom item with CUSTOM_ITEM_TYPE', () => {
       const quantity = randomQuantitySmall();
-      const recommendedQuantity = quantity + randomQuantitySmall();
       const input: Omit<CreateItemInput, 'itemType'> = {
         name: 'Custom Item',
         categoryId: createCategoryId('food'),
         quantity,
         unit: 'pieces',
-        recommendedQuantity,
         neverExpires: true,
       };
 
@@ -773,7 +733,6 @@ describe('InventoryItemFactory', () => {
 
     it('allows custom itemType override', () => {
       const quantity = randomQuantitySmall();
-      const recommendedQuantity = quantity + randomQuantitySmall();
       const input: Omit<CreateItemInput, 'itemType'> & {
         itemType?: ProductTemplateId | 'custom';
       } = {
@@ -783,7 +742,6 @@ describe('InventoryItemFactory', () => {
         categoryId: createCategoryId('food'),
         quantity,
         unit: 'pieces',
-        recommendedQuantity,
         neverExpires: true,
       };
 

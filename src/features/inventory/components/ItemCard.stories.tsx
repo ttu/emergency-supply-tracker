@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemCard } from './ItemCard';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
-import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createDateOnly,
+  createProductTemplateId,
+} from '@/shared/types';
+import { AllProviders } from '@/shared/components/AllProviders';
 
 const meta = {
   title: 'Components/Inventory/ItemCard',
@@ -9,6 +15,13 @@ const meta = {
   parameters: {
     layout: 'padded',
   },
+  decorators: [
+    (Story) => (
+      <AllProviders>
+        <Story />
+      </AllProviders>
+    ),
+  ],
   argTypes: {
     onClick: { action: 'clicked' },
   },
@@ -30,10 +43,11 @@ const expiredDate = createDateOnly(
 const baseItem = createMockInventoryItem({
   id: createItemId('1'),
   name: 'Bottled Water',
+  itemType: createProductTemplateId('bottled-water'),
   categoryId: createCategoryId('water-beverages'),
   quantity: 20,
   unit: 'liters',
-  recommendedQuantity: 28,
+  productTemplateId: createProductTemplateId('bottled-water'),
   neverExpires: false,
   expirationDate: futureDate,
   location: 'Pantry',

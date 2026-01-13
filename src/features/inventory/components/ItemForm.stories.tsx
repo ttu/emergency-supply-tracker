@@ -29,7 +29,7 @@ const sampleItem = createMockInventoryItem({
   categoryId: createCategoryId('water-beverages'),
   quantity: 20,
   unit: 'liters',
-  recommendedQuantity: 28,
+
   neverExpires: false,
   expirationDate: futureDate,
   purchaseDate: pastDate,
@@ -42,7 +42,6 @@ export const NewItem: Story = {
     categories: STANDARD_CATEGORIES,
     onSubmit: () => {},
     onCancel: () => {},
-    defaultRecommendedQuantity: 10,
   },
 };
 

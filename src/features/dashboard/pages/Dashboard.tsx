@@ -125,8 +125,8 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
 
   // Generate alerts (including water shortage alerts)
   const allAlerts = useMemo(
-    () => generateDashboardAlerts(items, t, household),
-    [items, t, household],
+    () => generateDashboardAlerts(items, t, household, recommendedItems),
+    [items, t, household, recommendedItems],
   );
 
   // Generate backup reminder alert if needed

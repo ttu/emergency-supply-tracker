@@ -315,8 +315,7 @@ describe('Onboarding', () => {
         expect.objectContaining({
           id: expect.any(String),
           categoryId: expect.any(String),
-          quantity: expect.any(Number), // Can be 0 or recommendedQuantity
-          recommendedQuantity: expect.any(Number),
+          quantity: expect.any(Number),
         }),
       ]),
     );

@@ -92,11 +92,6 @@ export function createMockInventoryItem(
     categoryId: createCategoryId(faker.helpers.arrayElement(VALID_CATEGORIES)),
     quantity: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
     unit: faker.helpers.arrayElement(VALID_UNITS),
-    recommendedQuantity: faker.number.float({
-      min: 1,
-      max: 200,
-      fractionDigits: 2,
-    }),
     expirationDate: faker.helpers.maybe(
       () => createDateOnly(faker.date.future().toISOString().split('T')[0]),
       { probability: 0.5 },

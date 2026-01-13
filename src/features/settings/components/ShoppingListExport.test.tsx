@@ -7,47 +7,15 @@ import {
   vi,
   type Mock,
 } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { ReactNode } from 'react';
+import { screen, fireEvent } from '@testing-library/react';
 import { ShoppingListExport } from './ShoppingListExport';
-import {
-  InventoryContext,
-  type InventoryContextValue,
-} from '@/features/inventory';
+import { renderWithProviders } from '@/test';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
-import type { InventoryItem } from '@/shared/types';
-import { createItemId, createCategoryId } from '@/shared/types';
-
-const createMockInventoryContext = (
-  items: InventoryItem[] = [],
-): InventoryContextValue => ({
-  items,
-  categories: [],
-  addItem: vi.fn(),
-  addItems: vi.fn(),
-  updateItem: vi.fn(),
-  deleteItem: vi.fn(),
-  dismissedAlertIds: [],
-  dismissAlert: vi.fn(),
-  reactivateAlert: vi.fn(),
-  reactivateAllAlerts: vi.fn(),
-  disabledRecommendedItems: [],
-  disableRecommendedItem: vi.fn(),
-  enableRecommendedItem: vi.fn(),
-  enableAllRecommendedItems: vi.fn(),
-});
-
-const renderWithContext = (
-  component: ReactNode,
-  items: InventoryItem[] = [],
-) => {
-  const context = createMockInventoryContext(items);
-  return render(
-    <InventoryContext.Provider value={context}>
-      {component}
-    </InventoryContext.Provider>,
-  );
-};
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 
 describe('ShoppingListExport', () => {
   let createElementSpy: ReturnType<typeof vi.spyOn>;
@@ -83,7 +51,7 @@ describe('ShoppingListExport', () => {
   });
 
   it('should render shopping list export button', () => {
-    renderWithContext(<ShoppingListExport />);
+    renderWithProviders(<ShoppingListExport />);
 
     expect(
       screen.getByText('settings.shoppingList.button'),
@@ -94,7 +62,7 @@ describe('ShoppingListExport', () => {
   });
 
   it('should disable button when no items need restocking', () => {
-    renderWithContext(<ShoppingListExport />);
+    renderWithProviders(<ShoppingListExport />);
 
     const button = screen.getByText('settings.shoppingList.button');
     expect(button).toBeDisabled();
@@ -104,11 +72,15 @@ describe('ShoppingListExport', () => {
     const itemNeedingRestock = createMockInventoryItem({
       id: createItemId('item-1'),
       name: 'Water',
+      categoryId: createCategoryId('water-beverages'),
       quantity: 5,
-      recommendedQuantity: 20,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
     });
 
-    renderWithContext(<ShoppingListExport />, [itemNeedingRestock]);
+    renderWithProviders(<ShoppingListExport />, {
+      initialAppData: { items: [itemNeedingRestock] },
+    });
 
     const button = screen.getByText('settings.shoppingList.button');
     expect(button).not.toBeDisabled();
@@ -118,17 +90,23 @@ describe('ShoppingListExport', () => {
     const items = [
       createMockInventoryItem({
         id: createItemId('item-1'),
+        categoryId: createCategoryId('water-beverages'),
         quantity: 5,
-        recommendedQuantity: 20,
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
+        categoryId: createCategoryId('water-beverages'),
         quantity: 3,
-        recommendedQuantity: 10,
+        itemType: createProductTemplateId('long-life-juice'),
+        productTemplateId: createProductTemplateId('long-life-juice'),
       }),
     ];
 
-    renderWithContext(<ShoppingListExport />, items);
+    renderWithProviders(<ShoppingListExport />, {
+      initialAppData: { items },
+    });
 
     expect(
       screen.getByText(/\(2 settings\.shoppingList\.items\)/),
@@ -136,7 +114,17 @@ describe('ShoppingListExport', () => {
   });
 
   it('should not trigger export when button is disabled', () => {
-    renderWithContext(<ShoppingListExport />);
+    renderWithProviders(<ShoppingListExport />, {
+      initialAppData: {
+        items: [], // Ensure no items so button is disabled
+        household: {
+          adults: 1,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
+    });
 
     const button = screen.getByText('settings.shoppingList.button');
     expect(button).toBeDisabled();
@@ -151,11 +139,14 @@ describe('ShoppingListExport', () => {
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 5,
-      recommendedQuantity: 20,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
       unit: 'liters',
     });
 
-    renderWithContext(<ShoppingListExport />, [itemNeedingRestock]);
+    renderWithProviders(<ShoppingListExport />, {
+      initialAppData: { items: [itemNeedingRestock] },
+    });
 
     const button = screen.getByText('settings.shoppingList.button');
     fireEvent.click(button);
@@ -172,11 +163,14 @@ describe('ShoppingListExport', () => {
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
       quantity: 5,
-      recommendedQuantity: 20,
+      itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'),
       unit: 'liters',
     });
 
-    renderWithContext(<ShoppingListExport />, [itemNeedingRestock]);
+    renderWithProviders(<ShoppingListExport />, {
+      initialAppData: { items: [itemNeedingRestock] },
+    });
 
     const button = screen.getByText('settings.shoppingList.button');
     fireEvent.click(button);
@@ -187,53 +181,87 @@ describe('ShoppingListExport', () => {
   });
 
   it('should not include items that do not need restocking', () => {
+    // Use specific household: 1 adult, 3 days = 9L needed (3L × 1 × 3)
+    // Item 1: 5L < 9L (needs restock)
+    // Item 2: 20L >= 9L (fully stocked, doesn't need restock)
     const items = [
       createMockInventoryItem({
         id: createItemId('item-1'),
         name: 'Needs Restock',
+        categoryId: createCategoryId('water-beverages'),
         quantity: 5,
-        recommendedQuantity: 20,
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         name: 'Fully Stocked',
-        quantity: 20,
-        recommendedQuantity: 20,
+        categoryId: createCategoryId('water-beverages'),
+        quantity: 20, // 20L >= 9L needed (fully stocked)
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
     ];
 
-    renderWithContext(<ShoppingListExport />, items);
+    renderWithProviders(<ShoppingListExport />, {
+      initialAppData: {
+        items,
+        household: {
+          adults: 1,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
+    });
 
     // Only 1 item needs restocking
     expect(screen.getByText(/1/)).toBeInTheDocument();
   });
 
   it('should group items by category', () => {
+    // Use specific household: 1 adult, 3 days
+    // Bottled-water: 3L × 1 × 3 = 9L needed, have 5L (needs restock)
+    // Canned-beans: need to check base quantity, but 2 cans should be below recommended
+    // Long-life-juice: 2L × 1 = 2L needed (doesn't scale with days), have 3L (ok, but let's use 1L to ensure it needs restock)
     const items = [
       createMockInventoryItem({
         id: createItemId('item-1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5,
-        recommendedQuantity: 20,
+        quantity: 5, // 5L < 9L needed
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         name: 'Beans',
         categoryId: createCategoryId('food'),
-        quantity: 2,
-        recommendedQuantity: 10,
+        quantity: 1, // 1 can, likely below recommended for 1 adult, 3 days
+        itemType: createProductTemplateId('canned-vegetables'),
+        productTemplateId: createProductTemplateId('canned-vegetables'),
       }),
       createMockInventoryItem({
         id: createItemId('item-3'),
         name: 'More Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 3,
-        recommendedQuantity: 15,
+        quantity: 1, // 1L < 2L needed
+        itemType: createProductTemplateId('long-life-juice'),
+        productTemplateId: createProductTemplateId('long-life-juice'),
       }),
     ];
 
-    renderWithContext(<ShoppingListExport />, items);
+    renderWithProviders(<ShoppingListExport />, {
+      initialAppData: {
+        items,
+        household: {
+          adults: 1,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
+    });
 
     // 3 items need restocking
     expect(screen.getByText(/3/)).toBeInTheDocument();

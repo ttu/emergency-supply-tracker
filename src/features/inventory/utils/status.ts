@@ -103,12 +103,20 @@ export function getItemStatus(
 }
 
 /**
- * Calculate status for an inventory item
+ * Calculate status for an inventory item.
+ * Requires recommended quantity to be calculated separately.
+ *
+ * @param item - The inventory item
+ * @param recommendedQuantity - The recommended quantity for this item (calculated from recommended items)
+ * @returns The item status
  */
-export function calculateItemStatus(item: InventoryItem): ItemStatus {
+export function calculateItemStatus(
+  item: InventoryItem,
+  recommendedQuantity: number,
+): ItemStatus {
   return getItemStatus(
     item.quantity,
-    item.recommendedQuantity,
+    recommendedQuantity,
     item.expirationDate,
     item.neverExpires,
     item.markedAsEnough,
@@ -153,31 +161,34 @@ export function getStatusVariant(
 
 /**
  * Calculate missing quantity for an inventory item.
- * Returns the amount missing when status is warning/critical due to quantity (not expiration).
+ * Returns the amount missing when quantity is less than recommended (not expiration).
  *
  * Only returns a non-zero value when:
- * - Status is warning or critical
+ * - Quantity is less than recommended quantity (actual shortage)
  * - Not expired or expiring soon (so it's a quantity issue, not expiration)
  * - Not marked as enough (markedAsEnough overrides quantity checks)
  * - recommendedQuantity > 0 (must have a valid recommendation)
  *
  * @param item - The inventory item to calculate missing quantity for
+ * @param recommendedQuantity - The recommended quantity for this item (calculated from recommended items)
  * @returns The missing quantity (0 if not applicable or not a quantity issue)
  *
  * @example
  * ```typescript
  * const item = {
  *   quantity: 1,
- *   recommendedQuantity: 10,
  *   neverExpires: true,
  *   // ... other fields
  * };
- * const missing = calculateMissingQuantity(item);
+ * const recommendedQuantity = 10;
+ * const missing = calculateMissingQuantity(item, recommendedQuantity);
  * // Returns 9 (10 - 1 = 9)
  * ```
  */
-export function calculateMissingQuantity(item: InventoryItem): number {
-  const status = calculateItemStatus(item);
+export function calculateMissingQuantity(
+  item: InventoryItem,
+  recommendedQuantity: number,
+): number {
   const expired = isItemExpired(item.expirationDate, item.neverExpires);
   const daysUntil = getDaysUntilExpiration(
     item.expirationDate,
@@ -187,22 +198,23 @@ export function calculateMissingQuantity(item: InventoryItem): number {
     daysUntil !== undefined && daysUntil <= EXPIRING_SOON_DAYS_THRESHOLD;
 
   // Only show missing quantity if:
-  // 1. Status is warning or critical
+  // 1. Quantity is less than recommended (actual shortage)
   // 2. Not expired or expiring soon (so it's a quantity issue, not expiration)
   // 3. Not marked as enough (markedAsEnough overrides quantity checks)
   // 4. recommendedQuantity > 0 (must have a valid recommendation)
+  const hasShortage = item.quantity < recommendedQuantity;
   const isQuantityIssue =
-    (status === 'warning' || status === 'critical') &&
+    hasShortage &&
     !expired &&
     !isExpiringSoon &&
     !item.markedAsEnough &&
-    item.recommendedQuantity > 0;
+    recommendedQuantity > 0;
 
   if (!isQuantityIssue) {
     return 0;
   }
 
-  return Math.max(0, item.recommendedQuantity - item.quantity);
+  return Math.max(0, recommendedQuantity - item.quantity);
 }
 
 /**
@@ -215,47 +227,55 @@ export function calculateMissingQuantity(item: InventoryItem): number {
  *
  * @param item - The inventory item to calculate missing quantity for
  * @param allItems - All inventory items to search for matching items
+ * @param recommendedQuantity - The recommended quantity for this item type (calculated from recommended items)
  * @returns The total missing quantity across all matching items (0 if not applicable)
  *
  * @example
  * ```typescript
- * const item1 = { id: '1', quantity: 2, recommendedQuantity: 10, productTemplateId: 'rope', ... };
- * const item2 = { id: '2', quantity: 1, recommendedQuantity: 10, productTemplateId: 'rope', ... };
- * const missing = calculateTotalMissingQuantity(item1, [item1, item2]);
+ * const item1 = { id: '1', quantity: 2, productTemplateId: 'rope', ... };
+ * const item2 = { id: '2', quantity: 1, productTemplateId: 'rope', ... };
+ * const recommendedQuantity = 10;
+ * const missing = calculateTotalMissingQuantity(item1, [item1, item2], recommendedQuantity);
  * // Returns 7 (10 - (2 + 1) = 7)
  * ```
  */
 export function calculateTotalMissingQuantity(
   item: InventoryItem,
   allItems: InventoryItem[],
+  recommendedQuantity: number,
 ): number {
   // Find all items of the same type
   const matchingItems = allItems.filter((otherItem) => {
-    // Match by productTemplateId (preferred)
+    // Match by productTemplateId if both have it and they match
     if (item.productTemplateId && otherItem.productTemplateId) {
-      if (item.productTemplateId === otherItem.productTemplateId) {
-        return true;
-      }
+      return item.productTemplateId === otherItem.productTemplateId;
     }
-    // Match by itemType (fallback) - only if productTemplateId doesn't match
+
+    // Match by itemType if:
+    // - itemType is not 'custom' for both
+    // - itemTypes match
+    // This handles cases where items might have productTemplateId but we still want to match by itemType
+    // (e.g., one item has productTemplateId, another doesn't, but both have same itemType)
     if (
-      !item.productTemplateId &&
-      !otherItem.productTemplateId &&
       item.itemType !== 'custom' &&
-      otherItem.itemType === item.itemType
+      otherItem.itemType !== 'custom' &&
+      item.itemType === otherItem.itemType
     ) {
+      // If both have productTemplateId but they don't match, they're different items
+      if (item.productTemplateId && otherItem.productTemplateId) {
+        return false; // Already checked above, shouldn't reach here
+      }
+      // Match by itemType
       return true;
     }
+
     return false;
   });
 
   // If no matching items (shouldn't happen, but handle gracefully)
   if (matchingItems.length === 0) {
-    return calculateMissingQuantity(item);
+    return calculateMissingQuantity(item, recommendedQuantity);
   }
-
-  // Get recommended quantity from the first matching item (should be same for all)
-  const recommendedQuantity = matchingItems[0].recommendedQuantity;
 
   // If recommendedQuantity is 0 or negative, return 0
   if (recommendedQuantity <= 0) {
@@ -267,11 +287,10 @@ export function calculateTotalMissingQuantity(
     .filter((i) => !i.markedAsEnough)
     .reduce((sum, i) => sum + i.quantity, 0);
 
-  // Check if the total has a quantity issue (not expiration)
-  // A quantity issue exists if:
-  // 1. Total quantity is 0 (critical)
-  // 2. Total quantity < recommendedQuantity * LOW_QUANTITY_WARNING_RATIO (warning)
-  // 3. None of the matching items are expired or expiring soon (expiration takes precedence)
+  // Check if the total has a quantity shortage (not expiration)
+  // A shortage exists if:
+  // 1. Total quantity < recommendedQuantity (actual shortage)
+  // 2. None of the matching items are expired or expiring soon (expiration takes precedence)
   const hasExpirationIssue = matchingItems.some((i) => {
     const expired = isItemExpired(i.expirationDate, i.neverExpires);
     const daysUntil = getDaysUntilExpiration(i.expirationDate, i.neverExpires);
@@ -285,13 +304,12 @@ export function calculateTotalMissingQuantity(
     return 0;
   }
 
-  // Check if total quantity indicates a quantity issue
-  const hasQuantityIssue =
-    totalActual === 0 ||
-    totalActual < recommendedQuantity * LOW_QUANTITY_WARNING_RATIO;
+  // Check if total quantity indicates a shortage (total < recommended)
+  // Show missing quantity whenever there's an actual shortage, not just when below warning threshold
+  const hasShortage = totalActual < recommendedQuantity;
 
-  // Only return missing quantity if there's a quantity issue
-  if (!hasQuantityIssue) {
+  // Only return missing quantity if there's a shortage
+  if (!hasShortage) {
     return 0;
   }
 
