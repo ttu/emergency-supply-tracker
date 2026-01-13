@@ -30,6 +30,7 @@ export interface ItemFormProps {
   ) => void;
   onCancel: () => void;
   defaultRecommendedQuantity?: number;
+  defaultCategoryId?: string;
   templateWeightGramsPerUnit?: number;
   templateCaloriesPer100g?: number;
   templateRequiresWaterLiters?: number;
@@ -67,6 +68,7 @@ export const ItemForm = ({
   onSubmit,
   onCancel,
   defaultRecommendedQuantity = 1,
+  defaultCategoryId,
   templateWeightGramsPerUnit,
   templateCaloriesPer100g,
   templateRequiresWaterLiters,
@@ -106,7 +108,7 @@ export const ItemForm = ({
   const [formData, setFormData] = useState<FormData>(() => ({
     itemType: item?.itemType || '',
     name: item?.name || '',
-    categoryId: item?.categoryId || '',
+    categoryId: item?.categoryId || defaultCategoryId || '',
     quantity: item?.quantity?.toString() || '',
     unit: item?.unit || 'pieces',
     recommendedQuantity:

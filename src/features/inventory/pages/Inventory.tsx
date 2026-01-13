@@ -371,6 +371,7 @@ export function Inventory({
             onSubmit={editingItem?.id ? handleUpdateItem : handleAddItem}
             onCancel={handleCancelForm}
             defaultRecommendedQuantity={getDefaultRecommendedQuantity()}
+            defaultCategoryId={selectedCategoryId}
             templateWeightGramsPerUnit={selectedTemplate?.weightGramsPerUnit}
             templateCaloriesPer100g={selectedTemplate?.caloriesPer100g}
             templateRequiresWaterLiters={selectedTemplate?.requiresWaterLiters}
