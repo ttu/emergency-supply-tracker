@@ -87,17 +87,14 @@ export function calculatePreparednessScore(
       return;
     }
 
-    // Find matching inventory items by productTemplateId or name only
+    // Find matching inventory items by productTemplateId or itemType only
     // (not by category, to avoid double-counting items across multiple recommended items)
-    // Note: Custom items (itemType === 'custom') should NOT match by name to avoid
-    // false matches with recommended items
+    // Note: We don't match by name to avoid false matches with user-typed names
     const matchingItems = items.filter((item) => {
+      // Direct template ID match (most reliable)
       if (item.productTemplateId === recItem.id) return true;
-      // Only match by name if not a custom item, and normalize name for comparison
-      if (item.itemType !== 'custom') {
-        const nameNormalized = item.name.toLowerCase().replace(/\s+/g, '-');
-        if (nameNormalized === recItem.id) return true;
-      }
+      // itemType is stored as template ID when created from template
+      if (item.itemType === recItem.id) return true;
       return false;
     });
 
@@ -175,15 +172,12 @@ export function calculateCategoryPreparedness(
       return;
     }
 
-    // Note: Custom items (itemType === 'custom') should NOT match by name to avoid
-    // false matches with recommended items
+    // Note: We don't match by name to avoid false matches with user-typed names
     const matchingItems = categoryItems.filter((item) => {
+      // Direct template ID match (most reliable)
       if (item.productTemplateId === recItem.id) return true;
-      // Only match by name if not a custom item, and normalize name for comparison
-      if (item.itemType !== 'custom') {
-        const nameNormalized = item.name.toLowerCase().replace(/\s+/g, '-');
-        if (nameNormalized === recItem.id) return true;
-      }
+      // itemType is stored as template ID when created from template
+      if (item.itemType === recItem.id) return true;
       return false;
     });
 

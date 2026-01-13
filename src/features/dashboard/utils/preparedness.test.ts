@@ -609,13 +609,13 @@ describe('calculatePreparednessScore', () => {
       });
     });
 
-    describe('non-custom items should match by exact name', () => {
-      it('should match non-custom item by exact name when name equals recommended item ID', () => {
-        // Item with itemType that's not 'custom' should match by exact name
+    describe('items should NOT match by name (only productTemplateId or itemType)', () => {
+      it('should NOT match item by name even if name equals recommended item ID', () => {
+        // Items should only match via productTemplateId or itemType, not by name
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
-          name: 'battery-radio', // Exact match with recommended item ID
-          itemType: createProductTemplateId('some-other-type'), // Not 'custom', but also not matching
+          name: 'battery-radio', // Name matches, but no productTemplateId or matching itemType
+          itemType: createProductTemplateId('some-other-type'), // Not matching
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
@@ -641,17 +641,16 @@ describe('calculatePreparednessScore', () => {
           customRecommendedItems,
         );
 
-        // Should match by exact name and contribute to score
-        expect(score).toBeGreaterThan(0);
-        expect(score).toBeLessThanOrEqual(100);
+        // Should NOT match because we don't match by name
+        expect(score).toBe(0);
       });
 
-      it('should match by normalized name when name normalizes to recommended item ID', () => {
-        // calculatePreparednessScore now uses normalized name matching (like categoryStatus.ts)
+      it('should NOT match item by normalized name even if name normalizes to recommended item ID', () => {
+        // Items should only match via productTemplateId or itemType, not by name
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
-          name: 'Battery Radio', // Normalizes to 'battery-radio'
-          itemType: createProductTemplateId('some-type'), // Not 'custom'
+          name: 'Battery Radio', // Would normalize to 'battery-radio', but we don't match by name
+          itemType: createProductTemplateId('some-type'), // Not matching
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
@@ -677,9 +676,8 @@ describe('calculatePreparednessScore', () => {
           customRecommendedItems,
         );
 
-        // Should match because 'Battery Radio' normalizes to 'battery-radio'
-        expect(score).toBeGreaterThan(0);
-        expect(score).toBeLessThanOrEqual(100);
+        // Should NOT match because we don't match by name
+        expect(score).toBe(0);
       });
     });
 
