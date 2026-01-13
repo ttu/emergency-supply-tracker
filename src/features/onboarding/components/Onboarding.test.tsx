@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Onboarding } from './Onboarding';
 import { SettingsProvider } from '@/features/settings';
+import { RecommendedItemsProvider } from '@/features/templates';
 
 // Mock react-i18next
 const mockChangeLanguage = vi.fn();
@@ -61,9 +62,11 @@ describe('Onboarding', () => {
   it('renders welcome screen initially', () => {
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     expect(screen.getByTestId('get-started-button')).toBeInTheDocument();
@@ -73,9 +76,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     const getStartedButton = screen.getByTestId('get-started-button');
@@ -90,9 +95,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Welcome -> Preset
@@ -116,9 +123,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Welcome -> Preset
@@ -142,9 +151,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Welcome -> Preset
@@ -176,9 +187,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Navigate to quick setup
@@ -199,16 +212,28 @@ describe('Onboarding', () => {
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
+    // Kit Selection step
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
+    await user.click(kitContinueButton);
+
     await waitFor(() => {
       expect(screen.getByTestId('skip-quick-setup-button')).toBeInTheDocument();
     });
 
-    // Quick Setup -> Household (back button)
+    // Quick Setup -> Kit Selection (back button)
     const backButton = screen.getByTestId('quick-setup-back-button');
     await user.click(backButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
     });
   });
 
@@ -216,9 +241,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Navigate to quick setup
@@ -238,6 +265,16 @@ describe('Onboarding', () => {
 
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
+
+    // Kit Selection step
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
+    await user.click(kitContinueButton);
 
     await waitFor(() => {
       expect(screen.getByTestId('skip-quick-setup-button')).toBeInTheDocument();
@@ -261,9 +298,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Navigate to quick setup
@@ -283,6 +322,16 @@ describe('Onboarding', () => {
 
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
+
+    // Kit Selection step
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
+    await user.click(kitContinueButton);
 
     await waitFor(() => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
@@ -325,9 +374,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Navigate to quick setup
@@ -347,6 +398,16 @@ describe('Onboarding', () => {
 
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
+
+    // Kit Selection step
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
+    await user.click(kitContinueButton);
 
     await waitFor(() => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
@@ -382,9 +443,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Navigate to quick setup
@@ -404,6 +467,16 @@ describe('Onboarding', () => {
 
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
+
+    // Kit Selection step
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
+    await user.click(kitContinueButton);
 
     await waitFor(() => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
@@ -433,9 +506,11 @@ describe('Onboarding', () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
-      <SettingsProvider>
-        <Onboarding onComplete={onComplete} />
-      </SettingsProvider>,
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
     );
 
     // Navigate to household form
@@ -468,6 +543,16 @@ describe('Onboarding', () => {
     // Submit form
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
+
+    // Kit Selection step
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
+    await user.click(kitContinueButton);
 
     await waitFor(() => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();

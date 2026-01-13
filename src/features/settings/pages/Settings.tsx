@@ -12,9 +12,7 @@ import {
   ClearDataButton,
   DisabledRecommendations,
   OverriddenRecommendations,
-  RecommendationsStatus,
-  ImportRecommendationsButton,
-  ExportRecommendationsButton,
+  KitManagement,
 } from '@/features/settings';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
@@ -86,19 +84,15 @@ export function Settings() {
           <OverriddenRecommendations />
         </section>
 
-        {/* Recommended Items */}
+        {/* Recommendation Kits */}
         <section
           className={styles.section}
-          data-testid="section-recommended-items"
+          data-testid="section-recommendation-kits"
         >
           <h2 className={styles.sectionTitle}>
-            {t('settings.sections.recommendedItems')}
+            {t('settings.sections.recommendationKits')}
           </h2>
-          <RecommendationsStatus />
-          <div className={styles.dataButtons}>
-            <ImportRecommendationsButton />
-            <ExportRecommendationsButton />
-          </div>
+          <KitManagement />
         </section>
 
         {/* Data Management */}
