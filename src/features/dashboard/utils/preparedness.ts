@@ -89,10 +89,14 @@ export function calculatePreparednessScore(
 
     // Find matching inventory items by productTemplateId or name only
     // (not by category, to avoid double-counting items across multiple recommended items)
-    const matchingItems = items.filter(
-      (item) =>
-        item.productTemplateId === recItem.id || item.name === recItem.id,
-    );
+    // Note: Custom items (itemType === 'custom') should NOT match by name to avoid
+    // false matches with recommended items
+    const matchingItems = items.filter((item) => {
+      if (item.productTemplateId === recItem.id) return true;
+      // Only match by name if not a custom item
+      if (item.itemType !== 'custom' && item.name === recItem.id) return true;
+      return false;
+    });
 
     const totalQty = matchingItems.reduce(
       (sum, item) => sum + item.quantity,
@@ -168,10 +172,14 @@ export function calculateCategoryPreparedness(
       return;
     }
 
-    const matchingItems = categoryItems.filter(
-      (item) =>
-        item.productTemplateId === recItem.id || item.name === recItem.id,
-    );
+    // Note: Custom items (itemType === 'custom') should NOT match by name to avoid
+    // false matches with recommended items
+    const matchingItems = categoryItems.filter((item) => {
+      if (item.productTemplateId === recItem.id) return true;
+      // Only match by name if not a custom item
+      if (item.itemType !== 'custom' && item.name === recItem.id) return true;
+      return false;
+    });
 
     const actualQty = matchingItems.reduce(
       (sum, item) => sum + item.quantity,

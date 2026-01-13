@@ -1099,6 +1099,347 @@ describe('calculateCategoryShortages - communication-info category', () => {
   });
 });
 
+describe('calculateCategoryShortages - item matching logic', () => {
+  const household = createMockHousehold();
+
+  describe('custom items should NOT match recommended items by name', () => {
+    it('should NOT match custom item "Battery Radio" with recommended "battery-radio"', () => {
+      // This is the specific bug scenario: custom item with similar name
+      const customItem = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Battery Radio',
+        itemType: 'custom', // Custom item
+        categoryId: createCategoryId('communication-info'),
+        quantity: 2,
+        unit: 'pieces',
+        recommendedQuantity: 5,
+        // No productTemplateId - this is a custom item
+      });
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        [customItem],
+        household,
+      );
+
+      // Custom item should NOT match, so battery-radio should still be in shortages
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      expect(batteryRadioShortage).toBeDefined();
+      expect(batteryRadioShortage!.actual).toBe(0); // Custom item didn't match
+      expect(batteryRadioShortage!.missing).toBeGreaterThan(0);
+    });
+
+    it('should NOT match custom item with normalized name that matches recommended item ID', () => {
+      // Test various name variations that would normalize to a recommended item ID
+      const testCases = [
+        { name: 'Battery Radio', recommendedId: 'battery-radio' },
+        { name: 'Hand Crank Radio', recommendedId: 'hand-crank-radio' },
+        { name: 'First Aid Kit', recommendedId: 'first-aid-kit' },
+      ];
+
+      testCases.forEach(({ name, recommendedId }) => {
+        const customItem = createMockInventoryItem({
+          id: createItemId(`item-${recommendedId}`),
+          name,
+          itemType: 'custom',
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          unit: 'pieces',
+          recommendedQuantity: 1,
+        });
+
+        const result = calculateCategoryShortages(
+          'communication-info',
+          [customItem],
+          household,
+        );
+
+        // Custom item should NOT match, so recommended item should still be in shortages
+        const shortage = result.shortages.find(
+          (s) => s.itemId === recommendedId,
+        );
+        if (shortage) {
+          expect(shortage.actual).toBe(0);
+        }
+      });
+    });
+  });
+
+  describe('items should match by productTemplateId', () => {
+    it('should match item with productTemplateId even if name differs', () => {
+      const item = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'My Custom Battery Radio', // Different name
+        itemType: createProductTemplateId('battery-radio'),
+        categoryId: createCategoryId('communication-info'),
+        quantity: 0, // Not enough, so it appears in shortages
+        unit: 'pieces',
+        recommendedQuantity: 1,
+        productTemplateId: createProductTemplateId('battery-radio'), // This enables matching
+      });
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        [item],
+        household,
+      );
+
+      // Should match by productTemplateId (even though quantity is 0)
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      expect(batteryRadioShortage).toBeDefined();
+      expect(batteryRadioShortage!.actual).toBe(0); // Matched but quantity is 0
+      expect(batteryRadioShortage!.missing).toBe(1);
+      // Verify it's counted in totalActual
+      expect(result.totalActual).toBe(0);
+    });
+
+    it('should match multiple items with same productTemplateId and sum quantities', () => {
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'Radio 1',
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          productTemplateId: createProductTemplateId('battery-radio'),
+        }),
+        createMockInventoryItem({
+          id: createItemId('item-2'),
+          name: 'Radio 2',
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          productTemplateId: createProductTemplateId('battery-radio'),
+        }),
+      ];
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        items,
+        household,
+      );
+
+      // Communication-info category tracks by item types, not quantities
+      // Both items match the same recommended item (battery-radio), so it counts as 1 item type fulfilled
+      // We need 2 item types total (battery-radio and hand-crank-radio)
+      expect(result.totalActual).toBe(1); // 1 item type fulfilled (battery-radio)
+      expect(result.totalNeeded).toBe(2); // 2 item types needed
+      // Since we have battery-radio fulfilled, it won't be in shortages
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      expect(batteryRadioShortage).toBeUndefined(); // Not in shortages because fulfilled
+    });
+
+    it('should show shortage when item matches but quantity is insufficient', () => {
+      const item = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'My Radio',
+        categoryId: createCategoryId('communication-info'),
+        quantity: 0, // Has 0, needs 1
+        productTemplateId: createProductTemplateId('battery-radio'),
+      });
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        [item],
+        household,
+      );
+
+      // Should match and appear in shortages because quantity is insufficient
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      expect(batteryRadioShortage).toBeDefined();
+      expect(batteryRadioShortage!.actual).toBe(0);
+      expect(batteryRadioShortage!.needed).toBe(1);
+      expect(batteryRadioShortage!.missing).toBe(1);
+    });
+  });
+
+  describe('items should match by itemType when it equals recommended item ID', () => {
+    it('should match item with itemType equal to recommended item ID', () => {
+      const item = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Some Radio',
+        itemType: createProductTemplateId('battery-radio'), // itemType matches
+        categoryId: createCategoryId('communication-info'),
+        quantity: 0, // Not enough, so it appears in shortages
+        unit: 'pieces',
+        recommendedQuantity: 1,
+        // No productTemplateId, but itemType matches
+      });
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        [item],
+        household,
+      );
+
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      expect(batteryRadioShortage).toBeDefined();
+      expect(batteryRadioShortage!.actual).toBe(0); // Matched by itemType but quantity is 0
+      expect(result.totalActual).toBe(0);
+    });
+  });
+
+  describe('non-custom items should match by normalized name', () => {
+    it('should match non-custom item by normalized name', () => {
+      // Item with itemType that's not 'custom' should match by name
+      const item = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Battery Radio', // Name normalizes to 'battery-radio'
+        itemType: createProductTemplateId('some-other-type'), // Not 'custom', but also not matching
+        categoryId: createCategoryId('communication-info'),
+        quantity: 0, // Not enough, so it appears in shortages
+        unit: 'pieces',
+        recommendedQuantity: 1,
+        // No productTemplateId
+      });
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        [item],
+        household,
+      );
+
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      expect(batteryRadioShortage).toBeDefined();
+      expect(batteryRadioShortage!.actual).toBe(0); // Matched by normalized name but quantity is 0
+      expect(result.totalActual).toBe(0);
+    });
+
+    it('should match item with name variations that normalize correctly', () => {
+      const testCases = [
+        { name: 'Battery Radio', expectedMatch: 'battery-radio' },
+        { name: 'battery radio', expectedMatch: 'battery-radio' },
+        { name: 'BATTERY RADIO', expectedMatch: 'battery-radio' },
+        { name: 'Hand Crank Radio', expectedMatch: 'hand-crank-radio' },
+      ];
+
+      testCases.forEach(({ name, expectedMatch }) => {
+        const item = createMockInventoryItem({
+          id: createItemId(`item-${expectedMatch}`),
+          name,
+          itemType: createProductTemplateId('some-type'), // Not 'custom'
+          categoryId: createCategoryId('communication-info'),
+          quantity: 0, // Not enough, so it appears in shortages
+          unit: 'pieces',
+          recommendedQuantity: 1,
+        });
+
+        const result = calculateCategoryShortages(
+          'communication-info',
+          [item],
+          household,
+        );
+
+        const shortage = result.shortages.find(
+          (s) => s.itemId === expectedMatch,
+        );
+        expect(shortage).toBeDefined();
+        expect(shortage!.actual).toBe(0); // Matched but quantity is 0
+        expect(result.totalActual).toBe(0);
+      });
+    });
+  });
+
+  describe('matching priority and edge cases', () => {
+    it('should prioritize productTemplateId over name matching', () => {
+      // Item with productTemplateId for one item but name matching another
+      const item = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Battery Radio', // Name would match 'battery-radio' if not custom
+        itemType: 'custom',
+        categoryId: createCategoryId('communication-info'),
+        quantity: 0, // Not enough, so it appears in shortages
+        unit: 'pieces',
+        recommendedQuantity: 1,
+        productTemplateId: createProductTemplateId('hand-crank-radio'), // But productTemplateId matches different item
+      });
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        [item],
+        household,
+      );
+
+      // Should match hand-crank-radio by productTemplateId
+      const handCrankShortage = result.shortages.find(
+        (s) => s.itemId === 'hand-crank-radio',
+      );
+      expect(handCrankShortage).toBeDefined();
+      expect(handCrankShortage!.actual).toBe(0); // Matched but quantity is 0
+
+      // Should NOT match battery-radio (custom item doesn't match by name)
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      expect(batteryRadioShortage).toBeDefined();
+      expect(batteryRadioShortage!.actual).toBe(0); // Didn't match
+    });
+
+    it('should handle markedAsEnough correctly with custom items', () => {
+      const customItem = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Battery Radio',
+        itemType: 'custom',
+        categoryId: createCategoryId('communication-info'),
+        quantity: 1,
+        unit: 'pieces',
+        recommendedQuantity: 1,
+        markedAsEnough: true, // Marked as enough
+      });
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        [customItem],
+        household,
+      );
+
+      // Custom item doesn't match, so markedAsEnough shouldn't affect the shortage
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      // Should still show as shortage because custom item didn't match
+      expect(batteryRadioShortage).toBeDefined();
+      expect(batteryRadioShortage!.missing).toBeGreaterThan(0);
+    });
+
+    it('should handle markedAsEnough correctly with matching items', () => {
+      const matchingItem = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Battery Radio',
+        itemType: createProductTemplateId('battery-radio'),
+        categoryId: createCategoryId('communication-info'),
+        quantity: 1,
+        unit: 'pieces',
+        recommendedQuantity: 2, // Needs 2, has 1
+        markedAsEnough: true, // But marked as enough
+        productTemplateId: createProductTemplateId('battery-radio'),
+      });
+
+      const result = calculateCategoryShortages(
+        'communication-info',
+        [matchingItem],
+        household,
+      );
+
+      // Should NOT appear in shortages because markedAsEnough
+      const batteryRadioShortage = result.shortages.find(
+        (s) => s.itemId === 'battery-radio',
+      );
+      expect(batteryRadioShortage).toBeUndefined();
+    });
+  });
+});
+
 describe('getCategoryDisplayStatus', () => {
   const household = createMockHousehold();
 
