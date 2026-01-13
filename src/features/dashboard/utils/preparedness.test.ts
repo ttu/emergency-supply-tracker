@@ -646,11 +646,11 @@ describe('calculatePreparednessScore', () => {
         expect(score).toBeLessThanOrEqual(100);
       });
 
-      it('should NOT match by name if name does not exactly equal recommended item ID', () => {
-        // Note: calculatePreparednessScore uses exact name match, not normalized
+      it('should match by normalized name when name normalizes to recommended item ID', () => {
+        // calculatePreparednessScore now uses normalized name matching (like categoryStatus.ts)
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
-          name: 'Battery Radio', // Does NOT exactly match 'battery-radio'
+          name: 'Battery Radio', // Normalizes to 'battery-radio'
           itemType: createProductTemplateId('some-type'), // Not 'custom'
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
@@ -677,8 +677,9 @@ describe('calculatePreparednessScore', () => {
           customRecommendedItems,
         );
 
-        // Should NOT match because 'Battery Radio' !== 'battery-radio' (exact match required)
-        expect(score).toBe(0);
+        // Should match because 'Battery Radio' normalizes to 'battery-radio'
+        expect(score).toBeGreaterThan(0);
+        expect(score).toBeLessThanOrEqual(100);
       });
     });
 

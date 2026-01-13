@@ -1133,10 +1133,10 @@ describe('calculateCategoryShortages - item matching logic', () => {
 
     it('should NOT match custom item with normalized name that matches recommended item ID', () => {
       // Test various name variations that would normalize to a recommended item ID
+      // Only include items from communication-info category
       const testCases = [
         { name: 'Battery Radio', recommendedId: 'battery-radio' },
         { name: 'Hand Crank Radio', recommendedId: 'hand-crank-radio' },
-        { name: 'First Aid Kit', recommendedId: 'first-aid-kit' },
       ];
 
       const testCustomItemDoesNotMatch = (
@@ -1163,9 +1163,9 @@ describe('calculateCategoryShortages - item matching logic', () => {
         const shortageById = (shortages: typeof result.shortages, id: string) =>
           shortages.find((s) => s.itemId === id);
         const shortage = shortageById(result.shortages, recommendedId);
-        if (shortage) {
-          expect(shortage.actual).toBe(0);
-        }
+        // Assert shortage exists (since we're testing communication-info category items)
+        expect(shortage).toBeDefined();
+        expect(shortage!.actual).toBe(0);
       };
 
       testCases.forEach(({ name, recommendedId }) => {

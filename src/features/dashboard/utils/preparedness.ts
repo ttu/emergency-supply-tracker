@@ -93,8 +93,11 @@ export function calculatePreparednessScore(
     // false matches with recommended items
     const matchingItems = items.filter((item) => {
       if (item.productTemplateId === recItem.id) return true;
-      // Only match by name if not a custom item
-      if (item.itemType !== 'custom' && item.name === recItem.id) return true;
+      // Only match by name if not a custom item, and normalize name for comparison
+      if (item.itemType !== 'custom') {
+        const nameNormalized = item.name.toLowerCase().replace(/\s+/g, '-');
+        if (nameNormalized === recItem.id) return true;
+      }
       return false;
     });
 
@@ -176,8 +179,11 @@ export function calculateCategoryPreparedness(
     // false matches with recommended items
     const matchingItems = categoryItems.filter((item) => {
       if (item.productTemplateId === recItem.id) return true;
-      // Only match by name if not a custom item
-      if (item.itemType !== 'custom' && item.name === recItem.id) return true;
+      // Only match by name if not a custom item, and normalize name for comparison
+      if (item.itemType !== 'custom') {
+        const nameNormalized = item.name.toLowerCase().replace(/\s+/g, '-');
+        if (nameNormalized === recItem.id) return true;
+      }
       return false;
     });
 
