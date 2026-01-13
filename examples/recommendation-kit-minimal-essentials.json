@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "name": "Minimal Essentials Kit",
+    "version": "1.0.0",
+    "description": "Bare minimum 72-hour emergency supplies focusing on water and food essentials only",
+    "source": "Custom",
+    "createdAt": "2026-01-12T20:00:00.000Z",
+    "language": "en"
+  },
+  "items": [
+    {
+      "id": "bottled-water",
+      "i18nKey": "products.bottled-water",
+      "category": "water-beverages",
+      "baseQuantity": 3,
+      "unit": "liters",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "canned-soup",
+      "i18nKey": "products.canned-soup",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 400,
+      "caloriesPer100g": 50,
+      "caloriesPerUnit": 200
+    },
+    {
+      "id": "canned-vegetables",
+      "i18nKey": "products.canned-vegetables",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 400,
+      "caloriesPer100g": 25,
+      "caloriesPerUnit": 100
+    },
+    {
+      "id": "canned-fish",
+      "i18nKey": "products.canned-fish",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 36,
+      "weightGramsPerUnit": 150,
+      "caloriesPer100g": 130,
+      "caloriesPerUnit": 200
+    },
+    {
+      "id": "crackers",
+      "i18nKey": "products.crackers",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 200,
+      "caloriesPer100g": 250,
+      "caloriesPerUnit": 500
+    },
+    {
+      "id": "energy-bars",
+      "i18nKey": "products.energy-bars",
+      "category": "food",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 50,
+      "caloriesPer100g": 500,
+      "caloriesPerUnit": 250
+    },
+    {
+      "id": "nuts",
+      "i18nKey": "products.nuts",
+      "category": "food",
+      "baseQuantity": 0.1,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 600,
+      "caloriesPerUnit": 6000
+    },
+    {
+      "id": "can-opener",
+      "i18nKey": "products.can-opener",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    }
+  ]
+}

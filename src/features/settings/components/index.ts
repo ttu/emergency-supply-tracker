@@ -6,6 +6,7 @@ export { ExportRecommendationsButton } from './ExportRecommendationsButton';
 export { HouseholdForm } from './HouseholdForm';
 export { ImportButton } from './ImportButton';
 export { ImportRecommendationsButton } from './ImportRecommendationsButton';
+export { KitManagement } from './KitManagement';
 export { LanguageSelector } from './LanguageSelector';
 export { NutritionSettings } from './NutritionSettings';
 export { OverriddenRecommendations } from './OverriddenRecommendations';

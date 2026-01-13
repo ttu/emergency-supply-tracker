@@ -1,0 +1,189 @@
+import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/shared/components/Button';
+import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
+import { Toast } from '@/shared/components/Toast';
+import { useRecommendedItems } from '@/features/templates';
+import { KitSelector } from '@/features/templates/components/KitSelector';
+import type { KitId, RecommendedItemsFile } from '@/shared/types';
+import styles from './KitManagement.module.css';
+
+export function KitManagement() {
+  const { t } = useTranslation();
+  const {
+    availableKits,
+    selectedKitId,
+    selectKit,
+    uploadKit,
+    deleteKit,
+    exportRecommendedItems,
+  } = useRecommendedItems();
+
+  const [kitToDelete, setKitToDelete] = useState<`custom:${string}` | null>(
+    null,
+  );
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVariant, setToastVariant] = useState<'success' | 'error'>(
+    'success',
+  );
+
+  const selectedKit = availableKits.find((kit) => kit.id === selectedKitId);
+
+  const handleSelectKit = useCallback(
+    (kitId: KitId) => {
+      selectKit(kitId);
+      const kit = availableKits.find((k) => k.id === kitId);
+      if (kit) {
+        setToastMessage(
+          t('settings.kits.selected', { name: kit.name }) as string,
+        );
+        setToastVariant('success');
+      }
+    },
+    [selectKit, availableKits, t],
+  );
+
+  const handleUploadKit = useCallback(
+    (file: RecommendedItemsFile) => {
+      const result = uploadKit(file);
+      if (result.kitId) {
+        setToastMessage(
+          t('settings.kits.uploadSuccess', { name: file.meta.name }) as string,
+        );
+        setToastVariant('success');
+      } else if (result.errors && result.errors.length > 0) {
+        setToastMessage(
+          t('settings.kits.uploadError', {
+            error: result.errors[0],
+          }) as string,
+        );
+        setToastVariant('error');
+      }
+    },
+    [uploadKit, t],
+  );
+
+  const handleDeleteKit = useCallback((kitId: `custom:${string}`) => {
+    setKitToDelete(kitId);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (kitToDelete) {
+      const kit = availableKits.find((k) => k.id === kitToDelete);
+      deleteKit(kitToDelete);
+      setKitToDelete(null);
+      if (kit) {
+        setToastMessage(
+          t('settings.kits.deleteSuccess', { name: kit.name }) as string,
+        );
+        setToastVariant('success');
+      }
+    }
+  }, [kitToDelete, deleteKit, availableKits, t]);
+
+  const handleCancelDelete = useCallback(() => {
+    setKitToDelete(null);
+  }, []);
+
+  const handleExport = useCallback(() => {
+    const kitData = exportRecommendedItems();
+    const json = JSON.stringify(kitData, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${selectedKit?.name || 'recommendations'}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setToastMessage(t('settings.kits.exportSuccess') as string);
+    setToastVariant('success');
+  }, [exportRecommendedItems, selectedKit, t]);
+
+  const handleCloseToast = useCallback(() => {
+    setToastMessage(null);
+  }, []);
+
+  const kitToDeleteInfo = kitToDelete
+    ? availableKits.find((k) => k.id === kitToDelete)
+    : null;
+
+  return (
+    <div className={styles.container} data-testid="kit-management">
+      {/* Current Kit Status */}
+      <div className={styles.statusSection}>
+        <div className={styles.statusInfo}>
+          <span className={styles.label}>
+            {t('settings.kits.currentKit.label')}
+          </span>
+          {selectedKit ? (
+            <span className={styles.value}>
+              {selectedKit.name}
+              <span className={styles.itemCount}>
+                (
+                {t('settings.kits.itemCount', { count: selectedKit.itemCount })}
+                )
+              </span>
+              {selectedKit.isBuiltIn && (
+                <span className={styles.badge}>
+                  {t('settings.kits.builtIn')}
+                </span>
+              )}
+            </span>
+          ) : (
+            <span className={styles.value}>
+              {t('settings.kits.noKitSelected')}
+            </span>
+          )}
+        </div>
+        <div className={styles.actions}>
+          <Button
+            variant="secondary"
+            onClick={handleExport}
+            disabled={!selectedKitId}
+            data-testid="export-kit-button"
+          >
+            {t('settings.kits.export')}
+          </Button>
+        </div>
+      </div>
+
+      {/* Kit Selector */}
+      <div className={styles.selectorSection}>
+        <h3 className={styles.sectionTitle}>{t('settings.kits.selectKit')}</h3>
+        <KitSelector
+          availableKits={availableKits}
+          selectedKitId={selectedKitId}
+          onSelectKit={handleSelectKit}
+          onUploadKit={handleUploadKit}
+          onDeleteKit={handleDeleteKit}
+          showUpload={true}
+          showDelete={true}
+        />
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!kitToDelete}
+        title={t('settings.kits.deleteConfirm.title')}
+        message={t('settings.kits.deleteConfirm.message', {
+          name: kitToDeleteInfo?.name || '',
+        })}
+        confirmLabel={t('settings.kits.deleteConfirm.confirm')}
+        confirmVariant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
+
+      {/* Toast notifications */}
+      <Toast
+        isVisible={!!toastMessage}
+        message={toastMessage || ''}
+        variant={toastVariant}
+        onClose={handleCloseToast}
+      />
+    </div>
+  );
+}

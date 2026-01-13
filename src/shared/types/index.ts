@@ -265,6 +265,56 @@ export interface RecommendedItemsFile {
   items: ImportedRecommendedItem[];
 }
 
+// Recommendation Kit Types
+
+/** Built-in kit identifiers */
+export const BUILT_IN_KIT_IDS = [
+  '72tuntia-standard',
+  'minimal-essentials',
+] as const;
+
+export type BuiltInKitId = (typeof BUILT_IN_KIT_IDS)[number];
+
+/** Kit identifier: either a built-in kit or a custom uploaded kit */
+export type KitId = BuiltInKitId | `custom:${string}`;
+
+/** Helper to check if a kit ID is a built-in kit */
+export function isBuiltInKitId(kitId: string): kitId is BuiltInKitId {
+  return BUILT_IN_KIT_IDS.includes(kitId as BuiltInKitId);
+}
+
+/** Helper to check if a kit ID is a custom kit */
+export function isCustomKitId(kitId: string): kitId is `custom:${string}` {
+  return kitId.startsWith('custom:');
+}
+
+/** Extract the UUID from a custom kit ID */
+export function getCustomKitUuid(kitId: `custom:${string}`): string {
+  return kitId.replace('custom:', '');
+}
+
+/** Create a custom kit ID from a UUID */
+export function createCustomKitId(uuid: string): `custom:${string}` {
+  return `custom:${uuid}`;
+}
+
+/** A user-uploaded custom recommendation kit stored in localStorage */
+export interface UploadedKit {
+  id: string; // UUID
+  file: RecommendedItemsFile;
+  uploadedAt: string; // ISO timestamp
+}
+
+/** Summary info about an available kit (for display in UI) */
+export interface KitInfo {
+  id: KitId;
+  name: string;
+  description?: string;
+  itemCount: number;
+  isBuiltIn: boolean;
+  uploadedAt?: string; // Only for custom kits
+}
+
 // App Data (root)
 export interface AppData {
   version: string;
@@ -275,7 +325,11 @@ export interface AppData {
   customTemplates: ProductTemplate[];
   dismissedAlertIds: AlertId[]; // Alert IDs that have been dismissed by the user
   disabledRecommendedItems: ProductTemplateId[]; // Product template IDs that have been disabled by the user
-  customRecommendedItems?: RecommendedItemsFile | null; // Custom imported recommendations (null = use built-in)
+  // Kit management (new multi-kit system)
+  selectedRecommendationKit?: KitId; // Currently selected kit ID
+  uploadedRecommendationKits?: UploadedKit[]; // User-uploaded custom kits
+  // Legacy field - kept for migration, will be migrated to uploadedRecommendationKits
+  customRecommendedItems?: RecommendedItemsFile | null; // @deprecated - use uploadedRecommendationKits
   lastModified: string;
   lastBackupDate?: DateOnly; // ISO date of last export
   backupReminderDismissedUntil?: DateOnly; // ISO date (first of next month) - reminder hidden until this date

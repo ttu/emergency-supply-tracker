@@ -4,9 +4,10 @@ import { RecommendedItemsProvider } from './index';
 import { useRecommendedItems } from '../hooks';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { RECOMMENDED_ITEMS } from '../data';
-import type { RecommendedItemsFile } from '@/shared/types';
+import type { RecommendedItemsFile, UploadedKit, KitId } from '@/shared/types';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
-import { createProductTemplateId } from '@/shared/types';
+import { createProductTemplateId, createCustomKitId } from '@/shared/types';
+import { DEFAULT_KIT_ID } from '../kits';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
@@ -31,6 +32,8 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
     customTemplates: [],
     dismissedAlertIds: [],
     disabledRecommendedItems: [],
+    selectedRecommendationKit: DEFAULT_KIT_ID,
+    uploadedRecommendationKits: [],
     lastModified: new Date().toISOString(),
   })),
 }));
@@ -55,6 +58,10 @@ function TestComponent({
       </div>
       <div data-testid="custom-info">
         {context.customRecommendationsInfo?.name || 'none'}
+      </div>
+      <div data-testid="selected-kit">{context.selectedKitId || 'none'}</div>
+      <div data-testid="available-kits-count">
+        {context.availableKits.length}
       </div>
     </div>
   );
@@ -92,6 +99,12 @@ describe('RecommendedItemsProvider', () => {
     ],
   };
 
+  const uploadedKit: UploadedKit = {
+    id: 'test-kit-uuid',
+    uploadedAt: '2024-01-01T00:00:00.000Z',
+    file: validCustomFile,
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetAppData.mockReturnValue(null);
@@ -109,11 +122,15 @@ describe('RecommendedItemsProvider', () => {
     );
     expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
     expect(screen.getByTestId('custom-info')).toHaveTextContent('none');
+    expect(screen.getByTestId('selected-kit')).toHaveTextContent(
+      DEFAULT_KIT_ID,
+    );
   });
 
-  it('should load custom recommendations from localStorage', () => {
+  it('should load uploaded kit from localStorage and select it', () => {
     mockGetAppData.mockReturnValue({
-      customRecommendedItems: validCustomFile,
+      uploadedRecommendationKits: [uploadedKit],
+      selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
     });
 
     render(
@@ -129,16 +146,14 @@ describe('RecommendedItemsProvider', () => {
     );
   });
 
-  it('should import valid recommendations file', async () => {
-    let importFn!: ReturnType<
-      typeof useRecommendedItems
-    >['importRecommendedItems'];
+  it('should import valid recommendations file via uploadKit', async () => {
+    let uploadKitFn!: ReturnType<typeof useRecommendedItems>['uploadKit'];
 
     render(
       <RecommendedItemsProvider>
         <TestComponent
           onContextReady={(ctx) => {
-            importFn = ctx.importRecommendedItems;
+            uploadKitFn = ctx.uploadKit;
           }}
         />
       </RecommendedItemsProvider>,
@@ -147,26 +162,20 @@ describe('RecommendedItemsProvider', () => {
     expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
 
     act(() => {
-      const result = importFn(validCustomFile);
+      const result = uploadKitFn(validCustomFile);
       expect(result.valid).toBe(true);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('is-custom')).toHaveTextContent('true');
-      expect(screen.getByTestId('items-count')).toHaveTextContent('2');
+      expect(result.kitId).toBeDefined();
     });
   });
 
   it('should reject invalid recommendations file', () => {
-    let importFn!: ReturnType<
-      typeof useRecommendedItems
-    >['importRecommendedItems'];
+    let uploadKitFn!: ReturnType<typeof useRecommendedItems>['uploadKit'];
 
     render(
       <RecommendedItemsProvider>
         <TestComponent
           onContextReady={(ctx) => {
-            importFn = ctx.importRecommendedItems;
+            uploadKitFn = ctx.uploadKit;
           }}
         />
       </RecommendedItemsProvider>,
@@ -178,7 +187,7 @@ describe('RecommendedItemsProvider', () => {
     } as unknown as RecommendedItemsFile;
 
     act(() => {
-      const result = importFn(invalidFile);
+      const result = uploadKitFn(invalidFile);
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
@@ -187,9 +196,10 @@ describe('RecommendedItemsProvider', () => {
     expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
   });
 
-  it('should export custom recommendations when using custom', async () => {
+  it('should export current kit when using custom', async () => {
     mockGetAppData.mockReturnValue({
-      customRecommendedItems: validCustomFile,
+      uploadedRecommendationKits: [uploadedKit],
+      selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
     });
 
     let exportFn: () => RecommendedItemsFile;
@@ -209,7 +219,8 @@ describe('RecommendedItemsProvider', () => {
       exportedFile = exportFn();
     });
 
-    expect(exportedFile!).toEqual(validCustomFile);
+    expect(exportedFile!.meta.name).toBe('Custom Recommendations');
+    expect(exportedFile!.items.length).toBe(2);
   });
 
   it('should export built-in recommendations when not using custom', () => {
@@ -234,18 +245,19 @@ describe('RecommendedItemsProvider', () => {
     expect(exportedFile!.items.length).toBe(RECOMMENDED_ITEMS.length);
   });
 
-  it('should reset to default recommendations', async () => {
+  it('should reset to default recommendations via selectKit', async () => {
     mockGetAppData.mockReturnValue({
-      customRecommendedItems: validCustomFile,
+      uploadedRecommendationKits: [uploadedKit],
+      selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
     });
 
-    let resetFn: () => void;
+    let selectKitFn: (kitId: KitId) => void;
 
     render(
       <RecommendedItemsProvider>
         <TestComponent
           onContextReady={(ctx) => {
-            resetFn = ctx.resetToDefaultRecommendations;
+            selectKitFn = ctx.selectKit;
           }}
         />
       </RecommendedItemsProvider>,
@@ -254,7 +266,7 @@ describe('RecommendedItemsProvider', () => {
     expect(screen.getByTestId('is-custom')).toHaveTextContent('true');
 
     act(() => {
-      resetFn();
+      selectKitFn(DEFAULT_KIT_ID);
     });
 
     await waitFor(() => {
@@ -265,14 +277,14 @@ describe('RecommendedItemsProvider', () => {
     });
   });
 
-  it('should save to localStorage when custom items change', async () => {
-    let importFn: (file: RecommendedItemsFile) => { valid: boolean };
+  it('should save to localStorage when kit is uploaded', async () => {
+    let uploadKitFn: (file: RecommendedItemsFile) => { valid: boolean };
 
     render(
       <RecommendedItemsProvider>
         <TestComponent
           onContextReady={(ctx) => {
-            importFn = ctx.importRecommendedItems;
+            uploadKitFn = ctx.uploadKit;
           }}
         />
       </RecommendedItemsProvider>,
@@ -282,26 +294,25 @@ describe('RecommendedItemsProvider', () => {
     mockSaveAppData.mockClear();
 
     await act(async () => {
-      importFn(validCustomFile);
+      uploadKitFn(validCustomFile);
     });
 
     await waitFor(() => {
       expect(mockSaveAppData).toHaveBeenCalled();
     });
 
-    // Find the call that saved our custom items
+    // Find the call that saved our uploaded kit
     const lastCall =
       mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
-    expect(lastCall.customRecommendedItems).toEqual(validCustomFile);
-    // Note: Clearing disabledRecommendedItems is now the responsibility of the
-    // component that calls importRecommendedItems, since each provider manages
-    // its own slice of localStorage state independently
+    expect(lastCall.uploadedRecommendationKits).toBeDefined();
+    expect(lastCall.uploadedRecommendationKits.length).toBeGreaterThan(0);
   });
 
   describe('getItemName', () => {
     it('should return inline name for custom items with names', () => {
       mockGetAppData.mockReturnValue({
-        customRecommendedItems: validCustomFile,
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
       });
 
       let getItemNameFn!: ReturnType<typeof useRecommendedItems>['getItemName'];
@@ -321,13 +332,15 @@ describe('RecommendedItemsProvider', () => {
       const waterItem = items.find(
         (i) => i.id === createProductTemplateId('custom-item-2'),
       );
+      expect(waterItem).toBeDefined();
       expect(getItemNameFn(waterItem!, 'en')).toBe('Water Bottle');
       expect(getItemNameFn(waterItem!, 'fi')).toBe('Vesipullo');
     });
 
     it('should fall back to English when requested language not available', () => {
       mockGetAppData.mockReturnValue({
-        customRecommendedItems: validCustomFile,
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
       });
 
       let getItemNameFn!: ReturnType<typeof useRecommendedItems>['getItemName'];
@@ -347,6 +360,7 @@ describe('RecommendedItemsProvider', () => {
       const waterItem = items.find(
         (i) => i.id === createProductTemplateId('custom-item-2'),
       );
+      expect(waterItem).toBeDefined();
       // Request German, should fall back to English
       expect(getItemNameFn(waterItem!, 'de')).toBe('Water Bottle');
     });
@@ -432,7 +446,8 @@ describe('RecommendedItemsProvider', () => {
 
   it('should provide customRecommendationsInfo with correct data', () => {
     mockGetAppData.mockReturnValue({
-      customRecommendedItems: validCustomFile,
+      uploadedRecommendationKits: [uploadedKit],
+      selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
     });
 
     let info!: ReturnType<
@@ -453,6 +468,105 @@ describe('RecommendedItemsProvider', () => {
       name: 'Custom Recommendations',
       version: CURRENT_SCHEMA_VERSION,
       itemCount: 2,
+    });
+  });
+
+  describe('kit selection and management', () => {
+    it('should list available kits including built-in and uploaded', () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: DEFAULT_KIT_ID,
+      });
+
+      let availableKits!: ReturnType<
+        typeof useRecommendedItems
+      >['availableKits'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              availableKits = ctx.availableKits;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Should have built-in kits + 1 uploaded kit
+      expect(availableKits.length).toBeGreaterThan(1);
+
+      // Should include the uploaded kit
+      const customKit = availableKits.find(
+        (k) => k.id === createCustomKitId('test-kit-uuid'),
+      );
+      expect(customKit).toBeDefined();
+      expect(customKit?.name).toBe('Custom Recommendations');
+    });
+
+    it('should select a different kit', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: DEFAULT_KIT_ID,
+      });
+
+      let selectKitFn!: ReturnType<typeof useRecommendedItems>['selectKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              selectKitFn = ctx.selectKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
+
+      act(() => {
+        selectKitFn(createCustomKitId('test-kit-uuid'));
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('is-custom')).toHaveTextContent('true');
+        expect(screen.getByTestId('items-count')).toHaveTextContent('2');
+      });
+    });
+
+    it('should delete an uploaded kit', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: DEFAULT_KIT_ID,
+      });
+
+      let deleteKitFn!: ReturnType<typeof useRecommendedItems>['deleteKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              deleteKitFn = ctx.deleteKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear any initial save calls
+      mockSaveAppData.mockClear();
+
+      act(() => {
+        deleteKitFn(createCustomKitId('test-kit-uuid'));
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      // Verify the kit was removed from the saved data
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+      expect(lastCall.uploadedRecommendationKits).toBeDefined();
+      expect(lastCall.uploadedRecommendationKits.length).toBe(0);
     });
   });
 });

@@ -4,10 +4,11 @@ import { WelcomeScreen } from './WelcomeScreen';
 import { HouseholdPresetSelector } from './HouseholdPresetSelector';
 import { HouseholdForm } from './HouseholdForm';
 import type { HouseholdData } from './HouseholdForm';
+import { RecommendationKitStep } from './RecommendationKitStep';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
-import { RECOMMENDED_ITEMS } from '@/features/templates';
+import { useRecommendedItems } from '@/features/templates';
 import { HOUSEHOLD_DEFAULTS } from '@/features/household';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 
@@ -15,10 +16,16 @@ export interface OnboardingProps {
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;
 }
 
-type OnboardingStep = 'welcome' | 'preset' | 'household' | 'quickSetup';
+type OnboardingStep =
+  | 'welcome'
+  | 'preset'
+  | 'household'
+  | 'kitSelection'
+  | 'quickSetup';
 
 export const Onboarding = ({ onComplete }: OnboardingProps) => {
   const { t } = useTranslation('products');
+  const { recommendedItems } = useRecommendedItems();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [selectedPreset, setSelectedPreset] = useState<HouseholdPreset | null>(
     null,
@@ -44,6 +51,10 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       useFreezer: data.useFreezer,
     };
     setHouseholdConfig(config);
+    setCurrentStep('kitSelection');
+  };
+
+  const handleKitSelectionContinue = () => {
     setCurrentStep('quickSetup');
   };
 
@@ -51,7 +62,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
     if (!householdConfig) return;
 
     // Calculate total available items (after filtering for freezer requirements)
-    const availableItems = RECOMMENDED_ITEMS.filter((item) => {
+    const availableItems = recommendedItems.filter((item) => {
       // Skip frozen items if not using freezer
       if (item.requiresFreezer && !householdConfig.useFreezer) {
         return false;
@@ -64,26 +75,28 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
     const quantity = allItemsSelected ? 0 : 1;
 
     // Calculate and create inventory items from selected recommended items
-    const items: InventoryItem[] = RECOMMENDED_ITEMS.filter((item) => {
-      // Only include selected items
-      if (!selectedItemIds.has(item.id)) {
-        return false;
-      }
-      // Skip frozen items if not using freezer
-      if (item.requiresFreezer && !householdConfig.useFreezer) {
-        return false;
-      }
-      return true;
-    }).map((item) => {
-      // Translate item name
-      const itemName = t(item.i18nKey.replace('products.', ''));
+    const items: InventoryItem[] = recommendedItems
+      .filter((item) => {
+        // Only include selected items
+        if (!selectedItemIds.has(item.id)) {
+          return false;
+        }
+        // Skip frozen items if not using freezer
+        if (item.requiresFreezer && !householdConfig.useFreezer) {
+          return false;
+        }
+        return true;
+      })
+      .map((item) => {
+        // Translate item name
+        const itemName = t(item.i18nKey.replace('products.', ''));
 
-      // Create item using factory with determined quantity
-      return InventoryItemFactory.createFromTemplate(item, householdConfig, {
-        name: itemName,
-        quantity,
+        // Create item using factory with determined quantity
+        return InventoryItemFactory.createFromTemplate(item, householdConfig, {
+          name: itemName,
+          quantity,
+        });
       });
-    });
 
     onComplete(householdConfig, items);
   };
@@ -125,12 +138,19 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
         />
       )}
 
+      {currentStep === 'kitSelection' && (
+        <RecommendationKitStep
+          onContinue={handleKitSelectionContinue}
+          onBack={() => setCurrentStep('household')}
+        />
+      )}
+
       {currentStep === 'quickSetup' && householdConfig && (
         <QuickSetupScreen
           household={householdConfig}
           onAddItems={handleAddItems}
           onSkip={handleSkip}
-          onBack={() => setCurrentStep('household')}
+          onBack={() => setCurrentStep('kitSelection')}
         />
       )}
     </>

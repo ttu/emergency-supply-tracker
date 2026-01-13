@@ -20,6 +20,7 @@ import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
 import { UserSettingsFactory } from '@/features/settings/factories/UserSettingsFactory';
 import { STANDARD_CATEGORIES } from '@/features/categories/data';
+import { DEFAULT_KIT_ID } from '@/features/templates/kits';
 import {
   CURRENT_SCHEMA_VERSION,
   migrateToCurrentVersion,
@@ -90,6 +91,8 @@ export function createDefaultAppData(): AppData {
     customTemplates: [],
     dismissedAlertIds: [],
     disabledRecommendedItems: [],
+    selectedRecommendationKit: DEFAULT_KIT_ID,
+    uploadedRecommendationKits: [],
     lastModified: new Date().toISOString(),
   };
 }

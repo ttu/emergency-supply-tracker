@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { HouseholdConfig } from '@/shared/types';
-import { RECOMMENDED_ITEMS } from '@/features/templates';
+import type {
+  HouseholdConfig,
+  RecommendedItemDefinition,
+} from '@/shared/types';
+import { useRecommendedItems } from '@/features/templates';
 import { Button } from '@/shared/components/Button';
 import styles from './QuickSetupScreen.module.css';
 
@@ -19,10 +22,11 @@ export const QuickSetupScreen = ({
   onBack,
 }: QuickSetupScreenProps) => {
   const { t } = useTranslation(['common', 'categories', 'products', 'units']);
+  const { recommendedItems } = useRecommendedItems();
   const [showDetails, setShowDetails] = useState(false);
 
   // Calculate which items will be added
-  const itemsToAdd = RECOMMENDED_ITEMS.filter((item) => {
+  const itemsToAdd = recommendedItems.filter((item) => {
     // Skip frozen items if not using freezer
     if (item.requiresFreezer && !household.useFreezer) {
       return false;
@@ -36,7 +40,7 @@ export const QuickSetupScreen = ({
   );
 
   // Calculate recommended quantity for an item
-  const calculateQuantity = (item: (typeof RECOMMENDED_ITEMS)[0]): number => {
+  const calculateQuantity = (item: RecommendedItemDefinition): number => {
     let quantity = item.baseQuantity;
 
     if (item.scaleWithPeople) {
