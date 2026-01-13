@@ -161,7 +161,7 @@ function calculateNonFoodCategoryStatus(
  * Generate alerts for a single category based on stock status.
  */
 function generateCategoryAlerts(
-  category: { id: string; standardCategoryId?: string },
+  category: { id: string },
   categoryItems: InventoryItem[],
   percentOfRecommended: number,
   isFood: boolean,
@@ -170,8 +170,7 @@ function generateCategoryAlerts(
   const alerts: Alert[] = [];
   const categoryName = t(category.id, { ns: 'categories' });
 
-  // Use standardCategoryId if available, otherwise use id (convert to string if needed)
-  const categoryIdForAlert = category.standardCategoryId ?? String(category.id);
+  const categoryIdForAlert = String(category.id);
 
   // Check for out of stock (quantity/calories = 0)
   const isOutOfStock = isFood
@@ -230,16 +229,12 @@ function generateCategoryStockAlerts(
       return;
     }
 
-    const isFood = category.standardCategoryId
-      ? isFoodCategory(category.standardCategoryId)
-      : isFoodCategory(category.id as string);
+    const isFood = isFoodCategory(String(category.id));
 
     // Calculate status based on category type
     // For water-beverages, use calculateCategoryShortages to get accurate status
     // (it handles preparation water and item type tracking correctly)
-    const isWaterCategory =
-      category.standardCategoryId === 'water-beverages' ||
-      String(category.id) === 'water-beverages';
+    const isWaterCategory = String(category.id) === 'water-beverages';
 
     let percentOfRecommended: number;
     let hasEnough: boolean;
