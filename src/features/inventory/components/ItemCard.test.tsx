@@ -16,6 +16,13 @@ vi.mock('react-i18next', () => ({
       if (key.includes('expiresIn') && params) {
         return `Expires in ${params.days} days`;
       }
+      if (key === 'inventory.quantityMissing' && params) {
+        return `${params.count} ${params.unit} missing`;
+      }
+      // Return unit names as-is for testing
+      if (key === 'liters' || key === 'rolls' || key === 'meters') {
+        return key;
+      }
       return key;
     },
   }),
@@ -196,5 +203,47 @@ describe('ItemCard', () => {
     });
     render(<ItemCard item={customItem} />);
     expect(screen.getByText('custom')).toBeInTheDocument();
+  });
+
+  describe('missing quantity display', () => {
+    it('should show missing quantity when calculateMissingQuantity returns > 0', () => {
+      const lowQuantityItem = createMockInventoryItem({
+        ...baseItem,
+        quantity: 10,
+        recommendedQuantity: 28,
+        neverExpires: true,
+        expirationDate: undefined,
+      });
+      render(<ItemCard item={lowQuantityItem} />);
+      // Should show "18 liters missing" (28 - 10 = 18)
+      expect(screen.getByText(/18.*liters.*missing/i)).toBeInTheDocument();
+    });
+
+    it('should not show missing quantity when calculateMissingQuantity returns 0', () => {
+      const sufficientItem = createMockInventoryItem({
+        ...baseItem,
+        quantity: 30, // More than recommended (28)
+        recommendedQuantity: 28,
+        neverExpires: true,
+        expirationDate: undefined,
+      });
+      render(<ItemCard item={sufficientItem} />);
+      // Should NOT show missing quantity
+      expect(screen.queryByText(/missing/i)).not.toBeInTheDocument();
+    });
+
+    it('should display missing quantity with correct unit translation', () => {
+      const ropeItem = createMockInventoryItem({
+        ...baseItem,
+        quantity: 1,
+        recommendedQuantity: 10,
+        unit: 'meters',
+        neverExpires: true,
+        expirationDate: undefined,
+      });
+      render(<ItemCard item={ropeItem} />);
+      // Should show "9 meters missing" (10 - 1 = 9)
+      expect(screen.getByText(/9.*meters.*missing/i)).toBeInTheDocument();
+    });
   });
 });

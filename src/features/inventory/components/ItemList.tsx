@@ -33,6 +33,7 @@ export const ItemList = ({
         <ItemCard
           key={item.id}
           item={item}
+          allItems={items}
           onClick={onItemClick ? () => onItemClick(item) : undefined}
         />
       ))}

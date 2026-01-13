@@ -68,7 +68,8 @@
 .location,
 .calories,
 .capacity,
-.waterRequirement {
+.waterRequirement,
+.missingQuantity {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
 }
@@ -79,6 +80,11 @@
 }
 
 .expiringSoon {
+  color: var(--color-warning);
+  font-weight: var(--font-weight-medium);
+}
+
+.missingQuantity {
   color: var(--color-warning);
   font-weight: var(--font-weight-medium);
 }

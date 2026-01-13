@@ -313,6 +313,7 @@
     "showRecommended": "Näytä {{count}} suositeltua tuotetta",
     "shortageFormat": "{{item}} – {{count}} {{unit}}",
     "shortageFormatMissing": "{{item}} – {{count}} {{unit}} puuttuu",
+    "quantityMissing": "{{count}} {{unit}} puuttuu",
     "expired": "Vanhentunut",
     "expiresIn": "Vanhenee {{days}} päivässä",
     "searchPlaceholder": "Hae tuotteita...",
