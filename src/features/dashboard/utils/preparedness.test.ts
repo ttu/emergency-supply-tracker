@@ -9,6 +9,7 @@ import {
   createMockHousehold,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   createItemId,
   createCategoryId,
@@ -246,7 +247,11 @@ describe('calculatePreparednessScore', () => {
 
   it('should return 0 when no items exist', () => {
     const items: InventoryItem[] = [];
-    const score = calculatePreparednessScore(items, baseHousehold);
+    const score = calculatePreparednessScore(
+      items,
+      baseHousehold,
+      RECOMMENDED_ITEMS,
+    );
     expect(score).toBe(0);
   });
 
@@ -259,7 +264,11 @@ describe('calculatePreparednessScore', () => {
         productTemplateId: createProductTemplateId('water'),
       }),
     ];
-    const score = calculatePreparednessScore(items, baseHousehold);
+    const score = calculatePreparednessScore(
+      items,
+      baseHousehold,
+      RECOMMENDED_ITEMS,
+    );
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);
   });
@@ -279,8 +288,16 @@ describe('calculatePreparednessScore', () => {
       }),
     ];
 
-    const smallScore = calculatePreparednessScore(items, smallHousehold);
-    const largeScore = calculatePreparednessScore(items, largeHousehold);
+    const smallScore = calculatePreparednessScore(
+      items,
+      smallHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const largeScore = calculatePreparednessScore(
+      items,
+      largeHousehold,
+      RECOMMENDED_ITEMS,
+    );
 
     // Both scores should be valid
     expect(smallScore).toBeGreaterThanOrEqual(0);
@@ -301,8 +318,16 @@ describe('calculatePreparednessScore', () => {
 
     const items: ReturnType<typeof createMockInventoryItem>[] = [];
 
-    const scoreWith = calculatePreparednessScore(items, withFreezer);
-    const scoreWithout = calculatePreparednessScore(items, withoutFreezer);
+    const scoreWith = calculatePreparednessScore(
+      items,
+      withFreezer,
+      RECOMMENDED_ITEMS,
+    );
+    const scoreWithout = calculatePreparednessScore(
+      items,
+      withoutFreezer,
+      RECOMMENDED_ITEMS,
+    );
 
     // Both should be 0 since no items, but the logic should not crash
     expect(scoreWith).toBe(0);
@@ -316,12 +341,16 @@ describe('calculatePreparednessScore', () => {
         name: 'Water',
         categoryId: createCategoryId('water'),
         quantity: 100, // Needed for capping test (100/50 = 200%, should cap at 100%)
-        recommendedQuantity: 50, // Needed for capping test
+        // Needed for capping test
         productTemplateId: createProductTemplateId('water'),
       }),
     ];
 
-    const score = calculatePreparednessScore(items, baseHousehold);
+    const score = calculatePreparednessScore(
+      items,
+      baseHousehold,
+      RECOMMENDED_ITEMS,
+    );
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);
   });
@@ -346,7 +375,11 @@ describe('calculatePreparednessScore', () => {
     ];
 
     // Should return 0 (not NaN or Infinity) when recommended quantity is 0
-    const score = calculatePreparednessScore(items, zeroPeopleHousehold);
+    const score = calculatePreparednessScore(
+      items,
+      zeroPeopleHousehold,
+      RECOMMENDED_ITEMS,
+    );
     expect(score).toBe(0);
     expect(Number.isFinite(score)).toBe(true);
   });
@@ -371,7 +404,11 @@ describe('calculatePreparednessScore', () => {
     ];
 
     // Should return 0 when maxPossibleScore is 0 (all items skipped)
-    const score = calculatePreparednessScore(items, zeroHousehold);
+    const score = calculatePreparednessScore(
+      items,
+      zeroHousehold,
+      RECOMMENDED_ITEMS,
+    );
     expect(score).toBe(0);
     expect(Number.isFinite(score)).toBe(true);
   });
@@ -438,7 +475,7 @@ describe('calculatePreparednessScore', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
+
           // No productTemplateId - this is a custom item
         });
 
@@ -474,7 +511,6 @@ describe('calculatePreparednessScore', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
         });
 
         const customRecommendedItems = [
@@ -509,7 +545,7 @@ describe('calculatePreparednessScore', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
+
           productTemplateId: createProductTemplateId('battery-radio'), // This enables matching
         });
 
@@ -619,7 +655,7 @@ describe('calculatePreparednessScore', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
+
           // No productTemplateId
         });
 
@@ -654,7 +690,7 @@ describe('calculatePreparednessScore', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
+
           // No productTemplateId
         });
 
@@ -691,7 +727,7 @@ describe('calculatePreparednessScore', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
+
           productTemplateId: createProductTemplateId('hand-crank-radio'), // But productTemplateId matches different item
         });
 
@@ -737,7 +773,7 @@ describe('calculatePreparednessScore', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
+
           productTemplateId: createProductTemplateId('battery-radio'), // productTemplateId enables matching
         });
 
@@ -825,7 +861,13 @@ describe('calculateCategoryPreparedness', () => {
 
   it('should return 0 for empty category with no recommended items', () => {
     const items: ReturnType<typeof createMockInventoryItem>[] = [];
-    const score = calculateCategoryPreparedness('custom', items, baseHousehold);
+    const score = calculateCategoryPreparedness(
+      'custom',
+      items,
+      baseHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
     expect(score).toBe(0);
   });
 
@@ -835,10 +877,16 @@ describe('calculateCategoryPreparedness', () => {
         id: createItemId('1'),
         name: 'Custom Item',
         categoryId: createCategoryId('custom'),
-        recommendedQuantity: 0, // No recommendations
+        // No recommendations
       }),
     ];
-    const score = calculateCategoryPreparedness('custom', items, baseHousehold);
+    const score = calculateCategoryPreparedness(
+      'custom',
+      items,
+      baseHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
     expect(score).toBe(100);
   });
 
@@ -851,7 +899,13 @@ describe('calculateCategoryPreparedness', () => {
         productTemplateId: createProductTemplateId('water'),
       }),
     ];
-    const score = calculateCategoryPreparedness('water', items, baseHousehold);
+    const score = calculateCategoryPreparedness(
+      'water',
+      items,
+      baseHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);
   });
@@ -875,11 +929,15 @@ describe('calculateCategoryPreparedness', () => {
       'water',
       items,
       baseHousehold,
+      RECOMMENDED_ITEMS,
+      [],
     );
     const foodScore = calculateCategoryPreparedness(
       'food',
       items,
       baseHousehold,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Both should return valid scores
@@ -931,8 +989,8 @@ describe('calculateCategoryPreparedness', () => {
       'water-beverages',
       items,
       zeroPeopleHousehold,
-      [],
       customRecommendedItems,
+      [],
     );
     expect(score).toBe(0);
     expect(Number.isFinite(score)).toBe(true);
@@ -969,8 +1027,8 @@ describe('calculateCategoryPreparedness', () => {
       'water-beverages',
       items,
       zeroHousehold,
-      [],
       customRecommendedItems,
+      [],
     );
     expect(score).toBe(0);
     expect(Number.isFinite(score)).toBe(true);

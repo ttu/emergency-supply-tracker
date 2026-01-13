@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemList } from './ItemList';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
+import { AllProviders } from '@/shared/components/AllProviders';
 
 const meta = {
   title: 'Components/Inventory/ItemList',
@@ -9,6 +10,13 @@ const meta = {
   parameters: {
     layout: 'padded',
   },
+  decorators: [
+    (Story) => (
+      <AllProviders>
+        <Story />
+      </AllProviders>
+    ),
+  ],
   argTypes: {
     onItemClick: { action: 'item clicked' },
   },
@@ -28,7 +36,7 @@ const sampleItems = [
     categoryId: createCategoryId('water-beverages'),
     quantity: 20,
     unit: 'liters',
-    recommendedQuantity: 28,
+
     neverExpires: false,
     expirationDate: futureDate,
     location: 'Pantry',
@@ -39,7 +47,7 @@ const sampleItems = [
     categoryId: createCategoryId('food'),
     quantity: 5,
     unit: 'cans',
-    recommendedQuantity: 20,
+
     neverExpires: false,
     expirationDate: futureDate,
     location: 'Pantry',
@@ -50,7 +58,7 @@ const sampleItems = [
     categoryId: createCategoryId('medical-health'),
     quantity: 1,
     unit: 'pieces',
-    recommendedQuantity: 1,
+
     neverExpires: true,
     location: 'Bathroom',
   }),

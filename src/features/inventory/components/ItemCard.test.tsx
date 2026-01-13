@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { ItemCard } from './ItemCard';
+import { renderWithProviders } from '@/test';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import {
   createDateOnly,
@@ -10,23 +11,28 @@ import {
 } from '@/shared/types';
 
 // Mock i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, params?: Record<string, unknown>) => {
-      if (key.includes('expiresIn') && params) {
-        return `Expires in ${params.days} days`;
-      }
-      if (key === 'inventory.quantityMissing' && params) {
-        return `${params.count} ${params.unit} missing`;
-      }
-      // Return unit names as-is for testing
-      if (key === 'liters' || key === 'rolls' || key === 'meters') {
+vi.mock('react-i18next', async () => {
+  const actual =
+    await vi.importActual<typeof import('react-i18next')>('react-i18next');
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: (key: string, params?: Record<string, unknown>) => {
+        if (key.includes('expiresIn') && params) {
+          return `Expires in ${params.days} days`;
+        }
+        if (key === 'inventory.quantityMissing' && params) {
+          return `${params.count} ${params.unit} missing`;
+        }
+        // Return unit names as-is for testing
+        if (key === 'liters' || key === 'rolls' || key === 'meters') {
+          return key;
+        }
         return key;
-      }
-      return key;
-    },
-  }),
-}));
+      },
+    }),
+  };
+});
 
 describe('ItemCard', () => {
   const futureDate = createDateOnly(
@@ -39,10 +45,10 @@ describe('ItemCard', () => {
     id: createItemId('1'),
     name: 'Bottled Water',
     itemType: createProductTemplateId('bottled-water'),
+    productTemplateId: createProductTemplateId('bottled-water'),
     categoryId: createCategoryId('water-beverages'),
     quantity: 20,
     unit: 'liters',
-    recommendedQuantity: 28,
     neverExpires: false,
     expirationDate: futureDate,
     location: 'Pantry',
@@ -50,24 +56,24 @@ describe('ItemCard', () => {
   });
 
   it('should render item name', () => {
-    render(<ItemCard item={baseItem} />);
+    renderWithProviders(<ItemCard item={baseItem} />);
     expect(screen.getByText('Bottled Water')).toBeInTheDocument();
   });
 
   it('should render quantity and unit', () => {
-    render(<ItemCard item={baseItem} />);
+    renderWithProviders(<ItemCard item={baseItem} />);
     expect(screen.getByText('20')).toBeInTheDocument();
     expect(screen.getByText('liters')).toBeInTheDocument();
   });
 
   it('should render location if provided', () => {
-    render(<ItemCard item={baseItem} />);
+    renderWithProviders(<ItemCard item={baseItem} />);
     expect(screen.getByText(/Pantry/)).toBeInTheDocument();
   });
 
   it('should not render location if not provided', () => {
     const itemWithoutLocation = { ...baseItem, location: '' };
-    render(<ItemCard item={itemWithoutLocation} />);
+    renderWithProviders(<ItemCard item={itemWithoutLocation} />);
     expect(screen.queryByText(/📍/)).not.toBeInTheDocument();
   });
 
@@ -78,7 +84,7 @@ describe('ItemCard', () => {
         .split('T')[0],
     );
     const expiringItem = { ...baseItem, expirationDate: soonDate };
-    render(<ItemCard item={expiringItem} />);
+    renderWithProviders(<ItemCard item={expiringItem} />);
     expect(screen.getByText(/Expires in/)).toBeInTheDocument();
   });
 
@@ -89,7 +95,7 @@ describe('ItemCard', () => {
         .split('T')[0],
     );
     const expiredItem = { ...baseItem, expirationDate: expiredDate };
-    render(<ItemCard item={expiredItem} />);
+    renderWithProviders(<ItemCard item={expiredItem} />);
     expect(screen.getByText(/inventory.expired/)).toBeInTheDocument();
   });
 
@@ -99,20 +105,20 @@ describe('ItemCard', () => {
       neverExpires: true,
       expirationDate: undefined,
     };
-    render(<ItemCard item={neverExpiresItem} />);
+    renderWithProviders(<ItemCard item={neverExpiresItem} />);
     expect(screen.queryByText(/📅/)).not.toBeInTheDocument();
   });
 
   it('should show formatted date for items not expiring soon', () => {
     // Item with expiration more than 30 days away
-    render(<ItemCard item={baseItem} />);
+    renderWithProviders(<ItemCard item={baseItem} />);
     // Should show the date rather than "expires in X days"
     expect(screen.getByText(/📅/)).toBeInTheDocument();
   });
 
   it('should be clickable when onClick is provided', () => {
     const onClick = vi.fn();
-    const { container } = render(
+    const { container } = renderWithProviders(
       <ItemCard item={baseItem} onClick={onClick} />,
     );
 
@@ -124,7 +130,7 @@ describe('ItemCard', () => {
 
   it('should handle keyboard events when clickable', () => {
     const onClick = vi.fn();
-    const { container } = render(
+    const { container } = renderWithProviders(
       <ItemCard item={baseItem} onClick={onClick} />,
     );
 
@@ -137,7 +143,7 @@ describe('ItemCard', () => {
   });
 
   it('should not be interactive when onClick is not provided', () => {
-    const { container } = render(<ItemCard item={baseItem} />);
+    const { container } = renderWithProviders(<ItemCard item={baseItem} />);
     const card = container.firstChild as HTMLElement;
     expect(card).not.toHaveAttribute('role', 'button');
     expect(card).not.toHaveAttribute('tabIndex');
@@ -150,7 +156,7 @@ describe('ItemCard', () => {
       name: 'Power Bank',
       capacityMah: 10000,
     });
-    render(<ItemCard item={powerItem} />);
+    renderWithProviders(<ItemCard item={powerItem} />);
     expect(screen.getByText('10000 mAh')).toBeInTheDocument();
     expect(screen.getByText(/🔋/)).toBeInTheDocument();
   });
@@ -162,7 +168,7 @@ describe('ItemCard', () => {
       name: 'Power Bank',
       capacityWh: 37,
     });
-    render(<ItemCard item={powerItem} />);
+    renderWithProviders(<ItemCard item={powerItem} />);
     expect(screen.getByText('37 Wh')).toBeInTheDocument();
     expect(screen.getByText(/🔋/)).toBeInTheDocument();
   });
@@ -175,7 +181,7 @@ describe('ItemCard', () => {
       capacityMah: 20000,
       capacityWh: 74,
     });
-    render(<ItemCard item={powerItem} />);
+    renderWithProviders(<ItemCard item={powerItem} />);
     expect(screen.getByText('20000 mAh')).toBeInTheDocument();
     expect(screen.getByText('74 Wh')).toBeInTheDocument();
     expect(screen.getByText(/🔋/)).toBeInTheDocument();
@@ -187,12 +193,12 @@ describe('ItemCard', () => {
       categoryId: createCategoryId('light-power'),
       name: 'Flashlight',
     });
-    render(<ItemCard item={itemWithoutCapacity} />);
+    renderWithProviders(<ItemCard item={itemWithoutCapacity} />);
     expect(screen.queryByText(/🔋/)).not.toBeInTheDocument();
   });
 
   it('should display item type', () => {
-    render(<ItemCard item={baseItem} />);
+    renderWithProviders(<ItemCard item={baseItem} />);
     expect(screen.getByText('bottled-water')).toBeInTheDocument();
   });
 
@@ -201,47 +207,80 @@ describe('ItemCard', () => {
       ...baseItem,
       itemType: 'custom',
     });
-    render(<ItemCard item={customItem} />);
+    renderWithProviders(<ItemCard item={customItem} />);
     expect(screen.getByText('custom')).toBeInTheDocument();
   });
 
   describe('missing quantity display', () => {
     it('should show missing quantity when calculateMissingQuantity returns > 0', () => {
+      // Use specific household: 1 adult, 3 days = 9L needed (3L × 1 × 3)
+      // Quantity 1L < 9L needed, so should show missing
       const lowQuantityItem = createMockInventoryItem({
         ...baseItem,
-        quantity: 10,
-        recommendedQuantity: 28,
+        quantity: 1,
         neverExpires: true,
         expirationDate: undefined,
       });
-      render(<ItemCard item={lowQuantityItem} />);
-      // Should show "18 liters missing" (28 - 10 = 18)
-      expect(screen.getByText(/18.*liters.*missing/i)).toBeInTheDocument();
+      renderWithProviders(<ItemCard item={lowQuantityItem} />, {
+        initialAppData: {
+          household: {
+            adults: 1,
+            children: 0,
+            supplyDurationDays: 3,
+            useFreezer: false,
+          },
+        },
+      });
+      // Should show missing quantity (9L - 1L = 8L missing)
+      expect(screen.getByText(/missing/i)).toBeInTheDocument();
     });
 
     it('should not show missing quantity when calculateMissingQuantity returns 0', () => {
+      // Use specific household: 1 adult, 3 days = 9L needed
+      // Quantity 20L >= 9L needed, so should not show missing
       const sufficientItem = createMockInventoryItem({
         ...baseItem,
-        quantity: 30, // More than recommended (28)
-        recommendedQuantity: 28,
+        quantity: 20,
         neverExpires: true,
         expirationDate: undefined,
       });
-      render(<ItemCard item={sufficientItem} />);
+      renderWithProviders(<ItemCard item={sufficientItem} />, {
+        initialAppData: {
+          household: {
+            adults: 1,
+            children: 0,
+            supplyDurationDays: 3,
+            useFreezer: false,
+          },
+        },
+      });
       // Should NOT show missing quantity
       expect(screen.queryByText(/missing/i)).not.toBeInTheDocument();
     });
 
     it('should display missing quantity with correct unit translation', () => {
+      // Use specific household: 1 adult, 3 days
+      // Rope: baseQuantity 10m, doesn't scale with people or days = 10m needed
+      // Quantity 1m < 10m needed, so should show missing
       const ropeItem = createMockInventoryItem({
         ...baseItem,
         quantity: 1,
-        recommendedQuantity: 10,
+        itemType: createProductTemplateId('rope'),
+        productTemplateId: createProductTemplateId('rope'),
         unit: 'meters',
         neverExpires: true,
         expirationDate: undefined,
       });
-      render(<ItemCard item={ropeItem} />);
+      renderWithProviders(<ItemCard item={ropeItem} />, {
+        initialAppData: {
+          household: {
+            adults: 1,
+            children: 0,
+            supplyDurationDays: 3,
+            useFreezer: false,
+          },
+        },
+      });
       // Should show "9 meters missing" (10 - 1 = 9)
       expect(screen.getByText(/9.*meters.*missing/i)).toBeInTheDocument();
     });

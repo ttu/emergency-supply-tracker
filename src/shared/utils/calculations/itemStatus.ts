@@ -103,12 +103,20 @@ export function getItemStatus(
 }
 
 /**
- * Calculate status for an inventory item
+ * Calculate status for an inventory item.
+ * Requires recommended quantity to be calculated separately.
+ *
+ * @param item - The inventory item
+ * @param recommendedQuantity - The recommended quantity for this item (calculated from recommended items)
+ * @returns The item status
  */
-export function calculateItemStatus(item: InventoryItem): ItemStatus {
+export function calculateItemStatus(
+  item: InventoryItem,
+  recommendedQuantity: number,
+): ItemStatus {
   return getItemStatus(
     item.quantity,
-    item.recommendedQuantity,
+    recommendedQuantity,
     item.expirationDate,
     item.neverExpires,
     item.markedAsEnough,

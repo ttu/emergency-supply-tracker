@@ -27,7 +27,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
       />,
     );
 
@@ -50,7 +49,6 @@ describe('ItemForm', () => {
       categoryId: createCategoryId('water-beverages'),
       quantity: 20,
       unit: 'liters',
-      recommendedQuantity: 28,
       neverExpires: false,
       expirationDate: createDateOnly('2025-12-31'),
       location: 'Pantry',
@@ -108,7 +106,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
       />,
     );
 
@@ -137,7 +134,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -166,7 +162,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -203,7 +198,6 @@ describe('ItemForm', () => {
         categoryId: 'water-beverages',
         quantity: 10,
         unit: 'pieces',
-        recommendedQuantity: 20,
         neverExpires: false,
         expirationDate: '2025-12-31',
         purchaseDate: undefined,
@@ -223,7 +217,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -256,7 +249,6 @@ describe('ItemForm', () => {
         categoryId: 'water-beverages',
         quantity: 10,
         unit: 'pieces',
-        recommendedQuantity: 20,
         neverExpires: false,
         expirationDate: '2025-12-31',
         purchaseDate: '2024-11-15',
@@ -296,7 +288,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -323,7 +314,6 @@ describe('ItemForm', () => {
         categoryId: 'water-beverages',
         quantity: 10,
         unit: 'pieces',
-        recommendedQuantity: 20,
         neverExpires: true,
         expirationDate: undefined,
         location: undefined,
@@ -343,7 +333,6 @@ describe('ItemForm', () => {
       categoryId: createCategoryId('food'),
       quantity: 5,
       unit: 'pieces',
-      recommendedQuantity: 10,
       neverExpires: false,
       expirationDate: createDateOnly('2025-12-31'),
     });
@@ -368,7 +357,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={20}
       />,
     );
 
@@ -408,7 +396,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
         templateWeightGramsPerUnit={400}
         templateCaloriesPer100g={50}
       />,
@@ -458,7 +445,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
         templateWeightGramsPerUnit={400}
         templateCaloriesPer100g={50}
       />,
@@ -497,7 +483,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={1}
       />,
     );
 
@@ -523,7 +508,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={1}
       />,
     );
 
@@ -545,7 +529,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={1}
       />,
     );
 
@@ -626,7 +609,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={1}
       />,
     );
 
@@ -666,7 +648,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
         templateRequiresWaterLiters={0.5}
       />,
     );
@@ -693,7 +674,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
       />,
     );
 
@@ -718,7 +698,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
       />,
     );
 
@@ -743,7 +722,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
       />,
     );
 
@@ -765,7 +743,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
       />,
     );
 
@@ -788,7 +765,6 @@ describe('ItemForm', () => {
         categories={STANDARD_CATEGORIES}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        defaultRecommendedQuantity={10}
       />,
     );
 

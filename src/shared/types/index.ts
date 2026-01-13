@@ -134,7 +134,6 @@ export interface InventoryItem {
   categoryId: CategoryId;
   quantity: number;
   unit: Unit;
-  recommendedQuantity: number;
   expirationDate?: DateOnly;
   purchaseDate?: DateOnly;
   neverExpires?: boolean;
@@ -151,7 +150,7 @@ export interface InventoryItem {
   capacityWh?: number;
   /** @categorySpecific Food category only - Liters of water required per unit for preparation */
   requiresWaterLiters?: number;
-  markedAsEnough?: boolean; // If true, item is considered complete regardless of quantity vs recommendedQuantity
+  markedAsEnough?: boolean; // If true, item is considered complete regardless of quantity vs recommended quantity
   createdAt: string;
   updatedAt: string;
 }

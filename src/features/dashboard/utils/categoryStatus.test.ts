@@ -16,6 +16,7 @@ import {
   createDateOnly,
   createProductTemplateId,
 } from '@/shared/types';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   DAILY_WATER_PER_PERSON,
   ADULT_REQUIREMENT_MULTIPLIER,
@@ -35,6 +36,7 @@ import {
 } from '@/shared/utils/test/faker-helpers';
 
 describe('calculateCategoryStatus', () => {
+  const mockHousehold = createMockHousehold();
   const waterCategory = createMockCategory({
     id: createCategoryId('water'),
     name: 'Water',
@@ -43,7 +45,14 @@ describe('calculateCategoryStatus', () => {
 
   it('should calculate status for empty category', () => {
     const items: InventoryItem[] = [];
-    const result = calculateCategoryStatus(waterCategory, items, 0);
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      0,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(result).toEqual({
       categoryId: createCategoryId('water'),
@@ -57,12 +66,24 @@ describe('calculateCategoryStatus', () => {
       totalActual: 0,
       totalNeeded: 0,
       primaryUnit: undefined,
+      totalActualCalories: undefined,
+      totalNeededCalories: undefined,
+      missingCalories: undefined,
+      drinkingWaterNeeded: undefined,
+      preparationWaterNeeded: undefined,
     });
   });
 
   it('should return critical status when completion < 30%', () => {
     const items: InventoryItem[] = [];
-    const result = calculateCategoryStatus(waterCategory, items, 25);
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      25,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(result.status).toBe('critical');
     expect(result.completionPercentage).toBe(25);
@@ -70,7 +91,14 @@ describe('calculateCategoryStatus', () => {
 
   it('should return warning status when completion between 30-70%', () => {
     const items: InventoryItem[] = [];
-    const result = calculateCategoryStatus(waterCategory, items, 50);
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      50,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(result.status).toBe('warning');
     expect(result.completionPercentage).toBe(50);
@@ -78,7 +106,14 @@ describe('calculateCategoryStatus', () => {
 
   it('should return ok status when completion >= 70%', () => {
     const items: InventoryItem[] = [];
-    const result = calculateCategoryStatus(waterCategory, items, 80);
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      80,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(result.status).toBe('ok');
     expect(result.completionPercentage).toBe(80);
@@ -92,7 +127,8 @@ describe('calculateCategoryStatus', () => {
         categoryId: createCategoryId('water'),
         quantity: 0,
         unit: 'liters', // 'gallons' is not a valid unit
-        recommendedQuantity: 28,
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -102,7 +138,8 @@ describe('calculateCategoryStatus', () => {
         categoryId: createCategoryId('water'),
         quantity: 10,
         unit: 'bottles',
-        recommendedQuantity: 24,
+        itemType: createProductTemplateId('long-life-milk'),
+        productTemplateId: createProductTemplateId('long-life-milk'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -112,13 +149,19 @@ describe('calculateCategoryStatus', () => {
         categoryId: createCategoryId('water'),
         quantity: 5,
         unit: 'pieces', // 'tablets' is not a valid unit
-        recommendedQuantity: 5,
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
-    const result = calculateCategoryStatus(waterCategory, items, 60);
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      60,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(result.itemCount).toBe(3);
     expect(result.criticalCount).toBeGreaterThanOrEqual(0);
@@ -135,12 +178,20 @@ describe('calculateCategoryStatus', () => {
         categoryId: createCategoryId('water'),
         quantity: 0,
         unit: 'liters', // 'gallons' is not a valid unit
-        recommendedQuantity: 28,
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: true,
       }),
     ];
 
-    const result = calculateCategoryStatus(waterCategory, items, 20);
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      20,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
     expect(result.status).toBe('critical');
     expect(result.criticalCount).toBe(1);
   });
@@ -153,7 +204,8 @@ describe('calculateCategoryStatus', () => {
         categoryId: createCategoryId('water'),
         quantity: 28,
         unit: 'liters', // 'gallons' is not a valid unit
-        recommendedQuantity: 28,
+        itemType: createProductTemplateId('bottled-water'),
+        productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
@@ -163,18 +215,27 @@ describe('calculateCategoryStatus', () => {
         categoryId: createCategoryId('food'),
         quantity: 10,
         unit: 'cans',
-        recommendedQuantity: 10,
+        itemType: createProductTemplateId('canned-soup'),
+        productTemplateId: createProductTemplateId('canned-soup'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
       }),
     ];
 
-    const result = calculateCategoryStatus(waterCategory, items, 100);
+    const result = calculateCategoryStatus(
+      waterCategory,
+      items,
+      100,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
     expect(result.itemCount).toBe(1);
   });
 });
 
 describe('calculateAllCategoryStatuses', () => {
+  const mockHousehold = createMockHousehold();
   const categories = [
     createMockCategory({
       id: createCategoryId('water'),
@@ -205,6 +266,9 @@ describe('calculateAllCategoryStatuses', () => {
       categories,
       items,
       preparedness,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(results).toHaveLength(3);
@@ -221,6 +285,9 @@ describe('calculateAllCategoryStatuses', () => {
       categories,
       items,
       preparedness,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(results[0].completionPercentage).toBe(80);
@@ -232,7 +299,14 @@ describe('calculateAllCategoryStatuses', () => {
     const items: InventoryItem[] = [];
     const preparedness = new Map<string, number>();
 
-    const results = calculateAllCategoryStatuses([], items, preparedness);
+    const results = calculateAllCategoryStatuses(
+      [],
+      items,
+      preparedness,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(results).toHaveLength(0);
   });
@@ -250,6 +324,8 @@ describe('calculateCategoryShortages', () => {
         'water-beverages',
         [],
         oneAdultHousehold,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
@@ -274,6 +350,8 @@ describe('calculateCategoryShortages', () => {
         'water-beverages',
         [],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Calculate expected based on household configuration
@@ -303,6 +381,8 @@ describe('calculateCategoryShortages', () => {
         'water-beverages',
         [],
         weekHousehold,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
@@ -332,6 +412,8 @@ describe('calculateCategoryShortages', () => {
         'water-beverages',
         [],
         familyHousehold,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Calculate expected: DAILY_WATER_PER_PERSON × (adults × 1 + children × 0.75) × days
@@ -362,6 +444,8 @@ describe('calculateCategoryShortages', () => {
         'water-beverages',
         [],
         childOnlyHousehold,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Calculate expected: DAILY_WATER_PER_PERSON × (0 × 1 + children × 0.75) × days
@@ -392,7 +476,6 @@ describe('calculateCategoryShortages', () => {
           categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
-          recommendedQuantity: 1,
           productTemplateId: createProductTemplateId('pasta'), // 1 L/kg water requirement
           neverExpires: false,
           expirationDate: createDateOnly('2025-12-31'),
@@ -403,6 +486,8 @@ describe('calculateCategoryShortages', () => {
         'water-beverages',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Calculate expected: base water + preparation water
@@ -441,6 +526,8 @@ describe('calculateCategoryShortages', () => {
         'water-beverages',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Calculate expected: just base water requirement (no preparation water)
@@ -478,7 +565,7 @@ describe('calculateCategoryShortages', () => {
         categoryId: createCategoryId('water-beverages'),
         quantity: actual,
         unit: 'liters',
-        recommendedQuantity: needed,
+        itemType: createProductTemplateId('bottled-water'),
         productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
@@ -489,6 +576,8 @@ describe('calculateCategoryShortages', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(result.shortages.length).toBeGreaterThan(0);
@@ -514,7 +603,7 @@ describe('calculateCategoryShortages', () => {
         categoryId: createCategoryId('water-beverages'),
         quantity: waterNeeded,
         unit: 'liters',
-        recommendedQuantity: waterNeeded,
+        itemType: createProductTemplateId('bottled-water'),
         productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
@@ -525,7 +614,7 @@ describe('calculateCategoryShortages', () => {
         categoryId: createCategoryId('water-beverages'),
         quantity: milkNeeded,
         unit: 'liters',
-        recommendedQuantity: milkNeeded,
+        itemType: createProductTemplateId('long-life-milk'),
         productTemplateId: createProductTemplateId('long-life-milk'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
@@ -536,7 +625,7 @@ describe('calculateCategoryShortages', () => {
         categoryId: createCategoryId('water-beverages'),
         quantity: juiceNeeded,
         unit: 'liters',
-        recommendedQuantity: juiceNeeded,
+        itemType: createProductTemplateId('long-life-juice'),
         productTemplateId: createProductTemplateId('long-life-juice'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
@@ -547,13 +636,21 @@ describe('calculateCategoryShortages', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(result.shortages.length).toBe(0);
   });
 
   it('should return empty for custom category with no recommendations', () => {
-    const result = calculateCategoryShortages('custom-category', [], household);
+    const result = calculateCategoryShortages(
+      'custom-category',
+      [],
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(result.shortages).toEqual([]);
     expect(result.totalActual).toBe(0);
@@ -581,6 +678,8 @@ describe('calculateCategoryShortages', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Should be sorted with biggest shortage first
@@ -614,7 +713,13 @@ describe('calculateCategoryShortages', () => {
       }),
     ];
 
-    const result = calculateCategoryShortages('food', items, household);
+    const result = calculateCategoryShortages(
+      'food',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     const actualCalories =
       soupQuantity * soupCalories + pastaQuantity * pastaCalories;
@@ -652,7 +757,13 @@ describe('calculateCategoryShortages', () => {
       }),
     ];
 
-    const result = calculateCategoryShortages('food', items, household);
+    const result = calculateCategoryShortages(
+      'food',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     const actualCalories = riceQuantity * 3600;
     expect(result.totalActualCalories).toBe(actualCalories);
@@ -674,6 +785,8 @@ describe('calculateCategoryShortages', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(result.totalActualCalories).toBeUndefined();
@@ -718,7 +831,7 @@ describe('calculateCategoryStatus - inventory-based status', () => {
         categoryId: createCategoryId('water-beverages'),
         quantity: actual,
         unit: 'liters',
-        recommendedQuantity: needed,
+        itemType: createProductTemplateId('bottled-water'),
         productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
@@ -732,6 +845,8 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       items,
       completionPercentage,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Should be "ok" because we have enough total inventory
@@ -756,7 +871,7 @@ describe('calculateCategoryStatus - inventory-based status', () => {
         categoryId: createCategoryId('water-beverages'),
         quantity: actual,
         unit: 'liters',
-        recommendedQuantity: needed,
+        itemType: createProductTemplateId('bottled-water'),
         productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
@@ -772,6 +887,8 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       items,
       completionPercentage,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(result.status).toBe('critical');
@@ -805,6 +922,8 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       items,
       completionPercentage,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Should be "ok" because we have enough calories
@@ -844,6 +963,8 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       items,
       completionPercentage,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Status should be critical because calorie percentage (20%) is below CRITICAL_PERCENTAGE_THRESHOLD (30)
@@ -854,19 +975,8 @@ describe('calculateCategoryStatus - inventory-based status', () => {
     );
   });
 
-  it('should still use completion percentage when household is not provided', () => {
-    const items: InventoryItem[] = [];
-
-    // Without household, we can't calculate shortages, so use completion percentage
-    const resultLow = calculateCategoryStatus(waterCategory, items, 20);
-    expect(resultLow.status).toBe('critical');
-
-    const resultMid = calculateCategoryStatus(waterCategory, items, 50);
-    expect(resultMid.status).toBe('warning');
-
-    const resultHigh = calculateCategoryStatus(waterCategory, items, 80);
-    expect(resultHigh.status).toBe('ok');
-  });
+  // Note: household is now required, so this test is no longer applicable
+  // Category status calculation requires household to determine recommended quantities
 
   it('should use weighted fulfillment for mixed units in dashboard (calculateCategoryStatus)', () => {
     // Test that calculateCategoryStatus (used by dashboard) also applies mixed units fix
@@ -902,6 +1012,8 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       items,
       0, // This would be the percentage from calculateCategoryPreparedness (incorrect for mixed units)
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Should have 2.0 weighted fulfillment out of 3 total items
@@ -924,6 +1036,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
       'water-beverages',
       [],
       household,
+      RECOMMENDED_ITEMS,
       [],
     );
 
@@ -944,6 +1057,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
       'water-beverages',
       [],
       household,
+      RECOMMENDED_ITEMS,
       ['bottled-water'],
     );
 
@@ -965,6 +1079,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
       'water-beverages',
       [],
       household,
+      RECOMMENDED_ITEMS,
       [],
     );
 
@@ -972,6 +1087,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
       'water-beverages',
       [],
       household,
+      RECOMMENDED_ITEMS,
       ['bottled-water'],
     );
 
@@ -986,6 +1102,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
       'water-beverages',
       [],
       household,
+      RECOMMENDED_ITEMS,
       ['bottled-water', 'long-life-milk', 'long-life-juice'],
     );
 
@@ -1000,6 +1117,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
       'water-beverages',
       [],
       household,
+      RECOMMENDED_ITEMS,
       ['non-existent-item'],
     );
 
@@ -1035,6 +1153,7 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
       ['long-life-milk', 'long-life-juice'],
     );
 
@@ -1059,6 +1178,7 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
       ['bottled-water', 'long-life-milk', 'long-life-juice'],
     );
 
@@ -1088,6 +1208,8 @@ describe('calculateCategoryShortages - communication-info category', () => {
       'communication-info',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Should have 1 of 2 item types fulfilled
@@ -1119,6 +1241,8 @@ describe('calculateCategoryShortages - communication-info category', () => {
       'communication-info',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Should have 2 of 2 item types fulfilled
@@ -1143,6 +1267,8 @@ describe('calculateCategoryShortages - communication-info category', () => {
       'communication-info',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Should still have 1 of 2 item types fulfilled (not 5 of 2)
@@ -1164,7 +1290,6 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 2,
         unit: 'pieces',
-        recommendedQuantity: 5,
         // No productTemplateId - this is a custom item
       });
 
@@ -1172,6 +1297,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         [customItem],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Custom item should NOT match, so battery-radio should still be in shortages
@@ -1202,13 +1329,14 @@ describe('calculateCategoryShortages - item matching logic', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
         });
 
         const result = calculateCategoryShortages(
           'communication-info',
           [customItem],
           household,
+          RECOMMENDED_ITEMS,
+          [],
         );
 
         // Custom item should NOT match, so recommended item should still be in shortages
@@ -1235,7 +1363,6 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Not enough, so it appears in shortages
         unit: 'pieces',
-        recommendedQuantity: 1,
         productTemplateId: createProductTemplateId('battery-radio'), // This enables matching
       });
 
@@ -1243,6 +1370,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         [item],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Should match by productTemplateId (even though quantity is 0)
@@ -1278,6 +1407,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Communication-info category tracks by item types, not quantities
@@ -1305,6 +1436,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         [item],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Should match and appear in shortages because quantity is insufficient
@@ -1327,7 +1460,6 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Not enough, so it appears in shortages
         unit: 'pieces',
-        recommendedQuantity: 1,
         // No productTemplateId, but itemType matches
       });
 
@@ -1335,6 +1467,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         [item],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       const batteryRadioShortage = result.shortages.find(
@@ -1356,7 +1490,6 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Not enough, so it appears in shortages
         unit: 'pieces',
-        recommendedQuantity: 1,
         // No productTemplateId
       });
 
@@ -1364,6 +1497,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         [item],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       const batteryRadioShortage = result.shortages.find(
@@ -1393,13 +1528,14 @@ describe('calculateCategoryShortages - item matching logic', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 0, // Not enough, so it appears in shortages
           unit: 'pieces',
-          recommendedQuantity: 1,
         });
 
         const result = calculateCategoryShortages(
           'communication-info',
           [item],
           household,
+          RECOMMENDED_ITEMS,
+          [],
         );
 
         const shortageById = (shortages: typeof result.shortages, id: string) =>
@@ -1426,7 +1562,6 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 0, // Not enough, so it appears in shortages
         unit: 'pieces',
-        recommendedQuantity: 1,
         productTemplateId: createProductTemplateId('hand-crank-radio'), // But productTemplateId matches different item
       });
 
@@ -1434,6 +1569,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         [item],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Should match hand-crank-radio by productTemplateId
@@ -1459,7 +1596,6 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 1,
         unit: 'pieces',
-        recommendedQuantity: 1,
         markedAsEnough: true, // Marked as enough
       });
 
@@ -1467,6 +1603,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         [customItem],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Custom item doesn't match, so markedAsEnough shouldn't affect the shortage
@@ -1486,7 +1624,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         categoryId: createCategoryId('communication-info'),
         quantity: 1,
         unit: 'pieces',
-        recommendedQuantity: 2, // Needs 2, has 1
+        // Needs 2, has 1
         markedAsEnough: true, // But marked as enough
         productTemplateId: createProductTemplateId('battery-radio'),
       });
@@ -1495,6 +1633,8 @@ describe('calculateCategoryShortages - item matching logic', () => {
         'communication-info',
         [matchingItem],
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Should NOT appear in shortages because markedAsEnough
@@ -1525,6 +1665,8 @@ describe('getCategoryDisplayStatus', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(result).toHaveProperty('status');
@@ -1543,6 +1685,8 @@ describe('getCategoryDisplayStatus', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(result.status).toBe('critical');
@@ -1562,7 +1706,13 @@ describe('getCategoryDisplayStatus', () => {
       }),
     ];
 
-    const result = getCategoryDisplayStatus('food', items, household);
+    const result = getCategoryDisplayStatus(
+      'food',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(result.totalActualCalories).toBeDefined();
     expect(result.totalNeededCalories).toBeDefined();
@@ -1585,6 +1735,8 @@ describe('getCategoryDisplayStatus', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(result.totalActualCalories).toBeUndefined();
@@ -1612,7 +1764,7 @@ describe('getCategoryDisplayStatus', () => {
         categoryId: createCategoryId('water-beverages'),
         quantity: actual,
         unit: 'liters',
-        recommendedQuantity: waterNeeded,
+        itemType: createProductTemplateId('bottled-water'),
         productTemplateId: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
@@ -1623,6 +1775,8 @@ describe('getCategoryDisplayStatus', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // Should be "ok" because we have enough total quantity
@@ -1651,7 +1805,13 @@ describe('getCategoryDisplayStatus', () => {
       }),
     ];
 
-    const result = getCategoryDisplayStatus('food', items, household);
+    const result = getCategoryDisplayStatus(
+      'food',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     expect(result.status).toBe('ok');
     expect(result.totalActualCalories).toBeGreaterThanOrEqual(
@@ -1681,7 +1841,13 @@ describe('getCategoryDisplayStatus', () => {
       }),
     ];
 
-    const result = getCategoryDisplayStatus('food', items, household);
+    const result = getCategoryDisplayStatus(
+      'food',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     // The completionPercentage should reflect calorie-based progress, not item count
     expect(result.completionPercentage).toBe(targetPercentage);
@@ -1716,6 +1882,8 @@ describe('getCategoryDisplayStatus', () => {
       'water-beverages',
       items,
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     expect(result.status).toBe('critical');
@@ -1758,6 +1926,8 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         'cash-documents',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Should have 3 total item types
@@ -1791,6 +1961,8 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         'cash-documents',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Weighted fulfillment: (100/300) + 1.0 + 0.0 = 0.33 + 1.0 + 0.0 = 1.33
@@ -1833,6 +2005,8 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         'cash-documents',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Weighted fulfillment: 1.0 + 1.0 + 1.0 = 3.0
@@ -1869,6 +2043,8 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         'cash-documents',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Weighted fulfillment: 1.0 (marked as enough) + 1.0 (marked as enough) + 0 = 2
@@ -1909,6 +2085,8 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         'cash-documents',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Weighted fulfillment: 0.0 + 0.0 + 0.0 = 0.0
@@ -1940,11 +2118,15 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         'cash-documents',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
       const displayResult = getCategoryDisplayStatus(
         'cash-documents',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // The percentage from display should match the ratio from shortages
@@ -1975,6 +2157,8 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         'communication-info',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Should use weighted fulfillment (1.0 / 2.0 = 0.5)
@@ -2000,6 +2184,8 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         'communication-info',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Should be 1 of 2 item types (binary fulfillment for communication-info)
@@ -2049,7 +2235,13 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       }),
     ];
 
-    const result = getCategoryDisplayStatus('cash-documents', items, household);
+    const result = getCategoryDisplayStatus(
+      'cash-documents',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     // Calculate expected percentage from totalActual/totalNeeded
     const expectedPercentage = (result.totalActual / result.totalNeeded) * 100;
@@ -2080,7 +2272,13 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       // contact-list is missing (0/1)
     ];
 
-    const result = getCategoryDisplayStatus('cash-documents', items, household);
+    const result = getCategoryDisplayStatus(
+      'cash-documents',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     // Should have 2.0 weighted fulfillment out of 3 total items
     expect(result.totalActual).toBeCloseTo(2, 1);
@@ -2104,7 +2302,6 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         quantity: 300, // 100% of recommended 300 euros
         unit: 'euros',
         productTemplateId: createProductTemplateId('cash'),
-        recommendedQuantity: 300,
       }),
       createMockInventoryItem({
         id: createItemId('docs-1'),
@@ -2113,12 +2310,17 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         quantity: 1, // 100% of recommended 1 sets
         unit: 'sets',
         productTemplateId: createProductTemplateId('document-copies'),
-        recommendedQuantity: 1,
       }),
       // Emergency Contact List is missing (0/1 pieces)
     ];
 
-    const result = getCategoryDisplayStatus('cash-documents', items, household);
+    const result = getCategoryDisplayStatus(
+      'cash-documents',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     // Verify mixed units detection
     expect(result.primaryUnit).toBeUndefined(); // Should be undefined for mixed units
@@ -2154,7 +2356,13 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       }),
     ];
 
-    const result = getCategoryDisplayStatus('cash-documents', items, household);
+    const result = getCategoryDisplayStatus(
+      'cash-documents',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     // If items don't match, totalActual would be 0
     // But we still have 3 recommended items, so totalNeeded is 3
@@ -2242,6 +2450,8 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         'cash-documents',
         items,
         household,
+        RECOMMENDED_ITEMS,
+        [],
       );
 
       // Verify weighted fulfillment matches expected
@@ -2282,7 +2492,13 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       }),
     ];
 
-    const result = getCategoryDisplayStatus('cash-documents', items, household);
+    const result = getCategoryDisplayStatus(
+      'cash-documents',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
 
     // All items marked as enough should count as 1.0 each
     expect(result.totalActual).toBe(3);

@@ -173,7 +173,7 @@ describe('Dashboard', () => {
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       unit: 'liters', // 'gallons' is not a valid unit
-      recommendedQuantity: 28,
+
       neverExpires: true,
     });
 
@@ -198,7 +198,7 @@ describe('Dashboard', () => {
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       unit: 'liters', // 'gallons' is not a valid unit
-      recommendedQuantity: 28,
+
       neverExpires: true,
     });
 
@@ -242,7 +242,7 @@ describe('Dashboard', () => {
       categoryId: createCategoryId('water-beverages'),
       quantity: 28,
       unit: 'liters', // 'gallons' is not a valid unit
-      recommendedQuantity: 28,
+
       neverExpires: false,
       expirationDate: createDateOnly('2025-12-31'),
     });
@@ -287,7 +287,7 @@ describe('Dashboard', () => {
       categoryId: createCategoryId('water-beverages'),
       quantity: 0,
       unit: 'liters', // 'gallons' is not a valid unit
-      recommendedQuantity: 28,
+
       neverExpires: true,
     });
 

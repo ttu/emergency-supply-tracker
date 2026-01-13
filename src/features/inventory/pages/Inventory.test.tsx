@@ -332,7 +332,7 @@ describe('Inventory Page with items', () => {
     itemType: createProductTemplateId('bottled-water'),
     categoryId: createCategoryId('water-beverages'),
     quantity: 10, // Used in sorting test
-    recommendedQuantity: 20,
+
     expirationDate: createDateOnly(
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         .toISOString()
@@ -361,7 +361,7 @@ describe('Inventory Page with items', () => {
     itemType: createProductTemplateId('batteries'),
     categoryId: createCategoryId('light-power'),
     quantity: 20, // Used in sorting test (highest)
-    recommendedQuantity: 10,
+
     neverExpires: true,
   });
 
@@ -574,18 +574,14 @@ describe('Template to InventoryItem conversion', () => {
       throw new Error('Template not found');
     }
 
-    const household = createMockHousehold({ children: 0 });
-
-    const recommendedQty = calculateRecommendedQuantity(template, household);
-
     // Simulate what handleSelectTemplate does in Inventory.tsx
     const newItem = {
       name: 'Bottled Water', // translated name
-      itemType: template.id, // Store template ID, not translated name
+      itemType: createProductTemplateId(template.id),
+      productTemplateId: createProductTemplateId(template.id),
       categoryId: template.category,
       quantity: 0,
       unit: template.unit,
-      recommendedQuantity: recommendedQty,
       neverExpires: !template.defaultExpirationMonths,
       expirationDate: template.defaultExpirationMonths
         ? new Date(
@@ -593,7 +589,6 @@ describe('Template to InventoryItem conversion', () => {
               template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
           ).toISOString()
         : undefined,
-      productTemplateId: template.id,
       caloriesPerUnit: template.caloriesPerUnit,
     };
 
@@ -613,18 +608,14 @@ describe('Template to InventoryItem conversion', () => {
       throw new Error('Template not found');
     }
 
-    const household = createMockHousehold({ children: 0 });
-
-    const recommendedQty = calculateRecommendedQuantity(template, household);
-
     // Simulate what handleSelectTemplate does in Inventory.tsx
     const newItem = {
       name: 'Canned Soup',
-      itemType: template.id, // Store template ID, not translated name
+      itemType: createProductTemplateId(template.id),
+      productTemplateId: createProductTemplateId(template.id),
       categoryId: template.category,
       quantity: 0,
       unit: template.unit,
-      recommendedQuantity: recommendedQty,
       neverExpires: !template.defaultExpirationMonths,
       expirationDate: template.defaultExpirationMonths
         ? new Date(
@@ -632,7 +623,6 @@ describe('Template to InventoryItem conversion', () => {
               template.defaultExpirationMonths * 30 * 24 * 60 * 60 * 1000,
           ).toISOString()
         : undefined,
-      productTemplateId: template.id,
       caloriesPerUnit: template.caloriesPerUnit,
     };
 
@@ -659,10 +649,9 @@ describe('Template to InventoryItem conversion', () => {
       id: createItemId('1'),
       name: 'Bottled Water',
       itemType: createProductTemplateId('bottled-water'),
+      productTemplateId: createProductTemplateId('bottled-water'), // This enables matching
       categoryId: createCategoryId('water-beverages'),
       quantity: expectedQuantity, // Needed for calculation
-      recommendedQuantity: expectedQuantity, // Needed for calculation
-      productTemplateId: createProductTemplateId('bottled-water'), // This enables matching
     });
 
     // Item WITHOUT productTemplateId (the bug)
@@ -672,7 +661,6 @@ describe('Template to InventoryItem conversion', () => {
       itemType: 'custom',
       categoryId: createCategoryId('water-beverages'),
       quantity: expectedQuantity, // Needed for calculation
-      recommendedQuantity: expectedQuantity, // Needed for calculation
       // productTemplateId is missing - this was the bug
     });
 
@@ -680,12 +668,16 @@ describe('Template to InventoryItem conversion', () => {
       'water-beverages',
       [itemWithTemplateId],
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     const scoreWithoutTemplateId = calculateCategoryPreparedness(
       'water-beverages',
       [itemWithoutTemplateId],
       household,
+      RECOMMENDED_ITEMS,
+      [],
     );
 
     // With productTemplateId, the item matches and contributes to the score
@@ -705,7 +697,7 @@ describe('Inventory Page - Mark as Enough', () => {
     categoryId: createCategoryId('cooking-heat'), // Candles are in cooking-heat category
     quantity: 4,
     unit: 'pieces',
-    recommendedQuantity: 10,
+
     neverExpires: true,
     markedAsEnough: false,
     productTemplateId: createProductTemplateId('candles'), // Match the recommended item

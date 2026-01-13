@@ -4,6 +4,7 @@ import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { generateDashboardAlerts } from '../utils';
 import { Button } from '@/shared/components/Button';
+import { useRecommendedItems } from '@/features/templates';
 import type { AlertType } from '../types';
 import styles from './HiddenAlerts.module.css';
 
@@ -24,10 +25,12 @@ export function HiddenAlerts() {
     useInventory();
   const { household } = useHousehold();
 
+  const { recommendedItems } = useRecommendedItems();
+
   // Generate all possible alerts (including water shortage alerts)
   const allAlerts = useMemo(
-    () => generateDashboardAlerts(items, t, household),
-    [items, t, household],
+    () => generateDashboardAlerts(items, t, household, recommendedItems),
+    [items, t, household, recommendedItems],
   );
 
   // Get only the alerts that are currently hidden AND still relevant

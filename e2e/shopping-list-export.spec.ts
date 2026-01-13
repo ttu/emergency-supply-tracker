@@ -6,19 +6,18 @@ test.describe('Shopping List Export Formats', () => {
   });
 
   test('should export shopping list as TXT format', async ({ page }) => {
-    // Add items that need restocking
+    // Add items that need restocking using a recommended item template
     await page.getByTestId('nav-inventory').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    // Search for rice (a recommended food item)
+    await page.getByTestId('template-search-input').fill('rice');
+    await page.waitForTimeout(300); // Wait for search results
+    // Click on the rice template
+    await page.getByText(/rice/i).first().click();
     await expect(page.getByTestId('item-form')).toBeVisible();
-
-    await page.fill('input[name="name"]', 'Item Needing Restock');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '2');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    // recommendedQuantity will be auto-calculated (likely > 2 for 2 adults, 3 days)
-    await page.check('input[type="checkbox"]');
+    // Set quantity to 0 to ensure it needs restocking
+    await page.fill('input[name="quantity"]', '0');
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Settings
@@ -56,7 +55,7 @@ test.describe('Shopping List Export Formats', () => {
 
         // Verify content structure
         expect(content).toContain('Shopping List');
-        expect(content).toContain('Item Needing Restock');
+        expect(content).toMatch(/rice/i);
         expect(content).toContain('Generated');
       }
     } else {
@@ -153,31 +152,34 @@ test.describe('Shopping List Export Formats', () => {
   test('should include only items needing restocking in export', async ({
     page,
   }) => {
-    // Add item that needs restocking
+    // Add item that needs restocking using a recommended item template
     await page.getByTestId('nav-inventory').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    // Search for rice (a recommended food item)
+    await page.getByTestId('template-search-input').fill('rice');
+    await page.waitForTimeout(300); // Wait for search results
+    // Click on the rice template
+    await page.getByText(/rice/i).first().click();
     await expect(page.getByTestId('item-form')).toBeVisible();
-
-    await page.fill('input[name="name"]', 'Needs Restock');
-    await page.selectOption('select[name="category"]', 'food');
+    // Set quantity to 1 (likely less than recommended for 2 adults, 3 days)
     await page.fill('input[name="quantity"]', '1');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Add item that doesn't need restocking (if we can set quantity >= recommended)
+    // Add item that doesn't need restocking using another recommended item template
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    // Search for canned fish (another recommended food item)
+    await page.getByTestId('template-search-input').fill('canned fish');
+    await page.waitForTimeout(300); // Wait for search results
+    // Click on the canned fish template
+    await page
+      .getByText(/canned fish/i)
+      .first()
+      .click();
     await expect(page.getByTestId('item-form')).toBeVisible();
-
-    await page.fill('input[name="name"]', 'Fully Stocked');
-    await page.selectOption('select[name="category"]', 'food');
+    // Set quantity to 20 (likely more than recommended for 2 adults, 3 days)
     await page.fill('input[name="quantity"]', '20');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Settings

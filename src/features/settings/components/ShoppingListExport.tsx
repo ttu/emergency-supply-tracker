@@ -1,16 +1,34 @@
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/features/inventory';
+import { useHousehold } from '@/features/household';
+import { useRecommendedItems } from '@/features/templates';
+import { useSettings } from '@/features/settings';
 import { Button } from '@/shared/components/Button';
 import type { InventoryItem } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
+import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
+import { CHILDREN_REQUIREMENT_MULTIPLIER } from '@/shared/utils/constants';
 import styles from './ShoppingListExport.module.css';
 
 export function ShoppingListExport() {
   const { t } = useTranslation();
   const { items } = useInventory();
+  const { household } = useHousehold();
+  const { recommendedItems } = useRecommendedItems();
+  const { settings } = useSettings();
 
   const getItemsNeedingRestock = (): InventoryItem[] => {
-    return items.filter((item) => item.quantity < item.recommendedQuantity);
+    return items.filter((item) => {
+      const recommendedQuantity = getRecommendedQuantityForItem(
+        item,
+        household,
+        recommendedItems,
+        settings.childrenRequirementPercentage
+          ? settings.childrenRequirementPercentage / 100
+          : CHILDREN_REQUIREMENT_MULTIPLIER,
+      );
+      return item.quantity < recommendedQuantity;
+    });
   };
 
   const generateShoppingList = (): string => {
@@ -49,9 +67,17 @@ export function ShoppingListExport() {
         list += '─'.repeat(40) + '\n';
 
         byCategory[categoryId].forEach((item) => {
-          const needed = item.recommendedQuantity - item.quantity;
+          const recommendedQuantity = getRecommendedQuantityForItem(
+            item,
+            household,
+            recommendedItems,
+            settings.childrenRequirementPercentage
+              ? settings.childrenRequirementPercentage / 100
+              : CHILDREN_REQUIREMENT_MULTIPLIER,
+          );
+          const needed = recommendedQuantity - item.quantity;
           list += `□ ${item.name}: ${needed} ${t(`units.${item.unit}`)}\n`;
-          list += `  ${t('settings.shoppingList.current')}: ${item.quantity}, ${t('settings.shoppingList.recommended')}: ${item.recommendedQuantity}\n`;
+          list += `  ${t('settings.shoppingList.current')}: ${item.quantity}, ${t('settings.shoppingList.recommended')}: ${recommendedQuantity}\n`;
         });
 
         list += '\n';

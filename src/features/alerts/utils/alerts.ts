@@ -1,4 +1,8 @@
-import type { InventoryItem, HouseholdConfig } from '@/shared/types';
+import type {
+  InventoryItem,
+  HouseholdConfig,
+  RecommendedItemDefinition,
+} from '@/shared/types';
 import { createAlertId, isFoodCategory } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import {
@@ -10,6 +14,7 @@ import {
 import { calculateWaterRequirements } from '@/shared/utils/calculations/water';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { calculateCategoryShortages } from '@/features/dashboard/utils/categoryStatus';
+import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import type { Alert, AlertCounts, TranslationFunction } from '../types';
 import { ALERT_PRIORITY } from '../types';
 
@@ -96,8 +101,15 @@ function calculateFoodCategoryStatus(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
 ): { percentOfRecommended: number; hasEnough: boolean } {
-  const shortageInfo = calculateCategoryShortages(categoryId, items, household);
+  const shortageInfo = calculateCategoryShortages(
+    categoryId,
+    items,
+    household,
+    recommendedItems,
+    [],
+  );
 
   const hasEnough =
     (shortageInfo.totalActualCalories ?? 0) >=
@@ -115,8 +127,13 @@ function calculateFoodCategoryStatus(
 
 /**
  * Calculate percentage and stock status for non-food categories using quantity-based calculation.
+ * Requires household to calculate recommended quantities.
  */
-function calculateNonFoodCategoryStatus(categoryItems: InventoryItem[]): {
+function calculateNonFoodCategoryStatus(
+  categoryItems: InventoryItem[],
+  household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
+): {
   percentOfRecommended: number;
   hasEnough: boolean;
 } {
@@ -125,7 +142,12 @@ function calculateNonFoodCategoryStatus(categoryItems: InventoryItem[]): {
 
   categoryItems.forEach((item) => {
     totalQuantity += item.quantity;
-    totalRecommended += item.recommendedQuantity;
+    const recommendedQty = getRecommendedQuantityForItem(
+      item,
+      household,
+      recommendedItems,
+    );
+    totalRecommended += recommendedQty;
   });
 
   const percentOfRecommended =
@@ -148,6 +170,9 @@ function generateCategoryAlerts(
   const alerts: Alert[] = [];
   const categoryName = t(category.id, { ns: 'categories' });
 
+  // Use standardCategoryId if available, otherwise use id (convert to string if needed)
+  const categoryIdForAlert = category.standardCategoryId ?? String(category.id);
+
   // Check for out of stock (quantity/calories = 0)
   const isOutOfStock = isFood
     ? false // For food, we check calories above, so if hasEnough is false but calories > 0, it's just low
@@ -155,14 +180,14 @@ function generateCategoryAlerts(
 
   if (isOutOfStock) {
     alerts.push({
-      id: createAlertId(`category-out-of-stock-${category.id}`),
+      id: createAlertId(`category-out-of-stock-${categoryIdForAlert}`),
       type: 'critical',
       message: t('alerts.stock.outOfStock'),
       itemName: categoryName,
     });
   } else if (percentOfRecommended < CRITICALLY_LOW_STOCK_PERCENTAGE) {
     alerts.push({
-      id: createAlertId(`category-critically-low-${category.id}`),
+      id: createAlertId(`category-critically-low-${categoryIdForAlert}`),
       type: 'critical',
       message: t('alerts.stock.criticallyLow', {
         percent: Math.round(percentOfRecommended),
@@ -171,7 +196,7 @@ function generateCategoryAlerts(
     });
   } else if (percentOfRecommended < LOW_STOCK_PERCENTAGE) {
     alerts.push({
-      id: createAlertId(`category-low-stock-${category.id}`),
+      id: createAlertId(`category-low-stock-${categoryIdForAlert}`),
       type: 'warning',
       message: t('alerts.stock.runningLow', {
         percent: Math.round(percentOfRecommended),
@@ -190,7 +215,8 @@ function generateCategoryAlerts(
 function generateCategoryStockAlerts(
   items: InventoryItem[],
   t: TranslationFunction,
-  household?: HouseholdConfig,
+  household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
 ): Alert[] {
   const alerts: Alert[] = [];
 
@@ -209,10 +235,46 @@ function generateCategoryStockAlerts(
       : isFoodCategory(category.id as string);
 
     // Calculate status based on category type
-    const { percentOfRecommended, hasEnough } =
-      isFood && household
-        ? calculateFoodCategoryStatus(category.id, items, household)
-        : calculateNonFoodCategoryStatus(categoryItems);
+    // For water-beverages, use calculateCategoryShortages to get accurate status
+    // (it handles preparation water and item type tracking correctly)
+    const isWaterCategory =
+      category.standardCategoryId === 'water-beverages' ||
+      String(category.id) === 'water-beverages';
+
+    let percentOfRecommended: number;
+    let hasEnough: boolean;
+
+    if (isFood) {
+      const foodStatus = calculateFoodCategoryStatus(
+        String(category.id),
+        items,
+        household,
+        recommendedItems,
+      );
+      percentOfRecommended = foodStatus.percentOfRecommended;
+      hasEnough = foodStatus.hasEnough;
+    } else if (isWaterCategory) {
+      const shortageInfo = calculateCategoryShortages(
+        String(category.id),
+        items,
+        household,
+        recommendedItems,
+        [],
+      );
+      percentOfRecommended =
+        shortageInfo.totalNeeded > 0
+          ? (shortageInfo.totalActual / shortageInfo.totalNeeded) * 100
+          : 100;
+      hasEnough = shortageInfo.totalActual >= shortageInfo.totalNeeded;
+    } else {
+      const nonFoodStatus = calculateNonFoodCategoryStatus(
+        categoryItems,
+        household,
+        recommendedItems,
+      );
+      percentOfRecommended = nonFoodStatus.percentOfRecommended;
+      hasEnough = nonFoodStatus.hasEnough;
+    }
 
     // Don't generate alerts if we have enough (for food: enough calories, for others: enough quantity)
     if (hasEnough) {
@@ -236,17 +298,14 @@ function generateCategoryStockAlerts(
 
 /**
  * Generate alerts for water shortage when food requires more water than available
+ * @param _household - Required for API consistency (not currently used in calculation)
  */
 function generateWaterShortageAlerts(
   items: InventoryItem[],
-  household: HouseholdConfig | undefined,
+  _household: HouseholdConfig,
   t: TranslationFunction,
 ): Alert[] {
   const alerts: Alert[] = [];
-
-  if (!household) {
-    return alerts;
-  }
 
   const waterRequirements = calculateWaterRequirements(items);
 
@@ -273,10 +332,16 @@ function generateWaterShortageAlerts(
 export function generateDashboardAlerts(
   items: InventoryItem[],
   t: TranslationFunction,
-  household?: HouseholdConfig,
+  household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
 ): Alert[] {
   const expirationAlerts = generateExpirationAlerts(items, t);
-  const categoryStockAlerts = generateCategoryStockAlerts(items, t, household);
+  const categoryStockAlerts = generateCategoryStockAlerts(
+    items,
+    t,
+    household,
+    recommendedItems,
+  );
   const waterShortageAlerts = generateWaterShortageAlerts(items, household, t);
 
   // Combine alerts (removed item-level critical alerts as they're now covered by category alerts)

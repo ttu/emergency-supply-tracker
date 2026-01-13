@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { renderWithProviders } from '@/test';
 import {
   CategoryStatusSummary,
   CategoryShortage,
@@ -13,91 +14,99 @@ import {
 } from '@/shared/types';
 
 // Mock react-i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, unknown>) => {
-      const categoryTranslations: Record<string, string> = {
-        'water-beverages': 'Water & Beverages',
-        food: 'Food',
-        'medical-health': 'Medical & Health',
-      };
+vi.mock('react-i18next', async () => {
+  const actual =
+    await vi.importActual<typeof import('react-i18next')>('react-i18next');
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: (key: string, options?: Record<string, unknown>) => {
+        const categoryTranslations: Record<string, string> = {
+          'water-beverages': 'Water & Beverages',
+          food: 'Food',
+          'medical-health': 'Medical & Health',
+        };
 
-      const unitTranslations: Record<string, string> = {
-        liters: 'L',
-        pieces: 'pcs',
-        cans: 'cans',
-      };
+        const unitTranslations: Record<string, string> = {
+          liters: 'L',
+          pieces: 'pcs',
+          cans: 'cans',
+        };
 
-      const commonTranslations: Record<string, string> = {
-        'status.ok': 'OK',
-        'status.warning': 'Warning',
-        'status.critical': 'Critical',
-        'dashboard.category.kcal': 'kcal',
-        'dashboard.category.items': 'items',
-        'dashboard.category.waterForPeople': 'Water for people',
-        'dashboard.category.waterForPreparation': 'Water for preparation',
-        'dashboard.category.totalWater': 'Total required',
-        'dashboard.category.recommendedCalories':
-          'Recommended {{count}} kcal more',
-        'inventory.recommended': 'Recommended',
-        'inventory.showLess': 'Show less',
-        'inventory.showRecommended': 'Show {{count}} recommended items',
-        'inventory.shortageFormat': '{{item}} – {{count}} {{unit}}',
-        'inventory.shortageFormatMissing':
-          '{{item}} – {{count}} {{unit}} missing',
-        'inventory.markAsEnough': 'Mark as enough',
-        'inventory.addToInventory': 'Add to inventory',
-        'inventory.disableRecommended': "Don't recommend this item",
-        liters: 'L',
-      };
+        const commonTranslations: Record<string, string> = {
+          'status.ok': 'OK',
+          'status.warning': 'Warning',
+          'status.critical': 'Critical',
+          'dashboard.category.kcal': 'kcal',
+          'dashboard.category.items': 'items',
+          'dashboard.category.waterForPeople': 'Water for people',
+          'dashboard.category.waterForPreparation': 'Water for preparation',
+          'dashboard.category.totalWater': 'Total required',
+          'dashboard.category.recommendedCalories':
+            'Recommended {{count}} kcal more',
+          'inventory.recommended': 'Recommended',
+          'inventory.showLess': 'Show less',
+          'inventory.showRecommended': 'Show {{count}} recommended items',
+          'inventory.shortageFormat': '{{item}} – {{count}} {{unit}}',
+          'inventory.shortageFormatMissing':
+            '{{item}} – {{count}} {{unit}} missing',
+          'inventory.markAsEnough': 'Mark as enough',
+          'inventory.addToInventory': 'Add to inventory',
+          'inventory.disableRecommended': "Don't recommend this item",
+          liters: 'L',
+        };
 
-      const productTranslations: Record<string, string> = {
-        bandages: 'Bandages',
-        'pain-relievers': 'Pain Relievers',
-        antiseptic: 'Antiseptic',
-        'first-aid-kit': 'First Aid Kit',
-        thermometer: 'Thermometer',
-        'prescription-meds': 'Prescription Medications',
-      };
+        const productTranslations: Record<string, string> = {
+          bandages: 'Bandages',
+          'pain-relievers': 'Pain Relievers',
+          antiseptic: 'Antiseptic',
+          'first-aid-kit': 'First Aid Kit',
+          thermometer: 'Thermometer',
+          'prescription-meds': 'Prescription Medications',
+        };
 
-      if (options?.ns === 'categories') {
-        return categoryTranslations[key] || key;
-      }
-      if (options?.ns === 'units') {
-        return unitTranslations[key] || key;
-      }
-      if (options?.ns === 'products') {
-        return productTranslations[key] || key;
-      }
+        if (options?.ns === 'categories') {
+          return categoryTranslations[key] || key;
+        }
+        if (options?.ns === 'units') {
+          return unitTranslations[key] || key;
+        }
+        if (options?.ns === 'products') {
+          return productTranslations[key] || key;
+        }
 
-      // Handle "liters" key when called without namespace (used in water breakdown)
-      if (key === 'liters' && !options?.ns) {
-        return 'L';
-      }
+        // Handle "liters" key when called without namespace (used in water breakdown)
+        if (key === 'liters' && !options?.ns) {
+          return 'L';
+        }
 
-      // Handle interpolation for translations with {{count}}
-      if (key === 'inventory.showRecommended' && options?.count) {
-        return `Show ${options.count} recommended items`;
-      }
-      if (key === 'dashboard.category.recommendedCalories' && options?.count) {
-        return `Recommended ${options.count} kcal more`;
-      }
-      // Handle shortage format interpolation
-      if (key === 'inventory.shortageFormat' && options?.item) {
-        return `${options.item} – ${options.count} ${options.unit}`;
-      }
-      if (key === 'inventory.shortageFormatMissing' && options?.item) {
-        return `${options.item} – ${options.count} ${options.unit} missing`;
-      }
+        // Handle interpolation for translations with {{count}}
+        if (key === 'inventory.showRecommended' && options?.count) {
+          return `Show ${options.count} recommended items`;
+        }
+        if (
+          key === 'dashboard.category.recommendedCalories' &&
+          options?.count
+        ) {
+          return `Recommended ${options.count} kcal more`;
+        }
+        // Handle shortage format interpolation
+        if (key === 'inventory.shortageFormat' && options?.item) {
+          return `${options.item} – ${options.count} ${options.unit}`;
+        }
+        if (key === 'inventory.shortageFormatMissing' && options?.item) {
+          return `${options.item} – ${options.count} ${options.unit} missing`;
+        }
 
-      return commonTranslations[key] || key;
-    },
-  }),
-}));
+        return commonTranslations[key] || key;
+      },
+    }),
+  };
+});
 
 describe('CategoryStatusSummary', () => {
   it('renders category name', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="water-beverages"
         status="ok"
@@ -112,7 +121,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('renders status badge with correct text', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="water-beverages"
         status="ok"
@@ -127,7 +136,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('renders warning status badge', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="water-beverages"
         status="warning"
@@ -142,7 +151,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('renders critical status badge', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="water-beverages"
         status="critical"
@@ -157,7 +166,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('renders quantity progress for non-food categories', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="water-beverages"
         status="warning"
@@ -172,7 +181,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('renders percentage when no primary unit', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="water-beverages"
         status="ok"
@@ -187,7 +196,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('renders calories for food category', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="food"
         status="warning"
@@ -205,7 +214,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('renders food category name', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="food"
         status="ok"
@@ -222,7 +231,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('falls back to percentage for food with zero needed calories', () => {
-    render(
+    renderWithProviders(
       <CategoryStatusSummary
         categoryId="food"
         status="ok"
@@ -240,7 +249,7 @@ describe('CategoryStatusSummary', () => {
   });
 
   it('caps progress bar at 100%', () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <CategoryStatusSummary
         categoryId="water-beverages"
         status="ok"
@@ -284,7 +293,7 @@ describe('CategoryStatusSummary', () => {
     };
 
     it('hides missing items by default and shows expand button', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -309,7 +318,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('does not show missing section when no shortages', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="ok"
@@ -325,7 +334,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('hides all items by default when shortages exist', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -353,7 +362,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('shows expand button with count when shortages exist', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -372,7 +381,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('shows expand button when any shortages exist', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -393,7 +402,7 @@ describe('CategoryStatusSummary', () => {
     it('expands to show all items when expand button is clicked', async () => {
       const user = userEvent.setup();
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -429,7 +438,7 @@ describe('CategoryStatusSummary', () => {
     it('collapses back to hiding all items when show less is clicked', async () => {
       const user = userEvent.setup();
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -473,7 +482,7 @@ describe('CategoryStatusSummary', () => {
       const user = userEvent.setup();
       const onAddToInventory = vi.fn();
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -506,7 +515,7 @@ describe('CategoryStatusSummary', () => {
       const user = userEvent.setup();
       const onDisableRecommended = vi.fn();
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -536,7 +545,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('shows item count text when primaryUnit is undefined and totalNeeded > 0', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="water-beverages"
           status="warning"
@@ -551,7 +560,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('shows percentage when totalNeeded is 0', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="water-beverages"
           status="ok"
@@ -568,7 +577,7 @@ describe('CategoryStatusSummary', () => {
     it('formats shortage correctly with item name and unit', async () => {
       const user = userEvent.setup();
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -603,7 +612,7 @@ describe('CategoryStatusSummary', () => {
         missing: 15, // Missing 15
       };
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="warning"
@@ -629,7 +638,7 @@ describe('CategoryStatusSummary', () => {
       const user = userEvent.setup();
       const onAddToInventory = vi.fn();
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -663,7 +672,7 @@ describe('CategoryStatusSummary', () => {
       const user = userEvent.setup();
       const onDisableRecommended = vi.fn();
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -698,7 +707,7 @@ describe('CategoryStatusSummary', () => {
       const onAddToInventory = vi.fn();
       const onDisableRecommended = vi.fn();
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="medical-health"
           status="critical"
@@ -732,7 +741,7 @@ describe('CategoryStatusSummary', () => {
 
   describe('missing calories display', () => {
     it('displays missing calories message for food category', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="food"
           status="warning"
@@ -752,7 +761,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('does not display missing calories when missingCalories is 0', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="food"
           status="ok"
@@ -770,7 +779,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('does not display missing calories when missingCalories is undefined', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="food"
           status="ok"
@@ -789,7 +798,7 @@ describe('CategoryStatusSummary', () => {
 
   describe('water breakdown display', () => {
     it('displays water breakdown for water-beverages category', () => {
-      const { container } = render(
+      const { container } = renderWithProviders(
         <CategoryStatusSummary
           categoryId="water-beverages"
           status="warning"
@@ -813,7 +822,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('displays water breakdown without preparation water when it is 0', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="water-beverages"
           status="warning"
@@ -834,7 +843,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('displays water breakdown without preparation water when it is undefined', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="water-beverages"
           status="warning"
@@ -854,7 +863,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('does not display water breakdown for non-water category', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="food"
           status="ok"
@@ -871,7 +880,7 @@ describe('CategoryStatusSummary', () => {
     });
 
     it('does not display water breakdown when drinkingWaterNeeded is undefined', () => {
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="water-beverages"
           status="warning"
@@ -909,11 +918,11 @@ describe('CategoryStatusSummary', () => {
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
         quantity: 4,
-        recommendedQuantity: 10,
+
         markedAsEnough: false,
       });
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="light-power"
           status="warning"
@@ -948,11 +957,11 @@ describe('CategoryStatusSummary', () => {
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
         quantity: 4,
-        recommendedQuantity: 10,
+
         markedAsEnough: true,
       });
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="light-power"
           status="warning"
@@ -979,11 +988,11 @@ describe('CategoryStatusSummary', () => {
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
         quantity: 0,
-        recommendedQuantity: 10,
+
         markedAsEnough: false,
       });
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="light-power"
           status="critical"
@@ -1012,11 +1021,11 @@ describe('CategoryStatusSummary', () => {
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
         quantity: 4,
-        recommendedQuantity: 10,
+
         markedAsEnough: false,
       });
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="light-power"
           status="warning"
@@ -1055,11 +1064,11 @@ describe('CategoryStatusSummary', () => {
         productTemplateId: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
         quantity: 4,
-        recommendedQuantity: 10,
+
         markedAsEnough: false,
       });
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="light-power"
           status="warning"
@@ -1093,11 +1102,11 @@ describe('CategoryStatusSummary', () => {
         itemType: 'custom', // Custom items should NOT match by name
         categoryId: createCategoryId('light-power'),
         quantity: 4,
-        recommendedQuantity: 10,
+
         markedAsEnough: false,
       });
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="light-power"
           status="warning"
@@ -1133,11 +1142,11 @@ describe('CategoryStatusSummary', () => {
         productTemplateId: createProductTemplateId('candles'), // This enables matching
         categoryId: createCategoryId('light-power'),
         quantity: 4,
-        recommendedQuantity: 10,
+
         markedAsEnough: false,
       });
 
-      render(
+      renderWithProviders(
         <CategoryStatusSummary
           categoryId="light-power"
           status="warning"
