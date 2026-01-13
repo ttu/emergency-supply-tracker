@@ -80,20 +80,19 @@ describe('Modal', () => {
   });
 
   it('does not call onClose when clicking inside modal and releasing outside', () => {
-    const { container } = render(
+    render(
       <Modal isOpen={true} onClose={onClose} title="Test Modal">
         <p>Modal content</p>
       </Modal>,
     );
 
     const modalContent = screen.getByText('Modal content');
-    const overlay = container.querySelector('[class*="overlay"]');
+    const overlay = document.body.querySelector('[class*="overlay"]');
+    expect(overlay).not.toBeNull();
 
     // Simulate mousedown inside modal, then mouseup on overlay
     fireEvent.mouseDown(modalContent);
-    if (overlay) {
-      fireEvent.mouseUp(overlay);
-    }
+    fireEvent.mouseUp(overlay!);
 
     // Modal should not close because mousedown happened inside
     expect(onClose).not.toHaveBeenCalled();
