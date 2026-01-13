@@ -237,7 +237,8 @@ export function calculateCategoryShortages(
     uniqueUnits.add(recItem.unit);
     totalItemTypes++;
     // Calculate weighted fulfillment (0-1) for this item type
-    // This matches the logic in calculateCategoryPreparedness
+    // If marked as enough or recommended quantity is zero, treat as fully fulfilled (1.0)
+    // Otherwise, calculate ratio of actual to recommended, capped at 1.0
     const fulfillmentRatio =
       hasMarkedAsEnough || recommendedQty === 0
         ? 1
@@ -367,6 +368,44 @@ export function calculateCategoryStatus(
   // Check if inventory meets the minimum requirements
   const hasEnough = household && hasEnoughInventory(category.id, shortageInfo);
 
+  // For food category, calculate percentage based on calories instead of quantity
+  // (if household is provided and we have calorie data)
+  // This should be checked first, before mixed units, as food is a special case
+  const isFood = isFoodCategory(category.id);
+  let effectivePercentage = completionPercentage;
+  if (
+    household &&
+    isFood &&
+    shortageInfo.totalNeededCalories &&
+    shortageInfo.totalNeededCalories > 0
+  ) {
+    const caloriePercentage = Math.round(
+      ((shortageInfo.totalActualCalories ?? 0) /
+        shortageInfo.totalNeededCalories) *
+        100,
+    );
+    effectivePercentage = caloriePercentage;
+  }
+
+  // For mixed units categories, calculate percentage from weighted fulfillment
+  // to ensure consistency with the item count display (same logic as getCategoryDisplayStatus)
+  // Check if this is a mixed units category (primaryUnit is undefined) and we have items to track
+  // Skip this check for food category, as food uses calorie-based calculation
+  if (
+    household &&
+    !isFood &&
+    !shortageInfo.primaryUnit &&
+    shortageInfo.totalNeeded > 0
+  ) {
+    // Use weighted fulfillment ratio to calculate percentage
+    // This ensures the progress bar matches the "X / Y items" display
+    // totalActual is the weighted fulfillment sum, totalNeeded is the number of item types
+    const weightedPercentage = Math.round(
+      (shortageInfo.totalActual / shortageInfo.totalNeeded) * 100,
+    );
+    effectivePercentage = weightedPercentage;
+  }
+
   // Determine overall category status
   let categoryStatus: ItemStatus;
 
@@ -374,12 +413,12 @@ export function calculateCategoryStatus(
     categoryStatus = 'ok';
   } else if (
     criticalCount > 0 ||
-    completionPercentage < CRITICAL_PERCENTAGE_THRESHOLD
+    effectivePercentage < CRITICAL_PERCENTAGE_THRESHOLD
   ) {
     categoryStatus = 'critical';
   } else if (
     warningCount > 0 ||
-    completionPercentage < WARNING_PERCENTAGE_THRESHOLD
+    effectivePercentage < WARNING_PERCENTAGE_THRESHOLD
   ) {
     categoryStatus = 'warning';
   } else {
@@ -389,7 +428,7 @@ export function calculateCategoryStatus(
   // Cap percentage at 100: exact 100 when enough, otherwise capped
   const finalCompletionPercentage = hasEnough
     ? 100
-    : Math.min(completionPercentage, 100);
+    : Math.min(effectivePercentage, 100);
 
   return {
     categoryId: category.id,
@@ -502,6 +541,20 @@ export function getCategoryDisplayStatus(
         100,
     );
     effectivePercentage = caloriePercentage;
+  }
+
+  // For mixed units categories, calculate percentage from weighted fulfillment
+  // to ensure consistency with the item count display
+  // Check if this is a mixed units category (primaryUnit is undefined) and we have items to track
+  // Skip this check for food category, as food uses calorie-based calculation
+  if (!isFood && !shortageInfo.primaryUnit && shortageInfo.totalNeeded > 0) {
+    // Use weighted fulfillment ratio to calculate percentage
+    // This ensures the progress bar matches the "X / Y items" display
+    // totalActual is the weighted fulfillment sum, totalNeeded is the number of item types
+    const weightedPercentage = Math.round(
+      (shortageInfo.totalActual / shortageInfo.totalNeeded) * 100,
+    );
+    effectivePercentage = weightedPercentage;
   }
 
   // Determine status: if we have enough inventory, the status should be OK

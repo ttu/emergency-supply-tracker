@@ -20,6 +20,7 @@ import {
   DAILY_WATER_PER_PERSON,
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
+  CRITICAL_PERCENTAGE_THRESHOLD,
 } from '@/shared/utils/constants';
 import {
   randomChildrenMinOne,
@@ -821,8 +822,9 @@ describe('calculateCategoryStatus - inventory-based status', () => {
     const neededCalories = Math.ceil(
       peopleMultiplier * household.supplyDurationDays * 2000,
     );
-    // Create items with insufficient calories
-    const riceQuantity = Math.max(0.1, (neededCalories / 3600) * 0.5); // 50% of needed
+    // Create items with insufficient calories (less than 30% to trigger critical)
+    // Use 20% of needed calories to ensure critical status
+    const riceQuantity = Math.max(0.1, (neededCalories / 3600) * 0.2); // 20% of needed
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -834,10 +836,9 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       }),
     ];
 
-    // Use a fixed low percentage (25) that's strictly less than CRITICAL_PERCENTAGE_THRESHOLD (30)
-    // to ensure deterministic test behavior. randomPercentageLow() can return 30, which would
-    // not trigger the critical status check (completionPercentage < 30).
-    const completionPercentage = 25;
+    // The completionPercentage parameter is now overridden by calorie-based calculation
+    // So we pass a high value, but the actual percentage will be calculated from calories (20%)
+    const completionPercentage = 80; // This will be overridden
     const result = calculateCategoryStatus(
       foodCategory,
       items,
@@ -845,7 +846,12 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       household,
     );
 
+    // Status should be critical because calorie percentage (20%) is below CRITICAL_PERCENTAGE_THRESHOLD (30)
     expect(result.status).toBe('critical');
+    // The completionPercentage should reflect calorie-based calculation, not the passed-in value
+    expect(result.completionPercentage).toBeLessThan(
+      CRITICAL_PERCENTAGE_THRESHOLD,
+    );
   });
 
   it('should still use completion percentage when household is not provided', () => {
@@ -860,6 +866,52 @@ describe('calculateCategoryStatus - inventory-based status', () => {
 
     const resultHigh = calculateCategoryStatus(waterCategory, items, 80);
     expect(resultHigh.status).toBe('ok');
+  });
+
+  it('should use weighted fulfillment for mixed units in dashboard (calculateCategoryStatus)', () => {
+    // Test that calculateCategoryStatus (used by dashboard) also applies mixed units fix
+    // Scenario: Cash (300/300 = 100%), Documents (1/1 = 100%), missing Contact List (0/1 = 0%)
+    const cashDocumentsCategory = createMockCategory({
+      id: createCategoryId('cash-documents'),
+      name: 'Cash & Documents',
+      icon: '💰',
+    });
+
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: createItemId('cash-1'),
+        categoryId: createCategoryId('cash-documents'),
+        quantity: 300, // 100% of 300 euros
+        unit: 'euros',
+        productTemplateId: createProductTemplateId('cash'),
+      }),
+      createMockInventoryItem({
+        id: createItemId('docs-1'),
+        categoryId: createCategoryId('cash-documents'),
+        quantity: 1, // 100% of 1 sets
+        unit: 'sets',
+        productTemplateId: createProductTemplateId('document-copies'),
+      }),
+      // contact-list is missing (0/1)
+    ];
+
+    // calculateCategoryPreparedness would return 0% for mixed units (doesn't handle weighted fulfillment)
+    // But calculateCategoryStatus should override it with weighted fulfillment calculation
+    const result = calculateCategoryStatus(
+      cashDocumentsCategory,
+      items,
+      0, // This would be the percentage from calculateCategoryPreparedness (incorrect for mixed units)
+      household,
+    );
+
+    // Should have 2.0 weighted fulfillment out of 3 total items
+    expect(result.totalActual).toBeCloseTo(2, 1);
+    expect(result.totalNeeded).toBe(3);
+    expect(result.primaryUnit).toBeUndefined(); // Mixed units
+
+    // CRITICAL: Percentage should NOT be 0! Should be calculated from weighted fulfillment
+    expect(result.completionPercentage).toBeGreaterThan(0);
+    expect(result.completionPercentage).toBe(Math.round((2 / 3) * 100)); // Should be 67%
   });
 });
 
@@ -1464,8 +1516,8 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         household,
       );
 
-      // Weighted fulfillment: 1.0 (marked as enough) + 1.0 (marked as enough) + 0.0 = 2.0
-      expect(result.totalActual).toBeCloseTo(2.0, 1);
+      // Weighted fulfillment: 1.0 (marked as enough) + 1.0 (marked as enough) + 0 = 2
+      expect(result.totalActual).toBeCloseTo(2, 1);
       expect(result.totalNeeded).toBe(3);
       // Should not appear in shortages
       expect(result.shortages.length).toBe(1); // Only contact-list should be in shortages
@@ -1652,6 +1704,117 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
     expect(result.completionPercentage).toBeCloseTo(expectedPercentage, 0);
   });
 
+  it('should show correct percentage when having 2 out of 3 items (cash and documents)', () => {
+    // Scenario: User has cash (300/300 = 100%) and documents (1/1 = 100%), missing contact-list (0/1 = 0%)
+    // Expected: 2.0 / 3 = 67% (rounded)
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        categoryId: createCategoryId('cash-documents'),
+        quantity: 300, // 100% of 300 euros
+        unit: 'euros',
+        productTemplateId: createProductTemplateId('cash'),
+      }),
+      createMockInventoryItem({
+        id: createItemId('2'),
+        categoryId: createCategoryId('cash-documents'),
+        quantity: 1, // 100% of 1 sets
+        unit: 'sets',
+        productTemplateId: createProductTemplateId('document-copies'),
+      }),
+      // contact-list is missing (0/1)
+    ];
+
+    const result = getCategoryDisplayStatus('cash-documents', items, household);
+
+    // Should have 2.0 weighted fulfillment out of 3 total items
+    expect(result.totalActual).toBeCloseTo(2, 1);
+    expect(result.totalNeeded).toBe(3);
+    expect(result.primaryUnit).toBeUndefined(); // Mixed units
+
+    // Percentage should be (2/3) * 100 = 67% (rounded)
+    const expectedPercentage = Math.round((2 / 3) * 100);
+    expect(result.completionPercentage).toBe(expectedPercentage);
+    expect(result.completionPercentage).toBeGreaterThan(0); // Should not be 0!
+  });
+
+  it('should NOT show 0% when having 2 out of 3 items - exact user scenario', () => {
+    // Exact scenario from user: Cash (300 euros), Documents (1 sets), missing Contact List
+    // This test validates the bug fix for progress bar showing 0%
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: createItemId('cash-1'),
+        name: 'Cash (Small Bills and Coins)',
+        categoryId: createCategoryId('cash-documents'),
+        quantity: 300, // 100% of recommended 300 euros
+        unit: 'euros',
+        productTemplateId: createProductTemplateId('cash'),
+        recommendedQuantity: 300,
+      }),
+      createMockInventoryItem({
+        id: createItemId('docs-1'),
+        name: 'Copies of Important Documents',
+        categoryId: createCategoryId('cash-documents'),
+        quantity: 1, // 100% of recommended 1 sets
+        unit: 'sets',
+        productTemplateId: createProductTemplateId('document-copies'),
+        recommendedQuantity: 1,
+      }),
+      // Emergency Contact List is missing (0/1 pieces)
+    ];
+
+    const result = getCategoryDisplayStatus('cash-documents', items, household);
+
+    // Verify mixed units detection
+    expect(result.primaryUnit).toBeUndefined(); // Should be undefined for mixed units
+    expect(result.totalNeeded).toBe(3); // 3 item types: cash, documents, contact-list
+
+    // Verify weighted fulfillment: 1.0 (cash) + 1.0 (documents) + 0.0 (contact-list) = 2.0
+    expect(result.totalActual).toBeCloseTo(2, 1);
+
+    // CRITICAL: Percentage should NOT be 0!
+    expect(result.completionPercentage).toBeGreaterThan(0);
+    expect(result.completionPercentage).toBe(Math.round((2 / 3) * 100)); // Should be 67%
+  });
+
+  it('should handle case where items exist but dont match recommended items', () => {
+    // Test what happens when items exist in the category but don't match recommended items
+    // This could cause totalActual to be 0 even though items exist
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: createItemId('cash-1'),
+        name: 'Cash',
+        categoryId: createCategoryId('cash-documents'),
+        quantity: 300,
+        unit: 'euros',
+        // Missing productTemplateId - won't match 'cash' recommended item
+      }),
+      createMockInventoryItem({
+        id: createItemId('docs-1'),
+        name: 'Documents',
+        categoryId: createCategoryId('cash-documents'),
+        quantity: 1,
+        unit: 'sets',
+        // Missing productTemplateId - won't match 'document-copies' recommended item
+      }),
+    ];
+
+    const result = getCategoryDisplayStatus('cash-documents', items, household);
+
+    // If items don't match, totalActual would be 0
+    // But we still have 3 recommended items, so totalNeeded is 3
+    expect(result.totalNeeded).toBe(3);
+
+    // If items don't match, totalActual would be 0, and percentage would be 0%
+    // This is expected behavior - items need to match recommended items
+    if (result.totalActual === 0) {
+      expect(result.completionPercentage).toBe(0);
+    } else {
+      // If items do match (by name normalization), percentage should be calculated
+      expect(result.completionPercentage).toBeGreaterThanOrEqual(0);
+    }
+  });
+
   it('should show consistent progress for various fulfillment levels', () => {
     const testCases = [
       {
@@ -1659,14 +1822,14 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         cash: 75, // 25% of 300
         documents: 0, // 0% of 1
         contactList: 0, // 0% of 1
-        expectedWeighted: 0.25 + 0.0 + 0.0, // 0.25
+        expectedWeighted: 0.25 + 0 + 0, // 0.25
       },
       {
         name: '50% fulfillment',
         cash: 150, // 50% of 300
         documents: 0.5, // 50% of 1 (partial set)
         contactList: 0, // 0% of 1
-        expectedWeighted: 0.5 + 0.5 + 0.0, // 1.0
+        expectedWeighted: 0.5 + 0.5 + 0, // 1
       },
       {
         name: '75% fulfillment',
@@ -1680,7 +1843,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         cash: 300, // 100% of 300
         documents: 1, // 100% of 1
         contactList: 1, // 100% of 1
-        expectedWeighted: 1.0 + 1.0 + 1.0, // 3.0
+        expectedWeighted: 1 + 1 + 1, // 3
       },
     ];
 
