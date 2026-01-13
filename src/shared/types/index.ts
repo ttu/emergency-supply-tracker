@@ -139,7 +139,6 @@ export interface InventoryItem {
   neverExpires?: boolean;
   location?: string;
   notes?: string;
-  productTemplateId?: ProductTemplateId;
   /** @categorySpecific Food category only - Weight per unit in grams (e.g., one can weighs 400g) */
   weightGrams?: number;
   /** @categorySpecific Food category only - Calories per unit (e.g., one can has 200 kcal) */

@@ -261,7 +261,7 @@ describe('calculatePreparednessScore', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        productTemplateId: createProductTemplateId('water'),
+        itemType: createProductTemplateId('water'),
       }),
     ];
     const score = calculatePreparednessScore(
@@ -284,7 +284,7 @@ describe('calculatePreparednessScore', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        productTemplateId: createProductTemplateId('water'),
+        itemType: createProductTemplateId('water'),
       }),
     ];
 
@@ -342,7 +342,7 @@ describe('calculatePreparednessScore', () => {
         categoryId: createCategoryId('water'),
         quantity: 100, // Needed for capping test (100/50 = 200%, should cap at 100%)
         // Needed for capping test
-        productTemplateId: createProductTemplateId('water'),
+        itemType: createProductTemplateId('water'),
       }),
     ];
 
@@ -370,7 +370,7 @@ describe('calculatePreparednessScore', () => {
         name: 'Water',
         categoryId: createCategoryId('water'),
         quantity: 10,
-        productTemplateId: createProductTemplateId('water'),
+        itemType: createProductTemplateId('water'),
       }),
     ];
 
@@ -399,7 +399,7 @@ describe('calculatePreparednessScore', () => {
         name: 'Water',
         categoryId: createCategoryId('water'),
         quantity: 10,
-        productTemplateId: createProductTemplateId('water'),
+        itemType: createProductTemplateId('water'),
       }),
     ];
 
@@ -430,7 +430,7 @@ describe('calculatePreparednessScore', () => {
         name: 'test-item',
         categoryId: createCategoryId('tools'),
         quantity: 5,
-        productTemplateId: createProductTemplateId('test-item'),
+        itemType: createProductTemplateId('test-item'),
       }),
     ];
 
@@ -476,7 +476,7 @@ describe('calculatePreparednessScore', () => {
           quantity: 1,
           unit: 'pieces',
 
-          // No productTemplateId - this is a custom item
+          // itemType is 'custom' - this is a custom item
         });
 
         // Create a custom recommended items list with battery-radio
@@ -536,17 +536,15 @@ describe('calculatePreparednessScore', () => {
       });
     });
 
-    describe('items should match by productTemplateId', () => {
-      it('should match item with productTemplateId even if name differs', () => {
+    describe('items should match by itemType', () => {
+      it('should match item with itemType even if name differs', () => {
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
           name: 'Sony Portable Emergency Radio', // Realistic product name
-          itemType: createProductTemplateId('battery-radio'),
+          itemType: createProductTemplateId('battery-radio'), // This enables matching
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-
-          productTemplateId: createProductTemplateId('battery-radio'), // This enables matching
         });
 
         const customRecommendedItems = [
@@ -567,26 +565,26 @@ describe('calculatePreparednessScore', () => {
           customRecommendedItems,
         );
 
-        // Should match by productTemplateId and contribute to score
+        // Should match by itemType and contribute to score
         expect(score).toBeGreaterThan(0);
         expect(score).toBeLessThanOrEqual(100);
       });
 
-      it('should match multiple items with same productTemplateId and sum quantities', () => {
+      it('should match multiple items with same itemType and sum quantities', () => {
         const items = [
           createMockInventoryItem({
             id: createItemId('item-1'),
             name: 'Radio 1',
             categoryId: createCategoryId('communication-info'),
             quantity: 1,
-            productTemplateId: createProductTemplateId('battery-radio'),
+            itemType: createProductTemplateId('battery-radio'),
           }),
           createMockInventoryItem({
             id: createItemId('item-2'),
             name: 'Radio 2',
             categoryId: createCategoryId('communication-info'),
             quantity: 1,
-            productTemplateId: createProductTemplateId('battery-radio'),
+            itemType: createProductTemplateId('battery-radio'),
           }),
         ];
 
@@ -619,7 +617,7 @@ describe('calculatePreparednessScore', () => {
           name: 'My Radio',
           categoryId: createCategoryId('communication-info'),
           quantity: 1, // Has 1, needs 2
-          productTemplateId: createProductTemplateId('battery-radio'),
+          itemType: createProductTemplateId('battery-radio'),
         });
 
         const customRecommendedItems = [
@@ -645,18 +643,16 @@ describe('calculatePreparednessScore', () => {
       });
     });
 
-    describe('items should NOT match by name (only productTemplateId or itemType)', () => {
+    describe('items should NOT match by name (only itemType)', () => {
       it('should NOT match item by name even if name equals recommended item ID', () => {
-        // Items should only match via productTemplateId or itemType, not by name
+        // Items should only match via itemType, not by name
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
-          name: 'battery-radio', // Name matches, but no productTemplateId or matching itemType
+          name: 'battery-radio', // Name matches, but itemType doesn't match
           itemType: createProductTemplateId('some-other-type'), // Not matching
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-
-          // No productTemplateId
         });
 
         const customRecommendedItems = [
@@ -682,7 +678,7 @@ describe('calculatePreparednessScore', () => {
       });
 
       it('should NOT match item by normalized name even if name normalizes to recommended item ID', () => {
-        // Items should only match via productTemplateId or itemType, not by name
+        // Items should only match via itemType, not by name
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
           name: 'Battery Radio', // Would normalize to 'battery-radio', but we don't match by name
@@ -690,8 +686,6 @@ describe('calculatePreparednessScore', () => {
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-
-          // No productTemplateId
         });
 
         const customRecommendedItems = [
@@ -718,17 +712,15 @@ describe('calculatePreparednessScore', () => {
     });
 
     describe('matching priority and edge cases', () => {
-      it('should prioritize productTemplateId over name matching', () => {
-        // Item with productTemplateId for one item but name matching another
+      it('should match by itemType, not by name', () => {
+        // Item with itemType for one item but name matching another
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
           name: 'battery-radio', // Name would match 'battery-radio'
-          itemType: 'custom',
+          itemType: createProductTemplateId('hand-crank-radio'), // But itemType matches different item
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-
-          productTemplateId: createProductTemplateId('hand-crank-radio'), // But productTemplateId matches different item
         });
 
         const customRecommendedItems = [
@@ -758,23 +750,21 @@ describe('calculatePreparednessScore', () => {
           customRecommendedItems,
         );
 
-        // Should match hand-crank-radio by productTemplateId (not battery-radio by name)
+        // Should match hand-crank-radio by itemType (not battery-radio by name)
         // Since custom items don't match by name, only hand-crank-radio should match
         // Score should be 50% (1 item matched out of 2)
         expect(score).toBe(50);
       });
 
       it('should handle items that match multiple recommended items correctly', () => {
-        // Item that could match multiple recommended items should only match by productTemplateId
+        // Item that could match multiple recommended items should only match by itemType
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
           name: 'Panasonic Portable Radio', // Realistic product name
-          itemType: 'custom',
+          itemType: createProductTemplateId('battery-radio'), // itemType enables matching
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
-
-          productTemplateId: createProductTemplateId('battery-radio'), // productTemplateId enables matching
         });
 
         const customRecommendedItems = [
@@ -795,7 +785,7 @@ describe('calculatePreparednessScore', () => {
           customRecommendedItems,
         );
 
-        // Should match by productTemplateId (not by name since it's custom)
+        // Should match by itemType
         expect(score).toBe(100);
       });
 
@@ -806,7 +796,7 @@ describe('calculatePreparednessScore', () => {
             name: 'Radio 1',
             categoryId: createCategoryId('communication-info'),
             quantity: 1,
-            productTemplateId: createProductTemplateId('battery-radio'), // Matches
+            itemType: createProductTemplateId('battery-radio'), // Matches
           }),
           createMockInventoryItem({
             id: createItemId('item-2'),
@@ -814,7 +804,7 @@ describe('calculatePreparednessScore', () => {
             itemType: 'custom',
             categoryId: createCategoryId('communication-info'),
             quantity: 1,
-            // No productTemplateId
+            // itemType is 'custom', won't match
           }),
         ];
 
@@ -896,7 +886,7 @@ describe('calculateCategoryPreparedness', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        productTemplateId: createProductTemplateId('water'),
+        itemType: createProductTemplateId('water'),
       }),
     ];
     const score = calculateCategoryPreparedness(
@@ -916,7 +906,7 @@ describe('calculateCategoryPreparedness', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        productTemplateId: createProductTemplateId('water'),
+        itemType: createProductTemplateId('water'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),

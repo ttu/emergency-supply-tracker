@@ -66,9 +66,6 @@ function normalizeItems(
     id: createItemId(item.id as string),
     categoryId: createCategoryId(item.categoryId as string),
     itemType: normalizeItemType(item.itemType),
-    productTemplateId: item.productTemplateId
-      ? createProductTemplateId(item.productTemplateId as string)
-      : undefined,
   }));
 }
 

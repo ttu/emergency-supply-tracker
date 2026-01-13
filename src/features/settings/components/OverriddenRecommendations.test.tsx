@@ -86,7 +86,6 @@ describe('OverriddenRecommendations', () => {
       itemType: createProductTemplateId('candles'),
       categoryId: createCategoryId('cooking-heat'),
       markedAsEnough: true,
-      productTemplateId: createProductTemplateId('candles'),
     });
 
     const appData = createMockAppData({
@@ -108,7 +107,6 @@ describe('OverriddenRecommendations', () => {
       itemType: createProductTemplateId('candles'),
       categoryId: createCategoryId('cooking-heat'),
       markedAsEnough: true,
-      productTemplateId: createProductTemplateId('candles'),
     });
 
     const appData = createMockAppData({
@@ -136,7 +134,6 @@ describe('OverriddenRecommendations', () => {
       itemType: createProductTemplateId('candles'),
       categoryId: createCategoryId('cooking-heat'),
       markedAsEnough: true,
-      productTemplateId: createProductTemplateId('candles'),
     });
 
     const markedItem2 = createMockInventoryItem({
@@ -145,7 +142,6 @@ describe('OverriddenRecommendations', () => {
       itemType: createProductTemplateId('flashlight'),
       categoryId: createCategoryId('light-power'),
       markedAsEnough: true,
-      productTemplateId: createProductTemplateId('flashlight'),
     });
 
     const appData = createMockAppData({
@@ -168,7 +164,6 @@ describe('OverriddenRecommendations', () => {
       itemType: createProductTemplateId('candles'),
       categoryId: createCategoryId('cooking-heat'),
       markedAsEnough: true,
-      productTemplateId: createProductTemplateId('candles'),
     });
 
     const markedItem2 = createMockInventoryItem({
@@ -177,7 +172,6 @@ describe('OverriddenRecommendations', () => {
       itemType: createProductTemplateId('flashlight'),
       categoryId: createCategoryId('light-power'),
       markedAsEnough: true,
-      productTemplateId: createProductTemplateId('flashlight'),
     });
 
     const appData = createMockAppData({
@@ -204,7 +198,7 @@ describe('OverriddenRecommendations', () => {
       itemType: 'custom',
       categoryId: createCategoryId('food'),
       markedAsEnough: true,
-      // No productTemplateId
+      // itemType is 'custom'
     });
 
     const appData = createMockAppData({

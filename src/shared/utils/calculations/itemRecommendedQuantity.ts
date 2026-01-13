@@ -22,17 +22,10 @@ export function getRecommendedQuantityForItem(
   recommendedItems: RecommendedItemDefinition[],
   childrenMultiplier: number = CHILDREN_REQUIREMENT_MULTIPLIER,
 ): number {
-  // Try to find recommended item by productTemplateId first (most reliable)
+  // Find recommended item by itemType
   let recommendedItem: RecommendedItemDefinition | undefined;
 
-  if (item.productTemplateId) {
-    recommendedItem = recommendedItems.find(
-      (rec) => rec.id === item.productTemplateId,
-    );
-  }
-
-  // Fallback to itemType if productTemplateId didn't match
-  if (!recommendedItem && item.itemType && item.itemType !== 'custom') {
+  if (item.itemType && item.itemType !== 'custom') {
     recommendedItem = recommendedItems.find((rec) => rec.id === item.itemType);
   }
 

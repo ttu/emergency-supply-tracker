@@ -222,8 +222,8 @@ export function calculateMissingQuantity(
  * This matches the calculation used in the recommendations list, showing
  * the total missing across all instances of an item type.
  *
- * Items are matched by productTemplateId or itemType. If an item is marked
- * as enough, it's excluded from the calculation.
+ * Items are matched by itemType. If an item is marked as enough,
+ * it's excluded from the calculation.
  *
  * @param item - The inventory item to calculate missing quantity for
  * @param allItems - All inventory items to search for matching items
@@ -232,8 +232,8 @@ export function calculateMissingQuantity(
  *
  * @example
  * ```typescript
- * const item1 = { id: '1', quantity: 2, productTemplateId: 'rope', ... };
- * const item2 = { id: '2', quantity: 1, productTemplateId: 'rope', ... };
+ * const item1 = { id: '1', quantity: 2, itemType: 'rope', ... };
+ * const item2 = { id: '2', quantity: 1, itemType: 'rope', ... };
  * const recommendedQuantity = 10;
  * const missing = calculateTotalMissingQuantity(item1, [item1, item2], recommendedQuantity);
  * // Returns 7 (10 - (2 + 1) = 7)
@@ -246,30 +246,12 @@ export function calculateTotalMissingQuantity(
 ): number {
   // Find all items of the same type
   const matchingItems = allItems.filter((otherItem) => {
-    // Match by productTemplateId if both have it and they match
-    if (item.productTemplateId && otherItem.productTemplateId) {
-      return item.productTemplateId === otherItem.productTemplateId;
-    }
-
-    // Match by itemType if:
-    // - itemType is not 'custom' for both
-    // - itemTypes match
-    // This handles cases where items might have productTemplateId but we still want to match by itemType
-    // (e.g., one item has productTemplateId, another doesn't, but both have same itemType)
-    if (
+    // Match by itemType if both are not 'custom' and itemTypes match
+    return (
       item.itemType !== 'custom' &&
       otherItem.itemType !== 'custom' &&
       item.itemType === otherItem.itemType
-    ) {
-      // If both have productTemplateId but they don't match, they're different items
-      if (item.productTemplateId && otherItem.productTemplateId) {
-        return false; // Already checked above, shouldn't reach here
-      }
-      // Match by itemType
-      return true;
-    }
-
-    return false;
+    );
   });
 
   // If no matching items (shouldn't happen, but handle gracefully)

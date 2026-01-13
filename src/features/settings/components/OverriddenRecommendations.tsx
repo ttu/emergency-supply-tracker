@@ -18,8 +18,9 @@ export function OverriddenRecommendations() {
         // Try to find matching recommended item
         const recommendedItem = RECOMMENDED_ITEMS.find(
           (rec) =>
-            item.productTemplateId === rec.id ||
-            rec.id === item.itemType?.toLowerCase().replace(/\s+/g, '-'),
+            item.itemType === rec.id ||
+            (item.itemType !== 'custom' &&
+              rec.id === item.itemType?.toLowerCase().replace(/\s+/g, '-')),
         );
 
         if (!recommendedItem) {
