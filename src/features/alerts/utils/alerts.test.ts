@@ -279,13 +279,25 @@ describe('generateDashboardAlerts', () => {
   });
 
   it('should not generate stock alerts when category quantity is adequate', () => {
+    // Use a specific household: 2 adults, 3 days
+    // Water needed: 3L × 2 × 3 = 18L
+    // Milk needed: 2L × 2 = 4L
+    // Juice needed: 2L × 2 = 4L
+    // Total needed: 26L
+    // Total actual: 30L + 10L + 10L = 50L (192% - more than adequate)
+    const household = createMockHousehold({
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 3,
+    });
+
     // Add all three items with adequate quantities: 30L water, 10L milk, 10L juice
     const items = [
       createMockInventoryItem({
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 30, // 30L water
+        quantity: 30, // 30L water (more than 18L needed)
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         productTemplateId: createProductTemplateId('bottled-water'),
@@ -296,7 +308,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('2'),
         name: 'Milk',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 10, // 10L milk
+        quantity: 10, // 10L milk (more than 4L needed)
         unit: 'liters',
         itemType: createProductTemplateId('long-life-milk'),
         productTemplateId: createProductTemplateId('long-life-milk'),
@@ -307,7 +319,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('3'),
         name: 'Juice',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 10, // 10L juice
+        quantity: 10, // 10L juice (more than 4L needed)
         unit: 'liters',
         itemType: createProductTemplateId('long-life-juice'),
         productTemplateId: createProductTemplateId('long-life-juice'),
@@ -319,7 +331,7 @@ describe('generateDashboardAlerts', () => {
     const alerts = generateDashboardAlerts(
       items,
       mockT,
-      mockHousehold,
+      household,
       RECOMMENDED_ITEMS,
     );
     const stockAlerts = alerts.filter((a) => a.id.includes('category'));
@@ -823,7 +835,7 @@ describe('food category calorie-based alerts', () => {
     expect(foodAlert?.message).toContain('40%'); // 4800/12000 = 40%
   });
 
-  it('should not generate stock alerts when household is not provided', () => {
+  it('should not generate stock alerts when calories are sufficient for the household', () => {
     // Items with enough calories should not generate stock alerts
     // Use a specific household: 1 adult, 3 days = 6000 calories needed
     const household = createMockHousehold({

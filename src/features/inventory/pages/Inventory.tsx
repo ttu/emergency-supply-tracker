@@ -101,8 +101,8 @@ export function Inventory({
       selectedCategoryId,
       items,
       household,
-      disabledRecommendedItems,
       recommendedItems,
+      disabledRecommendedItems,
       calculationOptions,
     );
   }, [

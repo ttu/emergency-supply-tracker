@@ -126,8 +126,8 @@ export function calculateCategoryPreparedness(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
-  disabledRecommendedItems: string[] = [],
   recommendedItems: RecommendedItemDefinition[],
+  disabledRecommendedItems: string[] = [],
   options: CategoryCalculationOptions = {},
 ): number {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);

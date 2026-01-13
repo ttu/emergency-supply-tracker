@@ -668,16 +668,16 @@ describe('Template to InventoryItem conversion', () => {
       'water-beverages',
       [itemWithTemplateId],
       household,
-      [],
       RECOMMENDED_ITEMS,
+      [],
     );
 
     const scoreWithoutTemplateId = calculateCategoryPreparedness(
       'water-beverages',
       [itemWithoutTemplateId],
       household,
-      [],
       RECOMMENDED_ITEMS,
+      [],
     );
 
     // With productTemplateId, the item matches and contributes to the score

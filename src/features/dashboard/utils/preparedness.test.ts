@@ -865,8 +865,8 @@ describe('calculateCategoryPreparedness', () => {
       'custom',
       items,
       baseHousehold,
-      [],
       RECOMMENDED_ITEMS,
+      [],
     );
     expect(score).toBe(0);
   });
@@ -884,8 +884,8 @@ describe('calculateCategoryPreparedness', () => {
       'custom',
       items,
       baseHousehold,
-      [],
       RECOMMENDED_ITEMS,
+      [],
     );
     expect(score).toBe(100);
   });
@@ -903,8 +903,8 @@ describe('calculateCategoryPreparedness', () => {
       'water',
       items,
       baseHousehold,
-      [],
       RECOMMENDED_ITEMS,
+      [],
     );
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);
@@ -929,15 +929,15 @@ describe('calculateCategoryPreparedness', () => {
       'water',
       items,
       baseHousehold,
-      [],
       RECOMMENDED_ITEMS,
+      [],
     );
     const foodScore = calculateCategoryPreparedness(
       'food',
       items,
       baseHousehold,
-      [],
       RECOMMENDED_ITEMS,
+      [],
     );
 
     // Both should return valid scores
@@ -989,8 +989,8 @@ describe('calculateCategoryPreparedness', () => {
       'water-beverages',
       items,
       zeroPeopleHousehold,
-      [],
       customRecommendedItems,
+      [],
     );
     expect(score).toBe(0);
     expect(Number.isFinite(score)).toBe(true);
@@ -1027,8 +1027,8 @@ describe('calculateCategoryPreparedness', () => {
       'water-beverages',
       items,
       zeroHousehold,
-      [],
       customRecommendedItems,
+      [],
     );
     expect(score).toBe(0);
     expect(Number.isFinite(score)).toBe(true);

@@ -107,8 +107,8 @@ function calculateFoodCategoryStatus(
     categoryId,
     items,
     household,
-    [],
     recommendedItems,
+    [],
   );
 
   const hasEnough =
@@ -240,36 +240,41 @@ function generateCategoryStockAlerts(
     const isWaterCategory =
       category.standardCategoryId === 'water-beverages' ||
       String(category.id) === 'water-beverages';
-    const { percentOfRecommended, hasEnough } = isFood
-      ? calculateFoodCategoryStatus(
-          String(category.id),
-          items,
-          household,
-          recommendedItems,
-        )
-      : isWaterCategory
-        ? (() => {
-            const shortageInfo = calculateCategoryShortages(
-              String(category.id),
-              items,
-              household,
-              [],
-              recommendedItems,
-            );
-            const percent =
-              shortageInfo.totalNeeded > 0
-                ? (shortageInfo.totalActual / shortageInfo.totalNeeded) * 100
-                : 100;
-            return {
-              percentOfRecommended: percent,
-              hasEnough: shortageInfo.totalActual >= shortageInfo.totalNeeded,
-            };
-          })()
-        : calculateNonFoodCategoryStatus(
-            categoryItems,
-            household,
-            recommendedItems,
-          );
+
+    let percentOfRecommended: number;
+    let hasEnough: boolean;
+
+    if (isFood) {
+      const foodStatus = calculateFoodCategoryStatus(
+        String(category.id),
+        items,
+        household,
+        recommendedItems,
+      );
+      percentOfRecommended = foodStatus.percentOfRecommended;
+      hasEnough = foodStatus.hasEnough;
+    } else if (isWaterCategory) {
+      const shortageInfo = calculateCategoryShortages(
+        String(category.id),
+        items,
+        household,
+        recommendedItems,
+        [],
+      );
+      percentOfRecommended =
+        shortageInfo.totalNeeded > 0
+          ? (shortageInfo.totalActual / shortageInfo.totalNeeded) * 100
+          : 100;
+      hasEnough = shortageInfo.totalActual >= shortageInfo.totalNeeded;
+    } else {
+      const nonFoodStatus = calculateNonFoodCategoryStatus(
+        categoryItems,
+        household,
+        recommendedItems,
+      );
+      percentOfRecommended = nonFoodStatus.percentOfRecommended;
+      hasEnough = nonFoodStatus.hasEnough;
+    }
 
     // Don't generate alerts if we have enough (for food: enough calories, for others: enough quantity)
     if (hasEnough) {

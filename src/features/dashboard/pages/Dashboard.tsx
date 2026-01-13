@@ -80,8 +80,8 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         category.id,
         items,
         household,
-        disabledRecommendedItems,
         recommendedItems,
+        disabledRecommendedItems,
         calculationOptions,
       );
       map.set(category.id, score);
@@ -103,8 +103,8 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         items,
         categoryPreparedness,
         household,
-        disabledRecommendedItems,
         recommendedItems,
+        disabledRecommendedItems,
         calculationOptions,
       ),
     [

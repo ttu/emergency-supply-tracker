@@ -102,8 +102,8 @@ export function calculateCategoryShortages(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
-  disabledRecommendedItems: string[] = [],
   recommendedItems: RecommendedItemDefinition[],
+  disabledRecommendedItems: string[] = [],
   options: CategoryCalculationOptions = {},
 ): {
   shortages: CategoryShortage[];
@@ -346,8 +346,8 @@ export function calculateCategoryStatus(
   items: InventoryItem[],
   completionPercentage: number,
   household: HouseholdConfig,
-  disabledRecommendedItems: string[] = [],
   recommendedItems: RecommendedItemDefinition[],
+  disabledRecommendedItems: string[] = [],
   options: CategoryCalculationOptions = {},
 ): CategoryStatusSummary {
   const categoryItems = items.filter((item) => item.categoryId === category.id);
@@ -381,8 +381,8 @@ export function calculateCategoryStatus(
     category.id,
     items,
     household,
-    disabledRecommendedItems,
     recommendedItems,
+    disabledRecommendedItems,
     options,
   );
 
@@ -474,8 +474,8 @@ export function calculateAllCategoryStatuses(
   items: InventoryItem[],
   categoryPreparedness: Map<string, number>,
   household: HouseholdConfig,
-  disabledRecommendedItems: string[] = [],
   recommendedItems: RecommendedItemDefinition[],
+  disabledRecommendedItems: string[] = [],
   options: CategoryCalculationOptions = {},
 ): CategoryStatusSummary[] {
   return categories.map((category) => {
@@ -485,8 +485,8 @@ export function calculateAllCategoryStatuses(
       items,
       completionPercentage,
       household,
-      disabledRecommendedItems,
       recommendedItems,
+      disabledRecommendedItems,
       options,
     );
   });
@@ -519,16 +519,16 @@ export function getCategoryDisplayStatus(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
-  disabledRecommendedItems: string[] = [],
   recommendedItems: RecommendedItemDefinition[],
+  disabledRecommendedItems: string[] = [],
   options: CategoryCalculationOptions = {},
 ): CategoryDisplayStatus {
   const calculatedPercentage = calculateCategoryPreparedness(
     categoryId,
     items,
     household,
-    disabledRecommendedItems,
     recommendedItems,
+    disabledRecommendedItems,
     options,
   );
 
@@ -536,8 +536,8 @@ export function getCategoryDisplayStatus(
     categoryId,
     items,
     household,
-    disabledRecommendedItems,
     recommendedItems,
+    disabledRecommendedItems,
     options,
   );
 
