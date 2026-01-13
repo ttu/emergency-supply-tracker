@@ -504,7 +504,7 @@ describe('calculatePreparednessScore', () => {
       it('should match item with productTemplateId even if name differs', () => {
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
-          name: 'My Custom Battery Radio', // Different name
+          name: 'Sony Portable Emergency Radio', // Realistic product name
           itemType: createProductTemplateId('battery-radio'),
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
@@ -732,13 +732,13 @@ describe('calculatePreparednessScore', () => {
         // Item that could match multiple recommended items should only match by productTemplateId
         const item = createMockInventoryItem({
           id: createItemId('item-1'),
-          name: 'battery-radio', // Name matches one recommended item
+          name: 'Panasonic Portable Radio', // Realistic product name
           itemType: 'custom',
           categoryId: createCategoryId('communication-info'),
           quantity: 1,
           unit: 'pieces',
           recommendedQuantity: 1,
-          productTemplateId: createProductTemplateId('battery-radio'), // productTemplateId matches another
+          productTemplateId: createProductTemplateId('battery-radio'), // productTemplateId enables matching
         });
 
         const customRecommendedItems = [
