@@ -1084,13 +1084,53 @@ describe('CategoryStatusSummary', () => {
       ).toBeInTheDocument();
     });
 
-    it('matches items by normalized name', async () => {
+    it('does NOT match custom items by normalized name to avoid false matches', async () => {
+      const user = userEvent.setup();
+      const shortage = createShortage('candles', 4, 10);
+      const customItem = createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Candles', // Same name as recommended item, but custom type
+        itemType: 'custom', // Custom items should NOT match by name
+        categoryId: createCategoryId('light-power'),
+        quantity: 4,
+        recommendedQuantity: 10,
+        markedAsEnough: false,
+      });
+
+      render(
+        <CategoryStatusSummary
+          categoryId="light-power"
+          status="warning"
+          completionPercentage={40}
+          totalActual={4}
+          totalNeeded={10}
+          primaryUnit="pieces"
+          shortages={[shortage]}
+          onMarkAsEnough={vi.fn()}
+          items={[customItem]}
+        />,
+      );
+
+      // First expand the recommended items (they are hidden by default)
+      const expandButton = screen.getByRole('button', {
+        name: /Show.*recommended/i,
+      });
+      await user.click(expandButton);
+
+      // Custom items should NOT match by name, so "Mark as enough" button should NOT appear
+      expect(
+        screen.queryByRole('button', { name: 'Mark as enough' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('matches items by productTemplateId even if name differs', async () => {
       const user = userEvent.setup();
       const shortage = createShortage('candles', 4, 10);
       const matchingItem = createMockInventoryItem({
         id: createItemId('item-1'),
-        name: 'Candles',
-        itemType: 'custom',
+        name: 'My Custom Candles', // Different name, but has productTemplateId
+        itemType: createProductTemplateId('candles'),
+        productTemplateId: createProductTemplateId('candles'), // This enables matching
         categoryId: createCategoryId('light-power'),
         quantity: 4,
         recommendedQuantity: 10,
@@ -1117,6 +1157,7 @@ describe('CategoryStatusSummary', () => {
       });
       await user.click(expandButton);
 
+      // Items with productTemplateId should match, so "Mark as enough" button should appear
       expect(
         screen.getByRole('button', { name: 'Mark as enough' }),
       ).toBeInTheDocument();

@@ -420,6 +420,400 @@ describe('calculatePreparednessScore', () => {
     expect(score).toBeLessThanOrEqual(100);
     expect(Number.isFinite(score)).toBe(true);
   });
+
+  describe('item matching logic', () => {
+    const household = createMockHousehold({
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 3,
+    });
+
+    describe('custom items should NOT match recommended items by name', () => {
+      it('should NOT match custom item "Battery Radio" with recommended "battery-radio"', () => {
+        // This is the specific bug scenario: custom item with similar name
+        const customItem = createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'Battery Radio',
+          itemType: 'custom', // Custom item
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          unit: 'pieces',
+          recommendedQuantity: 1,
+          // No productTemplateId - this is a custom item
+        });
+
+        // Create a custom recommended items list with battery-radio
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          [customItem],
+          household,
+          customRecommendedItems,
+        );
+
+        // Custom item should NOT match, so score should be 0 (no items matched)
+        expect(score).toBe(0);
+      });
+
+      it('should NOT match custom item with name that exactly matches recommended item ID', () => {
+        // Test exact name match (not normalized)
+        const customItem = createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'battery-radio', // Exact match with recommended item ID
+          itemType: 'custom',
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          unit: 'pieces',
+          recommendedQuantity: 1,
+        });
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          [customItem],
+          household,
+          customRecommendedItems,
+        );
+
+        // Custom item should NOT match even with exact name match
+        expect(score).toBe(0);
+      });
+    });
+
+    describe('items should match by productTemplateId', () => {
+      it('should match item with productTemplateId even if name differs', () => {
+        const item = createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'Sony Portable Emergency Radio', // Realistic product name
+          itemType: createProductTemplateId('battery-radio'),
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          unit: 'pieces',
+          recommendedQuantity: 1,
+          productTemplateId: createProductTemplateId('battery-radio'), // This enables matching
+        });
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          [item],
+          household,
+          customRecommendedItems,
+        );
+
+        // Should match by productTemplateId and contribute to score
+        expect(score).toBeGreaterThan(0);
+        expect(score).toBeLessThanOrEqual(100);
+      });
+
+      it('should match multiple items with same productTemplateId and sum quantities', () => {
+        const items = [
+          createMockInventoryItem({
+            id: createItemId('item-1'),
+            name: 'Radio 1',
+            categoryId: createCategoryId('communication-info'),
+            quantity: 1,
+            productTemplateId: createProductTemplateId('battery-radio'),
+          }),
+          createMockInventoryItem({
+            id: createItemId('item-2'),
+            name: 'Radio 2',
+            categoryId: createCategoryId('communication-info'),
+            quantity: 1,
+            productTemplateId: createProductTemplateId('battery-radio'),
+          }),
+        ];
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          items,
+          household,
+          customRecommendedItems,
+        );
+
+        // With 2 items of quantity 1 each, we have 2 total, but need 1 (recommended)
+        // Score should be 100% (capped) since we have more than needed
+        expect(score).toBe(100);
+      });
+
+      it('should calculate partial score when quantity is less than recommended', () => {
+        const item = createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'My Radio',
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1, // Has 1, needs 2
+          productTemplateId: createProductTemplateId('battery-radio'),
+        });
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 2, // Needs 2
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          [item],
+          household,
+          customRecommendedItems,
+        );
+
+        // Should have partial score: 1/2 = 50%
+        expect(score).toBe(50);
+      });
+    });
+
+    describe('items should NOT match by name (only productTemplateId or itemType)', () => {
+      it('should NOT match item by name even if name equals recommended item ID', () => {
+        // Items should only match via productTemplateId or itemType, not by name
+        const item = createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'battery-radio', // Name matches, but no productTemplateId or matching itemType
+          itemType: createProductTemplateId('some-other-type'), // Not matching
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          unit: 'pieces',
+          recommendedQuantity: 1,
+          // No productTemplateId
+        });
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          [item],
+          household,
+          customRecommendedItems,
+        );
+
+        // Should NOT match because we don't match by name
+        expect(score).toBe(0);
+      });
+
+      it('should NOT match item by normalized name even if name normalizes to recommended item ID', () => {
+        // Items should only match via productTemplateId or itemType, not by name
+        const item = createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'Battery Radio', // Would normalize to 'battery-radio', but we don't match by name
+          itemType: createProductTemplateId('some-type'), // Not matching
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          unit: 'pieces',
+          recommendedQuantity: 1,
+          // No productTemplateId
+        });
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          [item],
+          household,
+          customRecommendedItems,
+        );
+
+        // Should NOT match because we don't match by name
+        expect(score).toBe(0);
+      });
+    });
+
+    describe('matching priority and edge cases', () => {
+      it('should prioritize productTemplateId over name matching', () => {
+        // Item with productTemplateId for one item but name matching another
+        const item = createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'battery-radio', // Name would match 'battery-radio'
+          itemType: 'custom',
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          unit: 'pieces',
+          recommendedQuantity: 1,
+          productTemplateId: createProductTemplateId('hand-crank-radio'), // But productTemplateId matches different item
+        });
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          {
+            id: createProductTemplateId('hand-crank-radio'),
+            i18nKey: 'products.hand-crank-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          [item],
+          household,
+          customRecommendedItems,
+        );
+
+        // Should match hand-crank-radio by productTemplateId (not battery-radio by name)
+        // Since custom items don't match by name, only hand-crank-radio should match
+        // Score should be 50% (1 item matched out of 2)
+        expect(score).toBe(50);
+      });
+
+      it('should handle items that match multiple recommended items correctly', () => {
+        // Item that could match multiple recommended items should only match by productTemplateId
+        const item = createMockInventoryItem({
+          id: createItemId('item-1'),
+          name: 'Panasonic Portable Radio', // Realistic product name
+          itemType: 'custom',
+          categoryId: createCategoryId('communication-info'),
+          quantity: 1,
+          unit: 'pieces',
+          recommendedQuantity: 1,
+          productTemplateId: createProductTemplateId('battery-radio'), // productTemplateId enables matching
+        });
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          [item],
+          household,
+          customRecommendedItems,
+        );
+
+        // Should match by productTemplateId (not by name since it's custom)
+        expect(score).toBe(100);
+      });
+
+      it('should calculate score correctly with mix of matching and non-matching items', () => {
+        const items = [
+          createMockInventoryItem({
+            id: createItemId('item-1'),
+            name: 'Radio 1',
+            categoryId: createCategoryId('communication-info'),
+            quantity: 1,
+            productTemplateId: createProductTemplateId('battery-radio'), // Matches
+          }),
+          createMockInventoryItem({
+            id: createItemId('item-2'),
+            name: 'Battery Radio', // Custom item, won't match
+            itemType: 'custom',
+            categoryId: createCategoryId('communication-info'),
+            quantity: 1,
+            // No productTemplateId
+          }),
+        ];
+
+        const customRecommendedItems = [
+          {
+            id: createProductTemplateId('battery-radio'),
+            i18nKey: 'products.battery-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          {
+            id: createProductTemplateId('hand-crank-radio'),
+            i18nKey: 'products.hand-crank-radio',
+            category: 'communication-info' as const,
+            baseQuantity: 1,
+            unit: 'pieces' as const,
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+        ];
+
+        const score = calculatePreparednessScore(
+          items,
+          household,
+          customRecommendedItems,
+        );
+
+        // Only battery-radio should match (1 out of 2 items)
+        expect(score).toBe(50);
+      });
+    });
+  });
 });
 
 describe('calculateCategoryPreparedness', () => {
