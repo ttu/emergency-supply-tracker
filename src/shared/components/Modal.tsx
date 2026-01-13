@@ -84,11 +84,11 @@ export function Modal({
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay} onMouseDown={onClose}>
       <div
         ref={modalRef}
         className={`${styles.modal} ${styles[size]}`}
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
