@@ -29,7 +29,6 @@ export interface ItemFormProps {
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
   ) => void;
   onCancel: () => void;
-  defaultRecommendedQuantity?: number;
   defaultCategoryId?: string;
   templateWeightGramsPerUnit?: number;
   templateCaloriesPer100g?: number;
@@ -42,7 +41,6 @@ interface FormData {
   categoryId: string;
   quantity: string;
   unit: string;
-  recommendedQuantity: number;
   neverExpires: boolean;
   expirationDate: string;
   purchaseDate: string;
@@ -67,7 +65,6 @@ export const ItemForm = ({
   categories,
   onSubmit,
   onCancel,
-  defaultRecommendedQuantity = 1,
   defaultCategoryId,
   templateWeightGramsPerUnit,
   templateCaloriesPer100g,
@@ -111,8 +108,6 @@ export const ItemForm = ({
     categoryId: item?.categoryId || defaultCategoryId || '',
     quantity: item?.quantity?.toString() || '',
     unit: item?.unit || 'pieces',
-    recommendedQuantity:
-      item?.recommendedQuantity ?? defaultRecommendedQuantity,
     neverExpires: item?.neverExpires ?? false,
     expirationDate: item?.expirationDate || '',
     purchaseDate: item?.purchaseDate || '',
@@ -174,7 +169,6 @@ export const ItemForm = ({
       categoryId: createCategoryId(formData.categoryId),
       quantity: parseFloat(formData.quantity),
       unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
-      recommendedQuantity: formData.recommendedQuantity,
       neverExpires: formData.neverExpires,
       expirationDate: (() => {
         if (formData.neverExpires) {

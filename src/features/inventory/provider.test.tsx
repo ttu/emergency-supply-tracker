@@ -88,7 +88,7 @@ function TestComponent({
             categoryId: createCategoryId('food'),
             quantity: 5,
             unit: 'pieces',
-            recommendedQuantity: 10,
+
             neverExpires: true,
           })
         }

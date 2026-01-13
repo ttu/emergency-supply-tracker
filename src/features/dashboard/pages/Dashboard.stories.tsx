@@ -53,7 +53,7 @@ export const WithItems: Story = {
           categoryId: createCategoryId('water-beverages'),
           quantity: 20,
           unit: 'liters',
-          recommendedQuantity: 28,
+
           neverExpires: false,
           expirationDate: createDateOnly('2026-12-31'),
           location: 'Pantry',
@@ -64,7 +64,7 @@ export const WithItems: Story = {
           categoryId: createCategoryId('food'),
           quantity: 15,
           unit: 'cans',
-          recommendedQuantity: 20,
+
           neverExpires: false,
           expirationDate: createDateOnly('2026-06-30'),
           location: 'Pantry',
@@ -75,7 +75,7 @@ export const WithItems: Story = {
           categoryId: createCategoryId('medical-health'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
+
           neverExpires: true,
           location: 'Closet',
         }),
@@ -105,7 +105,7 @@ export const WithAlerts: Story = {
           categoryId: createCategoryId('water-beverages'),
           quantity: 10,
           unit: 'liters',
-          recommendedQuantity: 28,
+
           neverExpires: false,
           expirationDate: createDateOnly('2024-01-01'),
           purchaseDate: createDateOnly('2023-12-15'),
@@ -117,7 +117,7 @@ export const WithAlerts: Story = {
           categoryId: createCategoryId('food'),
           quantity: 2,
           unit: 'cans',
-          recommendedQuantity: 20,
+
           neverExpires: false,
           expirationDate: createDateOnly('2026-12-31'),
           purchaseDate: createDateOnly('2024-11-01'),
@@ -129,7 +129,7 @@ export const WithAlerts: Story = {
           categoryId: createCategoryId('medical-health'),
           quantity: 5,
           unit: 'pieces',
-          recommendedQuantity: 10,
+
           neverExpires: false,
           expirationDate: createDateOnly(
             new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
@@ -169,7 +169,7 @@ export const WellPrepared: Story = {
           categoryId: createCategoryId('water-beverages'),
           quantity: 30,
           unit: 'liters',
-          recommendedQuantity: 28,
+
           neverExpires: false,
           expirationDate: createDateOnly('2026-12-31'),
           location: 'Pantry',
@@ -180,7 +180,7 @@ export const WellPrepared: Story = {
           categoryId: createCategoryId('food'),
           quantity: 25,
           unit: 'cans',
-          recommendedQuantity: 20,
+
           neverExpires: false,
           expirationDate: createDateOnly('2026-12-31'),
           location: 'Pantry',
@@ -191,7 +191,7 @@ export const WellPrepared: Story = {
           categoryId: createCategoryId('light-power'),
           quantity: 2,
           unit: 'pieces',
-          recommendedQuantity: 2,
+
           neverExpires: true,
           location: 'Utility Closet',
         }),
@@ -201,7 +201,7 @@ export const WellPrepared: Story = {
           categoryId: createCategoryId('medical-health'),
           quantity: 1,
           unit: 'pieces',
-          recommendedQuantity: 1,
+
           neverExpires: true,
           location: 'Bathroom',
         }),

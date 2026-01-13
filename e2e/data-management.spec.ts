@@ -114,16 +114,18 @@ test.describe('Data Management', () => {
 
   test('should export shopping list', async ({ page }) => {
     // Add item that needs restocking (quantity 0 = definitely needs restocking)
+    // Use a recommended item template so it matches a recommended item definition
     await page.getByTestId('nav-inventory').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    // Search for rice (a recommended food item)
+    await page.fill('input[placeholder*="Search"]', 'rice');
+    await page.waitForTimeout(300); // Wait for search results
+    // Click on the rice template
+    await page.getByText(/rice/i).first().click();
     await expect(page.getByTestId('item-form')).toBeVisible();
-    await page.fill('input[name="name"]', 'Out of Stock Item');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '0'); // Zero quantity needs restocking
-    await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    // Set quantity to 0 so it needs restocking
+    await page.fill('input[name="quantity"]', '0');
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Settings

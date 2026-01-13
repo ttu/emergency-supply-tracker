@@ -6,11 +6,18 @@ import {
   getDaysUntilExpiration,
 } from '@/shared/utils/calculations/itemStatus';
 import { getWaterRequirementPerUnit } from '@/shared/utils/calculations/water';
-import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
+import {
+  EXPIRING_SOON_DAYS_THRESHOLD,
+  CHILDREN_REQUIREMENT_MULTIPLIER,
+} from '@/shared/utils/constants';
 import {
   calculateMissingQuantity,
   calculateTotalMissingQuantity,
 } from '../utils/status';
+import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
+import { useHousehold } from '@/features/household';
+import { useRecommendedItems } from '@/features/templates';
+import { useSettings } from '@/features/settings';
 import styles from './ItemCard.module.css';
 
 export interface ItemCardProps {
@@ -21,6 +28,9 @@ export interface ItemCardProps {
 
 export const ItemCard = ({ item, allItems, onClick }: ItemCardProps) => {
   const { t } = useTranslation(['common', 'units', 'products']);
+  const { household } = useHousehold();
+  const { recommendedItems } = useRecommendedItems();
+  const { settings } = useSettings();
 
   const formatExpirationDate = (dateString?: string): string => {
     if (!dateString) return '';
@@ -33,11 +43,22 @@ export const ItemCard = ({ item, allItems, onClick }: ItemCardProps) => {
     item.expirationDate,
     item.neverExpires,
   );
+
+  // Calculate recommended quantity for this item
+  const recommendedQuantity = getRecommendedQuantityForItem(
+    item,
+    household,
+    recommendedItems,
+    settings.childrenRequirementPercentage
+      ? settings.childrenRequirementPercentage / 100
+      : CHILDREN_REQUIREMENT_MULTIPLIER,
+  );
+
   // If allItems is provided, calculate total missing across all items of same type
   // Otherwise, calculate missing for this individual item
   const missingQuantity = allItems
-    ? calculateTotalMissingQuantity(item, allItems)
-    : calculateMissingQuantity(item);
+    ? calculateTotalMissingQuantity(item, allItems, recommendedQuantity)
+    : calculateMissingQuantity(item, recommendedQuantity);
 
   return (
     <div

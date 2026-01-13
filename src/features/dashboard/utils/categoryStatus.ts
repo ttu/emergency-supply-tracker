@@ -7,12 +7,10 @@ import type {
   RecommendedItemDefinition,
 } from '@/shared/types';
 import { isFoodCategory, isFoodRecommendedItem } from '@/shared/types';
-import {
-  calculateItemStatus,
-  getStatusFromPercentage,
-} from '@/shared/utils/calculations/itemStatus';
+import { getStatusFromPercentage } from '@/shared/utils/calculations/itemStatus';
+import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
+import { calculateItemStatus } from '@/features/inventory/utils/status';
 import { calculateTotalWaterRequired } from '@/shared/utils/calculations/water';
-import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from './preparedness';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
@@ -78,11 +76,19 @@ function hasEnoughInventory(
     totalNeededCalories?: number;
   },
 ): boolean {
+  // If nothing is needed, we can't determine if we have enough
+  // This happens when there are no recommended items for the category
+  // In this case, return false (not enough) to show critical status
+  if (shortageInfo.totalNeeded === 0) {
+    return false;
+  }
+
   if (isFoodCategory(categoryId)) {
-    return (
-      (shortageInfo.totalActualCalories ?? 0) >=
-      (shortageInfo.totalNeededCalories ?? 0)
-    );
+    const neededCalories = shortageInfo.totalNeededCalories ?? 0;
+    if (neededCalories === 0) {
+      return false;
+    }
+    return (shortageInfo.totalActualCalories ?? 0) >= neededCalories;
   }
   return shortageInfo.totalActual >= shortageInfo.totalNeeded;
 }
@@ -96,8 +102,8 @@ export function calculateCategoryShortages(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
   disabledRecommendedItems: string[] = [],
-  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   options: CategoryCalculationOptions = {},
 ): {
   shortages: CategoryShortage[];
@@ -339,9 +345,9 @@ export function calculateCategoryStatus(
   category: Category,
   items: InventoryItem[],
   completionPercentage: number,
-  household?: HouseholdConfig,
+  household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
   disabledRecommendedItems: string[] = [],
-  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   options: CategoryCalculationOptions = {},
 ): CategoryStatusSummary {
   const categoryItems = items.filter((item) => item.categoryId === category.id);
@@ -352,34 +358,42 @@ export function calculateCategoryStatus(
   let okCount = 0;
 
   categoryItems.forEach((item) => {
-    const status = calculateItemStatus(item);
+    // Calculate recommended quantity for status determination
+    const recommendedQuantity = getRecommendedQuantityForItem(
+      item,
+      household,
+      recommendedItems,
+      options.childrenMultiplier,
+    );
+    const status =
+      recommendedQuantity > 0
+        ? calculateItemStatus(item, recommendedQuantity)
+        : item.quantity === 0
+          ? 'critical'
+          : 'ok';
     if (status === 'critical') criticalCount++;
     else if (status === 'warning') warningCount++;
     else okCount++;
   });
 
-  // Calculate shortages if household config is provided
-  const shortageInfo = household
-    ? calculateCategoryShortages(
-        category.id,
-        items,
-        household,
-        disabledRecommendedItems,
-        recommendedItems,
-        options,
-      )
-    : { shortages: [], totalActual: 0, totalNeeded: 0, primaryUnit: undefined };
+  // Calculate shortages
+  const shortageInfo = calculateCategoryShortages(
+    category.id,
+    items,
+    household,
+    recommendedItems,
+    disabledRecommendedItems,
+    options,
+  );
 
   // Check if inventory meets the minimum requirements
-  const hasEnough = household && hasEnoughInventory(category.id, shortageInfo);
+  const hasEnough = hasEnoughInventory(category.id, shortageInfo);
 
   // For food category, calculate percentage based on calories instead of quantity
-  // (if household is provided and we have calorie data)
   // This should be checked first, before mixed units, as food is a special case
   const isFood = isFoodCategory(category.id);
   let effectivePercentage = completionPercentage;
   if (
-    household &&
     isFood &&
     shortageInfo.totalNeededCalories &&
     shortageInfo.totalNeededCalories > 0
@@ -396,12 +410,7 @@ export function calculateCategoryStatus(
   // to ensure consistency with the item count display (same logic as getCategoryDisplayStatus)
   // Check if this is a mixed units category (primaryUnit is undefined) and we have items to track
   // Skip this check for food category, as food uses calorie-based calculation
-  if (
-    household &&
-    !isFood &&
-    !shortageInfo.primaryUnit &&
-    shortageInfo.totalNeeded > 0
-  ) {
+  if (!isFood && !shortageInfo.primaryUnit && shortageInfo.totalNeeded > 0) {
     // Use weighted fulfillment ratio to calculate percentage
     // This ensures the progress bar matches the "X / Y items" display
     // totalActual is the weighted fulfillment sum, totalNeeded is the number of item types
@@ -464,9 +473,9 @@ export function calculateAllCategoryStatuses(
   categories: Category[],
   items: InventoryItem[],
   categoryPreparedness: Map<string, number>,
-  household?: HouseholdConfig,
+  household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
   disabledRecommendedItems: string[] = [],
-  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   options: CategoryCalculationOptions = {},
 ): CategoryStatusSummary[] {
   return categories.map((category) => {
@@ -476,8 +485,8 @@ export function calculateAllCategoryStatuses(
       items,
       completionPercentage,
       household,
-      disabledRecommendedItems,
       recommendedItems,
+      disabledRecommendedItems,
       options,
     );
   });
@@ -510,16 +519,16 @@ export function getCategoryDisplayStatus(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
   disabledRecommendedItems: string[] = [],
-  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   options: CategoryCalculationOptions = {},
 ): CategoryDisplayStatus {
   const calculatedPercentage = calculateCategoryPreparedness(
     categoryId,
     items,
     household,
-    disabledRecommendedItems,
     recommendedItems,
+    disabledRecommendedItems,
     options,
   );
 
@@ -527,8 +536,8 @@ export function getCategoryDisplayStatus(
     categoryId,
     items,
     household,
-    disabledRecommendedItems,
     recommendedItems,
+    disabledRecommendedItems,
     options,
   );
 

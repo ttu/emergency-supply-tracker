@@ -12,7 +12,6 @@ import {
   createProductTemplateId,
   createDateOnly,
 } from '@/shared/types';
-import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { isTemplateId } from '@/shared/utils/storage/localStorage';
 import { isValidUnit } from '@/shared/utils/validation/unitValidation';
@@ -57,7 +56,6 @@ export interface CreateFromFormInput {
   categoryId: string;
   quantity: number;
   unit: Unit;
-  recommendedQuantity: number;
   neverExpires: boolean;
   expirationDate?: DateOnly;
   purchaseDate?: DateOnly;
@@ -124,13 +122,8 @@ function validateItemInput(input: CreateItemInput): void {
     throw new InventoryItemValidationError('unit is required');
   }
 
-  if (input.recommendedQuantity === undefined) {
-    throw new InventoryItemValidationError('recommendedQuantity is required');
-  }
-
   // Numeric constraints
   validateNonNegative(input.quantity, 'quantity');
-  validateNonNegative(input.recommendedQuantity, 'recommendedQuantity');
   validateNonNegative(input.weightGrams, 'weightGrams');
   validateNonNegative(input.caloriesPerUnit, 'caloriesPerUnit');
   validateNonNegative(input.requiresWaterLiters, 'requiresWaterLiters');
@@ -215,26 +208,19 @@ export class InventoryItemFactory {
 
   /**
    * Creates an InventoryItem from a RecommendedItemDefinition template.
-   * Calculates recommended quantity based on household configuration.
+   * Recommended quantity is calculated dynamically at runtime, not stored.
    *
    * @param template - Recommended item definition
-   * @param household - Household configuration for quantity calculation
+   * @param _household - Household configuration (kept for API compatibility, not currently used)
    * @param options - Optional overrides (name, quantity, expirationDate, childrenMultiplier)
    * @returns InventoryItem created from template
    * @throws InventoryItemValidationError if validation fails
    */
   static createFromTemplate(
     template: RecommendedItemDefinition,
-    household: HouseholdConfig,
+    _household: HouseholdConfig,
     options: CreateFromTemplateOptions = {},
   ): InventoryItem {
-    // Calculate recommended quantity
-    const recommendedQuantity = calculateRecommendedQuantity(
-      template,
-      household,
-      options.childrenMultiplier,
-    );
-
     // Calculate expiration date if applicable
     const expirationDate =
       options.expirationDate ??
@@ -249,7 +235,6 @@ export class InventoryItemFactory {
       categoryId: createCategoryId(template.category),
       quantity: options.quantity ?? 0,
       unit: template.unit,
-      recommendedQuantity,
       expirationDate,
       neverExpires: !template.defaultExpirationMonths,
       productTemplateId: template.id,
@@ -264,6 +249,7 @@ export class InventoryItemFactory {
   /**
    * Creates an InventoryItem from form submission data.
    * Validates and converts form data to InventoryItem.
+   * Recommended quantity is calculated dynamically at runtime, not stored.
    *
    * @param formData - Form input data
    * @returns InventoryItem created from form data
@@ -281,7 +267,6 @@ export class InventoryItemFactory {
       categoryId: createCategoryId(formData.categoryId),
       quantity: formData.quantity,
       unit: formData.unit,
-      recommendedQuantity: formData.recommendedQuantity,
       neverExpires: formData.neverExpires,
       expirationDate: (() => {
         if (formData.neverExpires) {

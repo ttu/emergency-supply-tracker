@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHousehold } from '@/features/household';
-import { calculateHouseholdMultiplier } from '@/shared/utils/calculations/recommendedQuantity';
 import {
   useInventory,
   CategoryNav,
@@ -11,6 +10,7 @@ import {
   CategoryStatusSummary,
 } from '@/features/inventory';
 import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
+import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import { useSettings } from '@/features/settings';
 import { useRecommendedItems, TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
@@ -101,8 +101,8 @@ export function Inventory({
       selectedCategoryId,
       items,
       household,
-      disabledRecommendedItems,
       recommendedItems,
+      disabledRecommendedItems,
       calculationOptions,
     );
   }, [
@@ -134,7 +134,15 @@ export function Inventory({
   // Filter by status
   if (statusFilter !== 'all') {
     filteredItems = filteredItems.filter((item) => {
-      const status = calculateItemStatus(item);
+      const recommendedQuantity = getRecommendedQuantityForItem(
+        item,
+        household,
+        recommendedItems,
+        settings.childrenRequirementPercentage
+          ? settings.childrenRequirementPercentage / 100
+          : undefined,
+      );
+      const status = calculateItemStatus(item, recommendedQuantity);
       return status === statusFilter;
     });
   }
@@ -259,11 +267,6 @@ export function Inventory({
     setSelectedTemplate(undefined);
   };
 
-  // Calculate default recommended quantity for manual entries
-  const getDefaultRecommendedQuantity = (): number => {
-    return Math.ceil(calculateHouseholdMultiplier(household));
-  };
-
   // Handler for adding a recommended item to inventory from status summary
   const handleAddRecommendedToInventory = useCallback(
     (itemId: string) => {
@@ -370,7 +373,6 @@ export function Inventory({
             categories={STANDARD_CATEGORIES}
             onSubmit={editingItem?.id ? handleUpdateItem : handleAddItem}
             onCancel={handleCancelForm}
-            defaultRecommendedQuantity={getDefaultRecommendedQuantity()}
             defaultCategoryId={selectedCategoryId}
             templateWeightGramsPerUnit={selectedTemplate?.weightGramsPerUnit}
             templateCaloriesPer100g={selectedTemplate?.caloriesPer100g}

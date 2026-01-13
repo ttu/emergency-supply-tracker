@@ -166,7 +166,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
-          recommendedQuantity: randomQuantityFloat(),
+          itemType: createProductTemplateId('pasta'),
           productTemplateId: createProductTemplateId('pasta'), // 1 L/kg
         }),
         createMockInventoryItem({
@@ -175,7 +175,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('food'),
           quantity: riceQuantity,
           unit: 'kilograms',
-          recommendedQuantity: randomQuantityFloat(),
+          itemType: createProductTemplateId('pasta'),
           productTemplateId: createProductTemplateId('rice'), // 1.5 L/kg
         }),
       ];
@@ -269,7 +269,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('food'), // Wrong category
           quantity: 10,
           unit: 'liters',
-          recommendedQuantity: 9,
+
           productTemplateId: createProductTemplateId('bottled-water'),
         }),
       ];
@@ -284,7 +284,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('water-beverages'),
           quantity: 10,
           unit: 'bottles', // Not liters
-          recommendedQuantity: 9,
+
           productTemplateId: createProductTemplateId('bottled-water'),
         }),
       ];
@@ -319,7 +319,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('water-beverages'),
           quantity: waterQuantity,
           unit: 'liters',
-          recommendedQuantity: randomQuantitySmall(),
+          itemType: createProductTemplateId('bottled-water'),
           productTemplateId: createProductTemplateId('bottled-water'),
         }),
         createMockInventoryItem({
@@ -328,7 +328,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
-          recommendedQuantity: randomQuantityFloat(),
+          itemType: createProductTemplateId('pasta'),
           productTemplateId: createProductTemplateId('pasta'), // 1 L/kg
         }),
       ];
@@ -360,7 +360,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('water-beverages'),
           quantity: waterQuantity,
           unit: 'liters',
-          recommendedQuantity: randomQuantitySmall(),
+          itemType: createProductTemplateId('bottled-water'),
           productTemplateId: createProductTemplateId('bottled-water'),
         }),
         createMockInventoryItem({
@@ -369,7 +369,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
-          recommendedQuantity: randomQuantityFloat(),
+          itemType: createProductTemplateId('pasta'),
           productTemplateId: createProductTemplateId('pasta'), // 1 L/kg
         }),
       ];
@@ -392,7 +392,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('food'),
           quantity: pastaQuantity,
           unit: 'kilograms',
-          recommendedQuantity: randomQuantityFloat(),
+          itemType: createProductTemplateId('pasta'),
           productTemplateId: createProductTemplateId('pasta'),
         }),
         createMockInventoryItem({
@@ -401,7 +401,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('food'),
           quantity: riceQuantity,
           unit: 'kilograms',
-          recommendedQuantity: randomQuantityFloat(),
+          itemType: createProductTemplateId('pasta'),
           productTemplateId: createProductTemplateId('rice'),
         }),
       ];
