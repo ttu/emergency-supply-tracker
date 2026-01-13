@@ -313,6 +313,7 @@
     "showRecommended": "Show {{count}} recommended items",
     "shortageFormat": "{{item}} – {{count}} {{unit}}",
     "shortageFormatMissing": "{{item}} – {{count}} {{unit}} missing",
+    "quantityMissing": "{{count}} {{unit}} missing",
     "expired": "Expired",
     "expiresIn": "Expires in {{days}} days",
     "searchPlaceholder": "Search items...",
