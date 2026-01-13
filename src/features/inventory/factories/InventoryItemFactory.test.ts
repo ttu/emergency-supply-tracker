@@ -80,14 +80,12 @@ describe('InventoryItemFactory', () => {
         ...validInput,
         location: '  Pantry  ',
         notes: '  Test notes  ',
-        productTemplateId: createProductTemplateId('template-1'),
         weightGrams,
         caloriesPerUnit,
       });
 
       expect(item.location).toBe('Pantry');
       expect(item.notes).toBe('Test notes');
-      expect(item.productTemplateId).toBeDefined();
       expect(item.weightGrams).toBe(weightGrams);
       expect(item.caloriesPerUnit).toBe(caloriesPerUnit);
     });
@@ -335,7 +333,7 @@ describe('InventoryItemFactory', () => {
       expect(item.quantity).toBe(0); // Default
       expect(item.unit).toBe('liters');
       // recommendedQuantity is no longer stored, calculated dynamically at runtime
-      expect(item.productTemplateId).toBe(template.id);
+      // itemType is set to template.id when created from template
       expect(item.neverExpires).toBe(true); // No defaultExpirationMonths
       expect(item.expirationDate).toBeUndefined();
     });
@@ -467,7 +465,8 @@ describe('InventoryItemFactory', () => {
       const item = InventoryItemFactory.createFromTemplate(template, household);
 
       // recommendedQuantity is no longer stored, calculated dynamically
-      expect(item.productTemplateId).toBe(template.id);
+      // itemType is set to template.id when created from template
+      expect(item.itemType).toBe(template.id);
     });
 
     it('uses custom childrenMultiplier option (stored for future use)', () => {
@@ -491,7 +490,8 @@ describe('InventoryItemFactory', () => {
 
       // recommendedQuantity is no longer stored, calculated dynamically
       // childrenMultiplier option is kept for API compatibility
-      expect(item.productTemplateId).toBe(template.id);
+      // itemType is set to template.id when created from template
+      expect(item.itemType).toBe(template.id);
     });
   });
 
@@ -693,24 +693,20 @@ describe('InventoryItemFactory', () => {
       }).toThrow('expirationDate is required when neverExpires is false');
     });
 
-    it('converts productTemplateId string to ProductTemplateId', () => {
+    it('uses itemType from form data', () => {
       const quantity = randomQuantitySmall();
       const formData: CreateFromFormInput = {
         name: 'Test Item',
-        itemType: 'test-item',
+        itemType: 'template-1',
         categoryId: 'food',
         quantity,
         unit: 'pieces',
         neverExpires: true,
-        productTemplateId: 'template-1',
       };
 
       const item = InventoryItemFactory.createFromFormData(formData);
 
-      expect(item.productTemplateId).toBeDefined();
-      expect(item.productTemplateId).toBe(
-        createProductTemplateId('template-1'),
-      );
+      expect(item.itemType).toBe('template-1');
     });
   });
 

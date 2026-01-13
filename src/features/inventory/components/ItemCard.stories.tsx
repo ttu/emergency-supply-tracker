@@ -47,7 +47,6 @@ const baseItem = createMockInventoryItem({
   categoryId: createCategoryId('water-beverages'),
   quantity: 20,
   unit: 'liters',
-  productTemplateId: createProductTemplateId('bottled-water'),
   neverExpires: false,
   expirationDate: futureDate,
   location: 'Pantry',

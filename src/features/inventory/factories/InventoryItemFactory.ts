@@ -61,7 +61,6 @@ export interface CreateFromFormInput {
   purchaseDate?: DateOnly;
   location?: string;
   notes?: string;
-  productTemplateId?: string;
   weightGrams?: number;
   caloriesPerUnit?: number;
   requiresWaterLiters?: number;
@@ -202,7 +201,6 @@ export class InventoryItemFactory {
       // Ensure optional fields are undefined if not provided
       location: input.location?.trim() || undefined,
       notes: input.notes?.trim() || undefined,
-      productTemplateId: input.productTemplateId || undefined,
     };
   }
 
@@ -237,7 +235,6 @@ export class InventoryItemFactory {
       unit: template.unit,
       expirationDate,
       neverExpires: !template.defaultExpirationMonths,
-      productTemplateId: template.id,
       weightGrams: template.weightGramsPerUnit,
       caloriesPerUnit: template.caloriesPerUnit,
       requiresWaterLiters: template.requiresWaterLiters,
@@ -283,9 +280,6 @@ export class InventoryItemFactory {
           : undefined,
       location: formData.location,
       notes: formData.notes,
-      productTemplateId: formData.productTemplateId
-        ? createProductTemplateId(formData.productTemplateId)
-        : undefined,
       weightGrams: formData.weightGrams,
       caloriesPerUnit: formData.caloriesPerUnit,
       requiresWaterLiters: formData.requiresWaterLiters,

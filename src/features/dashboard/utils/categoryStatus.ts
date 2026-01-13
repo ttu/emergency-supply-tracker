@@ -202,15 +202,13 @@ export function calculateCategoryShortages(
 
     recommendedQty = Math.ceil(recommendedQty);
 
-    // Match items by: productTemplateId, itemType (direct ID match), or name (normalized)
+    // Match items by: itemType (direct ID match), or name (normalized)
     // Note: Custom items (itemType === 'custom') should NOT match by name to avoid
     // false matches with recommended items
     const recItemId = recItem.id;
     const recItemIdNormalized = recItemId.toLowerCase();
     const matchingItems = categoryItems.filter((item) => {
-      // Direct template ID match
-      if (item.productTemplateId === recItemId) return true;
-      // itemType is now stored as template ID directly
+      // itemType is stored as template ID directly
       if (item.itemType === recItemId) return true;
       // Match name by normalizing to kebab-case (for manually created items)
       // BUT exclude custom items to avoid false matches

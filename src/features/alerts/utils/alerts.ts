@@ -20,15 +20,15 @@ import { ALERT_PRIORITY } from '../types';
 
 /**
  * Get the translated item name for an inventory item.
- * For built-in products, translates using itemType/productTemplateId.
+ * For built-in products, translates using itemType.
  * For custom items, returns the stored name as-is.
  */
 function getTranslatedItemName(
   item: InventoryItem,
   t: TranslationFunction,
 ): string {
-  // Try productTemplateId first (most reliable)
-  const templateId = item.productTemplateId || item.itemType;
+  // Use itemType for template ID
+  const templateId = item.itemType;
 
   // If we have a valid template ID (not custom), translate it
   if (templateId && templateId !== CUSTOM_ITEM_TYPE) {
