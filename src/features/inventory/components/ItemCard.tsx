@@ -7,14 +7,19 @@ import {
 } from '@/shared/utils/calculations/itemStatus';
 import { getWaterRequirementPerUnit } from '@/shared/utils/calculations/water';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
+import {
+  calculateMissingQuantity,
+  calculateTotalMissingQuantity,
+} from '../utils/status';
 import styles from './ItemCard.module.css';
 
 export interface ItemCardProps {
   item: InventoryItem;
+  allItems?: InventoryItem[]; // Optional: if provided, calculates total missing across all items of same type
   onClick?: () => void;
 }
 
-export const ItemCard = ({ item, onClick }: ItemCardProps) => {
+export const ItemCard = ({ item, allItems, onClick }: ItemCardProps) => {
   const { t } = useTranslation(['common', 'units', 'products']);
 
   const formatExpirationDate = (dateString?: string): string => {
@@ -28,6 +33,11 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
     item.expirationDate,
     item.neverExpires,
   );
+  // If allItems is provided, calculate total missing across all items of same type
+  // Otherwise, calculate missing for this individual item
+  const missingQuantity = allItems
+    ? calculateTotalMissingQuantity(item, allItems)
+    : calculateMissingQuantity(item);
 
   return (
     <div
@@ -55,6 +65,16 @@ export const ItemCard = ({ item, onClick }: ItemCardProps) => {
           <span className={styles.current}>{item.quantity}</span>
           <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
         </div>
+
+        {missingQuantity > 0 && (
+          <div className={styles.missingQuantity}>
+            ⚠️{' '}
+            {t('inventory.quantityMissing', {
+              count: missingQuantity,
+              unit: t(item.unit, { ns: 'units' }),
+            })}
+          </div>
+        )}
 
         {!item.neverExpires && item.expirationDate && (
           <div className={styles.expiration}>
