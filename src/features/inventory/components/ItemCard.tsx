@@ -93,6 +93,7 @@ export const ItemCard = ({ item, allItems, onClick }: ItemCardProps) => {
             {t('inventory.quantityMissing', {
               count: missingQuantity,
               unit: t(item.unit, { ns: 'units' }),
+              ns: 'common',
             })}
           </div>
         )}

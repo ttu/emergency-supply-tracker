@@ -7,9 +7,8 @@ import {
   MAX_ITEM_SCORE,
   DEFAULT_FULL_PREPAREDNESS,
   DEFAULT_EMPTY_PREPAREDNESS,
-  ADULT_REQUIREMENT_MULTIPLIER,
-  CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
+import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
 import type {
   CategoryCalculationOptions,
   CategoryStatusSummary,
@@ -117,7 +116,10 @@ export function calculatePreparednessScore(
 }
 
 /**
- * Calculate preparedness for a specific category
+ * Calculate preparedness for a specific category.
+ * Uses the unified category percentage calculator for consistency.
+ * - Food category: Uses calorie-based calculation
+ * - Other categories: Uses quantity-based calculation
  */
 export function calculateCategoryPreparedness(
   categoryId: string,
@@ -140,57 +142,23 @@ export function calculateCategoryPreparedness(
       : DEFAULT_EMPTY_PREPAREDNESS;
   }
 
-  // Use childrenMultiplier from options, falling back to default constant
-  const childrenMultiplier =
-    options.childrenMultiplier ?? CHILDREN_REQUIREMENT_MULTIPLIER;
+  // Use unified category percentage calculator
+  // This ensures food categories use calorie-based calculation
+  // and other categories use quantity-based calculation
+  const percentageResult = calculateCategoryPercentage(
+    categoryId,
+    items,
+    household,
+    disabledRecommendedItems,
+    recommendedItems,
+    {
+      childrenMultiplier: options.childrenMultiplier,
+      dailyCaloriesPerPerson: options.dailyCaloriesPerPerson,
+      dailyWaterPerPerson: options.dailyWaterPerPerson,
+    },
+  );
 
-  // Adults count as 1.0, children use the configurable multiplier
-  const peopleMultiplier =
-    household.adults * ADULT_REQUIREMENT_MULTIPLIER +
-    household.children * childrenMultiplier;
-
-  let totalScore = 0;
-  let maxScore = 0;
-
-  recommendedForCategory.forEach((recItem) => {
-    let recommendedQty = recItem.baseQuantity;
-
-    if (recItem.scaleWithPeople) {
-      recommendedQty *= peopleMultiplier;
-    }
-
-    if (recItem.scaleWithDays) {
-      recommendedQty *= household.supplyDurationDays;
-    }
-
-    // Skip items with zero recommended quantity to avoid division by zero
-    if (recommendedQty === 0) {
-      return;
-    }
-
-    // Note: We don't match by name to avoid false matches with user-typed names
-    const matchingItems = categoryItems.filter((item) => {
-      // itemType is stored as template ID when created from template
-      return item.itemType === recItem.id;
-    });
-
-    const actualQty = matchingItems.reduce(
-      (sum, item) => sum + item.quantity,
-      0,
-    );
-    const score = Math.min(
-      (actualQty / recommendedQty) * MAX_ITEM_SCORE,
-      MAX_ITEM_SCORE,
-    );
-
-    totalScore += score;
-    maxScore += MAX_ITEM_SCORE;
-  });
-
-  // Avoid division by zero if no items contributed to the score
-  if (maxScore === 0) {
-    return 0;
-  }
-
-  return Math.round((totalScore / maxScore) * MAX_ITEM_SCORE);
+  // Return the percentage (0-100+)
+  // Cap at 100 for preparedness score
+  return Math.min(percentageResult.percentage, 100);
 }

@@ -1,7 +1,7 @@
 # Application Architecture
 
 > **Version:** 2.0.0  
-> **Last Updated:** 2025-01-23  
+> **Last Updated:** 2026-01-14  
 > **Source of Truth:** `src/features/`, `src/shared/`
 
 This document describes the complete architecture of the Emergency Supply Tracker application, including the layered architecture, feature slice organization, component structure, and data flow.
@@ -245,6 +245,7 @@ interface UserSettings {
   - `calculateItemStatus()` - used by inventory, dashboard, alerts
   - `getStatusFromPercentage()` - used by inventory, dashboard
   - `getDaysUntilExpiration()` - used by inventory, alerts
+  - `calculateCategoryPercentage()` - unified category completion percentage (used by dashboard, alerts)
   - Water calculations, calorie calculations
 
 - **Feature-specific utilities** (used by single feature) → `src/features/{feature}/utils/`
@@ -263,6 +264,7 @@ getItemStatus(quantity, recommended, expiration): ItemStatus
 getStatusFromPercentage(percentage): ItemStatus
 getDaysUntilExpiration(expirationDate): number | undefined
 isItemExpired(expirationDate): boolean
+calculateCategoryPercentage(categoryId, items, household, ...): CategoryPercentageResult  // Unified category percentage
 
 // Feature-specific calculations (features/*/utils/)
 calculatePreparednessScore(items, household): number  // Dashboard

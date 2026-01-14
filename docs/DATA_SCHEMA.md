@@ -1,7 +1,7 @@
 # Data Schema
 
 > **Version:** 1.1.0
-> **Last Updated:** 2025-12-31
+> **Last Updated:** 2026-01-14
 > **Source of Truth:** `src/types/index.ts`
 
 This document describes the data structures used in the Emergency Supply Tracker application. All types are defined in TypeScript and stored in the browser's LocalStorage.
@@ -486,6 +486,58 @@ totalCalories = quantity * caloriesPerUnit;
 // Or calculated from weight
 totalCalories = (weightGrams / 100) * caloriesPer100g;
 ```
+
+### Category Percentage Calculation
+
+The application uses a unified `calculateCategoryPercentage()` function to ensure consistent percentage calculations across dashboard alerts and category cards.
+
+**Food Category (Calorie-Based):**
+
+```typescript
+// Calculate total needed calories
+totalNeededCalories = (adults × 1.0 + children × 0.75) × supplyDurationDays × dailyCaloriesPerPerson
+
+// Calculate total actual calories from inventory
+totalActualCalories = sum of (item.quantity × item.caloriesPerUnit) for all food items
+
+// Percentage
+percentage = (totalActualCalories / totalNeededCalories) × 100
+```
+
+**Other Categories (Quantity-Based):**
+
+```typescript
+// For each recommended item in category:
+recommendedQty = baseQuantity
+if (scaleWithPeople) recommendedQty ×= peopleMultiplier
+if (scaleWithDays) recommendedQty ×= supplyDurationDays
+
+// Match inventory items by itemType (no name matching)
+actualQty = sum of matching items' quantities
+
+// Total across all recommended items
+totalNeeded = sum of all recommendedQty
+totalActual = sum of all actualQty
+
+// For categories with mixed units (e.g., communication-info):
+// Count item types fulfilled instead of quantities
+percentage = (itemTypesFulfilled / totalItemTypes) × 100
+
+// For categories with single unit:
+percentage = (totalActual / totalNeeded) × 100
+```
+
+**Special Cases:**
+
+- **Water & Beverages:** Includes water needed for food preparation in addition to drinking water
+- **Mixed Units Categories:** Uses item type counting (e.g., "3 / 5 items" instead of quantity-based)
+- **No Recommended Items:** Returns 100% if category has items, 0% if empty
+
+**Key Features:**
+
+- Items are matched **only by `itemType`** (no normalized name matching)
+- Disabled recommended items are excluded from calculations
+- Custom calculation options can override defaults (children multiplier, daily calories, daily water)
 
 ---
 
