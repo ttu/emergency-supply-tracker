@@ -5,6 +5,48 @@ import * as localStorage from '@/shared/utils/storage/localStorage';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 import type { AppData, HouseholdConfig } from '@/shared/types';
 
+// Helper functions to create mock data (reduces nesting depth)
+function createMockSettings(overrides?: Partial<AppData['settings']>) {
+  return {
+    language: 'en' as const,
+    theme: 'light' as const,
+    highContrast: false,
+    advancedFeatures: {
+      calorieTracking: false,
+      powerManagement: false,
+      waterTracking: false,
+    },
+    ...overrides,
+  };
+}
+
+function createMockHousehold(
+  overrides?: Partial<HouseholdConfig>,
+): HouseholdConfig {
+  return {
+    adults: 2,
+    children: 0,
+    supplyDurationDays: 7,
+    useFreezer: false,
+    ...overrides,
+  };
+}
+
+function createMockAppData(overrides?: Partial<AppData>): AppData {
+  return {
+    version: CURRENT_SCHEMA_VERSION,
+    household: createMockHousehold(),
+    settings: createMockSettings(),
+    items: [],
+    customCategories: [],
+    customTemplates: [],
+    dismissedAlertIds: [],
+    disabledRecommendedItems: [],
+    lastModified: new Date().toISOString(),
+    ...overrides,
+  };
+}
+
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
   getAppData: vi.fn(),
@@ -43,33 +85,16 @@ describe('useLocalStorageSync', () => {
 
   describe('initialization', () => {
     it('should initialize state from localStorage when data exists', () => {
-      const mockHousehold: HouseholdConfig = {
+      const mockHousehold = createMockHousehold({
         adults: 3,
         children: 2,
         supplyDurationDays: 7,
         useFreezer: true,
-      };
-
-      vi.mocked(localStorage.getAppData).mockReturnValue({
-        version: CURRENT_SCHEMA_VERSION,
-        household: mockHousehold,
-        settings: {
-          language: 'en',
-          theme: 'light',
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
       });
+
+      vi.mocked(localStorage.getAppData).mockReturnValue(
+        createMockAppData({ household: mockHousehold }),
+      );
 
       const { result } = renderHook(() =>
         useLocalStorageSync('household', mockHousehold),
@@ -81,12 +106,12 @@ describe('useLocalStorageSync', () => {
     });
 
     it('should use default value when localStorage has no data', () => {
-      const defaultHousehold: HouseholdConfig = {
+      const defaultHousehold = createMockHousehold({
         adults: 1,
         children: 0,
         supplyDurationDays: 3,
         useFreezer: false,
-      };
+      });
 
       vi.mocked(localStorage.getAppData).mockReturnValue(undefined);
 
@@ -100,34 +125,19 @@ describe('useLocalStorageSync', () => {
     });
 
     it('should use default value when localStorage data is missing the key', () => {
-      const defaultHousehold: HouseholdConfig = {
+      const defaultHousehold = createMockHousehold({
         adults: 1,
         children: 0,
         supplyDurationDays: 3,
         useFreezer: false,
-      };
+      });
 
       // Mock AppData without household to test fallback to default
-      vi.mocked(localStorage.getAppData).mockReturnValue({
-        version: CURRENT_SCHEMA_VERSION,
-        household: undefined as unknown as HouseholdConfig,
-        settings: {
-          language: 'en',
-          theme: 'light',
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
-      } as AppData);
+      vi.mocked(localStorage.getAppData).mockReturnValue(
+        createMockAppData({
+          household: undefined as unknown as HouseholdConfig,
+        }) as AppData,
+      );
 
       const { result } = renderHook(() =>
         useLocalStorageSync('household', defaultHousehold),
@@ -137,7 +147,7 @@ describe('useLocalStorageSync', () => {
     });
 
     it('should support custom initializer function', () => {
-      const mockSettings = {
+      const mockSettings = createMockSettings({
         language: 'fi' as const,
         theme: 'dark' as const,
         highContrast: true,
@@ -146,24 +156,16 @@ describe('useLocalStorageSync', () => {
           powerManagement: false,
           waterTracking: true,
         },
-      };
-
-      vi.mocked(localStorage.getAppData).mockReturnValue({
-        version: CURRENT_SCHEMA_VERSION,
-        household: {
-          adults: 2,
-          children: 0,
-          supplyDurationDays: 3,
-          useFreezer: false,
-        },
-        settings: mockSettings,
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
       });
+
+      vi.mocked(localStorage.getAppData).mockReturnValue(
+        createMockAppData({
+          household: createMockHousehold({
+            supplyDurationDays: 3,
+          }),
+          settings: mockSettings,
+        }),
+      );
 
       const initializer = (data: AppData | undefined) => {
         if (data?.settings) {
@@ -197,33 +199,13 @@ describe('useLocalStorageSync', () => {
 
   describe('state updates and persistence', () => {
     it('should save to localStorage when state is updated', () => {
-      const defaultHousehold: HouseholdConfig = {
-        adults: 2,
-        children: 0,
+      const defaultHousehold = createMockHousehold({
         supplyDurationDays: 3,
-        useFreezer: false,
-      };
+      });
 
-      const mockAppData = {
-        version: CURRENT_SCHEMA_VERSION,
+      const mockAppData = createMockAppData({
         household: defaultHousehold,
-        settings: {
-          language: 'en' as const,
-          theme: 'light' as const,
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
-      };
+      });
 
       vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
       vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
@@ -232,12 +214,12 @@ describe('useLocalStorageSync', () => {
         useLocalStorageSync('household', defaultHousehold),
       );
 
-      const updatedHousehold: HouseholdConfig = {
+      const updatedHousehold = createMockHousehold({
         adults: 4,
         children: 2,
         supplyDurationDays: 7,
         useFreezer: true,
-      };
+      });
 
       act(() => {
         result.current[1](updatedHousehold);
@@ -253,33 +235,16 @@ describe('useLocalStorageSync', () => {
     });
 
     it('should call createDefaultAppData when getAppData returns undefined in useEffect', () => {
-      const defaultHousehold: HouseholdConfig = {
+      const defaultHousehold = createMockHousehold({
         adults: 1,
         children: 0,
         supplyDurationDays: 3,
         useFreezer: false,
-      };
+      });
 
-      const mockDefaultAppData = {
-        version: CURRENT_SCHEMA_VERSION,
+      const mockDefaultAppData = createMockAppData({
         household: defaultHousehold,
-        settings: {
-          language: 'en' as const,
-          theme: 'light' as const,
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
-      };
+      });
 
       // Mock getAppData to return undefined (simulating empty localStorage)
       vi.mocked(localStorage.getAppData).mockReturnValue(undefined);
@@ -301,33 +266,13 @@ describe('useLocalStorageSync', () => {
     });
 
     it('should support functional state updates', () => {
-      const defaultHousehold: HouseholdConfig = {
-        adults: 2,
-        children: 0,
+      const defaultHousehold = createMockHousehold({
         supplyDurationDays: 3,
-        useFreezer: false,
-      };
+      });
 
-      const mockAppData = {
-        version: CURRENT_SCHEMA_VERSION,
+      const mockAppData = createMockAppData({
         household: defaultHousehold,
-        settings: {
-          language: 'en' as const,
-          theme: 'light' as const,
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
-      };
+      });
 
       vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
       vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
@@ -352,34 +297,15 @@ describe('useLocalStorageSync', () => {
     });
 
     it('should update lastModified timestamp on each save', () => {
-      const defaultHousehold: HouseholdConfig = {
-        adults: 2,
-        children: 0,
+      const defaultHousehold = createMockHousehold({
         supplyDurationDays: 3,
-        useFreezer: false,
-      };
+      });
 
       const initialTimestamp = '2024-01-01T00:00:00.000Z';
-      const mockAppData = {
-        version: CURRENT_SCHEMA_VERSION,
+      const mockAppData = createMockAppData({
         household: defaultHousehold,
-        settings: {
-          language: 'en' as const,
-          theme: 'light' as const,
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
         lastModified: initialTimestamp,
-      };
+      });
 
       vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
       vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
@@ -402,31 +328,11 @@ describe('useLocalStorageSync', () => {
 
   describe('multiple state slices', () => {
     it('should support syncing multiple independent properties', () => {
-      const mockAppData = {
-        version: CURRENT_SCHEMA_VERSION,
-        household: {
-          adults: 2,
-          children: 0,
+      const mockAppData = createMockAppData({
+        household: createMockHousehold({
           supplyDurationDays: 3,
-          useFreezer: false,
-        },
-        settings: {
-          language: 'en' as const,
-          theme: 'light' as const,
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
-      };
+        }),
+      });
 
       vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
       vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
@@ -459,12 +365,9 @@ describe('useLocalStorageSync', () => {
       const consoleErrorSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {});
-      const defaultHousehold: HouseholdConfig = {
-        adults: 2,
-        children: 0,
+      const defaultHousehold = createMockHousehold({
         supplyDurationDays: 3,
-        useFreezer: false,
-      };
+      });
 
       vi.mocked(localStorage.getAppData).mockImplementation(() => {
         throw new Error('localStorage unavailable');
@@ -484,33 +387,13 @@ describe('useLocalStorageSync', () => {
       const consoleErrorSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {});
-      const defaultHousehold: HouseholdConfig = {
-        adults: 2,
-        children: 0,
+      const defaultHousehold = createMockHousehold({
         supplyDurationDays: 3,
-        useFreezer: false,
-      };
+      });
 
-      const mockAppData = {
-        version: CURRENT_SCHEMA_VERSION,
+      const mockAppData = createMockAppData({
         household: defaultHousehold,
-        settings: {
-          language: 'en' as const,
-          theme: 'light' as const,
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        items: [],
-        customCategories: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
-      };
+      });
 
       vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
       vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
