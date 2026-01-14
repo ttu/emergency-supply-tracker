@@ -3,6 +3,15 @@
     "title": "Emergency Supply Tracker",
     "tagline": "Track your emergency supplies and stay prepared"
   },
+  "metadata": {
+    "title": "Emergency Supply Tracker - Preparedness Planning",
+    "description": "Track your emergency supplies and ensure preparedness for your household. Plan water, food, medical supplies, and more with this free tool.",
+    "keywords": "emergency preparedness, emergency kit, emergency supplies, disaster planning, survival kit tracker, emergency checklist, household preparedness",
+    "ogTitle": "Emergency Supply Tracker - Preparedness Planning",
+    "ogDescription": "Track emergency supplies for your household. Ensure preparedness with our free planning tool. No signup required, works offline.",
+    "twitterTitle": "Emergency Supply Tracker - Preparedness Planning",
+    "twitterDescription": "Free tool to track emergency supplies for your household. Plan water, food, medical supplies, and more."
+  },
   "landing": {
     "getStarted": "Get Started",
     "noSignup": {

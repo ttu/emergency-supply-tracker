@@ -13,6 +13,8 @@ import {
   getLanguageFromUrl,
   clearLanguageFromUrl,
   getInitialLanguage,
+  getLanguageFromDomain,
+  __DOMAIN_LANGUAGE_MAP__,
 } from './urlLanguage';
 
 describe('urlLanguage', () => {
@@ -153,6 +155,144 @@ describe('urlLanguage', () => {
     });
   });
 
+  describe('getLanguageFromDomain', () => {
+    let originalHostname: string;
+
+    beforeEach(() => {
+      originalHostname = globalThis.location.hostname;
+    });
+
+    afterEach(() => {
+      // Restore original hostname by navigating
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: originalHostname,
+        },
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    it('returns undefined when domain is not in mapping', () => {
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'example.com',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      expect(getLanguageFromDomain()).toBeUndefined();
+    });
+
+    it('returns undefined when hostname is localhost', () => {
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'localhost',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      expect(getLanguageFromDomain()).toBeUndefined();
+    });
+
+    it('handles single-part hostname', () => {
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'localhost',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      expect(getLanguageFromDomain()).toBeUndefined();
+    });
+
+    it('handles hostname with less than 2 parts', () => {
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'local',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      expect(getLanguageFromDomain()).toBeUndefined();
+    });
+
+    it('returns language for exact domain match', () => {
+      // Add test mapping
+      __DOMAIN_LANGUAGE_MAP__['test-domain.com'] = 'fi';
+
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'test-domain.com',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      expect(getLanguageFromDomain()).toBe('fi');
+
+      // Cleanup
+      delete __DOMAIN_LANGUAGE_MAP__['test-domain.com'];
+    });
+
+    it('returns language for subdomain match', () => {
+      // Add test mapping
+      __DOMAIN_LANGUAGE_MAP__['example.com'] = 'en';
+
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'www.example.com',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      expect(getLanguageFromDomain()).toBe('en');
+
+      // Cleanup
+      delete __DOMAIN_LANGUAGE_MAP__['example.com'];
+    });
+
+    it('checks for subdomain matches when exact match fails', () => {
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'www.example.com',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      // Since DOMAIN_LANGUAGE_MAP is empty, this will return undefined
+      // But we're testing the logic path
+      expect(getLanguageFromDomain()).toBeUndefined();
+    });
+
+    it('handles hostname with multiple subdomains', () => {
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'sub1.sub2.example.com',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      expect(getLanguageFromDomain()).toBeUndefined();
+    });
+  });
+
   describe('getInitialLanguage', () => {
     let originalSearch: string;
 
@@ -169,10 +309,42 @@ describe('urlLanguage', () => {
     });
 
     it('returns URL language when present (overrides stored)', () => {
+      const originalSearch = globalThis.location.search;
+      const originalHref = globalThis.location.href;
+
+      // Mock location to reflect the URL change
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          search: '?lang=fi',
+          href:
+            globalThis.location.origin +
+            globalThis.location.pathname +
+            '?lang=fi',
+        },
+        writable: true,
+        configurable: true,
+      });
       globalThis.history.replaceState({}, '', '/?lang=fi');
 
       // URL language 'fi' should override stored 'en'
       expect(getInitialLanguage('en')).toBe('fi');
+
+      // Restore
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          search: originalSearch,
+          href: originalHref,
+        },
+        writable: true,
+        configurable: true,
+      });
+      globalThis.history.replaceState(
+        {},
+        '',
+        globalThis.location.pathname + originalSearch,
+      );
     });
 
     it('returns stored language when no URL parameter', () => {
@@ -204,6 +376,76 @@ describe('urlLanguage', () => {
       globalThis.history.replaceState({}, '', '/?lang=');
 
       expect(getInitialLanguage()).toBe('en');
+    });
+
+    it('checks domain language when no URL parameter', () => {
+      globalThis.history.replaceState({}, '', '/');
+      const originalHostname = globalThis.location.hostname;
+
+      // Add test mapping
+      __DOMAIN_LANGUAGE_MAP__['test-domain.fi'] = 'fi';
+
+      // Mock location.hostname
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'test-domain.fi',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      // Domain language should be used when no URL parameter
+      expect(getInitialLanguage('en')).toBe('fi');
+      expect(getInitialLanguage()).toBe('fi');
+
+      // Restore
+      delete __DOMAIN_LANGUAGE_MAP__['test-domain.fi'];
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: originalHostname,
+        },
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    it('prioritizes URL parameter over domain language', () => {
+      const originalSearch = globalThis.location.search;
+      const originalHostname = globalThis.location.hostname;
+
+      globalThis.history.replaceState({}, '', '/?lang=en');
+
+      // Mock location.hostname (even if domain would map to 'fi')
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: 'tama-sivu.fi',
+          search: '?lang=en',
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      // URL parameter should take priority
+      expect(getInitialLanguage('fi')).toBe('en');
+
+      // Restore
+      Object.defineProperty(globalThis, 'location', {
+        value: {
+          ...globalThis.location,
+          hostname: originalHostname,
+          search: originalSearch,
+        },
+        writable: true,
+        configurable: true,
+      });
+      globalThis.history.replaceState(
+        {},
+        '',
+        globalThis.location.pathname + originalSearch,
+      );
     });
   });
 });
