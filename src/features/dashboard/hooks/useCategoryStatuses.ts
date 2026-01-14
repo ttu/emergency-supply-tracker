@@ -31,7 +31,7 @@ export function useCategoryStatuses(): UseCategoryStatusesResult {
   // Calculate per-category preparedness
   // Convert ProductTemplateId[] to string[] for compatibility with calculation functions
   const disabledRecommendedItemsAsStrings = useMemo(
-    () => disabledRecommendedItems.map((id) => String(id)),
+    () => disabledRecommendedItems.map(String),
     [disabledRecommendedItems],
   );
 
