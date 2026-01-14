@@ -12,11 +12,13 @@ export type { DashboardProps } from './pages/Dashboard';
 
 // Hooks
 export {
+  useBackupTracking,
   useCalculationOptions,
   useCategoryStatuses,
   useDashboardAlerts,
 } from './hooks';
 export type {
+  UseBackupTrackingResult,
   UseCategoryStatusesResult,
   UseDashboardAlertsResult,
 } from './hooks';
@@ -30,9 +32,6 @@ export {
   calculatePreparednessScore,
   calculatePreparednessScoreFromCategoryStatuses,
   calculateCategoryPreparedness,
-  shouldShowBackupReminder,
-  dismissBackupReminder,
-  recordBackupDate,
 } from './utils';
 export type {
   CategoryCalculationOptions,
@@ -40,3 +39,13 @@ export type {
   CategoryStatusSummary,
   CategoryDisplayStatus,
 } from './utils';
+
+/**
+ * @deprecated Use useBackupTracking hook instead.
+ * These functions are kept for backward compatibility but will be removed in a future version.
+ */
+export {
+  shouldShowBackupReminder,
+  dismissBackupReminder,
+  recordBackupDate,
+} from './utils/backupReminder';

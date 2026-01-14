@@ -17,8 +17,5 @@ export {
   calculateCategoryPreparedness,
 } from './preparedness';
 
-export {
-  shouldShowBackupReminder,
-  dismissBackupReminder,
-  recordBackupDate,
-} from './backupReminder';
+// Note: backupReminder utilities are exported from the feature index with deprecation notice.
+// Use useBackupTracking hook instead for new code.

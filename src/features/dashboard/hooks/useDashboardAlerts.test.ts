@@ -29,9 +29,19 @@ vi.mock('@/features/alerts', () => ({
   generateDashboardAlerts: vi.fn(),
 }));
 
-vi.mock('@/features/dashboard/utils', () => ({
-  shouldShowBackupReminder: vi.fn(),
-  dismissBackupReminder: vi.fn(),
+// Mock the useBackupTracking hook
+const mockShouldShowBackupReminder = vi.fn();
+const mockDismissBackupReminder = vi.fn();
+const mockRecordBackupDate = vi.fn();
+
+vi.mock('./useBackupTracking', () => ({
+  useBackupTracking: vi.fn(() => ({
+    lastBackupDate: undefined,
+    backupReminderDismissedUntil: undefined,
+    shouldShowBackupReminder: mockShouldShowBackupReminder,
+    recordBackupDate: mockRecordBackupDate,
+    dismissBackupReminder: mockDismissBackupReminder,
+  })),
 }));
 
 import { useInventory } from '@/features/inventory';
@@ -39,10 +49,6 @@ import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { generateDashboardAlerts } from '@/features/alerts';
-import {
-  shouldShowBackupReminder,
-  dismissBackupReminder,
-} from '@/features/dashboard/utils';
 
 describe('useDashboardAlerts', () => {
   const mockDismissAlert = vi.fn();
@@ -88,7 +94,8 @@ describe('useDashboardAlerts', () => {
     });
 
     vi.mocked(generateDashboardAlerts).mockReturnValue([]);
-    vi.mocked(shouldShowBackupReminder).mockReturnValue(false);
+    // Default: backup reminder not shown
+    mockShouldShowBackupReminder.mockReturnValue(false);
     vi.mocked(getAppData).mockReturnValue(undefined);
   };
 
@@ -105,7 +112,7 @@ describe('useDashboardAlerts', () => {
   });
 
   it('should include backup reminder alert when conditions are met', () => {
-    vi.mocked(shouldShowBackupReminder).mockReturnValue(true);
+    mockShouldShowBackupReminder.mockReturnValue(true);
 
     const { result } = renderHook(() => useDashboardAlerts());
 
@@ -190,7 +197,7 @@ describe('useDashboardAlerts', () => {
   });
 
   it('should handle dismissing backup reminder', () => {
-    vi.mocked(shouldShowBackupReminder).mockReturnValue(true);
+    mockShouldShowBackupReminder.mockReturnValue(true);
 
     const { result } = renderHook(() => useDashboardAlerts());
     const backupReminderId = createAlertId('backup-reminder');
@@ -199,7 +206,7 @@ describe('useDashboardAlerts', () => {
       result.current.handleDismissAlert(backupReminderId);
     });
 
-    expect(dismissBackupReminder).toHaveBeenCalled();
+    expect(mockDismissBackupReminder).toHaveBeenCalled();
   });
 
   it('should handle showing all alerts', () => {

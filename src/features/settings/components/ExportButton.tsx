@@ -1,13 +1,15 @@
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import { getAppData, exportToJSON } from '@/shared/utils/storage/localStorage';
-import { recordBackupDate } from '@/features/dashboard';
+import { useBackupTracking } from '@/features/dashboard';
 import styles from './ExportButton.module.css';
 
 export function ExportButton() {
   const { t } = useTranslation();
+  const { recordBackupDate } = useBackupTracking();
 
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
     const data = getAppData();
     if (!data) {
       alert(t('settings.export.noData'));
@@ -27,7 +29,7 @@ export function ExportButton() {
 
     // Record the backup date
     recordBackupDate();
-  };
+  }, [t, recordBackupDate]);
 
   return (
     <div className={styles.container}>
