@@ -96,6 +96,38 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
 
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Emergency Supply Tracker",
+        "url": "https://www.emergencysupplytracker.com/",
+        "description": "Track your emergency supplies and ensure preparedness for your household. Plan water, food, medical supplies, and more.",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "softwareVersion": "1.0.0",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "No signup required",
+          "100% browser-based - data stays on your device",
+          "Open source - transparent and community-driven",
+          "Household configuration for personalized recommendations",
+          "Expiration date tracking",
+          "Shopping list export",
+          "Offline support",
+          "Multi-language support (English, Finnish)"
+        ],
+        "screenshot": "https://www.emergencysupplytracker.com/og-image.png",
+        "inLanguage": ["en", "fi"]
+      }
+    </script>
+
     <!-- Inline script to update metadata based on ?lang= parameter -->
     <script>
       (function () {
@@ -212,38 +244,6 @@
           }
         }
       })();
-    </script>
-
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Emergency Supply Tracker",
-        "url": "https://www.emergencysupplytracker.com/",
-        "description": "Track your emergency supplies and ensure preparedness for your household. Plan water, food, medical supplies, and more.",
-        "applicationCategory": "UtilitiesApplication",
-        "operatingSystem": "Any",
-        "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "softwareVersion": "1.0.0",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "featureList": [
-          "No signup required",
-          "100% browser-based - data stays on your device",
-          "Open source - transparent and community-driven",
-          "Household configuration for personalized recommendations",
-          "Expiration date tracking",
-          "Shopping list export",
-          "Offline support",
-          "Multi-language support (English, Finnish)"
-        ],
-        "screenshot": "https://www.emergencysupplytracker.com/og-image.png",
-        "inLanguage": ["en", "fi"]
-      }
     </script>
   </head>
   <body>
