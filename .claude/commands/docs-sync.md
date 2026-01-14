@@ -165,7 +165,7 @@ Flag commits where:
 
 Report results in this format:
 
-```
+```text
 Documentation Sync Validation Results
 =====================================
 

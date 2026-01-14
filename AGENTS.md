@@ -333,21 +333,23 @@ Pattern: `category.subcategory.key`
 
 The `docs/` folder contains up-to-date documentation that reflects the actual implementation:
 
-| Document                                                             | Description                                   |
-| -------------------------------------------------------------------- | --------------------------------------------- |
-| **[docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md)**                       | TypeScript types and data structures          |
-| **[docs/FUNCTIONAL_SPEC.md](docs/FUNCTIONAL_SPEC.md)**               | Features, workflows, and UI components        |
-| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)**           | All 70 recommended items with current data    |
-| **[docs/COMPONENT_ARCHITECTURE.md](docs/COMPONENT_ARCHITECTURE.md)** | React component structure                     |
-| **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)**                 | Technology stack and configuration            |
-| **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)**             | Testing approach, Vitest, Playwright          |
-| **[docs/TRANSLATION_GUIDE.md](docs/TRANSLATION_GUIDE.md)**           | Internationalization (i18n)                   |
-| **[docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)**                     | ESLint, Prettier, CI/CD                       |
-| **[docs/CODE_COVERAGE.md](docs/CODE_COVERAGE.md)**                   | Coverage thresholds, Codecov, PR requirements |
+| Document                                                   | Description                                   |
+| ---------------------------------------------------------- | --------------------------------------------- |
+| **[docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md)**             | TypeScript types and data structures          |
+| **[docs/FUNCTIONAL_SPEC.md](docs/FUNCTIONAL_SPEC.md)**     | Features, workflows, and UI components        |
+| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 70 recommended items with current data    |
+| **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**           | React component structure                     |
+| **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)**       | Technology stack and configuration            |
+| **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)**   | Testing approach, Vitest, Playwright          |
+| **[docs/TRANSLATION_GUIDE.md](docs/TRANSLATION_GUIDE.md)** | Internationalization (i18n)                   |
+| **[docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)**           | ESLint, Prettier, CI/CD                       |
+| **[docs/CODE_COVERAGE.md](docs/CODE_COVERAGE.md)**         | Coverage thresholds, Codecov, PR requirements |
+
+**Design Documentation:** Feature-specific design documents are available in `docs/design-docs/` covering implementation details for household configuration, inventory management, recommended items, dashboard, alerts, and other features.
 
 ### Keeping Documentation Updated
 
-> **Important:** When implementing new features or making changes, update the corresponding documentation in `docs/` to keep it in sync with the code. This includes updating types in DATA_SCHEMA.md, new components in COMPONENT_ARCHITECTURE.md, etc.
+> **Important:** When implementing new features or making changes, update the corresponding documentation in `docs/` to keep it in sync with the code. This includes updating types in DATA_SCHEMA.md, new components in ARCHITECTURE.md, etc.
 
 ### Documentation Organization
 
@@ -603,7 +605,7 @@ To check PR review comments and status:
 ### Project-Specific Questions
 
 - "How should I structure a new category component?"
-  → Reference COMPONENT_ARCHITECTURE.md
+  → Reference ARCHITECTURE.md
 - "What's the calculation for recommended quantities?"
   → Reference DATA_SCHEMA.md
 - "How do I test LocalStorage persistence?"
