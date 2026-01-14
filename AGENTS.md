@@ -637,6 +637,14 @@ npm run build-storybook       # Build Storybook static site
 
 # Quality Gates (run before commit)
 npm run lint && npm test && npm run build
+
+# Claude Code Commands (slash commands)
+/verify                       # Run lint, type-check, tests, build
+/docs-sync                    # Validate documentation matches codebase
+/docs-sync quick              # Quick check (types, items, categories only)
+/pr-create                    # Create a pull request
+/pr-fix                       # Fix CodeRabbit review issues
+/issue-implement <number>     # Implement a GitHub issue
 ```
 
 ---
