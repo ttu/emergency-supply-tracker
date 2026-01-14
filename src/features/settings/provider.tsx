@@ -1,10 +1,6 @@
-import { useState, useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
 import type { UserSettings } from '@/shared/types';
-import {
-  getAppData,
-  saveAppData,
-  createDefaultAppData,
-} from '@/shared/utils/storage/localStorage';
+import { useLocalStorageSync } from '@/shared/hooks';
 import { SettingsContext } from './context';
 import {
   getLanguageFromUrl,
@@ -13,8 +9,7 @@ import {
 import { UserSettingsFactory } from './factories/UserSettingsFactory';
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<UserSettings>(() => {
-    const data = getAppData();
+  const [settings, setSettings] = useLocalStorageSync('settings', (data) => {
     // Merge stored settings with defaults using factory to handle new fields
     const storedSettings = UserSettingsFactory.create(data?.settings || {});
 
@@ -35,14 +30,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     clearLanguageFromUrl();
     // Only run once on mount
   }, []);
-
-  // Save to localStorage on change
-  useEffect(() => {
-    const data = getAppData() || createDefaultAppData();
-    data.settings = settings;
-    data.lastModified = new Date().toISOString();
-    saveAppData(data);
-  }, [settings]);
 
   const updateSettings = (updates: Partial<UserSettings>) => {
     setSettings((prev) => ({ ...prev, ...updates }));
