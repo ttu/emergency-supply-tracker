@@ -13,8 +13,7 @@ import {
 } from '@/shared/utils/constants';
 import { calculateWaterRequirements } from '@/shared/utils/calculations/water';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
-import { calculateCategoryShortages } from '@/features/dashboard/utils/categoryStatus';
-import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
+import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
 import type { Alert, AlertCounts, TranslationFunction } from '../types';
 import { ALERT_PRIORITY } from '../types';
 
@@ -95,66 +94,19 @@ function generateExpirationAlerts(
 }
 
 /**
- * Calculate percentage and stock status for food category using calorie-based calculation.
+ * Get category percentage using the unified calculator.
+ * Uses household config for accurate calculations.
  */
-function calculateFoodCategoryStatus(
+function getCategoryStockStatus(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
-  recommendedItems: RecommendedItemDefinition[],
 ): { percentOfRecommended: number; hasEnough: boolean } {
-  const shortageInfo = calculateCategoryShortages(
-    categoryId,
-    items,
-    household,
-    recommendedItems,
-    [],
-  );
-
-  const hasEnough =
-    (shortageInfo.totalActualCalories ?? 0) >=
-    (shortageInfo.totalNeededCalories ?? 0);
-
-  const percentOfRecommended =
-    shortageInfo.totalNeededCalories && shortageInfo.totalNeededCalories > 0
-      ? ((shortageInfo.totalActualCalories ?? 0) /
-          shortageInfo.totalNeededCalories) *
-        100
-      : 100;
-
-  return { percentOfRecommended, hasEnough };
-}
-
-/**
- * Calculate percentage and stock status for non-food categories using quantity-based calculation.
- * Requires household to calculate recommended quantities.
- */
-function calculateNonFoodCategoryStatus(
-  categoryItems: InventoryItem[],
-  household: HouseholdConfig,
-  recommendedItems: RecommendedItemDefinition[],
-): {
-  percentOfRecommended: number;
-  hasEnough: boolean;
-} {
-  let totalQuantity = 0;
-  let totalRecommended = 0;
-
-  categoryItems.forEach((item) => {
-    totalQuantity += item.quantity;
-    const recommendedQty = getRecommendedQuantityForItem(
-      item,
-      household,
-      recommendedItems,
-    );
-    totalRecommended += recommendedQty;
-  });
-
-  const percentOfRecommended =
-    totalRecommended > 0 ? (totalQuantity / totalRecommended) * 100 : 100;
-  const hasEnough = totalQuantity >= totalRecommended;
-
-  return { percentOfRecommended, hasEnough };
+  const result = calculateCategoryPercentage(categoryId, items, household);
+  return {
+    percentOfRecommended: result.percentage,
+    hasEnough: result.hasEnough,
+  };
 }
 
 /**
@@ -208,14 +160,15 @@ function generateCategoryAlerts(
 }
 
 /**
- * Generate alerts for categories with low stock (aggregated by category)
- * For food category, uses calorie-based calculations instead of quantity-based.
+ * Generate alerts for categories with low stock (aggregated by category).
+ * Uses the unified category percentage calculator for consistent calculations
+ * across alerts and category cards.
  */
 function generateCategoryStockAlerts(
   items: InventoryItem[],
   t: TranslationFunction,
   household: HouseholdConfig,
-  recommendedItems: RecommendedItemDefinition[],
+  _recommendedItems: RecommendedItemDefinition[],
 ): Alert[] {
   const alerts: Alert[] = [];
 
@@ -231,45 +184,12 @@ function generateCategoryStockAlerts(
 
     const isFood = isFoodCategory(String(category.id));
 
-    // Calculate status based on category type
-    // For water-beverages, use calculateCategoryShortages to get accurate status
-    // (it handles preparation water and item type tracking correctly)
-    const isWaterCategory = String(category.id) === 'water-beverages';
-
-    let percentOfRecommended: number;
-    let hasEnough: boolean;
-
-    if (isFood) {
-      const foodStatus = calculateFoodCategoryStatus(
-        String(category.id),
-        items,
-        household,
-        recommendedItems,
-      );
-      percentOfRecommended = foodStatus.percentOfRecommended;
-      hasEnough = foodStatus.hasEnough;
-    } else if (isWaterCategory) {
-      const shortageInfo = calculateCategoryShortages(
-        String(category.id),
-        items,
-        household,
-        recommendedItems,
-        [],
-      );
-      percentOfRecommended =
-        shortageInfo.totalNeeded > 0
-          ? (shortageInfo.totalActual / shortageInfo.totalNeeded) * 100
-          : 100;
-      hasEnough = shortageInfo.totalActual >= shortageInfo.totalNeeded;
-    } else {
-      const nonFoodStatus = calculateNonFoodCategoryStatus(
-        categoryItems,
-        household,
-        recommendedItems,
-      );
-      percentOfRecommended = nonFoodStatus.percentOfRecommended;
-      hasEnough = nonFoodStatus.hasEnough;
-    }
+    // Calculate status using unified calculator
+    const { percentOfRecommended, hasEnough } = getCategoryStockStatus(
+      category.id,
+      items,
+      household,
+    );
 
     // Don't generate alerts if we have enough (for food: enough calories, for others: enough quantity)
     if (hasEnough) {

@@ -164,7 +164,7 @@ describe('HiddenAlerts', () => {
   it('should show warning alert with correct icon', () => {
     // Use a specific household: 1 adult, 3 days = 9L needed (3L per day)
     // For water-beverages, we need water (9L), milk (2L), and juice (2L) = 13L total
-    // With 1L of water and 0L milk/juice, we have 1L out of 13L = 7.7% (below 50% threshold for warning)
+    // With 5L of water and 0L milk/juice, we have 5L out of 13L = 38.5% (between 25% and 50%, so warning threshold)
     const household = createMockHousehold({
       adults: 1,
       children: 0,
