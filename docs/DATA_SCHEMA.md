@@ -177,13 +177,18 @@ Category definition for organizing items:
 
 ```typescript
 interface Category {
-  id: string; // Unique identifier
-  standardCategoryId?: StandardCategoryId; // Reference to standard category
+  id: string; // Unique identifier (StandardCategoryId for standard categories, UUID for custom)
   name: string; // Display name
   icon?: string; // Emoji icon
   isCustom: boolean; // User-created category flag
 }
 ```
+
+**Notes:**
+
+- For standard categories, `id` is the same as the `StandardCategoryId` (e.g., `"food"`, `"water-beverages"`)
+- For custom categories, `id` is a UUID generated at creation time
+- The `isCustom` flag distinguishes between built-in and user-created categories
 
 ---
 
