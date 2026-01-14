@@ -24,11 +24,16 @@ if [ -f "${REPO_DIR}/AGENTS.local.md" ]; then
   cp "${REPO_DIR}/AGENTS.local.md" "${WORKTREE_DIR}/AGENTS.local.md"
 fi
 
-# Copy .claude/settings.local.json if it exists
-if [ -f "${REPO_DIR}/.claude/settings.local.json" ]; then
-  echo "Copying .claude/settings.local.json to worktree..."
-  mkdir -p "${WORKTREE_DIR}/.claude"
-  cp "${REPO_DIR}/.claude/settings.local.json" "${WORKTREE_DIR}/.claude/settings.local.json"
+# Copy entire .claude directory if it exists (includes settings, agents, commands, etc.)
+if [ -d "${REPO_DIR}/.claude" ]; then
+  echo "Copying .claude directory to worktree..."
+  cp -r "${REPO_DIR}/.claude" "${WORKTREE_DIR}/.claude"
+fi
+
+# Copy entire .cursor directory if it exists (includes rules, settings, etc.)
+if [ -d "${REPO_DIR}/.cursor" ]; then
+  echo "Copying .cursor directory to worktree..."
+  cp -r "${REPO_DIR}/.cursor" "${WORKTREE_DIR}/.cursor"
 fi
 
 # Install dependencies
