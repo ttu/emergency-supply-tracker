@@ -60,7 +60,7 @@ export function ShoppingListExport() {
       .forEach((categoryId) => {
         const category = STANDARD_CATEGORIES.find((c) => c.id === categoryId);
         const categoryName = category
-          ? t(`categories.${category.standardCategoryId}`)
+          ? t(`categories.${category.id}`)
           : categoryId;
 
         list += `${category?.icon || '📦'} ${categoryName}\n`;

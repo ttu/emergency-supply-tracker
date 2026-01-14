@@ -115,7 +115,6 @@ export interface UserSettings {
 // Category
 export interface Category {
   id: CategoryId;
-  standardCategoryId?: StandardCategoryId;
   name: string;
   icon?: string;
   isCustom: boolean;

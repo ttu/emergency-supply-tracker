@@ -28,7 +28,6 @@ describe('CategoryFactory', () => {
       expect(category.name).toBe('Test Category');
       expect(category.icon).toBe('🧪');
       expect(category.isCustom).toBe(true);
-      expect(category.standardCategoryId).toBeUndefined();
     });
 
     it('trims name whitespace', () => {
@@ -65,16 +64,6 @@ describe('CategoryFactory', () => {
         CategoryFactory.createCustom({
           name: 'Test',
           isCustom: false,
-        } as CreateCategoryInput);
-      }).toThrow(CategoryValidationError);
-    });
-
-    it('throws error when standardCategoryId is provided', () => {
-      expect(() => {
-        CategoryFactory.createCustom({
-          name: 'Test',
-          standardCategoryId: 'food',
-          isCustom: true,
         } as CreateCategoryInput);
       }).toThrow(CategoryValidationError);
     });
@@ -160,23 +149,22 @@ describe('CategoryFactory', () => {
   describe('createStandard', () => {
     it('creates a standard category', () => {
       const category = CategoryFactory.createStandard({
-        standardCategoryId: 'food',
+        id: 'food',
         name: 'Food',
         icon: '🍽️',
       });
 
       expect(category.id).toBeDefined();
-      expect(category.standardCategoryId).toBe('food');
       expect(category.name).toBe('Food');
       expect(category.icon).toBe('🍽️');
       expect(category.isCustom).toBe(false);
     });
 
-    it('throws error when standardCategoryId is invalid', () => {
+    it('throws error when id is invalid', () => {
       expect(() => {
         CategoryFactory.createStandard({
           // @ts-expect-error - Testing invalid input
-          standardCategoryId: 'invalid-category',
+          id: 'invalid-category',
           name: 'Invalid',
         });
       }).toThrow(CategoryValidationError);

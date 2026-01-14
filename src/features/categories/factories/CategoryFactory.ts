@@ -1,6 +1,5 @@
 import type { Category, StandardCategoryId } from '@/shared/types';
-import { createCategoryId } from '@/shared/types';
-import { STANDARD_CATEGORIES } from '../data';
+import { createCategoryId, VALID_CATEGORIES } from '@/shared/types';
 
 /**
  * Input for creating a custom category.
@@ -12,7 +11,7 @@ export type CreateCategoryInput = Omit<Category, 'id'>;
  * Input for creating a standard category (for internal use).
  */
 export interface CreateStandardCategoryInput {
-  standardCategoryId: StandardCategoryId;
+  id: StandardCategoryId;
   name: string;
   icon?: string;
 }
@@ -55,13 +54,6 @@ function validateCategoryInput(
   if (!input.isCustom) {
     throw new CategoryValidationError(
       'isCustom must be true for user-created categories',
-    );
-  }
-
-  // Standard categories cannot be created via factory (they're predefined)
-  if (input.standardCategoryId) {
-    throw new CategoryValidationError(
-      'standardCategoryId should not be set for custom categories',
     );
   }
 
@@ -108,7 +100,6 @@ export class CategoryFactory {
       id: createCategoryId(crypto.randomUUID()),
       name: input.name.trim(),
       isCustom: true,
-      standardCategoryId: undefined, // Custom categories don't have standardCategoryId
     };
   }
 
@@ -118,23 +109,16 @@ export class CategoryFactory {
    *
    * @param input - Standard category data
    * @returns Category
-   * @throws CategoryValidationError if standardCategoryId is invalid
+   * @throws CategoryValidationError if id is not a valid StandardCategoryId
    */
   static createStandard(input: CreateStandardCategoryInput): Category {
-    // Validate standardCategoryId exists in STANDARD_CATEGORIES
-    const standardCategory = STANDARD_CATEGORIES.find(
-      (cat) => cat.standardCategoryId === input.standardCategoryId,
-    );
-
-    if (!standardCategory) {
-      throw new CategoryValidationError(
-        `Invalid standardCategoryId: ${input.standardCategoryId}`,
-      );
+    // Validate id is a valid StandardCategoryId
+    if (!VALID_CATEGORIES.includes(input.id)) {
+      throw new CategoryValidationError(`Invalid category id: ${input.id}`);
     }
 
     return {
-      id: createCategoryId(input.standardCategoryId),
-      standardCategoryId: input.standardCategoryId,
+      id: createCategoryId(input.id),
       name: input.name,
       icon: input.icon,
       isCustom: false,
