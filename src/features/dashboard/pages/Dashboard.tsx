@@ -1,33 +1,10 @@
-import { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
-import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
-import { useSettings } from '@/features/settings';
-import { useRecommendedItems } from '@/features/templates';
-import { STANDARD_CATEGORIES } from '@/features/categories';
-import {
-  AlertBanner,
-  generateDashboardAlerts,
-  type Alert,
-} from '@/features/alerts';
-import {
-  DashboardHeader,
-  CategoryGrid,
-  calculatePreparednessScoreFromCategoryStatuses,
-  calculateCategoryPreparedness,
-  calculateAllCategoryStatuses,
-  shouldShowBackupReminder,
-  dismissBackupReminder,
-  type CategoryCalculationOptions,
-} from '@/features/dashboard';
-import { getAppData } from '@/shared/utils/storage/localStorage';
+import { AlertBanner } from '@/features/alerts';
+import { DashboardHeader, CategoryGrid } from '@/features/dashboard';
+import { useCategoryStatuses, useDashboardAlerts } from '../hooks';
 import { createAlertId } from '@/shared/types';
-import {
-  DAILY_CALORIES_PER_PERSON,
-  DAILY_WATER_PER_PERSON,
-  CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '@/shared/utils/constants';
 import type { PageType } from '@/shared/components/Navigation';
 import styles from './Dashboard.module.css';
 
@@ -38,175 +15,47 @@ export interface DashboardProps {
   ) => void;
 }
 
-const BACKUP_REMINDER_ALERT_ID = createAlertId('backup-reminder');
-
+/**
+ * Dashboard page component - displays overview of emergency supply preparedness.
+ *
+ * This component is now focused on presentation and navigation concerns,
+ * with business logic extracted into custom hooks:
+ * - useCategoryStatuses: category preparedness and status calculations
+ * - useDashboardAlerts: alert generation, filtering, and management
+ */
 export function Dashboard({ onNavigate }: DashboardProps = {}) {
   const { t } = useTranslation();
-  const {
-    items,
-    dismissedAlertIds,
-    dismissAlert,
-    reactivateAllAlerts,
-    disabledRecommendedItems,
-  } = useInventory();
   const { household } = useHousehold();
-  const { settings } = useSettings();
-  const { recommendedItems } = useRecommendedItems();
-  const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
 
-  // Build calculation options from user settings
-  const calculationOptions: CategoryCalculationOptions = useMemo(
-    () => ({
-      childrenMultiplier:
-        (settings.childrenRequirementPercentage ??
-          CHILDREN_REQUIREMENT_MULTIPLIER * 100) / 100,
-      dailyCaloriesPerPerson:
-        settings.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON,
-      dailyWaterPerPerson:
-        settings.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON,
-    }),
-    [
-      settings.childrenRequirementPercentage,
-      settings.dailyCaloriesPerPerson,
-      settings.dailyWaterPerPerson,
-    ],
-  );
+  // Use extracted hooks for business logic
+  const { categoryStatuses, preparednessScore } = useCategoryStatuses();
+  const {
+    activeAlerts,
+    hiddenAlertsCount,
+    handleDismissAlert,
+    handleShowAllAlerts,
+  } = useDashboardAlerts();
 
-  // Calculate per-category preparedness
-  const categoryPreparedness = useMemo(() => {
-    const map = new Map<string, number>();
-    STANDARD_CATEGORIES.forEach((category) => {
-      const score = calculateCategoryPreparedness(
-        category.id,
-        items,
-        household,
-        recommendedItems,
-        disabledRecommendedItems,
-        calculationOptions,
-      );
-      map.set(category.id, score);
-    });
-    return map;
-  }, [
-    items,
-    household,
-    disabledRecommendedItems,
-    recommendedItems,
-    calculationOptions,
-  ]);
-
-  // Calculate category statuses
-  const categoryStatuses = useMemo(
-    () =>
-      calculateAllCategoryStatuses(
-        STANDARD_CATEGORIES,
-        items,
-        categoryPreparedness,
-        household,
-        recommendedItems,
-        disabledRecommendedItems,
-        calculationOptions,
-      ),
-    [
-      items,
-      categoryPreparedness,
-      household,
-      disabledRecommendedItems,
-      recommendedItems,
-      calculationOptions,
-    ],
-  );
-
-  // Calculate overall preparedness score based on category statuses
-  const preparednessScore = useMemo(
-    () => calculatePreparednessScoreFromCategoryStatuses(categoryStatuses),
-    [categoryStatuses],
-  );
-
-  // Generate alerts (including water shortage alerts)
-  const allAlerts = useMemo(
-    () => generateDashboardAlerts(items, t, household, recommendedItems),
-    [items, t, household, recommendedItems],
-  );
-
-  // Generate backup reminder alert if needed
-  // Note: items is included in deps to re-evaluate when inventory changes
-  const backupReminderAlert: Alert | undefined = useMemo(() => {
-    if (backupReminderDismissed) return undefined;
-
-    const appData = getAppData();
-    if (!shouldShowBackupReminder(appData)) return undefined;
-
-    return {
-      id: BACKUP_REMINDER_ALERT_ID,
-      type: 'info',
-      message: t('alerts.backup.reminderMessage'),
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backupReminderDismissed, t, items]);
-
-  // Combine all alerts with backup reminder first
-  const combinedAlerts = useMemo(() => {
-    const alerts = [...allAlerts];
-    if (backupReminderAlert) {
-      alerts.unshift(backupReminderAlert);
-    }
-    return alerts;
-  }, [allAlerts, backupReminderAlert]);
-
-  // Filter out dismissed alerts
-  const dismissedSet = useMemo(
-    () => new Set(dismissedAlertIds),
-    [dismissedAlertIds],
-  );
-
-  const activeAlerts = useMemo(
-    () => combinedAlerts.filter((alert) => !dismissedSet.has(alert.id)),
-    [combinedAlerts, dismissedSet],
-  );
-
-  // Count hidden alerts that still exist (excluding backup reminder)
-  const hiddenAlertsCount = useMemo(
-    () => allAlerts.filter((alert) => dismissedSet.has(alert.id)).length,
-    [allAlerts, dismissedSet],
-  );
-
-  const handleDismissAlert = useCallback(
-    (alertId: string) => {
-      const alertIdTyped = createAlertId(alertId);
-      if (alertIdTyped === BACKUP_REMINDER_ALERT_ID) {
-        dismissBackupReminder();
-        setBackupReminderDismissed(true);
-      } else {
-        dismissAlert(alertIdTyped);
-      }
-    },
-    [dismissAlert],
-  );
-
-  const handleShowAllAlerts = () => {
-    reactivateAllAlerts();
-  };
-
+  // Navigation handlers
   const handleCategoryClick = (categoryId: string) => {
-    // Navigate to inventory page filtered by category
     onNavigate?.('inventory', { initialCategoryId: categoryId });
   };
 
   const handleAddItems = () => {
-    // Navigate to inventory page with add modal open
     onNavigate?.('inventory', { openAddModal: true });
   };
 
   const handleViewInventory = () => {
-    // Navigate to inventory page
     onNavigate?.('inventory');
   };
 
   const handleExportShoppingList = () => {
-    // Placeholder: Export shopping list functionality to be implemented
-    // Will export shopping list based on low stock items
     console.log('Export shopping list');
+  };
+
+  // Alert dismiss handler that converts string to AlertId
+  const onDismissAlert = (alertId: string) => {
+    handleDismissAlert(createAlertId(alertId));
   };
 
   return (
@@ -220,7 +69,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
       {/* Alerts Section */}
       {activeAlerts.length > 0 && (
         <section className={styles.alertsSection}>
-          <AlertBanner alerts={activeAlerts} onDismiss={handleDismissAlert} />
+          <AlertBanner alerts={activeAlerts} onDismiss={onDismissAlert} />
         </section>
       )}
 

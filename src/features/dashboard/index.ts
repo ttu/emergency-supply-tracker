@@ -10,6 +10,17 @@ export type {
 export { Dashboard } from './pages/Dashboard';
 export type { DashboardProps } from './pages/Dashboard';
 
+// Hooks
+export {
+  useCalculationOptions,
+  useCategoryStatuses,
+  useDashboardAlerts,
+} from './hooks';
+export type {
+  UseCategoryStatusesResult,
+  UseDashboardAlertsResult,
+} from './hooks';
+
 // Utils
 export {
   calculateCategoryShortages,

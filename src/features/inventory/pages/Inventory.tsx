@@ -11,7 +11,6 @@ import {
 } from '@/features/inventory';
 import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
-import { useSettings } from '@/features/settings';
 import { useRecommendedItems, TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
@@ -24,14 +23,9 @@ import type {
 } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import {
-  getCategoryDisplayStatus,
-  type CategoryCalculationOptions,
+  useCategoryStatuses,
+  useCalculationOptions,
 } from '@/features/dashboard';
-import {
-  DAILY_CALORIES_PER_PERSON,
-  DAILY_WATER_PER_PERSON,
-  CHILDREN_REQUIREMENT_MULTIPLIER,
-} from '@/shared/utils/constants';
 import styles from './Inventory.module.css';
 
 type SortBy = 'name' | 'quantity' | 'expiration';
@@ -46,35 +40,14 @@ export function Inventory({
   initialCategoryId,
 }: InventoryProps = {}) {
   const { t, i18n } = useTranslation(['common', 'products']);
-  const {
-    items,
-    addItem,
-    updateItem,
-    deleteItem,
-    disableRecommendedItem,
-    disabledRecommendedItems,
-  } = useInventory();
+  const { items, addItem, updateItem, deleteItem, disableRecommendedItem } =
+    useInventory();
   const { household } = useHousehold();
-  const { settings } = useSettings();
   const { recommendedItems, getItemName } = useRecommendedItems();
 
-  // Build calculation options from user settings
-  const calculationOptions: CategoryCalculationOptions = useMemo(
-    () => ({
-      childrenMultiplier:
-        (settings.childrenRequirementPercentage ??
-          CHILDREN_REQUIREMENT_MULTIPLIER * 100) / 100,
-      dailyCaloriesPerPerson:
-        settings.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON,
-      dailyWaterPerPerson:
-        settings.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON,
-    }),
-    [
-      settings.childrenRequirementPercentage,
-      settings.dailyCaloriesPerPerson,
-      settings.dailyWaterPerPerson,
-    ],
-  );
+  // Use shared hook for category statuses (reuses same calculation as Dashboard)
+  const { categoryStatuses } = useCategoryStatuses();
+  const calculationOptions = useCalculationOptions();
 
   // Filter and sort state
   const [selectedCategoryId, setSelectedCategoryId] = useState<
@@ -94,25 +67,11 @@ export function Inventory({
     RecommendedItemDefinition | undefined
   >(undefined);
 
-  // Calculate category status when a category is selected
+  // Get category status for selected category from shared hook
   const categoryStatus = useMemo(() => {
     if (!selectedCategoryId) return undefined;
-    return getCategoryDisplayStatus(
-      selectedCategoryId,
-      items,
-      household,
-      recommendedItems,
-      disabledRecommendedItems,
-      calculationOptions,
-    );
-  }, [
-    selectedCategoryId,
-    items,
-    household,
-    disabledRecommendedItems,
-    recommendedItems,
-    calculationOptions,
-  ]);
+    return categoryStatuses.find((cs) => cs.categoryId === selectedCategoryId);
+  }, [selectedCategoryId, categoryStatuses]);
 
   // Filter items
   let filteredItems = items;
@@ -138,9 +97,7 @@ export function Inventory({
         item,
         household,
         recommendedItems,
-        settings.childrenRequirementPercentage
-          ? settings.childrenRequirementPercentage / 100
-          : undefined,
+        calculationOptions.childrenMultiplier,
       );
       const status = calculateItemStatus(item, recommendedQuantity);
       return status === statusFilter;
