@@ -11,7 +11,8 @@ import { getStatusFromPercentage } from '@/shared/utils/calculations/itemStatus'
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import { calculateItemStatus } from '@/features/inventory/utils/status';
 import { calculateTotalWaterRequired } from '@/shared/utils/calculations/water';
-import { calculateCategoryPreparedness } from './preparedness';
+import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
+import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
@@ -387,22 +388,11 @@ export function calculateCategoryStatus(
   // Check if inventory meets the minimum requirements
   const hasEnough = hasEnoughInventory(category.id, shortageInfo);
 
-  // For food category, calculate percentage based on calories instead of quantity
-  // This should be checked first, before mixed units, as food is a special case
+  // completionPercentage already comes from calculateCategoryPreparedness()
+  // which uses the unified calculator (calorie-based for food, quantity-based for others)
+  // No need for calorie override anymore
   const isFood = isFoodCategory(category.id);
   let effectivePercentage = completionPercentage;
-  if (
-    isFood &&
-    shortageInfo.totalNeededCalories &&
-    shortageInfo.totalNeededCalories > 0
-  ) {
-    const caloriePercentage = Math.round(
-      ((shortageInfo.totalActualCalories ?? 0) /
-        shortageInfo.totalNeededCalories) *
-        100,
-    );
-    effectivePercentage = caloriePercentage;
-  }
 
   // For mixed units categories, calculate percentage from weighted fulfillment
   // to ensure consistency with the item count display (same logic as getCategoryDisplayStatus)
@@ -517,19 +507,21 @@ export function getCategoryDisplayStatus(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
-  recommendedItems: RecommendedItemDefinition[],
+  recommendedItems: RecommendedItemDefinition[] = RECOMMENDED_ITEMS,
   disabledRecommendedItems: string[] = [],
   options: CategoryCalculationOptions = {},
 ): CategoryDisplayStatus {
-  const calculatedPercentage = calculateCategoryPreparedness(
+  // Use unified category percentage calculator
+  const percentageResult = calculateCategoryPercentage(
     categoryId,
     items,
     household,
-    recommendedItems,
     disabledRecommendedItems,
+    recommendedItems,
     options,
   );
 
+  // Still need shortage info for detailed display (shortages list, units, etc.)
   const shortageInfo = calculateCategoryShortages(
     categoryId,
     items,
@@ -542,18 +534,10 @@ export function getCategoryDisplayStatus(
   // Check if inventory meets the minimum requirements
   const hasEnough = hasEnoughInventory(categoryId, shortageInfo);
 
-  // For food category, calculate percentage based on calories instead of quantity
+  // Use percentage from unified calculator
+  // For mixed units categories, still use weighted fulfillment for consistency with item count display
   const isFood = isFoodCategory(categoryId);
-  let effectivePercentage = calculatedPercentage;
-
-  if (isFood && shortageInfo.totalNeededCalories) {
-    const caloriePercentage = Math.round(
-      ((shortageInfo.totalActualCalories ?? 0) /
-        shortageInfo.totalNeededCalories) *
-        100,
-    );
-    effectivePercentage = caloriePercentage;
-  }
+  let effectivePercentage = percentageResult.percentage;
 
   // For mixed units categories, calculate percentage from weighted fulfillment
   // to ensure consistency with the item count display
@@ -587,9 +571,17 @@ export function getCategoryDisplayStatus(
     totalNeeded: shortageInfo.totalNeeded,
     primaryUnit: shortageInfo.primaryUnit,
     shortages: shortageInfo.shortages,
-    totalActualCalories: shortageInfo.totalActualCalories,
-    totalNeededCalories: shortageInfo.totalNeededCalories,
-    missingCalories: shortageInfo.missingCalories,
+    totalActualCalories: percentageResult.totalActualCalories,
+    totalNeededCalories: percentageResult.totalNeededCalories,
+    missingCalories:
+      percentageResult.totalNeededCalories &&
+      percentageResult.totalActualCalories
+        ? Math.max(
+            0,
+            percentageResult.totalNeededCalories -
+              percentageResult.totalActualCalories,
+          )
+        : undefined,
     drinkingWaterNeeded: shortageInfo.drinkingWaterNeeded,
     preparationWaterNeeded: shortageInfo.preparationWaterNeeded,
   };

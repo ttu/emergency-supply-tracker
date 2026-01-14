@@ -4,6 +4,7 @@ import {
   calculateCategoryShortages,
   getCategoryDisplayStatus,
 } from './categoryStatus';
+import { calculateCategoryPreparedness } from './preparedness';
 import type { InventoryItem } from '@/shared/types';
 import {
   createMockCategory,
@@ -944,9 +945,16 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       }),
     ];
 
-    // The completionPercentage parameter is now overridden by calorie-based calculation
-    // So we pass a high value, but the actual percentage will be calculated from calories (20%)
-    const completionPercentage = 80; // This will be overridden
+    // completionPercentage now comes from calculateCategoryPreparedness() which uses unified calculator
+    // Calculate the actual percentage using calculateCategoryPreparedness
+    const completionPercentage = calculateCategoryPreparedness(
+      'food',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
+
     const result = calculateCategoryStatus(
       foodCategory,
       items,
@@ -958,7 +966,7 @@ describe('calculateCategoryStatus - inventory-based status', () => {
 
     // Status should be critical because calorie percentage (20%) is below CRITICAL_PERCENTAGE_THRESHOLD (30)
     expect(result.status).toBe('critical');
-    // The completionPercentage should reflect calorie-based calculation, not the passed-in value
+    // The completionPercentage should reflect calorie-based calculation from unified calculator
     expect(result.completionPercentage).toBeLessThan(
       CRITICAL_PERCENTAGE_THRESHOLD,
     );

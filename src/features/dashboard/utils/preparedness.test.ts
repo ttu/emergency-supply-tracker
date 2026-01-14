@@ -974,7 +974,9 @@ describe('calculateCategoryPreparedness', () => {
       },
     ];
 
-    // Should return 0 (not NaN or Infinity) when maxScore is 0 (all items skipped)
+    // When all recommended quantities are 0 (0 people), totalNeeded is 0
+    // Unified calculator returns 100% when totalNeeded is 0 (no requirements = fully prepared)
+    // But we cap at 100 for preparedness score
     const score = calculateCategoryPreparedness(
       'water-beverages',
       items,
@@ -982,7 +984,7 @@ describe('calculateCategoryPreparedness', () => {
       customRecommendedItems,
       [],
     );
-    expect(score).toBe(0);
+    expect(score).toBe(100); // No requirements = 100% prepared
     expect(Number.isFinite(score)).toBe(true);
   });
 
@@ -1012,7 +1014,9 @@ describe('calculateCategoryPreparedness', () => {
       },
     ];
 
-    // Should return 0 when maxScore is 0 (all items skipped)
+    // When all recommended quantities are 0 (0 people, 0 days), totalNeeded is 0
+    // Unified calculator returns 100% when totalNeeded is 0 (no requirements = fully prepared)
+    // But we cap at 100 for preparedness score
     const score = calculateCategoryPreparedness(
       'water-beverages',
       items,
@@ -1020,7 +1024,7 @@ describe('calculateCategoryPreparedness', () => {
       customRecommendedItems,
       [],
     );
-    expect(score).toBe(0);
+    expect(score).toBe(100); // No requirements = 100% prepared
     expect(Number.isFinite(score)).toBe(true);
   });
 });

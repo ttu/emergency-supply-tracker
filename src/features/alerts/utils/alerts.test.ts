@@ -851,3 +851,80 @@ describe('food category calorie-based alerts', () => {
     expect(stockAlerts).toHaveLength(0);
   });
 });
+
+describe('alert and category display consistency', () => {
+  /**
+   * This test verifies that alerts and category cards show consistent percentages
+   * for the food category using calorie-based calculations.
+   *
+   * Previously there was a bug where:
+   * - Alert used: item.quantity / item.recommendedQuantity (quantity-based)
+   * - Category card used: totalActualCalories / totalNeededCalories (calorie-based)
+   *
+   * Now both use the unified calculateCategoryPercentage function which correctly
+   * applies calorie-based calculation for food category.
+   */
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-01-01'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should show same percentage in alert as in category card for food category', async () => {
+    // Import the category display function to compare
+    const { getCategoryDisplayStatus } =
+      await import('@/features/dashboard/utils/categoryStatus');
+
+    // Create a household that needs 6000 calories (1 adult * 2000 * 3 days)
+    const household = createMockHousehold({
+      adults: 1,
+      children: 0,
+      supplyDurationDays: 3,
+    });
+
+    // Create a food item with low calories to trigger a warning alert
+    // Household needs: 1 adult * 2000 kcal * 3 days = 6000 kcal
+    // Item has: 0.5 kg rice * 3600 kcal/kg = 1800 kcal = 30% (below 50%, triggers warning)
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Rice',
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('rice'),
+        quantity: 0.5, // 0.5 kg = 1800 calories = 30% of needed
+        caloriesPerUnit: 3600, // 1 kg = 3600 calories
+        unit: 'kilograms',
+        neverExpires: false,
+        expirationDate: createDateOnly('2025-12-31'),
+      }),
+    ];
+
+    // Generate alert and get category status
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      household,
+      RECOMMENDED_ITEMS,
+    );
+    const foodAlert = alerts.find((a) => a.id?.includes('food'));
+
+    const categoryStatus = getCategoryDisplayStatus('food', items, household);
+
+    // Both should show 30% (calorie-based: 1800/6000)
+    expect(foodAlert).toBeDefined();
+
+    // Extract percentage from alert message (e.g., "Running low (30% stocked)")
+    const alertPercentageMatch = foodAlert?.message.match(/(\d+)%/);
+    const alertPercentage = alertPercentageMatch
+      ? parseInt(alertPercentageMatch[1])
+      : undefined;
+
+    // The alert percentage should match the category card percentage
+    // Both now use the same calorie-based calculation
+    expect(alertPercentage).toBe(categoryStatus.completionPercentage);
+    expect(alertPercentage).toBe(30);
+  });
+});
