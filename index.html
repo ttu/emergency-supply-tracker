@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
 
     <!-- Primary Meta Tags -->
-    <title>Emergency Supply Tracker - 72-Hour Preparedness Planning</title>
+    <title>Emergency Supply Tracker - Preparedness Planning</title>
     <meta
       name="description"
-      content="Track your emergency supplies and ensure 72-hour preparedness for your household. Plan water, food, medical supplies, and more with this free tool."
+      content="Track your emergency supplies and ensure preparedness for your household. Plan water, food, medical supplies, and more with this free tool."
     />
     <meta
       name="keywords"
-      content="emergency preparedness, 72 hour kit, emergency supplies, disaster planning, survival kit tracker, emergency checklist, household preparedness"
+      content="emergency preparedness, emergency kit, emergency supplies, disaster planning, survival kit tracker, emergency checklist, household preparedness"
     />
     <meta name="author" content="Emergency Supply Tracker" />
     <link rel="canonical" href="https://www.emergencysupplytracker.com/" />
@@ -25,11 +25,11 @@
     <meta property="og:url" content="https://www.emergencysupplytracker.com/" />
     <meta
       property="og:title"
-      content="Emergency Supply Tracker - 72-Hour Preparedness"
+      content="Emergency Supply Tracker - Preparedness Planning"
     />
     <meta
       property="og:description"
-      content="Track emergency supplies for your household. Ensure 72-hour preparedness with our free planning tool. No signup required, works offline."
+      content="Track emergency supplies for your household. Ensure preparedness with our free planning tool. No signup required, works offline."
     />
     <meta
       property="og:image"
@@ -49,11 +49,11 @@
     />
     <meta
       name="twitter:title"
-      content="Emergency Supply Tracker - 72-Hour Preparedness"
+      content="Emergency Supply Tracker - Preparedness Planning"
     />
     <meta
       name="twitter:description"
-      content="Free tool to track 72-hour emergency supplies for your household. Plan water, food, medical supplies, and more."
+      content="Free tool to track emergency supplies for your household. Plan water, food, medical supplies, and more."
     />
     <meta
       name="twitter:image"
@@ -96,6 +96,116 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
 
+    <!-- Inline script to update metadata based on ?lang= parameter -->
+    <script>
+      (function () {
+        // Metadata translations
+        const metadata = {
+          en: {
+            title: 'Emergency Supply Tracker - Preparedness Planning',
+            description:
+              'Track your emergency supplies and ensure preparedness for your household. Plan water, food, medical supplies, and more with this free tool.',
+            keywords:
+              'emergency preparedness, emergency kit, emergency supplies, disaster planning, survival kit tracker, emergency checklist, household preparedness',
+            ogTitle: 'Emergency Supply Tracker - Preparedness Planning',
+            ogDescription:
+              'Track emergency supplies for your household. Ensure preparedness with our free planning tool. No signup required, works offline.',
+            twitterTitle: 'Emergency Supply Tracker - Preparedness Planning',
+            twitterDescription:
+              'Free tool to track emergency supplies for your household. Plan water, food, medical supplies, and more.',
+            ogLocale: 'en_US',
+          },
+          fi: {
+            title: 'Hätävarastojen Seuranta - Valmiussuunnittelu',
+            description:
+              'Seuraa hätävarastojasi ja varmista kotitaloutesi valmius. Suunnittele vesi, ruoka, lääkintätarvikkeet ja muuta tämän ilmaisen työkalun avulla.',
+            keywords:
+              'hätävarautuminen, hätävarustus, hätävarat, katastrofisuunnittelu, selviytymispakki, hätätilanteen tarkistuslista, kotitalouden valmius',
+            ogTitle: 'Hätävarastojen Seuranta - Valmiussuunnittelu',
+            ogDescription:
+              'Seuraa hätävarastoja kotitaloudellesi. Varmista valmius ilmaisella suunnittelutyökalullamme. Rekisteröitymistä ei tarvita, toimii offline-tilassa.',
+            twitterTitle: 'Hätävarastojen Seuranta - Valmiussuunnittelu',
+            twitterDescription:
+              'Ilmainen työkalu hätävarastojen seuraamiseen kotitaloudellesi. Suunnittele vesi, ruoka, lääkintätarvikkeet ja muuta.',
+            ogLocale: 'fi_FI',
+          },
+        };
+
+        // Get language from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const lang = urlParams.get('lang');
+        const supportedLangs = ['en', 'fi'];
+        const detectedLang =
+          lang && supportedLangs.includes(lang) ? lang : 'en';
+        const translations = metadata[detectedLang];
+
+        // Update document title
+        document.title = translations.title;
+
+        // Update HTML lang attribute
+        document.documentElement.lang = detectedLang;
+
+        // Update meta description
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+          metaDescription.setAttribute('content', translations.description);
+        }
+
+        // Update meta keywords
+        const metaKeywords = document.querySelector('meta[name="keywords"]');
+        if (metaKeywords) {
+          metaKeywords.setAttribute('content', translations.keywords);
+        }
+
+        // Update Open Graph tags
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) {
+          ogTitle.setAttribute('content', translations.ogTitle);
+        }
+
+        const ogDescription = document.querySelector(
+          'meta[property="og:description"]',
+        );
+        if (ogDescription) {
+          ogDescription.setAttribute('content', translations.ogDescription);
+        }
+
+        const ogLocale = document.querySelector('meta[property="og:locale"]');
+        if (ogLocale) {
+          ogLocale.setAttribute('content', translations.ogLocale);
+        }
+
+        // Update Twitter Card tags
+        const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twitterTitle) {
+          twitterTitle.setAttribute('content', translations.twitterTitle);
+        }
+
+        const twitterDescription = document.querySelector(
+          'meta[name="twitter:description"]',
+        );
+        if (twitterDescription) {
+          twitterDescription.setAttribute('content', translations.twitterDescription);
+        }
+
+        // Update JSON-LD structured data description
+        const jsonLdScript = document.querySelector(
+          'script[type="application/ld+json"]',
+        );
+        if (jsonLdScript) {
+          try {
+            const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
+            if (jsonLd.description) {
+              jsonLd.description = translations.description;
+              jsonLdScript.textContent = JSON.stringify(jsonLd);
+            }
+          } catch (e) {
+            // Silently fail if JSON-LD parsing fails
+          }
+        }
+      })();
+    </script>
+
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
       {
@@ -103,7 +213,7 @@
         "@type": "WebApplication",
         "name": "Emergency Supply Tracker",
         "url": "https://www.emergencysupplytracker.com/",
-        "description": "Track your emergency supplies and ensure 72-hour preparedness for your household. Plan water, food, medical supplies, and more.",
+        "description": "Track your emergency supplies and ensure preparedness for your household. Plan water, food, medical supplies, and more.",
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires JavaScript. Requires HTML5.",

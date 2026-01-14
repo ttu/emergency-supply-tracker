@@ -3,6 +3,15 @@
     "title": "Hätävarastojen Seuranta",
     "tagline": "Seuraa hätävarastojasi ja pysy valmiina"
   },
+  "metadata": {
+    "title": "Hätävarastojen Seuranta - Valmiussuunnittelu",
+    "description": "Seuraa hätävarastojasi ja varmista kotitaloutesi valmius. Suunnittele vesi, ruoka, lääkintätarvikkeet ja muuta tämän ilmaisen työkalun avulla.",
+    "keywords": "hätävarautuminen, hätävarustus, hätävarat, katastrofisuunnittelu, selviytymispakki, hätätilanteen tarkistuslista, kotitalouden valmius",
+    "ogTitle": "Hätävarastojen Seuranta - Valmiussuunnittelu",
+    "ogDescription": "Seuraa hätävarastoja kotitaloudellesi. Varmista valmius ilmaisella suunnittelutyökalullamme. Rekisteröitymistä ei tarvita, toimii offline-tilassa.",
+    "twitterTitle": "Hätävarastojen Seuranta - Valmiussuunnittelu",
+    "twitterDescription": "Ilmainen työkalu hätävarastojen seuraamiseen kotitaloudellesi. Suunnittele vesi, ruoka, lääkintätarvikkeet ja muuta."
+  },
   "landing": {
     "getStarted": "Aloita",
     "noSignup": {

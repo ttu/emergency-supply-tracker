@@ -2,3 +2,4 @@
 export { useKeyboardNavigation } from './useKeyboardNavigation';
 export { useLocalStorageSync } from './useLocalStorageSync';
 export { useNotification } from './useNotification';
+export { useDocumentMetadata } from './useDocumentMetadata';

@@ -34,6 +34,7 @@
     "validate": "npm run format:check && npm run type-check:all && npm run lint && npm test && npm run build",
     "validate:all": "npm run format:check && npm run lint && npm test && npm run build && npm run test:e2e",
     "validate:i18n": "tsx scripts/validate-i18n.ts",
+    "generate:og-image": "node scripts/generate-og-image.js",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

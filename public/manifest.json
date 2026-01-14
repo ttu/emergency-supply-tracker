@@ -1,7 +1,7 @@
 {
   "name": "Emergency Supply Tracker",
   "short_name": "EST",
-  "description": "Track emergency supplies for 72-hour preparedness",
+  "description": "Track emergency supplies for preparedness",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
