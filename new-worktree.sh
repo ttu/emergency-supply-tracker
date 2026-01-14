@@ -27,12 +27,16 @@ fi
 # Copy entire .claude directory if it exists (includes settings, agents, commands, etc.)
 if [ -d "${REPO_DIR}/.claude" ]; then
   echo "Copying .claude directory to worktree..."
+  # Remove destination if it exists to avoid nested directories
+  [ -d "${WORKTREE_DIR}/.claude" ] && rm -rf "${WORKTREE_DIR}/.claude"
   cp -r "${REPO_DIR}/.claude" "${WORKTREE_DIR}/.claude"
 fi
 
 # Copy entire .cursor directory if it exists (includes rules, settings, etc.)
 if [ -d "${REPO_DIR}/.cursor" ]; then
   echo "Copying .cursor directory to worktree..."
+  # Remove destination if it exists to avoid nested directories
+  [ -d "${WORKTREE_DIR}/.cursor" ] && rm -rf "${WORKTREE_DIR}/.cursor"
   cp -r "${REPO_DIR}/.cursor" "${WORKTREE_DIR}/.cursor"
 fi
 
