@@ -18,13 +18,19 @@ const DOMAIN_LANGUAGE_MAP: Record<string, SupportedLanguage> = {
 };
 
 /**
+ * @internal
+ * Exported for testing only - allows tests to verify domain language detection
+ */
+export const __DOMAIN_LANGUAGE_MAP__ = DOMAIN_LANGUAGE_MAP;
+
+/**
  * Gets the language based on the current domain.
  * Returns undefined if domain is not in the mapping.
  *
  * @returns The language code for the current domain, or undefined.
  */
 export function getLanguageFromDomain(): SupportedLanguage | undefined {
-  const hostname = window.location.hostname;
+  const hostname = globalThis.location.hostname;
 
   // Check exact match first
   if (hostname in DOMAIN_LANGUAGE_MAP) {
@@ -73,7 +79,7 @@ export function extractLanguageFromSearch(
  * @returns The language code if valid, or undefined if not present or invalid.
  */
 export function getLanguageFromUrl(): SupportedLanguage | undefined {
-  return extractLanguageFromSearch(window.location.search);
+  return extractLanguageFromSearch(globalThis.location.search);
 }
 
 /**
@@ -81,10 +87,10 @@ export function getLanguageFromUrl(): SupportedLanguage | undefined {
  * Uses replaceState to avoid adding to browser history.
  */
 export function clearLanguageFromUrl(): void {
-  const url = new URL(window.location.href);
+  const url = new URL(globalThis.location.href);
   if (url.searchParams.has('lang')) {
     url.searchParams.delete('lang');
-    window.history.replaceState({}, '', url.toString());
+    globalThis.history.replaceState({}, '', url.toString());
   }
 }
 

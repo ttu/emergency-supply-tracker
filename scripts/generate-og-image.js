@@ -5,9 +5,9 @@
  */
 
 import { chromium } from 'playwright';
-import { readFileSync, writeFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,7 +47,9 @@ async function generateOgImage() {
   console.log(`   Size: ${screenshot.length} bytes`);
 }
 
-generateOgImage().catch((error) => {
+try {
+  await generateOgImage();
+} catch (error) {
   console.error('❌ Error generating OG image:', error);
   process.exit(1);
-});
+}

@@ -132,7 +132,7 @@
         };
 
         // Get language from URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams = new URLSearchParams(globalThis.location.search);
         const lang = urlParams.get('lang');
         const supportedLangs = ['en', 'fi'];
         const detectedLang =
@@ -146,7 +146,9 @@
         document.documentElement.lang = detectedLang;
 
         // Update meta description
-        const metaDescription = document.querySelector('meta[name="description"]');
+        const metaDescription = document.querySelector(
+          'meta[name="description"]',
+        );
         if (metaDescription) {
           metaDescription.setAttribute('content', translations.description);
         }
@@ -176,7 +178,9 @@
         }
 
         // Update Twitter Card tags
-        const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+        const twitterTitle = document.querySelector(
+          'meta[name="twitter:title"]',
+        );
         if (twitterTitle) {
           twitterTitle.setAttribute('content', translations.twitterTitle);
         }
@@ -185,7 +189,10 @@
           'meta[name="twitter:description"]',
         );
         if (twitterDescription) {
-          twitterDescription.setAttribute('content', translations.twitterDescription);
+          twitterDescription.setAttribute(
+            'content',
+            translations.twitterDescription,
+          );
         }
 
         // Update JSON-LD structured data description
@@ -199,8 +206,9 @@
               jsonLd.description = translations.description;
               jsonLdScript.textContent = JSON.stringify(jsonLd);
             }
-          } catch (e) {
-            // Silently fail if JSON-LD parsing fails
+          } catch (error) {
+            // Log error if JSON-LD parsing fails, but don't block page load
+            console.warn('Failed to update JSON-LD description:', error);
           }
         }
       })();
