@@ -1,10 +1,6 @@
-import { useState, useEffect, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import type { HouseholdConfig } from '@/shared/types';
-import {
-  getAppData,
-  saveAppData,
-  createDefaultAppData,
-} from '@/shared/utils/storage/localStorage';
+import { useLocalStorageSync } from '@/shared/hooks';
 import { HouseholdContext } from './context';
 
 const DEFAULT_HOUSEHOLD: HouseholdConfig = {
@@ -39,18 +35,10 @@ const HOUSEHOLD_PRESETS: Record<
 };
 
 export function HouseholdProvider({ children }: { children: ReactNode }) {
-  const [household, setHousehold] = useState<HouseholdConfig>(() => {
-    const data = getAppData();
-    return data?.household || DEFAULT_HOUSEHOLD;
-  });
-
-  // Save to localStorage on change
-  useEffect(() => {
-    const data = getAppData() || createDefaultAppData();
-    data.household = household;
-    data.lastModified = new Date().toISOString();
-    saveAppData(data);
-  }, [household]);
+  const [household, setHousehold] = useLocalStorageSync(
+    'household',
+    DEFAULT_HOUSEHOLD,
+  );
 
   const updateHousehold = (updates: Partial<HouseholdConfig>) => {
     setHousehold((prev) => ({ ...prev, ...updates }));
