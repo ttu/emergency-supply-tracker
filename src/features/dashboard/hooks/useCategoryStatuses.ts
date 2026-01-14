@@ -29,6 +29,12 @@ export function useCategoryStatuses(): UseCategoryStatusesResult {
   const calculationOptions = useCalculationOptions();
 
   // Calculate per-category preparedness
+  // Convert ProductTemplateId[] to string[] for compatibility with calculation functions
+  const disabledRecommendedItemsAsStrings = useMemo(
+    () => disabledRecommendedItems.map((id) => String(id)),
+    [disabledRecommendedItems],
+  );
+
   const categoryPreparedness = useMemo(() => {
     const map = new Map<string, number>();
     STANDARD_CATEGORIES.forEach((category) => {
@@ -36,8 +42,8 @@ export function useCategoryStatuses(): UseCategoryStatusesResult {
         category.id,
         items,
         household,
-        disabledRecommendedItems,
         recommendedItems,
+        disabledRecommendedItemsAsStrings,
         calculationOptions,
       );
       map.set(category.id, score);
@@ -46,8 +52,8 @@ export function useCategoryStatuses(): UseCategoryStatusesResult {
   }, [
     items,
     household,
-    disabledRecommendedItems,
     recommendedItems,
+    disabledRecommendedItemsAsStrings,
     calculationOptions,
   ]);
 
@@ -59,15 +65,15 @@ export function useCategoryStatuses(): UseCategoryStatusesResult {
         items,
         categoryPreparedness,
         household,
-        disabledRecommendedItems,
         recommendedItems,
+        disabledRecommendedItemsAsStrings,
         calculationOptions,
       ),
     [
       items,
       categoryPreparedness,
       household,
-      disabledRecommendedItems,
+      disabledRecommendedItemsAsStrings,
       recommendedItems,
       calculationOptions,
     ],

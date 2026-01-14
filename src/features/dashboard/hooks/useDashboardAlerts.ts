@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
+import { useRecommendedItems } from '@/features/templates';
 import { generateDashboardAlerts, type Alert } from '@/features/alerts';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { shouldShowBackupReminder, dismissBackupReminder } from '../utils';
@@ -25,12 +26,13 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
   const { items, dismissedAlertIds, dismissAlert, reactivateAllAlerts } =
     useInventory();
   const { household } = useHousehold();
+  const { recommendedItems } = useRecommendedItems();
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
 
   // Generate alerts (including water shortage alerts)
   const allAlerts = useMemo(
-    () => generateDashboardAlerts(items, t, household),
-    [items, t, household],
+    () => generateDashboardAlerts(items, t, household, recommendedItems),
+    [items, t, household, recommendedItems],
   );
 
   // Generate backup reminder alert if needed

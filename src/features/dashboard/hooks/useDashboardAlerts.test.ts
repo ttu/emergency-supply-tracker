@@ -11,6 +11,10 @@ vi.mock('@/features/household', () => ({
   useHousehold: vi.fn(),
 }));
 
+vi.mock('@/features/templates', () => ({
+  useRecommendedItems: vi.fn(),
+}));
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
@@ -32,6 +36,7 @@ vi.mock('@/features/dashboard/utils', () => ({
 
 import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
+import { useRecommendedItems } from '@/features/templates';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { generateDashboardAlerts } from '@/features/alerts';
 import {
@@ -70,6 +75,16 @@ describe('useDashboardAlerts', () => {
       },
       updateHousehold: vi.fn(),
       setPreset: vi.fn(),
+    });
+
+    vi.mocked(useRecommendedItems).mockReturnValue({
+      recommendedItems: [],
+      customRecommendationsInfo: null,
+      isUsingCustomRecommendations: false,
+      importRecommendedItems: vi.fn(),
+      exportRecommendedItems: vi.fn(),
+      resetToDefaultRecommendations: vi.fn(),
+      getItemName: vi.fn(),
     });
 
     vi.mocked(generateDashboardAlerts).mockReturnValue([]);
