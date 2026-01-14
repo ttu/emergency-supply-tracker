@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import { useState, ReactNode, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type {
   InventoryItem,
@@ -9,11 +9,7 @@ import type {
 } from '@/shared/types';
 import { createAlertId, createProductTemplateId } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
-import {
-  getAppData,
-  saveAppData,
-  createDefaultAppData,
-} from '@/shared/utils/storage/localStorage';
+import { useLocalStorageSync } from '@/shared/hooks';
 import { InventoryContext } from './context';
 import {
   trackItemAdded,
@@ -32,32 +28,22 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     () => notification?.showNotification ?? (() => {}),
     [notification?.showNotification],
   );
-  const [items, setItems] = useState<InventoryItem[]>(() => {
-    const data = getAppData();
+  const [items, setItems] = useLocalStorageSync('items', (data) => {
     return data?.items || [];
   });
   const [categories] = useState<Category[]>(STANDARD_CATEGORIES);
-  const [dismissedAlertIds, setDismissedAlertIds] = useState<AlertId[]>(() => {
-    const data = getAppData();
-    return (data?.dismissedAlertIds || []).map(createAlertId);
-  });
-  const [disabledRecommendedItems, setDisabledRecommendedItems] = useState<
-    ProductTemplateId[]
-  >(() => {
-    const data = getAppData();
-    return (data?.disabledRecommendedItems || []).map(createProductTemplateId);
-  });
-
-  // Save items, dismissedAlertIds, and disabledRecommendedItems to localStorage on change
-  // Consolidated into single effect to avoid race conditions
-  useEffect(() => {
-    const data = getAppData() || createDefaultAppData();
-    data.items = items;
-    data.dismissedAlertIds = dismissedAlertIds;
-    data.disabledRecommendedItems = disabledRecommendedItems;
-    data.lastModified = new Date().toISOString();
-    saveAppData(data);
-  }, [items, dismissedAlertIds, disabledRecommendedItems]);
+  const [dismissedAlertIds, setDismissedAlertIds] = useLocalStorageSync(
+    'dismissedAlertIds',
+    (data) => {
+      return (data?.dismissedAlertIds || []).map(createAlertId);
+    },
+  );
+  const [disabledRecommendedItems, setDisabledRecommendedItems] =
+    useLocalStorageSync('disabledRecommendedItems', (data) => {
+      return (data?.disabledRecommendedItems || []).map(
+        createProductTemplateId,
+      );
+    });
 
   const addItem = useCallback(
     (item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -69,7 +55,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         'success',
       );
     },
-    [showNotification, t],
+    [setItems, showNotification, t],
   );
 
   const updateItem = useCallback(
@@ -89,7 +75,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         );
       }
     },
-    [items, showNotification, t],
+    [items, setItems, showNotification, t],
   );
 
   const deleteItem = useCallback(
@@ -104,7 +90,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         );
       }
     },
-    [items, showNotification, t],
+    [items, setItems, showNotification, t],
   );
 
   const addItems = useCallback(
@@ -118,36 +104,48 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         );
       }
     },
-    [showNotification, t],
+    [setItems, showNotification, t],
   );
 
-  const dismissAlert = useCallback((alertId: AlertId) => {
-    setDismissedAlertIds((prev) =>
-      prev.includes(alertId) ? prev : [...prev, alertId],
-    );
-  }, []);
+  const dismissAlert = useCallback(
+    (alertId: AlertId) => {
+      setDismissedAlertIds((prev) =>
+        prev.includes(alertId) ? prev : [...prev, alertId],
+      );
+    },
+    [setDismissedAlertIds],
+  );
 
-  const reactivateAlert = useCallback((alertId: AlertId) => {
-    setDismissedAlertIds((prev) => prev.filter((id) => id !== alertId));
-  }, []);
+  const reactivateAlert = useCallback(
+    (alertId: AlertId) => {
+      setDismissedAlertIds((prev) => prev.filter((id) => id !== alertId));
+    },
+    [setDismissedAlertIds],
+  );
 
   const reactivateAllAlerts = useCallback(() => {
     setDismissedAlertIds([]);
-  }, []);
+  }, [setDismissedAlertIds]);
 
-  const disableRecommendedItem = useCallback((itemId: ProductTemplateId) => {
-    setDisabledRecommendedItems((prev) =>
-      prev.includes(itemId) ? prev : [...prev, itemId],
-    );
-  }, []);
+  const disableRecommendedItem = useCallback(
+    (itemId: ProductTemplateId) => {
+      setDisabledRecommendedItems((prev) =>
+        prev.includes(itemId) ? prev : [...prev, itemId],
+      );
+    },
+    [setDisabledRecommendedItems],
+  );
 
-  const enableRecommendedItem = useCallback((itemId: ProductTemplateId) => {
-    setDisabledRecommendedItems((prev) => prev.filter((id) => id !== itemId));
-  }, []);
+  const enableRecommendedItem = useCallback(
+    (itemId: ProductTemplateId) => {
+      setDisabledRecommendedItems((prev) => prev.filter((id) => id !== itemId));
+    },
+    [setDisabledRecommendedItems],
+  );
 
   const enableAllRecommendedItems = useCallback(() => {
     setDisabledRecommendedItems([]);
-  }, []);
+  }, [setDisabledRecommendedItems]);
 
   return (
     <InventoryContext.Provider
