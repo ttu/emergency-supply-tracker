@@ -14,6 +14,7 @@ import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { Navigation, PageType } from '@/shared/components/Navigation';
 import { NotificationBar } from '@/shared/components/NotificationBar';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
+import { DocumentMetadata } from '@/shared/components/DocumentMetadata';
 import { Dashboard } from '@/features/dashboard';
 import { Help } from '@/features/help';
 import { Onboarding } from '@/features/onboarding';
@@ -105,6 +106,7 @@ function App() {
     <ErrorBoundary>
       <SettingsProvider>
         <ThemeApplier>
+          <DocumentMetadata />
           <NotificationProvider>
             <HouseholdProvider>
               <RecommendedItemsProvider>
