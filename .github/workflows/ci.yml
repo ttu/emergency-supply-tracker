@@ -73,7 +73,7 @@ jobs:
       - run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e:chromium
+      - run: npm run test:e2e
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v6
         if: always()
