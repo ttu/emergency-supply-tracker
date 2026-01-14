@@ -14,7 +14,7 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
     household: {
       adults: 2,
       children: 0,
-      supplyDurationDays: 3,
+      supplyDurationDays: 7,
       useFreezer: false,
     },
     settings: {
@@ -248,6 +248,54 @@ describe('useLocalStorageSync', () => {
         expect.objectContaining({
           household: updatedHousehold,
           lastModified: expect.any(String),
+        }),
+      );
+    });
+
+    it('should call createDefaultAppData when getAppData returns undefined in useEffect', () => {
+      const defaultHousehold: HouseholdConfig = {
+        adults: 1,
+        children: 0,
+        supplyDurationDays: 3,
+        useFreezer: false,
+      };
+
+      const mockDefaultAppData = {
+        version: CURRENT_SCHEMA_VERSION,
+        household: defaultHousehold,
+        settings: {
+          language: 'en' as const,
+          theme: 'light' as const,
+          highContrast: false,
+          advancedFeatures: {
+            calorieTracking: false,
+            powerManagement: false,
+            waterTracking: false,
+          },
+        },
+        items: [],
+        customCategories: [],
+        customTemplates: [],
+        dismissedAlertIds: [],
+        disabledRecommendedItems: [],
+        lastModified: new Date().toISOString(),
+      };
+
+      // Mock getAppData to return undefined (simulating empty localStorage)
+      vi.mocked(localStorage.getAppData).mockReturnValue(undefined);
+      vi.mocked(localStorage.createDefaultAppData).mockReturnValue(
+        mockDefaultAppData,
+      );
+
+      renderHook(() => useLocalStorageSync('household', defaultHousehold));
+
+      // Verify createDefaultAppData was called in useEffect
+      expect(localStorage.createDefaultAppData).toHaveBeenCalled();
+
+      // Verify saveAppData was called with the default app data
+      expect(localStorage.saveAppData).toHaveBeenCalledWith(
+        expect.objectContaining({
+          household: defaultHousehold,
         }),
       );
     });

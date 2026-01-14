@@ -31,7 +31,7 @@ The Emergency Supply Tracker codebase demonstrates **solid architectural foundat
 
 ### Project Structure
 
-```
+```text
 src/
 ├── features/          # Feature modules (dashboard, inventory, settings, household, onboarding, templates)
 ├── shared/           # Shared utilities, components, types
