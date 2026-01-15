@@ -12,8 +12,8 @@ import type {
 } from '@/shared/types';
 
 // Import built-in kit JSON files
-import standard72h from './72tuntia-standard.json';
-import minimal from './minimal-essentials.json';
+import standard72h from './72tuntia-standard.json' assert { type: 'json' };
+import minimal from './minimal-essentials.json' assert { type: 'json' };
 
 /** Map of built-in kit IDs to their data */
 export const BUILT_IN_KITS: Record<BuiltInKitId, RecommendedItemsFile> = {
