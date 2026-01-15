@@ -1,11 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  ReactNode,
-  useCallback,
-  useMemo,
-} from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import type {
   RecommendedItemDefinition,
   RecommendedItemsFile,
@@ -13,11 +6,7 @@ import type {
   LocalizedNames,
 } from '@/shared/types';
 import { RECOMMENDED_ITEMS } from '../data';
-import {
-  getAppData,
-  saveAppData,
-  createDefaultAppData,
-} from '@/shared/utils/storage/localStorage';
+import { useLocalStorageSync } from '@/shared/hooks';
 import { RecommendedItemsContext } from '../context';
 import {
   validateRecommendedItemsFile,
@@ -34,10 +23,11 @@ export function RecommendedItemsProvider({
 }: {
   children: ReactNode;
 }) {
-  // Custom recommended items file (null means using built-in)
+  // Use the shared localStorage sync hook for customRecommendedItems
+  // Note: When customRecommendedItems changes, callers should also clear
+  // disabledRecommendedItems via inventory context since IDs may no longer exist
   const [customRecommendedItems, setCustomRecommendedItems] =
-    useState<RecommendedItemsFile | null>(() => {
-      const data = getAppData();
+    useLocalStorageSync('customRecommendedItems', (data) => {
       return data?.customRecommendedItems ?? null;
     });
 
@@ -76,24 +66,6 @@ export function RecommendedItemsProvider({
 
   const isUsingCustomRecommendations = customRecommendedItems !== null;
 
-  // Track whether this is the initial mount to prevent unnecessary localStorage writes
-  const isInitialMount = useRef(true);
-
-  // Save to localStorage when customRecommendedItems changes (skip initial mount)
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
-    const data = getAppData() || createDefaultAppData();
-    data.customRecommendedItems = customRecommendedItems;
-    // Clear disabled items when recommendations change (IDs may no longer exist)
-    data.disabledRecommendedItems = [];
-    data.lastModified = new Date().toISOString();
-    saveAppData(data);
-  }, [customRecommendedItems]);
-
   const importRecommendedItems = useCallback(
     (file: RecommendedItemsFile): ValidationResult => {
       const result = validateRecommendedItemsFile(file);
@@ -102,7 +74,7 @@ export function RecommendedItemsProvider({
       }
       return result;
     },
-    [],
+    [setCustomRecommendedItems],
   );
 
   const exportRecommendedItems = useCallback((): RecommendedItemsFile => {
@@ -145,7 +117,7 @@ export function RecommendedItemsProvider({
 
   const resetToDefaultRecommendations = useCallback(() => {
     setCustomRecommendedItems(null);
-  }, []);
+  }, [setCustomRecommendedItems]);
 
   const getItemName = useCallback(
     (

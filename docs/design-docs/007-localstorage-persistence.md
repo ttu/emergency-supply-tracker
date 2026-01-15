@@ -1,7 +1,7 @@
 # Design Doc: LocalStorage Persistence Architecture
 
 **Status:** Published  
-**Last Updated:** 2025-01-23  
+**Last Updated:** 2026-01-15  
 **Authors:** Development Team
 
 ---
@@ -167,6 +167,58 @@ interface AppData {
 - Auto-save to LocalStorage via `useEffect` hooks
 - Merge feature state with full AppData on save
 - Each provider handles its own state slice
+
+### React Hooks Abstraction Layer
+
+To reduce coupling and improve testability, localStorage access is abstracted through custom hooks:
+
+**Core Hook: `useLocalStorageSync`**
+
+**Location:** `src/shared/hooks/useLocalStorageSync.ts`
+
+```typescript
+function useLocalStorageSync<T>(
+  key: string,
+  selector: (data: AppData | undefined) => T,
+): [T, (value: T | ((prev: T) => T)) => void];
+```
+
+- Provides React state that syncs with localStorage
+- Reads initial value using the selector function
+- Writes changes back to localStorage on state update
+- Handles read-modify-write pattern automatically
+- Enables easier testing through hook mocking
+
+**Feature-Specific Hooks:**
+
+| Hook                   | Purpose                      | Location                    |
+| ---------------------- | ---------------------------- | --------------------------- |
+| `useBackupTracking()`  | Manage backup reminder state | `features/dashboard/hooks/` |
+| `useDashboardAlerts()` | Manage dashboard alert state | `features/dashboard/hooks/` |
+
+**Example Usage:**
+
+```typescript
+// In provider - using useLocalStorageSync
+const [customRecommendedItems, setCustomRecommendedItems] = useLocalStorageSync(
+  'customRecommendedItems',
+  (data) => {
+    return data?.customRecommendedItems ?? null;
+  },
+);
+
+// In component - using feature-specific hook
+const { shouldShowBackupReminder, recordBackupDate, dismissBackupReminder } =
+  useBackupTracking();
+```
+
+**Benefits:**
+
+- Reduces direct `getAppData()`/`saveAppData()` calls
+- Enables component testing without localStorage mocking
+- Provides consistent read-modify-write pattern
+- Centralizes localStorage access logic
+- Makes dependencies explicit through hook parameters
 
 ### Concurrent Writes and Race Condition Safety
 

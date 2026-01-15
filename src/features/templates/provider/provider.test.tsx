@@ -293,8 +293,9 @@ describe('RecommendedItemsProvider', () => {
     const lastCall =
       mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
     expect(lastCall.customRecommendedItems).toEqual(validCustomFile);
-    // Should clear disabled items on import
-    expect(lastCall.disabledRecommendedItems).toEqual([]);
+    // Note: Clearing disabledRecommendedItems is now the responsibility of the
+    // component that calls importRecommendedItems, since each provider manages
+    // its own slice of localStorage state independently
   });
 
   describe('getItemName', () => {

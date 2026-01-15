@@ -4,8 +4,8 @@ import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { generateDashboardAlerts, type Alert } from '@/features/alerts';
+import { useBackupTracking } from './useBackupTracking';
 import { getAppData } from '@/shared/utils/storage/localStorage';
-import { shouldShowBackupReminder, dismissBackupReminder } from '../utils';
 import { createAlertId, type AlertId } from '@/shared/types';
 
 const BACKUP_REMINDER_ALERT_ID = createAlertId('backup-reminder');
@@ -27,6 +27,8 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     useInventory();
   const { household } = useHousehold();
   const { recommendedItems } = useRecommendedItems();
+  const { shouldShowBackupReminder, dismissBackupReminder: dismissBackup } =
+    useBackupTracking();
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
 
   // Generate alerts (including water shortage alerts)
@@ -40,16 +42,17 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
   const backupReminderAlert: Alert | undefined = useMemo(() => {
     if (backupReminderDismissed) return undefined;
 
+    // Get lastModified from appData for backup reminder check
     const appData = getAppData();
-    if (!shouldShowBackupReminder(appData)) return undefined;
+    const lastModified = appData?.lastModified ?? new Date().toISOString();
+    if (!shouldShowBackupReminder(items.length, lastModified)) return undefined;
 
     return {
       id: BACKUP_REMINDER_ALERT_ID,
       type: 'info',
       message: t('alerts.backup.reminderMessage'),
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backupReminderDismissed, t, items]);
+  }, [backupReminderDismissed, t, items, shouldShowBackupReminder]);
 
   // Combine all alerts with backup reminder first
   const combinedAlerts = useMemo(() => {
@@ -80,13 +83,13 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
   const handleDismissAlert = useCallback(
     (alertId: AlertId) => {
       if (alertId === BACKUP_REMINDER_ALERT_ID) {
-        dismissBackupReminder();
+        dismissBackup();
         setBackupReminderDismissed(true);
       } else {
         dismissAlert(alertId);
       }
     },
-    [dismissAlert],
+    [dismissAlert, dismissBackup],
   );
 
   const handleShowAllAlerts = useCallback(() => {
