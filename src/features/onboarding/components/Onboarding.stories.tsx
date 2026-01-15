@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Onboarding } from './Onboarding';
 import { SettingsProvider } from '@/features/settings';
+import { RecommendedItemsProvider } from '@/features/templates';
 
 const meta = {
   title: 'Onboarding/Onboarding',
@@ -12,7 +13,9 @@ const meta = {
   decorators: [
     (Story) => (
       <SettingsProvider>
-        <Story />
+        <RecommendedItemsProvider>
+          <Story />
+        </RecommendedItemsProvider>
       </SettingsProvider>
     ),
   ],

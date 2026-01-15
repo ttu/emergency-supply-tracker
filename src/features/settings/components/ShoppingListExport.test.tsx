@@ -123,9 +123,10 @@ describe('ShoppingListExport', () => {
       },
     });
 
-    expect(
-      screen.getByText(/\(2 settings\.shoppingList\.items\)/),
-    ).toBeInTheDocument();
+    // The paragraph should contain the item count
+    const paragraph = screen.getByRole('button').nextElementSibling;
+    expect(paragraph).toHaveTextContent('(2');
+    expect(paragraph).toHaveTextContent('settings.shoppingList.items)');
   });
 
   it('should not trigger export when button is disabled', () => {
