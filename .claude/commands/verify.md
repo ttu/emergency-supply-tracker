@@ -1,51 +1,37 @@
 ---
-description: Run verification checks (lint, test, type-check, build)
-allowed-tools: Bash(npm:*), Bash(npx:*)
+name: verify-all
+description: Run full verification suite including E2E tests. Use this agent when comprehensive testing is needed, especially before merging PRs or after significant changes.
+tools: Bash(npm:*), Bash(npx:*)
+model: haiku
 ---
 
-# Verify Codebase
+# Full Verification Agent
 
-Run all verification checks to ensure code quality.
+Run comprehensive verification including E2E tests.
 
-## Instructions
+## Command
 
-Run these checks in order (stop on first failure unless `$ARGUMENTS` contains "all"):
+Run the full validation suite with a single command:
 
-1. **Lint** - Check code style
-   ```bash
-   npm run lint
-   ```
+```bash
+npm run validate:all
+```
 
-2. **Type Check** - Verify TypeScript types
-   ```bash
-   npx tsc --noEmit
-   ```
+This runs: format check → type check (all configs) → lint → unit tests → build → storybook tests → E2E tests
 
-3. **Tests** - Run test suite
-   ```bash
-   npm test
-   ```
+## Output Format
 
-4. **Build** - Verify production build
-   ```bash
-   npm run build
-   ```
-
-## Output
-
-Report results in this format:
+Report results as:
 
 ```
-Verification Results:
-- Lint: ✅ Pass / ❌ Fail
+Full Verification Results:
+- Format Check: ✅ Pass / ❌ Fail
 - Type Check: ✅ Pass / ❌ Fail
-- Tests: ✅ Pass (X passed) / ❌ Fail (X failed)
+- Lint: ✅ Pass / ❌ Fail
+- Unit Tests: ✅ Pass (X passed) / ❌ Fail (X failed)
 - Build: ✅ Pass / ❌ Fail
+- Storybook Tests: ✅ Pass (X passed) / ❌ Fail (X failed)
+- E2E Tests: ✅ Pass (X passed) / ❌ Fail (X failed)
 ```
 
-## Arguments
-
-- No arguments: Stop on first failure
-- `all`: Run all checks even if some fail
-- `quick`: Only run lint and type-check (skip tests and build)
-- `test`: Only run tests
+If any step fails, include the error output for debugging.
