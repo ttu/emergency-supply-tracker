@@ -12,6 +12,10 @@ import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemR
 import { calculateItemStatus } from '@/features/inventory/utils/status';
 import { calculateTotalWaterRequired } from '@/shared/utils/calculations/water';
 import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
+import {
+  findMatchingItems,
+  sumMatchingItemsCalories,
+} from '@/shared/utils/calculations/itemMatching';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
@@ -203,22 +207,9 @@ export function calculateCategoryShortages(
 
     recommendedQty = Math.ceil(recommendedQty);
 
-    // Match items by: itemType (direct ID match), or name (normalized)
-    // Note: Custom items (itemType === 'custom') should NOT match by name to avoid
-    // false matches with recommended items
-    const recItemId = recItem.id;
-    const recItemIdNormalized = recItemId.toLowerCase();
-    const matchingItems = categoryItems.filter((item) => {
-      // itemType is stored as template ID directly
-      if (item.itemType === recItemId) return true;
-      // Match name by normalizing to kebab-case (for manually created items)
-      // BUT exclude custom items to avoid false matches
-      if (item.itemType !== 'custom') {
-        const nameNormalized = item.name.toLowerCase().replace(/\s+/g, '-');
-        if (nameNormalized === recItemIdNormalized) return true;
-      }
-      return false;
-    });
+    // Find matching items using shared utility
+    // Matches by itemType or normalized name (excludes custom items from name matching)
+    const matchingItems = findMatchingItems(categoryItems, recItem);
 
     // If any matching item is marked as enough, treat as having met the requirement
     const hasMarkedAsEnough = matchingItems.some((item) => item.markedAsEnough);
@@ -228,16 +219,13 @@ export function calculateCategoryShortages(
       0,
     );
 
-    // Calculate calories for food items
+    // Calculate calories for food items using shared utility
     if (isFoodRecommendedItem(recItem) && recItem.caloriesPerUnit) {
-      // Get calories from inventory items (use template value as fallback)
-      // Always use actual quantities, not inflated to recommended
-      const itemCalories = matchingItems.reduce((sum, item) => {
-        const calsPerUnit =
-          item.caloriesPerUnit ?? recItem.caloriesPerUnit ?? 0;
-        return sum + item.quantity * calsPerUnit;
-      }, 0);
-
+      const itemCalories = sumMatchingItemsCalories(
+        categoryItems,
+        recItem,
+        recItem.caloriesPerUnit,
+      );
       totalActualCalories += itemCalories;
     }
 

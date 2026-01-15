@@ -9,6 +9,7 @@ import {
   DEFAULT_EMPTY_PREPAREDNESS,
 } from '@/shared/utils/constants';
 import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
+import { sumMatchingItemsQuantityByType } from '@/shared/utils/calculations/itemMatching';
 import type {
   CategoryCalculationOptions,
   CategoryStatusSummary,
@@ -85,18 +86,9 @@ export function calculatePreparednessScore(
       return;
     }
 
-    // Find matching inventory items by itemType only
+    // Find matching inventory items by itemType only using shared utility
     // (not by category, to avoid double-counting items across multiple recommended items)
-    // Note: We don't match by name to avoid false matches with user-typed names
-    const matchingItems = items.filter((item) => {
-      // itemType is stored as template ID when created from template
-      return item.itemType === recItem.id;
-    });
-
-    const totalQty = matchingItems.reduce(
-      (sum, item) => sum + item.quantity,
-      0,
-    );
+    const totalQty = sumMatchingItemsQuantityByType(items, recItem.id);
 
     // Score is percentage of recommended quantity, capped at MAX_ITEM_SCORE
     const itemScore = Math.min(

@@ -26,6 +26,10 @@ import {
   DAILY_WATER_PER_PERSON,
 } from '@/shared/utils/constants';
 import { calculateTotalWaterRequired } from './water';
+import {
+  findMatchingItemsByType,
+  itemMatchesRecommendedId,
+} from './itemMatching';
 
 /**
  * Options for category percentage calculations.
@@ -159,10 +163,7 @@ function calculateFoodCategoryPercentage(
     }
 
     // Find matching items by itemType only (no name matching)
-    const recItemId = recItem.id;
-    const matchingItems = categoryItems.filter(
-      (item) => item.itemType === recItemId,
-    );
+    const matchingItems = findMatchingItemsByType(categoryItems, recItem.id);
 
     // Sum calories from matching items
     const itemCalories = matchingItems.reduce((sum, item) => {
@@ -179,8 +180,8 @@ function calculateFoodCategoryPercentage(
     if (!item.caloriesPerUnit) return;
 
     // Check if this item was already counted (by itemType only)
-    const alreadyCounted = recommendedForCategory.some(
-      (recItem) => item.itemType === recItem.id,
+    const alreadyCounted = recommendedForCategory.some((recItem) =>
+      itemMatchesRecommendedId(item, recItem.id),
     );
 
     if (!alreadyCounted) {
@@ -246,10 +247,7 @@ function calculateQuantityCategoryPercentage(
     recommendedQty = Math.ceil(recommendedQty);
 
     // Find matching items by itemType only (no name matching)
-    const recItemId = recItem.id;
-    const matchingItems = categoryItems.filter(
-      (item) => item.itemType === recItemId,
-    );
+    const matchingItems = findMatchingItemsByType(categoryItems, recItem.id);
 
     const hasMarkedAsEnough = matchingItems.some((item) => item.markedAsEnough);
     const actualQty = matchingItems.reduce(
