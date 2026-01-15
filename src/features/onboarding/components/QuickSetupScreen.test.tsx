@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import { createMockHousehold } from '@/shared/utils/test/factories';
+import { RecommendedItemsProvider } from '@/features/templates';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -92,6 +93,11 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
+// Helper to wrap component with provider
+const renderWithProvider = (ui: React.ReactElement) => {
+  return render(<RecommendedItemsProvider>{ui}</RecommendedItemsProvider>);
+};
+
 describe('QuickSetupScreen', () => {
   const defaultHousehold = createMockHousehold({
     adults: 2,
@@ -103,7 +109,7 @@ describe('QuickSetupScreen', () => {
   it('renders title and subtitle', () => {
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -120,7 +126,7 @@ describe('QuickSetupScreen', () => {
   it('displays summary information', () => {
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -138,7 +144,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -158,7 +164,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -179,7 +185,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -209,7 +215,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -231,7 +237,7 @@ describe('QuickSetupScreen', () => {
       useFreezer: false,
     });
 
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={householdWithoutFreezer}
         onAddItems={onAddItems}
@@ -247,7 +253,7 @@ describe('QuickSetupScreen', () => {
   it('does not show freezer note when household has freezer', () => {
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -263,7 +269,7 @@ describe('QuickSetupScreen', () => {
   it('has accessible toggle button', () => {
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -279,7 +285,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -298,7 +304,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -330,7 +336,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -357,7 +363,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -389,7 +395,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -408,7 +414,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -440,7 +446,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -472,7 +478,7 @@ describe('QuickSetupScreen', () => {
   it('disables Add Items button when no items are selected', () => {
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}
@@ -489,7 +495,7 @@ describe('QuickSetupScreen', () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
-    render(
+    renderWithProvider(
       <QuickSetupScreen
         household={defaultHousehold}
         onAddItems={onAddItems}

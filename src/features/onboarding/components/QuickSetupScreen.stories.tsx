@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import { SettingsProvider } from '@/features/settings';
+import { RecommendedItemsProvider } from '@/features/templates';
 import { createMockHousehold } from '@/shared/utils/test/factories';
 
 const meta = {
@@ -13,7 +14,9 @@ const meta = {
   decorators: [
     (Story) => (
       <SettingsProvider>
-        <Story />
+        <RecommendedItemsProvider>
+          <Story />
+        </RecommendedItemsProvider>
       </SettingsProvider>
     ),
   ],

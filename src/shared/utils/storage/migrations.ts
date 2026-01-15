@@ -71,7 +71,7 @@ interface Migration {
  * ```
  */
 const MIGRATIONS: Migration[] = [
-  // Add migrations here as schema evolves
+  // No migrations yet - add here when schema changes require data transformation
   // Example:
   // {
   //   fromVersion: '1.0.0',
@@ -289,25 +289,6 @@ export function getMigrationPath(
 // =============================================================================
 // Add migration functions below as schema evolves.
 // Each function should be pure and handle edge cases gracefully.
-//
-// Example migration for adding a new required field:
-//
-// function migrateV100ToV110(data: AppData): AppData {
-//   return {
-//     ...data,
-//     newField: data.newField ?? 'default-value',
-//   };
-// }
-//
-// Example migration for renaming a field:
-//
-// function migrateV110ToV120(data: AppData): AppData {
-//   const { oldFieldName, ...rest } = data as AppData & { oldFieldName?: string };
-//   return {
-//     ...rest,
-//     newFieldName: oldFieldName ?? 'default',
-//   };
-// }
 // =============================================================================
 
 // =============================================================================

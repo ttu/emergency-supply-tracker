@@ -33,6 +33,9 @@ describe('Settings Page', () => {
       screen.getByText('settings.sections.overriddenRecommendations'),
     ).toBeInTheDocument();
     expect(
+      screen.getByText('settings.sections.recommendationKits'),
+    ).toBeInTheDocument();
+    expect(
       screen.getByText('settings.sections.dataManagement'),
     ).toBeInTheDocument();
     expect(screen.getByText('settings.sections.about')).toBeInTheDocument();

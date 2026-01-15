@@ -18,6 +18,7 @@ export {
   HouseholdForm,
   ImportButton,
   ImportRecommendationsButton,
+  KitManagement,
   LanguageSelector,
   NutritionSettings,
   OverriddenRecommendations,
