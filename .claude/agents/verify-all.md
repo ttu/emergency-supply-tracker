@@ -9,34 +9,15 @@ model: haiku
 
 Run comprehensive verification including E2E tests.
 
-## Steps
+## Command
 
-Execute these checks in order:
+Run the full validation suite with a single command:
 
-1. **Lint**
-   ```bash
-   npm run lint
-   ```
+```bash
+npm run validate:all
+```
 
-2. **Type Check**
-   ```bash
-   npx tsc --noEmit
-   ```
-
-3. **Unit/Integration Tests**
-   ```bash
-   npm test
-   ```
-
-4. **Build**
-   ```bash
-   npm run build
-   ```
-
-5. **E2E Tests**
-   ```bash
-   npm run test:e2e
-   ```
+This runs: format check → type check (all configs) → lint → unit tests → build → storybook tests → E2E tests
 
 ## Output Format
 
@@ -44,10 +25,12 @@ Report results as:
 
 ```
 Full Verification Results:
-- Lint: ✅ Pass / ❌ Fail
+- Format Check: ✅ Pass / ❌ Fail
 - Type Check: ✅ Pass / ❌ Fail
-- Tests: ✅ Pass (X passed) / ❌ Fail (X failed)
+- Lint: ✅ Pass / ❌ Fail
+- Unit Tests: ✅ Pass (X passed) / ❌ Fail (X failed)
 - Build: ✅ Pass / ❌ Fail
+- Storybook Tests: ✅ Pass (X passed) / ❌ Fail (X failed)
 - E2E Tests: ✅ Pass (X passed) / ❌ Fail (X failed)
 ```
 
