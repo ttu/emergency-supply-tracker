@@ -78,7 +78,15 @@ describe('ShoppingListExport', () => {
     });
 
     renderWithProviders(<ShoppingListExport />, {
-      initialAppData: { items: [itemNeedingRestock] },
+      initialAppData: {
+        items: [itemNeedingRestock],
+        household: {
+          adults: 1,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
     });
 
     const button = screen.getByText('settings.shoppingList.button');
@@ -102,7 +110,15 @@ describe('ShoppingListExport', () => {
     ];
 
     renderWithProviders(<ShoppingListExport />, {
-      initialAppData: { items },
+      initialAppData: {
+        items,
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
     });
 
     expect(
@@ -141,7 +157,15 @@ describe('ShoppingListExport', () => {
     });
 
     renderWithProviders(<ShoppingListExport />, {
-      initialAppData: { items: [itemNeedingRestock] },
+      initialAppData: {
+        items: [itemNeedingRestock],
+        household: {
+          adults: 1,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
     });
 
     const button = screen.getByText('settings.shoppingList.button');
@@ -164,7 +188,15 @@ describe('ShoppingListExport', () => {
     });
 
     renderWithProviders(<ShoppingListExport />, {
-      initialAppData: { items: [itemNeedingRestock] },
+      initialAppData: {
+        items: [itemNeedingRestock],
+        household: {
+          adults: 1,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
     });
 
     const button = screen.getByText('settings.shoppingList.button');
