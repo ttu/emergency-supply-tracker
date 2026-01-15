@@ -297,11 +297,15 @@ calculateCategoryStatus(category, items, ...): CategoryStatusSummary  // Dashboa
 
 **Custom Hooks:**
 
-| Hook             | Purpose                  | Location                    |
-| ---------------- | ------------------------ | --------------------------- |
-| `useInventory()` | Access inventory context | `features/inventory/hooks/` |
-| `useHousehold()` | Access household context | `features/household/hooks/` |
-| `useSettings()`  | Access settings context  | `features/settings/hooks/`  |
+| Hook                    | Purpose                      | Location                    |
+| ----------------------- | ---------------------------- | --------------------------- |
+| `useInventory()`        | Access inventory context     | `features/inventory/hooks/` |
+| `useHousehold()`        | Access household context     | `features/household/hooks/` |
+| `useSettings()`         | Access settings context      | `features/settings/hooks/`  |
+| `useBackupTracking()`   | Manage backup reminder state | `features/dashboard/hooks/` |
+| `useDashboardAlerts()`  | Manage dashboard alerts      | `features/dashboard/hooks/` |
+| `useCategoryStatuses()` | Calculate category statuses  | `features/dashboard/hooks/` |
+| `useLocalStorageSync()` | Sync state with localStorage | `shared/hooks/`             |
 
 **Connections:**
 
