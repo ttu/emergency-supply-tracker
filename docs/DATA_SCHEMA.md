@@ -1,8 +1,8 @@
 # Data Schema
 
-> **Version:** 1.1.0
-> **Last Updated:** 2026-01-14
-> **Source of Truth:** `src/types/index.ts`
+> **Version:** 1.2.0
+> **Last Updated:** 2026-01-15
+> **Source of Truth:** `src/shared/types/index.ts`
 
 This document describes the data structures used in the Emergency Supply Tracker application. All types are defined in TypeScript and stored in the browser's LocalStorage.
 
@@ -25,6 +25,37 @@ This document describes the data structures used in the Emergency Supply Tracker
 ---
 
 ## Core Types
+
+### Branded Types
+
+The application uses branded types (nominal typing) for type safety on string identifiers:
+
+```typescript
+// Branded types ensure type safety for string identifiers
+type ItemId = string & { readonly __brand: 'ItemId' };
+type CategoryId = string & { readonly __brand: 'CategoryId' };
+type ProductTemplateId = string & { readonly __brand: 'ProductTemplateId' };
+type AlertId = string & { readonly __brand: 'AlertId' };
+type DateOnly = string & { readonly __brand: 'DateOnly' }; // YYYY-MM-DD format
+```
+
+Factory functions create these branded types:
+
+```typescript
+createItemId(id: string): ItemId
+createCategoryId(id: string): CategoryId
+createProductTemplateId(id: string): ProductTemplateId
+createAlertId(id: string): AlertId
+createDateOnly(date: string): DateOnly
+```
+
+Type guards validate branded types:
+
+```typescript
+isItemId(value: unknown): value is ItemId
+isCategoryId(value: unknown): value is CategoryId
+isDateOnly(value: unknown): value is DateOnly
+```
 
 ### Unit
 
@@ -139,7 +170,7 @@ Application preferences and feature flags:
 ```typescript
 interface UserSettings {
   language: 'en' | 'fi'; // UI language
-  theme: 'light' | 'dark' | 'auto'; // Color theme
+  theme: Theme; // Color theme (see Theme type below)
   highContrast: boolean; // High contrast mode for accessibility
   advancedFeatures: {
     calorieTracking: boolean; // Enable calorie calculations
@@ -152,6 +183,23 @@ interface UserSettings {
   dailyWaterPerPerson?: number; // Default: 3 liters
   childrenRequirementPercentage?: number; // Default: 75 (children need 75% of adult requirements)
 }
+```
+
+### Theme
+
+Available color themes:
+
+```typescript
+type Theme =
+  | 'light' // Light mode
+  | 'dark' // Dark mode
+  | 'auto' // System preference
+  | 'midnight' // Dark blue theme
+  | 'ocean' // Ocean blue theme
+  | 'sunset' // Warm orange theme
+  | 'forest' // Green theme
+  | 'lavender' // Purple theme
+  | 'minimal'; // Minimalist theme
 ```
 
 ### Default Values
@@ -177,7 +225,7 @@ Category definition for organizing items:
 
 ```typescript
 interface Category {
-  id: string; // Unique identifier (StandardCategoryId for standard categories, UUID for custom)
+  id: CategoryId; // Unique identifier (branded string - StandardCategoryId for standard, UUID for custom)
   name: string; // Display name
   icon?: string; // Emoji icon
   isCustom: boolean; // User-created category flag
@@ -198,23 +246,23 @@ Individual items tracked in the user's inventory:
 
 ```typescript
 interface InventoryItem {
-  id: string; // Unique identifier (UUID)
+  id: ItemId; // Unique identifier (branded string)
   name: string; // Item name (or i18n key reference)
-  itemType: string; // Template ID (e.g., "canned-fish") or "custom" for user-created items, used for i18n lookup
-  categoryId: string; // Category reference
+  itemType: ProductTemplateId | 'custom'; // Template ID (e.g., "canned-fish") or "custom" for user-created items, used for i18n lookup
+  categoryId: CategoryId; // Category reference (branded string)
   quantity: number; // Current quantity owned
   unit: Unit; // Measurement unit
-  expirationDate?: string; // ISO date string (YYYY-MM-DD)
-  purchaseDate?: string; // ISO date string (YYYY-MM-DD)
+  expirationDate?: DateOnly; // ISO date string (YYYY-MM-DD)
+  purchaseDate?: DateOnly; // ISO date string (YYYY-MM-DD)
   neverExpires?: boolean; // Item doesn't expire
   location?: string; // Storage location
   notes?: string; // User notes
-  productTemplateId?: string; // Reference to product template
-  weightGrams?: number; // Weight per unit in grams (e.g., one can weighs 400g)
-  caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal)
-  capacityMah?: number; // Capacity in milliamp-hours (for powerbanks)
-  capacityWh?: number; // Capacity in watt-hours (for powerbanks)
-  requiresWaterLiters?: number; // Liters of water required per unit for preparation
+  weightGrams?: number; // Weight per unit in grams (e.g., one can weighs 400g) - Food category only
+  caloriesPerUnit?: number; // Calories per unit (e.g., one can has 200 kcal) - Food category only
+  capacityMah?: number; // Capacity in milliamp-hours (for powerbanks) - Light-power category only
+  capacityWh?: number; // Capacity in watt-hours (for powerbanks) - Light-power category only
+  requiresWaterLiters?: number; // Liters of water required per unit for preparation - Food category only
+  markedAsEnough?: boolean; // If true, item is considered complete regardless of quantity vs recommended
   createdAt: string; // ISO timestamp
   updatedAt: string; // ISO timestamp
 }
@@ -414,17 +462,17 @@ interface AppData {
 
 The 9 built-in supply categories:
 
-| ID                   | Name                 | Icon             |
-| -------------------- | -------------------- | ---------------- |
-| `water-beverages`    | Water & Beverages    | :droplet:        |
-| `food`               | Food                 | :fork_and_knife: |
-| `cooking-heat`       | Cooking & Heat       | :fire:           |
-| `light-power`        | Light & Power        | :bulb:           |
-| `communication-info` | Communication & Info | :radio:          |
-| `medical-health`     | Medical & Health     | :hospital:       |
-| `hygiene-sanitation` | Hygiene & Sanitation | :soap:           |
-| `tools-supplies`     | Tools & Supplies     | :wrench:         |
-| `cash-documents`     | Cash & Documents     | :moneybag:       |
+| ID                   | Name                 | Icon |
+| -------------------- | -------------------- | ---- |
+| `water-beverages`    | Water & Beverages    | 💧   |
+| `food`               | Food                 | 🍽️   |
+| `cooking-heat`       | Cooking & Heat       | 🔥   |
+| `light-power`        | Light & Power        | 💡   |
+| `communication-info` | Communication & Info | 📻   |
+| `medical-health`     | Medical & Health     | 🏥   |
+| `hygiene-sanitation` | Hygiene & Sanitation | 🧼   |
+| `tools-supplies`     | Tools & Supplies     | 🔧   |
+| `cash-documents`     | Cash & Documents     | 💰   |
 
 Standard categories are always available and not stored in `customCategories`. Only user-created categories are persisted.
 
