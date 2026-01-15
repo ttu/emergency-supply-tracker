@@ -101,7 +101,7 @@ Refined Issue Description
 
 ### Example 1: Issue from GitHub
 
-```
+```bash
 /issue-refine 42
 ```
 
@@ -109,7 +109,7 @@ Fetches issue #42, validates its description against codebase, and outputs refin
 
 ### Example 2: Direct Description
 
-```
+```bash
 /issue-refine "The dashboard doesn't show expiring items when they're within 7 days"
 ```
 
@@ -117,7 +117,7 @@ Validates this description against dashboard and alert code, refines to match ac
 
 ### Example 3: GitHub URL
 
-```
+```bash
 /issue-refine https://github.com/owner/repo/issues/123
 ```
 
