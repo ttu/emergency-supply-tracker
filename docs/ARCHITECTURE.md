@@ -1,7 +1,7 @@
 # Application Architecture
 
-> **Version:** 2.0.0  
-> **Last Updated:** 2026-01-14  
+> **Version:** 2.1.0
+> **Last Updated:** 2026-01-15
 > **Source of Truth:** `src/features/`, `src/shared/`
 
 This document describes the complete architecture of the Emergency Supply Tracker application, including the layered architecture, feature slice organization, component structure, and data flow.
@@ -102,10 +102,13 @@ src/
 │   │   └── index.ts
 │   ├── templates/
 │   │   ├── components/    # TemplateSelector
-│   │   ├── data.ts        # Template definitions
+│   │   ├── data.ts        # Recommended item definitions
 │   │   └── index.ts
-│   └── categories/
-│       ├── data.ts        # Category definitions
+│   ├── categories/
+│   │   ├── data.ts        # Category definitions
+│   │   └── index.ts
+│   └── help/
+│       ├── components/    # Help page components
 │       └── index.ts
 │
 ├── shared/                # Shared code across features
@@ -361,15 +364,24 @@ App
 
 Reusable building blocks in `src/shared/components/`:
 
-| Component    | Description                      | Usage                  |
-| ------------ | -------------------------------- | ---------------------- |
-| `Badge`      | Status badge with color variants | Status indicators      |
-| `Button`     | Primary action button            | Actions throughout app |
-| `Modal`      | Dialog overlay                   | Forms, confirmations   |
-| `Navigation` | Bottom/side navigation tabs      | Main navigation        |
-| `Select`     | Dropdown select                  | Form inputs            |
-| `Input`      | Text input field                 | Forms                  |
-| `Card`       | Container card                   | Content containers     |
+| Component          | Description                      | Usage                      |
+| ------------------ | -------------------------------- | -------------------------- |
+| `AllProviders`     | Combines all context providers   | App root wrapper           |
+| `Badge`            | Status badge with color variants | Status indicators          |
+| `Button`           | Primary action button            | Actions throughout app     |
+| `Card`             | Container card                   | Content containers         |
+| `ConfirmDialog`    | Confirmation dialog              | Delete/destructive actions |
+| `DocumentMetadata` | Manages document title/meta      | SEO and page titles        |
+| `ErrorBoundary`    | Error boundary wrapper           | Error handling             |
+| `Input`            | Text input field                 | Forms                      |
+| `LanguageSwitcher` | Language selection dropdown      | i18n language toggle       |
+| `Modal`            | Dialog overlay                   | Forms, confirmations       |
+| `Navigation`       | Bottom/side navigation tabs      | Main navigation            |
+| `NotificationBar`  | Notification container           | System notifications       |
+| `NotificationItem` | Individual notification          | Alert messages             |
+| `Select`           | Dropdown select                  | Form inputs                |
+| `Toast`            | Toast notification               | Temporary messages         |
+| `Tooltip`          | Hover tooltip                    | Contextual help            |
 
 **Connections:**
 

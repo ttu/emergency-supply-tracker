@@ -275,7 +275,7 @@ See [LICENSE](LICENSE) for details.
 
 🚧 **V0.1.0** - Work in progress
 
-The application is actively being developed. See [docs/specifications/PROGRESS.md](docs/specifications/PROGRESS.md) for implementation status.
+The application is actively being developed.
 
 ## Links
 
