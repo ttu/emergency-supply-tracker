@@ -637,6 +637,7 @@ npm run lint && npm test && npm run build
 /pr-create                    # Create a pull request
 /pr-fix                       # Fix CodeRabbit review issues
 /issue-implement <number>     # Implement a GitHub issue
+/issue-refine <number|text>   # Refine issue description by validating against codebase
 ```
 
 ---
