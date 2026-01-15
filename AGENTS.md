@@ -26,7 +26,7 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 
 - Track supplies across 9 categories (water, food, cooking, light, communication, medical, hygiene, tools, cash)
 - Household configuration (adults, children, supply duration, freezer)
-- 70 recommended items based on 72tuntia.fi guidelines
+- 71 recommended items based on 72tuntia.fi guidelines
 - Expiration tracking and alerts
 - Product templates (built-in + custom) with barcode support
 - Import/Export data (JSON)
@@ -105,7 +105,7 @@ Inputs:
 Expected behavior:
 [Describe edge cases and examples]
 
-Reference: See docs/specifications/[relevant-spec].md for requirements
+Reference: See docs/DATA_SCHEMA.md for type definitions
 ```
 
 **Example:**
@@ -131,7 +131,7 @@ Expected behavior:
 - If scaleWithDays=false, don't multiply by duration
 - Return rounded to 2 decimal places
 
-Reference: See docs/specifications/DATA_SCHEMA.md for calculation formulas
+Reference: See docs/DATA_SCHEMA.md for calculation formulas
 ```
 
 ---
@@ -152,7 +152,7 @@ User flows to test:
 2. [Flow 2 description]
 3. [Edge case]
 
-Reference implementation examples in docs/specifications/TESTING_STRATEGY.md
+Reference implementation examples in docs/TESTING_STRATEGY.md
 ```
 
 **Example:**
@@ -170,7 +170,7 @@ User flows to test:
 3. Changes persist after page reload
 4. Invalid inputs show validation errors
 
-Reference implementation examples in docs/specifications/TESTING_STRATEGY.md
+Reference implementation examples in docs/TESTING_STRATEGY.md
 ```
 
 ---
@@ -337,7 +337,7 @@ The `docs/` folder contains up-to-date documentation that reflects the actual im
 | ---------------------------------------------------------- | --------------------------------------------- |
 | **[docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md)**             | TypeScript types and data structures          |
 | **[docs/FUNCTIONAL_SPEC.md](docs/FUNCTIONAL_SPEC.md)**     | Features, workflows, and UI components        |
-| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 70 recommended items with current data    |
+| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 71 recommended items with current data    |
 | **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**           | React component structure                     |
 | **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)**       | Technology stack and configuration            |
 | **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)**   | Testing approach, Vitest, Playwright          |
@@ -354,16 +354,6 @@ The `docs/` folder contains up-to-date documentation that reflects the actual im
 ### Documentation Organization
 
 > **Important:** When creating implementation plans, memos, or other planning documents, place them in `docs/plans/`. This keeps planning documents organized and separate from reference documentation.
-
-### Original Specifications (DO NOT USE)
-
-> **Important:** Files in `docs/specifications/` contain the original pre-implementation specifications. These are outdated and should NOT be used unless explicitly asked. The implementation has diverged from these original specs.
-
-Only reference `docs/specifications/` files when:
-
-- Explicitly asked to compare spec vs implementation
-- Asked to review original design decisions
-- Working on implementation progress tracking (`PROGRESS.md`)
 
 ---
 
@@ -596,7 +586,7 @@ To check PR review comments and status:
 
 ### When Stuck
 
-1. Check specifications in `docs/specifications/`
+1. Check documentation in `docs/` (DATA_SCHEMA.md, ARCHITECTURE.md, etc.)
 2. Review existing similar components
 3. Run Storybook to see component examples
 4. Check test files for usage patterns
@@ -651,40 +641,6 @@ npm run lint && npm test && npm run build
 
 ---
 
----
-
-## Implementation Workflow
-
-For step-by-step implementation, see **[IMPLEMENTATION_PLAN.md](docs/specifications/IMPLEMENTATION_PLAN.md)**.
-
-### Using This Plan with AI Agents
-
-**Basic prompt:**
-
-```
-Implement Step X from IMPLEMENTATION_PLAN.md.
-
-Read the step details from docs/specifications/IMPLEMENTATION_PLAN.md, then:
-1. Complete all tasks listed in the step
-2. Run verification commands
-3. Ensure all quality gates pass
-
-When done, tell me the commit message to use.
-```
-
-**Quality gates before each commit:**
-
-```bash
-npm run lint        # Must pass
-npm test           # Must pass
-npm run build      # Must succeed
-npm run dev        # App must run without errors
-```
-
-See the full guide in [IMPLEMENTATION_PLAN.md - How to Use This Plan with AI Agents](docs/specifications/IMPLEMENTATION_PLAN.md#how-to-use-this-plan-with-ai-agents)
-
----
-
-**Document Version**: 1.1
-**Last Updated**: 2025-12-23
+**Document Version**: 1.2
+**Last Updated**: 2026-01-15
 **Purpose**: Guide AI-assisted development workflows for Emergency Supply Tracker

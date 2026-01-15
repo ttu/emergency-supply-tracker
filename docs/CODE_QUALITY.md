@@ -419,13 +419,13 @@ src/
 Use conventional commit format:
 
 ```
-type(scope): description
+type: description
 
 - Detail 1
 - Detail 2
 ```
 
-> **Note:** Do NOT add "Co-Authored-By" or "Generated with" footers. Keep commits clean.
+> **Note:** Do NOT add "Co-Authored-By" or "Generated with" footers to commit messages. Keep commits clean and simple. Do NOT use scopes in commit messages (e.g., use `feat:` not `feat(scope):`).
 
 ### Types
 
@@ -441,10 +441,6 @@ type(scope): description
 | `ci`       | CI/CD configuration changes              |
 | `build`    | Build system or external dependencies    |
 | `perf`     | Performance improvements                 |
-
-### Scopes (Optional)
-
-Examples: `dashboard`, `inventory`, `settings`, `types`, `storage`, `utils`, `data`, `ci`, `lint`
 
 ### Examples
 

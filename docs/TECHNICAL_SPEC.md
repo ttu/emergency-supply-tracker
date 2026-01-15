@@ -1,7 +1,7 @@
 # Technical Specification
 
-> **Version:** 1.0.0
-> **Last Updated:** 2025-12-28
+> **Version:** 1.1.0
+> **Last Updated:** 2026-01-15
 > **Source of Truth:** `package.json`
 
 This document describes the technical architecture and stack of the Emergency Supply Tracker application.
@@ -55,8 +55,7 @@ emergency-supply-tracker/
 │   └── ISSUE_TEMPLATE/   # Bug/feature templates
 ├── .husky/               # Git hooks
 ├── .storybook/           # Storybook config
-├── docs/                 # Updated documentation
-├── docs/specifications/  # Original specifications
+├── docs/                 # Documentation
 ├── e2e/                  # Playwright E2E tests
 ├── public/
 │   ├── locales/          # Translation files
@@ -64,15 +63,23 @@ emergency-supply-tracker/
 │   │   └── fi/           # Finnish translations
 │   └── ...               # Static assets
 ├── src/
-│   ├── components/       # React components
-│   ├── contexts/         # React Context providers
-│   ├── data/             # Static data (categories, items)
-│   ├── hooks/            # Custom React hooks
+│   ├── features/         # Feature slices (domain-driven)
+│   │   ├── alerts/       # Alert generation and display
+│   │   ├── categories/   # Category definitions
+│   │   ├── dashboard/    # Dashboard page and components
+│   │   ├── help/         # Help page
+│   │   ├── household/    # Household configuration
+│   │   ├── inventory/    # Inventory management
+│   │   ├── onboarding/   # Onboarding flow
+│   │   ├── settings/     # User settings
+│   │   └── templates/    # Product templates and recommended items
+│   ├── shared/           # Shared code across features
+│   │   ├── components/   # Reusable UI primitives
+│   │   ├── hooks/        # Shared hooks
+│   │   ├── types/        # TypeScript types
+│   │   └── utils/        # Utility functions
 │   ├── i18n/             # i18n configuration
-│   ├── pages/            # Page components
 │   ├── styles/           # Global CSS
-│   ├── types/            # TypeScript types
-│   ├── utils/            # Utility functions
 │   ├── App.tsx           # Root component
 │   └── main.tsx          # Entry point
 ├── package.json
