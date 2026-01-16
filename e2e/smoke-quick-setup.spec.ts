@@ -277,6 +277,7 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
   await page.getByTestId('nav-settings').click();
   await page.waitForLoadState('networkidle');
 
+  // Change language first
   const languageSelect = page.locator('select').first();
   if (await languageSelect.isVisible().catch(() => false)) {
     await languageSelect.selectOption('fi');
@@ -285,17 +286,27 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
     expect(navText).toBeTruthy();
   }
 
+  // Toggle advanced checkbox
+  const advancedCheckbox = page
+    .locator('label:has-text(/Calorie|Power|Water/i) input[type="checkbox"]')
+    .first();
+  if (await advancedCheckbox.isVisible().catch(() => false)) {
+    const initialState = await advancedCheckbox.isChecked();
+    await advancedCheckbox.click();
+    const newState = await advancedCheckbox.isChecked();
+    expect(newState).toBe(!initialState);
+  }
+
+  // Change theme LAST to avoid race conditions with other localStorage saves
   const themeSelect = page.locator('#theme-select');
   if (await themeSelect.isVisible().catch(() => false)) {
     await themeSelect.selectOption('dark');
-    // Wait for theme to be applied to DOM
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
     const themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('dark');
-    // Wait for settings to be saved to localStorage (useLocalStorageSync uses useEffect)
-    // Poll until the theme is saved, with a timeout
+    // Wait for settings to be saved to localStorage
     await page.waitForFunction(
       (key) => {
         const data = localStorage.getItem(key);
@@ -310,52 +321,6 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
       STORAGE_KEY,
       { timeout: TIMEOUTS.ELEMENT_VISIBLE },
     );
-  }
-
-  const advancedCheckbox = page
-    .locator('label:has-text(/Calorie|Power|Water/i) input[type="checkbox"]')
-    .first();
-  if (await advancedCheckbox.isVisible().catch(() => false)) {
-    const initialState = await advancedCheckbox.isChecked();
-    await advancedCheckbox.click();
-    const newState = await advancedCheckbox.isChecked();
-    expect(newState).toBe(!initialState);
-  }
-
-  // Final verification: ensure theme is still saved as 'dark' after all operations
-  // This handles potential race conditions between multiple useLocalStorageSync saves
-  await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
-  const finalTheme = await page.evaluate((key) => {
-    const data = localStorage.getItem(key);
-    if (!data) return null;
-    try {
-      const appData = JSON.parse(data);
-      return appData.settings?.theme;
-    } catch {
-      return null;
-    }
-  }, STORAGE_KEY);
-
-  // If theme was overwritten due to race condition, re-set it
-  if (finalTheme !== 'dark') {
-    const themeSelectFinal = page.locator('#theme-select');
-    if (await themeSelectFinal.isVisible().catch(() => false)) {
-      await themeSelectFinal.selectOption('dark');
-      await page.waitForFunction(
-        (key) => {
-          const data = localStorage.getItem(key);
-          if (!data) return false;
-          try {
-            const appData = JSON.parse(data);
-            return appData.settings?.theme === 'dark';
-          } catch {
-            return false;
-          }
-        },
-        STORAGE_KEY,
-        { timeout: TIMEOUTS.ELEMENT_VISIBLE },
-      );
-    }
   }
 }
 
