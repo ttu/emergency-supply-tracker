@@ -70,7 +70,8 @@
     "export": "Vie",
     "import": "Tuo",
     "clear": "Tyhjennä",
-    "copy": "Kopioi"
+    "copy": "Kopioi",
+    "loading": "Ladataan..."
   },
   "actions": {
     "add": "Lisää",

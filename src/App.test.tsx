@@ -107,7 +107,9 @@ describe('App', () => {
 
     // Should show settings sections (wait for lazy loading)
     await waitFor(() => {
-      expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
+      expect(
+        screen.getByText('settings.sections.household'),
+      ).toBeInTheDocument();
     });
     // Dashboard content should not be visible
     expect(
@@ -126,7 +128,9 @@ describe('App', () => {
     // Go to settings
     fireEvent.click(screen.getByText('navigation.settings'));
     await waitFor(() => {
-      expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
+      expect(
+        screen.getByText('settings.sections.household'),
+      ).toBeInTheDocument();
     });
 
     // Go to inventory

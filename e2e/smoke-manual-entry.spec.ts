@@ -310,10 +310,26 @@ async function testSettingsFeatures(page: Page) {
   const themeSelect = page.locator('#theme-select');
   if (await themeSelect.isVisible().catch(() => false)) {
     await themeSelect.selectOption('dark');
+    // Wait for theme to be applied to DOM
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
     const themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('dark');
+    // Wait for settings to be saved to localStorage (useLocalStorageSync uses useEffect)
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+    // Verify it was saved
+    const savedTheme = await page.evaluate((key) => {
+      const data = localStorage.getItem(key);
+      if (!data) return null;
+      try {
+        const appData = JSON.parse(data);
+        return appData.settings?.theme;
+      } catch {
+        return null;
+      }
+    }, STORAGE_KEY);
+    expect(savedTheme).toBe('dark');
   }
 
   // Toggle high contrast

@@ -19,18 +19,11 @@ function LoadingFallback() {
   const { t } = useTranslation();
   return (
     <div
-      style={{
-        padding: '2rem',
-        textAlign: 'center',
-        minHeight: '200px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      className="loading-fallback"
       aria-live="polite"
-      aria-label={t('common.loading', { defaultValue: 'Loading...' })}
+      aria-label={t('common.loading')}
     >
-      {t('common.loading', { defaultValue: 'Loading...' })}
+      {t('common.loading')}
     </div>
   );
 }
@@ -100,13 +93,16 @@ function AppContent() {
   };
 
   const renderPage = () => {
+    // Render dashboard component (reused for default case)
+    const dashboardPage = (
+      <Suspense fallback={<LoadingFallback />}>
+        <Dashboard onNavigate={handleNavigate} />
+      </Suspense>
+    );
+
     switch (currentPage) {
       case 'dashboard':
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <Dashboard onNavigate={handleNavigate} />
-          </Suspense>
-        );
+        return dashboardPage;
       case 'inventory':
         return (
           <Suspense fallback={<LoadingFallback />}>
@@ -129,11 +125,7 @@ function AppContent() {
           </Suspense>
         );
       default:
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <Dashboard onNavigate={handleNavigate} />
-          </Suspense>
-        );
+        return dashboardPage;
     }
   };
 
