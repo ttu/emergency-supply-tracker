@@ -295,19 +295,21 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
     );
     expect(themeAttribute).toBe('dark');
     // Wait for settings to be saved to localStorage (useLocalStorageSync uses useEffect)
-    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-    // Verify it was saved
-    const savedTheme = await page.evaluate((key) => {
-      const data = localStorage.getItem(key);
-      if (!data) return null;
-      try {
-        const appData = JSON.parse(data);
-        return appData.settings?.theme;
-      } catch {
-        return null;
-      }
-    }, STORAGE_KEY);
-    expect(savedTheme).toBe('dark');
+    // Poll until the theme is saved, with a timeout
+    await page.waitForFunction(
+      (key) => {
+        const data = localStorage.getItem(key);
+        if (!data) return false;
+        try {
+          const appData = JSON.parse(data);
+          return appData.settings?.theme === 'dark';
+        } catch {
+          return false;
+        }
+      },
+      STORAGE_KEY,
+      { timeout: TIMEOUTS.ELEMENT_VISIBLE },
+    );
   }
 
   const advancedCheckbox = page
