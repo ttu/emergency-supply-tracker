@@ -264,10 +264,14 @@ export function calculateTotalMissingQuantity(
     return 0;
   }
 
-  // Calculate total actual quantity (excluding items marked as enough)
-  const totalActual = matchingItems
-    .filter((i) => !i.markedAsEnough)
-    .reduce((sum, i) => sum + i.quantity, 0);
+  // If any matching item is marked as enough, treat as no shortage
+  const hasMarkedAsEnough = matchingItems.some((i) => i.markedAsEnough);
+  if (hasMarkedAsEnough) {
+    return 0;
+  }
+
+  // Calculate total actual quantity
+  const totalActual = matchingItems.reduce((sum, i) => sum + i.quantity, 0);
 
   // Check if the total has a quantity shortage (not expiration)
   // A shortage exists if:

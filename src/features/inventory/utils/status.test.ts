@@ -474,7 +474,7 @@ describe('calculateMissingQuantity', () => {
       expect(missing1).toBe(missing2);
     });
 
-    it('excludes items marked as enough from calculation', () => {
+    it('returns 0 when any matching item is marked as enough', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
@@ -485,14 +485,14 @@ describe('calculateMissingQuantity', () => {
         ...baseItem,
         id: createItemId('2'),
         quantity: 1,
-        markedAsEnough: true, // This should be excluded
+        markedAsEnough: true, // This marks the item type as enough
       });
       const allItems = [item1, item2];
 
-      // Only item1 counts: 2, recommended: 10, missing: 8
+      // When any item is marked as enough, there's no shortage
       expect(
         calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
-      ).toBe(8);
+      ).toBe(0);
     });
 
     it('returns 0 when total quantity meets recommendation', () => {
