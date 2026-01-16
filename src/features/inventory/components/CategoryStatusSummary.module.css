@@ -192,6 +192,11 @@
   border-color: var(--color-error);
 }
 
+.actionButtonDanger:focus {
+  outline: 2px solid var(--color-error);
+  outline-offset: 2px;
+}
+
 .expandButton {
   background: none;
   border: none;
