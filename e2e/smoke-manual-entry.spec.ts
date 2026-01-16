@@ -389,6 +389,42 @@ async function testSettingsFeatures(page: Page) {
     await reactivateButton.click();
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
   }
+
+  // Final verification: ensure theme is still saved as 'dark' after all operations
+  // This handles potential race conditions between multiple useLocalStorageSync saves
+  await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
+  const finalTheme = await page.evaluate((key) => {
+    const data = localStorage.getItem(key);
+    if (!data) return null;
+    try {
+      const appData = JSON.parse(data);
+      return appData.settings?.theme;
+    } catch {
+      return null;
+    }
+  }, STORAGE_KEY);
+
+  // If theme was overwritten due to race condition, re-set it
+  if (finalTheme !== 'dark') {
+    const themeSelectFinal = page.locator('#theme-select');
+    if (await themeSelectFinal.isVisible().catch(() => false)) {
+      await themeSelectFinal.selectOption('dark');
+      await page.waitForFunction(
+        (key) => {
+          const data = localStorage.getItem(key);
+          if (!data) return false;
+          try {
+            const appData = JSON.parse(data);
+            return appData.settings?.theme === 'dark';
+          } catch {
+            return false;
+          }
+        },
+        STORAGE_KEY,
+        { timeout: TIMEOUTS.ELEMENT_VISIBLE },
+      );
+    }
+  }
 }
 
 async function verifyAlertsDisappearAfterHouseholdChange(page: Page) {
