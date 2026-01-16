@@ -254,7 +254,7 @@ export const CategoryStatusSummary = ({
                         {onDisableRecommended && (
                           <button
                             type="button"
-                            className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                            className={`${styles.actionButton} ${styles.actionButtonDanger}`}
                             onClick={() =>
                               onDisableRecommended(shortage.itemId)
                             }

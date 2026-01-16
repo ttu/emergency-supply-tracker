@@ -180,6 +180,18 @@
   transform: scale(1.05);
 }
 
+.actionButtonDanger {
+  background-color: transparent;
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.actionButtonDanger:hover {
+  background-color: var(--color-error);
+  color: white;
+  border-color: var(--color-error);
+}
+
 .expandButton {
   background: none;
   border: none;
