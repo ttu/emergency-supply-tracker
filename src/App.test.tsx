@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import App from './App';
 import { createMockAppData } from '@/shared/utils/test/factories';
@@ -64,71 +64,102 @@ describe('App', () => {
     expect(screen.getByText('navigation.settings')).toBeInTheDocument();
   });
 
-  it('renders dashboard by default', () => {
+  it('renders dashboard by default', async () => {
     renderApp();
 
-    // Dashboard should show quick actions
-    expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    // Dashboard should show quick actions (wait for lazy loading)
+    await waitFor(() => {
+      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    });
   });
 
-  it('navigates to inventory when clicking inventory button', () => {
+  it('navigates to inventory when clicking inventory button', async () => {
     renderApp();
+
+    // Wait for initial dashboard to load
+    await waitFor(() => {
+      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    });
 
     const inventoryButton = screen.getByText('navigation.inventory');
     fireEvent.click(inventoryButton);
 
-    // Should show inventory page content
-    expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
+    // Should show inventory page content (wait for lazy loading)
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
+    });
     // Dashboard content should not be visible
     expect(
       screen.queryByText('dashboard.quickActions'),
     ).not.toBeInTheDocument();
   });
 
-  it('navigates to settings when clicking settings button', () => {
+  it('navigates to settings when clicking settings button', async () => {
     renderApp();
+
+    // Wait for initial dashboard to load
+    await waitFor(() => {
+      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    });
 
     const settingsButton = screen.getByText('navigation.settings');
     fireEvent.click(settingsButton);
 
-    // Should show settings sections
-    expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
+    // Should show settings sections (wait for lazy loading)
+    await waitFor(() => {
+      expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
+    });
     // Dashboard content should not be visible
     expect(
       screen.queryByText('dashboard.quickActions'),
     ).not.toBeInTheDocument();
   });
 
-  it('navigates between pages', () => {
+  it('navigates between pages', async () => {
     renderApp();
 
-    // Start on dashboard
-    expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    // Start on dashboard (wait for lazy loading)
+    await waitFor(() => {
+      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    });
 
     // Go to settings
     fireEvent.click(screen.getByText('navigation.settings'));
-    expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
+    });
 
     // Go to inventory
     fireEvent.click(screen.getByText('navigation.inventory'));
-    expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
+    });
 
     // Go back to dashboard
     fireEvent.click(screen.getByText('navigation.dashboard'));
-    expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    });
   });
 
-  it('navigates to help page', () => {
+  it('navigates to help page', async () => {
     renderApp();
+
+    // Wait for initial dashboard to load
+    await waitFor(() => {
+      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    });
 
     const helpButton = screen.getByText('navigation.help');
     fireEvent.click(helpButton);
 
-    // Should show help page content
-    expect(screen.getByText('help.title')).toBeInTheDocument();
+    // Should show help page content (wait for lazy loading)
+    await waitFor(() => {
+      expect(screen.getByText('help.title')).toBeInTheDocument();
+    });
   });
 
-  it('shows onboarding when not completed', () => {
+  it('shows onboarding when not completed', async () => {
     // Clear localStorage to show onboarding
     localStorage.clear();
     const appData = createMockAppData({
@@ -143,8 +174,10 @@ describe('App', () => {
 
     renderApp();
 
-    // Should show onboarding content (welcome screen or first step)
-    expect(screen.getByText('app.title')).toBeInTheDocument();
+    // Should show onboarding content (wait for lazy loading)
+    await waitFor(() => {
+      expect(screen.getByText('app.title')).toBeInTheDocument();
+    });
   });
 
   it('has skip link for accessibility', () => {

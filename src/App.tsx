@@ -1,13 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trackAppLaunch } from '@/shared/utils/analytics';
-import { SettingsProvider, useSettings, Settings } from '@/features/settings';
+import { SettingsProvider, useSettings } from '@/features/settings';
 import { HouseholdProvider, useHousehold } from '@/features/household';
-import {
-  InventoryProvider,
-  useInventory,
-  Inventory,
-} from '@/features/inventory';
+import { InventoryProvider, useInventory } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
 import { ThemeApplier } from './components/ThemeApplier';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
@@ -15,11 +11,56 @@ import { Navigation, PageType } from '@/shared/components/Navigation';
 import { NotificationBar } from '@/shared/components/NotificationBar';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { DocumentMetadata } from '@/shared/components/DocumentMetadata';
-import { Dashboard } from '@/features/dashboard';
-import { Help } from '@/features/help';
-import { Onboarding } from '@/features/onboarding';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import './App.css';
+
+// Loading fallback component for lazy-loaded features
+function LoadingFallback() {
+  const { t } = useTranslation();
+  return (
+    <div
+      style={{
+        padding: '2rem',
+        textAlign: 'center',
+        minHeight: '200px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      aria-live="polite"
+      aria-label={t('common.loading', { defaultValue: 'Loading...' })}
+    >
+      {t('common.loading', { defaultValue: 'Loading...' })}
+    </div>
+  );
+}
+
+// Lazy load feature pages for code splitting
+const Dashboard = lazy(() =>
+  import('@/features/dashboard').then((module) => ({
+    default: module.Dashboard,
+  })),
+);
+const Inventory = lazy(() =>
+  import('@/features/inventory').then((module) => ({
+    default: module.Inventory,
+  })),
+);
+const Settings = lazy(() =>
+  import('@/features/settings').then((module) => ({
+    default: module.Settings,
+  })),
+);
+const Help = lazy(() =>
+  import('@/features/help').then((module) => ({
+    default: module.Help,
+  })),
+);
+const Onboarding = lazy(() =>
+  import('@/features/onboarding').then((module) => ({
+    default: module.Onboarding,
+  })),
+);
 
 function AppContent() {
   const { t } = useTranslation();
@@ -61,25 +102,47 @@ function AppContent() {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard onNavigate={handleNavigate} />;
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <Dashboard onNavigate={handleNavigate} />
+          </Suspense>
+        );
       case 'inventory':
         return (
-          <Inventory
-            openAddModal={openInventoryModal}
-            initialCategoryId={initialCategoryId}
-          />
+          <Suspense fallback={<LoadingFallback />}>
+            <Inventory
+              openAddModal={openInventoryModal}
+              initialCategoryId={initialCategoryId}
+            />
+          </Suspense>
         );
       case 'settings':
-        return <Settings />;
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <Settings />
+          </Suspense>
+        );
       case 'help':
-        return <Help />;
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <Help />
+          </Suspense>
+        );
       default:
-        return <Dashboard onNavigate={handleNavigate} />;
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <Dashboard onNavigate={handleNavigate} />
+          </Suspense>
+        );
     }
   };
 
   if (!settings.onboardingCompleted) {
-    return <Onboarding onComplete={handleOnboardingComplete} />;
+    return (
+      <Suspense fallback={<LoadingFallback />}>
+        <Onboarding onComplete={handleOnboardingComplete} />
+      </Suspense>
+    );
   }
 
   return (
