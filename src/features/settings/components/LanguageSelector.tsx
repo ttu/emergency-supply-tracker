@@ -13,8 +13,8 @@ export function LanguageSelector() {
   };
 
   const options = [
-    { value: 'en', label: 'English' },
-    { value: 'fi', label: 'Suomi' },
+    { value: 'en', label: '🇬🇧 English' },
+    { value: 'fi', label: '🇫🇮 Suomi' },
   ];
 
   return (
