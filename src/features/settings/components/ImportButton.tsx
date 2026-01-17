@@ -26,7 +26,6 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [importData, setImportData] = useState<PartialExportData | null>(null);
 
-<<<<<<< HEAD
   const validateImportData = (data: PartialExportData): boolean => {
     if (!data || typeof data !== 'object') return false;
 
