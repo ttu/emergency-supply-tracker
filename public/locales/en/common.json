@@ -265,6 +265,30 @@
         "success": "Recommendations reset to default.",
         "error": "Failed to reset recommendations. Please try again."
       }
+    },
+    "exportSelection": {
+      "title": "Select Data to Export",
+      "description": "Choose which sections to include in the export file.",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "exportButton": "Export",
+      "sections": {
+        "items": "Inventory Items",
+        "household": "Household Configuration",
+        "settings": "Settings",
+        "customCategories": "Custom Categories",
+        "customTemplates": "Custom Templates",
+        "dismissedAlertIds": "Hidden Alerts",
+        "disabledRecommendedItems": "Disabled Recommendations",
+        "customRecommendedItems": "Custom Recommendations"
+      }
+    },
+    "importSelection": {
+      "title": "Select Data to Import",
+      "description": "Choose which sections to import from the file.",
+      "warning": "Selected sections will overwrite your current data.",
+      "importButton": "Import",
+      "notInFile": "(not in file)"
     }
   },
   "errorBoundary": {

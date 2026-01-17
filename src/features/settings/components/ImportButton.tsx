@@ -1,11 +1,19 @@
-import { useRef } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import {
-  importFromJSON,
+  parseImportJSON,
+  mergeImportData,
+  getAppData,
   saveAppData,
+  createDefaultAppData,
 } from '@/shared/utils/storage/localStorage';
-import type { AppData } from '@/shared/types';
+import { ImportSelectionModal } from './ImportSelectionModal';
+import type {
+  ExportSection,
+  PartialExportData,
+} from '@/shared/types/exportImport';
+import { getSectionsWithData } from '@/shared/types/exportImport';
 import styles from './ImportButton.module.css';
 
 interface ImportButtonProps {
@@ -15,58 +23,92 @@ interface ImportButtonProps {
 export function ImportButton({ onImportSuccess }: ImportButtonProps) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [importData, setImportData] = useState<PartialExportData | null>(null);
 
-  const validateAppData = (data: unknown): data is AppData => {
+  const validateImportData = (data: PartialExportData): boolean => {
     if (!data || typeof data !== 'object') return false;
-    const d = data as Record<string, unknown>;
 
-    return (
-      typeof d.version === 'string' &&
-      typeof d.household === 'object' &&
-      typeof d.settings === 'object' &&
-      Array.isArray(d.items) &&
-      typeof d.lastModified === 'string'
-      // categories is optional - will be populated from STANDARD_CATEGORIES if missing
-    );
+    // Must have version and lastModified at minimum
+    if (typeof data.version !== 'string') return false;
+    if (typeof data.lastModified !== 'string') return false;
+
+    // Must have at least one section with data
+    const sectionsWithData = getSectionsWithData(data);
+    return sectionsWithData.length > 0;
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const json = event.target?.result as string;
-        const data = importFromJSON(json);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const json = event.target?.result as string;
+          const data = parseImportJSON(json);
 
-        if (!validateAppData(data)) {
-          alert(t('settings.import.invalidFormat'));
-          return;
-        }
-
-        if (window.confirm(t('settings.import.confirmOverwrite'))) {
-          saveAppData(data);
-          alert(t('settings.import.success'));
-          if (onImportSuccess) {
-            onImportSuccess();
+          if (!validateImportData(data)) {
+            alert(t('settings.import.invalidFormat'));
+            return;
           }
-          // Reload to reflect changes
-          window.location.reload();
+
+          // Store parsed data and open modal for section selection
+          setImportData(data);
+          setIsModalOpen(true);
+        } catch (error) {
+          console.error('Import error:', error);
+          alert(t('settings.import.error'));
         }
+      };
+
+      reader.readAsText(file);
+
+      // Reset input so the same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    },
+    [t],
+  );
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+    setImportData(null);
+  }, []);
+
+  const handleImport = useCallback(
+    (sections: ExportSection[]) => {
+      if (!importData) return;
+
+      try {
+        // Get existing data or create default
+        const existing = getAppData() ?? createDefaultAppData();
+
+        // Merge selected sections
+        const merged = mergeImportData(existing, importData, sections);
+
+        // Save merged data
+        saveAppData(merged);
+
+        alert(t('settings.import.success'));
+
+        if (onImportSuccess) {
+          onImportSuccess();
+        }
+
+        // Reload to reflect changes
+        window.location.reload();
       } catch (error) {
-        console.error('Import error:', error);
+        console.error('Import merge error:', error);
         alert(t('settings.import.error'));
       }
-    };
 
-    reader.readAsText(file);
-
-    // Reset input so the same file can be selected again
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
+      handleCloseModal();
+    },
+    [importData, t, onImportSuccess, handleCloseModal],
+  );
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -91,6 +133,15 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
         {t('settings.import.button')}
       </Button>
       <p className={styles.description}>{t('settings.import.description')}</p>
+
+      {importData && (
+        <ImportSelectionModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onImport={handleImport}
+          importData={importData}
+        />
+      )}
     </div>
   );
 }

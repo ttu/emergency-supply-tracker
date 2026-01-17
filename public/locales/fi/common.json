@@ -265,6 +265,30 @@
         "success": "Suositukset palautettu oletuksiin.",
         "error": "Suositusten palautus epäonnistui. Yritä uudelleen."
       }
+    },
+    "exportSelection": {
+      "title": "Valitse vietävät tiedot",
+      "description": "Valitse, mitkä osiot sisällytetään vientitiedostoon.",
+      "selectAll": "Valitse kaikki",
+      "deselectAll": "Poista valinnat",
+      "exportButton": "Vie",
+      "sections": {
+        "items": "Varastotuotteet",
+        "household": "Kotitalouden asetukset",
+        "settings": "Asetukset",
+        "customCategories": "Mukautetut kategoriat",
+        "customTemplates": "Mukautetut mallit",
+        "dismissedAlertIds": "Piilotetut hälytykset",
+        "disabledRecommendedItems": "Poistetut suositukset",
+        "customRecommendedItems": "Mukautetut suositukset"
+      }
+    },
+    "importSelection": {
+      "title": "Valitse tuotavat tiedot",
+      "description": "Valitse, mitkä osiot tuodaan tiedostosta.",
+      "warning": "Valitut osiot korvaavat nykyiset tietosi.",
+      "importButton": "Tuo",
+      "notInFile": "(ei tiedostossa)"
     }
   },
   "errorBoundary": {

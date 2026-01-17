@@ -5,6 +5,11 @@ import type {
   Category,
   ProductTemplate,
 } from '@/shared/types';
+import type {
+  ExportSection,
+  PartialExportData,
+  ExportMetadata,
+} from '@/shared/types/exportImport';
 import {
   createItemId,
   createCategoryId,
@@ -326,4 +331,175 @@ export function importFromJSON(json: string): AppData {
   appData.version = CURRENT_SCHEMA_VERSION;
 
   return appData;
+}
+
+/**
+ * Exports selected sections of app data to JSON format with export metadata.
+ * Only includes the specified sections in the export.
+ *
+ * @param data - AppData to export
+ * @param sections - Array of section names to include in export
+ * @returns JSON string with selected app data and export metadata
+ */
+export function exportToJSONSelective(
+  data: AppData,
+  sections: ExportSection[],
+): string {
+  const exportMetadata: ExportMetadata = {
+    exportedAt: new Date().toISOString(),
+    appVersion: APP_VERSION,
+    itemCount: sections.includes('items') ? (data.items?.length ?? 0) : 0,
+    categoryCount: sections.includes('customCategories')
+      ? (data.customCategories?.length ?? 0) + STANDARD_CATEGORIES.length
+      : STANDARD_CATEGORIES.length,
+    includedSections: sections,
+  };
+
+  const exportData: PartialExportData = {
+    version: data.version,
+    exportMetadata,
+    lastModified: data.lastModified,
+  };
+
+  // Only include selected sections
+  if (sections.includes('household')) {
+    exportData.household = data.household;
+  }
+  if (sections.includes('settings')) {
+    exportData.settings = data.settings;
+  }
+  if (sections.includes('items')) {
+    exportData.items = data.items;
+  }
+  if (sections.includes('customCategories')) {
+    exportData.customCategories = data.customCategories;
+  }
+  if (sections.includes('customTemplates')) {
+    exportData.customTemplates = data.customTemplates;
+  }
+  if (sections.includes('dismissedAlertIds')) {
+    exportData.dismissedAlertIds = data.dismissedAlertIds;
+  }
+  if (sections.includes('disabledRecommendedItems')) {
+    exportData.disabledRecommendedItems = data.disabledRecommendedItems;
+  }
+  if (sections.includes('customRecommendedItems')) {
+    exportData.customRecommendedItems = data.customRecommendedItems;
+  }
+
+  return JSON.stringify(exportData, null, 2);
+}
+
+/**
+ * Parses imported JSON and returns partial data for section selection.
+ * Does not apply to existing data - just parses and validates.
+ *
+ * @param json - JSON string containing exported app data
+ * @returns Parsed partial export data
+ * @throws Error if JSON parsing fails
+ */
+export function parseImportJSON(json: string): PartialExportData {
+  let data: PartialExportData;
+  try {
+    data = JSON.parse(json) as PartialExportData;
+  } catch (error) {
+    console.error('Failed to parse import JSON:', error);
+    throw error;
+  }
+
+  // Check if imported data version is supported
+  const importedVersion = data.version || '1.0.0';
+  if (!isVersionSupported(importedVersion)) {
+    throw new MigrationError(
+      `Imported data schema version ${importedVersion} is not supported.`,
+      importedVersion,
+      CURRENT_SCHEMA_VERSION,
+    );
+  }
+
+  return data;
+}
+
+/**
+ * Merges selected sections from imported data into existing app data.
+ * Only the specified sections are merged; other sections remain unchanged.
+ *
+ * @param existing - Current app data
+ * @param imported - Imported partial data
+ * @param sections - Sections to merge from imported data
+ * @returns Merged app data
+ */
+export function mergeImportData(
+  existing: AppData,
+  imported: PartialExportData,
+  sections: ExportSection[],
+): AppData {
+  const merged: AppData = { ...existing };
+
+  if (sections.includes('household') && imported.household) {
+    merged.household = imported.household;
+  }
+
+  if (sections.includes('settings') && imported.settings) {
+    // Ensure onboarding is marked complete when importing settings
+    merged.settings = {
+      ...imported.settings,
+      onboardingCompleted: true,
+    };
+  }
+
+  if (sections.includes('items') && imported.items) {
+    // Normalize items before merging
+    const normalizedItems = normalizeItems(imported.items as InventoryItem[]);
+    merged.items =
+      normalizedItems?.map((item) => ({
+        ...item,
+        expirationDate:
+          item.expirationDate === null ? undefined : item.expirationDate,
+        neverExpires: item.expirationDate === null ? true : item.neverExpires,
+      })) ?? [];
+  }
+
+  if (sections.includes('customCategories') && imported.customCategories) {
+    merged.customCategories = imported.customCategories.map((cat) => ({
+      ...cat,
+      id: createCategoryId(cat.id as string),
+    }));
+  }
+
+  if (sections.includes('customTemplates') && imported.customTemplates) {
+    merged.customTemplates = imported.customTemplates.map((template) => ({
+      ...template,
+      id: createProductTemplateId(template.id as string),
+    }));
+  }
+
+  if (sections.includes('dismissedAlertIds') && imported.dismissedAlertIds) {
+    merged.dismissedAlertIds = (imported.dismissedAlertIds as string[]).map(
+      createAlertId,
+    );
+  }
+
+  if (
+    sections.includes('disabledRecommendedItems') &&
+    imported.disabledRecommendedItems
+  ) {
+    merged.disabledRecommendedItems = (
+      imported.disabledRecommendedItems as string[]
+    ).map(createProductTemplateId);
+  }
+
+  if (sections.includes('customRecommendedItems')) {
+    merged.customRecommendedItems = imported.customRecommendedItems;
+  }
+
+  // Update lastModified
+  merged.lastModified = new Date().toISOString();
+
+  // Apply migrations if needed
+  if (needsMigration(merged)) {
+    return migrateToCurrentVersion(merged);
+  }
+
+  return merged;
 }
