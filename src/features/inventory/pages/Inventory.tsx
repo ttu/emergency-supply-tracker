@@ -32,12 +32,14 @@ type SortBy = 'name' | 'quantity' | 'expiration';
 
 export interface InventoryProps {
   openAddModal?: boolean;
-  initialCategoryId?: string;
+  selectedCategoryId?: string;
+  onCategoryChange?: (categoryId: string | undefined) => void;
 }
 
 export function Inventory({
   openAddModal = false,
-  initialCategoryId,
+  selectedCategoryId: controlledCategoryId,
+  onCategoryChange,
 }: InventoryProps = {}) {
   const { t, i18n } = useTranslation(['common', 'products']);
   const { items, addItem, updateItem, deleteItem, disableRecommendedItem } =
@@ -49,10 +51,23 @@ export function Inventory({
   const { categoryStatuses } = useCategoryStatuses();
   const calculationOptions = useCalculationOptions();
 
-  // Filter and sort state
-  const [selectedCategoryId, setSelectedCategoryId] = useState<
-    string | undefined
-  >(initialCategoryId || undefined);
+  // Filter and sort state - use controlled state if provided, otherwise local state
+  const [localCategoryId, setLocalCategoryId] = useState<string | undefined>(
+    controlledCategoryId,
+  );
+
+  // Use controlled value if callback is provided, otherwise use local state
+  const selectedCategoryId = onCategoryChange
+    ? controlledCategoryId
+    : localCategoryId;
+
+  const handleCategoryChange = (categoryId: string | undefined) => {
+    if (onCategoryChange) {
+      onCategoryChange(categoryId);
+    } else {
+      setLocalCategoryId(categoryId);
+    }
+  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');
@@ -277,7 +292,7 @@ export function Inventory({
         <CategoryNav
           categories={STANDARD_CATEGORIES}
           selectedCategoryId={selectedCategoryId}
-          onSelectCategory={setSelectedCategoryId}
+          onSelectCategory={handleCategoryChange}
         />
         <FilterBar
           searchQuery={searchQuery}

@@ -59,24 +59,14 @@ function AppContent() {
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [openInventoryModal, setOpenInventoryModal] = useState(false);
-  const [initialCategoryId, setInitialCategoryId] = useState<
+  // Selected category is lifted to App level so it persists across navigation
+  const [selectedCategoryId, setSelectedCategoryId] = useState<
     string | undefined
   >(undefined);
-  // Counter to force Inventory remount only when navigating from Dashboard with a category
-  const [inventoryResetKey, setInventoryResetKey] = useState(0);
 
   const { settings, updateSettings } = useSettings();
   const { updateHousehold } = useHousehold();
   const { addItems } = useInventory();
-
-  // Handler for navigation tab clicks - clears initialCategoryId when leaving inventory
-  // so the category doesn't persist when returning via navigation tab
-  const handleNavTabClick = (page: PageType) => {
-    setCurrentPage(page);
-    if (page !== 'inventory') {
-      setInitialCategoryId(undefined);
-    }
-  };
 
   const handleNavigate = (
     page: PageType,
@@ -85,10 +75,9 @@ function AppContent() {
     setCurrentPage(page);
     if (page === 'inventory') {
       setOpenInventoryModal(options?.openAddModal || false);
-      // Only update category and trigger remount when explicitly navigating from Dashboard with a category
+      // Update category when explicitly navigating from Dashboard with a category
       if (options?.initialCategoryId !== undefined) {
-        setInitialCategoryId(options.initialCategoryId);
-        setInventoryResetKey((prev) => prev + 1);
+        setSelectedCategoryId(options.initialCategoryId);
       }
     } else {
       setOpenInventoryModal(false);
@@ -121,9 +110,9 @@ function AppContent() {
         return (
           <Suspense fallback={<LoadingFallback />}>
             <Inventory
-              key={inventoryResetKey}
               openAddModal={openInventoryModal}
-              initialCategoryId={initialCategoryId}
+              selectedCategoryId={selectedCategoryId}
+              onCategoryChange={setSelectedCategoryId}
             />
           </Suspense>
         );
@@ -157,7 +146,7 @@ function AppContent() {
       <a href="#main-content" className="skip-link">
         {t('accessibility.skipToContent')}
       </a>
-      <Navigation currentPage={currentPage} onNavigate={handleNavTabClick} />
+      <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
       <main id="main-content" className="main">
         {renderPage()}
       </main>
