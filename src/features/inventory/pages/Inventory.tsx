@@ -53,6 +53,7 @@ export function Inventory({
   const [selectedCategoryId, setSelectedCategoryId] = useState<
     string | undefined
   >(initialCategoryId || undefined);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');
   const [sortBy, setSortBy] = useState<SortBy>('name');

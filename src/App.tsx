@@ -107,6 +107,7 @@ function AppContent() {
         return (
           <Suspense fallback={<LoadingFallback />}>
             <Inventory
+              key={initialCategoryId}
               openAddModal={openInventoryModal}
               initialCategoryId={initialCategoryId}
             />
