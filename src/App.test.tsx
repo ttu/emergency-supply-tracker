@@ -191,4 +191,26 @@ describe('App', () => {
     expect(skipLink).toBeInTheDocument();
     expect(skipLink).toHaveAttribute('href', '#main-content');
   });
+
+  it('navigates to inventory with category when clicking category from dashboard', async () => {
+    renderApp();
+
+    // Wait for dashboard to load
+    await waitFor(() => {
+      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+    });
+
+    // Find and click a category card (water-beverages category)
+    const categoryCard = screen.getByTestId('category-water-beverages');
+    fireEvent.click(categoryCard);
+
+    // Should show inventory page with category filter active
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
+    });
+
+    // The category should be selected in the CategoryNav (has aria-current="page")
+    const categoryNavButton = screen.getByTestId('category-water-beverages');
+    expect(categoryNavButton).toHaveAttribute('aria-current', 'page');
+  });
 });
