@@ -40,8 +40,8 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
             value={settings.language}
             onChange={handleLanguageChange}
             options={[
-              { value: 'en', label: 'English' },
-              { value: 'fi', label: 'Suomi' },
+              { value: 'en', label: t('settings.language.option.en') },
+              { value: 'fi', label: t('settings.language.option.fi') },
             ]}
           />
         </section>

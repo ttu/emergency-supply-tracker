@@ -11,6 +11,8 @@ vi.mock('react-i18next', () => ({
         'app.title': 'Emergency Supply Tracker',
         'app.tagline': 'Track your emergency supplies and stay prepared',
         'settings.language.label': 'Language',
+        'settings.language.option.en': '🇬🇧 English',
+        'settings.language.option.fi': '🇫🇮 Suomi',
         'landing.getStarted': 'Get Started',
         'landing.noSignup.title': 'No Signup Required',
         'landing.noSignup.description': 'Start using immediately',
@@ -98,8 +100,8 @@ describe('WelcomeScreen', () => {
     const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
-    expect(screen.getByText('English')).toBeInTheDocument();
-    expect(screen.getByText('Suomi')).toBeInTheDocument();
+    expect(screen.getByText(/English/)).toBeInTheDocument();
+    expect(screen.getByText(/Suomi/)).toBeInTheDocument();
   });
 
   it('renders works offline selling point', () => {

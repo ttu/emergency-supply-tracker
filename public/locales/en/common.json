@@ -179,7 +179,11 @@
       "viewOnGitHub": "View on GitHub"
     },
     "language": {
-      "label": "Language"
+      "label": "Language",
+      "option": {
+        "en": "🇬🇧 English",
+        "fi": "🇫🇮 Suomi"
+      }
     },
     "theme": {
       "label": "Theme",
