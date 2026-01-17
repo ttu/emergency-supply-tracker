@@ -420,6 +420,37 @@ describe('Inventory Page with items', () => {
     expect(onCategoryChange).toHaveBeenCalledWith('food');
   });
 
+  it('should use local state for category when onCategoryChange is not provided (uncontrolled mode)', () => {
+    // Render without onCategoryChange - uses local state
+    renderWithProviders(<Inventory selectedCategoryId="water-beverages" />);
+
+    // Should show water item (filtered by initial category)
+    expect(screen.getByText('Test Water')).toBeInTheDocument();
+    expect(screen.queryByText('Expired Food')).not.toBeInTheDocument();
+
+    // Click on a different category - uses local state setter
+    const foodCategory = screen.getByTestId('category-food');
+    fireEvent.click(foodCategory);
+
+    // Should now show food item (local state changed)
+    expect(screen.queryByText('Test Water')).not.toBeInTheDocument();
+    expect(screen.getByText('Expired Food')).toBeInTheDocument();
+  });
+
+  it('should handle clicking All Categories in uncontrolled mode', () => {
+    // Render without onCategoryChange - uses local state
+    renderWithProviders(<Inventory selectedCategoryId="water-beverages" />);
+
+    // Click on All Categories button
+    const allCategoriesButton = screen.getByText('inventory.allCategories');
+    fireEvent.click(allCategoriesButton);
+
+    // Should now show all items
+    expect(screen.getByText('Test Water')).toBeInTheDocument();
+    expect(screen.getByText('Expired Food')).toBeInTheDocument();
+    expect(screen.getByText('Batteries')).toBeInTheDocument();
+  });
+
   it('should sort items by quantity', () => {
     renderWithProviders(<Inventory />);
 
