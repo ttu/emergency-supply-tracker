@@ -18,8 +18,8 @@ export function LanguageSwitcher() {
   return (
     <div className="language-switcher">
       <select value={settings.language} onChange={handleLanguageChange}>
-        <option value="en">English</option>
-        <option value="fi">Suomi</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="fi">🇫🇮 Suomi</option>
       </select>
     </div>
   );

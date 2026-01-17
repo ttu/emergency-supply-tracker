@@ -65,8 +65,8 @@ describe('LanguageSwitcher', () => {
   it('should show English and Suomi options', () => {
     renderWithContext(<LanguageSwitcher />);
 
-    expect(screen.getByText('English')).toBeInTheDocument();
-    expect(screen.getByText('Suomi')).toBeInTheDocument();
+    expect(screen.getByText(/English/)).toBeInTheDocument();
+    expect(screen.getByText(/Suomi/)).toBeInTheDocument();
   });
 
   it('should have current language selected', () => {

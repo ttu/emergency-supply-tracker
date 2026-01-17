@@ -7,7 +7,13 @@ import { SettingsProvider } from '@/features/settings';
 const mockChangeLanguage = vi.fn();
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'settings.language.option.en': '🇬🇧 English',
+        'settings.language.option.fi': '🇫🇮 Suomi',
+      };
+      return translations[key] || key;
+    },
     i18n: {
       changeLanguage: mockChangeLanguage,
     },
@@ -36,11 +42,11 @@ describe('LanguageSelector', () => {
     const select = screen.getByRole('combobox');
     expect(select).toBeInTheDocument();
 
-    // Check that English and Finnish options exist
+    // Check that English and Finnish options exist (with flag emojis)
     const options = screen.getAllByRole('option');
     expect(options).toHaveLength(2);
-    expect(options[0]).toHaveTextContent('English');
-    expect(options[1]).toHaveTextContent('Suomi');
+    expect(options[0]).toHaveTextContent(/English/);
+    expect(options[1]).toHaveTextContent(/Suomi/);
   });
 
   it('should change language when option selected', () => {
