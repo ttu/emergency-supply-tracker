@@ -1,11 +1,11 @@
 {
-  "water-beverages": "Vesi & juomat",
+  "water-beverages": "Vesi ja juomat",
   "food": "Ruoka",
-  "cooking-heat": "Ruoanlaitto & lämmitys",
-  "light-power": "Valo & sähkö",
-  "communication-info": "Viestintä & tiedotus",
-  "medical-health": "Lääkkeet & terveys",
-  "hygiene-sanitation": "Hygienia & sanitaatio",
-  "tools-supplies": "Työkalut & tarvikkeet",
-  "cash-documents": "Käteinen & dokumentit"
+  "cooking-heat": "Ruoanlaitto ja lämmitys",
+  "light-power": "Valo ja sähkö",
+  "communication-info": "Viestintä ja tiedotus",
+  "medical-health": "Lääkkeet ja terveys",
+  "hygiene-sanitation": "Hygienia ja sanitaatio",
+  "tools-supplies": "Työkalut ja tarvikkeet",
+  "cash-documents": "Käteinen ja dokumentit"
 }
