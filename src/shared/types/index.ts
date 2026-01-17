@@ -96,6 +96,18 @@ export const VALID_THEMES = [
 
 export type Theme = (typeof VALID_THEMES)[number];
 
+/** Themes available for user selection (excludes 'auto') */
+export const SELECTABLE_THEMES = [
+  'light',
+  'dark',
+  'midnight',
+  'ocean',
+  'sunset',
+  'forest',
+  'lavender',
+  'minimal',
+] as const satisfies readonly Theme[];
+
 export interface UserSettings {
   language: 'en' | 'fi';
   theme: Theme;

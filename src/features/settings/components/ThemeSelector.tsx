@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/features/settings';
+import { SELECTABLE_THEMES } from '@/shared/types';
 import styles from './ThemeSelector.module.css';
 
 export function ThemeSelector() {
@@ -37,14 +38,11 @@ export function ThemeSelector() {
         onChange={handleThemeChange}
         className={styles.select}
       >
-        <option value="light">{t('settings.theme.light')}</option>
-        <option value="dark">{t('settings.theme.dark')}</option>
-        <option value="midnight">{t('settings.theme.midnight')}</option>
-        <option value="ocean">{t('settings.theme.ocean')}</option>
-        <option value="sunset">{t('settings.theme.sunset')}</option>
-        <option value="forest">{t('settings.theme.forest')}</option>
-        <option value="lavender">{t('settings.theme.lavender')}</option>
-        <option value="minimal">{t('settings.theme.minimal')}</option>
+        {SELECTABLE_THEMES.map((theme) => (
+          <option key={theme} value={theme}>
+            {t(`settings.theme.${theme}`)}
+          </option>
+        ))}
       </select>
       <p className={styles.description}>{t('settings.theme.description')}</p>
 

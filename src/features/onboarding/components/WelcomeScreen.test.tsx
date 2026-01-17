@@ -13,6 +13,15 @@ vi.mock('react-i18next', () => ({
         'settings.language.label': 'Language',
         'settings.language.option.en': '🇬🇧 English',
         'settings.language.option.fi': '🇫🇮 Suomi',
+        'settings.theme.label': 'Theme',
+        'settings.theme.light': 'Light',
+        'settings.theme.dark': 'Dark',
+        'settings.theme.midnight': 'Midnight',
+        'settings.theme.ocean': 'Ocean',
+        'settings.theme.sunset': 'Sunset',
+        'settings.theme.forest': 'Forest',
+        'settings.theme.lavender': 'Lavender',
+        'settings.theme.minimal': 'Minimal',
         'landing.getStarted': 'Get Started',
         'landing.noSignup.title': 'No Signup Required',
         'landing.noSignup.description': 'Start using immediately',
@@ -42,7 +51,7 @@ const mockUpdateSettings = vi.fn();
 
 vi.mock('@/features/settings', () => ({
   useSettings: () => ({
-    settings: { language: 'en' },
+    settings: { language: 'en', theme: 'ocean' },
     updateSettings: mockUpdateSettings,
   }),
 }));
@@ -63,7 +72,7 @@ describe('WelcomeScreen', () => {
     render(<WelcomeScreen onContinue={onContinue} />);
 
     expect(screen.getByLabelText('Language')).toBeInTheDocument();
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getAllByRole('combobox')).toHaveLength(2);
   });
 
   it('renders feature highlights', () => {
@@ -117,10 +126,51 @@ describe('WelcomeScreen', () => {
     const onContinue = vi.fn();
     render(<WelcomeScreen onContinue={onContinue} />);
 
-    const languageSelect = screen.getByRole('combobox');
+    const languageSelect = screen.getByLabelText('Language');
     await user.selectOptions(languageSelect, 'fi');
 
     // The handleLanguageChange function should call updateSettings
     expect(mockUpdateSettings).toHaveBeenCalledWith({ language: 'fi' });
+  });
+
+  it('renders theme selector', () => {
+    const onContinue = vi.fn();
+    render(<WelcomeScreen onContinue={onContinue} />);
+
+    expect(screen.getByLabelText('Theme')).toBeInTheDocument();
+  });
+
+  it('renders theme options', () => {
+    const onContinue = vi.fn();
+    render(<WelcomeScreen onContinue={onContinue} />);
+
+    const themeSelect = screen.getByLabelText('Theme');
+    expect(themeSelect).toBeInTheDocument();
+
+    // Check that theme options are available
+    expect(screen.getByRole('option', { name: 'Light' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Dark' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Ocean' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: 'Midnight' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Sunset' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Forest' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: 'Lavender' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Minimal' })).toBeInTheDocument();
+  });
+
+  it('calls updateSettings when theme selector is changed', async () => {
+    mockUpdateSettings.mockClear();
+    const user = userEvent.setup();
+    const onContinue = vi.fn();
+    render(<WelcomeScreen onContinue={onContinue} />);
+
+    const themeSelect = screen.getByLabelText('Theme');
+    await user.selectOptions(themeSelect, 'dark');
+
+    expect(mockUpdateSettings).toHaveBeenCalledWith({ theme: 'dark' });
   });
 });
