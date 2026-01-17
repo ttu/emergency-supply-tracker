@@ -404,6 +404,22 @@ describe('Inventory Page with items', () => {
     expect(screen.queryByText('Batteries')).not.toBeInTheDocument();
   });
 
+  it('should call onCategoryChange when category is changed (controlled mode)', () => {
+    const onCategoryChange = vi.fn();
+    renderWithProviders(
+      <Inventory
+        selectedCategoryId="water-beverages"
+        onCategoryChange={onCategoryChange}
+      />,
+    );
+
+    // Click on a different category
+    const foodCategory = screen.getByTestId('category-food');
+    fireEvent.click(foodCategory);
+
+    expect(onCategoryChange).toHaveBeenCalledWith('food');
+  });
+
   it('should sort items by quantity', () => {
     renderWithProviders(<Inventory />);
 
