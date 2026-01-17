@@ -62,6 +62,8 @@ function AppContent() {
   const [initialCategoryId, setInitialCategoryId] = useState<
     string | undefined
   >(undefined);
+  // Counter to force Inventory remount only when navigating from Dashboard with a category
+  const [inventoryResetKey, setInventoryResetKey] = useState(0);
 
   const { settings, updateSettings } = useSettings();
   const { updateHousehold } = useHousehold();
@@ -74,10 +76,13 @@ function AppContent() {
     setCurrentPage(page);
     if (page === 'inventory') {
       setOpenInventoryModal(options?.openAddModal || false);
-      setInitialCategoryId(options?.initialCategoryId);
+      // Only update category and trigger remount when explicitly navigating from Dashboard with a category
+      if (options?.initialCategoryId !== undefined) {
+        setInitialCategoryId(options.initialCategoryId);
+        setInventoryResetKey((prev) => prev + 1);
+      }
     } else {
       setOpenInventoryModal(false);
-      setInitialCategoryId(undefined);
     }
   };
 
@@ -107,7 +112,7 @@ function AppContent() {
         return (
           <Suspense fallback={<LoadingFallback />}>
             <Inventory
-              key={initialCategoryId}
+              key={inventoryResetKey}
               openAddModal={openInventoryModal}
               initialCategoryId={initialCategoryId}
             />
