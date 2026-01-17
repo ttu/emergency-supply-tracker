@@ -26,6 +26,7 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [importData, setImportData] = useState<PartialExportData | null>(null);
 
+<<<<<<< HEAD
   const validateImportData = (data: PartialExportData): boolean => {
     if (!data || typeof data !== 'object') return false;
 
@@ -44,6 +45,10 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
       if (!file) return;
 
       const reader = new FileReader();
+      reader.onerror = () => {
+        console.error('Import error:', reader.error);
+        alert(t('settings.import.error'));
+      };
       reader.onload = (event) => {
         try {
           const json = event.target?.result as string;

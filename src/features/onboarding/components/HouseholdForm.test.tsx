@@ -62,19 +62,25 @@ describe('HouseholdForm', () => {
   const mockSaveAppData = localStorage.saveAppData as Mock;
 
   let consoleErrorSpy: MockInstance;
+  const originalLocation = globalThis.location;
 
   beforeEach(() => {
     vi.clearAllMocks();
     globalThis.alert = vi.fn();
     globalThis.confirm = vi.fn(() => true);
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    globalThis.location = {
-      reload: vi.fn(),
-    } as unknown as Location;
+    Object.defineProperty(globalThis, 'location', {
+      value: { ...originalLocation, reload: vi.fn() },
+      writable: true,
+    });
   });
 
   afterEach(() => {
     consoleErrorSpy.mockRestore();
+    Object.defineProperty(globalThis, 'location', {
+      value: originalLocation,
+      writable: true,
+    });
   });
 
   it('renders form fields', () => {

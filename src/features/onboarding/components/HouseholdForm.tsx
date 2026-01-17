@@ -7,7 +7,7 @@ import {
   importFromJSON,
   saveAppData,
 } from '@/shared/utils/storage/localStorage';
-import type { AppData } from '@/shared/types';
+import { isValidAppData } from '@/shared/utils/validation';
 import styles from './HouseholdForm.module.css';
 
 function parseIntOrDefault(value: string, defaultValue: number): number {
@@ -46,19 +46,6 @@ export function HouseholdForm({
     Partial<Record<keyof HouseholdData, string>>
   >({});
 
-  const validateAppData = (data: unknown): data is AppData => {
-    if (!data || typeof data !== 'object') return false;
-    const d = data as Record<string, unknown>;
-
-    return (
-      typeof d.version === 'string' &&
-      typeof d.household === 'object' &&
-      typeof d.settings === 'object' &&
-      Array.isArray(d.items) &&
-      typeof d.lastModified === 'string'
-    );
-  };
-
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
@@ -68,12 +55,16 @@ export function HouseholdForm({
     if (!file) return;
 
     const reader = new FileReader();
+    reader.onerror = () => {
+      console.error('Import error:', reader.error);
+      alert(t('settings.import.error'));
+    };
     reader.onload = (event) => {
       try {
         const json = event.target?.result as string;
         const data = importFromJSON(json);
 
-        if (!validateAppData(data)) {
+        if (!isValidAppData(data)) {
           alert(t('settings.import.invalidFormat'));
           return;
         }
