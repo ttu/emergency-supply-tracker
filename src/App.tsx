@@ -69,6 +69,15 @@ function AppContent() {
   const { updateHousehold } = useHousehold();
   const { addItems } = useInventory();
 
+  // Handler for navigation tab clicks - clears initialCategoryId when leaving inventory
+  // so the category doesn't persist when returning via navigation tab
+  const handleNavTabClick = (page: PageType) => {
+    setCurrentPage(page);
+    if (page !== 'inventory') {
+      setInitialCategoryId(undefined);
+    }
+  };
+
   const handleNavigate = (
     page: PageType,
     options?: { openAddModal?: boolean; initialCategoryId?: string },
@@ -148,7 +157,7 @@ function AppContent() {
       <a href="#main-content" className="skip-link">
         {t('accessibility.skipToContent')}
       </a>
-      <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+      <Navigation currentPage={currentPage} onNavigate={handleNavTabClick} />
       <main id="main-content" className="main">
         {renderPage()}
       </main>
