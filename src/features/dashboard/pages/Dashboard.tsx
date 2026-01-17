@@ -3,6 +3,7 @@ import { Button } from '@/shared/components/Button';
 import { useHousehold } from '@/features/household';
 import { AlertBanner } from '@/features/alerts';
 import { DashboardHeader, CategoryGrid } from '@/features/dashboard';
+import { useShoppingListExport } from '@/features/settings';
 import { useCategoryStatuses, useDashboardAlerts } from '../hooks';
 import { createAlertId } from '@/shared/types';
 import type { PageType } from '@/shared/components/Navigation';
@@ -35,6 +36,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
     handleDismissAlert,
     handleShowAllAlerts,
   } = useDashboardAlerts();
+  const { handleExport: handleExportShoppingList } = useShoppingListExport();
 
   // Navigation handlers
   const handleCategoryClick = (categoryId: string) => {
@@ -47,10 +49,6 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
 
   const handleViewInventory = () => {
     onNavigate?.('inventory');
-  };
-
-  const handleExportShoppingList = () => {
-    console.log('Export shopping list');
   };
 
   // Alert dismiss handler that converts string to AlertId
