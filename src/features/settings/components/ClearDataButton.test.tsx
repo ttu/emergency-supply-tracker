@@ -2,9 +2,13 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ClearDataButton } from './ClearDataButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
+import * as errorLoggerStorage from '@/shared/utils/errorLogger/storage';
+import * as analyticsStorage from '@/shared/utils/analytics/storage';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage');
+vi.mock('@/shared/utils/errorLogger/storage');
+vi.mock('@/shared/utils/analytics/storage');
 
 // Store original console.error to restore later
 const originalConsoleError = console.error;
@@ -43,6 +47,8 @@ describe('ClearDataButton', () => {
 
     expect(globalThis.confirm).toHaveBeenCalledTimes(1);
     expect(localStorage.clearAppData).not.toHaveBeenCalled();
+    expect(errorLoggerStorage.clearErrorLogs).not.toHaveBeenCalled();
+    expect(analyticsStorage.clearAnalyticsData).not.toHaveBeenCalled();
   });
 
   it('should not clear data if second confirmation is cancelled', () => {
@@ -58,6 +64,8 @@ describe('ClearDataButton', () => {
 
     expect(globalThis.confirm).toHaveBeenCalledTimes(2);
     expect(localStorage.clearAppData).not.toHaveBeenCalled();
+    expect(errorLoggerStorage.clearErrorLogs).not.toHaveBeenCalled();
+    expect(analyticsStorage.clearAnalyticsData).not.toHaveBeenCalled();
   });
 
   it('should clear data when both confirmations are accepted', () => {
@@ -72,6 +80,8 @@ describe('ClearDataButton', () => {
 
     expect(globalThis.confirm).toHaveBeenCalledTimes(2);
     expect(localStorage.clearAppData).toHaveBeenCalled();
+    expect(errorLoggerStorage.clearErrorLogs).toHaveBeenCalled();
+    expect(analyticsStorage.clearAnalyticsData).toHaveBeenCalled();
     expect(globalThis.alert).toHaveBeenCalledWith('settings.clearData.success');
     // window.location.reload should be called
     expect(reloadSpy).toHaveBeenCalled();
