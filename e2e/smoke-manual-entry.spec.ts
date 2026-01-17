@@ -306,16 +306,6 @@ async function testSettingsFeatures(page: Page) {
     expect(navText).toBeTruthy();
   }
 
-  // Change theme
-  const themeSelect = page.locator('#theme-select');
-  if (await themeSelect.isVisible().catch(() => false)) {
-    await themeSelect.selectOption('dark');
-    const themeAttribute = await page.evaluate(
-      () => document.documentElement.dataset.theme,
-    );
-    expect(themeAttribute).toBe('dark');
-  }
-
   // Toggle high contrast
   const highContrastCheckbox = page.locator('#high-contrast-toggle');
   if (await highContrastCheckbox.isVisible().catch(() => false)) {
@@ -371,6 +361,45 @@ async function testSettingsFeatures(page: Page) {
     await reactivateButton.click();
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
   }
+
+  // Change theme LAST to avoid race conditions with other localStorage saves
+  // Theme select MUST be visible - this is a required test step
+  const themeSelect = page.locator('#theme-select');
+  await expect(themeSelect).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+  await themeSelect.selectOption('dark');
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+  const themeAttribute = await page.evaluate(
+    () => document.documentElement.dataset.theme,
+  );
+  expect(themeAttribute).toBe('dark');
+  // Wait for settings to be saved to localStorage
+  await page.waitForFunction(
+    (key) => {
+      const data = localStorage.getItem(key);
+      if (!data) return false;
+      try {
+        const appData = JSON.parse(data);
+        return appData.settings?.theme === 'dark';
+      } catch {
+        return false;
+      }
+    },
+    STORAGE_KEY,
+    { timeout: TIMEOUTS.ELEMENT_VISIBLE },
+  );
+  // Wait for localStorage to stabilize (ensure no pending saves overwrite it)
+  await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
+  // Verify theme is still 'dark' after stabilization
+  const stableTheme = await page.evaluate((key) => {
+    const data = localStorage.getItem(key);
+    if (!data) return null;
+    try {
+      return JSON.parse(data).settings?.theme;
+    } catch {
+      return null;
+    }
+  }, STORAGE_KEY);
+  expect(stableTheme).toBe('dark');
 }
 
 async function verifyAlertsDisappearAfterHouseholdChange(page: Page) {
@@ -489,8 +518,10 @@ async function testNavigationAndPersistence(page: Page) {
   });
   const themeSelectAfterReload = page.locator('#theme-select');
   if (await themeSelectAfterReload.isVisible().catch(() => false)) {
-    const themeValue = await themeSelectAfterReload.inputValue();
-    expect(themeValue).toBe('dark');
+    // Wait for the select to have the persisted value (lazy loading may cause delay)
+    await expect(themeSelectAfterReload).toHaveValue('dark', {
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
   }
 }
 

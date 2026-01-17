@@ -70,7 +70,8 @@
     "export": "Export",
     "import": "Import",
     "clear": "Clear",
-    "copy": "Copy"
+    "copy": "Copy",
+    "loading": "Loading..."
   },
   "actions": {
     "add": "Add",

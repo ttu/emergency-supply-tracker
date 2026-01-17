@@ -277,6 +277,7 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
   await page.getByTestId('nav-settings').click();
   await page.waitForLoadState('networkidle');
 
+  // Change language first
   const languageSelect = page.locator('select').first();
   if (await languageSelect.isVisible().catch(() => false)) {
     await languageSelect.selectOption('fi');
@@ -285,15 +286,7 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
     expect(navText).toBeTruthy();
   }
 
-  const themeSelect = page.locator('#theme-select');
-  if (await themeSelect.isVisible().catch(() => false)) {
-    await themeSelect.selectOption('dark');
-    const themeAttribute = await page.evaluate(
-      () => document.documentElement.dataset.theme,
-    );
-    expect(themeAttribute).toBe('dark');
-  }
-
+  // Toggle advanced checkbox
   const advancedCheckbox = page
     .locator('label:has-text(/Calorie|Power|Water/i) input[type="checkbox"]')
     .first();
@@ -303,6 +296,34 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
     const newState = await advancedCheckbox.isChecked();
     expect(newState).toBe(!initialState);
   }
+
+  // Change theme LAST to avoid race conditions with other localStorage saves
+  // Theme select MUST be visible - this is a required test step
+  const themeSelect = page.locator('#theme-select');
+  await expect(themeSelect).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+  await themeSelect.selectOption('dark');
+  await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
+  const themeAttribute = await page.evaluate(
+    () => document.documentElement.dataset.theme,
+  );
+  expect(themeAttribute).toBe('dark');
+  // Wait for settings to be saved to localStorage
+  await page.waitForFunction(
+    (key) => {
+      const data = localStorage.getItem(key);
+      if (!data) return false;
+      try {
+        const appData = JSON.parse(data);
+        return appData.settings?.theme === 'dark';
+      } catch {
+        return false;
+      }
+    },
+    STORAGE_KEY,
+    { timeout: TIMEOUTS.ELEMENT_VISIBLE },
+  );
+  // Wait for localStorage to stabilize
+  await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
 }
 
 async function reEnableDisabledRecommendation(page: Page) {
@@ -406,8 +427,10 @@ async function testPersistenceQuickSetup(page: Page) {
   });
   const themeSelectAfterReload = page.locator('#theme-select');
   if (await themeSelectAfterReload.isVisible().catch(() => false)) {
-    const themeValue = await themeSelectAfterReload.inputValue();
-    expect(themeValue).toBe('dark');
+    // Wait for the select to have the persisted value (lazy loading may cause delay)
+    await expect(themeSelectAfterReload).toHaveValue('dark', {
+      timeout: TIMEOUTS.ELEMENT_VISIBLE,
+    });
   }
 }
 

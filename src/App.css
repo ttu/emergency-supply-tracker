@@ -11,6 +11,15 @@
   overflow-y: auto;
 }
 
+.loading-fallback {
+  padding: 2rem;
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
   .main {
     padding: 0;
