@@ -214,8 +214,9 @@ describe('ExportButton', () => {
       ).toBeInTheDocument();
     });
 
-    // Should show item count
-    expect(screen.getByText('(2)')).toBeInTheDocument();
+    // Should show item count - use getAllByText since multiple sections may have counts
+    const counts = screen.getAllByText('(2)');
+    expect(counts.length).toBeGreaterThan(0);
   });
 
   it('should have all sections selected by default', async () => {

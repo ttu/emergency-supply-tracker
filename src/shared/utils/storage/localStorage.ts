@@ -490,7 +490,10 @@ export function mergeImportData(
   }
 
   if (sections.includes('customRecommendedItems')) {
-    merged.customRecommendedItems = imported.customRecommendedItems;
+    // Only overwrite if the imported data actually has this section
+    if (imported.customRecommendedItems !== undefined) {
+      merged.customRecommendedItems = imported.customRecommendedItems;
+    }
   }
 
   // Update lastModified
