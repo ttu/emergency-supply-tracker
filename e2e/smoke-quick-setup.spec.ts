@@ -364,7 +364,16 @@ async function testDataManagementQuickSetup(page: Page) {
   const exportButton = page.getByTestId('export-data-button');
   if (await exportButton.isVisible().catch(() => false)) {
     await exportButton.click();
-    await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
+    // Wait for export selection modal and click export button
+    const exportModalButton = page.locator('button', {
+      hasText: /^Export$|^Vie$/i,
+    });
+    if (
+      await exportModalButton.isVisible({ timeout: 3000 }).catch(() => false)
+    ) {
+      await exportModalButton.click();
+    }
+    await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
   }
 
   const shoppingListButton = page.getByTestId('export-shopping-list-button');

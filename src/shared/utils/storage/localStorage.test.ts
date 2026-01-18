@@ -6,14 +6,38 @@ import {
   clearAppData,
   exportToJSON,
   importFromJSON,
+  exportToJSONSelective,
+  parseImportJSON,
+  mergeImportData,
 } from './localStorage';
+import type {
+  ExportSection,
+  PartialExportData,
+} from '@/shared/types/exportImport';
 import {
   createMockAppData,
   createMockCategory,
   createMockHousehold,
 } from '@/shared/utils/test/factories';
 import { CURRENT_SCHEMA_VERSION, MigrationError } from './migrations';
-import { createCategoryId } from '@/shared/types';
+import {
+  createCategoryId,
+  createItemId,
+  createProductTemplateId,
+  createAlertId,
+} from '@/shared/types';
+
+// Helper to create minimal export metadata for tests
+const createTestExportMetadata = (
+  sections: string[] = [],
+): PartialExportData['exportMetadata'] => ({
+  exportedAt: '2024-01-01T00:00:00.000Z',
+  appVersion: CURRENT_SCHEMA_VERSION,
+  itemCount: 0,
+  categoryCount: 0,
+  includedSections:
+    sections as PartialExportData['exportMetadata']['includedSections'],
+});
 
 describe('localStorage utilities', () => {
   beforeEach(() => {
@@ -646,6 +670,404 @@ describe('localStorage utilities', () => {
       expect(result.version).toBe(CURRENT_SCHEMA_VERSION);
 
       needsMigrationSpy.mockRestore();
+    });
+  });
+
+  describe('exportToJSONSelective', () => {
+    it('exports only selected sections', () => {
+      const mockData = createMockAppData({
+        items: [
+          {
+            id: createItemId('item-1'),
+            name: 'Test Item',
+            itemType: 'custom',
+            categoryId: createCategoryId('food'),
+            quantity: 5,
+            unit: 'pieces',
+            neverExpires: true,
+            createdAt: '2024-01-01',
+            updatedAt: '2024-01-01',
+          },
+        ],
+        customCategories: [
+          createMockCategory({ id: createCategoryId('custom-1') }),
+        ],
+      });
+
+      const sections: ExportSection[] = ['items', 'household'];
+      const json = exportToJSONSelective(mockData, sections);
+      const parsed = JSON.parse(json);
+
+      expect(parsed.items).toBeDefined();
+      expect(parsed.household).toBeDefined();
+      expect(parsed.settings).toBeUndefined();
+      expect(parsed.customCategories).toBeUndefined();
+      expect(parsed.exportMetadata.includedSections).toEqual(sections);
+    });
+
+    it('exports all sections when all selected', () => {
+      const mockData = createMockAppData();
+      const allSections: ExportSection[] = [
+        'items',
+        'household',
+        'settings',
+        'customCategories',
+        'customTemplates',
+        'dismissedAlertIds',
+        'disabledRecommendedItems',
+        'customRecommendedItems',
+      ];
+      const json = exportToJSONSelective(mockData, allSections);
+      const parsed = JSON.parse(json);
+
+      expect(parsed.items).toBeDefined();
+      expect(parsed.household).toBeDefined();
+      expect(parsed.settings).toBeDefined();
+      expect(parsed.customCategories).toBeDefined();
+      expect(parsed.customTemplates).toBeDefined();
+    });
+
+    it('includes correct item count in metadata', () => {
+      const mockData = createMockAppData({
+        items: [
+          {
+            id: createItemId('item-1'),
+            name: 'Test Item 1',
+            itemType: 'custom',
+            categoryId: createCategoryId('food'),
+            quantity: 1,
+            unit: 'pieces',
+            neverExpires: true,
+            createdAt: '2024-01-01',
+            updatedAt: '2024-01-01',
+          },
+          {
+            id: createItemId('item-2'),
+            name: 'Test Item 2',
+            itemType: 'custom',
+            categoryId: createCategoryId('food'),
+            quantity: 2,
+            unit: 'pieces',
+            neverExpires: true,
+            createdAt: '2024-01-01',
+            updatedAt: '2024-01-01',
+          },
+        ],
+      });
+
+      const json = exportToJSONSelective(mockData, ['items']);
+      const parsed = JSON.parse(json);
+
+      expect(parsed.exportMetadata.itemCount).toBe(2);
+    });
+
+    it('sets itemCount to 0 when items section not selected', () => {
+      const mockData = createMockAppData({
+        items: [
+          {
+            id: createItemId('item-1'),
+            name: 'Test Item',
+            itemType: 'custom',
+            categoryId: createCategoryId('food'),
+            quantity: 1,
+            unit: 'pieces',
+            neverExpires: true,
+            createdAt: '2024-01-01',
+            updatedAt: '2024-01-01',
+          },
+        ],
+      });
+
+      const json = exportToJSONSelective(mockData, ['household']);
+      const parsed = JSON.parse(json);
+
+      expect(parsed.exportMetadata.itemCount).toBe(0);
+    });
+  });
+
+  describe('parseImportJSON', () => {
+    it('parses valid JSON and returns data', () => {
+      const testData = {
+        version: CURRENT_SCHEMA_VERSION,
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 7,
+          useFreezer: false,
+        },
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+      const json = JSON.stringify(testData);
+      const result = parseImportJSON(json);
+
+      expect(result.version).toBe(CURRENT_SCHEMA_VERSION);
+      expect(result.household).toEqual(testData.household);
+    });
+
+    it('throws error for invalid JSON', () => {
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      expect(() => parseImportJSON('invalid json')).toThrow();
+      consoleSpy.mockRestore();
+    });
+
+    it('throws MigrationError for unsupported version', () => {
+      const testData = {
+        version: '0.9.0',
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 7,
+          useFreezer: false,
+        },
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+      const json = JSON.stringify(testData);
+
+      expect(() => parseImportJSON(json)).toThrow(MigrationError);
+    });
+  });
+
+  describe('mergeImportData', () => {
+    it('merges selected sections only', () => {
+      const existing = createMockAppData({
+        household: {
+          adults: 1,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      });
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['household', 'settings']),
+        household: {
+          adults: 4,
+          children: 2,
+          supplyDurationDays: 14,
+          useFreezer: true,
+        },
+        settings: {
+          language: 'fi' as const,
+          theme: 'dark' as const,
+          highContrast: true,
+          advancedFeatures: {
+            calorieTracking: true,
+            powerManagement: true,
+            waterTracking: true,
+          },
+        },
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+
+      const result = mergeImportData(existing, imported, ['household']);
+
+      expect(result.household).toEqual(imported.household);
+      expect(result.settings).toEqual(existing.settings); // Not merged
+    });
+
+    it('marks onboarding complete when importing settings', () => {
+      const existing = createMockAppData();
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['settings']),
+        settings: {
+          language: 'fi' as const,
+          theme: 'dark' as const,
+          highContrast: false,
+          onboardingCompleted: false,
+          advancedFeatures: {
+            calorieTracking: false,
+            powerManagement: false,
+            waterTracking: false,
+          },
+        },
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+
+      const result = mergeImportData(existing, imported, ['settings']);
+
+      expect(result.settings.onboardingCompleted).toBe(true);
+    });
+
+    it('normalizes items with null expirationDate when importing', () => {
+      const existing = createMockAppData();
+      // Cast to bypass type checking since we're testing handling of legacy null values
+      const imported = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['items']),
+        items: [
+          {
+            id: createItemId('item-1'),
+            name: 'Test Item',
+            itemType: 'custom',
+            categoryId: createCategoryId('food'),
+            quantity: 5,
+            unit: 'pieces',
+            expirationDate: null, // Legacy format used null
+            neverExpires: false,
+            createdAt: '2024-01-01',
+            updatedAt: '2024-01-01',
+          },
+        ],
+        lastModified: '2024-01-01T00:00:00.000Z',
+      } as unknown as PartialExportData;
+
+      const result = mergeImportData(existing, imported, ['items']);
+
+      // When expirationDate is null, it should be converted to undefined and neverExpires set to true
+      expect(result.items[0].neverExpires).toBe(true);
+      expect(result.items[0].expirationDate).toBeUndefined();
+    });
+
+    it('merges customCategories with proper ID casting', () => {
+      const existing = createMockAppData();
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['customCategories']),
+        customCategories: [
+          {
+            id: createCategoryId('custom-cat-1'),
+            name: 'Custom Category',
+            isCustom: true,
+          },
+        ],
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+
+      const result = mergeImportData(existing, imported, ['customCategories']);
+
+      expect(result.customCategories[0].id).toBe('custom-cat-1');
+    });
+
+    it('merges customTemplates with proper ID casting', () => {
+      const existing = createMockAppData();
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['customTemplates']),
+        customTemplates: [
+          {
+            id: createProductTemplateId('custom-template-1'),
+            name: 'Custom Template',
+            category: createCategoryId('food'),
+            isCustom: true,
+            isBuiltIn: false,
+          },
+        ],
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+
+      const result = mergeImportData(existing, imported, ['customTemplates']);
+
+      expect(result.customTemplates[0].id).toBe('custom-template-1');
+    });
+
+    it('merges dismissedAlertIds', () => {
+      const existing = createMockAppData();
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['dismissedAlertIds']),
+        dismissedAlertIds: [createAlertId('alert-1'), createAlertId('alert-2')],
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+
+      const result = mergeImportData(existing, imported, ['dismissedAlertIds']);
+
+      expect(result.dismissedAlertIds).toHaveLength(2);
+    });
+
+    it('merges disabledRecommendedItems', () => {
+      const existing = createMockAppData();
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['disabledRecommendedItems']),
+        disabledRecommendedItems: [
+          createProductTemplateId('rec-1'),
+          createProductTemplateId('rec-2'),
+        ],
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+
+      const result = mergeImportData(existing, imported, [
+        'disabledRecommendedItems',
+      ]);
+
+      expect(result.disabledRecommendedItems).toHaveLength(2);
+    });
+
+    it('merges customRecommendedItems when defined', () => {
+      const existing = createMockAppData({ customRecommendedItems: null });
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['customRecommendedItems']),
+        customRecommendedItems: {
+          meta: {
+            name: 'Test Recommendations',
+            version: '1.0.0',
+            createdAt: '2024-01-01T00:00:00.000Z',
+          },
+          items: [],
+        },
+        lastModified: '2024-01-01T00:00:00.000Z',
+      };
+
+      const result = mergeImportData(existing, imported, [
+        'customRecommendedItems',
+      ]);
+
+      expect(result.customRecommendedItems).toBeDefined();
+      expect(result.customRecommendedItems?.meta.name).toBe(
+        'Test Recommendations',
+      );
+    });
+
+    it('does not overwrite customRecommendedItems when undefined in import', () => {
+      const existingRecs = {
+        meta: {
+          name: 'Existing Recommendations',
+          version: '1.0.0',
+          createdAt: '2024-01-01T00:00:00.000Z',
+        },
+        items: [],
+      };
+      const existing = createMockAppData({
+        customRecommendedItems: existingRecs,
+      });
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata([]),
+        lastModified: '2024-01-01T00:00:00.000Z',
+        // customRecommendedItems is undefined
+      };
+
+      const result = mergeImportData(existing, imported, [
+        'customRecommendedItems',
+      ]);
+
+      expect(result.customRecommendedItems).toEqual(existingRecs);
+    });
+
+    it('updates lastModified timestamp', () => {
+      const existing = createMockAppData();
+      const imported: PartialExportData = {
+        version: CURRENT_SCHEMA_VERSION,
+        exportMetadata: createTestExportMetadata(['household']),
+        household: {
+          adults: 2,
+          children: 0,
+          supplyDurationDays: 7,
+          useFreezer: false,
+        },
+        lastModified: '2020-01-01T00:00:00.000Z',
+      };
+
+      const beforeMerge = new Date().toISOString();
+      const result = mergeImportData(existing, imported, ['household']);
+      const afterMerge = new Date().toISOString();
+
+      expect(result.lastModified >= beforeMerge).toBe(true);
+      expect(result.lastModified <= afterMerge).toBe(true);
     });
   });
 });

@@ -228,8 +228,15 @@ test.describe('Backup Reminder', () => {
     await expect(exportButton).toBeVisible();
     await exportButton.click();
 
-    // Wait for export to complete
-    await page.waitForTimeout(1000);
+    // Wait for export selection modal to open and click export button
+    const exportModalButton = page.locator('button', {
+      hasText: /^Export$|^Vie$/i,
+    });
+    await expect(exportModalButton).toBeVisible({ timeout: 5000 });
+    await exportModalButton.click();
+
+    // Wait for modal to close and export to complete
+    await page.waitForTimeout(500);
 
     // Navigate back to Dashboard
     await page.getByTestId('nav-dashboard').click();

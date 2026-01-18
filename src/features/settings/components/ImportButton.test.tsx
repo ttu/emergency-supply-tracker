@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   beforeEach,
   afterEach,
@@ -12,26 +13,61 @@ import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
-  importFromJSON: vi.fn(),
+  parseImportJSON: vi.fn(),
+  mergeImportData: vi.fn(),
+  getAppData: vi.fn(),
   saveAppData: vi.fn(),
+  createDefaultAppData: vi.fn(),
 }));
 
 describe('ImportButton', () => {
-  const mockImportFromJSON = localStorage.importFromJSON as Mock;
+  const mockParseImportJSON = localStorage.parseImportJSON as Mock;
+  const mockMergeImportData = localStorage.mergeImportData as Mock;
+  const mockGetAppData = localStorage.getAppData as Mock;
   const mockSaveAppData = localStorage.saveAppData as Mock;
+  const mockCreateDefaultAppData = localStorage.createDefaultAppData as Mock;
 
   let consoleErrorSpy: MockInstance;
+
+  const defaultExistingData = {
+    version: CURRENT_SCHEMA_VERSION,
+    household: {
+      adults: 1,
+      children: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+    },
+    settings: {
+      language: 'en',
+      theme: 'light',
+      highContrast: false,
+      advancedFeatures: {
+        calorieTracking: false,
+        powerManagement: false,
+        waterTracking: false,
+      },
+    },
+    items: [],
+    customCategories: [],
+    customTemplates: [],
+    dismissedAlertIds: [],
+    disabledRecommendedItems: [],
+    lastModified: '2024-01-01T00:00:00.000Z',
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
     globalThis.alert = vi.fn();
-    globalThis.confirm = vi.fn(() => true);
     // Suppress console.error output from expected error handling in tests
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     // Mock window.location.reload to prevent jsdom navigation errors
     globalThis.location = {
       reload: vi.fn(),
     } as unknown as Location;
+
+    // Default mock returns
+    mockGetAppData.mockReturnValue(defaultExistingData);
+    mockCreateDefaultAppData.mockReturnValue(defaultExistingData);
   });
 
   afterEach(() => {
@@ -68,16 +104,79 @@ describe('ImportButton', () => {
     expect(clickSpy).toHaveBeenCalled();
   });
 
-  it('should handle valid JSON import', async () => {
+  it('should open selection modal for valid JSON import', async () => {
     const validData = {
       version: CURRENT_SCHEMA_VERSION,
-      household: { adults: 2, children: 0 },
-      settings: { language: 'en' },
-      items: [],
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      },
+      settings: {
+        language: 'en',
+        theme: 'dark',
+        highContrast: false,
+        advancedFeatures: {
+          calorieTracking: false,
+          powerManagement: false,
+          waterTracking: false,
+        },
+      },
+      items: [{ id: '1', name: 'Test' }],
       lastModified: '2024-01-01T00:00:00.000Z',
     };
 
-    mockImportFromJSON.mockReturnValue(validData);
+    mockParseImportJSON.mockReturnValue(validData);
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = new File([JSON.stringify(validData)], 'data.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    // Modal should open with selection options
+    await waitFor(() => {
+      expect(
+        screen.getByText('settings.importSelection.title'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should import selected sections when user confirms', async () => {
+    const user = userEvent.setup();
+    const validData = {
+      version: CURRENT_SCHEMA_VERSION,
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      },
+      settings: {
+        language: 'fi',
+        theme: 'dark',
+        highContrast: false,
+        advancedFeatures: {
+          calorieTracking: false,
+          powerManagement: false,
+          waterTracking: false,
+        },
+      },
+      items: [{ id: '1', name: 'Test' }],
+      lastModified: '2024-01-01T00:00:00.000Z',
+    };
+
+    const mergedData = { ...defaultExistingData, ...validData };
+
+    mockParseImportJSON.mockReturnValue(validData);
+    mockMergeImportData.mockReturnValue(mergedData);
+
     const onImportSuccess = vi.fn();
 
     render(<ImportButton onImportSuccess={onImportSuccess} />);
@@ -91,27 +190,36 @@ describe('ImportButton', () => {
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
+    // Wait for modal to open
     await waitFor(() => {
-      expect(mockImportFromJSON).toHaveBeenCalled();
-      expect(globalThis.confirm).toHaveBeenCalledWith(
-        'settings.import.confirmOverwrite',
-      );
+      expect(
+        screen.getByText('settings.importSelection.title'),
+      ).toBeInTheDocument();
     });
 
+    // Click import button in modal
+    const importButton = screen.getByText(
+      'settings.importSelection.importButton',
+    );
+    await user.click(importButton);
+
     await waitFor(() => {
-      expect(mockSaveAppData).toHaveBeenCalledWith(validData);
+      expect(mockMergeImportData).toHaveBeenCalled();
+      expect(mockSaveAppData).toHaveBeenCalledWith(mergedData);
       expect(globalThis.alert).toHaveBeenCalledWith('settings.import.success');
       expect(onImportSuccess).toHaveBeenCalled();
-      // Note: window.location.reload is called but difficult to mock in jsdom
     });
   });
 
   it('should show error for invalid JSON format', async () => {
     const invalidData = {
       foo: 'bar', // missing required fields
+      version: CURRENT_SCHEMA_VERSION,
+      lastModified: '2024-01-01T00:00:00.000Z',
+      // No sections with data
     };
 
-    mockImportFromJSON.mockReturnValue(invalidData);
+    mockParseImportJSON.mockReturnValue(invalidData);
 
     render(<ImportButton />);
 
@@ -133,17 +241,31 @@ describe('ImportButton', () => {
     expect(mockSaveAppData).not.toHaveBeenCalled();
   });
 
-  it('should not import when user cancels confirmation', async () => {
+  it('should close modal when user cancels', async () => {
+    const user = userEvent.setup();
     const validData = {
       version: CURRENT_SCHEMA_VERSION,
-      household: { adults: 2, children: 0 },
-      settings: { language: 'en' },
-      items: [],
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      },
+      settings: {
+        language: 'en',
+        theme: 'dark',
+        highContrast: false,
+        advancedFeatures: {
+          calorieTracking: false,
+          powerManagement: false,
+          waterTracking: false,
+        },
+      },
+      items: [{ id: '1', name: 'Test' }],
       lastModified: '2024-01-01T00:00:00.000Z',
     };
 
-    mockImportFromJSON.mockReturnValue(validData);
-    (globalThis.confirm as Mock).mockReturnValue(false);
+    mockParseImportJSON.mockReturnValue(validData);
 
     render(<ImportButton />);
 
@@ -156,15 +278,28 @@ describe('ImportButton', () => {
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
+    // Wait for modal to open
     await waitFor(() => {
-      expect(globalThis.confirm).toHaveBeenCalled();
+      expect(
+        screen.getByText('settings.importSelection.title'),
+      ).toBeInTheDocument();
+    });
+
+    // Click cancel button in modal
+    const cancelButton = screen.getByText('common.cancel');
+    await user.click(cancelButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('settings.importSelection.title'),
+      ).not.toBeInTheDocument();
     });
 
     expect(mockSaveAppData).not.toHaveBeenCalled();
   });
 
   it('should handle file read error', async () => {
-    mockImportFromJSON.mockImplementation(() => {
+    mockParseImportJSON.mockImplementation(() => {
       throw new Error('Parse error');
     });
 
@@ -193,19 +328,33 @@ describe('ImportButton', () => {
 
     fireEvent.change(fileInput, { target: { files: [] } });
 
-    expect(mockImportFromJSON).not.toHaveBeenCalled();
+    expect(mockParseImportJSON).not.toHaveBeenCalled();
   });
 
-  it('should reset file input after import', async () => {
+  it('should reset file input after selecting file', async () => {
     const validData = {
       version: CURRENT_SCHEMA_VERSION,
-      household: { adults: 2, children: 0 },
-      settings: { language: 'en' },
-      items: [],
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      },
+      settings: {
+        language: 'en',
+        theme: 'dark',
+        highContrast: false,
+        advancedFeatures: {
+          calorieTracking: false,
+          powerManagement: false,
+          waterTracking: false,
+        },
+      },
+      items: [{ id: '1', name: 'Test' }],
       lastModified: '2024-01-01T00:00:00.000Z',
     };
 
-    mockImportFromJSON.mockReturnValue(validData);
+    mockParseImportJSON.mockReturnValue(validData);
 
     render(<ImportButton />);
 
@@ -216,24 +365,28 @@ describe('ImportButton', () => {
       type: 'application/json',
     });
 
-    // We can't easily test the value reset, but we can verify the change event works
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(mockImportFromJSON).toHaveBeenCalled();
+      expect(mockParseImportJSON).toHaveBeenCalled();
     });
   });
 
-  it('should validate data has required fields', async () => {
+  it('should validate data has version field', async () => {
     // Missing version
     const missingVersion = {
-      household: { adults: 2 },
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      },
       settings: { language: 'en' },
       items: [],
       lastModified: '2024-01-01T00:00:00.000Z',
     };
 
-    mockImportFromJSON.mockReturnValue(missingVersion);
+    mockParseImportJSON.mockReturnValue(missingVersion);
 
     render(<ImportButton />);
 
@@ -254,7 +407,7 @@ describe('ImportButton', () => {
   });
 
   it('should validate data is an object', async () => {
-    mockImportFromJSON.mockReturnValue(null);
+    mockParseImportJSON.mockReturnValue(null);
 
     render(<ImportButton />);
 
@@ -272,32 +425,36 @@ describe('ImportButton', () => {
     });
   });
 
-  it('should validate items is an array', async () => {
-    const invalidItems = {
+  it('should show warning message in modal', async () => {
+    const validData = {
       version: CURRENT_SCHEMA_VERSION,
-      household: { adults: 2 },
-      settings: { language: 'en' },
-      items: 'not an array',
+      household: {
+        adults: 2,
+        children: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      },
+      items: [{ id: '1', name: 'Test' }],
       lastModified: '2024-01-01T00:00:00.000Z',
     };
 
-    mockImportFromJSON.mockReturnValue(invalidItems);
+    mockParseImportJSON.mockReturnValue(validData);
 
     render(<ImportButton />);
 
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File([JSON.stringify(invalidItems)], 'data.json', {
+    const file = new File([JSON.stringify(validData)], 'data.json', {
       type: 'application/json',
     });
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(globalThis.alert).toHaveBeenCalledWith(
-        'settings.import.invalidFormat',
-      );
+      expect(
+        screen.getByText('settings.importSelection.warning'),
+      ).toBeInTheDocument();
     });
   });
 });

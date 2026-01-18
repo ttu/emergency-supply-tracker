@@ -249,8 +249,15 @@ test.describe('Custom Product Templates', () => {
     await expect(exportButton).toBeVisible();
     await exportButton.click();
 
-    // Wait for download
-    await page.waitForTimeout(1000);
+    // Wait for export selection modal to open and click export button
+    const exportModalButton = page.locator('button', {
+      hasText: /^Export$|^Vie$/i,
+    });
+    await expect(exportModalButton).toBeVisible({ timeout: 5000 });
+    await exportModalButton.click();
+
+    // Wait for modal to close and download to complete
+    await page.waitForTimeout(500);
 
     // Verify custom template is in exported data
     // Custom templates are included in the export format

@@ -33,8 +33,15 @@ test.describe('Data Management', () => {
       await dialog.accept();
     });
 
-    // Click Export Data button (this uses programmatic download via createElement)
+    // Click Export Data button (this opens export selection modal)
     await exportButton.click();
+
+    // Wait for export selection modal to open and click export button
+    const exportModalButton = page.locator('button', {
+      hasText: /^Export$|^Vie$/i,
+    });
+    await expect(exportModalButton).toBeVisible({ timeout: 5000 });
+    await exportModalButton.click();
 
     // The export should succeed without showing "No data to export" alert
     // Give a brief moment for any potential dialog to appear
@@ -80,15 +87,9 @@ test.describe('Data Management', () => {
       lastModified: new Date().toISOString(),
     };
 
-    // Set up dialog handlers BEFORE setting the file
-    page.once('dialog', async (dialog) => {
-      expect(dialog.message()).toContain('replace all your current data');
+    // Set up dialog handler for success alert
+    page.on('dialog', async (dialog) => {
       await dialog.accept();
-
-      // Handle success alert
-      page.once('dialog', async (successDialog) => {
-        await successDialog.accept();
-      });
     });
 
     // Set file input using data-testid
@@ -98,6 +99,13 @@ test.describe('Data Management', () => {
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(testData)),
     });
+
+    // Wait for import selection modal to open
+    const importModalButton = page.locator('button', {
+      hasText: /^Import$|^Tuo$/i,
+    });
+    await expect(importModalButton).toBeVisible({ timeout: 5000 });
+    await importModalButton.click();
 
     // Wait for page reload after import
     await page.waitForLoadState('networkidle');
