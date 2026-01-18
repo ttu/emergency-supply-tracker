@@ -61,6 +61,8 @@ describe('HouseholdPresetSelector', () => {
 
   let consoleErrorSpy: MockInstance;
   const originalLocation = globalThis.location;
+  const originalAlert = globalThis.alert;
+  const originalConfirm = globalThis.confirm;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -79,6 +81,16 @@ describe('HouseholdPresetSelector', () => {
       value: originalLocation,
       writable: true,
     });
+    if (originalAlert !== undefined) {
+      globalThis.alert = originalAlert;
+    } else {
+      delete (globalThis as { alert?: unknown }).alert;
+    }
+    if (originalConfirm !== undefined) {
+      globalThis.confirm = originalConfirm;
+    } else {
+      delete (globalThis as { confirm?: unknown }).confirm;
+    }
   });
   it('renders all preset options', () => {
     const onSelectPreset = vi.fn();
