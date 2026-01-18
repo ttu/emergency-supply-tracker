@@ -335,7 +335,13 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
     try {
       const localData = getAppData();
       if (!localData) {
-        return createErrorResult('No local data to sync');
+        const errorMessage = 'No local data to sync';
+        setState((prev) => ({
+          ...prev,
+          state: 'error',
+          error: errorMessage,
+        }));
+        return createErrorResult(errorMessage);
       }
 
       const localModified = new Date(localData.lastModified).getTime();
