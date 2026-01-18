@@ -30,7 +30,7 @@ export function ConnectGoogleDrive() {
   };
 
   const handleDisconnect = async () => {
-    const confirmed = window.confirm(t('cloudSync.disconnect.confirm'));
+    const confirmed = globalThis.confirm(t('cloudSync.disconnect.confirm'));
     if (!confirmed) return;
 
     setIsDisconnecting(true);

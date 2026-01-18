@@ -8,11 +8,11 @@ export class GoogleDriveService implements CloudStorageProvider {
   readonly providerId = 'google-drive' as const;
 
   async connect(): Promise<void> {
-    return Promise.resolve();
+    // No-op for mock
   }
 
   async disconnect(): Promise<void> {
-    return Promise.resolve();
+    // No-op for mock
   }
 
   isConnected(): boolean {

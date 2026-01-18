@@ -1,4 +1,10 @@
-import { useState, useCallback, useEffect, type ReactNode } from 'react';
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  type ReactNode,
+} from 'react';
 import { CloudSyncContext } from './context';
 import type {
   CloudProvider,
@@ -63,8 +69,157 @@ function clearCloudSyncConfig(): void {
   }
 }
 
+/**
+ * Create a success result with updated state.
+ */
+function createSuccessResult(
+  direction: 'upload' | 'download' | 'none',
+  timestamp: string,
+  requiresReload?: boolean,
+): SyncResult {
+  return {
+    success: true,
+    direction,
+    timestamp,
+    ...(requiresReload && { requiresReload }),
+  };
+}
+
+/**
+ * Create an error result.
+ */
+function createErrorResult(error: string): SyncResult {
+  return {
+    success: false,
+    direction: 'none',
+    timestamp: new Date().toISOString(),
+    error,
+  };
+}
+
+/**
+ * Extract error message from caught error.
+ */
+function getErrorMessage(error: unknown): string {
+  if (error instanceof CloudSyncError) {
+    return error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return 'Sync failed';
+}
+
+/**
+ * Get remote file metadata and modification time.
+ * Returns { fileId, modifiedTime } or { fileId: null, modifiedTime: 0 } if not found.
+ */
+async function getRemoteFileInfo(
+  provider: CloudStorageProvider,
+  existingFileId: string | null,
+): Promise<{ fileId: string | null; modifiedTime: number }> {
+  let fileId = existingFileId;
+  let modifiedTime = 0;
+
+  // Check existing file
+  if (fileId) {
+    const metadata = await provider.getFileMetadata(fileId);
+    if (metadata) {
+      return {
+        fileId,
+        modifiedTime: new Date(metadata.modifiedTime).getTime(),
+      };
+    }
+    // File was deleted remotely
+    fileId = null;
+  }
+
+  // Try to find existing sync file
+  if (!fileId) {
+    fileId = await provider.findSyncFile();
+    if (fileId) {
+      const metadata = await provider.getFileMetadata(fileId);
+      if (metadata) {
+        modifiedTime = new Date(metadata.modifiedTime).getTime();
+      }
+    }
+  }
+
+  return { fileId, modifiedTime };
+}
+
+interface PerformSyncResult {
+  syncResult: SyncResult;
+  newFileId?: string;
+}
+
+/**
+ * Perform the actual sync operation based on timestamps.
+ * Uses last-write-wins strategy.
+ */
+async function performSync(
+  provider: CloudStorageProvider,
+  localData: ReturnType<typeof getAppData>,
+  localModified: number,
+  remoteFileId: string | null,
+  remoteModified: number,
+  timestamp: string,
+  providerName: CloudProvider,
+): Promise<PerformSyncResult> {
+  // Upload: local is newer or no remote file
+  if (!remoteFileId || localModified > remoteModified) {
+    const dataJson = JSON.stringify(localData, null, 2);
+    const newFileId = await provider.upload(
+      dataJson,
+      remoteFileId ?? undefined,
+    );
+
+    const newConfig: CloudSyncConfig = {
+      provider: providerName,
+      lastSyncTimestamp: timestamp,
+      remoteFileId: newFileId,
+    };
+    saveCloudSyncConfig(newConfig);
+
+    return {
+      syncResult: createSuccessResult('upload', timestamp),
+      newFileId,
+    };
+  }
+
+  // Download: remote is newer
+  if (remoteModified > localModified) {
+    const remoteDataJson = await provider.download(remoteFileId);
+    const remoteData = JSON.parse(remoteDataJson);
+    saveAppData(remoteData);
+
+    const newConfig: CloudSyncConfig = {
+      provider: providerName,
+      lastSyncTimestamp: timestamp,
+      remoteFileId,
+    };
+    saveCloudSyncConfig(newConfig);
+
+    return {
+      syncResult: createSuccessResult('download', timestamp, true),
+    };
+  }
+
+  // No changes needed
+  const newConfig: CloudSyncConfig = {
+    provider: providerName,
+    lastSyncTimestamp: timestamp,
+    remoteFileId,
+  };
+  saveCloudSyncConfig(newConfig);
+
+  return {
+    syncResult: createSuccessResult('none', timestamp),
+  };
+}
+
 interface CloudSyncProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 /**
@@ -167,22 +322,12 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
    */
   const syncNow = useCallback(async (): Promise<SyncResult> => {
     if (!state.provider) {
-      return {
-        success: false,
-        direction: 'none',
-        timestamp: new Date().toISOString(),
-        error: 'Not connected to a cloud provider',
-      };
+      return createErrorResult('Not connected to a cloud provider');
     }
 
     const provider = getProvider(state.provider) as CloudStorageProvider;
-    if (!provider || !provider.isConnected()) {
-      return {
-        success: false,
-        direction: 'none',
-        timestamp: new Date().toISOString(),
-        error: 'Not connected to cloud provider',
-      };
+    if (!provider?.isConnected()) {
+      return createErrorResult('Not connected to cloud provider');
     }
 
     setState((prev) => ({ ...prev, state: 'syncing', error: null }));
@@ -190,124 +335,35 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
     try {
       const localData = getAppData();
       if (!localData) {
-        return {
-          success: false,
-          direction: 'none',
-          timestamp: new Date().toISOString(),
-          error: 'No local data to sync',
-        };
+        return createErrorResult('No local data to sync');
       }
 
       const localModified = new Date(localData.lastModified).getTime();
-      let remoteModified = 0;
-      let remoteFileId = state.remoteFileId;
-
-      // Check if remote file exists and get its modification time
-      if (remoteFileId) {
-        const metadata = await provider.getFileMetadata(remoteFileId);
-        if (metadata) {
-          remoteModified = new Date(metadata.modifiedTime).getTime();
-        } else {
-          // File was deleted remotely
-          remoteFileId = null;
-        }
-      }
-
-      // If no remote file, try to find one
-      if (!remoteFileId) {
-        remoteFileId = await provider.findSyncFile();
-        if (remoteFileId) {
-          const metadata = await provider.getFileMetadata(remoteFileId);
-          if (metadata) {
-            remoteModified = new Date(metadata.modifiedTime).getTime();
-          }
-        }
-      }
+      const { fileId: remoteFileId, modifiedTime: remoteModified } =
+        await getRemoteFileInfo(provider, state.remoteFileId);
 
       const timestamp = new Date().toISOString();
+      const result = await performSync(
+        provider,
+        localData,
+        localModified,
+        remoteFileId,
+        remoteModified,
+        timestamp,
+        state.provider,
+      );
 
-      // Determine sync direction using last-write-wins
-      if (!remoteFileId || localModified > remoteModified) {
-        // Upload: local is newer or no remote file
-        const dataJson = JSON.stringify(localData, null, 2);
-        const newFileId = await provider.upload(
-          dataJson,
-          remoteFileId || undefined,
-        );
+      setState({
+        provider: state.provider,
+        lastSyncTimestamp: timestamp,
+        remoteFileId: result.newFileId ?? remoteFileId,
+        state: 'connected',
+        error: null,
+      });
 
-        const newConfig: CloudSyncConfig = {
-          provider: state.provider,
-          lastSyncTimestamp: timestamp,
-          remoteFileId: newFileId,
-        };
-        saveCloudSyncConfig(newConfig);
-
-        setState({
-          ...newConfig,
-          state: 'connected',
-          error: null,
-        });
-
-        return {
-          success: true,
-          direction: 'upload',
-          timestamp,
-        };
-      } else if (remoteModified > localModified) {
-        // Download: remote is newer
-        const remoteDataJson = await provider.download(remoteFileId);
-        const remoteData = JSON.parse(remoteDataJson);
-
-        // Save remote data to localStorage
-        saveAppData(remoteData);
-
-        const newConfig: CloudSyncConfig = {
-          provider: state.provider,
-          lastSyncTimestamp: timestamp,
-          remoteFileId,
-        };
-        saveCloudSyncConfig(newConfig);
-
-        setState({
-          ...newConfig,
-          state: 'connected',
-          error: null,
-        });
-
-        return {
-          success: true,
-          direction: 'download',
-          timestamp,
-          requiresReload: true,
-        };
-      } else {
-        // No changes needed
-        const newConfig: CloudSyncConfig = {
-          provider: state.provider,
-          lastSyncTimestamp: timestamp,
-          remoteFileId,
-        };
-        saveCloudSyncConfig(newConfig);
-
-        setState({
-          ...newConfig,
-          state: 'connected',
-          error: null,
-        });
-
-        return {
-          success: true,
-          direction: 'none',
-          timestamp,
-        };
-      }
+      return result.syncResult;
     } catch (error) {
-      const message =
-        error instanceof CloudSyncError
-          ? error.message
-          : error instanceof Error
-            ? error.message
-            : 'Sync failed';
+      const message = getErrorMessage(error);
 
       setState((prev) => ({
         ...prev,
@@ -315,12 +371,7 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
         error: message,
       }));
 
-      return {
-        success: false,
-        direction: 'none',
-        timestamp: new Date().toISOString(),
-        error: message,
-      };
+      return createErrorResult(message);
     }
   }, [state.provider, state.remoteFileId]);
 
@@ -335,16 +386,19 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
     }));
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      state,
+      connect,
+      disconnect,
+      syncNow,
+      clearError,
+    }),
+    [state, connect, disconnect, syncNow, clearError],
+  );
+
   return (
-    <CloudSyncContext.Provider
-      value={{
-        state,
-        connect,
-        disconnect,
-        syncNow,
-        clearError,
-      }}
-    >
+    <CloudSyncContext.Provider value={contextValue}>
       {children}
     </CloudSyncContext.Provider>
   );
