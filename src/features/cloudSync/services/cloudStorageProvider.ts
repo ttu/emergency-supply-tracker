@@ -61,9 +61,7 @@ let googleDriveInstance: GoogleDriveService | null = null;
 export function initializeProviders(): void {
   // Register Google Drive provider
   registerProvider('google-drive', () => {
-    if (!googleDriveInstance) {
-      googleDriveInstance = new GoogleDriveService();
-    }
+    googleDriveInstance ??= new GoogleDriveService();
     return googleDriveInstance;
   });
 

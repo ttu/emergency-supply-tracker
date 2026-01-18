@@ -174,9 +174,7 @@ export class GoogleDriveService implements CloudStorageProvider {
     }
 
     // Initialize token client if needed
-    if (!this.tokenClient) {
-      this.tokenClient = this.initTokenClient();
-    }
+    this.tokenClient ??= this.initTokenClient();
 
     // Request access token (opens Google sign-in popup)
     this.pendingAuthPromise = new Promise<void>((resolve, reject) => {
@@ -463,7 +461,7 @@ export class GoogleDriveService implements CloudStorageProvider {
         id: file.id,
         name: file.name,
         modifiedTime: file.modifiedTime,
-        size: file.size ? parseInt(file.size, 10) : undefined,
+        size: file.size ? Number.parseInt(file.size, 10) : undefined,
       };
     } catch (error) {
       if (error instanceof CloudSyncError && error.code === 'FILE_NOT_FOUND') {
