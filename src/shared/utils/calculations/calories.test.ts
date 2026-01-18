@@ -3,12 +3,15 @@ import {
   calculateCaloriesFromWeight,
   calculateTotalWeight,
   calculateTotalCalories,
+  calculateItemTotalCalories,
   getTemplateWeightPerUnit,
   getTemplateCaloriesPerUnit,
   resolveCaloriesPerUnit,
   formatWeight,
   formatCalories,
 } from './calories';
+import type { InventoryItem } from '@/shared/types';
+import { createItemId, createCategoryId } from '@/shared/types';
 import type { RecommendedItemDefinition } from '@/shared/types';
 import { createProductTemplateId } from '@/shared/types';
 
@@ -48,6 +51,95 @@ describe('calculateTotalCalories', () => {
 
   it('handles fractional quantities', () => {
     expect(calculateTotalCalories(0.5, 3600)).toBe(1800);
+  });
+
+  it('converts kilograms to units when unit is kilograms', () => {
+    // 1 kg with 100g per unit = 10 units, 10 * 400 = 4000 kcal
+    expect(calculateTotalCalories(1, 400, 'kilograms', 100)).toBe(4000);
+    // 1.5 kg with 100g per unit = 15 units, 15 * 400 = 6000 kcal
+    expect(calculateTotalCalories(1.5, 400, 'kilograms', 100)).toBe(6000);
+    // 0.5 kg with 100g per unit = 5 units, 5 * 400 = 2000 kcal
+    expect(calculateTotalCalories(0.5, 400, 'kilograms', 100)).toBe(2000);
+  });
+
+  it('uses quantity directly when unit is not kilograms', () => {
+    expect(calculateTotalCalories(5, 200, 'pieces')).toBe(1000);
+    expect(calculateTotalCalories(2, 3500, 'cans')).toBe(7000);
+  });
+
+  it('uses quantity directly when weightGrams is not provided for kilograms', () => {
+    // Falls back to direct multiplication if weightGrams not provided
+    expect(calculateTotalCalories(1, 400, 'kilograms')).toBe(400);
+  });
+});
+
+describe('calculateItemTotalCalories', () => {
+  it('calculates total calories for item with regular unit', () => {
+    const item: InventoryItem = {
+      id: createItemId('1'),
+      name: 'Test Item',
+      itemType: 'custom',
+      categoryId: createCategoryId('food'),
+      quantity: 5,
+      unit: 'cans',
+      weightGrams: 400,
+      caloriesPerUnit: 200,
+      neverExpires: true,
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
+    expect(calculateItemTotalCalories(item)).toBe(1000);
+  });
+
+  it('calculates total calories for item with kilograms unit', () => {
+    const item: InventoryItem = {
+      id: createItemId('1'),
+      name: 'Rice',
+      itemType: 'custom',
+      categoryId: createCategoryId('food'),
+      quantity: 1, // 1 kg
+      unit: 'kilograms',
+      weightGrams: 100, // 100g per unit
+      caloriesPerUnit: 400, // 400 kcal per unit
+      neverExpires: true,
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
+    // 1 kg = 1000g / 100g = 10 units, 10 * 400 = 4000 kcal
+    expect(calculateItemTotalCalories(item)).toBe(4000);
+  });
+
+  it('returns 0 when caloriesPerUnit is not set', () => {
+    const item: InventoryItem = {
+      id: createItemId('1'),
+      name: 'Test Item',
+      itemType: 'custom',
+      categoryId: createCategoryId('food'),
+      quantity: 5,
+      unit: 'cans',
+      neverExpires: true,
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
+    expect(calculateItemTotalCalories(item)).toBe(0);
+  });
+
+  it('handles fractional kilograms', () => {
+    const item: InventoryItem = {
+      id: createItemId('1'),
+      name: 'Rice',
+      itemType: 'custom',
+      categoryId: createCategoryId('food'),
+      quantity: 1.5, // 1.5 kg
+      unit: 'kilograms',
+      weightGrams: 100, // 100g per unit
+      caloriesPerUnit: 400, // 400 kcal per unit
+      neverExpires: true,
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
+    // 1.5 kg = 1500g / 100g = 15 units, 15 * 400 = 6000 kcal
+    expect(calculateItemTotalCalories(item)).toBe(6000);
   });
 });
 

@@ -1,4 +1,4 @@
-import type { RecommendedItemDefinition } from '@/shared/types';
+import type { InventoryItem, RecommendedItemDefinition } from '@/shared/types';
 import { isFoodRecommendedItem } from '@/shared/types';
 import {
   CALORIE_BASE_WEIGHT_GRAMS,
@@ -30,12 +30,38 @@ export function calculateTotalWeight(
 
 /**
  * Calculate total calories from quantity and calories per unit
+ * When unit is "kilograms", quantity is in kg and needs to be converted to units using weightGrams
  */
 export function calculateTotalCalories(
   quantity: number,
   caloriesPerUnit: number,
+  unit?: string,
+  weightGrams?: number,
 ): number {
+  // If unit is kilograms and weightGrams is provided, convert quantity (kg) to units
+  if (unit === 'kilograms' && weightGrams && weightGrams > 0) {
+    // Convert quantity (kg) to number of units: quantity * 1000 / weightGrams
+    const numberOfUnits = (quantity * 1000) / weightGrams;
+    return Math.round(numberOfUnits * caloriesPerUnit);
+  }
+  // Otherwise, quantity is already in units
   return Math.round(quantity * caloriesPerUnit);
+}
+
+/**
+ * Calculate total calories for an inventory item
+ * Handles unit conversion when unit is "kilograms"
+ */
+export function calculateItemTotalCalories(item: InventoryItem): number {
+  if (!item.caloriesPerUnit) {
+    return 0;
+  }
+  return calculateTotalCalories(
+    item.quantity,
+    item.caloriesPerUnit,
+    item.unit,
+    item.weightGrams,
+  );
 }
 
 /**
