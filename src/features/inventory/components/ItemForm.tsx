@@ -18,7 +18,10 @@ import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
 import { Button } from '@/shared/components/Button';
 import { calculateCaloriesFromWeight } from '@/shared/utils/calculations/calories';
-import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
+import {
+  CUSTOM_ITEM_TYPE,
+  DEFAULT_WEIGHT_PER_UNIT_GRAMS,
+} from '@/shared/utils/constants';
 import { isTemplateId } from '@/shared/utils/storage/localStorage';
 import styles from './ItemForm.module.css';
 
@@ -76,8 +79,12 @@ export const ItemForm = ({
   // Always display weight in grams (even when unit is kilograms, as package labels often use grams)
   const getDefaultWeight = (): string => {
     const weightGrams = item?.weightGrams ?? templateWeightGramsPerUnit;
-    if (weightGrams === undefined) return '';
-    return weightGrams.toString();
+    if (weightGrams !== undefined) return weightGrams.toString();
+    // Default to DEFAULT_WEIGHT_PER_UNIT_GRAMS for food items when no template or existing weight
+    if (isFoodCategory(item?.categoryId || defaultCategoryId || '')) {
+      return DEFAULT_WEIGHT_PER_UNIT_GRAMS.toString();
+    }
+    return '';
   };
 
   const getDefaultCalories = (): string => {
