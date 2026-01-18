@@ -2,23 +2,21 @@ import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
-import type {
-  ExportSection,
-  PartialExportData,
-  SectionInfo,
-} from '@/shared/types/exportImport';
 import {
   ALL_EXPORT_SECTIONS,
   getSectionInfo,
   getSectionsWithData,
+  type ExportSection,
+  type PartialExportData,
+  type SectionInfo,
 } from '@/shared/types/exportImport';
 import styles from './ImportSelectionModal.module.css';
 
 export interface ImportSelectionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onImport: (sections: ExportSection[]) => void;
-  importData: PartialExportData;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly onImport: (sections: ExportSection[]) => void;
+  readonly importData: PartialExportData;
 }
 
 export function ImportSelectionModal({
@@ -131,7 +129,7 @@ export function ImportSelectionModal({
             return (
               <label
                 key={section}
-                className={`${styles.sectionItem} ${!hasData ? styles.disabled : ''}`}
+                className={`${styles.sectionItem} ${hasData ? '' : styles.disabled}`}
               >
                 <input
                   type="checkbox"
@@ -143,7 +141,7 @@ export function ImportSelectionModal({
                 <span className={styles.sectionLabel}>
                   {getSectionLabel(section)}
                   <span
-                    className={`${styles.count} ${!hasData ? styles.notAvailable : ''}`}
+                    className={`${styles.count} ${hasData ? '' : styles.notAvailable}`}
                   >
                     {formatCount(info)}
                   </span>

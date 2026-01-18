@@ -421,45 +421,28 @@ export function parseImportJSON(json: string): PartialExportData {
 }
 
 /**
- * Merges selected sections from imported data into existing app data.
- * Only the specified sections are merged; other sections remain unchanged.
- *
- * @param existing - Current app data
- * @param imported - Imported partial data
- * @param sections - Sections to merge from imported data
- * @returns Merged app data
+ * Merges items section from imported data.
  */
-export function mergeImportData(
-  existing: AppData,
+function mergeItemsSection(imported: PartialExportData): InventoryItem[] {
+  const normalizedItems = normalizeItems(imported.items ?? []);
+  return (
+    normalizedItems?.map((item) => ({
+      ...item,
+      expirationDate:
+        item.expirationDate === null ? undefined : item.expirationDate,
+      neverExpires: item.expirationDate === null ? true : item.neverExpires,
+    })) ?? []
+  );
+}
+
+/**
+ * Merges simple array sections from imported data.
+ */
+function mergeSimpleSections(
+  merged: AppData,
   imported: PartialExportData,
   sections: ExportSection[],
-): AppData {
-  const merged: AppData = { ...existing };
-
-  if (sections.includes('household') && imported.household) {
-    merged.household = imported.household;
-  }
-
-  if (sections.includes('settings') && imported.settings) {
-    // Ensure onboarding is marked complete when importing settings
-    merged.settings = {
-      ...imported.settings,
-      onboardingCompleted: true,
-    };
-  }
-
-  if (sections.includes('items') && imported.items) {
-    // Normalize items before merging
-    const normalizedItems = normalizeItems(imported.items as InventoryItem[]);
-    merged.items =
-      normalizedItems?.map((item) => ({
-        ...item,
-        expirationDate:
-          item.expirationDate === null ? undefined : item.expirationDate,
-        neverExpires: item.expirationDate === null ? true : item.neverExpires,
-      })) ?? [];
-  }
-
+): void {
   if (sections.includes('customCategories') && imported.customCategories) {
     merged.customCategories = imported.customCategories.map((cat) => ({
       ...cat,
@@ -489,17 +472,49 @@ export function mergeImportData(
     ).map(createProductTemplateId);
   }
 
-  if (sections.includes('customRecommendedItems')) {
-    // Only overwrite if the imported data actually has this section
-    if (imported.customRecommendedItems !== undefined) {
-      merged.customRecommendedItems = imported.customRecommendedItems;
-    }
+  if (
+    sections.includes('customRecommendedItems') &&
+    imported.customRecommendedItems !== undefined
+  ) {
+    merged.customRecommendedItems = imported.customRecommendedItems;
+  }
+}
+
+/**
+ * Merges selected sections from imported data into existing app data.
+ * Only the specified sections are merged; other sections remain unchanged.
+ *
+ * @param existing - Current app data
+ * @param imported - Imported partial data
+ * @param sections - Sections to merge from imported data
+ * @returns Merged app data
+ */
+export function mergeImportData(
+  existing: AppData,
+  imported: PartialExportData,
+  sections: ExportSection[],
+): AppData {
+  const merged: AppData = { ...existing };
+
+  if (sections.includes('household') && imported.household) {
+    merged.household = imported.household;
   }
 
-  // Update lastModified
+  if (sections.includes('settings') && imported.settings) {
+    merged.settings = {
+      ...imported.settings,
+      onboardingCompleted: true,
+    };
+  }
+
+  if (sections.includes('items') && imported.items) {
+    merged.items = mergeItemsSection(imported);
+  }
+
+  mergeSimpleSections(merged, imported, sections);
+
   merged.lastModified = new Date().toISOString();
 
-  // Apply migrations if needed
   if (needsMigration(merged)) {
     return migrateToCurrentVersion(merged);
   }

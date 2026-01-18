@@ -3,19 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
 import type { AppData } from '@/shared/types';
-import type { ExportSection } from '@/shared/types/exportImport';
 import {
   ALL_EXPORT_SECTIONS,
   getSectionInfo,
+  type ExportSection,
   type SectionInfo,
 } from '@/shared/types/exportImport';
 import styles from './ExportSelectionModal.module.css';
 
 export interface ExportSelectionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onExport: (sections: ExportSection[]) => void;
-  appData: AppData;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly onExport: (sections: ExportSection[]) => void;
+  readonly appData: AppData;
 }
 
 export function ExportSelectionModal({
@@ -112,7 +112,7 @@ export function ExportSelectionModal({
           {sectionInfoList.map((info) => (
             <label
               key={info.section}
-              className={`${styles.sectionItem} ${!info.hasData ? styles.disabled : ''}`}
+              className={`${styles.sectionItem} ${info.hasData ? '' : styles.disabled}`}
             >
               <input
                 type="checkbox"
