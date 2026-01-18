@@ -119,6 +119,8 @@ export function calculateCategoryPercentage(
       household,
       peopleMultiplier,
       dailyCalories,
+      recommendedItems,
+      disabledRecommendedItems,
     );
   }
 
@@ -149,6 +151,8 @@ function calculateFoodCategoryPercentage(
   household: HouseholdConfig,
   peopleMultiplier: number,
   dailyCalories: number,
+  allRecommendedItems: RecommendedItemDefinition[],
+  disabledRecommendedItems: string[],
 ): CategoryPercentageResult {
   // Calculate total needed calories
   const totalNeededCalories =
@@ -157,6 +161,7 @@ function calculateFoodCategoryPercentage(
   // Calculate total actual calories from inventory
   let totalActualCalories = 0;
 
+  // Count calories from items matching enabled recommendations
   recommendedForCategory.forEach((recItem) => {
     if (!isFoodRecommendedItem(recItem) || !recItem.caloriesPerUnit) {
       return;
@@ -174,18 +179,41 @@ function calculateFoodCategoryPercentage(
     totalActualCalories += itemCalories;
   });
 
-  // Also count calories from items that don't match any recommended item
-  // but have caloriesPerUnit set
+  // Also count calories from items that don't match any enabled recommended item
+  // This includes:
+  // 1. Items with caloriesPerUnit that don't match any enabled recommendation
+  // 2. Items matching disabled recommendations (use recommendation's caloriesPerUnit if item doesn't have it)
   categoryItems.forEach((item) => {
-    if (!item.caloriesPerUnit) return;
-
-    // Check if this item was already counted (by itemType only)
+    // Check if this item was already counted (by itemType only) in enabled recommendations
     const alreadyCounted = recommendedForCategory.some((recItem) =>
       itemMatchesRecommendedId(item, recItem.id),
     );
 
-    if (!alreadyCounted) {
+    if (alreadyCounted) {
+      return;
+    }
+
+    // If item has caloriesPerUnit, count it
+    if (item.caloriesPerUnit) {
       totalActualCalories += item.quantity * item.caloriesPerUnit;
+      return;
+    }
+
+    // If item doesn't have caloriesPerUnit, check if it matches a disabled recommendation
+    // and use the recommendation's caloriesPerUnit
+    if (item.itemType) {
+      const disabledRecItem = allRecommendedItems.find(
+        (recItem) =>
+          recItem.id === item.itemType &&
+          disabledRecommendedItems.includes(recItem.id) &&
+          isFoodRecommendedItem(recItem) &&
+          recItem.caloriesPerUnit,
+      );
+
+      if (disabledRecItem) {
+        totalActualCalories +=
+          item.quantity * (disabledRecItem.caloriesPerUnit ?? 0);
+      }
     }
   });
 

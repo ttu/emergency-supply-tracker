@@ -1149,6 +1149,77 @@ describe('calculateCategoryPercentage', () => {
       expect(result.totalNeeded).toBe(1);
       expect(result.percentage).toBe(100);
     });
+
+    it('counts calories from items matching disabled recommendations', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        supplyDurationDays: 3,
+      });
+
+      // Need 6000 kcal (1 adult * 2000 kcal * 3 days)
+      // Have 1 kg rice = 3600 kcal (60%)
+      // Disable rice recommendation, but calories should still count
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('food'),
+          itemType: createProductTemplateId('rice'),
+          quantity: 1,
+          // Item doesn't have caloriesPerUnit, should use recommendation's value
+          caloriesPerUnit: undefined,
+          unit: 'kilograms',
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        ['rice'], // Disable rice recommendation
+        mockFoodRecommendedItems,
+      );
+
+      // Calories should still be counted from the disabled recommendation
+      expect(result.totalActualCalories).toBe(3600);
+      expect(result.totalNeededCalories).toBe(6000);
+      expect(result.percentage).toBe(60);
+    });
+
+    it('counts calories from items with own caloriesPerUnit matching disabled recommendations', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        supplyDurationDays: 3,
+      });
+
+      // Need 6000 kcal
+      // Have 1 kg rice with custom calories = 4000 kcal (67%)
+      // Disable rice recommendation, but calories should still count
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('food'),
+          itemType: createProductTemplateId('rice'),
+          quantity: 1,
+          caloriesPerUnit: 4000, // Custom calories per unit
+          unit: 'kilograms',
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        ['rice'], // Disable rice recommendation
+        mockFoodRecommendedItems,
+      );
+
+      // Should use item's own caloriesPerUnit, not recommendation's
+      expect(result.totalActualCalories).toBe(4000);
+      expect(result.totalNeededCalories).toBe(6000);
+      expect(result.percentage).toBe(67);
+    });
   });
 
   describe('edge cases', () => {
