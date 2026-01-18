@@ -30,18 +30,16 @@ const JSON_MIME_TYPE = 'application/json';
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
 // Google Identity Services types (loaded from external script)
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        oauth2: {
-          initTokenClient: (
-            config: GoogleTokenClientConfig,
-          ) => GoogleTokenClient;
-        };
-      };
+interface GoogleApi {
+  accounts: {
+    oauth2: {
+      initTokenClient: (config: GoogleTokenClientConfig) => GoogleTokenClient;
     };
-  }
+  };
+}
+
+declare global {
+  var google: GoogleApi | undefined;
 }
 
 interface GoogleTokenClientConfig {
@@ -107,7 +105,7 @@ export class GoogleDriveService implements CloudStorageProvider {
       );
     }
 
-    if (!window.google?.accounts?.oauth2) {
+    if (!globalThis.google?.accounts?.oauth2) {
       throw new CloudSyncError(
         'Google Identity Services not loaded. Check your internet connection.',
         'AUTH_FAILED',
@@ -115,7 +113,7 @@ export class GoogleDriveService implements CloudStorageProvider {
       );
     }
 
-    return window.google.accounts.oauth2.initTokenClient({
+    return globalThis.google.accounts.oauth2.initTokenClient({
       client_id: clientId,
       scope: SCOPES,
       callback: (response: GoogleTokenResponse) => {
