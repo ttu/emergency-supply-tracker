@@ -64,7 +64,7 @@ describe('CloudSyncProvider', () => {
   let initializeProvidersSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    window.localStorage.clear();
+    globalThis.localStorage.clear();
     cloudStorageProvider.resetProviders();
 
     // Create fresh mock provider for each test
@@ -113,7 +113,7 @@ describe('CloudSyncProvider', () => {
       lastSyncTimestamp: '2024-01-01T00:00:00Z',
       remoteFileId: 'file-123',
     };
-    window.localStorage.setItem(
+    globalThis.localStorage.setItem(
       'emergencySupplyTracker_cloudSyncConfig',
       JSON.stringify(config),
     );
@@ -125,7 +125,7 @@ describe('CloudSyncProvider', () => {
       expiresAt: Date.now() + 3600000,
       provider: 'google-drive',
     };
-    window.localStorage.setItem(
+    globalThis.localStorage.setItem(
       'emergencySupplyTracker_cloudTokens',
       JSON.stringify(tokens),
     );
@@ -142,7 +142,7 @@ describe('CloudSyncProvider', () => {
 
   it('should handle invalid JSON in config gracefully', () => {
     // Store invalid JSON
-    window.localStorage.setItem(
+    globalThis.localStorage.setItem(
       'emergencySupplyTracker_cloudSyncConfig',
       'invalid json{',
     );
@@ -194,8 +194,9 @@ describe('CloudSyncProvider', () => {
 
       // Check that config was saved with file ID
       const savedConfig = JSON.parse(
-        window.localStorage.getItem('emergencySupplyTracker_cloudSyncConfig') ??
-          '{}',
+        globalThis.localStorage.getItem(
+          'emergencySupplyTracker_cloudSyncConfig',
+        ) ?? '{}',
       );
       expect(savedConfig.remoteFileId).toBe('existing-file-id');
     });
@@ -331,7 +332,7 @@ describe('CloudSyncProvider', () => {
         <CloudSyncProvider>
           <TestConsumer
             onStateChange={(cs) => {
-              (window as unknown as Record<string, unknown>).testSyncNow =
+              (globalThis as unknown as Record<string, unknown>).testSyncNow =
                 cs.syncNow;
             }}
           />
@@ -339,7 +340,7 @@ describe('CloudSyncProvider', () => {
       );
 
       const syncResult = await (
-        window as unknown as { testSyncNow: () => Promise<unknown> }
+        globalThis as unknown as { testSyncNow: () => Promise<unknown> }
       ).testSyncNow();
 
       expect(syncResult).toEqual(
@@ -539,7 +540,7 @@ describe('CloudSyncProvider', () => {
       mockLocalStorage.getAppData.mockReturnValue(localData);
 
       // Store config with file ID that will be deleted
-      window.localStorage.setItem(
+      globalThis.localStorage.setItem(
         'emergencySupplyTracker_cloudSyncConfig',
         JSON.stringify({
           provider: 'google-drive',
@@ -549,7 +550,7 @@ describe('CloudSyncProvider', () => {
       );
 
       // Store tokens to appear connected
-      window.localStorage.setItem(
+      globalThis.localStorage.setItem(
         'emergencySupplyTracker_cloudTokens',
         JSON.stringify({
           accessToken: 'token',
