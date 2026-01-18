@@ -16,9 +16,10 @@ export function ConnectGoogleDrive() {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   const isConnected =
-    state.state === 'connected' ||
-    state.state === 'syncing' ||
-    (state.state === 'error' && state.provider === 'google-drive');
+    state.provider === 'google-drive' &&
+    (state.state === 'connected' ||
+      state.state === 'syncing' ||
+      state.state === 'error');
 
   const handleConnect = async () => {
     setIsConnecting(true);
