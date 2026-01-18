@@ -30,8 +30,8 @@ test.describe('Settings', () => {
     await languageSelect.selectOption('fi');
 
     // Wait for language change to apply by waiting for Finnish text to appear
-    // Finnish for "Dashboard" is "Näkymä"
-    await expect(page.getByTestId('nav-dashboard')).toContainText('Näkymä', {
+    // Finnish for "Dashboard" is "Etusivu"
+    await expect(page.getByTestId('nav-dashboard')).toContainText('Etusivu', {
       timeout: 5000,
     });
 
