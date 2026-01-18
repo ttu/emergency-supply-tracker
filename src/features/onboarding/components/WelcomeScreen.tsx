@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import { Select } from '@/shared/components/Select';
 import { useSettings } from '@/features/settings';
+import { SELECTABLE_THEMES, type Theme } from '@/shared/types';
 import styles from './WelcomeScreen.module.css';
 
 export interface WelcomeScreenProps {
@@ -22,6 +23,12 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
     });
   };
 
+  const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const theme = event.target.value as Theme;
+    updateSettings({ theme });
+    document.documentElement.dataset.theme = theme;
+  };
+
   return (
     <main className={styles.container} data-testid="onboarding-welcome">
       <div className={styles.content}>
@@ -30,10 +37,7 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
           <p className={styles.tagline}>{t('app.tagline')}</p>
         </header>
 
-        <section
-          className={styles.languageSection}
-          aria-labelledby="language-label"
-        >
+        <section className={styles.preferencesSection}>
           <Select
             id="language-select"
             label={t('settings.language.label')}
@@ -43,6 +47,16 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
               { value: 'en', label: t('settings.language.option.en') },
               { value: 'fi', label: t('settings.language.option.fi') },
             ]}
+          />
+          <Select
+            id="theme-select"
+            label={t('settings.theme.label')}
+            value={settings.theme}
+            onChange={handleThemeChange}
+            options={SELECTABLE_THEMES.map((theme) => ({
+              value: theme,
+              label: t(`settings.theme.${theme}`),
+            }))}
           />
         </section>
 

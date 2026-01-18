@@ -65,8 +65,14 @@
   margin: 0;
 }
 
-.languageSection {
+.preferencesSection {
+  display: flex;
+  gap: var(--spacing-md);
   margin-bottom: var(--spacing-xl);
+}
+
+.preferencesSection > * {
+  flex: 1;
 }
 
 .sellingPoints {
@@ -175,5 +181,9 @@
 
   .sellingPoints {
     grid-template-columns: 1fr;
+  }
+
+  .preferencesSection {
+    flex-direction: column;
   }
 }
