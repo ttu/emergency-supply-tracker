@@ -9,6 +9,8 @@ coverage:
         target: 80% # New code must have 80% coverage
   ignore:
     - 'src/test/**' # Test utilities are excluded from coverage
+    - 'src/features/cloudSync/services/googleDrive.ts' # External API integration (requires browser OAuth)
+    - 'src/features/cloudSync/__mocks__/**' # Mock implementations for testing
 
 comment:
   layout: 'reach,diff,flags,files'
