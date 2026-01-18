@@ -10,14 +10,28 @@ import { VALID_UNITS, VALID_CATEGORIES } from '@/shared/types';
 import styles from './ItemEditor.module.css';
 
 export interface ItemEditorProps {
-  item?: ImportedRecommendedItem;
-  onSave: (item: ImportedRecommendedItem) => void;
-  onCancel: () => void;
-  existingIds?: Set<string>;
+  readonly item?: ImportedRecommendedItem;
+  readonly onSave: (item: ImportedRecommendedItem) => void;
+  readonly onCancel: () => void;
+  readonly existingIds?: Set<string>;
 }
 
 const generateId = (): string => {
-  return `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `custom-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+};
+
+/** Parse a string as a positive number, returns undefined if invalid */
+const parsePositiveNumber = (value: string): number | undefined => {
+  if (!value) return undefined;
+  const num = Number.parseFloat(value);
+  return !Number.isNaN(num) && num > 0 ? num : undefined;
+};
+
+/** Parse a string as a positive integer, returns undefined if invalid */
+const parsePositiveInt = (value: string): number | undefined => {
+  if (!value) return undefined;
+  const num = Number.parseInt(value, 10);
+  return !Number.isNaN(num) && num > 0 ? num : undefined;
 };
 
 export function ItemEditor({
@@ -76,8 +90,8 @@ export function ItemEditor({
     }
 
     // Base quantity must be positive
-    const qty = parseFloat(baseQuantity);
-    if (isNaN(qty) || qty <= 0) {
+    const qty = Number.parseFloat(baseQuantity);
+    if (Number.isNaN(qty) || qty <= 0) {
       newErrors.baseQuantity = t('kitEditor.validation.quantityPositive');
     }
 
@@ -100,7 +114,7 @@ export function ItemEditor({
           fi: nameFi.trim() || nameEn.trim(),
         },
         category,
-        baseQuantity: parseFloat(baseQuantity),
+        baseQuantity: Number.parseFloat(baseQuantity),
         unit,
         scaleWithPeople,
         scaleWithDays,
@@ -110,27 +124,21 @@ export function ItemEditor({
         savedItem.requiresFreezer = true;
       }
 
-      if (defaultExpirationMonths) {
-        const months = parseInt(defaultExpirationMonths, 10);
-        if (!isNaN(months) && months > 0) {
-          savedItem.defaultExpirationMonths = months;
-        }
+      const months = parsePositiveInt(defaultExpirationMonths);
+      if (months !== undefined) {
+        savedItem.defaultExpirationMonths = months;
       }
 
       // Only add food-specific fields for food category
       if (category === 'food') {
-        if (weightGramsPerUnit) {
-          const weight = parseFloat(weightGramsPerUnit);
-          if (!isNaN(weight) && weight > 0) {
-            savedItem.weightGramsPerUnit = weight;
-          }
+        const weight = parsePositiveNumber(weightGramsPerUnit);
+        if (weight !== undefined) {
+          savedItem.weightGramsPerUnit = weight;
         }
 
-        if (caloriesPer100g) {
-          const calories = parseFloat(caloriesPer100g);
-          if (!isNaN(calories) && calories > 0) {
-            savedItem.caloriesPer100g = calories;
-          }
+        const calories = parsePositiveNumber(caloriesPer100g);
+        if (calories !== undefined) {
+          savedItem.caloriesPer100g = calories;
         }
       }
 

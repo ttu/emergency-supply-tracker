@@ -4,11 +4,11 @@ import type { KitInfo } from '@/shared/types';
 import styles from './KitCard.module.css';
 
 export interface KitCardProps {
-  kit: KitInfo;
-  isSelected?: boolean;
-  onSelect?: (kit: KitInfo) => void;
-  onDelete?: (kit: KitInfo) => void;
-  showActions?: boolean;
+  readonly kit: KitInfo;
+  readonly isSelected?: boolean;
+  readonly onSelect?: (kit: KitInfo) => void;
+  readonly onDelete?: (kit: KitInfo) => void;
+  readonly showActions?: boolean;
 }
 
 export function KitCard({

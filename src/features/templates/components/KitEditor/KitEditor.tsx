@@ -11,8 +11,8 @@ import type {
 import styles from './KitEditor.module.css';
 
 export interface KitEditorProps {
-  isOpen: boolean;
-  onClose: () => void;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
 }
 
 export function KitEditor({ isOpen, onClose }: KitEditorProps) {
@@ -25,6 +25,7 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
     updateItemInKit,
     removeItemFromKit,
     getItemName,
+    exportRecommendedItems,
   } = useRecommendedItems();
 
   const [editingItem, setEditingItem] =
@@ -136,15 +137,27 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
 
   // Show item editor if editing or adding
   if (editingItem || isAddingItem) {
-    // Convert RecommendedItemDefinition to ImportedRecommendedItem format for editor
-    const displayName = editingItem ? getItemDisplayName(editingItem) : '';
+    // Get the original item from kit file to preserve names/i18nKey
+    const kitFile = exportRecommendedItems();
+    const originalItem = editingItem
+      ? kitFile.items.find((item) => item.id === editingItem.id)
+      : undefined;
+
+    // Convert to ImportedRecommendedItem format for editor, preserving original names
     const itemForEditor: ImportedRecommendedItem | undefined = editingItem
       ? {
           id: editingItem.id,
-          names: {
-            en: displayName,
-            fi: displayName,
-          },
+          // Preserve original names/i18nKey from the kit file
+          ...(originalItem?.names
+            ? { names: originalItem.names }
+            : originalItem?.i18nKey
+              ? { i18nKey: originalItem.i18nKey }
+              : {
+                  names: {
+                    en: getItemDisplayName(editingItem),
+                    fi: getItemDisplayName(editingItem),
+                  },
+                }),
           category: editingItem.category,
           baseQuantity: editingItem.baseQuantity,
           unit: editingItem.unit,

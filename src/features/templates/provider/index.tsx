@@ -44,13 +44,32 @@ import {
 // Map from item ID to localized names object
 type InlineNames = Map<string, LocalizedNames>;
 
+/** Update a kit's items with a transformer function */
+function updateKitItems(
+  kit: UploadedKit,
+  targetUuid: string,
+  transformer: (items: ImportedRecommendedItem[]) => ImportedRecommendedItem[],
+): UploadedKit {
+  if (kit.id !== targetUuid) return kit;
+  return {
+    ...kit,
+    file: {
+      ...kit.file,
+      items: transformer(kit.file.items),
+    },
+  };
+}
+
 /** Generate a UUID v4 */
 function generateUuid(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+    /[xy]/g,
+    (c: string) => {
+      const r = Math.trunc(Math.random() * 16);
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    },
+  );
 }
 
 export function RecommendedItemsProvider({
@@ -238,15 +257,7 @@ export function RecommendedItemsProvider({
       const uuid = getCustomKitUuid(selectedKitId);
       setUploadedKits((prev) =>
         prev.map((kit) =>
-          kit.id === uuid
-            ? {
-                ...kit,
-                file: {
-                  ...kit.file,
-                  items: [...kit.file.items, item],
-                },
-              }
-            : kit,
+          updateKitItems(kit, uuid, (items) => [...items, item]),
         ),
       );
     },
@@ -263,17 +274,9 @@ export function RecommendedItemsProvider({
       const uuid = getCustomKitUuid(selectedKitId);
       setUploadedKits((prev) =>
         prev.map((kit) =>
-          kit.id === uuid
-            ? {
-                ...kit,
-                file: {
-                  ...kit.file,
-                  items: kit.file.items.map((item) =>
-                    item.id === itemId ? { ...item, ...updates } : item,
-                  ),
-                },
-              }
-            : kit,
+          updateKitItems(kit, uuid, (items) =>
+            items.map((i) => (i.id === itemId ? { ...i, ...updates } : i)),
+          ),
         ),
       );
     },
@@ -290,15 +293,9 @@ export function RecommendedItemsProvider({
       const uuid = getCustomKitUuid(selectedKitId);
       setUploadedKits((prev) =>
         prev.map((kit) =>
-          kit.id === uuid
-            ? {
-                ...kit,
-                file: {
-                  ...kit.file,
-                  items: kit.file.items.filter((item) => item.id !== itemId),
-                },
-              }
-            : kit,
+          updateKitItems(kit, uuid, (items) =>
+            items.filter((i) => i.id !== itemId),
+          ),
         ),
       );
     },
