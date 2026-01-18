@@ -800,7 +800,7 @@ describe('ItemForm', () => {
     });
   });
 
-  it('should convert weight from grams to kg when unit changes to kilograms', async () => {
+  it('should keep weight in grams when unit changes to kilograms', async () => {
     render(
       <ItemForm
         categories={STANDARD_CATEGORIES}
@@ -838,11 +838,11 @@ describe('ItemForm', () => {
     // Change unit to kilograms
     fireEvent.change(unitSelect, { target: { value: 'kilograms' } });
 
-    // Weight should be converted to kg (1.5 kg)
-    expect(weightInput).toHaveValue(1.5);
+    // Weight should remain in grams (package labels often use grams)
+    expect(weightInput).toHaveValue(1500);
   });
 
-  it('should convert weight from kg to grams when unit changes from kilograms', async () => {
+  it('should keep weight in grams when unit changes from kilograms', async () => {
     const item = createMockInventoryItem({
       id: createItemId('1'),
       name: 'Test Food',
@@ -867,17 +867,17 @@ describe('ItemForm', () => {
       '#weightGrams',
     ) as HTMLInputElement;
 
-    // Initially weight is in kg (1.5 kg for 1500g)
-    expect(weightInput).toHaveValue(1.5);
+    // Initially weight is in grams (1500g)
+    expect(weightInput).toHaveValue(1500);
 
     // Change unit to pieces
     fireEvent.change(unitSelect, { target: { value: 'pieces' } });
 
-    // Weight should be converted to grams (1500g)
+    // Weight should remain in grams (package labels often use grams)
     expect(weightInput).toHaveValue(1500);
   });
 
-  it('should convert weight from kg to grams on submit when unit is kilograms', async () => {
+  it('should submit weight in grams when unit is kilograms', async () => {
     render(
       <ItemForm
         categories={STANDARD_CATEGORIES}
@@ -913,7 +913,7 @@ describe('ItemForm', () => {
     const weightInput = document.querySelector(
       '#weightGrams',
     ) as HTMLInputElement;
-    fireEvent.change(weightInput, { target: { value: '1.5' } }); // 1.5 kg
+    fireEvent.change(weightInput, { target: { value: '100' } }); // 100g (package label format)
     fireEvent.click(neverExpiresCheckbox);
 
     fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
@@ -925,7 +925,7 @@ describe('ItemForm', () => {
           categoryId: 'food',
           quantity: 2,
           unit: 'kilograms',
-          weightGrams: 1500, // 1.5 kg converted to 1500g
+          weightGrams: 100, // Weight entered in grams (as on package labels)
         }),
       );
     });
@@ -966,10 +966,10 @@ describe('ItemForm', () => {
       '#caloriesPerUnit',
     ) as HTMLInputElement;
 
-    // Enter 1.5 kg (should be converted to 1500g for calculation)
-    fireEvent.change(weightInput, { target: { value: '1.5' } });
+    // Enter 100g (as shown on package labels)
+    fireEvent.change(weightInput, { target: { value: '100' } });
 
-    // Calories should be calculated: 1500g * 50kcal/100g = 750kcal
-    expect(caloriesInput).toHaveValue(750);
+    // Calories should be calculated: 100g * 50kcal/100g = 50kcal
+    expect(caloriesInput).toHaveValue(50);
   });
 });

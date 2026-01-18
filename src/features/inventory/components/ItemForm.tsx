@@ -73,15 +73,10 @@ export const ItemForm = ({
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
   // Calculate default weight and calories from template
-  // Convert from grams to display unit (kg if unit is kilograms, otherwise grams)
-  const getDefaultWeight = (unit: Unit = 'pieces'): string => {
+  // Always display weight in grams (even when unit is kilograms, as package labels often use grams)
+  const getDefaultWeight = (): string => {
     const weightGrams = item?.weightGrams ?? templateWeightGramsPerUnit;
     if (weightGrams === undefined) return '';
-
-    // If unit is kilograms, convert grams to kg for display
-    if (unit === 'kilograms') {
-      return (weightGrams / 1000).toString();
-    }
     return weightGrams.toString();
   };
 
@@ -119,7 +114,7 @@ export const ItemForm = ({
       purchaseDate: item?.purchaseDate || '',
       location: item?.location || '',
       notes: item?.notes || '',
-      weightGrams: getDefaultWeight(initialUnit),
+      weightGrams: getDefaultWeight(),
       caloriesPerUnit: getDefaultCalories(),
       requiresWaterLiters: getDefaultRequiresWaterLiters(),
       capacityMah: item?.capacityMah?.toString() || '',
@@ -170,16 +165,9 @@ export const ItemForm = ({
         ? createProductTemplateId(trimmedItemType)
         : CUSTOM_ITEM_TYPE;
 
-    // Convert weight to grams if unit is kilograms
+    // Weight input always accepts grams (even when unit is kilograms)
     const weightGrams = formData.weightGrams
-      ? (() => {
-          const weightValue = Number.parseFloat(formData.weightGrams);
-          // If unit is kilograms, convert kg to grams
-          if (formData.unit === 'kilograms') {
-            return weightValue * 1000;
-          }
-          return weightValue;
-        })()
+      ? Number.parseFloat(formData.weightGrams)
       : undefined;
 
     onSubmit({
@@ -225,16 +213,15 @@ export const ItemForm = ({
 
       // Recalculate calories when weight changes manually (if template has caloriesPer100g)
       // Weight and calories are per-unit values, so they don't change with quantity
+      // Weight input always accepts grams (even when unit is kilograms)
       if (
         field === 'weightGrams' &&
         templateCaloriesPer100g &&
         typeof value === 'string' &&
         Number.parseFloat(value) > 0
       ) {
-        // Convert weight to grams for calculation (if unit is kilograms, value is in kg)
-        const weightValue = Number.parseFloat(value);
-        const weightGrams =
-          prev.unit === 'kilograms' ? weightValue * 1000 : weightValue;
+        // Weight is already in grams (no conversion needed)
+        const weightGrams = Number.parseFloat(value);
         const newCalories = calculateCaloriesFromWeight(
           weightGrams,
           templateCaloriesPer100g,
@@ -242,21 +229,8 @@ export const ItemForm = ({
         updated.caloriesPerUnit = newCalories.toString();
       }
 
-      // When unit changes, convert weight display value
-      if (field === 'unit' && typeof value === 'string') {
-        const currentWeight = prev.weightGrams;
-        if (currentWeight && !Number.isNaN(Number.parseFloat(currentWeight))) {
-          const weightValue = Number.parseFloat(currentWeight);
-          // If changing to/from kilograms, convert the display value
-          if (value === 'kilograms' && prev.unit !== 'kilograms') {
-            // Converting from grams to kg: divide by 1000
-            updated.weightGrams = (weightValue / 1000).toString();
-          } else if (value !== 'kilograms' && prev.unit === 'kilograms') {
-            // Converting from kg to grams: multiply by 1000
-            updated.weightGrams = (weightValue * 1000).toString();
-          }
-        }
-      }
+      // Note: Weight input always accepts grams, even when unit is kilograms
+      // (package labels often show weight in grams)
 
       return updated;
     });
@@ -376,7 +350,7 @@ export const ItemForm = ({
                 value={formData.weightGrams}
                 onChange={(e) => handleChange('weightGrams', e.target.value)}
                 min="0"
-                step={formData.unit === 'kilograms' ? '0.1' : '1'}
+                step="1"
               />
             </div>
 
