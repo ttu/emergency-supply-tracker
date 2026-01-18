@@ -1,4 +1,8 @@
-import type { InventoryItem, RecommendedItemDefinition } from '@/shared/types';
+import type {
+  InventoryItem,
+  RecommendedItemDefinition,
+  Unit,
+} from '@/shared/types';
 import { isFoodRecommendedItem } from '@/shared/types';
 import {
   CALORIE_BASE_WEIGHT_GRAMS,
@@ -35,7 +39,7 @@ export function calculateTotalWeight(
 export function calculateTotalCalories(
   quantity: number,
   caloriesPerUnit: number,
-  unit?: string,
+  unit?: Unit,
   weightGrams?: number,
 ): number {
   // If unit is kilograms and weightGrams is provided, convert quantity (kg) to units
