@@ -1,24 +1,7 @@
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  afterEach,
-  type Mock,
-  type MockInstance,
-} from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HouseholdForm } from './HouseholdForm';
-import * as localStorage from '@/shared/utils/storage/localStorage';
-import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
-
-// Mock localStorage utilities
-vi.mock('@/shared/utils/storage/localStorage', () => ({
-  importFromJSON: vi.fn(),
-  saveAppData: vi.fn(),
-}));
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -38,13 +21,6 @@ vi.mock('react-i18next', () => ({
         'household.errors.supplyDaysMax': 'Maximum {{max}} days allowed',
         'actions.save': 'Save',
         'actions.back': 'Back',
-        'onboarding.import.link': 'Already have data? Import backup',
-        'onboarding.import.button': 'Import backup data',
-        'settings.import.invalidFormat': 'Invalid file format',
-        'settings.import.confirmOverwrite':
-          'This will replace all data. Continue?',
-        'settings.import.success': 'Data imported successfully',
-        'settings.import.error': 'Failed to import data',
       };
       let result = translations[key] || key;
       if (params) {
@@ -57,37 +33,9 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-// Helper to create a file with mocked text() method
-function createMockFile(content: string, name = 'data.json'): File {
-  const file = new File([content], name, { type: 'application/json' });
-  file.text = vi.fn().mockResolvedValue(content);
-  return file;
-}
-
 describe('HouseholdForm', () => {
-  const mockImportFromJSON = localStorage.importFromJSON as Mock;
-  const mockSaveAppData = localStorage.saveAppData as Mock;
-
-  let consoleErrorSpy: MockInstance;
-  const originalLocation = globalThis.location;
-
   beforeEach(() => {
     vi.clearAllMocks();
-    globalThis.alert = vi.fn();
-    globalThis.confirm = vi.fn(() => true);
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    Object.defineProperty(globalThis, 'location', {
-      value: { ...originalLocation, reload: vi.fn() },
-      writable: true,
-    });
-  });
-
-  afterEach(() => {
-    consoleErrorSpy.mockRestore();
-    Object.defineProperty(globalThis, 'location', {
-      value: originalLocation,
-      writable: true,
-    });
   });
 
   it('renders form fields', () => {
@@ -229,165 +177,5 @@ describe('HouseholdForm', () => {
     await user.click(backButton);
 
     expect(onBack).toHaveBeenCalledTimes(1);
-  });
-
-  describe('Import functionality', () => {
-    it('renders import link', () => {
-      const onSubmit = vi.fn();
-      render(<HouseholdForm onSubmit={onSubmit} />);
-
-      expect(
-        screen.getByText('Already have data? Import backup'),
-      ).toBeInTheDocument();
-    });
-
-    it('has hidden file input for import', () => {
-      const onSubmit = vi.fn();
-      render(<HouseholdForm onSubmit={onSubmit} />);
-
-      const fileInput = screen.getByLabelText('Import backup data');
-      expect(fileInput).toBeInTheDocument();
-      expect(fileInput).toHaveAttribute('type', 'file');
-      expect(fileInput).toHaveAttribute('accept', '.json');
-    });
-
-    it('triggers file input on import link click', async () => {
-      const user = userEvent.setup();
-      const onSubmit = vi.fn();
-      render(<HouseholdForm onSubmit={onSubmit} />);
-
-      const fileInput = screen.getByLabelText(
-        'Import backup data',
-      ) as HTMLInputElement;
-      const clickSpy = vi.spyOn(fileInput, 'click');
-
-      const importLink = screen.getByText('Already have data? Import backup');
-      await user.click(importLink);
-
-      expect(clickSpy).toHaveBeenCalled();
-    });
-
-    it('handles valid JSON import', async () => {
-      const validData = {
-        version: CURRENT_SCHEMA_VERSION,
-        household: { adults: 2, children: 0 },
-        settings: { language: 'en' },
-        items: [],
-        lastModified: '2024-01-01T00:00:00.000Z',
-      };
-
-      mockImportFromJSON.mockReturnValue(validData);
-      const onSubmit = vi.fn();
-
-      render(<HouseholdForm onSubmit={onSubmit} />);
-
-      const fileInput = screen.getByLabelText(
-        'Import backup data',
-      ) as HTMLInputElement;
-      const file = createMockFile(JSON.stringify(validData));
-
-      fireEvent.change(fileInput, { target: { files: [file] } });
-
-      await waitFor(() => {
-        expect(mockImportFromJSON).toHaveBeenCalled();
-        expect(globalThis.confirm).toHaveBeenCalledWith(
-          'This will replace all data. Continue?',
-        );
-      });
-
-      await waitFor(() => {
-        expect(mockSaveAppData).toHaveBeenCalledWith(validData);
-        expect(globalThis.alert).toHaveBeenCalledWith(
-          'Data imported successfully',
-        );
-        expect(globalThis.location.reload).toHaveBeenCalled();
-      });
-    });
-
-    it('shows error for invalid JSON format', async () => {
-      const invalidData = {
-        foo: 'bar', // missing required fields
-      };
-
-      mockImportFromJSON.mockReturnValue(invalidData);
-      const onSubmit = vi.fn();
-
-      render(<HouseholdForm onSubmit={onSubmit} />);
-
-      const fileInput = screen.getByLabelText(
-        'Import backup data',
-      ) as HTMLInputElement;
-      const file = createMockFile(JSON.stringify(invalidData));
-
-      fireEvent.change(fileInput, { target: { files: [file] } });
-
-      await waitFor(() => {
-        expect(globalThis.alert).toHaveBeenCalledWith('Invalid file format');
-      });
-
-      expect(mockSaveAppData).not.toHaveBeenCalled();
-    });
-
-    it('does not import when user cancels confirmation', async () => {
-      const validData = {
-        version: CURRENT_SCHEMA_VERSION,
-        household: { adults: 2, children: 0 },
-        settings: { language: 'en' },
-        items: [],
-        lastModified: '2024-01-01T00:00:00.000Z',
-      };
-
-      mockImportFromJSON.mockReturnValue(validData);
-      (globalThis.confirm as Mock).mockReturnValue(false);
-      const onSubmit = vi.fn();
-
-      render(<HouseholdForm onSubmit={onSubmit} />);
-
-      const fileInput = screen.getByLabelText(
-        'Import backup data',
-      ) as HTMLInputElement;
-      const file = createMockFile(JSON.stringify(validData));
-
-      fireEvent.change(fileInput, { target: { files: [file] } });
-
-      await waitFor(() => {
-        expect(globalThis.confirm).toHaveBeenCalled();
-      });
-
-      expect(mockSaveAppData).not.toHaveBeenCalled();
-    });
-
-    it('handles file read error', async () => {
-      mockImportFromJSON.mockImplementation(() => {
-        throw new Error('Parse error');
-      });
-      const onSubmit = vi.fn();
-
-      render(<HouseholdForm onSubmit={onSubmit} />);
-
-      const fileInput = screen.getByLabelText(
-        'Import backup data',
-      ) as HTMLInputElement;
-      const file = createMockFile('invalid json');
-
-      fireEvent.change(fileInput, { target: { files: [file] } });
-
-      await waitFor(() => {
-        expect(globalThis.alert).toHaveBeenCalledWith('Failed to import data');
-      });
-    });
-
-    it('does nothing when no file selected', () => {
-      const onSubmit = vi.fn();
-      render(<HouseholdForm onSubmit={onSubmit} />);
-
-      const fileInput = screen.getByLabelText(
-        'Import backup data',
-      ) as HTMLInputElement;
-
-      fireEvent.change(fileInput, { target: { files: [] } });
-
-      expect(mockImportFromJSON).not.toHaveBeenCalled();
-    });
   });
 });

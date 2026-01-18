@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/shared/components/Card';
 import { Button } from '@/shared/components/Button';
+import { useImportData } from '@/shared/hooks';
 import styles from './HouseholdPresetSelector.module.css';
 
 export interface HouseholdPreset {
@@ -27,6 +28,7 @@ export function HouseholdPresetSelector({
   onBack,
 }: HouseholdPresetSelectorProps) {
   const { t } = useTranslation();
+  const { fileInputRef, handleFileChange, triggerFileInput } = useImportData();
 
   return (
     <div className={styles.container} data-testid="onboarding-preset-selector">
@@ -105,6 +107,26 @@ export function HouseholdPresetSelector({
             </Button>
           </div>
         )}
+
+        <div className={styles.importSection}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleFileChange}
+            className={styles.fileInput}
+            aria-label={t('onboarding.import.button')}
+            data-testid="onboarding-import-file-input"
+          />
+          <button
+            type="button"
+            onClick={triggerFileInput}
+            className={styles.importLink}
+            data-testid="onboarding-import-link"
+          >
+            {t('onboarding.import.link')}
+          </button>
+        </div>
       </div>
     </div>
   );

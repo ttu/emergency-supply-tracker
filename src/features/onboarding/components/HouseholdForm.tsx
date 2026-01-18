@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/shared/components/Input';
 import { Button } from '@/shared/components/Button';
 import { HOUSEHOLD_DEFAULTS, HOUSEHOLD_LIMITS } from '@/features/household';
-import { useImportData } from '@/shared/hooks';
 import styles from './HouseholdForm.module.css';
 
 function parseIntOrDefault(value: string, defaultValue: number): number {
@@ -30,7 +29,6 @@ export function HouseholdForm({
   onBack,
 }: HouseholdFormProps) {
   const { t } = useTranslation();
-  const { fileInputRef, handleFileChange, triggerFileInput } = useImportData();
   const [formData, setFormData] = useState<HouseholdData>({
     adults: initialData?.adults ?? HOUSEHOLD_DEFAULTS.adults,
     children: initialData?.children ?? HOUSEHOLD_DEFAULTS.children,
@@ -199,26 +197,6 @@ export function HouseholdForm({
             >
               {t('actions.save')}
             </Button>
-          </div>
-
-          <div className={styles.importSection}>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleFileChange}
-              className={styles.fileInput}
-              aria-label={t('onboarding.import.button')}
-              data-testid="onboarding-import-file-input"
-            />
-            <button
-              type="button"
-              onClick={triggerFileInput}
-              className={styles.importLink}
-              data-testid="onboarding-import-link"
-            >
-              {t('onboarding.import.link')}
-            </button>
           </div>
         </form>
       </div>
