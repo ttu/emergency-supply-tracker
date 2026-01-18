@@ -110,6 +110,12 @@ async function addItemFromTemplate(page: Page) {
   await page.getByTestId('add-item-button').click();
   await expect(page.getByTestId('template-selector')).toBeVisible();
 
+  // Reset category filter to "All" before searching (may be pre-filtered from category navigation)
+  const categoryFilter = page.getByTestId('template-category-select');
+  if (await categoryFilter.isVisible().catch(() => false)) {
+    await categoryFilter.selectOption('');
+  }
+
   await page.getByTestId('template-search-input').fill('water');
   const waterTemplate = page
     .locator('button[type="button"]')

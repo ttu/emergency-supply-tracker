@@ -166,7 +166,7 @@ describe('Inventory Page', () => {
   });
 
   it('should open template selector with initial category', () => {
-    renderWithProviders(<Inventory initialCategoryId="food" />);
+    renderWithProviders(<Inventory selectedCategoryId="food" />);
 
     // Open template selector
     const addButton = screen.getByText('inventory.addFromTemplate');
@@ -395,13 +395,60 @@ describe('Inventory Page with items', () => {
     expect(screen.queryByText('Expired Food')).not.toBeInTheDocument();
   });
 
-  it('should filter items by category via initialCategoryId', () => {
-    renderWithProviders(<Inventory initialCategoryId="water-beverages" />);
+  it('should filter items by category via selectedCategoryId', () => {
+    renderWithProviders(<Inventory selectedCategoryId="water-beverages" />);
 
     // Should show water item but not food (filtered by category)
     expect(screen.getByText('Test Water')).toBeInTheDocument();
     expect(screen.queryByText('Expired Food')).not.toBeInTheDocument();
     expect(screen.queryByText('Batteries')).not.toBeInTheDocument();
+  });
+
+  it('should call onCategoryChange when category is changed (controlled mode)', () => {
+    const onCategoryChange = vi.fn();
+    renderWithProviders(
+      <Inventory
+        selectedCategoryId="water-beverages"
+        onCategoryChange={onCategoryChange}
+      />,
+    );
+
+    // Click on a different category
+    const foodCategory = screen.getByTestId('category-food');
+    fireEvent.click(foodCategory);
+
+    expect(onCategoryChange).toHaveBeenCalledWith('food');
+  });
+
+  it('should use local state for category when onCategoryChange is not provided (uncontrolled mode)', () => {
+    // Render without onCategoryChange - uses local state
+    renderWithProviders(<Inventory selectedCategoryId="water-beverages" />);
+
+    // Should show water item (filtered by initial category)
+    expect(screen.getByText('Test Water')).toBeInTheDocument();
+    expect(screen.queryByText('Expired Food')).not.toBeInTheDocument();
+
+    // Click on a different category - uses local state setter
+    const foodCategory = screen.getByTestId('category-food');
+    fireEvent.click(foodCategory);
+
+    // Should now show food item (local state changed)
+    expect(screen.queryByText('Test Water')).not.toBeInTheDocument();
+    expect(screen.getByText('Expired Food')).toBeInTheDocument();
+  });
+
+  it('should handle clicking All Categories in uncontrolled mode', () => {
+    // Render without onCategoryChange - uses local state
+    renderWithProviders(<Inventory selectedCategoryId="water-beverages" />);
+
+    // Click on All Categories button
+    const allCategoriesButton = screen.getByText('inventory.allCategories');
+    fireEvent.click(allCategoriesButton);
+
+    // Should now show all items
+    expect(screen.getByText('Test Water')).toBeInTheDocument();
+    expect(screen.getByText('Expired Food')).toBeInTheDocument();
+    expect(screen.getByText('Batteries')).toBeInTheDocument();
   });
 
   it('should sort items by quantity', () => {
@@ -499,7 +546,7 @@ describe('Inventory Page with items', () => {
   });
 
   it('should show category status summary when category is selected', () => {
-    renderWithProviders(<Inventory initialCategoryId="water-beverages" />);
+    renderWithProviders(<Inventory selectedCategoryId="water-beverages" />);
 
     // Should show category-related content
     expect(screen.getByText('Test Water')).toBeInTheDocument();
@@ -712,7 +759,7 @@ describe('Inventory Page - Mark as Enough', () => {
 
   it('should show mark as enough button in recommended list for item with low quantity', async () => {
     const user = userEvent.setup();
-    renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+    renderWithProviders(<Inventory selectedCategoryId="cooking-heat" />);
 
     // First expand the recommended items (they are hidden by default)
     const expandButton = screen.getByRole('button', {
@@ -733,7 +780,7 @@ describe('Inventory Page - Mark as Enough', () => {
     // This test verifies that handleAddRecommendedToInventory callback exists
     // and can be triggered when a template is found (line 275 coverage)
     const user = userEvent.setup();
-    renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+    renderWithProviders(<Inventory selectedCategoryId="cooking-heat" />);
 
     // Expand recommended items to show the category status summary
     const expandButton = screen.getByRole('button', {
@@ -763,7 +810,7 @@ describe('Inventory Page - Mark as Enough', () => {
     // This test verifies that handleDisableRecommendedItem callback exists
     // and can be triggered (line 284 coverage)
     const user = userEvent.setup();
-    renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+    renderWithProviders(<Inventory selectedCategoryId="cooking-heat" />);
 
     const expandButton = screen.getByRole('button', {
       name: /Show.*recommended/i,
@@ -790,7 +837,7 @@ describe('Inventory Page - Mark as Enough', () => {
 
   it('should call handleMarkAsEnough when mark button in recommended list is clicked', async () => {
     const user = userEvent.setup();
-    renderWithProviders(<Inventory initialCategoryId="cooking-heat" />);
+    renderWithProviders(<Inventory selectedCategoryId="cooking-heat" />);
 
     // First expand the recommended items (they are hidden by default)
     const expandButton = screen.getByRole('button', {

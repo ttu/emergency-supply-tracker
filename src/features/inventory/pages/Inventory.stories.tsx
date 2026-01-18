@@ -32,6 +32,6 @@ export const WithModalOpen: Story = {
 
 export const WithCategoryFilter: Story = {
   args: {
-    initialCategoryId: 'water-beverages',
+    selectedCategoryId: 'water-beverages',
   },
 };

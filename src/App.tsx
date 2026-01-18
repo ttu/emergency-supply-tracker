@@ -59,7 +59,8 @@ function AppContent() {
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [openInventoryModal, setOpenInventoryModal] = useState(false);
-  const [initialCategoryId, setInitialCategoryId] = useState<
+  // Selected category is lifted to App level so it persists across navigation
+  const [selectedCategoryId, setSelectedCategoryId] = useState<
     string | undefined
   >(undefined);
 
@@ -74,10 +75,12 @@ function AppContent() {
     setCurrentPage(page);
     if (page === 'inventory') {
       setOpenInventoryModal(options?.openAddModal || false);
-      setInitialCategoryId(options?.initialCategoryId);
+      // Update category when explicitly navigating from Dashboard with a category
+      if (options?.initialCategoryId !== undefined) {
+        setSelectedCategoryId(options.initialCategoryId);
+      }
     } else {
       setOpenInventoryModal(false);
-      setInitialCategoryId(undefined);
     }
   };
 
@@ -108,7 +111,8 @@ function AppContent() {
           <Suspense fallback={<LoadingFallback />}>
             <Inventory
               openAddModal={openInventoryModal}
-              initialCategoryId={initialCategoryId}
+              selectedCategoryId={selectedCategoryId}
+              onCategoryChange={setSelectedCategoryId}
             />
           </Suspense>
         );
