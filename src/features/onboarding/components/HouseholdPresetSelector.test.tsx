@@ -358,9 +358,6 @@ describe('HouseholdPresetSelector', () => {
     });
 
     it('handles file read error', async () => {
-      mockImportFromJSON.mockImplementation(() => {
-        throw new Error('Parse error');
-      });
       const onSelectPreset = vi.fn();
 
       render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
@@ -368,7 +365,10 @@ describe('HouseholdPresetSelector', () => {
       const fileInput = screen.getByLabelText(
         'Import backup data',
       ) as HTMLInputElement;
-      const file = createMockFile('invalid json');
+      const file = new File(['invalid json'], 'data.json', {
+        type: 'application/json',
+      });
+      file.text = vi.fn().mockRejectedValue(new Error('Read error'));
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
