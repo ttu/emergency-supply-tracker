@@ -220,7 +220,11 @@ export function calculateCategoryShortages(
     );
 
     // Calculate calories for food items using shared utility
-    if (isFoodRecommendedItem(recItem) && recItem.caloriesPerUnit) {
+    if (
+      isFoodRecommendedItem(recItem) &&
+      recItem.caloriesPerUnit != null &&
+      Number.isFinite(recItem.caloriesPerUnit)
+    ) {
       const itemCalories = sumMatchingItemsCalories(
         categoryItems,
         recItem,

@@ -140,7 +140,7 @@ export function sumMatchingItemsCalories(
 ): number {
   const matchingItems = findMatchingItems(items, recommendedItem);
   return matchingItems.reduce((sum, item) => {
-    if (item.caloriesPerUnit) {
+    if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
       return sum + calculateItemTotalCalories(item);
     }
     // Fallback: use default calories per unit (assume quantity is already in units)
@@ -163,7 +163,7 @@ export function sumMatchingItemsCaloriesByType(
 ): number {
   const matchingItems = findMatchingItemsByType(items, recommendedItemId);
   return matchingItems.reduce((sum, item) => {
-    if (item.caloriesPerUnit) {
+    if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
       return sum + calculateItemTotalCalories(item);
     }
     // Fallback: use default calories per unit (assume quantity is already in units)

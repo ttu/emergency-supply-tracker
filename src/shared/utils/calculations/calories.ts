@@ -57,7 +57,7 @@ export function calculateTotalCalories(
  * Handles unit conversion when unit is "kilograms"
  */
 export function calculateItemTotalCalories(item: InventoryItem): number {
-  if (!item.caloriesPerUnit) {
+  if (item.caloriesPerUnit == null || !Number.isFinite(item.caloriesPerUnit)) {
     return 0;
   }
   return calculateTotalCalories(

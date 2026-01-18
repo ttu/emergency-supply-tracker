@@ -124,6 +124,23 @@ describe('calculateItemTotalCalories', () => {
     expect(calculateItemTotalCalories(item)).toBe(0);
   });
 
+  it('handles zero calories per unit correctly', () => {
+    const item: InventoryItem = {
+      id: createItemId('1'),
+      name: 'Water',
+      itemType: 'custom',
+      categoryId: createCategoryId('food'),
+      quantity: 10,
+      unit: 'bottles',
+      caloriesPerUnit: 0, // Zero calories (e.g., water)
+      neverExpires: true,
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
+    // Should return 0, not treat it as missing and use a default
+    expect(calculateItemTotalCalories(item)).toBe(0);
+  });
+
   it('handles fractional kilograms', () => {
     const item: InventoryItem = {
       id: createItemId('1'),

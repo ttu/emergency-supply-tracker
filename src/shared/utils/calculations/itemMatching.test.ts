@@ -300,6 +300,27 @@ describe('itemMatching', () => {
       expect(result).toBe(2 * 400); // 800
     });
 
+    it('handles zero calories per unit correctly', () => {
+      const cannedFoodId = createProductTemplateId('canned-food');
+
+      const items = [
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: 5,
+          caloriesPerUnit: 0, // Zero calories (e.g., water)
+        }),
+      ];
+      const recommendedItem = createMockRecommendedItem({
+        id: cannedFoodId,
+        category: 'food',
+      });
+
+      const result = sumMatchingItemsCalories(items, recommendedItem, 400);
+
+      // Should use 0 calories, not the default 400
+      expect(result).toBe(0);
+    });
+
     it('returns 0 when no matches', () => {
       const bottledWaterId = createProductTemplateId('bottled-water');
       const cannedFoodId = createProductTemplateId('canned-food');
@@ -358,6 +379,23 @@ describe('itemMatching', () => {
       const result = sumMatchingItemsCaloriesByType(items, 'canned-food', 250);
 
       expect(result).toBe(3 * 250); // 750
+    });
+
+    it('handles zero calories per unit correctly', () => {
+      const cannedFoodId = createProductTemplateId('canned-food');
+
+      const items = [
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: 5,
+          caloriesPerUnit: 0, // Zero calories (e.g., water)
+        }),
+      ];
+
+      const result = sumMatchingItemsCaloriesByType(items, 'canned-food', 400);
+
+      // Should use 0 calories, not the default 400
+      expect(result).toBe(0);
     });
   });
 });
