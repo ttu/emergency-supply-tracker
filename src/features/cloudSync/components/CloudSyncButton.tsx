@@ -28,7 +28,7 @@ export function CloudSyncButton() {
           setLastResult(t('cloudSync.result.downloaded'));
           // Reload page to reflect downloaded data
           if (result.requiresReload) {
-            window.location.reload();
+            globalThis.location.reload();
           }
           break;
         case 'none':
