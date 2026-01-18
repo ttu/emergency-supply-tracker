@@ -799,4 +799,177 @@ describe('ItemForm', () => {
       );
     });
   });
+
+  it('should convert weight from grams to kg when unit changes to kilograms', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        templateWeightGramsPerUnit={1500}
+        templateCaloriesPer100g={50}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const unitSelect = document.querySelector('#unit') as HTMLSelectElement;
+
+    fireEvent.change(nameInput, { target: { value: 'Test Food' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+
+    // Wait for weight input to appear
+    await waitFor(() => {
+      const weightInput = document.querySelector(
+        '#weightGrams',
+      ) as HTMLInputElement;
+      expect(weightInput).toBeInTheDocument();
+    });
+
+    const weightInput = document.querySelector(
+      '#weightGrams',
+    ) as HTMLInputElement;
+
+    // Initially weight is in grams (1500g)
+    expect(weightInput).toHaveValue(1500);
+
+    // Change unit to kilograms
+    fireEvent.change(unitSelect, { target: { value: 'kilograms' } });
+
+    // Weight should be converted to kg (1.5 kg)
+    expect(weightInput).toHaveValue(1.5);
+  });
+
+  it('should convert weight from kg to grams when unit changes from kilograms', async () => {
+    const item = createMockInventoryItem({
+      id: createItemId('1'),
+      name: 'Test Food',
+      categoryId: createCategoryId('food'),
+      quantity: 1,
+      unit: 'kilograms',
+      weightGrams: 1500,
+      neverExpires: true,
+    });
+
+    render(
+      <ItemForm
+        item={item}
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const unitSelect = document.querySelector('#unit') as HTMLSelectElement;
+    const weightInput = document.querySelector(
+      '#weightGrams',
+    ) as HTMLInputElement;
+
+    // Initially weight is in kg (1.5 kg for 1500g)
+    expect(weightInput).toHaveValue(1.5);
+
+    // Change unit to pieces
+    fireEvent.change(unitSelect, { target: { value: 'pieces' } });
+
+    // Weight should be converted to grams (1500g)
+    expect(weightInput).toHaveValue(1500);
+  });
+
+  it('should convert weight from kg to grams on submit when unit is kilograms', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        templateCaloriesPer100g={50}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+    const unitSelect = document.querySelector('#unit') as HTMLSelectElement;
+    const neverExpiresCheckbox = screen.getByRole('checkbox');
+
+    fireEvent.change(nameInput, { target: { value: 'Test Food' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+    fireEvent.change(quantityInput, { target: { value: '2' } });
+    fireEvent.change(unitSelect, { target: { value: 'kilograms' } });
+
+    // Wait for weight input to appear
+    await waitFor(() => {
+      const weightInput = document.querySelector(
+        '#weightGrams',
+      ) as HTMLInputElement;
+      expect(weightInput).toBeInTheDocument();
+    });
+
+    const weightInput = document.querySelector(
+      '#weightGrams',
+    ) as HTMLInputElement;
+    fireEvent.change(weightInput, { target: { value: '1.5' } }); // 1.5 kg
+    fireEvent.click(neverExpiresCheckbox);
+
+    fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Test Food',
+          categoryId: 'food',
+          quantity: 2,
+          unit: 'kilograms',
+          weightGrams: 1500, // 1.5 kg converted to 1500g
+        }),
+      );
+    });
+  });
+
+  it('should calculate calories correctly when unit is kilograms', async () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        templateCaloriesPer100g={50}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const unitSelect = document.querySelector('#unit') as HTMLSelectElement;
+
+    fireEvent.change(nameInput, { target: { value: 'Test Food' } });
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+    fireEvent.change(unitSelect, { target: { value: 'kilograms' } });
+
+    // Wait for weight input to appear
+    await waitFor(() => {
+      const weightInput = document.querySelector(
+        '#weightGrams',
+      ) as HTMLInputElement;
+      expect(weightInput).toBeInTheDocument();
+    });
+
+    const weightInput = document.querySelector(
+      '#weightGrams',
+    ) as HTMLInputElement;
+    const caloriesInput = document.querySelector(
+      '#caloriesPerUnit',
+    ) as HTMLInputElement;
+
+    // Enter 1.5 kg (should be converted to 1500g for calculation)
+    fireEvent.change(weightInput, { target: { value: '1.5' } });
+
+    // Calories should be calculated: 1500g * 50kcal/100g = 750kcal
+    expect(caloriesInput).toHaveValue(750);
+  });
 });
