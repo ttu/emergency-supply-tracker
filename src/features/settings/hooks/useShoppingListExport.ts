@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
@@ -28,23 +29,25 @@ export function useShoppingListExport(): UseShoppingListExportResult {
   const { recommendedItems } = useRecommendedItems();
   const { settings } = useSettings();
 
-  const getItemsNeedingRestock = (): InventoryItem[] => {
+  // Extract children multiplier to avoid duplication
+  const childrenMultiplier = settings.childrenRequirementPercentage
+    ? settings.childrenRequirementPercentage / 100
+    : CHILDREN_REQUIREMENT_MULTIPLIER;
+
+  // Memoize items needing restock to avoid redundant computation
+  const itemsToRestock = useMemo(() => {
     return items.filter((item) => {
       const recommendedQuantity = getRecommendedQuantityForItem(
         item,
         household,
         recommendedItems,
-        settings.childrenRequirementPercentage
-          ? settings.childrenRequirementPercentage / 100
-          : CHILDREN_REQUIREMENT_MULTIPLIER,
+        childrenMultiplier,
       );
       return item.quantity < recommendedQuantity;
     });
-  };
+  }, [items, household, recommendedItems, childrenMultiplier]);
 
   const generateShoppingList = (): string => {
-    const itemsToRestock = getItemsNeedingRestock();
-
     if (itemsToRestock.length === 0) {
       return t('settings.shoppingList.noItems');
     }
@@ -82,9 +85,7 @@ export function useShoppingListExport(): UseShoppingListExportResult {
             item,
             household,
             recommendedItems,
-            settings.childrenRequirementPercentage
-              ? settings.childrenRequirementPercentage / 100
-              : CHILDREN_REQUIREMENT_MULTIPLIER,
+            childrenMultiplier,
           );
           const needed = recommendedQuantity - item.quantity;
           list += `□ ${item.name}: ${needed} ${t(`units.${item.unit}`)}\n`;
@@ -98,8 +99,6 @@ export function useShoppingListExport(): UseShoppingListExportResult {
   };
 
   const handleExport = () => {
-    const itemsToRestock = getItemsNeedingRestock();
-
     if (itemsToRestock.length === 0) {
       alert(t('settings.shoppingList.noItemsAlert'));
       return;
@@ -116,8 +115,6 @@ export function useShoppingListExport(): UseShoppingListExportResult {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
-
-  const itemsToRestock = getItemsNeedingRestock();
 
   return {
     itemsToRestock,

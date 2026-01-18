@@ -13,6 +13,7 @@ import {
   createCategoryId,
   createDateOnly,
   createAlertId,
+  createProductTemplateId,
 } from '@/shared/types';
 
 // Mock i18next
@@ -300,7 +301,7 @@ describe('Dashboard', () => {
       quantity: 1, // Below recommended for household (3L × 1 adult × 3 days = 9L)
       unit: 'liters',
       neverExpires: true,
-      itemType: 'bottled-water' as never, // Matches a recommended item template
+      itemType: createProductTemplateId('bottled-water'),
     });
 
     renderWithProviders(<Dashboard />, {
