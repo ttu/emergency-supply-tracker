@@ -4,7 +4,7 @@
 > **Last Updated:** 2026-01-15
 > **Source of Truth:** `src/features/templates/data.ts`
 
-This document lists all 71 recommended emergency supply items based on Finnish emergency preparedness guidelines (72tuntia.fi).
+This document lists all 81 recommended emergency supply items based on Finnish emergency preparedness guidelines (72tuntia.fi).
 
 ---
 
@@ -16,6 +16,7 @@ Items can scale based on household configuration:
 | ----------------------- | -------------------------------------- |
 | `scaleWithPeople: true` | Quantity multiplied by household size  |
 | `scaleWithDays: true`   | Quantity multiplied by supply duration |
+| `scaleWithPets: true`   | Quantity multiplied by pet count       |
 | `requiresFreezer: true` | Only shown if household uses freezer   |
 
 **Base quantities** are calculated for 1 person for 3 days.
@@ -165,6 +166,27 @@ Items can scale based on household configuration:
 
 ---
 
+## 10. Pets
+
+Pet supplies for emergency preparedness. These items only appear when household has pets configured (pets > 0).
+
+| ID                        | Name                    | Base Qty | Unit      | Scales With | Expiration |
+| ------------------------- | ----------------------- | -------- | --------- | ----------- | ---------- |
+| `pet-food-dry`            | Dry Pet Food            | 0.2      | kilograms | Pets, Days  | 12 months  |
+| `pet-food-wet`            | Wet Pet Food            | 1        | cans      | Pets, Days  | 24 months  |
+| `pet-water-bowl`          | Pet Water Bowl          | 1        | pieces    | Pets        | -          |
+| `pet-food-bowl`           | Pet Food Bowl           | 1        | pieces    | Pets        | -          |
+| `pet-carrier`             | Pet Carrier             | 1        | pieces    | Pets        | -          |
+| `pet-leash-collar`        | Pet Leash & Collar      | 1        | sets      | Pets        | -          |
+| `pet-waste-bags`          | Pet Waste Bags          | 5        | pieces    | Pets, Days  | -          |
+| `pet-medications`         | Pet Medications         | 1        | days      | Pets, Days  | -          |
+| `pet-comfort-items`       | Pet Comfort Items       | 1        | pieces    | Pets        | -          |
+| `pet-vaccination-records` | Pet Vaccination Records | 1        | sets      | Pets        | -          |
+
+**Note:** Pet items scale with pet count (`scaleWithPets: true`). Some items like food and medications also scale with supply duration.
+
+---
+
 ## Summary
 
 | Category             | Item Count |
@@ -178,7 +200,8 @@ Items can scale based on household configuration:
 | Hygiene & Sanitation | 10         |
 | Tools & Supplies     | 11         |
 | Cash & Documents     | 3          |
-| **Total**            | **71**     |
+| Pets                 | 10         |
+| **Total**            | **81**     |
 
 ---
 

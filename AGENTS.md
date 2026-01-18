@@ -24,9 +24,9 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 
 **Key Features:**
 
-- Track supplies across 9 categories (water-beverages, food, cooking-heat, light-power, communication-info, medical-health, hygiene-sanitation, tools-supplies, cash-documents)
-- Household configuration (adults, children, supply duration, freezer)
-- 71 recommended items based on 72tuntia.fi guidelines
+- Track supplies across 10 categories (water-beverages, food, cooking-heat, light-power, communication-info, medical-health, hygiene-sanitation, tools-supplies, cash-documents, pets)
+- Household configuration (adults, children, pets, supply duration, freezer)
+- 81 recommended items based on 72tuntia.fi guidelines
 - Expiration tracking and alerts
 - Product templates (built-in + custom) with barcode support
 - Import/Export data (JSON)

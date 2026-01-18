@@ -2,8 +2,8 @@ import { STANDARD_CATEGORIES, getCategoryById } from './data';
 
 describe('standardCategories', () => {
   describe('STANDARD_CATEGORIES', () => {
-    it('should contain 9 standard categories', () => {
-      expect(STANDARD_CATEGORIES).toHaveLength(9);
+    it('should contain 10 standard categories', () => {
+      expect(STANDARD_CATEGORIES).toHaveLength(10);
     });
 
     it('should have water-beverages as first category', () => {
@@ -11,9 +11,9 @@ describe('standardCategories', () => {
       expect(STANDARD_CATEGORIES[0].icon).toBe('💧');
     });
 
-    it('should have cash-documents as last category', () => {
-      expect(STANDARD_CATEGORIES[8].id).toBe('cash-documents');
-      expect(STANDARD_CATEGORIES[8].icon).toBe('💰');
+    it('should have pets as last category', () => {
+      expect(STANDARD_CATEGORIES[9].id).toBe('pets');
+      expect(STANDARD_CATEGORIES[9].icon).toBe('🐕');
     });
 
     it('should have all categories marked as not custom', () => {
