@@ -13,6 +13,9 @@ describe('HouseholdForm', () => {
       screen.getByLabelText('settings.household.children'),
     ).toBeInTheDocument();
     expect(
+      screen.getByLabelText('settings.household.pets'),
+    ).toBeInTheDocument();
+    expect(
       screen.getByLabelText('settings.household.supplyDays'),
     ).toBeInTheDocument();
     expect(
@@ -43,12 +46,16 @@ describe('HouseholdForm', () => {
     const childrenInput = screen.getByLabelText(
       'settings.household.children',
     ) as HTMLInputElement;
+    const petsInput = screen.getByLabelText(
+      'settings.household.pets',
+    ) as HTMLInputElement;
     const supplyDaysInput = screen.getByLabelText(
       'settings.household.supplyDays',
     ) as HTMLInputElement;
 
     expect(adultsInput.value).toBe('2');
     expect(childrenInput.value).toBe('3');
+    expect(petsInput.value).toBe('0');
     expect(supplyDaysInput.value).toBe('3');
   });
 
@@ -140,8 +147,12 @@ describe('HouseholdForm', () => {
     const childrenInput = screen.getByLabelText(
       'settings.household.children',
     ) as HTMLInputElement;
+    const petsInput = screen.getByLabelText(
+      'settings.household.pets',
+    ) as HTMLInputElement;
     expect(adultsInput.value).toBe('2');
     expect(childrenInput.value).toBe('2');
+    expect(petsInput.value).toBe('1');
   });
 
   it('should update children value', () => {
@@ -186,6 +197,28 @@ describe('HouseholdForm', () => {
     fireEvent.change(childrenInput, { target: { value: '' } });
 
     expect(childrenInput.value).toBe('0');
+  });
+
+  it('should update pets value', () => {
+    renderWithHousehold(<HouseholdForm />);
+
+    const petsInput = screen.getByLabelText(
+      'settings.household.pets',
+    ) as HTMLInputElement;
+    fireEvent.change(petsInput, { target: { value: '2' } });
+
+    expect(petsInput.value).toBe('2');
+  });
+
+  it('should handle empty pets value as 0', () => {
+    renderWithHousehold(<HouseholdForm />);
+
+    const petsInput = screen.getByLabelText(
+      'settings.household.pets',
+    ) as HTMLInputElement;
+    fireEvent.change(petsInput, { target: { value: '' } });
+
+    expect(petsInput.value).toBe('0');
   });
 
   it('should handle empty supply days value as 1', () => {

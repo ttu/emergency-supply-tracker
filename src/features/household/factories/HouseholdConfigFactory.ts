@@ -49,6 +49,18 @@ function validateHouseholdConfig(input: CreateHouseholdConfigInput): void {
     );
   }
 
+  // Validate pets
+  if (input.pets < HOUSEHOLD_LIMITS.pets.min) {
+    throw new HouseholdConfigValidationError(
+      `pets must be at least ${HOUSEHOLD_LIMITS.pets.min}, got ${input.pets}`,
+    );
+  }
+  if (input.pets > HOUSEHOLD_LIMITS.pets.max) {
+    throw new HouseholdConfigValidationError(
+      `pets must be at most ${HOUSEHOLD_LIMITS.pets.max}, got ${input.pets}`,
+    );
+  }
+
   // Validate supplyDurationDays
   if (input.supplyDurationDays < HOUSEHOLD_LIMITS.supplyDays.min) {
     throw new HouseholdConfigValidationError(
@@ -90,6 +102,7 @@ export class HouseholdConfigFactory {
     return {
       adults: input.adults,
       children: input.children,
+      pets: input.pets,
       supplyDurationDays: input.supplyDurationDays,
       useFreezer: input.useFreezer,
       freezerHoldTimeHours: input.freezerHoldTimeHours,
@@ -107,18 +120,21 @@ export class HouseholdConfigFactory {
       single: {
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
         useFreezer: false,
       },
       couple: {
         adults: 2,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
         useFreezer: true,
       },
       family: {
         adults: 2,
         children: 2,
+        pets: 1,
         supplyDurationDays: 3,
         useFreezer: true,
       },
@@ -139,6 +155,7 @@ export class HouseholdConfigFactory {
     const defaults: HouseholdConfig = {
       adults: 2,
       children: 0,
+      pets: 0,
       supplyDurationDays: 7,
       useFreezer: false,
     };

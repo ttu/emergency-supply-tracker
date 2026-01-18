@@ -12,6 +12,8 @@ import { faker } from '@faker-js/faker';
 export const FAKER_ADULTS = { min: 1, max: 5 } as const;
 export const FAKER_CHILDREN = { min: 0, max: 4 } as const;
 export const FAKER_CHILDREN_MIN_ONE = { min: 1, max: 4 } as const;
+export const FAKER_PETS = { min: 0, max: 3 } as const;
+export const FAKER_PETS_MIN_ONE = { min: 1, max: 3 } as const;
 export const FAKER_SUPPLY_DURATION_DAYS = { min: 3, max: 14 } as const;
 export const FAKER_SUPPLY_DURATION_DAYS_LONG = { min: 7, max: 14 } as const;
 
@@ -70,6 +72,20 @@ export function randomChildren(): number {
  */
 export function randomChildrenMinOne(): number {
   return faker.number.int(FAKER_CHILDREN_MIN_ONE);
+}
+
+/**
+ * Generate a random integer for pets count
+ */
+export function randomPets(): number {
+  return faker.number.int(FAKER_PETS);
+}
+
+/**
+ * Generate a random integer for pets count (minimum 1)
+ */
+export function randomPetsMinOne(): number {
+  return faker.number.int(FAKER_PETS_MIN_ONE);
 }
 
 /**

@@ -19,6 +19,12 @@ export const CHILDREN_REQUIREMENT_MULTIPLIER = 0.75;
 export const ADULT_REQUIREMENT_MULTIPLIER = 1.0;
 
 /**
+ * Multiplier for pets' requirements.
+ * Pets count as 1 each for their specific supplies.
+ */
+export const PET_REQUIREMENT_MULTIPLIER = 1;
+
+/**
  * Daily water requirement per person in liters.
  * Standard emergency preparedness recommendation: 3 liters per person per day.
  */

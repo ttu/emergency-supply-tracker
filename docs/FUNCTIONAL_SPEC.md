@@ -86,7 +86,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 ### 2. Supply Categories
 
-#### 9 Standard Categories (based on 72tuntia.fi)
+#### 10 Standard Categories (based on 72tuntia.fi)
 
 | ID                   | Name                 | Icon             | Description                               |
 | -------------------- | -------------------- | ---------------- | ----------------------------------------- |
@@ -99,6 +99,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 | `hygiene-sanitation` | Hygiene & Sanitation | :soap:           | Toilet paper, soap, wipes                 |
 | `tools-supplies`     | Tools & Supplies     | :wrench:         | Bucket, containers, duct tape             |
 | `cash-documents`     | Cash & Documents     | :moneybag:       | Cash, document copies                     |
+| `pets`               | Pets                 | :dog:            | Pet food, bowls, carriers, medications    |
 
 #### Custom Categories
 
@@ -161,7 +162,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 ### 4. Recommended Items
 
-70 recommended items across 9 categories. See [RECOMMENDED_ITEMS.md](RECOMMENDED_ITEMS.md) for complete list.
+81 recommended items across 10 categories. See [RECOMMENDED_ITEMS.md](RECOMMENDED_ITEMS.md) for complete list.
 
 **Key examples:**
 
@@ -333,7 +334,7 @@ A comprehensive help page with frequently asked questions and guidance.
 
 - `DashboardHeader`: Household summary, overall preparedness %
 - `AlertBanner`: Expired/expiring/missing items
-- `CategoryGrid`: 9 category cards with status indicators
+- `CategoryGrid`: 10 category cards with status indicators
 
 **Category Card shows:**
 

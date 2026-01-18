@@ -59,6 +59,7 @@ export const VALID_CATEGORIES = [
   'hygiene-sanitation',
   'tools-supplies',
   'cash-documents',
+  'pets',
 ] as const;
 
 export type StandardCategoryId = (typeof VALID_CATEGORIES)[number];
@@ -76,6 +77,7 @@ export type BatteryType = 'AAA' | 'AA' | 'C' | 'D' | '9V' | 'CR2032';
 export interface HouseholdConfig {
   adults: number;
   children: number;
+  pets: number;
   supplyDurationDays: number;
   useFreezer: boolean;
   freezerHoldTimeHours?: number;
@@ -193,6 +195,8 @@ export interface RecommendedItemDefinition {
   unit: Unit;
   scaleWithPeople: boolean;
   scaleWithDays: boolean;
+  /** @categorySpecific Pets category only - Scale quantity with number of pets */
+  scaleWithPets?: boolean;
   requiresFreezer?: boolean;
   defaultExpirationMonths?: number;
   /** @categorySpecific Food category only - Weight in grams per unit (e.g., 150g per can) */
@@ -227,6 +231,8 @@ export interface ImportedRecommendedItem {
   unit: Unit;
   scaleWithPeople: boolean;
   scaleWithDays: boolean;
+  /** @categorySpecific Pets category only - Scale quantity with number of pets */
+  scaleWithPets?: boolean;
   requiresFreezer?: boolean;
   defaultExpirationMonths?: number;
   /** @categorySpecific Food category only - Weight in grams per unit (e.g., 150g per can) */
