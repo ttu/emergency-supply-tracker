@@ -139,7 +139,9 @@ describe('ConnectGoogleDrive', () => {
 
     it('should show confirmation dialog on disconnect', async () => {
       const user = userEvent.setup();
-      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+      const mockConfirm = vi
+        .spyOn(globalThis, 'confirm')
+        .mockReturnValue(false);
 
       renderWithContext(
         createMockContext({ state: 'connected', provider: 'google-drive' }),
@@ -154,7 +156,7 @@ describe('ConnectGoogleDrive', () => {
 
     it('should call disconnect when confirmed', async () => {
       const user = userEvent.setup();
-      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+      const mockConfirm = vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
       const mockDisconnect = vi.fn().mockResolvedValue(undefined);
 
       renderWithContext(
@@ -173,7 +175,9 @@ describe('ConnectGoogleDrive', () => {
 
     it('should not call disconnect when cancelled', async () => {
       const user = userEvent.setup();
-      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+      const mockConfirm = vi
+        .spyOn(globalThis, 'confirm')
+        .mockReturnValue(false);
       const mockDisconnect = vi.fn().mockResolvedValue(undefined);
 
       renderWithContext(
@@ -192,7 +196,7 @@ describe('ConnectGoogleDrive', () => {
 
     it('should show disconnecting text during disconnect', async () => {
       const user = userEvent.setup();
-      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+      const mockConfirm = vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
       let resolveDisconnect: () => void;
       const disconnectPromise = new Promise<void>((resolve) => {
         resolveDisconnect = resolve;

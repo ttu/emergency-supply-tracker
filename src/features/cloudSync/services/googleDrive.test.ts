@@ -51,7 +51,10 @@ class TestableGoogleDriveService implements CloudStorageProvider {
       );
     }
 
-    if (!window.google?.accounts?.oauth2) {
+    if (
+      !(globalThis as typeof globalThis & { google?: typeof globalThis.google })
+        .google?.accounts?.oauth2
+    ) {
       throw new CloudSyncError(
         'Google Identity Services not loaded. Check your internet connection.',
         'AUTH_FAILED',
@@ -59,7 +62,11 @@ class TestableGoogleDriveService implements CloudStorageProvider {
       );
     }
 
-    return window.google.accounts.oauth2.initTokenClient({
+    return (
+      globalThis as typeof globalThis & {
+        google: NonNullable<typeof globalThis.google>;
+      }
+    ).google.accounts.oauth2.initTokenClient({
       client_id: clientId,
       scope: 'https://www.googleapis.com/auth/drive.file',
       callback: (response: {
@@ -398,7 +405,7 @@ class TestableGoogleDriveService implements CloudStorageProvider {
         id: file.id,
         name: file.name,
         modifiedTime: file.modifiedTime,
-        size: file.size ? parseInt(file.size, 10) : undefined,
+        size: file.size ? Number.parseInt(file.size, 10) : undefined,
       };
     } catch (error) {
       if (error instanceof CloudSyncError && error.code === 'FILE_NOT_FOUND') {
@@ -444,10 +451,10 @@ describe('GoogleDriveService', () => {
       return mockTokenClient;
     });
 
-    // Setup window.google mock
+    // Setup globalThis.google mock
     // Use type assertion to avoid interface declaration conflicts
     (
-      window as Window & {
+      globalThis as typeof globalThis & {
         google?: {
           accounts: {
             oauth2: {
@@ -472,7 +479,7 @@ describe('GoogleDriveService', () => {
   });
 
   afterEach(() => {
-    delete (window as Window & { google?: unknown }).google;
+    delete (globalThis as typeof globalThis & { google?: unknown }).google;
   });
 
   describe('providerId', () => {
@@ -506,7 +513,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw error if Google Identity Services not loaded', async () => {
-      delete (window as Window & { google?: unknown }).google;
+      delete (globalThis as typeof globalThis & { google?: unknown }).google;
 
       await expect(service.connect()).rejects.toThrow(CloudSyncError);
       await expect(service.connect()).rejects.toThrow(
@@ -604,7 +611,7 @@ describe('GoogleDriveService', () => {
 
   describe('disconnect', () => {
     beforeEach(() => {
-      global.fetch = vi.fn().mockResolvedValue({ ok: true });
+      globalThis.fetch = vi.fn().mockResolvedValue({ ok: true });
     });
 
     it('should revoke token and clear storage', async () => {
@@ -617,7 +624,7 @@ describe('GoogleDriveService', () => {
 
       await service.disconnect();
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         'https://oauth2.googleapis.com/revoke?token=valid-token',
         { method: 'POST' },
       );
@@ -631,7 +638,7 @@ describe('GoogleDriveService', () => {
         provider: 'google-drive',
         refreshToken: null,
       });
-      (global.fetch as Mock).mockRejectedValue(new Error('Network error'));
+      (globalThis.fetch as Mock).mockRejectedValue(new Error('Network error'));
 
       await service.disconnect();
 
@@ -643,7 +650,7 @@ describe('GoogleDriveService', () => {
 
       await service.disconnect();
 
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(globalThis.fetch).not.toHaveBeenCalled();
       expect(tokenStorage.clearTokens).toHaveBeenCalled();
     });
   });
@@ -771,7 +778,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should return file id when found', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
@@ -785,7 +792,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should return null when no files found', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ files: [] }),
       });
@@ -796,7 +803,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw CloudSyncError on network error', async () => {
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+      globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
       await expect(service.findSyncFile()).rejects.toThrow(CloudSyncError);
       await expect(service.findSyncFile()).rejects.toThrow(
@@ -817,7 +824,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should update existing file', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ id: 'existing-file-id' }),
       });
@@ -828,14 +835,14 @@ describe('GoogleDriveService', () => {
       );
 
       expect(fileId).toBe('existing-file-id');
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringContaining('existing-file-id'),
         expect.objectContaining({ method: 'PATCH' }),
       );
     });
 
     it('should create new file with multipart upload', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ id: 'new-file-id' }),
       });
@@ -843,7 +850,7 @@ describe('GoogleDriveService', () => {
       const fileId = await service.upload('{"data": "test"}');
 
       expect(fileId).toBe('new-file-id');
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringContaining('uploadType=multipart'),
         expect.objectContaining({ method: 'POST' }),
       );
@@ -858,7 +865,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw CloudSyncError on upload failure', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 500,
       });
@@ -879,7 +886,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should download file content', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         text: () => Promise.resolve('{"downloaded": "data"}'),
       });
@@ -890,7 +897,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw FILE_NOT_FOUND on 404', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 404,
       });
@@ -909,7 +916,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw CloudSyncError on other failures', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 500,
       });
@@ -930,7 +937,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should return file metadata', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
@@ -952,7 +959,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should return null for FILE_NOT_FOUND', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 404,
         json: () => Promise.resolve({ error: { message: 'Not found' } }),
@@ -964,7 +971,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should handle missing size field', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
@@ -992,7 +999,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw TOKEN_EXPIRED on 401', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 401,
         json: () => Promise.resolve({ error: { message: 'Token expired' } }),
@@ -1007,7 +1014,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw PERMISSION_DENIED on 403', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 403,
         json: () => Promise.resolve({ error: { message: 'Access denied' } }),
@@ -1022,7 +1029,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw QUOTA_EXCEEDED on 507', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 507,
         json: () => Promise.resolve({ error: { message: 'Storage full' } }),
@@ -1037,7 +1044,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw UNKNOWN on other status codes', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 500,
         json: () => Promise.resolve({}),
