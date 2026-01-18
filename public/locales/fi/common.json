@@ -433,6 +433,12 @@
     "skip": "Ohita toistaiseksi",
     "addItems": "Lisää valitut tuotteet"
   },
+  "onboarding": {
+    "import": {
+      "link": "Onko sinulla jo tietoja? Tuo varmuuskopio",
+      "button": "Tuo varmuuskopiotiedot"
+    }
+  },
   "accessibility": {
     "skipToContent": "Siirry pääsisältöön",
     "mainNavigation": "Päänavigaatio",

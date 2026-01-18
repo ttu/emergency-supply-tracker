@@ -1,4 +1,5 @@
 export { isValidUnit } from './unitValidation';
+export { isValidAppData } from './appDataValidation';
 export { VALID_UNITS } from '@/shared/types';
 export {
   validateRecommendedItemsFile,

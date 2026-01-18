@@ -433,6 +433,12 @@
     "skip": "Skip for now",
     "addItems": "Add Selected Items"
   },
+  "onboarding": {
+    "import": {
+      "link": "Already have data? Import backup",
+      "button": "Import backup data"
+    }
+  },
   "accessibility": {
     "skipToContent": "Skip to main content",
     "mainNavigation": "Main navigation",

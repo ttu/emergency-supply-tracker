@@ -180,7 +180,7 @@ test.describe('Onboarding Flow', () => {
     await expect(page.getByTestId('onboarding-household-form')).toBeVisible();
 
     // Go back to Preset (button is "Back")
-    await page.getByRole('button', { name: /Back|Takaisin/i }).click();
+    await page.getByTestId('household-back-button').click();
     await expect(page.getByTestId('onboarding-preset-selector')).toBeVisible();
   });
 });
