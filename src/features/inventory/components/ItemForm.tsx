@@ -141,9 +141,7 @@ export const ItemForm = ({
     }
 
     // Validate quantity: must be present, numeric, finite, and non-negative
-    if (!formData.quantity) {
-      newErrors.quantity = t('itemForm.errors.quantityInvalid');
-    } else {
+    if (formData.quantity) {
       const parsedQuantity = Number.parseFloat(formData.quantity);
       if (
         Number.isNaN(parsedQuantity) ||
@@ -152,6 +150,8 @@ export const ItemForm = ({
       ) {
         newErrors.quantity = t('itemForm.errors.quantityInvalid');
       }
+    } else {
+      newErrors.quantity = t('itemForm.errors.quantityInvalid');
     }
 
     if (!formData.neverExpires && !formData.expirationDate) {
