@@ -75,6 +75,10 @@ describe('HouseholdPresetSelector', () => {
 
   afterEach(() => {
     consoleErrorSpy.mockRestore();
+    Object.defineProperty(globalThis, 'location', {
+      value: originalLocation,
+      writable: true,
+    });
   });
   it('renders all preset options', () => {
     const onSelectPreset = vi.fn();
