@@ -5,8 +5,15 @@ test.describe('Cloud Sync', () => {
     await setupApp();
   });
 
-  test('should display cloud sync section in settings', async ({ page }) => {
+  // Helper function to navigate to cloud sync section
+  async function navigateToCloudSync(page: import('@playwright/test').Page) {
     await page.getByTestId('nav-settings').click();
+    // Click on the cloudSync menu item in the sidebar
+    await page.getByTestId('sidemenu-item-cloudSync').click();
+  }
+
+  test('should display cloud sync section in settings', async ({ page }) => {
+    await navigateToCloudSync(page);
 
     // Verify cloud sync section is visible
     await expect(page.getByTestId('section-cloud-sync')).toBeVisible();
@@ -15,7 +22,7 @@ test.describe('Cloud Sync', () => {
   test('should display cloud sync status when disconnected', async ({
     page,
   }) => {
-    await page.getByTestId('nav-settings').click();
+    await navigateToCloudSync(page);
 
     // Verify status section is visible
     await expect(page.getByTestId('cloud-sync-status')).toBeVisible();
@@ -29,7 +36,7 @@ test.describe('Cloud Sync', () => {
   });
 
   test('should display connect button when disconnected', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await navigateToCloudSync(page);
 
     // Verify connect button is visible
     const connectButton = page.getByTestId('cloud-sync-connect-button');
@@ -40,7 +47,7 @@ test.describe('Cloud Sync', () => {
   });
 
   test('should show connect Google Drive component', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await navigateToCloudSync(page);
 
     // Verify connect Google Drive component is visible
     await expect(page.getByTestId('connect-google-drive')).toBeVisible();
@@ -49,7 +56,7 @@ test.describe('Cloud Sync', () => {
   test('should display sync button when connected', async ({ page }) => {
     // This test would require mocking Google Drive connection
     // For now, we verify the UI structure exists
-    await page.getByTestId('nav-settings').click();
+    await navigateToCloudSync(page);
 
     // When disconnected, the sync button might not be visible, but the section structure exists
     // We verify the section is present
@@ -57,7 +64,7 @@ test.describe('Cloud Sync', () => {
   });
 
   test('should display status indicator', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await navigateToCloudSync(page);
 
     // Verify status indicator is visible
     const indicator = page.getByTestId('cloud-sync-status-indicator');
@@ -72,8 +79,8 @@ test.describe('Cloud Sync', () => {
     // Verify we're on settings page
     await expect(page.getByTestId('page-settings')).toBeVisible();
 
-    // Scroll to cloud sync section if needed (it's at the bottom)
-    await page.getByTestId('section-cloud-sync').scrollIntoViewIfNeeded();
+    // Click on cloud sync menu item
+    await page.getByTestId('sidemenu-item-cloudSync').click();
 
     // Verify cloud sync section is visible
     await expect(page.getByTestId('section-cloud-sync')).toBeVisible();
