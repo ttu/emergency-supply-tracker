@@ -11,6 +11,7 @@ import { createProductTemplateId } from '@/shared/types';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
+  PET_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
 
 describe('calculateHouseholdMultiplier', () => {
@@ -36,6 +37,7 @@ describe('calculateRecommendedQuantity', () => {
       unit: 'liters',
       scaleWithPeople: true,
       scaleWithDays: true,
+      scaleWithPets: false,
     });
     const household = createMockHousehold({ children: 0 });
     const expected =
@@ -54,10 +56,67 @@ describe('calculateRecommendedQuantity', () => {
       unit: 'pieces',
       scaleWithPeople: false,
       scaleWithDays: false,
+      scaleWithPets: false,
     });
     const household = createMockHousehold();
     const result = calculateRecommendedQuantity(item, household);
     // Should return baseQuantity regardless of household size
     expect(result).toBe(baseQuantity);
+  });
+
+  it('scales with pets only', () => {
+    const baseQuantity = 1;
+    const item = createMockRecommendedItem({
+      id: createProductTemplateId('pet-carrier'),
+      i18nKey: 'products.pet-carrier',
+      category: 'pets',
+      baseQuantity,
+      unit: 'pieces',
+      scaleWithPeople: false,
+      scaleWithDays: false,
+      scaleWithPets: true,
+    });
+    const household = createMockHousehold({ pets: 3 });
+    const expected = baseQuantity * 3 * PET_REQUIREMENT_MULTIPLIER;
+    const result = calculateRecommendedQuantity(item, household);
+    expect(result).toBe(expected);
+  });
+
+  it('scales with pets and days', () => {
+    const baseQuantity = 0.2; // 0.2 kg per pet per day
+    const item = createMockRecommendedItem({
+      id: createProductTemplateId('pet-food-dry'),
+      i18nKey: 'products.pet-food-dry',
+      category: 'pets',
+      baseQuantity,
+      unit: 'kilograms',
+      scaleWithPeople: false,
+      scaleWithDays: true,
+      scaleWithPets: true,
+    });
+    const household = createMockHousehold({ pets: 2, supplyDurationDays: 3 });
+    // 0.2 * 2 pets * 3 days = 1.2 -> ceil = 2
+    const expected = Math.ceil(
+      baseQuantity * 2 * PET_REQUIREMENT_MULTIPLIER * 3,
+    );
+    const result = calculateRecommendedQuantity(item, household);
+    expect(result).toBe(expected);
+  });
+
+  it('returns 0 when scaleWithPets is true and pets is 0', () => {
+    const baseQuantity = 1;
+    const item = createMockRecommendedItem({
+      id: createProductTemplateId('pet-carrier'),
+      i18nKey: 'products.pet-carrier',
+      category: 'pets',
+      baseQuantity,
+      unit: 'pieces',
+      scaleWithPeople: false,
+      scaleWithDays: false,
+      scaleWithPets: true,
+    });
+    const household = createMockHousehold({ pets: 0 });
+    const result = calculateRecommendedQuantity(item, household);
+    expect(result).toBe(0);
   });
 });

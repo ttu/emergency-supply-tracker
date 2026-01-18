@@ -4,12 +4,17 @@ import { useLocalStorageSync } from './useLocalStorageSync';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 import type { AppData, HouseholdConfig } from '@/shared/types';
+import {
+  createMockHousehold as createFactoryHousehold,
+  createMockSettings as createFactorySettings,
+  createMockAppData as createFactoryAppData,
+} from '@/shared/utils/test/factories';
 
-// Helper functions to create mock data (reduces nesting depth)
+// Create deterministic mock data for tests (not random like factories)
 function createMockSettings(overrides?: Partial<AppData['settings']>) {
-  return {
-    language: 'en' as const,
-    theme: 'light' as const,
+  return createFactorySettings({
+    language: 'en',
+    theme: 'light',
     highContrast: false,
     advancedFeatures: {
       calorieTracking: false,
@@ -17,26 +22,27 @@ function createMockSettings(overrides?: Partial<AppData['settings']>) {
       waterTracking: false,
     },
     ...overrides,
-  };
+  });
 }
 
 function createMockHousehold(
   overrides?: Partial<HouseholdConfig>,
 ): HouseholdConfig {
-  return {
+  return createFactoryHousehold({
     adults: 2,
     children: 0,
+    pets: 0,
     supplyDurationDays: 7,
     useFreezer: false,
     ...overrides,
-  };
+  });
 }
 
 function createMockAppData(overrides?: Partial<AppData>): AppData {
-  return {
+  return createFactoryAppData({
     version: CURRENT_SCHEMA_VERSION,
-    household: createMockHousehold(),
-    settings: createMockSettings(),
+    household: createMockHousehold(overrides?.household),
+    settings: createMockSettings(overrides?.settings),
     items: [],
     customCategories: [],
     customTemplates: [],
@@ -44,7 +50,7 @@ function createMockAppData(overrides?: Partial<AppData>): AppData {
     disabledRecommendedItems: [],
     lastModified: new Date().toISOString(),
     ...overrides,
-  };
+  });
 }
 
 // Mock localStorage utilities
@@ -56,6 +62,7 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
     household: {
       adults: 2,
       children: 0,
+      pets: 0,
       supplyDurationDays: 7,
       useFreezer: false,
     },

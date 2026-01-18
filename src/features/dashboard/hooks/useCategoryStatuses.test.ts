@@ -47,6 +47,7 @@ describe('useCategoryStatuses', () => {
       household: {
         adults: 2,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
         useFreezer: false,
       },

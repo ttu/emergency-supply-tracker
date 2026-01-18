@@ -80,6 +80,7 @@ export const NoFreezer: Story = {
     household: {
       adults: 2,
       children: 1,
+      pets: 0,
       supplyDurationDays: 3,
       useFreezer: false,
     },
@@ -97,6 +98,7 @@ export const ExtendedSupply: Story = {
     household: {
       adults: 2,
       children: 0,
+      pets: 0,
       supplyDurationDays: 14,
       useFreezer: true,
     },

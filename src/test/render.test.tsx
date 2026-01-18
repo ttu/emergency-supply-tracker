@@ -65,6 +65,7 @@ describe('renderWithProviders localStorage persistence', () => {
       household: {
         adults: 4,
         children: 2,
+        pets: 0,
         supplyDurationDays: 7,
         useFreezer: false,
       },
@@ -104,6 +105,7 @@ describe('renderWithProviders localStorage persistence', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },
@@ -196,6 +198,7 @@ describe('renderWithProviders localStorage persistence', () => {
       household: {
         adults: 2,
         children: 1,
+        pets: 0,
         supplyDurationDays: 5,
         useFreezer: false,
       },

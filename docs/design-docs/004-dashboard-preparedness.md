@@ -86,7 +86,7 @@ Users need a quick overview of their emergency preparedness status without navig
    - Dismissible alerts
 
 3. **CategoryGrid**
-   - 9 category cards
+   - 10 category cards
    - Each card shows:
      - Category name and icon
      - Status indicator (worst item status in category)

@@ -31,8 +31,9 @@
 }
 
 .success {
-  background-color: var(--color-success-alpha);
-  color: var(--color-success);
+  /* Use darker green background with white text for WCAG AA compliance (small text needs 4.5:1) */
+  background-color: var(--color-success-dark);
+  color: white;
 }
 
 .warning {

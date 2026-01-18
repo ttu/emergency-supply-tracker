@@ -89,6 +89,7 @@ describe('HouseholdForm', () => {
     expect(onSubmit).toHaveBeenCalledWith({
       adults: 2,
       children: 1,
+      pets: 0,
       supplyDays: 10,
       useFreezer: true,
     });

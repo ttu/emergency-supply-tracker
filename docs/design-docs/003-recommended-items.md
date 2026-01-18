@@ -168,7 +168,7 @@ interface RecommendedItemDefinition {
 
 **Location:** `src/data/recommendedItems.ts`
 
-- 70 items across 9 categories
+- 81 items across 10 categories
 - Uses i18n keys for translations
 - Hardcoded TypeScript constants
 - Immutable (only changed via code updates)

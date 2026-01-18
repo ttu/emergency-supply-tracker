@@ -92,5 +92,15 @@
   "dust-masks": "Pölynaamari tai N95 hengityssuojain",
   "cash": "Käteinen (pienet setelit ja kolikot)",
   "document-copies": "Kopiot tärkeistä asiakirjoista",
-  "contact-list": "Hätänumeroiden lista"
+  "contact-list": "Hätänumeroiden lista",
+  "pet-food-dry": "Lemmikin ruoka (kuiva)",
+  "pet-food-wet": "Lemmikin ruoka (märkä/säilyke)",
+  "pet-water-bowl": "Lemmikin vesikuppi",
+  "pet-food-bowl": "Lemmikin ruokakuppi",
+  "pet-carrier": "Lemmikin kuljetuskoppa",
+  "pet-leash-collar": "Lemmikin talutushihna ja kaulapanta",
+  "pet-waste-bags": "Lemmikin jätepussit",
+  "pet-medications": "Lemmikin lääkkeet",
+  "pet-comfort-items": "Lemmikin lohdutustuotteet (peitto/lelu)",
+  "pet-vaccination-records": "Lemmikin rokotus-/terveystiedot"
 }

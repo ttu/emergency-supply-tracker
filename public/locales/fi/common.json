@@ -113,6 +113,7 @@
     "formSubtitle": "Säädä kotitaloutesi tiedot",
     "adults": "Aikuiset",
     "children": "Lapset",
+    "pets": "Lemmikit",
     "supplyDays": "Varastojen kesto (päivää)",
     "supplyDaysHelper": "Suositus: 3-7 päivää",
     "useFreezer": "Käytä pakastinta",
@@ -128,6 +129,8 @@
       "adultsMax": "Enintään {{max}} aikuista sallittu",
       "childrenNegative": "Ei voi olla negatiivinen",
       "childrenMax": "Enintään {{max}} lasta sallittu",
+      "petsNegative": "Ei voi olla negatiivinen",
+      "petsMax": "Enintään {{max}} lemmikkiä sallittu",
       "supplyDaysMin": "Vähintään {{min}} päivä vaaditaan",
       "supplyDaysMax": "Enintään {{max}} päivää sallittu"
     }
@@ -201,6 +204,7 @@
     "household": {
       "adults": "Aikuiset",
       "children": "Lapset",
+      "pets": "Lemmikit",
       "supplyDays": "Varastojen kesto (päivää)",
       "useFreezer": "Käytä pakastinta",
       "freezerHoldTime": "Pakastimen säilytysaika (tuntia)",

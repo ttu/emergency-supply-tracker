@@ -17,6 +17,7 @@ vi.mock('react-i18next', () => ({
         'hygiene-sanitation': 'Hygiene & Sanitation',
         'tools-supplies': 'Tools & Supplies',
         'cash-documents': 'Cash & Documents',
+        pets: 'Pets',
       };
 
       if (options?.ns === 'categories') {
@@ -214,15 +215,15 @@ describe('CategoryNav', () => {
     const nav = screen.getByRole('navigation');
     fireEvent.keyDown(nav, { key: 'ArrowLeft' });
 
-    // Should wrap to last category
-    expect(onSelectCategory).toHaveBeenCalledWith('cash-documents');
+    // Should wrap to last category (pets is now the last category)
+    expect(onSelectCategory).toHaveBeenCalledWith('pets');
   });
 
   it('should wrap around to first category when pressing ArrowRight at end', () => {
     render(
       <CategoryNav
         categories={STANDARD_CATEGORIES}
-        selectedCategoryId="cash-documents"
+        selectedCategoryId="pets"
         onSelectCategory={onSelectCategory}
       />,
     );
@@ -261,7 +262,7 @@ describe('CategoryNav', () => {
     const nav = screen.getByRole('navigation');
     fireEvent.keyDown(nav, { key: 'End' });
 
-    expect(onSelectCategory).toHaveBeenCalledWith('cash-documents');
+    expect(onSelectCategory).toHaveBeenCalledWith('pets');
   });
 
   it('should not navigate with other keys', () => {

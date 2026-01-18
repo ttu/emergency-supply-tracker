@@ -56,6 +56,12 @@ export const STANDARD_CATEGORIES: Category[] = [
     icon: '💰',
     isCustom: false,
   },
+  {
+    id: createCategoryId('pets'),
+    name: 'Pets',
+    icon: '🐕',
+    isCustom: false,
+  },
 ];
 
 export function getCategoryById(id: StandardCategoryId): Category | undefined {

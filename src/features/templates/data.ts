@@ -767,6 +767,112 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     scaleWithPeople: false,
     scaleWithDays: false,
   },
+
+  // ===================================================================
+  // 10. Pets
+  // ===================================================================
+  {
+    id: createProductTemplateId('pet-food-dry'),
+    i18nKey: 'products.pet-food-dry',
+    category: 'pets',
+    baseQuantity: 0.2, // 200g per pet per day
+    unit: 'kilograms',
+    scaleWithPeople: false,
+    scaleWithDays: true,
+    scaleWithPets: true,
+    defaultExpirationMonths: 12,
+  },
+  {
+    id: createProductTemplateId('pet-food-wet'),
+    i18nKey: 'products.pet-food-wet',
+    category: 'pets',
+    baseQuantity: 1, // 1 can per pet per day
+    unit: 'cans',
+    scaleWithPeople: false,
+    scaleWithDays: true,
+    scaleWithPets: true,
+    defaultExpirationMonths: 24,
+  },
+  {
+    id: createProductTemplateId('pet-water-bowl'),
+    i18nKey: 'products.pet-water-bowl',
+    category: 'pets',
+    baseQuantity: 1,
+    unit: 'pieces',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    scaleWithPets: true,
+  },
+  {
+    id: createProductTemplateId('pet-food-bowl'),
+    i18nKey: 'products.pet-food-bowl',
+    category: 'pets',
+    baseQuantity: 1,
+    unit: 'pieces',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    scaleWithPets: true,
+  },
+  {
+    id: createProductTemplateId('pet-carrier'),
+    i18nKey: 'products.pet-carrier',
+    category: 'pets',
+    baseQuantity: 1,
+    unit: 'pieces',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    scaleWithPets: true,
+  },
+  {
+    id: createProductTemplateId('pet-leash-collar'),
+    i18nKey: 'products.pet-leash-collar',
+    category: 'pets',
+    baseQuantity: 1,
+    unit: 'sets',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    scaleWithPets: true,
+  },
+  {
+    id: createProductTemplateId('pet-waste-bags'),
+    i18nKey: 'products.pet-waste-bags',
+    category: 'pets',
+    baseQuantity: 5, // 5 bags per pet per day
+    unit: 'pieces',
+    scaleWithPeople: false,
+    scaleWithDays: true,
+    scaleWithPets: true,
+  },
+  {
+    id: createProductTemplateId('pet-medications'),
+    i18nKey: 'products.pet-medications',
+    category: 'pets',
+    baseQuantity: 1, // 1 day supply per pet per day
+    unit: 'days',
+    scaleWithPeople: false,
+    scaleWithDays: true,
+    scaleWithPets: true,
+  },
+  {
+    id: createProductTemplateId('pet-comfort-items'),
+    i18nKey: 'products.pet-comfort-items',
+    category: 'pets',
+    baseQuantity: 1, // 1 blanket/toy per pet
+    unit: 'pieces',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    scaleWithPets: true,
+  },
+  {
+    id: createProductTemplateId('pet-vaccination-records'),
+    i18nKey: 'products.pet-vaccination-records',
+    category: 'pets',
+    baseQuantity: 1, // 1 set per pet
+    unit: 'sets',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    scaleWithPets: true,
+  },
 ];
 
 /**

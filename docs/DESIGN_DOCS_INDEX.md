@@ -81,7 +81,7 @@ All design documents are located in the [`docs/design-docs/`](./design-docs/) di
     - Template-based item creation
 
 11. **[Category Management](./design-docs/011-category-management.md)**
-    - Standard 9 categories
+    - Standard 10 categories
     - Custom category creation
     - Category icons and metadata
     - Category-based filtering

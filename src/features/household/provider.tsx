@@ -6,6 +6,7 @@ import { HouseholdContext } from './context';
 const DEFAULT_HOUSEHOLD: HouseholdConfig = {
   adults: 2,
   children: 3,
+  pets: 0,
   supplyDurationDays: 3,
   useFreezer: false,
 };
@@ -17,18 +18,21 @@ const HOUSEHOLD_PRESETS: Record<
   single: {
     adults: 1,
     children: 0,
+    pets: 0,
     supplyDurationDays: 3,
     useFreezer: false,
   },
   couple: {
     adults: 2,
     children: 0,
+    pets: 0,
     supplyDurationDays: 3,
     useFreezer: true,
   },
   family: {
     adults: 2,
     children: 2,
+    pets: 1,
     supplyDurationDays: 3,
     useFreezer: true,
   },
