@@ -107,7 +107,7 @@ export const ItemForm = ({
   };
 
   const [formData, setFormData] = useState<FormData>(() => {
-    const initialUnit = (item?.unit || 'pieces') as Unit;
+    const initialUnit = item?.unit || 'pieces';
     return {
       itemType: item?.itemType || '',
       name: item?.name || '',
@@ -145,7 +145,7 @@ export const ItemForm = ({
       newErrors.categoryId = t('itemForm.errors.categoryRequired');
     }
 
-    if (!formData.quantity || parseFloat(formData.quantity) < 0) {
+    if (!formData.quantity || Number.parseFloat(formData.quantity) < 0) {
       newErrors.quantity = t('itemForm.errors.quantityInvalid');
     }
 
@@ -173,7 +173,7 @@ export const ItemForm = ({
     // Convert weight to grams if unit is kilograms
     const weightGrams = formData.weightGrams
       ? (() => {
-          const weightValue = parseFloat(formData.weightGrams);
+          const weightValue = Number.parseFloat(formData.weightGrams);
           // If unit is kilograms, convert kg to grams
           if (formData.unit === 'kilograms') {
             return weightValue * 1000;
@@ -186,7 +186,7 @@ export const ItemForm = ({
       name: formData.name.trim(),
       itemType,
       categoryId: createCategoryId(formData.categoryId),
-      quantity: parseFloat(formData.quantity),
+      quantity: Number.parseFloat(formData.quantity),
       unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
       neverExpires: formData.neverExpires,
       expirationDate: (() => {
@@ -205,16 +205,16 @@ export const ItemForm = ({
       notes: formData.notes.trim() || undefined,
       weightGrams,
       caloriesPerUnit: formData.caloriesPerUnit
-        ? parseFloat(formData.caloriesPerUnit)
+        ? Number.parseFloat(formData.caloriesPerUnit)
         : undefined,
       requiresWaterLiters: formData.requiresWaterLiters
-        ? parseFloat(formData.requiresWaterLiters)
+        ? Number.parseFloat(formData.requiresWaterLiters)
         : undefined,
       capacityMah: formData.capacityMah
-        ? parseFloat(formData.capacityMah)
+        ? Number.parseFloat(formData.capacityMah)
         : undefined,
       capacityWh: formData.capacityWh
-        ? parseFloat(formData.capacityWh)
+        ? Number.parseFloat(formData.capacityWh)
         : undefined,
     });
   };
@@ -229,10 +229,10 @@ export const ItemForm = ({
         field === 'weightGrams' &&
         templateCaloriesPer100g &&
         typeof value === 'string' &&
-        parseFloat(value) > 0
+        Number.parseFloat(value) > 0
       ) {
         // Convert weight to grams for calculation (if unit is kilograms, value is in kg)
-        const weightValue = parseFloat(value);
+        const weightValue = Number.parseFloat(value);
         const weightGrams =
           prev.unit === 'kilograms' ? weightValue * 1000 : weightValue;
         const newCalories = calculateCaloriesFromWeight(
@@ -245,8 +245,8 @@ export const ItemForm = ({
       // When unit changes, convert weight display value
       if (field === 'unit' && typeof value === 'string') {
         const currentWeight = prev.weightGrams;
-        if (currentWeight && !isNaN(parseFloat(currentWeight))) {
-          const weightValue = parseFloat(currentWeight);
+        if (currentWeight && !Number.isNaN(Number.parseFloat(currentWeight))) {
+          const weightValue = Number.parseFloat(currentWeight);
           // If changing to/from kilograms, convert the display value
           if (value === 'kilograms' && prev.unit !== 'kilograms') {
             // Converting from grams to kg: divide by 1000
