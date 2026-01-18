@@ -140,8 +140,18 @@ export const ItemForm = ({
       newErrors.categoryId = t('itemForm.errors.categoryRequired');
     }
 
-    if (!formData.quantity || Number.parseFloat(formData.quantity) < 0) {
+    // Validate quantity: must be present, numeric, finite, and non-negative
+    if (!formData.quantity) {
       newErrors.quantity = t('itemForm.errors.quantityInvalid');
+    } else {
+      const parsedQuantity = Number.parseFloat(formData.quantity);
+      if (
+        Number.isNaN(parsedQuantity) ||
+        !Number.isFinite(parsedQuantity) ||
+        parsedQuantity < 0
+      ) {
+        newErrors.quantity = t('itemForm.errors.quantityInvalid');
+      }
     }
 
     if (!formData.neverExpires && !formData.expirationDate) {

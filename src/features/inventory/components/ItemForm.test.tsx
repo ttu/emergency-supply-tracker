@@ -128,6 +128,70 @@ describe('ItemForm', () => {
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
+  it('should reject non-numeric quantity values', () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+    const expirationDateInput = document.querySelector(
+      '#expirationDate',
+    ) as HTMLInputElement;
+
+    fireEvent.change(nameInput, { target: { value: 'Test Item' } });
+    fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
+    fireEvent.change(quantityInput, { target: { value: 'abc' } });
+    fireEvent.change(expirationDateInput, { target: { value: '2025-12-31' } });
+
+    const submitButton = screen.getByRole('button', { name: 'common.add' });
+    fireEvent.click(submitButton);
+
+    // Validation should prevent submission due to non-numeric value
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
+
+  it('should reject infinite quantity values', () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+    const quantityInput = document.querySelector(
+      '#quantity',
+    ) as HTMLInputElement;
+    const expirationDateInput = document.querySelector(
+      '#expirationDate',
+    ) as HTMLInputElement;
+
+    fireEvent.change(nameInput, { target: { value: 'Test Item' } });
+    fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
+    fireEvent.change(quantityInput, { target: { value: 'Infinity' } });
+    fireEvent.change(expirationDateInput, { target: { value: '2025-12-31' } });
+
+    const submitButton = screen.getByRole('button', { name: 'common.add' });
+    fireEvent.click(submitButton);
+
+    // Validation should prevent submission due to infinite value
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
+
   it('should require expiration date when not never expires', () => {
     render(
       <ItemForm
