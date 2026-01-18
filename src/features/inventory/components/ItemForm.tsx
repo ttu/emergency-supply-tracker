@@ -351,11 +351,7 @@ export const ItemForm = ({
               <Input
                 id="weightGrams"
                 name="weightGrams"
-                label={
-                  formData.unit === 'kilograms'
-                    ? t('itemForm.weightKilograms')
-                    : t('itemForm.weightGrams')
-                }
+                label={t('itemForm.weightGrams')}
                 type="number"
                 value={formData.weightGrams}
                 onChange={(e) => handleChange('weightGrams', e.target.value)}
