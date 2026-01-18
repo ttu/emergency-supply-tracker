@@ -7,13 +7,13 @@ import { parseRecommendedItemsFile } from '@/shared/utils/validation/recommended
 import styles from './KitSelector.module.css';
 
 export interface KitSelectorProps {
-  availableKits: KitInfo[];
-  selectedKitId: KitId | null;
-  onSelectKit: (kitId: KitId) => void;
-  onUploadKit?: (file: RecommendedItemsFile) => void;
-  onDeleteKit?: (kitId: `custom:${string}`) => void;
-  showUpload?: boolean;
-  showDelete?: boolean;
+  readonly availableKits: KitInfo[];
+  readonly selectedKitId: KitId | null;
+  readonly onSelectKit: (kitId: KitId) => void;
+  readonly onUploadKit?: (file: RecommendedItemsFile) => void;
+  readonly onDeleteKit?: (kitId: `custom:${string}`) => void;
+  readonly showUpload?: boolean;
+  readonly showDelete?: boolean;
 }
 
 export function KitSelector({

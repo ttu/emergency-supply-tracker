@@ -7,8 +7,8 @@ import { createCustomKitId } from '@/shared/types';
 import styles from './RecommendationKitStep.module.css';
 
 export interface RecommendationKitStepProps {
-  onContinue: () => void;
-  onBack: () => void;
+  readonly onContinue: () => void;
+  readonly onBack: () => void;
 }
 
 export function RecommendationKitStep({

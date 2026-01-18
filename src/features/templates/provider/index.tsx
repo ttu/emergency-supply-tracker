@@ -37,16 +37,7 @@ import {
 // Map from item ID to localized names object
 type InlineNames = Map<string, LocalizedNames>;
 
-/** Generate a UUID v4 */
-function generateUuid(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c: string) => {
-    const r = Math.trunc(Math.random() * 16);
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
-/** Helper to update a specific kit's items */
+/** Update a kit's items with a transformer function */
 function updateKitItems(
   kit: UploadedKit,
   targetUuid: string,
@@ -55,8 +46,23 @@ function updateKitItems(
   if (kit.id !== targetUuid) return kit;
   return {
     ...kit,
-    file: { ...kit.file, items: transformer(kit.file.items) },
+    file: {
+      ...kit.file,
+      items: transformer(kit.file.items),
+    },
   };
+}
+
+/** Generate a UUID v4 */
+function generateUuid(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+    /[xy]/g,
+    (c: string) => {
+      const r = Math.trunc(Math.random() * 16);
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    },
+  );
 }
 
 export function RecommendedItemsProvider({
@@ -262,9 +268,7 @@ export function RecommendedItemsProvider({
       setUploadedKits((prev) =>
         prev.map((kit) =>
           updateKitItems(kit, uuid, (items) =>
-            items.map((item) =>
-              item.id === itemId ? { ...item, ...updates } : item,
-            ),
+            items.map((i) => (i.id === itemId ? { ...i, ...updates } : i)),
           ),
         ),
       );
@@ -283,7 +287,7 @@ export function RecommendedItemsProvider({
       setUploadedKits((prev) =>
         prev.map((kit) =>
           updateKitItems(kit, uuid, (items) =>
-            items.filter((item) => item.id !== itemId),
+            items.filter((i) => i.id !== itemId),
           ),
         ),
       );
