@@ -363,7 +363,7 @@
     "quantity": "Quantity",
     "unit": "Unit",
     "recommendedQuantity": "Recommended Quantity",
-    "weightGrams": "Weight per unit (g)",
+    "weightGrams": "Weight per unit (grams)",
     "weightKilograms": "Weight per unit (kg)",
     "caloriesPerUnit": "Calories per unit",
     "capacityMah": "Capacity (mAh)",
