@@ -6,6 +6,7 @@ import {
   getDaysUntilExpiration,
 } from '@/shared/utils/calculations/itemStatus';
 import { getWaterRequirementPerUnit } from '@/shared/utils/calculations/water';
+import { calculateItemTotalCalories } from '@/shared/utils/calculations/calories';
 import {
   EXPIRING_SOON_DAYS_THRESHOLD,
   CHILDREN_REQUIREMENT_MULTIPLIER,
@@ -126,7 +127,7 @@ export const ItemCard = ({ item, allItems, onClick }: ItemCardProps) => {
 
         {isFoodItem(item) && item.caloriesPerUnit && (
           <div className={styles.calories}>
-            🔥 {Math.round(item.quantity * item.caloriesPerUnit)} kcal
+            🔥 {calculateItemTotalCalories(item)} kcal
           </div>
         )}
 

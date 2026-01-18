@@ -131,6 +131,8 @@ export function hasMarkedAsEnough(
  * @param defaultCaloriesPerUnit - Fallback calories per unit if item doesn't have it set
  * @returns Total calories from all matching items
  */
+import { calculateItemTotalCalories } from './calories';
+
 export function sumMatchingItemsCalories(
   items: InventoryItem[],
   recommendedItem: RecommendedItemDefinition,
@@ -138,8 +140,11 @@ export function sumMatchingItemsCalories(
 ): number {
   const matchingItems = findMatchingItems(items, recommendedItem);
   return matchingItems.reduce((sum, item) => {
-    const calsPerUnit = item.caloriesPerUnit ?? defaultCaloriesPerUnit;
-    return sum + item.quantity * calsPerUnit;
+    if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
+      return sum + calculateItemTotalCalories(item);
+    }
+    // Fallback: use default calories per unit (assume quantity is already in units)
+    return sum + item.quantity * defaultCaloriesPerUnit;
   }, 0);
 }
 
@@ -158,7 +163,10 @@ export function sumMatchingItemsCaloriesByType(
 ): number {
   const matchingItems = findMatchingItemsByType(items, recommendedItemId);
   return matchingItems.reduce((sum, item) => {
-    const calsPerUnit = item.caloriesPerUnit ?? defaultCaloriesPerUnit;
-    return sum + item.quantity * calsPerUnit;
+    if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
+      return sum + calculateItemTotalCalories(item);
+    }
+    // Fallback: use default calories per unit (assume quantity is already in units)
+    return sum + item.quantity * defaultCaloriesPerUnit;
   }, 0);
 }

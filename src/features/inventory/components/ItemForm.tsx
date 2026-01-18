@@ -18,7 +18,10 @@ import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
 import { Button } from '@/shared/components/Button';
 import { calculateCaloriesFromWeight } from '@/shared/utils/calculations/calories';
-import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
+import {
+  CUSTOM_ITEM_TYPE,
+  DEFAULT_WEIGHT_PER_UNIT_GRAMS,
+} from '@/shared/utils/constants';
 import { isTemplateId } from '@/shared/utils/storage/localStorage';
 import styles from './ItemForm.module.css';
 
@@ -73,10 +76,13 @@ export const ItemForm = ({
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
   // Calculate default weight and calories from template
+  // Always display weight in grams (even when unit is kilograms, as package labels often use grams)
   const getDefaultWeight = (): string => {
-    if (item?.weightGrams !== undefined) return item.weightGrams.toString();
-    if (templateWeightGramsPerUnit !== undefined) {
-      return templateWeightGramsPerUnit.toString();
+    const weightGrams = item?.weightGrams ?? templateWeightGramsPerUnit;
+    if (weightGrams !== undefined) return weightGrams.toString();
+    // Default to DEFAULT_WEIGHT_PER_UNIT_GRAMS for food items when no template or existing weight
+    if (isFoodCategory(item?.categoryId || defaultCategoryId || '')) {
+      return DEFAULT_WEIGHT_PER_UNIT_GRAMS.toString();
     }
     return '';
   };
@@ -102,23 +108,26 @@ export const ItemForm = ({
     return '';
   };
 
-  const [formData, setFormData] = useState<FormData>(() => ({
-    itemType: item?.itemType || '',
-    name: item?.name || '',
-    categoryId: item?.categoryId || defaultCategoryId || '',
-    quantity: item?.quantity?.toString() || '',
-    unit: item?.unit || 'pieces',
-    neverExpires: item?.neverExpires ?? false,
-    expirationDate: item?.expirationDate || '',
-    purchaseDate: item?.purchaseDate || '',
-    location: item?.location || '',
-    notes: item?.notes || '',
-    weightGrams: getDefaultWeight(),
-    caloriesPerUnit: getDefaultCalories(),
-    requiresWaterLiters: getDefaultRequiresWaterLiters(),
-    capacityMah: item?.capacityMah?.toString() || '',
-    capacityWh: item?.capacityWh?.toString() || '',
-  }));
+  const [formData, setFormData] = useState<FormData>(() => {
+    const initialUnit = item?.unit || 'pieces';
+    return {
+      itemType: item?.itemType || '',
+      name: item?.name || '',
+      categoryId: item?.categoryId || defaultCategoryId || '',
+      quantity: item?.quantity?.toString() || '',
+      unit: initialUnit,
+      neverExpires: item?.neverExpires ?? false,
+      expirationDate: item?.expirationDate || '',
+      purchaseDate: item?.purchaseDate || '',
+      location: item?.location || '',
+      notes: item?.notes || '',
+      weightGrams: getDefaultWeight(),
+      caloriesPerUnit: getDefaultCalories(),
+      requiresWaterLiters: getDefaultRequiresWaterLiters(),
+      capacityMah: item?.capacityMah?.toString() || '',
+      capacityWh: item?.capacityWh?.toString() || '',
+    };
+  });
 
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -138,7 +147,17 @@ export const ItemForm = ({
       newErrors.categoryId = t('itemForm.errors.categoryRequired');
     }
 
-    if (!formData.quantity || parseFloat(formData.quantity) < 0) {
+    // Validate quantity: must be present, numeric, finite, and non-negative
+    if (formData.quantity) {
+      const parsedQuantity = Number.parseFloat(formData.quantity);
+      if (
+        Number.isNaN(parsedQuantity) ||
+        !Number.isFinite(parsedQuantity) ||
+        parsedQuantity < 0
+      ) {
+        newErrors.quantity = t('itemForm.errors.quantityInvalid');
+      }
+    } else {
       newErrors.quantity = t('itemForm.errors.quantityInvalid');
     }
 
@@ -163,11 +182,16 @@ export const ItemForm = ({
         ? createProductTemplateId(trimmedItemType)
         : CUSTOM_ITEM_TYPE;
 
+    // Weight input always accepts grams (even when unit is kilograms)
+    const weightGrams = formData.weightGrams
+      ? Number.parseFloat(formData.weightGrams)
+      : undefined;
+
     onSubmit({
       name: formData.name.trim(),
       itemType,
       categoryId: createCategoryId(formData.categoryId),
-      quantity: parseFloat(formData.quantity),
+      quantity: Number.parseFloat(formData.quantity),
       unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
       neverExpires: formData.neverExpires,
       expirationDate: (() => {
@@ -184,20 +208,18 @@ export const ItemForm = ({
         : undefined,
       location: formData.location.trim() || undefined,
       notes: formData.notes.trim() || undefined,
-      weightGrams: formData.weightGrams
-        ? parseFloat(formData.weightGrams)
-        : undefined,
+      weightGrams,
       caloriesPerUnit: formData.caloriesPerUnit
-        ? parseFloat(formData.caloriesPerUnit)
+        ? Number.parseFloat(formData.caloriesPerUnit)
         : undefined,
       requiresWaterLiters: formData.requiresWaterLiters
-        ? parseFloat(formData.requiresWaterLiters)
+        ? Number.parseFloat(formData.requiresWaterLiters)
         : undefined,
       capacityMah: formData.capacityMah
-        ? parseFloat(formData.capacityMah)
+        ? Number.parseFloat(formData.capacityMah)
         : undefined,
       capacityWh: formData.capacityWh
-        ? parseFloat(formData.capacityWh)
+        ? Number.parseFloat(formData.capacityWh)
         : undefined,
     });
   };
@@ -208,18 +230,24 @@ export const ItemForm = ({
 
       // Recalculate calories when weight changes manually (if template has caloriesPer100g)
       // Weight and calories are per-unit values, so they don't change with quantity
+      // Weight input always accepts grams (even when unit is kilograms)
       if (
         field === 'weightGrams' &&
         templateCaloriesPer100g &&
         typeof value === 'string' &&
-        parseFloat(value) > 0
+        Number.parseFloat(value) > 0
       ) {
+        // Weight is already in grams (no conversion needed)
+        const weightGrams = Number.parseFloat(value);
         const newCalories = calculateCaloriesFromWeight(
-          parseFloat(value),
+          weightGrams,
           templateCaloriesPer100g,
         );
         updated.caloriesPerUnit = newCalories.toString();
       }
+
+      // Note: Weight input always accepts grams, even when unit is kilograms
+      // (package labels often show weight in grams)
 
       return updated;
     });

@@ -18,6 +18,7 @@ import type {
   RecommendedItemDefinition,
 } from '@/shared/types';
 import { isFoodCategory, isFoodRecommendedItem } from '@/shared/types';
+import { calculateItemTotalCalories } from './calories';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
@@ -172,7 +173,14 @@ function calculateFoodCategoryPercentage(
 
     // Sum calories from matching items
     const itemCalories = matchingItems.reduce((sum, item) => {
-      const calsPerUnit = item.caloriesPerUnit ?? recItem.caloriesPerUnit ?? 0;
+      if (
+        item.caloriesPerUnit != null &&
+        Number.isFinite(item.caloriesPerUnit)
+      ) {
+        return sum + calculateItemTotalCalories(item);
+      }
+      // Fallback: use recommended item's calories per unit (assume quantity is already in units)
+      const calsPerUnit = recItem.caloriesPerUnit ?? 0;
       return sum + item.quantity * calsPerUnit;
     }, 0);
 
@@ -193,9 +201,9 @@ function calculateFoodCategoryPercentage(
       return;
     }
 
-    // If item has caloriesPerUnit, count it
-    if (item.caloriesPerUnit) {
-      totalActualCalories += item.quantity * item.caloriesPerUnit;
+    // If item has caloriesPerUnit, count it using calculateItemTotalCalories
+    if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
+      totalActualCalories += calculateItemTotalCalories(item);
       return;
     }
 
@@ -207,7 +215,8 @@ function calculateFoodCategoryPercentage(
           recItem.id === item.itemType &&
           disabledRecommendedItems.includes(recItem.id) &&
           isFoodRecommendedItem(recItem) &&
-          recItem.caloriesPerUnit,
+          recItem.caloriesPerUnit != null &&
+          Number.isFinite(recItem.caloriesPerUnit),
       );
 
       if (disabledRecItem) {
