@@ -58,6 +58,8 @@ export default defineConfig({
         '!src/test/**',
         '!src/i18n/config.ts',
         '!src/serviceWorker.ts',
+        '!src/features/cloudSync/services/googleDrive.ts', // External API (requires browser OAuth)
+        '!src/features/cloudSync/__mocks__/**', // Test mocks
       ],
       thresholds: {
         branches: 80,
