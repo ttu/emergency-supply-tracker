@@ -202,10 +202,7 @@ function calculateFoodCategoryPercentage(
     }
 
     // If item has caloriesPerUnit, count it using calculateItemTotalCalories
-    if (
-      item.caloriesPerUnit != null &&
-      Number.isFinite(item.caloriesPerUnit)
-    ) {
+    if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
       totalActualCalories += calculateItemTotalCalories(item);
       return;
     }
