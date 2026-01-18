@@ -1,11 +1,21 @@
 ---
-description: Fix CodeRabbit review issues from the current PR
+description: Fix PR review issues (CodeRabbit, reviewers, CI failures)
 allowed-tools: Bash(git:*), Bash(gh:*), Read, Edit, Write, Glob, Grep, WebFetch
 ---
 
 # Fix PR Review Issues
 
-Read CodeRabbit review comments, Codecov coverage reports, and SonarQube issues from the current PR and fix them.
+Fix all issues from the current PR: CI/CD failures, CodeRabbit comments, SonarCloud issues, Codecov coverage, and human reviewer feedback.
+
+## Order of Checking
+
+When fixing a PR, check these in order:
+
+1. **CI/CD checks** (must all pass)
+2. **CodeRabbit review comments** (address all non-nitpick issues)
+3. **SonarCloud issues** (fix code smells, bugs, security issues)
+4. **Codecov** (ensure coverage thresholds are met)
+5. **Human reviewer comments** (if any)
 
 ## Instructions
 
@@ -16,15 +26,16 @@ Read CodeRabbit review comments, Codecov coverage reports, and SonarQube issues 
    gh pr view --json number,url
    ```
 
-2. Fetch all review comments from the PR:
+2. Check CI/CD status first:
 
    ```bash
-   gh api repos/{owner}/{repo}/pulls/{pr_number}/comments
+   gh pr checks {pr_number} --repo ttu/emergency-supply-tracker
    ```
 
-3. Also check the PR reviews for inline comments:
+3. Fetch all review comments from the PR:
 
    ```bash
+   gh api repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments
    gh pr view {pr_number} --json reviews,comments
    ```
 
@@ -33,30 +44,34 @@ Read CodeRabbit review comments, Codecov coverage reports, and SonarQube issues 
    - Ignore comments marked with "✅ Addressed" as they are already resolved
    - Focus on unresolved issues that require code changes
 
-5. Check Codecov coverage comments:
+5. Check SonarCloud issues:
+   - Check the SonarCloud link from `gh pr checks` output
+   - Or visit: `https://sonarcloud.io/project/issues?id=ttu_emergency-supply-tracker&pullRequest={pr_number}`
+   - Identify code smells, bugs, security hotspots
+
+6. Check Codecov coverage:
+   - Check the Codecov link from `gh pr checks` output
    - Look for comments from "codecov" bot
    - Identify files with decreased coverage or uncovered lines
    - Check if new code needs additional tests
 
-6. Check SonarQube issues:
-   - Look for comments from "sonarcloud" or "sonarqube" bot
-   - Check the SonarQube dashboard link if provided in PR checks
-   - Run `gh pr checks {pr_number}` to find SonarQube status and links
-   - Identify code smells, bugs, security hotspots, and coverage issues
+7. Check human reviewer comments:
+   - Look for comments not from bots (coderabbitai, codecov, sonarcloud)
+   - Address requested changes from human reviewers
 
-7. For each issue:
+8. For each issue:
    - Read the relevant file
    - Understand the suggested fix
    - Apply the fix
    - Mark the issue as addressed in your response
 
-8. After fixing all issues:
+9. After fixing all issues:
    - Run `/verify quick` to check lint and types
    - Commit the fixes with appropriate message:
      - `fix: address CodeRabbit review feedback` for CodeRabbit issues
      - `test: improve coverage for <area>` for Codecov issues
-     - `fix: address SonarQube issues` for SonarQube issues
-     - Or combine: `fix: address review feedback` if fixing multiple sources
+     - `fix: address SonarCloud issues` for SonarCloud issues
+     - `fix: address review feedback` if fixing multiple sources
    - Optionally run `/verify` for full verification if requested
 
 ## Safety Rules
