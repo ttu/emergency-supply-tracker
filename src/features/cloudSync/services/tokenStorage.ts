@@ -104,6 +104,6 @@ export function getTokensForProvider(
   provider: CloudProvider,
 ): StoredTokens | null {
   const tokens = getStoredTokens();
-  if (!tokens || tokens.provider !== provider) return null;
+  if (tokens?.provider !== provider) return null;
   return tokens;
 }
