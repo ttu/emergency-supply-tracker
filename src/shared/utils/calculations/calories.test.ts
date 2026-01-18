@@ -10,10 +10,12 @@ import {
   formatWeight,
   formatCalories,
 } from './calories';
-import type { InventoryItem } from '@/shared/types';
-import { createItemId, createCategoryId } from '@/shared/types';
-import type { RecommendedItemDefinition } from '@/shared/types';
-import { createProductTemplateId } from '@/shared/types';
+import type { InventoryItem, RecommendedItemDefinition } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createProductTemplateId,
+} from '@/shared/types';
 
 describe('calculateCaloriesFromWeight', () => {
   it('calculates calories from weight and caloriesPer100g', () => {
