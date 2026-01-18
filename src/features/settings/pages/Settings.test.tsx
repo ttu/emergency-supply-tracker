@@ -43,6 +43,7 @@ describe('Settings Page', () => {
     expect(
       screen.getByText('settings.sections.overriddenRecommendations'),
     ).toBeInTheDocument();
+    expect(screen.getByText('settings.sections.cloudSync')).toBeInTheDocument();
     expect(
       screen.getByText('settings.sections.dataManagement'),
     ).toBeInTheDocument();
