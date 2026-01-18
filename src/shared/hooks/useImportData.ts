@@ -8,6 +8,7 @@ import { isValidAppData } from '@/shared/utils/validation';
 
 interface UseImportDataOptions {
   onImportSuccess?: () => void;
+  skipConfirmation?: boolean;
 }
 
 interface UseImportDataReturn {
@@ -26,7 +27,7 @@ interface UseImportDataReturn {
 export function useImportData(
   options: UseImportDataOptions = {},
 ): UseImportDataReturn {
-  const { onImportSuccess } = options;
+  const { onImportSuccess, skipConfirmation = false } = options;
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,7 +50,10 @@ export function useImportData(
           return;
         }
 
-        if (globalThis.confirm(t('settings.import.confirmOverwrite'))) {
+        if (
+          skipConfirmation ||
+          globalThis.confirm(t('settings.import.confirmOverwrite'))
+        ) {
           saveAppData(data);
           alert(t('settings.import.success'));
           onImportSuccess?.();
@@ -61,7 +65,7 @@ export function useImportData(
         alert(t('settings.import.error'));
       }
     },
-    [t, onImportSuccess],
+    [t, onImportSuccess, skipConfirmation],
   );
 
   const triggerFileInput = useCallback(() => {

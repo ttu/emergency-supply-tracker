@@ -28,7 +28,9 @@ export function HouseholdPresetSelector({
   onBack,
 }: HouseholdPresetSelectorProps) {
   const { t } = useTranslation();
-  const { fileInputRef, handleFileChange, triggerFileInput } = useImportData();
+  const { fileInputRef, handleFileChange, triggerFileInput } = useImportData({
+    skipConfirmation: true,
+  });
 
   return (
     <div className={styles.container} data-testid="onboarding-preset-selector">

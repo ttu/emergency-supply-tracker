@@ -290,9 +290,7 @@ describe('HouseholdPresetSelector', () => {
 
       await waitFor(() => {
         expect(mockImportFromJSON).toHaveBeenCalled();
-        expect(globalThis.confirm).toHaveBeenCalledWith(
-          'This will replace all data. Continue?',
-        );
+        expect(globalThis.confirm).not.toHaveBeenCalled();
       });
 
       await waitFor(() => {
@@ -328,7 +326,7 @@ describe('HouseholdPresetSelector', () => {
       expect(mockSaveAppData).not.toHaveBeenCalled();
     });
 
-    it('does not import when user cancels confirmation', async () => {
+    it('imports without confirmation dialog in onboarding context', async () => {
       const validData = {
         version: CURRENT_SCHEMA_VERSION,
         household: { adults: 2, children: 0 },
@@ -338,7 +336,6 @@ describe('HouseholdPresetSelector', () => {
       };
 
       mockImportFromJSON.mockReturnValue(validData);
-      (globalThis.confirm as Mock).mockReturnValue(false);
       const onSelectPreset = vi.fn();
 
       render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
@@ -351,10 +348,14 @@ describe('HouseholdPresetSelector', () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
-        expect(globalThis.confirm).toHaveBeenCalled();
+        expect(mockImportFromJSON).toHaveBeenCalled();
+        expect(globalThis.confirm).not.toHaveBeenCalled();
+        expect(mockSaveAppData).toHaveBeenCalledWith(validData);
+        expect(globalThis.alert).toHaveBeenCalledWith(
+          'Data imported successfully',
+        );
+        expect(globalThis.location.reload).toHaveBeenCalled();
       });
-
-      expect(mockSaveAppData).not.toHaveBeenCalled();
     });
 
     it('handles file read error', async () => {
