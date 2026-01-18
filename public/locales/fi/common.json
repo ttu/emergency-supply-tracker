@@ -55,7 +55,7 @@
     }
   },
   "navigation": {
-    "dashboard": "Näkymä",
+    "dashboard": "Etusivu",
     "inventory": "Varasto",
     "settings": "Asetukset",
     "help": "Ohje"
@@ -93,7 +93,7 @@
   "alerts": {
     "expiration": {
       "expired": "Tuote on vanhentunut",
-      "expiringSoon": "Vanhenee {{days}} päivässä"
+      "expiringSoon": "Vanhenee {{days}} päivän kuluttua"
     },
     "stock": {
       "outOfStock": "Ei varastossa",
@@ -329,7 +329,7 @@
     "shortageFormatMissing": "{{item}} – {{count}} {{unit}} puuttuu",
     "quantityMissing": "{{count}} {{unit}} puuttuu",
     "expired": "Vanhentunut",
-    "expiresIn": "Vanhenee {{days}} päivässä",
+    "expiresIn": "Vanhenee {{days}} päivän kuluttua",
     "searchPlaceholder": "Hae tuotteita...",
     "searchLabel": "Hae varastosta",
     "addFromTemplate": "Lisää tuote",
@@ -444,7 +444,7 @@
     },
     "categories": {
       "question": "Mitkä ovat eri kategoriat?",
-      "answer": "Sovellus järjestää tarvikkeet 9 kategoriaan: Ruoka, Vesi, Ensiapu, Työkalut & Turvallisuus, Hygienia, Asiakirjat, Viestintä, Vaatteet ja Muu. Tämä auttaa varmistamaan kattavan suojan kaikissa oleellisissa tarvikkeiden tyypeissä."
+      "answer": "Sovellus järjestää tarvikkeet 9 kategoriaan: Vesi ja juomat, Ruoka, Ruoanlaitto ja lämmitys, Valo ja sähkö, Viestintä ja tiedotus, Lääkkeet ja terveys, Hygienia ja sanitaatio, Työkalut ja tarvikkeet sekä Käteinen ja dokumentit. Tämä auttaa varmistamaan kattavan varautumisen kaikissa oleellisissa tarviketyypeissä."
     },
     "statusColors": {
       "question": "Mitä tilavärit tarkoittavat?",
