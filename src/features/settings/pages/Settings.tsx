@@ -16,6 +16,7 @@ import {
   ImportRecommendationsButton,
   ExportRecommendationsButton,
 } from '@/features/settings';
+import { CloudSyncSection } from '@/features/cloudSync';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
 
@@ -99,6 +100,14 @@ export function Settings() {
             <ImportRecommendationsButton />
             <ExportRecommendationsButton />
           </div>
+        </section>
+
+        {/* Cloud Sync */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>
+            {t('settings.sections.cloudSync')}
+          </h2>
+          <CloudSyncSection />
         </section>
 
         {/* Data Management */}

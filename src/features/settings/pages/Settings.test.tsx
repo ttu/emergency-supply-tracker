@@ -1,6 +1,8 @@
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders, screen } from '@/test';
 import { Settings } from './Settings';
+import { CloudSyncProvider } from '@/features/cloudSync';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -8,15 +10,24 @@ vi.mock('react-i18next', async () => {
   return defaultI18nMock;
 });
 
+// Wrapper to add CloudSyncProvider since Settings uses CloudSyncSection
+const renderSettings = (component: React.ReactElement) => {
+  return renderWithProviders(component, {
+    wrapper: ({ children }) => (
+      <CloudSyncProvider>{children}</CloudSyncProvider>
+    ),
+  });
+};
+
 describe('Settings Page', () => {
   it('should render settings page', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(screen.getByText('navigation.settings')).toBeInTheDocument();
   });
 
   it('should render all section titles', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(
       screen.getByText('settings.sections.appearance'),
@@ -32,6 +43,7 @@ describe('Settings Page', () => {
     expect(
       screen.getByText('settings.sections.overriddenRecommendations'),
     ).toBeInTheDocument();
+    expect(screen.getByText('settings.sections.cloudSync')).toBeInTheDocument();
     expect(
       screen.getByText('settings.sections.dataManagement'),
     ).toBeInTheDocument();
@@ -42,20 +54,20 @@ describe('Settings Page', () => {
   });
 
   it('should render language selector', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(screen.getByText('settings.language.label')).toBeInTheDocument();
   });
 
   it('should render household form', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(screen.getByText('settings.household.adults')).toBeInTheDocument();
     expect(screen.getByText('settings.household.children')).toBeInTheDocument();
   });
 
   it('should render nutrition settings', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(
       screen.getByText('settings.nutrition.dailyCalories'),
@@ -66,14 +78,14 @@ describe('Settings Page', () => {
   });
 
   it('should render hidden alerts section', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // HiddenAlerts component shows empty message when no alerts are hidden
     expect(screen.getByText('settings.hiddenAlerts.empty')).toBeInTheDocument();
   });
 
   it('should render disabled recommendations section', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // DisabledRecommendations component shows empty message when no items are disabled
     expect(
@@ -82,7 +94,7 @@ describe('Settings Page', () => {
   });
 
   it('should render overridden recommendations section', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // OverriddenRecommendations component shows empty message when no items are overridden
     expect(
@@ -91,7 +103,7 @@ describe('Settings Page', () => {
   });
 
   it('should render data management buttons', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(screen.getByText('settings.export.button')).toBeInTheDocument();
     expect(screen.getByText('settings.import.button')).toBeInTheDocument();
@@ -101,20 +113,20 @@ describe('Settings Page', () => {
   });
 
   it('should render about section', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(screen.getByText('app.title')).toBeInTheDocument();
     expect(screen.getByText('settings.about.viewOnGitHub')).toBeInTheDocument();
   });
 
   it('should render clear data button in danger zone', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(screen.getByText('settings.clearData.button')).toBeInTheDocument();
   });
 
   it('should have GitHub link with correct attributes', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     const link = screen.getByText('settings.about.viewOnGitHub');
     expect(link).toHaveAttribute(
