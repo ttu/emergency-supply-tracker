@@ -31,43 +31,34 @@ export function useImportData(
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
-
-      const reader = new FileReader();
-      reader.onerror = () => {
-        console.error('Import error:', reader.error);
-        alert(t('settings.import.error'));
-      };
-      reader.onload = (event) => {
-        try {
-          const json = event.target?.result as string;
-          const data = importFromJSON(json);
-
-          if (!isValidAppData(data)) {
-            alert(t('settings.import.invalidFormat'));
-            return;
-          }
-
-          if (window.confirm(t('settings.import.confirmOverwrite'))) {
-            saveAppData(data);
-            alert(t('settings.import.success'));
-            onImportSuccess?.();
-            // Reload to reflect changes
-            window.location.reload();
-          }
-        } catch (error) {
-          console.error('Import error:', error);
-          alert(t('settings.import.error'));
-        }
-      };
-
-      reader.readAsText(file);
 
       // Reset input so the same file can be selected again
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
+      }
+
+      try {
+        const json = await file.text();
+        const data = importFromJSON(json);
+
+        if (!isValidAppData(data)) {
+          alert(t('settings.import.invalidFormat'));
+          return;
+        }
+
+        if (globalThis.confirm(t('settings.import.confirmOverwrite'))) {
+          saveAppData(data);
+          alert(t('settings.import.success'));
+          onImportSuccess?.();
+          // Reload to reflect changes
+          globalThis.location.reload();
+        }
+      } catch (error) {
+        console.error('Import error:', error);
+        alert(t('settings.import.error'));
       }
     },
     [t, onImportSuccess],
