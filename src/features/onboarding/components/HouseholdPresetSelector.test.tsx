@@ -81,12 +81,12 @@ describe('HouseholdPresetSelector', () => {
       value: originalLocation,
       writable: true,
     });
-    if (originalAlert !== undefined) {
+    if (originalAlert) {
       globalThis.alert = originalAlert;
     } else {
       delete (globalThis as { alert?: unknown }).alert;
     }
-    if (originalConfirm !== undefined) {
+    if (originalConfirm) {
       globalThis.confirm = originalConfirm;
     } else {
       delete (globalThis as { confirm?: unknown }).confirm;
