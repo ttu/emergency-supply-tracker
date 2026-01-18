@@ -40,6 +40,7 @@ describe('Settings Page', () => {
     expect(
       within(sidebar).getByTestId('sidemenu-item-nutrition'),
     ).toBeInTheDocument();
+    expect(screen.getByText('settings.sections.cloudSync')).toBeInTheDocument();
     expect(
       within(sidebar).getByTestId('sidemenu-item-hiddenAlerts'),
     ).toBeInTheDocument();
