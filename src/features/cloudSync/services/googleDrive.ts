@@ -179,10 +179,10 @@ export class GoogleDriveService implements CloudStorageProvider {
       this.pendingAuthResolve = resolve;
       this.pendingAuthReject = reject;
 
-      // If we have expired tokens, request with prompt to allow switching accounts
-      const hasExpiredTokens = getTokensForProvider('google-drive') !== null;
+      // If we have existing tokens, allow account switching; otherwise request consent
+      const hasExistingTokens = getTokensForProvider('google-drive') !== null;
       this.tokenClient!.requestAccessToken({
-        prompt: hasExpiredTokens ? '' : 'consent',
+        prompt: hasExistingTokens ? 'select_account' : 'consent',
       });
     }).finally(() => {
       this.pendingAuthPromise = null;
