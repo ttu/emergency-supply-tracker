@@ -24,7 +24,7 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 
 **Key Features:**
 
-- Track supplies across 9 categories (water, food, cooking, light, communication, medical, hygiene, tools, cash)
+- Track supplies across 9 categories (water-beverages, food, cooking-heat, light-power, communication-info, medical-health, hygiene-sanitation, tools-supplies, cash-documents)
 - Household configuration (adults, children, supply duration, freezer)
 - 71 recommended items based on 72tuntia.fi guidelines
 - Expiration tracking and alerts
@@ -39,128 +39,54 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 
 ### 1. Adding a New Component
 
-**Prompt Template:**
-
-```
-Create a new [component name] component following our architecture:
-- Pure/presentational component in src/components/[Name]/
-- Full TypeScript props interface
-- Storybook stories with multiple states (Default, [State1], [State2])
-- Integration tests using React Testing Library
-- CSS Modules for styling
-
-Component should:
-[Describe what the component does]
-
-Props needed:
-[List required and optional props]
-
-States to show in Storybook:
-[List different visual states]
-```
-
-**Example:**
-
-```
+```text
 Create a new StatusBadge component following our architecture:
-- Pure/presentational component in src/components/StatusBadge/
+- Feature component in src/features/[feature]/components/ OR shared in src/shared/components/
 - Full TypeScript props interface
-- Storybook stories with multiple states (OK, Warning, Critical)
+- Storybook stories with multiple states
 - Integration tests using React Testing Library
 - CSS Modules for styling
 
-Component should:
-Display a colored badge indicating item status with icon and optional label
+Component should: Display a colored badge indicating item status with icon and optional label
 
 Props needed:
 - status: 'ok' | 'warning' | 'critical'
 - showLabel?: boolean (default: true)
 - size?: 'small' | 'medium' | 'large' (default: 'medium')
 
-States to show in Storybook:
-- All three status types
-- With and without labels
-- Different sizes
+States to show in Storybook: All status types, with/without labels, different sizes
 ```
 
 ---
 
 ### 2. Implementing Business Logic
 
-**Prompt Template:**
-
-```
-Implement [function/feature name] following our patterns:
-- Pure utility function in src/utils/[module].ts
-- Full TypeScript types
+```text
+Implement calculateRecommendedQuantity in src/shared/utils/calculations.ts:
+- Pure utility function with full TypeScript types
 - Comprehensive unit tests (100% coverage for business logic)
 - JSDoc comments explaining the logic
 
-The function should:
-[Describe the calculation/logic]
-
 Inputs:
-[List input parameters and types]
-
-Expected behavior:
-[Describe edge cases and examples]
-
-Reference: See docs/DATA_SCHEMA.md for type definitions
-```
-
-**Example:**
-
-```
-Implement calculateRecommendedQuantity following our patterns:
-- Pure utility function in src/utils/calculations.ts
-- Full TypeScript types
-- Comprehensive unit tests (100% coverage for business logic)
-- JSDoc comments explaining the logic
-
-The function should:
-Calculate the recommended quantity for an item based on household configuration
-
-Inputs:
-- recommendedItem: RecommendedItemDefinition (includes baseQuantity, scaleWithPeople, scaleWithDays)
+- recommendedItem: RecommendedItemDefinition (baseQuantity, scaleWithPeople, scaleWithDays)
 - household: HouseholdConfig (adults, children, supplyDurationDays)
 
 Expected behavior:
 - Base quantity for 1 adult for 3 days
 - Adults multiply by 1.0, children by 0.75
 - If scaleWithPeople=false, don't multiply by people count
-- If scaleWithDays=false, don't multiply by duration
-- Return rounded to 2 decimal places
+- Return rounded up (Math.ceil)
 
-Reference: See docs/DATA_SCHEMA.md for calculation formulas
+Reference: docs/DATA_SCHEMA.md for type definitions
 ```
 
 ---
 
 ### 3. Adding E2E Tests
 
-**Prompt Template:**
-
-```
-Create Playwright E2E tests for [feature name]:
-- Test file: e2e/[feature].spec.ts
-- Test critical user flows
-- Use localStorage setup in beforeEach for faster tests
-- Test both desktop and mobile viewports if relevant
-
-User flows to test:
-1. [Flow 1 description]
-2. [Flow 2 description]
-3. [Edge case]
-
-Reference implementation examples in docs/TESTING_STRATEGY.md
-```
-
-**Example:**
-
-```
+```text
 Create Playwright E2E tests for household configuration:
 - Test file: e2e/household-config.spec.ts
-- Test critical user flows
 - Use localStorage setup in beforeEach for faster tests
 - Test both desktop and mobile viewports
 
@@ -170,57 +96,29 @@ User flows to test:
 3. Changes persist after page reload
 4. Invalid inputs show validation errors
 
-Reference implementation examples in docs/TESTING_STRATEGY.md
+Reference: docs/TESTING_STRATEGY.md for examples
 ```
 
 ---
 
 ### 4. Internationalization (i18n)
 
-**Prompt Template:**
+```text
+Add translations for AlertBanner component:
+- Update public/locales/en/common.json (alerts section)
+- Update public/locales/fi/common.json (alerts section)
+- Update component to use useTranslation hook
 
-```
-Add translations for [feature/component]:
-- Update locales/en/[file].json
-- Update locales/fi/[file].json
-- Ensure translation keys follow our naming convention
-- Update component to use translation keys
-
-Texts to translate:
-[List all user-facing strings]
-
-Context:
-[Explain where these appear in the UI]
-```
-
-**Example:**
-
-```
-Add translations for the AlertBanner component:
-- Update locales/en/common.json (alerts section)
-- Update locales/fi/common.json (alerts section)
-- Ensure translation keys follow our naming convention
-- Update AlertBanner to use useTranslation hook
-
-Texts to translate:
-- "Items expiring soon"
-- "Expired items"
-- "Missing critical items"
-- "Low quantity warning"
-
-Context:
-These appear in dashboard alerts when users have supply issues
+Texts: "Items expiring soon", "Expired items", "Missing critical items", "Low quantity warning"
+Context: Dashboard alerts when users have supply issues
 ```
 
 ---
 
 ### 5. Refactoring
 
-**Prompt Template:**
-
-```
-Refactor [component/module] to:
-[Describe refactoring goal]
+```text
+Refactor [component/module] to: [Describe refactoring goal]
 
 Requirements:
 - Maintain all existing functionality
@@ -229,35 +127,25 @@ Requirements:
 - Ensure TypeScript types are accurate
 - Run tests to verify no regressions
 
-Current issues:
-[Describe what needs improvement]
+Current issues: [Describe what needs improvement]
 ```
 
 ---
 
 ### 6. Debugging
 
-**Prompt Template:**
-
-```
+```text
 Debug issue: [Brief description]
 
-Current behavior:
-[What's happening]
-
-Expected behavior:
-[What should happen]
+Current behavior: [What's happening]
+Expected behavior: [What should happen]
 
 Steps to reproduce:
 1. [Step 1]
 2. [Step 2]
 
-Relevant files:
-- [File 1]
-- [File 2]
-
-Error message (if any):
-[Error text]
+Relevant files: [File 1], [File 2]
+Error message (if any): [Error text]
 ```
 
 ---
@@ -266,7 +154,7 @@ Error message (if any):
 
 When asking AI to review code, use this checklist:
 
-```
+```text
 Review the following code for:
 ✓ TypeScript types are correct and complete
 ✓ Follows our component architecture (presentational vs container)
@@ -289,19 +177,53 @@ Code:
 
 ### Component Naming
 
-- **Presentational**: `ItemCard`, `StatusBadge`, `AlertBanner`
-- **Container**: `ItemCardContainer`, `DashboardContainer`
-- **Pages**: `Dashboard`, `Inventory`, `Settings`
-- **Hooks**: `useInventory`, `useHousehold`, `useItemStatus`
+- **Feature Components**: `ItemCard`, `CategoryGrid`, `AlertBanner` (in `src/features/[feature]/components/`)
+- **Shared Components**: `Button`, `Modal`, `Badge`, `Input` (in `src/shared/components/`)
+- **Layout Components**: `Header`, `Footer`, `Layout` (in `src/components/layout/`)
+- **Pages**: `Dashboard`, `Inventory`, `Settings` (in `src/features/[feature]/pages/`)
+- **Hooks**: `useInventory`, `useHousehold`, `useSettings` (in `src/features/[feature]/hooks/`)
 
 ### File Organization
 
+The project uses **Feature Slice Architecture**:
+
+```text
+src/
+├── features/                    # Feature slices (domain-driven)
+│   └── [feature]/
+│       ├── components/          # Feature-specific components
+│       │   ├── [Component].tsx
+│       │   ├── [Component].stories.tsx
+│       │   ├── [Component].test.tsx
+│       │   └── [Component].module.css
+│       ├── hooks/               # Feature-specific hooks
+│       ├── utils/               # Feature-specific utilities
+│       ├── context.ts           # Feature context (if needed)
+│       ├── provider.tsx         # Feature provider (if needed)
+│       └── index.ts             # Public API
+├── shared/
+│   ├── components/              # Reusable UI components (Button, Modal, etc.)
+│   ├── hooks/                   # Shared hooks
+│   ├── utils/                   # Shared utilities
+│   ├── contexts/                # Shared contexts
+│   └── types/                   # Shared TypeScript types
+└── components/layout/           # Layout components (Header, Footer)
 ```
-src/components/[ComponentName]/
-  ├── [ComponentName].tsx
-  ├── [ComponentName].stories.tsx
-  ├── [ComponentName].test.tsx
-  └── [ComponentName].module.css
+
+**Example feature structure** (`src/features/inventory/`):
+
+```text
+inventory/
+├── components/
+│   ├── ItemCard.tsx
+│   ├── ItemCard.stories.tsx
+│   ├── ItemCard.test.tsx
+│   └── ItemCard.module.css
+├── hooks/
+│   └── useInventory.ts
+├── context.ts
+├── provider.tsx
+└── index.ts
 ```
 
 ### Test Naming
@@ -550,7 +472,7 @@ When working in a Cursor worktree, follow these steps to create a PR:
 
    ```bash
    gh pr create \
-     --repo owner/repo-name \
+     --repo ttu/emergency-supply-tracker \
      --title "type: description" \
      --body "PR description" \
      --base main \
@@ -564,7 +486,7 @@ When working in a Cursor worktree, follow these steps to create a PR:
 **Alternative:** If the CLI fails, use the web interface:
 
 ```
-https://github.com/owner/repo/pull/new/your-branch-name
+https://github.com/ttu/emergency-supply-tracker/pull/new/your-branch-name
 ```
 
 ### Checking PR Review Comments and Status
@@ -576,7 +498,17 @@ To check PR review comments and status:
 - **CI/CD checks:** `gh pr checks <PR_NUMBER> --repo ttu/emergency-supply-tracker`
 - **Review comments:** `gh api repos/ttu/emergency-supply-tracker/pulls/<PR_NUMBER>/comments`
 - **PR summary:** `gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --json comments,reviews`
+- **SonarCloud issues:** Check the SonarCloud link from `gh pr checks` output, or visit `https://sonarcloud.io/project/issues?id=ttu_emergency-supply-tracker&pullRequest=<PR_NUMBER>`
+- **Codecov coverage:** Check the Codecov link from `gh pr checks` output for coverage reports and any coverage regressions
 - **View in browser:** `gh pr view <PR_NUMBER> --repo ttu/emergency-supply-tracker --web`
+
+**When fixing a PR, check these in order:**
+
+1. CI/CD checks (must all pass)
+2. CodeRabbit review comments (address all non-nitpick issues)
+3. SonarCloud issues (fix code smells, bugs, security issues)
+4. Codecov (ensure coverage thresholds are met)
+5. Human reviewer comments (if any)
 
 **Tip:** CodeRabbit resolved issues are marked with "✅ Addressed". Verify all actionable feedback is addressed before re-review.
 
@@ -611,31 +543,44 @@ npm run dev                    # Start dev server
 npm run storybook              # Start Storybook component explorer
 
 # Testing
-npm run test                  # Run Vitest tests
-npm run test:watch            # Watch mode
-npm run test:coverage         # Coverage report
-npm run test:e2e              # Run Playwright tests (install Playwright first)
+npm run test                   # Run Vitest tests
+npm run test:watch             # Watch mode
+npm run test:coverage          # Coverage report
+npm run test:e2e               # Run Playwright tests
+npm run test:e2e:ui            # Run Playwright tests with UI
+npm run test:storybook         # Test Storybook stories
+npm run test:a11y              # Run accessibility tests
+npm run test:mutation          # Run mutation testing
+npm run test:all               # Run all test types
+
+# Type Checking
+npm run type-check             # Run TypeScript type checking
 
 # Quality
-npm run lint                  # Run ESLint
-npm run lint:fix              # Fix ESLint issues
-npm run format                # Format with Prettier
-npm run format:check          # Check formatting
+npm run lint                   # Run ESLint
+npm run lint:fix               # Fix ESLint issues
+npm run format                 # Format with Prettier
+npm run format:check           # Check formatting
+
+# Validation
+npm run validate               # Run all validations
+npm run validate:all           # Comprehensive validation (lint, types, tests, build)
+npm run validate:i18n          # Validate i18n translation keys
 
 # Build & Deploy
-npm run build                 # Production build
-npm run preview               # Preview production build
-npm run build-storybook       # Build Storybook static site
+npm run build                  # Production build
+npm run preview                # Preview production build
+npm run build-storybook        # Build Storybook static site
 
 # Quality Gates (run before commit)
-npm run lint && npm test && npm run build
+npm run validate:all
 
 # Claude Code Commands (slash commands)
 /verify                       # Run lint, type-check, tests, build
 /docs-sync                    # Validate documentation matches codebase
 /docs-sync quick              # Quick check (types, items, categories only)
 /pr-create                    # Create a pull request
-/pr-fix                       # Fix CodeRabbit review issues
+/pr-fix                       # Fix PR review issues (CodeRabbit, reviewers, CI failures)
 /issue-implement <number>     # Implement a GitHub issue
 /issue-refine <number|text>   # Refine issue description by validating against codebase
 ```
