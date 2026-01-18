@@ -38,6 +38,8 @@
 .input[type='time'] {
   -webkit-appearance: none;
   appearance: none;
+  /* Ensure consistent height after removing native appearance on iOS */
+  min-height: 2.75rem; /* ~44px to match text inputs */
 }
 
 .input:hover:not(:disabled) {
