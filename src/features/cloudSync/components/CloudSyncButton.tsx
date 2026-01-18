@@ -25,10 +25,12 @@ export function CloudSyncButton() {
           setLastResult(t('cloudSync.result.uploaded'));
           break;
         case 'download':
-          setLastResult(t('cloudSync.result.downloaded'));
           // Reload page to reflect downloaded data
           if (result.requiresReload) {
             globalThis.location.reload();
+          } else {
+            // Only show message if no reload needed
+            setLastResult(t('cloudSync.result.downloaded'));
           }
           break;
         case 'none':
