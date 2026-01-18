@@ -88,12 +88,24 @@ vi.mock('@/features/alerts', () => ({
 }));
 
 describe('Dashboard', () => {
+  // Store original global values for cleanup
+  const originalAlert = globalThis.alert;
+  const originalCreateObjectURL = globalThis.URL.createObjectURL;
+  const originalRevokeObjectURL = globalThis.URL.revokeObjectURL;
+
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
     // Reset mock
     mockGenerateDashboardAlerts.mockReset();
     mockGenerateDashboardAlerts.mockReturnValue([]);
+  });
+
+  afterEach(() => {
+    // Restore original global values
+    globalThis.alert = originalAlert;
+    globalThis.URL.createObjectURL = originalCreateObjectURL;
+    globalThis.URL.revokeObjectURL = originalRevokeObjectURL;
   });
 
   it('should render dashboard header', () => {

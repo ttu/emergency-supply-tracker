@@ -30,13 +30,18 @@ export function useShoppingListExport(): UseShoppingListExportResult {
   const { settings } = useSettings();
 
   // Extract children multiplier to avoid duplication
-  const childrenMultiplier = settings.childrenRequirementPercentage
-    ? settings.childrenRequirementPercentage / 100
-    : CHILDREN_REQUIREMENT_MULTIPLIER;
+  // Use nullish coalescing to preserve 0% as a valid value
+  const childrenMultiplier =
+    (settings.childrenRequirementPercentage ??
+      CHILDREN_REQUIREMENT_MULTIPLIER * 100) / 100;
 
   // Memoize items needing restock to avoid redundant computation
   const itemsToRestock = useMemo(() => {
     return items.filter((item) => {
+      // Skip items marked as enough by the user
+      if (item.markedAsEnough) {
+        return false;
+      }
       const recommendedQuantity = getRecommendedQuantityForItem(
         item,
         household,
