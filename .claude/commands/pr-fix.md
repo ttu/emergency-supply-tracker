@@ -35,7 +35,7 @@ When fixing a PR, check these in order:
 3. Fetch all review comments from the PR:
 
    ```bash
-   gh api repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments
+   gh api --paginate repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments
    gh pr view {pr_number} --json reviews,comments
    ```
 

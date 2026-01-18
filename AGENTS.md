@@ -39,7 +39,7 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 
 ### 1. Adding a New Component
 
-```
+```text
 Create a new StatusBadge component following our architecture:
 - Feature component in src/features/[feature]/components/ OR shared in src/shared/components/
 - Full TypeScript props interface
@@ -61,7 +61,7 @@ States to show in Storybook: All status types, with/without labels, different si
 
 ### 2. Implementing Business Logic
 
-```
+```text
 Implement calculateRecommendedQuantity in src/shared/utils/calculations.ts:
 - Pure utility function with full TypeScript types
 - Comprehensive unit tests (100% coverage for business logic)
@@ -75,7 +75,7 @@ Expected behavior:
 - Base quantity for 1 adult for 3 days
 - Adults multiply by 1.0, children by 0.75
 - If scaleWithPeople=false, don't multiply by people count
-- Return rounded to 2 decimal places
+- Return rounded up (Math.ceil)
 
 Reference: docs/DATA_SCHEMA.md for type definitions
 ```
@@ -84,7 +84,7 @@ Reference: docs/DATA_SCHEMA.md for type definitions
 
 ### 3. Adding E2E Tests
 
-```
+```text
 Create Playwright E2E tests for household configuration:
 - Test file: e2e/household-config.spec.ts
 - Use localStorage setup in beforeEach for faster tests
@@ -103,7 +103,7 @@ Reference: docs/TESTING_STRATEGY.md for examples
 
 ### 4. Internationalization (i18n)
 
-```
+```text
 Add translations for AlertBanner component:
 - Update public/locales/en/common.json (alerts section)
 - Update public/locales/fi/common.json (alerts section)
@@ -117,7 +117,7 @@ Context: Dashboard alerts when users have supply issues
 
 ### 5. Refactoring
 
-```
+```text
 Refactor [component/module] to: [Describe refactoring goal]
 
 Requirements:
@@ -134,7 +134,7 @@ Current issues: [Describe what needs improvement]
 
 ### 6. Debugging
 
-```
+```text
 Debug issue: [Brief description]
 
 Current behavior: [What's happening]
@@ -154,7 +154,7 @@ Error message (if any): [Error text]
 
 When asking AI to review code, use this checklist:
 
-```
+```text
 Review the following code for:
 ✓ TypeScript types are correct and complete
 ✓ Follows our component architecture (presentational vs container)
@@ -187,7 +187,7 @@ Code:
 
 The project uses **Feature Slice Architecture**:
 
-```
+```text
 src/
 ├── features/                    # Feature slices (domain-driven)
 │   └── [feature]/
@@ -212,7 +212,7 @@ src/
 
 **Example feature structure** (`src/features/inventory/`):
 
-```
+```text
 inventory/
 ├── components/
 │   ├── ItemCard.tsx
