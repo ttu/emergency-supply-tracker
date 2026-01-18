@@ -162,22 +162,28 @@ describe('CloudSyncButton', () => {
         requiresReload: true,
       } as SyncResult);
 
-      // jsdom doesn't allow mocking window.location.reload directly
-      // Instead, we can verify the component tries to call it by checking if
-      // syncNow was called and the downloaded result message is shown (before reload would happen)
-      renderWithContext(createMockContext({}, { syncNow: mockSyncNow }));
+      // Mock globalThis.location by replacing the entire object
+      const reloadMock = vi.fn();
+      const originalLocation = globalThis.location;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).location = {
+        ...originalLocation,
+        reload: reloadMock,
+      } as Location;
 
-      await user.click(screen.getByRole('button'));
+      try {
+        renderWithContext(createMockContext({}, { syncNow: mockSyncNow }));
 
-      // Wait for the sync to complete - in the real app, reload would happen here
-      // Since we can't mock reload in jsdom, we verify the flow up to that point
-      await waitFor(() => {
-        expect(mockSyncNow).toHaveBeenCalled();
-      });
+        await user.click(screen.getByRole('button'));
 
-      // The component should have processed the requiresReload flag
-      // In a real browser, window.location.reload() would be called here
-      // We can't directly test that in jsdom, but the test verifies the sync completed
+        await waitFor(() => {
+          expect(mockSyncNow).toHaveBeenCalled();
+          expect(reloadMock).toHaveBeenCalled();
+        });
+      } finally {
+        // Restore original location
+        globalThis.location = originalLocation;
+      }
     });
 
     it('should show no changes result when none direction', async () => {
