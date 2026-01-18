@@ -13,6 +13,7 @@ import {
   createCategoryId,
   createDateOnly,
   createAlertId,
+  createProductTemplateId,
 } from '@/shared/types';
 
 // Mock i18next
@@ -87,12 +88,24 @@ vi.mock('@/features/alerts', () => ({
 }));
 
 describe('Dashboard', () => {
+  // Store original global values for cleanup
+  const originalAlert = globalThis.alert;
+  const originalCreateObjectURL = globalThis.URL.createObjectURL;
+  const originalRevokeObjectURL = globalThis.URL.revokeObjectURL;
+
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
     // Reset mock
     mockGenerateDashboardAlerts.mockReset();
     mockGenerateDashboardAlerts.mockReturnValue([]);
+  });
+
+  afterEach(() => {
+    // Restore original global values
+    globalThis.alert = originalAlert;
+    globalThis.URL.createObjectURL = originalCreateObjectURL;
+    globalThis.URL.revokeObjectURL = originalRevokeObjectURL;
   });
 
   it('should render dashboard header', () => {
@@ -139,7 +152,11 @@ describe('Dashboard', () => {
 
   it('should handle quick action clicks', () => {
     const onNavigate = vi.fn();
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    // Mock alert, URL.createObjectURL, and URL.revokeObjectURL for export
+    globalThis.alert = vi.fn();
+    globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+    globalThis.URL.revokeObjectURL = vi.fn();
+
     renderWithProviders(<Dashboard onNavigate={onNavigate} />);
 
     // Test Add Items button - should navigate to inventory with modal open
@@ -152,11 +169,11 @@ describe('Dashboard', () => {
     fireEvent.click(screen.getByText(/dashboard.viewInventory/i));
     expect(onNavigate).toHaveBeenCalledWith('inventory');
 
-    // Test Export Shopping List button - logs but doesn't navigate (export functionality to be implemented)
+    // Test Export Shopping List button - should show alert when no items need restocking
     fireEvent.click(screen.getByText(/dashboard.exportShoppingList/i));
-    expect(consoleSpy).toHaveBeenCalledWith('Export shopping list');
-
-    consoleSpy.mockRestore();
+    expect(globalThis.alert).toHaveBeenCalledWith(
+      'settings.shoppingList.noItemsAlert',
+    );
   });
 
   it('should not show alerts section when no alerts', () => {
@@ -267,6 +284,60 @@ describe('Dashboard', () => {
     expect(
       screen.getByText(/dashboard.categoriesOverview/i),
     ).toBeInTheDocument();
+  });
+
+  it('should export shopping list when items need restocking', () => {
+    // Mock DOM APIs for export functionality
+    globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+    globalThis.URL.revokeObjectURL = vi.fn();
+
+    // Mock anchor element click to prevent jsdom navigation errors
+    const originalCreateElement =
+      Document.prototype.createElement.bind(document);
+    const createElementSpy = vi
+      .spyOn(document, 'createElement')
+      .mockImplementation((tagName: string) => {
+        const element = originalCreateElement(tagName);
+        if (tagName === 'a') {
+          element.click = vi.fn();
+        }
+        return element;
+      });
+
+    // Create an item that needs restocking (quantity below recommended)
+    // Using itemType: 'bottled-water' which has a recommended quantity
+    const itemNeedingRestock = createMockInventoryItem({
+      id: createItemId('1'),
+      name: 'Water',
+      categoryId: createCategoryId('water-beverages'),
+      quantity: 1, // Below recommended for household (3L × 1 adult × 3 days = 9L)
+      unit: 'liters',
+      neverExpires: true,
+      itemType: createProductTemplateId('bottled-water'),
+    });
+
+    renderWithProviders(<Dashboard />, {
+      initialAppData: {
+        items: [itemNeedingRestock],
+        household: {
+          adults: 1,
+          children: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
+    });
+
+    // Click the export button
+    fireEvent.click(screen.getByText(/dashboard.exportShoppingList/i));
+
+    // Verify export was triggered (blob created and revoked)
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
+    expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith(
+      'blob:mock-url',
+    );
+
+    createElementSpy.mockRestore();
   });
 
   it('should show hidden alerts indicator when alerts are dismissed', () => {

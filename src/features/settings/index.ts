@@ -6,7 +6,8 @@ export type { SettingsContextValue } from './context';
 export { SettingsProvider } from './provider';
 
 // Hooks
-export { useSettings } from './hooks';
+export { useSettings, useShoppingListExport } from './hooks';
+export type { UseShoppingListExportResult } from './hooks';
 
 // Components
 export {
