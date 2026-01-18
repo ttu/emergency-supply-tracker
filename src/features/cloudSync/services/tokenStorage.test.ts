@@ -7,7 +7,7 @@ import {
   updateAccessToken,
   getTokensForProvider,
 } from './tokenStorage';
-import type { StoredTokens } from '../types';
+import type { StoredTokens, CloudProvider } from '../types';
 
 const TOKEN_STORAGE_KEY = 'emergencySupplyTracker_cloudTokens';
 
@@ -285,9 +285,9 @@ describe('tokenStorage', () => {
       };
       localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokens));
 
-      // This should never happen with current types, but testing the logic
-      const result = getTokensForProvider('google-drive');
-      expect(result).not.toBeNull();
+      // Query for a different provider to test mismatch logic
+      const result = getTokensForProvider('onedrive' as CloudProvider);
+      expect(result).toBeNull();
     });
   });
 });
