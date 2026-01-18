@@ -20,9 +20,9 @@ export const ADULT_REQUIREMENT_MULTIPLIER = 1.0;
 
 /**
  * Multiplier for pets' requirements.
- * Pets count as 1.0 each for their specific supplies.
+ * Pets count as 1 each for their specific supplies.
  */
-export const PET_REQUIREMENT_MULTIPLIER = 1.0;
+export const PET_REQUIREMENT_MULTIPLIER = 1;
 
 /**
  * Daily water requirement per person in liters.
