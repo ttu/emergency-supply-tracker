@@ -586,7 +586,7 @@ describe('GoogleDriveService', () => {
       expect(mockTokenClient.requestAccessToken).toHaveBeenCalledTimes(1);
     });
 
-    it('should use empty prompt when renewing expired tokens', async () => {
+    it('should request account selection when renewing existing tokens', async () => {
       (tokenStorage.getTokensForProvider as Mock).mockReturnValue({
         accessToken: 'expired-token',
         expiresAt: Date.now() - 1000,
