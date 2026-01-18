@@ -93,8 +93,11 @@ export function useShoppingListExport(): UseShoppingListExportResult {
             childrenMultiplier,
           );
           const needed = recommendedQuantity - item.quantity;
-          list += `□ ${item.name}: ${needed} ${t(`units.${item.unit}`)}\n`;
-          list += `  ${t('settings.shoppingList.current')}: ${item.quantity}, ${t('settings.shoppingList.recommended')}: ${recommendedQuantity}\n`;
+          const unitLabel = t('units.' + item.unit);
+          const currentLabel = t('settings.shoppingList.current');
+          const recommendedLabel = t('settings.shoppingList.recommended');
+          list += `□ ${item.name}: ${needed} ${unitLabel}\n`;
+          list += `  ${currentLabel}: ${item.quantity}, ${recommendedLabel}: ${recommendedQuantity}\n`;
         });
 
         list += '\n';
@@ -117,7 +120,7 @@ export function useShoppingListExport(): UseShoppingListExportResult {
     link.download = `shopping-list-${new Date().toISOString().split('T')[0]}.txt`;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
     URL.revokeObjectURL(url);
   };
 
