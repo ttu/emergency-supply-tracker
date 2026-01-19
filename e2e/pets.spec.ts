@@ -267,6 +267,11 @@ test.describe('Pet Support', () => {
       const recommendedItems = page.locator('[class*="missingItemText"]');
       const count = await recommendedItems.count();
       expect(count).toBeGreaterThan(0);
+
+      // Find the pet bowl item and verify its quantity is 2 (1 per pet × 2 pets)
+      // The format is "Item Name: X unit" e.g., "Pet Water Bowl: 2 pieces"
+      const petBowlItem = recommendedItems.filter({ hasText: /Pet.*Bowl.*2/i });
+      await expect(petBowlItem.first()).toBeVisible();
     });
   });
 
