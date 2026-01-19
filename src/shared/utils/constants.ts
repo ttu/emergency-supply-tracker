@@ -40,6 +40,11 @@ export const DAILY_CALORIES_PER_PERSON = 2000;
 export const CALORIE_BASE_WEIGHT_GRAMS = 100;
 
 /**
+ * Default weight per unit (grams) for food items when no template or existing weight is provided.
+ */
+export const DEFAULT_WEIGHT_PER_UNIT_GRAMS = 100;
+
+/**
  * Threshold in grams for converting to kilograms in display.
  */
 export const GRAMS_TO_KG_THRESHOLD = 1000;

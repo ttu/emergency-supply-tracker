@@ -388,6 +388,7 @@
     "unit": "Yksikkö",
     "recommendedQuantity": "Suositeltu määrä",
     "weightGrams": "Paino/yksikkö (g)",
+    "weightKilograms": "Paino/yksikkö (kg)",
     "caloriesPerUnit": "Kalorit/yksikkö",
     "capacityMah": "Kapasiteetti (mAh)",
     "capacityWh": "Kapasiteetti (Wh)",
