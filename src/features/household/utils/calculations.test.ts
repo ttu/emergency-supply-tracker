@@ -13,6 +13,7 @@ import {
   CHILDREN_REQUIREMENT_MULTIPLIER,
   PET_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
+import { randomPetsMinOne } from '@/shared/utils/test/faker-helpers';
 
 describe('calculateHouseholdMultiplier', () => {
   it('calculates multiplier correctly for random household configurations', () => {
@@ -66,6 +67,7 @@ describe('calculateRecommendedQuantity', () => {
 
   it('scales with pets only', () => {
     const baseQuantity = 1;
+    const pets = randomPetsMinOne();
     const item = createMockRecommendedItem({
       id: createProductTemplateId('pet-carrier'),
       i18nKey: 'products.pet-carrier',
@@ -76,8 +78,10 @@ describe('calculateRecommendedQuantity', () => {
       scaleWithDays: false,
       scaleWithPets: true,
     });
-    const household = createMockHousehold({ pets: 3 });
-    const expected = baseQuantity * 3 * PET_REQUIREMENT_MULTIPLIER;
+    const household = createMockHousehold({ pets });
+    const expected = Math.ceil(
+      baseQuantity * pets * PET_REQUIREMENT_MULTIPLIER,
+    );
     const result = calculateRecommendedQuantity(item, household);
     expect(result).toBe(expected);
   });
