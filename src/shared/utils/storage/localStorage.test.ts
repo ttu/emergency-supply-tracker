@@ -838,6 +838,7 @@ describe('localStorage utilities', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },
@@ -848,6 +849,7 @@ describe('localStorage utilities', () => {
         household: {
           adults: 4,
           children: 2,
+          pets: 0,
           supplyDurationDays: 14,
           useFreezer: true,
         },
@@ -1059,6 +1061,7 @@ describe('localStorage utilities', () => {
         household: {
           adults: 2,
           children: 0,
+          pets: 0,
           supplyDurationDays: 7,
           useFreezer: false,
         },
