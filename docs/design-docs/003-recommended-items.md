@@ -8,7 +8,7 @@
 
 ## Summary
 
-The Recommended Items system provides 70 built-in emergency supply recommendations based on 72tuntia.fi guidelines. It supports custom recommendation sets via import/export, multi-language item names, and flexible scaling rules for household personalization.
+The Recommended Items system provides 81 built-in emergency supply recommendations based on 72tuntia.fi guidelines. It supports custom recommendation sets via import/export, multi-language item names, and flexible scaling rules for household personalization.
 
 ---
 
@@ -29,7 +29,7 @@ The system must support both built-in recommendations and custom imports while m
 
 ### Goals
 
-- ✅ Provide 70 built-in recommended items based on 72tuntia.fi
+- ✅ Provide 81 built-in recommended items based on 72tuntia.fi
 - ✅ Support custom recommendation imports (JSON)
 - ✅ Export current recommendations (built-in or custom)
 - ✅ Multi-language item names (English, Finnish, etc.)
@@ -128,7 +128,7 @@ interface RecommendedItemDefinition {
 **Reset to Default:**
 
 1. User clicks "Reset to Default" button
-2. System restores built-in 70-item recommendations
+2. System restores built-in 81-item recommendations
 3. User's inventory items preserved
 4. Disabled recommendations list preserved (if IDs still exist)
 
@@ -331,7 +331,7 @@ interface AppData {
 
 ## References
 
-- [RECOMMENDED_ITEMS.md](../RECOMMENDED_ITEMS.md) - Complete list of 70 items
+- [RECOMMENDED_ITEMS.md](../RECOMMENDED_ITEMS.md) - Complete list of 81 items
 - [DATA_SCHEMA.md](../DATA_SCHEMA.md) - Data structure definitions
 - [FUNCTIONAL_SPEC.md](../FUNCTIONAL_SPEC.md) - Functional requirements
 - `src/data/recommendedItems.ts` - Built-in recommendations

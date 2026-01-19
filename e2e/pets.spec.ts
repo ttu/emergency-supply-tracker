@@ -298,8 +298,8 @@ test.describe('Pet Support', () => {
       const petsInput = numberInputs.nth(2);
       await expect(petsInput).toBeVisible();
 
-      // Default pets should be 0 (from HOUSEHOLD_DEFAULTS)
-      await expect(petsInput).toHaveValue('0');
+      // Family preset sets pets to 1
+      await expect(petsInput).toHaveValue('1');
 
       // Set pets to 2
       await petsInput.fill('2');
