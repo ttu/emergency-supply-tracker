@@ -20,6 +20,13 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
   createDefaultAppData: vi.fn(),
 }));
 
+// Helper to create a file with mocked text() method
+function createMockFile(content: string, name = 'data.json'): File {
+  const file = new File([content], name, { type: 'application/json' });
+  file.text = vi.fn().mockResolvedValue(content);
+  return file;
+}
+
 describe('ImportButton', () => {
   const mockParseImportJSON = localStorage.parseImportJSON as Mock;
   const mockMergeImportData = localStorage.mergeImportData as Mock;
@@ -184,9 +191,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File([JSON.stringify(validData)], 'data.json', {
-      type: 'application/json',
-    });
+    const file = createMockFile(JSON.stringify(validData));
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -226,9 +231,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File([JSON.stringify(invalidData)], 'data.json', {
-      type: 'application/json',
-    });
+    const file = createMockFile(JSON.stringify(invalidData));
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -272,9 +275,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File([JSON.stringify(validData)], 'data.json', {
-      type: 'application/json',
-    });
+    const file = createMockFile(JSON.stringify(validData));
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -308,9 +309,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File(['invalid json'], 'data.json', {
-      type: 'application/json',
-    });
+    const file = createMockFile('invalid json');
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -361,9 +360,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File([JSON.stringify(validData)], 'data.json', {
-      type: 'application/json',
-    });
+    const file = createMockFile(JSON.stringify(validData));
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -393,9 +390,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File([JSON.stringify(missingVersion)], 'data.json', {
-      type: 'application/json',
-    });
+    const file = createMockFile(JSON.stringify(missingVersion));
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -414,7 +409,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File(['null'], 'data.json', { type: 'application/json' });
+    const file = createMockFile('null');
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -445,9 +440,7 @@ describe('ImportButton', () => {
     const fileInput = screen.getByLabelText(
       'settings.import.button',
     ) as HTMLInputElement;
-    const file = new File([JSON.stringify(validData)], 'data.json', {
-      type: 'application/json',
-    });
+    const file = createMockFile(JSON.stringify(validData));
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 

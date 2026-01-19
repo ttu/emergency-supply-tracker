@@ -44,6 +44,10 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
       if (!file) return;
 
       const reader = new FileReader();
+      reader.onerror = () => {
+        console.error('Import error:', reader.error);
+        alert(t('settings.import.error'));
+      };
       reader.onload = (event) => {
         try {
           const json = event.target?.result as string;
