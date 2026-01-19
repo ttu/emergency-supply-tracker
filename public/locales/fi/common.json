@@ -139,6 +139,7 @@
   },
   "settings": {
     "title": "Asetukset",
+    "menuLabel": "Asetusten navigointi",
     "sections": {
       "appearance": "Ulkoasu",
       "household": "Kotitalouden asetukset",
@@ -505,6 +506,11 @@
     "goBack": "Takaisin",
     "highContrast": "Korkea kontrasti",
     "highContrastDescription": "Lisää visuaalista kontrastia paremman luettavuuden vuoksi"
+  },
+  "sideMenu": {
+    "openMenu": "Avaa valikko",
+    "closeMenu": "Sulje valikko",
+    "menuLabel": "Navigointivalikko"
   },
   "help": {
     "title": "Ohje & UKK",

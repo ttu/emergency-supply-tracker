@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useHousehold } from '@/features/household';
 import {
   useInventory,
-  CategoryNav,
   FilterBar,
   ItemList,
   ItemForm,
@@ -15,6 +14,7 @@ import { useRecommendedItems, TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
+import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
 import { createItemId, createProductTemplateId } from '@/shared/types';
 import type {
   InventoryItem,
@@ -302,6 +302,20 @@ export function Inventory({
     [recommendedItems, getItemName, i18n.language],
   );
 
+  // Convert categories to SideMenu items (only enabled categories)
+  const categoryMenuItems: SideMenuItem[] = enabledCategories.map(
+    (category) => ({
+      id: category.id,
+      label: t(category.id, { ns: 'categories' }),
+      icon: category.icon,
+    }),
+  );
+
+  const handleSideMenuCategoryChange = (id: string) => {
+    // If 'all' is selected, clear the category filter
+    handleCategoryChange(id === 'all' ? undefined : id);
+  };
+
   return (
     <div className={styles.container} data-testid="page-inventory">
       <header className={styles.header}>
@@ -317,57 +331,68 @@ export function Inventory({
         </div>
       </header>
 
-      <div className={styles.filters}>
-        <CategoryNav
-          categories={enabledCategories}
-          selectedCategoryId={selectedCategoryId}
-          onSelectCategory={handleCategoryChange}
+      <div className={styles.layout}>
+        <SideMenu
+          items={categoryMenuItems}
+          selectedId={selectedCategoryId || 'all'}
+          onSelect={handleSideMenuCategoryChange}
+          ariaLabel={t('accessibility.categoryNavigation')}
+          showAllOption={{
+            id: 'all',
+            label: t('inventory.allCategories'),
+            icon: '📦',
+          }}
         />
-        <FilterBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          statusFilter={statusFilter}
-          onStatusFilterChange={setStatusFilter}
-          sortBy={sortBy}
-          onSortByChange={setSortBy}
-        />
-      </div>
 
-      <div className={styles.content}>
-        {selectedCategoryId && categoryStatus && (
-          <div className={styles.categoryHeader}>
-            <CategoryStatusSummary
-              categoryId={selectedCategoryId}
-              status={categoryStatus.status}
-              completionPercentage={categoryStatus.completionPercentage}
-              totalActual={categoryStatus.totalActual}
-              totalNeeded={categoryStatus.totalNeeded}
-              primaryUnit={categoryStatus.primaryUnit}
-              shortages={categoryStatus.shortages}
-              totalActualCalories={categoryStatus.totalActualCalories}
-              totalNeededCalories={categoryStatus.totalNeededCalories}
-              missingCalories={categoryStatus.missingCalories}
-              drinkingWaterNeeded={categoryStatus.drinkingWaterNeeded}
-              preparationWaterNeeded={categoryStatus.preparationWaterNeeded}
-              onAddToInventory={handleAddRecommendedToInventory}
-              onDisableRecommended={handleDisableRecommendedItem}
-              onMarkAsEnough={handleMarkAsEnough}
-              items={items}
-              resolveItemName={resolveItemName}
+        <div className={styles.main}>
+          <div className={styles.filters}>
+            <FilterBar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              sortBy={sortBy}
+              onSortByChange={setSortBy}
             />
-            <div className={styles.categoryActions}>
-              <Button
-                variant="secondary"
-                size="small"
-                onClick={handleDisableCategory}
-                data-testid="disable-category-button"
-              >
-                {t('inventory.disableCategory')}
-              </Button>
-            </div>
           </div>
-        )}
-        <ItemList items={filteredItems} onItemClick={handleEditItem} />
+
+          <div className={styles.content}>
+            {selectedCategoryId && categoryStatus && (
+              <div className={styles.categoryHeader}>
+                <CategoryStatusSummary
+                  categoryId={selectedCategoryId}
+                  status={categoryStatus.status}
+                  completionPercentage={categoryStatus.completionPercentage}
+                  totalActual={categoryStatus.totalActual}
+                  totalNeeded={categoryStatus.totalNeeded}
+                  primaryUnit={categoryStatus.primaryUnit}
+                  shortages={categoryStatus.shortages}
+                  totalActualCalories={categoryStatus.totalActualCalories}
+                  totalNeededCalories={categoryStatus.totalNeededCalories}
+                  missingCalories={categoryStatus.missingCalories}
+                  drinkingWaterNeeded={categoryStatus.drinkingWaterNeeded}
+                  preparationWaterNeeded={categoryStatus.preparationWaterNeeded}
+                  onAddToInventory={handleAddRecommendedToInventory}
+                  onDisableRecommended={handleDisableRecommendedItem}
+                  onMarkAsEnough={handleMarkAsEnough}
+                  items={items}
+                  resolveItemName={resolveItemName}
+                />
+                <div className={styles.categoryActions}>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={handleDisableCategory}
+                    data-testid="disable-category-button"
+                  >
+                    {t('inventory.disableCategory')}
+                  </Button>
+                </div>
+              </div>
+            )}
+            <ItemList items={filteredItems} onItemClick={handleEditItem} />
+          </div>
+        </div>
       </div>
 
       {/* Add/Edit Item Modal */}

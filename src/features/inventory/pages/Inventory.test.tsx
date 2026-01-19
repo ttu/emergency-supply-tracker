@@ -414,7 +414,7 @@ describe('Inventory Page with items', () => {
     );
 
     // Click on a different category
-    const foodCategory = screen.getByTestId('category-food');
+    const foodCategory = screen.getByTestId('sidemenu-item-food');
     fireEvent.click(foodCategory);
 
     expect(onCategoryChange).toHaveBeenCalledWith('food');
@@ -429,7 +429,7 @@ describe('Inventory Page with items', () => {
     expect(screen.queryByText('Expired Food')).not.toBeInTheDocument();
 
     // Click on a different category - uses local state setter
-    const foodCategory = screen.getByTestId('category-food');
+    const foodCategory = screen.getByTestId('sidemenu-item-food');
     fireEvent.click(foodCategory);
 
     // Should now show food item (local state changed)

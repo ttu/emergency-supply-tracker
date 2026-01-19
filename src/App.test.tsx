@@ -209,8 +209,10 @@ describe('App', () => {
       expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
     });
 
-    // The category should be selected in the CategoryNav (has aria-current="page")
-    const categoryNavButton = screen.getByTestId('category-water-beverages');
+    // The category should be selected in the SideMenu (has aria-current="page")
+    const categoryNavButton = screen.getByTestId(
+      'sidemenu-item-water-beverages',
+    );
     expect(categoryNavButton).toHaveAttribute('aria-current', 'page');
   });
 });

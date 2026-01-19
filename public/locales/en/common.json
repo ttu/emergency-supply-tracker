@@ -139,6 +139,7 @@
   },
   "settings": {
     "title": "Settings",
+    "menuLabel": "Settings navigation",
     "sections": {
       "appearance": "Appearance",
       "household": "Household Configuration",
@@ -505,6 +506,11 @@
     "goBack": "Go back",
     "highContrast": "High contrast",
     "highContrastDescription": "Increase visual contrast for better readability"
+  },
+  "sideMenu": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menuLabel": "Navigation menu"
   },
   "help": {
     "title": "Help & FAQ",

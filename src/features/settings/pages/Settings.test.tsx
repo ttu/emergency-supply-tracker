@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders, screen } from '@/test';
+import { renderWithProviders, screen, fireEvent } from '@/test';
 import { Settings } from './Settings';
 
 // Mock i18next
@@ -15,51 +15,63 @@ describe('Settings Page', () => {
     expect(screen.getByText('navigation.settings')).toBeInTheDocument();
   });
 
-  it('should render all section titles', () => {
+  it('should render side menu with all section options', () => {
     renderWithProviders(<Settings />);
 
+    // All sections should appear in the side menu
+    expect(screen.getByTestId('sidemenu-item-appearance')).toBeInTheDocument();
+    expect(screen.getByTestId('sidemenu-item-household')).toBeInTheDocument();
+    expect(screen.getByTestId('sidemenu-item-nutrition')).toBeInTheDocument();
     expect(
-      screen.getByText('settings.sections.appearance'),
-    ).toBeInTheDocument();
-    expect(screen.getByText('settings.sections.household')).toBeInTheDocument();
-    expect(screen.getByText('settings.sections.nutrition')).toBeInTheDocument();
-    expect(
-      screen.getByText('settings.sections.hiddenAlerts'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('settings.sections.disabledRecommendations'),
+      screen.getByTestId('sidemenu-item-hiddenAlerts'),
     ).toBeInTheDocument();
     expect(
-      screen.getByText('settings.sections.overriddenRecommendations'),
+      screen.getByTestId('sidemenu-item-disabledRecommendations'),
     ).toBeInTheDocument();
     expect(
-      screen.getByText('settings.sections.recommendationKits'),
+      screen.getByTestId('sidemenu-item-overriddenRecommendations'),
     ).toBeInTheDocument();
     expect(
-      screen.getByText('settings.sections.dataManagement'),
+      screen.getByTestId('sidemenu-item-recommendedItems'),
     ).toBeInTheDocument();
-    expect(screen.getByText('settings.sections.about')).toBeInTheDocument();
     expect(
-      screen.getByText('settings.sections.dangerZone'),
+      screen.getByTestId('sidemenu-item-recommendationKits'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('sidemenu-item-dataManagement'),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('sidemenu-item-about')).toBeInTheDocument();
+    expect(screen.getByTestId('sidemenu-item-dangerZone')).toBeInTheDocument();
   });
 
-  it('should render language selector', () => {
+  it('should render appearance section by default', () => {
     renderWithProviders(<Settings />);
 
+    // Appearance section should be visible by default
+    expect(screen.getByTestId('section-appearance')).toBeInTheDocument();
     expect(screen.getByText('settings.language.label')).toBeInTheDocument();
   });
 
-  it('should render household form', () => {
+  it('should navigate to household section when clicked', () => {
     renderWithProviders(<Settings />);
 
+    // Click on household in the menu
+    fireEvent.click(screen.getByTestId('sidemenu-item-household'));
+
+    // Household section should now be visible
+    expect(screen.getByTestId('section-household')).toBeInTheDocument();
     expect(screen.getByText('settings.household.adults')).toBeInTheDocument();
     expect(screen.getByText('settings.household.children')).toBeInTheDocument();
   });
 
-  it('should render nutrition settings', () => {
+  it('should navigate to nutrition section when clicked', () => {
     renderWithProviders(<Settings />);
 
+    // Click on nutrition in the menu
+    fireEvent.click(screen.getByTestId('sidemenu-item-nutrition'));
+
+    // Nutrition section should now be visible
+    expect(screen.getByTestId('section-nutrition')).toBeInTheDocument();
     expect(
       screen.getByText('settings.nutrition.dailyCalories'),
     ).toBeInTheDocument();
@@ -68,34 +80,81 @@ describe('Settings Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render hidden alerts section', () => {
+  it('should navigate to hidden alerts section when clicked', () => {
     renderWithProviders(<Settings />);
 
-    // HiddenAlerts component shows empty message when no alerts are hidden
+    // Click on hidden alerts in the menu
+    fireEvent.click(screen.getByTestId('sidemenu-item-hiddenAlerts'));
+
+    // Hidden alerts section should now be visible
+    expect(screen.getByTestId('section-hidden-alerts')).toBeInTheDocument();
     expect(screen.getByText('settings.hiddenAlerts.empty')).toBeInTheDocument();
   });
 
-  it('should render disabled recommendations section', () => {
+  it('should navigate to disabled recommendations section when clicked', () => {
     renderWithProviders(<Settings />);
 
-    // DisabledRecommendations component shows empty message when no items are disabled
+    // Click on disabled recommendations in the menu
+    fireEvent.click(
+      screen.getByTestId('sidemenu-item-disabledRecommendations'),
+    );
+
+    // Disabled recommendations section should now be visible
+    expect(
+      screen.getByTestId('section-disabled-recommendations'),
+    ).toBeInTheDocument();
     expect(
       screen.getByText('settings.disabledRecommendations.empty'),
     ).toBeInTheDocument();
   });
 
-  it('should render overridden recommendations section', () => {
+  it('should navigate to overridden recommendations section when clicked', () => {
     renderWithProviders(<Settings />);
 
-    // OverriddenRecommendations component shows empty message when no items are overridden
+    // Click on overridden recommendations in the menu
+    fireEvent.click(
+      screen.getByTestId('sidemenu-item-overriddenRecommendations'),
+    );
+
+    // Overridden recommendations section should now be visible
+    expect(
+      screen.getByTestId('section-overridden-recommendations'),
+    ).toBeInTheDocument();
     expect(
       screen.getByText('settings.overriddenRecommendations.empty'),
     ).toBeInTheDocument();
   });
 
-  it('should render data management buttons', () => {
+  it('should navigate to recommended items section when clicked', () => {
     renderWithProviders(<Settings />);
 
+    // Click on recommended items in the menu
+    fireEvent.click(screen.getByTestId('sidemenu-item-recommendedItems'));
+
+    // Recommended items section should now be visible
+    expect(screen.getByTestId('section-recommended-items')).toBeInTheDocument();
+  });
+
+  it('should navigate to recommendation kits section when clicked', () => {
+    renderWithProviders(<Settings />);
+
+    // Click on recommendation kits in the menu
+    fireEvent.click(screen.getByTestId('sidemenu-item-recommendationKits'));
+
+    // Recommendation kits section should now be visible
+    expect(
+      screen.getByTestId('section-recommendation-kits'),
+    ).toBeInTheDocument();
+  });
+
+  it('should navigate to data management section when clicked', () => {
+    renderWithProviders(<Settings />);
+
+    // Click on data management in the menu
+    fireEvent.click(screen.getByTestId('sidemenu-item-dataManagement'));
+
+    // Data management section should now be visible
+    expect(screen.getByTestId('section-data-management')).toBeInTheDocument();
     expect(screen.getByText('settings.export.button')).toBeInTheDocument();
     expect(screen.getByText('settings.import.button')).toBeInTheDocument();
     expect(
@@ -103,21 +162,34 @@ describe('Settings Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render about section', () => {
+  it('should navigate to about section when clicked', () => {
     renderWithProviders(<Settings />);
 
+    // Click on about in the menu
+    fireEvent.click(screen.getByTestId('sidemenu-item-about'));
+
+    // About section should now be visible
+    expect(screen.getByTestId('section-about')).toBeInTheDocument();
     expect(screen.getByText('app.title')).toBeInTheDocument();
     expect(screen.getByText('settings.about.viewOnGitHub')).toBeInTheDocument();
   });
 
-  it('should render clear data button in danger zone', () => {
+  it('should navigate to danger zone section when clicked', () => {
     renderWithProviders(<Settings />);
 
+    // Click on danger zone in the menu
+    fireEvent.click(screen.getByTestId('sidemenu-item-dangerZone'));
+
+    // Danger zone section should now be visible
+    expect(screen.getByTestId('section-danger-zone')).toBeInTheDocument();
     expect(screen.getByText('settings.clearData.button')).toBeInTheDocument();
   });
 
   it('should have GitHub link with correct attributes', () => {
     renderWithProviders(<Settings />);
+
+    // Navigate to about section
+    fireEvent.click(screen.getByTestId('sidemenu-item-about'));
 
     const link = screen.getByText('settings.about.viewOnGitHub');
     expect(link).toHaveAttribute(
