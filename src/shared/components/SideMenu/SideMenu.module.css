@@ -116,6 +116,7 @@
   background: rgba(0, 0, 0, 0.5);
   z-index: var(--z-modal);
   display: flex;
+  justify-content: flex-end;
   animation: fadeIn var(--transition-fast) ease-out;
 }
 
@@ -143,7 +144,7 @@
 
 @keyframes slideIn {
   from {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
   to {
     transform: translateX(0);
