@@ -158,6 +158,7 @@ export function HouseholdForm({
             />
 
             <Input
+              id="pets"
               label={t('household.pets')}
               type="number"
               min={HOUSEHOLD_LIMITS.pets.min}

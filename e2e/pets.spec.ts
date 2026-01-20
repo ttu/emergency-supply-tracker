@@ -16,9 +16,8 @@ test.describe('Pet Support', () => {
       // Wait for the household section to be visible
       await expect(page.getByTestId('section-household')).toBeVisible();
 
-      // Pets input should be visible in household section (3rd number input)
-      const numberInputs = page.locator('input[type="number"]');
-      const petsInput = numberInputs.nth(2);
+      // Pets input should be visible in household section
+      const petsInput = page.locator('#pets');
       await expect(petsInput).toBeVisible();
     });
 
@@ -26,9 +25,8 @@ test.describe('Pet Support', () => {
       await page.getByTestId('nav-settings').click();
       await expect(page.getByTestId('section-household')).toBeVisible();
 
-      // Find pets input (3rd number input) and update value
-      const numberInputs = page.locator('input[type="number"]');
-      const petsInput = numberInputs.nth(2);
+      // Find pets input and update value
+      const petsInput = page.locator('#pets');
       await petsInput.fill('2');
 
       // Navigate away and back to verify persistence
@@ -37,8 +35,7 @@ test.describe('Pet Support', () => {
       await expect(page.getByTestId('section-household')).toBeVisible();
 
       // Verify value persisted
-      const petsInputAfter = page.locator('input[type="number"]').nth(2);
-      await expect(petsInputAfter).toHaveValue('2');
+      await expect(petsInput).toHaveValue('2');
     });
 
     test('should set pets to 1 when selecting family preset', async ({
@@ -50,8 +47,8 @@ test.describe('Pet Support', () => {
       // Click family preset
       await page.getByTestId('preset-family').click();
 
-      // Pets should be set to 1 (3rd number input)
-      const petsInput = page.locator('input[type="number"]').nth(2);
+      // Pets should be set to 1
+      const petsInput = page.locator('#pets');
       await expect(petsInput).toHaveValue('1');
     });
 
@@ -62,7 +59,7 @@ test.describe('Pet Support', () => {
       await page.getByTestId('nav-settings').click();
       await expect(page.getByTestId('section-household')).toBeVisible();
 
-      const petsInput = page.locator('input[type="number"]').nth(2);
+      const petsInput = page.locator('#pets');
       await petsInput.fill('3');
 
       // Click single preset
@@ -293,9 +290,8 @@ test.describe('Pet Support', () => {
       // Wait for household form to appear
       await expect(page.getByTestId('onboarding-household-form')).toBeVisible();
 
-      // Find pets input (3rd number input after adults and children)
-      const numberInputs = page.locator('input[type="number"]');
-      const petsInput = numberInputs.nth(2);
+      // Find pets input
+      const petsInput = page.locator('#pets');
       await expect(petsInput).toBeVisible();
 
       // Family preset sets pets to 1
