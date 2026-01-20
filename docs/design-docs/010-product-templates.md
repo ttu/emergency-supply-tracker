@@ -68,7 +68,7 @@ interface ProductTemplate {
 
 **Location:** `src/features/templates/data.ts`
 
-- Templates for all 70 recommended items
+- Templates for all 81 recommended items
 - Linked to recommended items by ID
 - Immutable (only changed via code updates)
 

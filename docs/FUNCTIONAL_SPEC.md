@@ -234,7 +234,7 @@ Users can import custom recommendation sets from JSON files to replace the built
 Sample recommendation files are available in `public/samples/`:
 
 - `recommendations-template.json` - Minimal template with 4 example items
-- `recommendations-default.json` - Full 70 built-in items exported as JSON
+- `recommendations-default.json` - Full 81 built-in items exported as JSON
 
 ---
 

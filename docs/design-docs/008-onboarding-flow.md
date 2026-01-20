@@ -85,7 +85,7 @@ The onboarding flow should be quick, intuitive, and not overwhelming.
 ### Step 4: Quick Setup
 
 - Option 1: "Add All Recommended Items"
-  - Adds all 70 recommended items with quantity=0
+  - Adds all 81 recommended items with quantity=0
   - User can update quantities later
 - Option 2: "Start Empty"
   - Starts with empty inventory

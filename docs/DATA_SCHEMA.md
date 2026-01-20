@@ -420,7 +420,7 @@ interface RecommendedItemsFile {
 Sample recommendation files are available in `public/samples/`:
 
 - `recommendations-template.json` - Minimal template with 4 example items
-- `recommendations-default.json` - Full 70 built-in items exported as JSON
+- `recommendations-default.json` - Full 81 built-in items exported as JSON
 
 ---
 
