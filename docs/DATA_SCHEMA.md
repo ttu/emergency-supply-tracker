@@ -98,7 +98,7 @@ type ItemStatus = 'ok' | 'warning' | 'critical';
 
 ### StandardCategoryId
 
-Identifiers for the 9 standard supply categories:
+Identifiers for the 10 standard supply categories:
 
 ```typescript
 type StandardCategoryId =
@@ -346,7 +346,7 @@ Items can scale based on:
 
 ## Custom Recommendations File
 
-Users can import custom recommendations from JSON files to replace the built-in 70-item list. This enables country-specific or organization-specific recommendation sets.
+Users can import custom recommendations from JSON files to replace the built-in 81-item list. This enables country-specific or organization-specific recommendation sets.
 
 ### LocalizedNames
 

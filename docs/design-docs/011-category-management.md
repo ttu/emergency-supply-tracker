@@ -8,7 +8,7 @@
 
 ## Summary
 
-The Category Management system provides 9 standard emergency supply categories based on 72tuntia.fi guidelines, plus support for custom user-created categories. Categories organize items, provide visual indicators, and enable filtering and navigation.
+The Category Management system provides 10 standard emergency supply categories based on 72tuntia.fi guidelines, plus support for custom user-created categories. Categories organize items, provide visual indicators, and enable filtering and navigation.
 
 ---
 
@@ -68,6 +68,7 @@ const STANDARD_CATEGORIES: StandardCategory[] = [
   { id: 'hygiene-sanitation', icon: '🧼', nameKey: 'hygiene-sanitation' },
   { id: 'tools-supplies', icon: '🔧', nameKey: 'tools-supplies' },
   { id: 'cash-documents', icon: '💰', nameKey: 'cash-documents' },
+  { id: 'pets', icon: '🐕', nameKey: 'pets' },
 ];
 ```
 

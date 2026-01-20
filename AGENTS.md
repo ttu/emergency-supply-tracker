@@ -259,7 +259,7 @@ The `docs/` folder contains up-to-date documentation that reflects the actual im
 | ---------------------------------------------------------- | --------------------------------------------- |
 | **[docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md)**             | TypeScript types and data structures          |
 | **[docs/FUNCTIONAL_SPEC.md](docs/FUNCTIONAL_SPEC.md)**     | Features, workflows, and UI components        |
-| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 71 recommended items with current data    |
+| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 81 recommended items with current data    |
 | **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**           | React component structure                     |
 | **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)**       | Technology stack and configuration            |
 | **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)**   | Testing approach, Vitest, Playwright          |

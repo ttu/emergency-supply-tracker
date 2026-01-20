@@ -176,7 +176,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 #### Custom Recommendations
 
-Users can import custom recommendation sets from JSON files to replace the built-in 70-item list. This enables:
+Users can import custom recommendation sets from JSON files to replace the built-in 81-item list. This enables:
 
 - **Country-specific recommendations**: Different countries have different preparedness guidelines
 - **Organization recommendations**: Companies, municipalities, or groups can share standardized kits
@@ -434,7 +434,7 @@ A comprehensive help page with frequently asked questions and guidance.
 **Recommended Items:**
 
 - `RecommendationsStatus`: Shows current recommendations source
-  - "Built-in (70 items)" or "Custom: {name} ({count} items)"
+  - "Built-in (81 items)" or "Custom: {name} ({count} items)"
   - Reset to default button (when using custom)
 - `ImportRecommendationsButton`: Import custom recommendations from JSON
   - File upload

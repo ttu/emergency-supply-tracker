@@ -209,13 +209,13 @@ The onboarding flow should be quick, intuitive, and not overwhelming.
 
 ### Risk 3: Performance with Many Items
 
-**Risk:** Adding all 70 items in Quick Setup could be slow.
+**Risk:** Adding all 81 items in Quick Setup could be slow.
 
 **Mitigation:**
 
 - Batch add operations
 - Show loading indicator
-- Tested with 70 items (acceptable performance)
+- Tested with 81 items (acceptable performance)
 - Users can skip and add manually
 
 ---
