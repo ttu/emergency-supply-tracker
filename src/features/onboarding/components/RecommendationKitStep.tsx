@@ -3,7 +3,6 @@ import { Button } from '@/shared/components/Button';
 import { KitSelector } from '@/features/templates/components';
 import { useRecommendedItems } from '@/features/templates';
 import type { KitId, RecommendedItemsFile } from '@/shared/types';
-import { createCustomKitId } from '@/shared/types';
 import styles from './RecommendationKitStep.module.css';
 
 export interface RecommendationKitStepProps {
@@ -26,8 +25,8 @@ export function RecommendationKitStep({
   const handleUploadKit = (file: RecommendedItemsFile) => {
     const result = uploadKit(file);
     if (result.valid && result.kitId) {
-      // Auto-select the uploaded kit
-      selectKit(createCustomKitId(result.kitId));
+      // Auto-select the uploaded kit (kitId is already a full KitId)
+      selectKit(result.kitId);
     }
   };
 

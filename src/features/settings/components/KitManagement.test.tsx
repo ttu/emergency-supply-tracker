@@ -62,7 +62,7 @@ const createMockContext = (overrides = {}) => ({
   selectKit: vi.fn(),
   uploadKit: vi.fn(() => ({
     valid: true,
-    kitId: 'new-kit-uuid' as `custom:${string}`,
+    kitId: 'custom:new-kit-uuid' as const,
     errors: [],
     warnings: [],
   })),
@@ -112,9 +112,7 @@ describe('KitManagement', () => {
   it('should display current kit status', () => {
     render(<KitManagement />);
 
-    expect(
-      screen.getByText('settings.kits.currentKit.label'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('kits.currentKit.label')).toBeInTheDocument();
     // The kit name appears in KitCard components as well
     expect(screen.getAllByText('Standard Kit').length).toBeGreaterThan(0);
   });
@@ -122,15 +120,15 @@ describe('KitManagement', () => {
   it('should display item count for selected kit', () => {
     render(<KitManagement />);
 
-    expect(
-      screen.getByText(/settings.kits.itemCount \(71\)/),
-    ).toBeInTheDocument();
+    expect(screen.getAllByText(/kits.itemCount \(71\)/).length).toBeGreaterThan(
+      0,
+    );
   });
 
   it('should show built-in badge for built-in kits', () => {
     render(<KitManagement />);
 
-    expect(screen.getByText('settings.kits.builtIn')).toBeInTheDocument();
+    expect(screen.getAllByText('kits.builtIn').length).toBeGreaterThan(0);
   });
 
   it('should show no kit selected message when no kit is selected', () => {
@@ -143,7 +141,7 @@ describe('KitManagement', () => {
 
     render(<KitManagement />);
 
-    expect(screen.getByText('settings.kits.noKitSelected')).toBeInTheDocument();
+    expect(screen.getByText('kits.noKitSelected')).toBeInTheDocument();
   });
 
   it('should render KitSelector component', () => {
@@ -167,7 +165,7 @@ describe('KitManagement', () => {
     fireEvent.click(screen.getByTestId('kit-card-minimal-essentials'));
 
     await waitFor(() => {
-      expect(screen.getByText(/settings.kits.selected/)).toBeInTheDocument();
+      expect(screen.getByText(/kits.selected/)).toBeInTheDocument();
     });
   });
 
@@ -176,16 +174,14 @@ describe('KitManagement', () => {
 
     fireEvent.click(screen.getByTestId('delete-kit-custom:test-uuid'));
 
-    expect(
-      screen.getByText('settings.kits.deleteConfirm.title'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('kits.deleteConfirm.title')).toBeInTheDocument();
   });
 
   it('should call deleteKit when delete is confirmed', () => {
     render(<KitManagement />);
 
     fireEvent.click(screen.getByTestId('delete-kit-custom:test-uuid'));
-    fireEvent.click(screen.getByText('settings.kits.deleteConfirm.confirm'));
+    fireEvent.click(screen.getByText('kits.deleteConfirm.confirm'));
 
     expect(mockContext.deleteKit).toHaveBeenCalledWith('custom:test-uuid');
   });
@@ -194,12 +190,10 @@ describe('KitManagement', () => {
     render(<KitManagement />);
 
     fireEvent.click(screen.getByTestId('delete-kit-custom:test-uuid'));
-    fireEvent.click(screen.getByText('settings.kits.deleteConfirm.confirm'));
+    fireEvent.click(screen.getByText('kits.deleteConfirm.confirm'));
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/settings.kits.deleteSuccess/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/kits.deleteSuccess/)).toBeInTheDocument();
     });
   });
 
@@ -209,9 +203,7 @@ describe('KitManagement', () => {
     fireEvent.click(screen.getByTestId('delete-kit-custom:test-uuid'));
 
     // Dialog should be open
-    expect(
-      screen.getByText('settings.kits.deleteConfirm.title'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('kits.deleteConfirm.title')).toBeInTheDocument();
 
     // Find cancel button - ConfirmDialog uses 'buttons.cancel'
     const cancelButtons = screen
@@ -221,7 +213,7 @@ describe('KitManagement', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText('settings.kits.deleteConfirm.title'),
+        screen.queryByText('kits.deleteConfirm.title'),
       ).not.toBeInTheDocument();
     });
   });
@@ -247,9 +239,7 @@ describe('KitManagement', () => {
     fireEvent.click(screen.getByTestId('export-kit-button'));
 
     await waitFor(() => {
-      expect(
-        screen.getByText('settings.kits.exportSuccess'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('kits.exportSuccess')).toBeInTheDocument();
     });
   });
 
@@ -272,7 +262,7 @@ describe('KitManagement', () => {
     fireEvent.click(screen.getByTestId('kit-card-minimal-essentials'));
 
     await waitFor(() => {
-      expect(screen.getByText(/settings.kits.selected/)).toBeInTheDocument();
+      expect(screen.getByText(/kits.selected/)).toBeInTheDocument();
     });
 
     // Find and close the toast - Toast component has a close button
@@ -284,9 +274,7 @@ describe('KitManagement', () => {
       fireEvent.click(toastCloseButtons[0]);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/settings.kits.selected/),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/kits.selected/)).not.toBeInTheDocument();
       });
     }
   });

@@ -47,7 +47,7 @@ const createMockContext = (overrides = {}) => ({
   selectKit: vi.fn(),
   uploadKit: vi.fn(() => ({
     valid: true,
-    kitId: 'new-kit-uuid' as `custom:${string}`,
+    kitId: 'custom:new-kit-uuid' as const,
     errors: [],
     warnings: [],
   })),

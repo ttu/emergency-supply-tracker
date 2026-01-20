@@ -43,8 +43,15 @@ export function ItemEditor({
   const { t } = useTranslation(['common', 'categories', 'units']);
   const isEditing = !!item;
 
-  // Form state
-  const [id] = useState(item?.id || generateId());
+  // Form state - use initializer function to guarantee unique ID at mount
+  const [id] = useState(() => {
+    if (item?.id) return item.id;
+    let candidate: string;
+    do {
+      candidate = generateId();
+    } while (existingIds.has(candidate));
+    return candidate;
+  });
   const [nameEn, setNameEn] = useState(item?.names?.en || '');
   const [nameFi, setNameFi] = useState(item?.names?.fi || '');
   const [category, setCategory] = useState<StandardCategoryId>(
@@ -110,6 +117,7 @@ export function ItemEditor({
       const savedItem: ImportedRecommendedItem = {
         id: id as ImportedRecommendedItem['id'],
         names: {
+          ...item?.names,
           en: nameEn.trim() || nameFi.trim(),
           fi: nameFi.trim() || nameEn.trim(),
         },
@@ -147,6 +155,7 @@ export function ItemEditor({
     [
       validate,
       id,
+      item,
       nameEn,
       nameFi,
       category,

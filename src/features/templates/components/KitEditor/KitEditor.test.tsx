@@ -59,42 +59,29 @@ const mockCustomKits: KitInfo[] = [
   },
 ];
 
-// Shared mock functions that can be checked across tests
-const mockAddItemToKit = vi.fn();
-const mockUpdateItemInKit = vi.fn();
-const mockRemoveItemFromKit = vi.fn();
-const mockSelectKit = vi.fn();
-const mockUploadKit = vi.fn(() => ({
-  valid: true,
-  kitId: 'new-kit-uuid' as `custom:${string}`,
-  errors: [],
-  warnings: [],
-}));
-const mockDeleteKit = vi.fn();
-const mockUpdateCurrentKitMeta = vi.fn();
-const mockExportRecommendedItems = vi.fn(() => ({
-  meta: { name: 'Test Kit', version: '1.0.0', createdAt: '2024-01-01' },
-  items: mockRecommendedItems.map((item) => ({
-    ...item,
-    i18nKey: item.i18nKey,
-  })),
-}));
-const mockGetItemName = vi.fn(
-  (item: RecommendedItemDefinition) => item.i18nKey || item.id,
-);
-
 const createMockContext = (overrides = {}) => ({
   recommendedItems: mockRecommendedItems,
   selectedKitId: '72tuntia-standard' as const,
   availableKits: mockBuiltInKits,
-  selectKit: mockSelectKit,
-  uploadKit: mockUploadKit,
-  deleteKit: mockDeleteKit,
-  updateCurrentKitMeta: mockUpdateCurrentKitMeta,
-  addItemToKit: mockAddItemToKit,
-  updateItemInKit: mockUpdateItemInKit,
-  removeItemFromKit: mockRemoveItemFromKit,
-  exportRecommendedItems: mockExportRecommendedItems,
+  selectKit: vi.fn(),
+  uploadKit: vi.fn(() => ({
+    valid: true,
+    kitId: 'custom:new-kit-uuid' as const,
+    errors: [],
+    warnings: [],
+  })),
+  deleteKit: vi.fn(),
+  updateCurrentKitMeta: vi.fn(),
+  addItemToKit: vi.fn(),
+  updateItemInKit: vi.fn(),
+  removeItemFromKit: vi.fn(),
+  exportRecommendedItems: vi.fn(() => ({
+    meta: { name: 'Test Kit', version: '1.0.0', createdAt: '2024-01-01' },
+    items: mockRecommendedItems.map((item) => ({
+      ...item,
+      i18nKey: item.i18nKey,
+    })),
+  })),
   customRecommendationsInfo: null,
   isUsingCustomRecommendations: false,
   importRecommendedItems: vi.fn(() => ({
@@ -103,17 +90,19 @@ const createMockContext = (overrides = {}) => ({
     warnings: [],
   })),
   resetToDefaultRecommendations: vi.fn(),
-  getItemName: mockGetItemName,
+  getItemName: vi.fn(
+    (item: RecommendedItemDefinition) => item.i18nKey || item.id,
+  ),
   ...overrides,
 });
 
-const mockContext = createMockContext();
-
 describe('KitEditor', () => {
   const mockOnClose = vi.fn();
+  let mockContext: ReturnType<typeof createMockContext>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockContext = createMockContext();
     vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
       mockContext as ReturnType<typeof templatesModule.useRecommendedItems>,
     );
@@ -217,11 +206,12 @@ describe('KitEditor', () => {
 
   describe('with custom kit selected', () => {
     beforeEach(() => {
+      mockContext = createMockContext({
+        selectedKitId: 'custom:test-uuid' as `custom:${string}`,
+        availableKits: [...mockBuiltInKits, ...mockCustomKits],
+      });
       vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
-        createMockContext({
-          selectedKitId: 'custom:test-uuid' as `custom:${string}`,
-          availableKits: [...mockBuiltInKits, ...mockCustomKits],
-        }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+        mockContext as ReturnType<typeof templatesModule.useRecommendedItems>,
       );
     });
 
@@ -287,7 +277,7 @@ describe('KitEditor', () => {
       fireEvent.click(screen.getByTestId('delete-item-water'));
       fireEvent.click(screen.getByText('kitEditor.deleteItem.confirm'));
 
-      expect(mockRemoveItemFromKit).toHaveBeenCalledWith('water');
+      expect(mockContext.removeItemFromKit).toHaveBeenCalledWith('water');
     });
 
     it('should close delete dialog when cancel is clicked', async () => {
@@ -331,7 +321,7 @@ describe('KitEditor', () => {
       // Save the item
       fireEvent.click(screen.getByTestId('item-editor-save'));
 
-      expect(mockAddItemToKit).toHaveBeenCalled();
+      expect(mockContext.addItemToKit).toHaveBeenCalled();
     });
 
     it('should open edit form for existing item', () => {

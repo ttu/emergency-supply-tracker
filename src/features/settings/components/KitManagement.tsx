@@ -34,9 +34,7 @@ export function KitManagement() {
       selectKit(kitId);
       const kit = availableKits.find((k) => k.id === kitId);
       if (kit) {
-        setToastMessage(
-          t('settings.kits.selected', { name: kit.name }) as string,
-        );
+        setToastMessage(t('kits.selected', { name: kit.name }) as string);
         setToastVariant('success');
       }
     },
@@ -48,12 +46,12 @@ export function KitManagement() {
       const result = uploadKit(file);
       if (result.kitId) {
         setToastMessage(
-          t('settings.kits.uploadSuccess', { name: file.meta.name }) as string,
+          t('kits.uploadSuccess', { name: file.meta.name }) as string,
         );
         setToastVariant('success');
       } else if (result.errors && result.errors.length > 0) {
         setToastMessage(
-          t('settings.kits.uploadError', {
+          t('kits.uploadError', {
             error: result.errors[0],
           }) as string,
         );
@@ -73,9 +71,7 @@ export function KitManagement() {
       deleteKit(kitToDelete);
       setKitToDelete(null);
       if (kit) {
-        setToastMessage(
-          t('settings.kits.deleteSuccess', { name: kit.name }) as string,
-        );
+        setToastMessage(t('kits.deleteSuccess', { name: kit.name }) as string);
         setToastVariant('success');
       }
     }
@@ -98,7 +94,7 @@ export function KitManagement() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    setToastMessage(t('settings.kits.exportSuccess') as string);
+    setToastMessage(t('kits.exportSuccess') as string);
     setToastVariant('success');
   }, [exportRecommendedItems, selectedKit, t]);
 
@@ -115,27 +111,19 @@ export function KitManagement() {
       {/* Current Kit Status */}
       <div className={styles.statusSection}>
         <div className={styles.statusInfo}>
-          <span className={styles.label}>
-            {t('settings.kits.currentKit.label')}
-          </span>
+          <span className={styles.label}>{t('kits.currentKit.label')}</span>
           {selectedKit ? (
             <span className={styles.value}>
               {selectedKit.name}
               <span className={styles.itemCount}>
-                (
-                {t('settings.kits.itemCount', { count: selectedKit.itemCount })}
-                )
+                ({t('kits.itemCount', { count: selectedKit.itemCount })})
               </span>
               {selectedKit.isBuiltIn && (
-                <span className={styles.badge}>
-                  {t('settings.kits.builtIn')}
-                </span>
+                <span className={styles.badge}>{t('kits.builtIn')}</span>
               )}
             </span>
           ) : (
-            <span className={styles.value}>
-              {t('settings.kits.noKitSelected')}
-            </span>
+            <span className={styles.value}>{t('kits.noKitSelected')}</span>
           )}
         </div>
         <div className={styles.actions}>
@@ -145,14 +133,14 @@ export function KitManagement() {
             disabled={!selectedKitId}
             data-testid="export-kit-button"
           >
-            {t('settings.kits.export')}
+            {t('kits.export')}
           </Button>
         </div>
       </div>
 
       {/* Kit Selector */}
       <div className={styles.selectorSection}>
-        <h3 className={styles.sectionTitle}>{t('settings.kits.selectKit')}</h3>
+        <h3 className={styles.sectionTitle}>{t('kits.selectKit')}</h3>
         <KitSelector
           availableKits={availableKits}
           selectedKitId={selectedKitId}
@@ -167,11 +155,11 @@ export function KitManagement() {
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={!!kitToDelete}
-        title={t('settings.kits.deleteConfirm.title')}
-        message={t('settings.kits.deleteConfirm.message', {
+        title={t('kits.deleteConfirm.title')}
+        message={t('kits.deleteConfirm.message', {
           name: kitToDeleteInfo?.name || '',
         })}
-        confirmLabel={t('settings.kits.deleteConfirm.confirm')}
+        confirmLabel={t('kits.deleteConfirm.confirm')}
         confirmVariant="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
