@@ -8,6 +8,7 @@ export interface HouseholdPreset {
   id: 'single' | 'couple' | 'family' | 'custom';
   adults: number;
   children: number;
+  pets: number;
 }
 
 export interface HouseholdPresetSelectorProps {
@@ -17,9 +18,9 @@ export interface HouseholdPresetSelectorProps {
 }
 
 const PRESETS: HouseholdPreset[] = [
-  { id: 'single', adults: 1, children: 0 },
-  { id: 'couple', adults: 2, children: 0 },
-  { id: 'family', adults: 2, children: 2 },
+  { id: 'single', adults: 1, children: 0, pets: 0 },
+  { id: 'couple', adults: 2, children: 0, pets: 0 },
+  { id: 'family', adults: 2, children: 2, pets: 1 },
 ];
 
 export function HouseholdPresetSelector({
@@ -74,14 +75,19 @@ export function HouseholdPresetSelector({
             padding="medium"
             className={`${styles.presetCard} ${selectedPreset === 'custom' ? styles.selected : ''}`}
             onClick={() =>
-              onSelectPreset({ id: 'custom', adults: 1, children: 0 })
+              onSelectPreset({ id: 'custom', adults: 1, children: 0, pets: 0 })
             }
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                onSelectPreset({ id: 'custom', adults: 1, children: 0 });
+                onSelectPreset({
+                  id: 'custom',
+                  adults: 1,
+                  children: 0,
+                  pets: 0,
+                });
               }
             }}
             data-testid="preset-custom"

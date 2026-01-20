@@ -114,7 +114,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
               ? {
                   adults: selectedPreset.adults,
                   children: selectedPreset.children,
-                  pets: HOUSEHOLD_DEFAULTS.pets,
+                  pets: selectedPreset.pets,
                   supplyDays: HOUSEHOLD_DEFAULTS.supplyDays,
                   useFreezer: HOUSEHOLD_DEFAULTS.useFreezer,
                 }

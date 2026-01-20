@@ -124,6 +124,7 @@ describe('HouseholdPresetSelector', () => {
       id: 'single',
       adults: 1,
       children: 0,
+      pets: 0,
     });
   });
 
@@ -139,6 +140,7 @@ describe('HouseholdPresetSelector', () => {
       id: 'custom',
       adults: 1,
       children: 0,
+      pets: 0,
     });
   });
 
@@ -174,6 +176,7 @@ describe('HouseholdPresetSelector', () => {
       id: 'family',
       adults: 2,
       children: 2,
+      pets: 1,
     });
   });
 
@@ -192,6 +195,7 @@ describe('HouseholdPresetSelector', () => {
       id: 'couple',
       adults: 2,
       children: 0,
+      pets: 0,
     });
   });
 
@@ -210,6 +214,7 @@ describe('HouseholdPresetSelector', () => {
       id: 'custom',
       adults: 1,
       children: 0,
+      pets: 0,
     });
   });
 
@@ -228,6 +233,7 @@ describe('HouseholdPresetSelector', () => {
       id: 'custom',
       adults: 1,
       children: 0,
+      pets: 0,
     });
   });
 
