@@ -5,14 +5,36 @@ import { SettingsProvider, useSettings } from '@/features/settings';
 import { HouseholdProvider, useHousehold } from '@/features/household';
 import { InventoryProvider, useInventory } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
-import { ThemeApplier } from './components/ThemeApplier';
+import { SettingsEffects } from './components/SettingsEffects';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { Navigation, PageType } from '@/shared/components/Navigation';
 import { NotificationBar } from '@/shared/components/NotificationBar';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
-import { DocumentMetadata } from '@/shared/components/DocumentMetadata';
+import { composeProviders } from '@/shared/utils/composeProviders';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import './App.css';
+
+/**
+ * Composed application providers.
+ *
+ * Order matters - providers are nested from first (outermost) to last (innermost):
+ * 1. ErrorBoundary - Catches React errors
+ * 2. SettingsProvider - Settings context (theme, language, onboarding)
+ * 3. SettingsEffects - Applies theme + document metadata (requires SettingsProvider)
+ * 4. NotificationProvider - Toast notifications (required by InventoryProvider)
+ * 5. HouseholdProvider - Household configuration
+ * 6. RecommendedItemsProvider - Recommended item definitions
+ * 7. InventoryProvider - Inventory items and categories (uses NotificationProvider)
+ */
+const AppProviders = composeProviders([
+  ErrorBoundary,
+  SettingsProvider,
+  SettingsEffects,
+  NotificationProvider,
+  HouseholdProvider,
+  RecommendedItemsProvider,
+  InventoryProvider,
+]);
 
 // Loading fallback component for lazy-loaded features
 function LoadingFallback() {
@@ -162,22 +184,9 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <SettingsProvider>
-        <ThemeApplier>
-          <DocumentMetadata />
-          <NotificationProvider>
-            <HouseholdProvider>
-              <RecommendedItemsProvider>
-                <InventoryProvider>
-                  <AppContent />
-                </InventoryProvider>
-              </RecommendedItemsProvider>
-            </HouseholdProvider>
-          </NotificationProvider>
-        </ThemeApplier>
-      </SettingsProvider>
-    </ErrorBoundary>
+    <AppProviders>
+      <AppContent />
+    </AppProviders>
   );
 }
 
