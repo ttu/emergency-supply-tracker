@@ -459,7 +459,7 @@
     "githubLink": "Käy GitHub-sivustolla",
     "gettingStarted": {
       "question": "Miten aloitan?",
-      "answer": "Aloita määrittämällä kotitaloutesi tiedot Asetuksissa. Lisää sitten tuotteita varastoosi joko suositelluista malleista tai luo mukautettuja tuotteita. Kojelauta näyttää valmiuspisteesi ja mahdolliset hälytykset."
+      "answer": "Kun avaat sovelluksen ensimmäisen kerran, ohjataan sinut onboarding-prosessiin. Prosessi opastaa sinua:\n\n1. Valitsemaan kielen (suomi/englanti)\n2. Valitsemaan kotitalouden esiasetuksen tai määrittämään sen manuaalisesti\n3. Määrittämään kotitalouden tiedot (aikuiset, lapset, varastojakso)\n4. Lisäämään suositellut tuotteet varastoon tai aloittamaan tyhjällä varastolla\n\nOnboardingin jälkeen voit aloittaa käyttämään sovellusta. Voit muokata kotitalouden asetuksia myöhemmin Asetukset-välilehdeltä."
     },
     "householdSize": {
       "question": "Miksi kotitalouden koko on tärkeä?",
@@ -496,6 +496,10 @@
     "preparednessScore": {
       "question": "Miten valmiuspisteet lasketaan?",
       "answer": "Pisteet perustuvat suositeltujen tuotteiden prosenttiosuuteen, jotka sinulla on riittävässä määrässä. Se ottaa huomioon: varastoidut tuotteet vs. suositellut tuotteet, nykyiset määrät vs. suositellut määrät ja vanhenemistilan. Yli 80% pisteet osoittavat hyvää valmistautumista."
+    },
+    "howIsItFree": {
+      "question": "Miten tämä voi olla ilmainen?",
+      "answer": "• Sovellus on kehitetty omaan käyttöön ja jaettu avoimesti muiden hyödyksi\n• AI on nopeuttanut kehitystä merkittävästi, joten tämän on ehtinyt kehittää melko nopeasti. Tilanne 01/2026: Työaikaa on käytetty noin 50 tuntia\n• Juoksevat kulut ovat minimaaliset, koska sovellus toimii täysin selaimessa\n• Hostaus GitHub Pages -palvelussa (ilmainen)\n• CI/CD ja projektinhallinta GitHubissa (ilmainen)\n• Kehitys ja muut työkalut (ilmaiset)\n• Ainoa kustannus on verkkotunnus, noin 10 dollaria vuodessa"
     },
     "tips": {
       "tip1": "Aseta realistinen varastojakso (vähintään 72 tuntia, suositus 2 viikkoa)",

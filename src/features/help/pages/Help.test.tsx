@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Help } from './Help';
 
 // Mock i18next
@@ -35,62 +35,19 @@ describe('Help', () => {
     ).toBeInTheDocument();
   });
 
-  it('should toggle topic expansion on click', () => {
+  it('should render all FAQ answers as always visible', () => {
     render(<Help />);
-
-    const topicButton = screen.getByText('help.gettingStarted.question');
-
-    // Initially collapsed
-    expect(
-      screen.queryByText('help.gettingStarted.answer'),
-    ).not.toBeInTheDocument();
-
-    // Click to expand
-    fireEvent.click(topicButton);
     expect(screen.getByText('help.gettingStarted.answer')).toBeInTheDocument();
-
-    // Click to collapse
-    fireEvent.click(topicButton);
-    expect(
-      screen.queryByText('help.gettingStarted.answer'),
-    ).not.toBeInTheDocument();
-  });
-
-  it('should collapse previous topic when opening new one', () => {
-    render(<Help />);
-
-    const topic1Button = screen.getByText('help.gettingStarted.question');
-    const topic2Button = screen.getByText('help.householdSize.question');
-
-    // Expand first topic
-    fireEvent.click(topic1Button);
-    expect(screen.getByText('help.gettingStarted.answer')).toBeInTheDocument();
-
-    // Expand second topic
-    fireEvent.click(topic2Button);
     expect(screen.getByText('help.householdSize.answer')).toBeInTheDocument();
     expect(
-      screen.queryByText('help.gettingStarted.answer'),
-    ).not.toBeInTheDocument();
+      screen.getByText('help.recommendedItems.answer'),
+    ).toBeInTheDocument();
   });
 
-  it('should set correct aria-expanded attribute', () => {
+  it('should render question mark icons', () => {
     render(<Help />);
-
-    const topicButton = screen.getByText('help.gettingStarted.question');
-
-    // Initially collapsed
-    expect(topicButton.closest('button')).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
-
-    // Expanded
-    fireEvent.click(topicButton);
-    expect(topicButton.closest('button')).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
+    const questionIcons = screen.getAllByText('?');
+    expect(questionIcons.length).toBeGreaterThan(0);
   });
 
   it('should render quick tips section', () => {
