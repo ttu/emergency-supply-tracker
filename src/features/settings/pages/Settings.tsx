@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiddenAlerts } from '@/features/alerts';
 import {
@@ -37,6 +37,28 @@ type SettingsSection =
   | 'about'
   | 'dangerZone';
 
+interface SectionProps {
+  testId: string;
+  titleKey: string;
+  titleClassName?: string;
+  children: ReactNode;
+}
+
+function Section({
+  testId,
+  titleKey,
+  titleClassName = styles.sectionTitle,
+  children,
+}: SectionProps) {
+  const { t } = useTranslation();
+  return (
+    <section className={styles.section} data-testid={testId}>
+      <h2 className={titleClassName}>{t(titleKey)}</h2>
+      {children}
+    </section>
+  );
+}
+
 export function Settings() {
   const { t } = useTranslation();
   const [selectedSection, setSelectedSection] =
@@ -73,61 +95,55 @@ export function Settings() {
     switch (selectedSection) {
       case 'appearance':
         return (
-          <section className={styles.section} data-testid="section-appearance">
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.appearance')}
-            </h2>
+          <Section
+            testId="section-appearance"
+            titleKey="settings.sections.appearance"
+          >
             <div className={styles.appearanceSettings}>
               <LanguageSelector />
               <ThemeSelector />
             </div>
-          </section>
+          </Section>
         );
 
       case 'household':
         return (
-          <section className={styles.section} data-testid="section-household">
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.household')}
-            </h2>
+          <Section
+            testId="section-household"
+            titleKey="settings.sections.household"
+          >
             <HouseholdForm />
-          </section>
+          </Section>
         );
 
       case 'nutrition':
         return (
-          <section className={styles.section} data-testid="section-nutrition">
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.nutrition')}
-            </h2>
+          <Section
+            testId="section-nutrition"
+            titleKey="settings.sections.nutrition"
+          >
             <NutritionSettings />
-          </section>
+          </Section>
         );
 
       case 'hiddenAlerts':
         return (
-          <section
-            className={styles.section}
-            data-testid="section-hidden-alerts"
+          <Section
+            testId="section-hidden-alerts"
+            titleKey="settings.sections.hiddenAlerts"
           >
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.hiddenAlerts')}
-            </h2>
             <HiddenAlerts />
-          </section>
+          </Section>
         );
 
       case 'disabledRecommendations':
         return (
-          <section
-            className={styles.section}
-            data-testid="section-disabled-recommendations"
+          <Section
+            testId="section-disabled-recommendations"
+            titleKey="settings.sections.disabledRecommendations"
           >
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.disabledRecommendations')}
-            </h2>
             <DisabledRecommendations />
-          </section>
+          </Section>
         );
 
       case 'disabledCategories':
@@ -145,32 +161,26 @@ export function Settings() {
 
       case 'overriddenRecommendations':
         return (
-          <section
-            className={styles.section}
-            data-testid="section-overridden-recommendations"
+          <Section
+            testId="section-overridden-recommendations"
+            titleKey="settings.sections.overriddenRecommendations"
           >
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.overriddenRecommendations')}
-            </h2>
             <OverriddenRecommendations />
-          </section>
+          </Section>
         );
 
       case 'recommendedItems':
         return (
-          <section
-            className={styles.section}
-            data-testid="section-recommended-items"
+          <Section
+            testId="section-recommended-items"
+            titleKey="settings.sections.recommendedItems"
           >
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.recommendedItems')}
-            </h2>
             <RecommendationsStatus />
             <div className={styles.dataButtons}>
               <ImportRecommendationsButton />
               <ExportRecommendationsButton />
             </div>
-          </section>
+          </Section>
         );
 
       case 'recommendationKits':
@@ -188,28 +198,22 @@ export function Settings() {
 
       case 'dataManagement':
         return (
-          <section
-            className={styles.section}
-            data-testid="section-data-management"
+          <Section
+            testId="section-data-management"
+            titleKey="settings.sections.dataManagement"
           >
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.dataManagement')}
-            </h2>
             <div className={styles.dataButtons}>
               <ExportButton />
               <ImportButton />
               <ShoppingListExport />
               <DebugExport />
             </div>
-          </section>
+          </Section>
         );
 
       case 'about':
         return (
-          <section className={styles.section} data-testid="section-about">
-            <h2 className={styles.sectionTitle}>
-              {t('settings.sections.about')}
-            </h2>
+          <Section testId="section-about" titleKey="settings.sections.about">
             <div className={styles.about}>
               <p className={styles.appName}>{t('app.title')}</p>
               <p className={styles.version}>
@@ -225,18 +229,21 @@ export function Settings() {
                 {t('settings.about.viewOnGitHub')}
               </a>
             </div>
-          </section>
+          </Section>
         );
 
       case 'dangerZone':
         return (
-          <section className={styles.section} data-testid="section-danger-zone">
-            <h2 className={styles.dangerTitle}>
-              {t('settings.sections.dangerZone')}
-            </h2>
+          <Section
+            testId="section-danger-zone"
+            titleKey="settings.sections.dangerZone"
+            titleClassName={styles.dangerTitle}
+          >
             <ClearDataButton />
-          </section>
+          </Section>
         );
+      default:
+        return selectedSection satisfies never;
     }
   };
 

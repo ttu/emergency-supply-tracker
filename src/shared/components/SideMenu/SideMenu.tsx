@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useKeyboardNavigation } from '@/shared/hooks/useKeyboardNavigation';
 import { SideMenuDrawer } from './SideMenuDrawer';
@@ -31,6 +31,7 @@ export function SideMenu({
 }: SideMenuProps) {
   const { t } = useTranslation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const drawerId = useId();
 
   const allItems = useMemo(
     () => (showAllOption ? [showAllOption, ...items] : items),
@@ -104,7 +105,7 @@ export function SideMenu({
         onClick={() => setIsDrawerOpen(true)}
         aria-label={t('sideMenu.openMenu')}
         aria-expanded={isDrawerOpen}
-        aria-controls="sidemenu-drawer"
+        aria-controls={drawerId}
         data-testid="sidemenu-hamburger"
       >
         <span className={styles.hamburgerIcon}>
@@ -121,6 +122,7 @@ export function SideMenu({
 
       {/* Mobile drawer */}
       <SideMenuDrawer
+        id={drawerId}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >

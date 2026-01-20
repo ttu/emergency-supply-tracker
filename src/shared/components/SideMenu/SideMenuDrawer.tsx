@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next';
 import styles from './SideMenu.module.css';
 
 interface SideMenuDrawerProps {
+  id?: string;
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
 }
 
 export function SideMenuDrawer({
+  id,
   isOpen,
   onClose,
   children,
@@ -88,7 +90,7 @@ export function SideMenuDrawer({
     >
       <div
         ref={drawerRef}
-        id="sidemenu-drawer"
+        id={id}
         className={styles.drawer}
         onMouseDown={(e) => e.stopPropagation()}
         role="dialog"

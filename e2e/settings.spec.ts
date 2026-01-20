@@ -16,7 +16,11 @@ test.describe('Settings', () => {
 
     // Verify settings page is visible
     await expect(page.getByTestId('page-settings')).toBeVisible();
+    // Appearance is the default section
     await expect(page.getByTestId('section-appearance')).toBeVisible();
+
+    // Navigate to household section via side menu
+    await page.getByTestId('sidemenu-item-household').click();
     await expect(page.getByTestId('section-household')).toBeVisible();
   });
 
@@ -48,6 +52,10 @@ test.describe('Settings', () => {
   test('should update household configuration', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to household section
+    await page.getByTestId('sidemenu-item-household').click();
+    await expect(page.getByTestId('section-household')).toBeVisible();
+
     // Find household inputs
     const adultsInput = page.locator('input[type="number"]').first();
     await adultsInput.fill('3');
@@ -56,6 +64,7 @@ test.describe('Settings', () => {
     // Navigate away and back to verify persistence
     await page.getByTestId('nav-dashboard').click();
     await page.getByTestId('nav-settings').click();
+    await page.getByTestId('sidemenu-item-household').click();
 
     // Verify value persisted
     await expect(adultsInput).toHaveValue('3');
@@ -63,6 +72,10 @@ test.describe('Settings', () => {
 
   test('should use household presets', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to household section
+    await page.getByTestId('sidemenu-item-household').click();
+    await expect(page.getByTestId('section-household')).toBeVisible();
 
     // Click a preset button (e.g., "Family")
     await page.getByTestId('preset-family').click();
@@ -77,6 +90,10 @@ test.describe('Settings', () => {
 
   test('should toggle advanced features', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section which has checkboxes
+    await page.getByTestId('sidemenu-item-nutrition').click();
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Find and toggle a feature checkbox
     const featureCheckbox = page.locator('input[type="checkbox"]').first();
@@ -93,6 +110,10 @@ test.describe('Settings', () => {
   test('should navigate to GitHub from About section', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to about section
+    await page.getByTestId('sidemenu-item-about').click();
+    await expect(page.getByTestId('section-about')).toBeVisible();
+
     // Find GitHub link
     const githubLink = page.locator('a[href*="github"]');
 
@@ -103,6 +124,9 @@ test.describe('Settings', () => {
 
   test('should display disabled recommendations section', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to disabled recommendations section
+    await page.getByTestId('sidemenu-item-disabledRecommendations').click();
 
     // Verify disabled recommendations section exists
     await expect(
@@ -148,6 +172,9 @@ test.describe('Settings', () => {
 
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to disabled recommendations section
+    await page.getByTestId('sidemenu-item-disabledRecommendations').click();
 
     // Should see the Disabled Recommendations section with the item
     await expect(
@@ -198,6 +225,12 @@ test.describe('Settings', () => {
 
     // Navigate to Settings and re-enable the item
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to disabled recommendations section
+    await page.getByTestId('sidemenu-item-disabledRecommendations').click();
+    await expect(
+      page.getByTestId('section-disabled-recommendations'),
+    ).toBeVisible();
 
     // Click Enable button (not Enable All)
     const enableButton = page
@@ -254,6 +287,12 @@ test.describe('Settings', () => {
 
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to disabled recommendations section
+    await page.getByTestId('sidemenu-item-disabledRecommendations').click();
+    await expect(
+      page.getByTestId('section-disabled-recommendations'),
+    ).toBeVisible();
 
     // Should see Enable All button
     const enableAllButton = page.locator(

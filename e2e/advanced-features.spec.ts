@@ -10,6 +10,10 @@ test.describe('Advanced Features', () => {
   }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to nutrition section which contains the feature checkboxes
+    await page.getByTestId('sidemenu-item-nutrition').click();
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
+
     // Advanced features checkboxes might be in a section or might not be visible
     // Check if there are any checkboxes in the settings page
     const allCheckboxes = page.locator('input[type="checkbox"]');
@@ -44,6 +48,10 @@ test.describe('Advanced Features', () => {
   }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to nutrition section which contains the feature checkboxes
+    await page.getByTestId('sidemenu-item-nutrition').click();
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
+
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
     const checkboxCount = await allCheckboxes.count();
@@ -75,6 +83,10 @@ test.describe('Advanced Features', () => {
     page,
   }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section which contains the feature checkboxes
+    await page.getByTestId('sidemenu-item-nutrition').click();
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
@@ -108,6 +120,10 @@ test.describe('Advanced Features', () => {
   }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to nutrition section which contains the feature checkboxes
+    await page.getByTestId('sidemenu-item-nutrition').click();
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
+
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
     const checkboxCount = await allCheckboxes.count();
@@ -135,6 +151,7 @@ test.describe('Advanced Features', () => {
 
       // Verify settings persisted
       await page.getByTestId('nav-settings').click();
+      await page.getByTestId('sidemenu-item-nutrition').click();
       await page.waitForLoadState('networkidle');
       const checkboxAfterReload = page
         .locator('input[type="checkbox"]')
@@ -148,6 +165,10 @@ test.describe('Advanced Features', () => {
     page,
   }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section which contains the feature checkboxes
+    await page.getByTestId('sidemenu-item-nutrition').click();
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
