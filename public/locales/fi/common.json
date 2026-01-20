@@ -472,6 +472,10 @@
     "import": {
       "link": "Onko sinulla jo tietoja? Tuo varmuuskopio",
       "button": "Tuo varmuuskopiotiedot"
+    },
+    "kitSelection": {
+      "title": "Valitse suosituspaketti",
+      "subtitle": "Valitse valmis paketti tai lataa oma mukautettu suosituspaketti"
     }
   },
   "accessibility": {
@@ -594,12 +598,6 @@
       "nameRequired": "Vähintään yksi nimi vaaditaan",
       "idExists": "Tuote tällä tunnuksella on jo olemassa",
       "quantityPositive": "Määrän on oltava suurempi kuin 0"
-    }
-  },
-  "onboarding": {
-    "kitSelection": {
-      "title": "Valitse suosituspaketti",
-      "subtitle": "Valitse valmis paketti tai lataa oma mukautettu suosituspaketti"
     }
   }
 }

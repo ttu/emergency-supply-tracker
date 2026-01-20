@@ -148,9 +148,12 @@ describe('localStorage utilities', () => {
       const json = JSON.stringify(mockData);
       const imported = importFromJSON(json);
       // onboardingCompleted is always set to true on import
+      // Kit fields are initialized with defaults if absent
       expect(imported).toEqual({
         ...mockData,
         settings: { ...mockData.settings, onboardingCompleted: true },
+        selectedRecommendationKit: '72tuntia-standard',
+        uploadedRecommendationKits: [],
       });
     });
 

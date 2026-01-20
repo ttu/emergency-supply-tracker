@@ -1,4 +1,11 @@
-import { ReactNode, useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import type {
   RecommendedItemDefinition,
   RecommendedItemsFile,
@@ -70,16 +77,27 @@ export function RecommendedItemsProvider({
 }: {
   children: ReactNode;
 }) {
-  // Selected kit ID
-  const [selectedKitId, setSelectedKitId] = useState<KitId>(() => {
-    const data = getAppData();
-    return data?.selectedRecommendationKit ?? DEFAULT_KIT_ID;
-  });
-
-  // Uploaded custom kits
+  // Initialize both kit states together to avoid stale references
   const [uploadedKits, setUploadedKits] = useState<UploadedKit[]>(() => {
     const data = getAppData();
     return data?.uploadedRecommendationKits ?? [];
+  });
+
+  // Selected kit ID - validates against uploaded kits on initial load
+  const [selectedKitId, setSelectedKitId] = useState<KitId>(() => {
+    const data = getAppData();
+    const storedKitId = data?.selectedRecommendationKit ?? DEFAULT_KIT_ID;
+
+    // Validate custom kit still exists (guard against stale selection)
+    if (isCustomKitId(storedKitId)) {
+      const storedKits = data?.uploadedRecommendationKits ?? [];
+      const uuid = getCustomKitUuid(storedKitId);
+      const kitExists = storedKits.some((k) => k.id === uuid);
+      if (!kitExists) {
+        return DEFAULT_KIT_ID;
+      }
+    }
+    return storedKitId;
   });
 
   // Track whether this is the initial mount to prevent unnecessary localStorage writes
@@ -150,7 +168,13 @@ export function RecommendedItemsProvider({
     };
   }, [selectedKitId, currentKitFile]);
 
-  const isUsingCustomRecommendations = isCustomKitId(selectedKitId);
+  // Guard against stale custom kit selection
+  // Note: Stale kit validation is handled during initialization in useState
+  const isUsingCustomRecommendations =
+    isCustomKitId(selectedKitId) && !!currentKitFile;
+
+  // Track previous kit ID to detect actual kit changes
+  const previousKitIdRef = useRef<KitId>(selectedKitId);
 
   // Save to localStorage when kit selection or uploaded kits change (skip initial mount)
   useEffect(() => {
@@ -162,8 +186,11 @@ export function RecommendedItemsProvider({
     const data = getAppData() || createDefaultAppData();
     data.selectedRecommendationKit = selectedKitId;
     data.uploadedRecommendationKits = uploadedKits;
-    // Clear disabled items when recommendations change (IDs may no longer exist)
-    data.disabledRecommendedItems = [];
+    // Clear disabled items only when the active kit actually changes (not on unrelated kit uploads)
+    if (previousKitIdRef.current !== selectedKitId) {
+      data.disabledRecommendedItems = [];
+    }
+    previousKitIdRef.current = selectedKitId;
     data.lastModified = new Date().toISOString();
     saveAppData(data);
   }, [selectedKitId, uploadedKits]);
@@ -183,9 +210,9 @@ export function RecommendedItemsProvider({
         return result;
       }
 
-      const kitId = generateUuid();
+      const uuid = generateUuid();
       const newKit: UploadedKit = {
-        id: kitId,
+        id: uuid,
         file,
         uploadedAt: new Date().toISOString(),
       };
@@ -194,7 +221,7 @@ export function RecommendedItemsProvider({
 
       return {
         ...result,
-        kitId,
+        kitId: createCustomKitId(uuid),
       };
     },
     [],
@@ -312,8 +339,8 @@ export function RecommendedItemsProvider({
     (file: RecommendedItemsFile): ValidationResult => {
       const result = uploadKit(file);
       if (result.valid && result.kitId) {
-        // Auto-select the imported kit
-        setSelectedKitId(createCustomKitId(result.kitId));
+        // Auto-select the imported kit (kitId is already a full KitId)
+        setSelectedKitId(result.kitId);
       }
       return result;
     },

@@ -308,4 +308,28 @@ describe('ItemEditor', () => {
     const savedItem = mockOnSave.mock.calls[0][0];
     expect(savedItem.defaultExpirationMonths).toBeUndefined();
   });
+
+  it('should not validate ID uniqueness when editing existing item', async () => {
+    const existingIds = new Set([mockItem.id]);
+
+    render(
+      <ItemEditor
+        item={mockItem}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
+        existingIds={existingIds}
+      />,
+    );
+
+    // Change the name and submit
+    await userEvent.clear(screen.getByTestId('item-name-en'));
+    await userEvent.type(screen.getByTestId('item-name-en'), 'Updated Name');
+    await userEvent.click(screen.getByTestId('item-editor-save'));
+
+    // Should save successfully even though ID is in existingIds (because we're editing)
+    expect(mockOnSave).toHaveBeenCalled();
+    expect(
+      screen.queryByText('kitEditor.validation.idExists'),
+    ).not.toBeInTheDocument();
+  });
 });

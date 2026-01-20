@@ -568,5 +568,418 @@ describe('RecommendedItemsProvider', () => {
       expect(lastCall.uploadedRecommendationKits).toBeDefined();
       expect(lastCall.uploadedRecommendationKits.length).toBe(0);
     });
+
+    it('should switch to default kit when deleting the currently selected kit', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
+      });
+
+      let deleteKitFn!: ReturnType<typeof useRecommendedItems>['deleteKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              deleteKitFn = ctx.deleteKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      expect(screen.getByTestId('is-custom')).toHaveTextContent('true');
+
+      act(() => {
+        deleteKitFn(createCustomKitId('test-kit-uuid'));
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
+        expect(screen.getByTestId('selected-kit')).toHaveTextContent(
+          DEFAULT_KIT_ID,
+        );
+      });
+    });
+  });
+
+  describe('kit editing', () => {
+    it('should update kit metadata', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
+      });
+
+      let updateMetaFn!: ReturnType<
+        typeof useRecommendedItems
+      >['updateCurrentKitMeta'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              updateMetaFn = ctx.updateCurrentKitMeta;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear initial calls
+      mockSaveAppData.mockClear();
+
+      act(() => {
+        updateMetaFn({ name: 'Updated Kit Name' });
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+      const updatedKit = lastCall.uploadedRecommendationKits.find(
+        (k: { id: string }) => k.id === 'test-kit-uuid',
+      );
+      expect(updatedKit?.file.meta.name).toBe('Updated Kit Name');
+    });
+
+    it('should warn and not update metadata for built-in kits', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      let updateMetaFn!: ReturnType<
+        typeof useRecommendedItems
+      >['updateCurrentKitMeta'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              updateMetaFn = ctx.updateCurrentKitMeta;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      act(() => {
+        updateMetaFn({ name: 'Should Not Update' });
+      });
+
+      expect(warnSpy).toHaveBeenCalledWith('Cannot edit built-in kit metadata');
+      warnSpy.mockRestore();
+    });
+
+    it('should add item to custom kit', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
+      });
+
+      let addItemFn!: ReturnType<typeof useRecommendedItems>['addItemToKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              addItemFn = ctx.addItemToKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear initial calls
+      mockSaveAppData.mockClear();
+
+      const newItem = {
+        id: createProductTemplateId('new-item'),
+        names: { en: 'New Item' },
+        category: 'food' as const,
+        unit: 'pieces' as const,
+        baseQuantity: 3,
+        scaleWithPeople: true,
+        scaleWithDays: false,
+      };
+
+      act(() => {
+        addItemFn(newItem);
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+      const updatedKit = lastCall.uploadedRecommendationKits.find(
+        (k: { id: string }) => k.id === 'test-kit-uuid',
+      );
+      expect(updatedKit?.file.items.length).toBe(3);
+    });
+
+    it('should warn and not add item to built-in kit', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      let addItemFn!: ReturnType<typeof useRecommendedItems>['addItemToKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              addItemFn = ctx.addItemToKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      act(() => {
+        addItemFn({
+          id: createProductTemplateId('new-item'),
+          names: { en: 'New Item' },
+          category: 'food',
+          unit: 'pieces',
+          baseQuantity: 1,
+          scaleWithPeople: true,
+          scaleWithDays: true,
+        });
+      });
+
+      expect(warnSpy).toHaveBeenCalledWith('Cannot add items to built-in kit');
+      warnSpy.mockRestore();
+    });
+
+    it('should update item in custom kit', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
+      });
+
+      let updateItemFn!: ReturnType<
+        typeof useRecommendedItems
+      >['updateItemInKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              updateItemFn = ctx.updateItemInKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear initial calls
+      mockSaveAppData.mockClear();
+
+      act(() => {
+        updateItemFn(createProductTemplateId('custom-item-1'), {
+          baseQuantity: 10,
+        });
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+      const updatedKit = lastCall.uploadedRecommendationKits.find(
+        (k: { id: string }) => k.id === 'test-kit-uuid',
+      );
+      const updatedItem = updatedKit?.file.items.find(
+        (i: { id: string }) =>
+          i.id === createProductTemplateId('custom-item-1'),
+      );
+      expect(updatedItem?.baseQuantity).toBe(10);
+    });
+
+    it('should warn and not update item in built-in kit', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      let updateItemFn!: ReturnType<
+        typeof useRecommendedItems
+      >['updateItemInKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              updateItemFn = ctx.updateItemInKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      act(() => {
+        updateItemFn('some-item', { baseQuantity: 10 });
+      });
+
+      expect(warnSpy).toHaveBeenCalledWith('Cannot edit items in built-in kit');
+      warnSpy.mockRestore();
+    });
+
+    it('should remove item from custom kit', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
+      });
+
+      let removeItemFn!: ReturnType<
+        typeof useRecommendedItems
+      >['removeItemFromKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              removeItemFn = ctx.removeItemFromKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear initial calls
+      mockSaveAppData.mockClear();
+
+      act(() => {
+        removeItemFn(createProductTemplateId('custom-item-1'));
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+      const updatedKit = lastCall.uploadedRecommendationKits.find(
+        (k: { id: string }) => k.id === 'test-kit-uuid',
+      );
+      expect(updatedKit?.file.items.length).toBe(1);
+    });
+
+    it('should warn and not remove item from built-in kit', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      let removeItemFn!: ReturnType<
+        typeof useRecommendedItems
+      >['removeItemFromKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              removeItemFn = ctx.removeItemFromKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      act(() => {
+        removeItemFn('some-item');
+      });
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Cannot remove items from built-in kit',
+      );
+      warnSpy.mockRestore();
+    });
+  });
+
+  describe('legacy methods', () => {
+    it('should import and auto-select via importRecommendedItems', async () => {
+      let importFn!: ReturnType<
+        typeof useRecommendedItems
+      >['importRecommendedItems'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              importFn = ctx.importRecommendedItems;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
+
+      act(() => {
+        const result = importFn(validCustomFile);
+        expect(result.valid).toBe(true);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('is-custom')).toHaveTextContent('true');
+      });
+    });
+
+    it('should reset via resetToDefaultRecommendations', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
+      });
+
+      let resetFn!: ReturnType<
+        typeof useRecommendedItems
+      >['resetToDefaultRecommendations'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              resetFn = ctx.resetToDefaultRecommendations;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      expect(screen.getByTestId('is-custom')).toHaveTextContent('true');
+
+      act(() => {
+        resetFn();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
+        expect(screen.getByTestId('selected-kit')).toHaveTextContent(
+          DEFAULT_KIT_ID,
+        );
+      });
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should fallback to default kit when custom kit is not found', () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [],
+        selectedRecommendationKit: createCustomKitId('nonexistent-uuid'),
+      });
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent />
+        </RecommendedItemsProvider>,
+      );
+
+      // Should fallback to default items count
+      expect(screen.getByTestId('items-count')).toHaveTextContent(
+        String(RECOMMENDED_ITEMS.length),
+      );
+    });
+
+    it('should return null for currentKitFile with invalid kit id type', () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [],
+        selectedRecommendationKit: 'invalid-kit-id' as KitId,
+      });
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent />
+        </RecommendedItemsProvider>,
+      );
+
+      // Should fallback to default items
+      expect(screen.getByTestId('items-count')).toHaveTextContent(
+        String(RECOMMENDED_ITEMS.length),
+      );
+    });
   });
 });

@@ -10,7 +10,7 @@ import type { ValidationResult } from '@/shared/utils/validation/recommendedItem
 
 /** Result of uploading a kit, includes kitId on success */
 export interface UploadKitResult extends ValidationResult {
-  kitId?: string;
+  kitId?: KitId;
 }
 
 export interface RecommendedItemsContextValue {

@@ -302,6 +302,14 @@ export function importFromJSON(json: string): AppData {
     data.disabledRecommendedItems = [];
   }
 
+  // Ensure kit fields are initialized with defaults if absent
+  if (!data.selectedRecommendationKit) {
+    data.selectedRecommendationKit = DEFAULT_KIT_ID;
+  }
+  if (!data.uploadedRecommendationKits) {
+    data.uploadedRecommendationKits = [];
+  }
+
   // customRecommendedItems is optional - preserve if present, otherwise leave undefined
 
   // Normalize items: ensure itemType values are valid and set neverExpires flag

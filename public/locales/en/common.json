@@ -472,6 +472,10 @@
     "import": {
       "link": "Already have data? Import backup",
       "button": "Import backup data"
+    },
+    "kitSelection": {
+      "title": "Choose a Recommendation Kit",
+      "subtitle": "Select a pre-configured kit or upload your own custom recommendations"
     }
   },
   "accessibility": {
@@ -594,12 +598,6 @@
       "nameRequired": "At least one name is required",
       "idExists": "An item with this ID already exists",
       "quantityPositive": "Quantity must be greater than 0"
-    }
-  },
-  "onboarding": {
-    "kitSelection": {
-      "title": "Choose a Recommendation Kit",
-      "subtitle": "Select a pre-configured kit or upload your own custom recommendations"
     }
   }
 }

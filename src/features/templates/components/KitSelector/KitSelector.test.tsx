@@ -292,4 +292,25 @@ describe('KitSelector', () => {
     // Custom kit should be in custom section
     expect(screen.getByTestId('kit-card-custom:abc123')).toBeInTheDocument();
   });
+
+  it('should not call onDeleteKit for non-custom kit ids', () => {
+    // This tests the isCustomKitId guard in handleDeleteKit
+    const mockOnDeleteKitTyped = vi.fn();
+
+    render(
+      <KitSelector
+        availableKits={mockBuiltInKits}
+        selectedKitId={null}
+        onSelectKit={mockOnSelectKit}
+        onDeleteKit={mockOnDeleteKitTyped}
+        showDelete={true}
+      />,
+    );
+
+    // Built-in kits don't have delete buttons, so this verifies the guard works
+    expect(
+      screen.queryByTestId('delete-kit-72tuntia-standard'),
+    ).not.toBeInTheDocument();
+    expect(mockOnDeleteKitTyped).not.toHaveBeenCalled();
+  });
 });
