@@ -15,7 +15,12 @@ import { createMockAppData } from '@/shared/utils/test/factories';
 import { createItemId, createCategoryId } from '@/shared/types';
 
 // Mock localStorage utilities
-vi.mock('@/shared/utils/storage/localStorage');
+vi.mock('@/shared/utils/storage/localStorage', () => ({
+  getAppData: vi.fn(),
+  saveAppData: vi.fn(),
+  exportToJSONSelective: vi.fn(),
+  createDefaultAppData: vi.fn(() => createMockAppData()),
+}));
 
 describe('ExportButton', () => {
   let createElementSpy: ReturnType<typeof vi.spyOn>;
@@ -25,6 +30,12 @@ describe('ExportButton', () => {
     globalThis.alert = vi.fn();
     globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
     globalThis.URL.revokeObjectURL = vi.fn();
+
+    // Set default mock return values
+    (localStorage.getAppData as Mock).mockReturnValue(createMockAppData());
+    (localStorage.createDefaultAppData as Mock).mockReturnValue(
+      createMockAppData(),
+    );
 
     // Mock anchor element click to prevent jsdom navigation errors
     // Access prototype method directly to avoid circular reference
