@@ -5,20 +5,22 @@
  *
  * @param baseQuantity - The base quantity value (may be fractional)
  * @param unit - The unit of measurement (e.g., "cans", "liters")
+ * @param roundingNote - Translated note about rounding (e.g., "{{value}} per person, rounded up in calculations")
  * @param showRoundingNote - Whether to show a note about rounding for fractional values
  * @returns Formatted string for display
  *
  * @example
- * formatBaseQuantity(0.67, "cans", true)
+ * formatBaseQuantity(0.67, "cans", "0.67 per person, rounded up in calculations", true)
  * // Returns: "1 cans (0.67 per person, rounded up in calculations)"
  *
  * @example
- * formatBaseQuantity(5, "liters", true)
+ * formatBaseQuantity(5, "liters", "...", true)
  * // Returns: "5 liters"
  */
 export function formatBaseQuantity(
   baseQuantity: number,
   unit: string,
+  roundingNote: string,
   showRoundingNote: boolean = true,
 ): string {
   const rounded = Math.ceil(baseQuantity);
@@ -26,7 +28,8 @@ export function formatBaseQuantity(
 
   if (isFractional && showRoundingNote) {
     // Show rounded value with original fractional value and rounding note
-    return `${rounded} ${unit} (${baseQuantity} per person, rounded up in calculations)`;
+    // The roundingNote should already contain the baseQuantity value via interpolation
+    return `${rounded} ${unit} (${roundingNote})`;
   }
 
   // For whole numbers or when note is disabled, just show the value

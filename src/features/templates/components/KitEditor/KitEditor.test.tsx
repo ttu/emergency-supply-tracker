@@ -296,10 +296,10 @@ describe('KitEditor', () => {
       ).toBeInTheDocument();
 
       // Find the cancel button in the dialog - ConfirmDialog uses 'buttons.cancel'
-      const cancelButton = screen
-        .getAllByRole('button')
-        .find((btn) => btn.textContent === 'buttons.cancel');
-      fireEvent.click(cancelButton!);
+      const cancelButton = screen.getByRole('button', {
+        name: 'buttons.cancel',
+      });
+      fireEvent.click(cancelButton);
 
       // Dialog should close - the title should no longer be visible
       await vi.waitFor(() => {

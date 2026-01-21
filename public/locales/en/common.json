@@ -572,6 +572,7 @@
     "noItems": "This kit has no items",
     "perPerson": "per person",
     "perDay": "per day",
+    "baseQuantityRoundingNote": "{{value}} per person, rounded up in calculations",
     "deleteItem": {
       "title": "Delete Item",
       "message": "Are you sure you want to delete \"{{name}}\"?",

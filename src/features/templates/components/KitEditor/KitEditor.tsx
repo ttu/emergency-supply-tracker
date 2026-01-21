@@ -9,6 +9,7 @@ import type {
   ImportedRecommendedItem,
   RecommendedItemDefinition,
 } from '@/shared/types';
+import { isCustomKitId } from '@/shared/types';
 import styles from './KitEditor.module.css';
 
 export interface KitEditorProps {
@@ -17,7 +18,12 @@ export interface KitEditorProps {
 }
 
 export function KitEditor({ isOpen, onClose }: KitEditorProps) {
-  const { t, i18n } = useTranslation(['common', 'categories', 'products']);
+  const { t, i18n } = useTranslation([
+    'common',
+    'categories',
+    'products',
+    'units',
+  ]);
   const {
     recommendedItems,
     selectedKitId,
@@ -42,7 +48,7 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
   );
 
   // Check if current kit is editable (only custom kits can be edited)
-  const isEditable = selectedKitId?.startsWith('custom:') ?? false;
+  const isEditable = selectedKitId != null && isCustomKitId(selectedKitId);
 
   // Get existing IDs for validation
   const existingIds = useMemo(
@@ -252,6 +258,9 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
                         {formatBaseQuantity(
                           item.baseQuantity,
                           t(item.unit, { ns: 'units' }),
+                          t('kitEditor.baseQuantityRoundingNote', {
+                            value: item.baseQuantity,
+                          }),
                           true,
                         )}
                         {item.scaleWithPeople && (

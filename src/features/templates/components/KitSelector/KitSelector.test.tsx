@@ -318,6 +318,7 @@ describe('KitSelector', () => {
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {});
+    const originalAlert = globalThis.alert;
     globalThis.alert = vi.fn();
 
     render(
@@ -354,6 +355,7 @@ describe('KitSelector', () => {
     });
 
     consoleErrorSpy.mockRestore();
+    globalThis.alert = originalAlert;
   });
 
   it('should reset file input after upload', async () => {

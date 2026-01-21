@@ -572,6 +572,7 @@
     "noItems": "Tässä paketissa ei ole tuotteita",
     "perPerson": "per henkilö",
     "perDay": "per päivä",
+    "baseQuantityRoundingNote": "{{value}} per henkilö, pyöristetty ylöspäin laskelmissa",
     "deleteItem": {
       "title": "Poista tuote",
       "message": "Haluatko varmasti poistaa tuotteen \"{{name}}\"?",
