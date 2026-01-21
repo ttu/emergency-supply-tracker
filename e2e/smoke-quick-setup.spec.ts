@@ -4,6 +4,7 @@ import {
   expect,
   expandRecommendedItems,
   ensureNoModals,
+  selectInventoryCategory,
 } from './fixtures';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
@@ -116,7 +117,7 @@ async function completeQuickSetupOnboarding(page: Page) {
 async function verifyRecommendedItemsAdded(page: Page) {
   await page.getByTestId('nav-inventory').click();
   await expect(page.getByTestId('add-item-button')).toBeVisible();
-  await expect(page.getByTestId('category-water-beverages')).toBeVisible();
+  await expect(page.getByTestId('sidemenu-item-water-beverages')).toBeVisible();
 
   const itemsAdded = await page.evaluate((key) => {
     const data = localStorage.getItem(key);
@@ -137,7 +138,7 @@ async function editItemInCategory(
   quantity: string,
 ) {
   await ensureNoModals(page);
-  await page.getByTestId(`category-${categoryId}`).click();
+  await selectInventoryCategory(page, categoryId);
   await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
   const items = page.locator(
@@ -159,7 +160,7 @@ async function editItemInCategory(
 
 async function editFoodItemAndDisableRecommendation(page: Page) {
   await ensureNoModals(page);
-  await page.getByTestId('category-food').click();
+  await selectInventoryCategory(page, 'food');
   await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
   const foodItems = page.locator(
@@ -188,7 +189,7 @@ async function editFoodItemAndDisableRecommendation(page: Page) {
 
 async function testCopyItem(page: Page) {
   await ensureNoModals(page);
-  await page.getByTestId('category-water-beverages').click();
+  await selectInventoryCategory(page, 'water-beverages');
   await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
 
   const waterItems = page.locator(

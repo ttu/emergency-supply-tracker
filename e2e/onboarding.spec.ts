@@ -139,8 +139,10 @@ test.describe('Onboarding Flow', () => {
 
     // Should have items in inventory (at least some recommended items)
     // Note: Items are added with quantity 0, so they may not be visible
-    // But the category should show some status
-    await expect(page.getByTestId('category-water-beverages')).toBeVisible();
+    // But the category should show in the side menu
+    await expect(
+      page.getByTestId('sidemenu-item-water-beverages'),
+    ).toBeVisible();
   });
 
   test('should not show onboarding for returning users', async ({ page }) => {

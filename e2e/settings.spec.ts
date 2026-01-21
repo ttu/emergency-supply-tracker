@@ -4,6 +4,7 @@ import {
   expandRecommendedItems,
   ensureNoModals,
   waitForCountChange,
+  selectInventoryCategory,
 } from './fixtures';
 
 test.describe('Settings', () => {
@@ -91,11 +92,10 @@ test.describe('Settings', () => {
   test('should toggle advanced features', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
-    // Navigate to nutrition section which has checkboxes
-    await page.getByTestId('sidemenu-item-nutrition').click();
-    await expect(page.getByTestId('section-nutrition')).toBeVisible();
+    // Appearance section is the default and has high contrast checkbox
+    await expect(page.getByTestId('section-appearance')).toBeVisible();
 
-    // Find and toggle a feature checkbox
+    // Find and toggle the high contrast checkbox
     const featureCheckbox = page.locator('input[type="checkbox"]').first();
     const initialState = await featureCheckbox.isChecked();
 
@@ -149,7 +149,8 @@ test.describe('Settings', () => {
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.getByTestId('category-water-beverages').click();
+    // Select Water & Beverages category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -199,7 +200,8 @@ test.describe('Settings', () => {
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.getByTestId('category-water-beverages').click();
+    // Select Water & Beverages category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -240,7 +242,7 @@ test.describe('Settings', () => {
 
     // Navigate back to inventory
     await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('category-water-beverages').click();
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items again
     await expandRecommendedItems(page);
@@ -261,7 +263,8 @@ test.describe('Settings', () => {
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.getByTestId('category-water-beverages').click();
+    // Select Water & Beverages category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -305,7 +308,7 @@ test.describe('Settings', () => {
 
     // Navigate back to inventory
     await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('category-water-beverages').click();
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items again
     await expandRecommendedItems(page);

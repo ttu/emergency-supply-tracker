@@ -116,8 +116,8 @@ test.describe('Dashboard', () => {
     // Should navigate to Inventory page
     await expect(page.getByTestId('page-inventory')).toBeVisible();
 
-    // Food category should be selected in the category navigation
-    const foodCategoryButton = page.getByTestId('category-food');
-    await expect(foodCategoryButton).toHaveClass(/selected|active/);
+    // Food category should be selected in the side menu navigation
+    const foodCategoryMenuItem = page.getByTestId('sidemenu-item-food');
+    await expect(foodCategoryMenuItem).toHaveClass(/selected|active/);
   });
 });

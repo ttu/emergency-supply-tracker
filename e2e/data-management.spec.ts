@@ -1,4 +1,10 @@
-import { test, expect, expandRecommendedItems } from './fixtures';
+import {
+  test,
+  expect,
+  expandRecommendedItems,
+  navigateToSettingsSection,
+  selectInventoryCategory,
+} from './fixtures';
 
 test.describe('Data Management', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -22,9 +28,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for Settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    // Navigate to Data Management section
+    await navigateToSettingsSection(page, 'dataManagement');
 
     // Verify Export Data button is visible
     const exportButton = page.getByTestId('export-data-button');
@@ -59,9 +64,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for Settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    // Navigate to Data Management section
+    await navigateToSettingsSection(page, 'dataManagement');
 
     // Create test data file with all required fields
     const testData = {
@@ -152,9 +156,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for Settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    // Navigate to Data Management section
+    await navigateToSettingsSection(page, 'dataManagement');
 
     // Verify Export Shopping List button is visible and enabled
     const exportButton = page.getByTestId('export-shopping-list-button');
@@ -203,9 +206,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for Settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    // Navigate to Danger Zone section where Clear Data button is located
+    await navigateToSettingsSection(page, 'dangerZone');
 
     // Verify Clear All Data button is visible using data-testid
     const clearButton = page.getByTestId('clear-data-button');
@@ -223,9 +225,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for settings page to fully load and be interactive
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    // Navigate to Recommendation Kits section
+    await navigateToSettingsSection(page, 'recommendationKits');
     await expect(page.getByTestId('kit-management')).toBeVisible();
 
     // Create custom recommendations file
@@ -288,9 +289,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    // Navigate to Recommendation Kits section
+    await navigateToSettingsSection(page, 'recommendationKits');
     await expect(page.getByTestId('kit-management')).toBeVisible();
 
     // Verify Export Kit button is visible in Kit Management section
@@ -309,9 +309,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    // Navigate to Recommendation Kits section
+    await navigateToSettingsSection(page, 'recommendationKits');
     await expect(page.getByTestId('kit-management')).toBeVisible();
     await expect(page.getByTestId('kit-selector')).toBeVisible();
 
@@ -378,9 +377,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    // Navigate to Recommendation Kits section
+    await navigateToSettingsSection(page, 'recommendationKits');
     await expect(page.getByTestId('kit-management')).toBeVisible();
     await expect(page.getByTestId('kit-selector')).toBeVisible();
 
@@ -436,8 +434,8 @@ test.describe('Data Management', () => {
     // Wait for inventory page to load
     await expect(page.getByTestId('page-inventory')).toBeVisible();
 
-    // Click on Water & Beverages category tab
-    await page.getByTestId('category-water-beverages').click();
+    // Select Water & Beverages category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items to see the custom recommendation
     await expandRecommendedItems(page);
@@ -447,13 +445,14 @@ test.describe('Data Management', () => {
       timeout: 5000,
     });
 
-    // Switch to Finnish
+    // Switch to Finnish - navigate to Appearance settings section
     await page.getByTestId('nav-settings').click();
+    await navigateToSettingsSection(page, 'appearance');
     await page.selectOption('#language-select', 'fi');
 
     // Navigate back to Inventory using testid (works regardless of language)
     await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('category-water-beverages').click();
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items again (in Finnish, use "Suositeltu:" instead of "Recommended:")
     await expect(page.locator('text=Suositeltu:')).toBeVisible();
@@ -478,9 +477,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    // Navigate to Recommendation Kits section
+    await navigateToSettingsSection(page, 'recommendationKits');
     await expect(page.getByTestId('kit-management')).toBeVisible();
     await expect(page.getByTestId('kit-selector')).toBeVisible();
 

@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, navigateToSettingsSection } from './fixtures';
 import {
   createMockAppData,
   createMockCategory,
@@ -366,8 +366,7 @@ test.describe('Custom Categories', () => {
 
     // Export data
     await page.getByTestId('nav-settings').click();
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    await navigateToSettingsSection(page, 'dataManagement');
     const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
     await exportButton.click();

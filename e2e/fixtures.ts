@@ -132,4 +132,56 @@ export const test = base.extend<{
   },
 });
 
+// Helper to navigate to a specific section in Settings page
+// Settings page uses SideMenu with sections
+export async function navigateToSettingsSection(page: Page, sectionId: string) {
+  const viewport = page.viewportSize();
+  const isMobile = viewport && viewport.width < 768;
+
+  // On mobile, we need to open the hamburger menu first
+  if (isMobile) {
+    const hamburger = page.getByTestId('sidemenu-hamburger');
+    const isHamburgerVisible = await hamburger.isVisible().catch(() => false);
+    if (isHamburgerVisible) {
+      await hamburger.click();
+      await page.waitForTimeout(300);
+    }
+  }
+
+  // Scope selector to drawer (mobile) or sidebar (desktop) to avoid strict mode violations
+  const menuContainer = isMobile
+    ? page.getByTestId('sidemenu-drawer')
+    : page.getByTestId('sidemenu-sidebar');
+  const menuItem = menuContainer.getByTestId(`sidemenu-item-${sectionId}`);
+  await expect(menuItem).toBeVisible({ timeout: 5000 });
+  await menuItem.click();
+  await page.waitForTimeout(100);
+}
+
+// Helper to select a category in Inventory page
+// Inventory page uses SideMenu for category navigation
+export async function selectInventoryCategory(page: Page, categoryId: string) {
+  const viewport = page.viewportSize();
+  const isMobile = viewport && viewport.width < 768;
+
+  // On mobile, we need to open the hamburger menu first
+  if (isMobile) {
+    const hamburger = page.getByTestId('sidemenu-hamburger');
+    const isHamburgerVisible = await hamburger.isVisible().catch(() => false);
+    if (isHamburgerVisible) {
+      await hamburger.click();
+      await page.waitForTimeout(300);
+    }
+  }
+
+  // Scope selector to drawer (mobile) or sidebar (desktop) to avoid strict mode violations
+  const menuContainer = isMobile
+    ? page.getByTestId('sidemenu-drawer')
+    : page.getByTestId('sidemenu-sidebar');
+  const menuItem = menuContainer.getByTestId(`sidemenu-item-${categoryId}`);
+  await expect(menuItem).toBeVisible({ timeout: 5000 });
+  await menuItem.click();
+  await page.waitForTimeout(100);
+}
+
 export { expect };
