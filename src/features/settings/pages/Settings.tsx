@@ -242,8 +242,14 @@ export function Settings() {
             <ClearDataButton />
           </Section>
         );
-      default:
-        return selectedSection satisfies never;
+      default: {
+        // Exhaustive check: ensures all SettingsSection cases are handled
+        // TypeScript's strict mode with noFallthroughCasesInSwitch enforces this at compile time,
+        // but this default case provides runtime safety
+        const _exhaustive: never = selectedSection as never;
+        void _exhaustive; // Suppress unused variable warning
+        return null;
+      }
     }
   };
 

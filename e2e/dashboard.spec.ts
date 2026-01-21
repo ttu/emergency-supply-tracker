@@ -116,8 +116,38 @@ test.describe('Dashboard', () => {
     // Should navigate to Inventory page
     await expect(page.getByTestId('page-inventory')).toBeVisible();
 
-    // Food category should be selected in the side menu navigation
-    const foodCategoryMenuItem = page.getByTestId('sidemenu-item-food');
+    // Scope to active container to avoid strict mode violations
+    const viewport = page.viewportSize();
+    const isMobile = viewport && viewport.width < 768;
+    const menuContainer = isMobile
+      ? page.getByTestId('sidemenu-drawer')
+      : page.getByTestId('sidemenu-sidebar');
+    const foodCategoryMenuItem =
+      menuContainer.getByTestId('sidemenu-item-food');
+    await expect(foodCategoryMenuItem).toHaveClass(/selected|active/);
+  });
+
+  test('should navigate to inventory with category filter on mobile', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    // Click on Food category card
+    const foodCategoryCard = page.getByTestId('category-food');
+    await expect(foodCategoryCard).toBeVisible();
+    await foodCategoryCard.click();
+
+    // Should navigate to Inventory page
+    await expect(page.getByTestId('page-inventory')).toBeVisible();
+
+    // On mobile, open hamburger to access drawer
+    const hamburger = page.getByTestId('sidemenu-hamburger');
+    if (await hamburger.isVisible().catch(() => false)) {
+      await hamburger.click();
+      await page.waitForTimeout(300);
+    }
+    const menuContainer = page.getByTestId('sidemenu-drawer');
+    const foodCategoryMenuItem =
+      menuContainer.getByTestId('sidemenu-item-food');
     await expect(foodCategoryMenuItem).toHaveClass(/selected|active/);
   });
 });

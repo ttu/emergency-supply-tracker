@@ -69,14 +69,15 @@ export function SideMenuDrawer({
 
   // Prevent body scroll when open
   useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = prevOverflow;
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = prevOverflow;
     };
   }, [isOpen]);
 

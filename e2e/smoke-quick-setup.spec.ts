@@ -117,7 +117,15 @@ async function completeQuickSetupOnboarding(page: Page) {
 async function verifyRecommendedItemsAdded(page: Page) {
   await page.getByTestId('nav-inventory').click();
   await expect(page.getByTestId('add-item-button')).toBeVisible();
-  await expect(page.getByTestId('sidemenu-item-water-beverages')).toBeVisible();
+  // Use scoped selector to avoid strict mode violations
+  const viewport = page.viewportSize();
+  const isMobile = viewport && viewport.width < 768;
+  const menuContainer = isMobile
+    ? page.getByTestId('sidemenu-drawer')
+    : page.getByTestId('sidemenu-sidebar');
+  await expect(
+    menuContainer.getByTestId('sidemenu-item-water-beverages'),
+  ).toBeVisible();
 
   const itemsAdded = await page.evaluate((key) => {
     const data = localStorage.getItem(key);

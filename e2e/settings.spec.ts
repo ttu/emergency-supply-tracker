@@ -5,6 +5,7 @@ import {
   ensureNoModals,
   waitForCountChange,
   selectInventoryCategory,
+  navigateToSettingsSection,
 } from './fixtures';
 
 test.describe('Settings', () => {
@@ -21,7 +22,7 @@ test.describe('Settings', () => {
     await expect(page.getByTestId('section-appearance')).toBeVisible();
 
     // Navigate to household section via side menu
-    await page.getByTestId('sidemenu-item-household').click();
+    await navigateToSettingsSection(page, 'household');
     await expect(page.getByTestId('section-household')).toBeVisible();
   });
 
@@ -54,7 +55,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to household section
-    await page.getByTestId('sidemenu-item-household').click();
+    await navigateToSettingsSection(page, 'household');
     await expect(page.getByTestId('section-household')).toBeVisible();
 
     // Find household inputs
@@ -65,7 +66,7 @@ test.describe('Settings', () => {
     // Navigate away and back to verify persistence
     await page.getByTestId('nav-dashboard').click();
     await page.getByTestId('nav-settings').click();
-    await page.getByTestId('sidemenu-item-household').click();
+    await navigateToSettingsSection(page, 'household');
 
     // Verify value persisted
     await expect(adultsInput).toHaveValue('3');
@@ -75,7 +76,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to household section
-    await page.getByTestId('sidemenu-item-household').click();
+    await navigateToSettingsSection(page, 'household');
     await expect(page.getByTestId('section-household')).toBeVisible();
 
     // Click a preset button (e.g., "Family")
@@ -111,7 +112,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to about section
-    await page.getByTestId('sidemenu-item-about').click();
+    await navigateToSettingsSection(page, 'about');
     await expect(page.getByTestId('section-about')).toBeVisible();
 
     // Find GitHub link
@@ -126,7 +127,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to disabled recommendations section
-    await page.getByTestId('sidemenu-item-disabledRecommendations').click();
+    await navigateToSettingsSection(page, 'disabledRecommendations');
 
     // Verify disabled recommendations section exists
     await expect(
@@ -175,7 +176,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to disabled recommendations section
-    await page.getByTestId('sidemenu-item-disabledRecommendations').click();
+    await navigateToSettingsSection(page, 'disabledRecommendations');
 
     // Should see the Disabled Recommendations section with the item
     await expect(
@@ -229,7 +230,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to disabled recommendations section
-    await page.getByTestId('sidemenu-item-disabledRecommendations').click();
+    await navigateToSettingsSection(page, 'disabledRecommendations');
     await expect(
       page.getByTestId('section-disabled-recommendations'),
     ).toBeVisible();
@@ -292,7 +293,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to disabled recommendations section
-    await page.getByTestId('sidemenu-item-disabledRecommendations').click();
+    await navigateToSettingsSection(page, 'disabledRecommendations');
     await expect(
       page.getByTestId('section-disabled-recommendations'),
     ).toBeVisible();
