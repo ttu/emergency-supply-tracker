@@ -183,6 +183,12 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+.drawerInner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .drawerContent {
   flex: 1;
   overflow-y: auto;

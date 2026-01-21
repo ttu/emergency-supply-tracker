@@ -259,7 +259,7 @@ describe('Settings Page', () => {
       fireEvent.click(within(sidebar).getByTestId(`sidemenu-item-${section}`));
       expect(
         screen.getByTestId(
-          `section-${section.replace(/([A-Z])/g, '-$1').toLowerCase()}`,
+          `section-${section.replaceAll(/([A-Z])/g, '-$1').toLowerCase()}`,
         ),
       ).toBeInTheDocument();
     });

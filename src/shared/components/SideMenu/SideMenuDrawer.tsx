@@ -42,20 +42,17 @@ export function SideMenuDrawer({
     }
   }, [isOpen]);
 
-  // Escape key and tab trap
+  // Tab trap for keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
+    const dialog = drawerRef.current;
+    if (!dialog) return;
 
     const handleTabTrap = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab' || !drawerRef.current) return;
+      if (e.key !== 'Tab' || !dialog) return;
 
-      const focusableElements = drawerRef.current.querySelectorAll<HTMLElement>(
+      const focusableElements = dialog.querySelectorAll<HTMLElement>(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       const firstElement = focusableElements[0];
@@ -70,14 +67,12 @@ export function SideMenuDrawer({
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
     document.addEventListener('keydown', handleTabTrap);
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
       document.removeEventListener('keydown', handleTabTrap);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   // Prevent body scroll when open
   useEffect(() => {
@@ -93,6 +88,35 @@ export function SideMenuDrawer({
     };
   }, [isOpen]);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Handle backdrop clicks via document listener (avoids SonarCloud warning about non-interactive elements)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleDocumentClick = (e: MouseEvent) => {
+      const dialog = drawerRef.current;
+      const content = contentRef.current;
+      // Close if click is outside the drawer content (on backdrop or dialog element)
+      if (
+        dialog &&
+        content &&
+        e.target instanceof Node &&
+        !content.contains(e.target) &&
+        (e.target === dialog || dialog.contains(e.target))
+      ) {
+        onClose();
+      }
+    };
+
+    // Use capture phase to catch clicks before they bubble
+    document.addEventListener('click', handleDocumentClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick, true);
+    };
+  }, [isOpen, onClose]);
+
   const drawerContent = (
     <dialog
       ref={drawerRef}
@@ -103,26 +127,22 @@ export function SideMenuDrawer({
         e.preventDefault();
         onClose();
       }}
-      onClick={(e) => {
-        // Close dialog when clicking the backdrop (the dialog element itself)
-        if (e.target === drawerRef.current) {
-          onClose();
-        }
-      }}
       data-testid="sidemenu-drawer"
     >
-      <div className={styles.drawerHeader}>
-        <button
-          type="button"
-          className={styles.closeButton}
-          onClick={onClose}
-          aria-label={t('sideMenu.closeMenu')}
-          data-testid="sidemenu-close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <div ref={contentRef} className={styles.drawerInner}>
+        <div className={styles.drawerHeader}>
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label={t('sideMenu.closeMenu')}
+            data-testid="sidemenu-close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div className={styles.drawerContent}>{children}</div>
       </div>
-      <div className={styles.drawerContent}>{children}</div>
     </dialog>
   );
 

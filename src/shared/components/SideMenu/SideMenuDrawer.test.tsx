@@ -128,9 +128,10 @@ describe('SideMenuDrawer', () => {
       </SideMenuDrawer>,
     );
 
-    // Click on the dialog element itself (backdrop click)
+    // Click on the dialog element itself (backdrop click) - outside the content area
     const dialog = screen.getByTestId('sidemenu-drawer');
-    fireEvent.click(dialog);
+    // Simulate click on dialog element (not on content)
+    fireEvent.click(dialog, { target: dialog });
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });
@@ -150,7 +151,7 @@ describe('SideMenuDrawer', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('calls onClose when Escape key is pressed', () => {
+  it('calls onClose when Escape key is pressed (via dialog onCancel)', () => {
     const onClose = vi.fn();
     render(
       <SideMenuDrawer isOpen={true} onClose={onClose}>
@@ -158,7 +159,13 @@ describe('SideMenuDrawer', () => {
       </SideMenuDrawer>,
     );
 
-    fireEvent.keyDown(document, { key: 'Escape' });
+    // Native dialog onCancel handles Escape key - simulate the cancel event
+    const dialog = screen.getByTestId('sidemenu-drawer');
+    const cancelEvent = new Event('cancel', {
+      bubbles: true,
+      cancelable: true,
+    });
+    fireEvent(dialog, cancelEvent);
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });
