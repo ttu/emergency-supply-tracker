@@ -4,6 +4,7 @@ import { Button } from '@/shared/components/Button';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { useRecommendedItems } from '@/features/templates';
 import { ItemEditor } from '../ItemEditor';
+import { formatBaseQuantity } from '@/shared/utils/formatting/baseQuantity';
 import type {
   ImportedRecommendedItem,
   RecommendedItemDefinition,
@@ -248,7 +249,11 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
                         {getItemDisplayName(item)}
                       </span>
                       <span className={styles.itemDetails}>
-                        {item.baseQuantity} {t(item.unit, { ns: 'units' })}
+                        {formatBaseQuantity(
+                          item.baseQuantity,
+                          t(item.unit, { ns: 'units' }),
+                          true,
+                        )}
                         {item.scaleWithPeople && (
                           <span className={styles.tag}>
                             {t('kitEditor.perPerson')}

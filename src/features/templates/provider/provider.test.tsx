@@ -127,6 +127,26 @@ describe('RecommendedItemsProvider', () => {
     );
   });
 
+  it('should fall back to default kit when stored custom kit no longer exists', () => {
+    // Simulate a scenario where a custom kit ID is stored but the kit was deleted
+    mockGetAppData.mockReturnValue({
+      uploadedRecommendationKits: [], // Kit was deleted
+      selectedRecommendationKit: createCustomKitId('deleted-kit-uuid'), // But ID is still stored
+    });
+
+    render(
+      <RecommendedItemsProvider>
+        <TestComponent />
+      </RecommendedItemsProvider>,
+    );
+
+    // Should fall back to default kit
+    expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
+    expect(screen.getByTestId('selected-kit')).toHaveTextContent(
+      DEFAULT_KIT_ID,
+    );
+  });
+
   it('should load uploaded kit from localStorage and select it', () => {
     mockGetAppData.mockReturnValue({
       uploadedRecommendationKits: [uploadedKit],

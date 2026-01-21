@@ -75,7 +75,7 @@
       "defaultExpirationMonths": 36,
       "weightGramsPerUnit": 150,
       "caloriesPer100g": 130,
-      "caloriesPerUnit": 200
+      "caloriesPerUnit": 195
     },
     {
       "id": "canned-meat",
@@ -257,7 +257,7 @@
       "defaultExpirationMonths": 12,
       "weightGramsPerUnit": 400,
       "caloriesPer100g": 115,
-      "caloriesPerUnit": 450
+      "caloriesPerUnit": 460
     },
     {
       "id": "camping-stove",

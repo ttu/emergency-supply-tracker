@@ -8,6 +8,34 @@ import { KitSelector } from '@/features/templates/components/KitSelector';
 import type { KitId, RecommendedItemsFile } from '@/shared/types';
 import styles from './KitManagement.module.css';
 
+/**
+ * Sanitizes a string to be used as a filename.
+ * Replaces reserved characters and control characters with hyphens,
+ * trims whitespace, collapses runs of replacement characters,
+ * and falls back to 'recommendations' if the result is empty.
+ *
+ * @param name - The name to sanitize
+ * @returns A sanitized filename-safe string
+ */
+function sanitizeFileName(name: string): string {
+  // Replace reserved characters: / \ : * ? " < > |
+  // Also replace control characters (char codes < 32)
+  let sanitized = name
+    .replace(/[/\\:*?"<>|]/g, '-')
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\x00-\x1F]/g, '-')
+    .trim();
+
+  // Collapse runs of hyphens/underscores into a single hyphen
+  sanitized = sanitized.replace(/[-_]+/g, '-');
+
+  // Remove leading/trailing hyphens after collapsing
+  sanitized = sanitized.replace(/^-+|-+$/g, '');
+
+  // Fall back to 'recommendations' if empty
+  return sanitized || 'recommendations';
+}
+
 export function KitManagement() {
   const { t } = useTranslation();
   const {
@@ -88,7 +116,13 @@ export function KitManagement() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${selectedKit?.name || 'recommendations'}.json`;
+
+    // Sanitize the kit name for use as a filename
+    const sanitizedName = sanitizeFileName(
+      selectedKit?.name || 'recommendations',
+    );
+    link.download = `${sanitizedName}.json`;
+
     document.body.appendChild(link);
     link.click();
     link.remove();

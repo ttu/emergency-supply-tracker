@@ -123,8 +123,11 @@ describe('ShoppingListExport', () => {
       },
     });
 
-    // The paragraph should contain the item count
-    const paragraph = screen.getByRole('button').nextElementSibling;
+    // Find the button by its accessible name
+    screen.getByRole('button', { name: 'settings.shoppingList.button' });
+
+    // Find the paragraph directly by its content (description text is always present)
+    const paragraph = screen.getByText('settings.shoppingList.description');
     expect(paragraph).toHaveTextContent('(2');
     expect(paragraph).toHaveTextContent('settings.shoppingList.items)');
   });

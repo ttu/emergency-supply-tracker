@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RecommendationKitStep } from './RecommendationKitStep';
 import * as templatesModule from '@/features/templates';
 import type { KitInfo, RecommendedItemDefinition } from '@/shared/types';
@@ -199,5 +199,127 @@ describe('RecommendationKitStep', () => {
     expect(
       screen.queryByTestId('delete-kit-custom:test-uuid'),
     ).not.toBeInTheDocument();
+  });
+
+  it('should auto-select uploaded kit when upload is successful', async () => {
+    const mockSelectKit = vi.fn();
+    const mockUploadKit = vi.fn(() => ({
+      valid: true,
+      kitId: 'custom:uploaded-kit' as const,
+      errors: [],
+      warnings: [],
+    }));
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        selectKit: mockSelectKit,
+        uploadKit: mockUploadKit,
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(
+      <RecommendationKitStep onContinue={mockOnContinue} onBack={mockOnBack} />,
+    );
+
+    // Simulate file upload
+    const fileInput = screen.getByTestId('kit-file-input');
+    const validKitFile = {
+      meta: {
+        name: 'Uploaded Kit',
+        version: '1.0.0',
+        createdAt: '2024-01-01T00:00:00.000Z',
+      },
+      items: [
+        {
+          id: 'test-item',
+          names: { en: 'Test Item', fi: 'Testituote' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: true,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const file = new File([JSON.stringify(validKitFile)], 'test.json', {
+      type: 'application/json',
+    });
+    // Mock file.text() method
+    (file as { text: () => Promise<string> }).text = vi
+      .fn()
+      .mockResolvedValue(JSON.stringify(validKitFile));
+    Object.defineProperty(fileInput, 'files', {
+      value: [file],
+      writable: false,
+    });
+
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(mockUploadKit).toHaveBeenCalled();
+      // Should auto-select the uploaded kit
+      expect(mockSelectKit).toHaveBeenCalledWith('custom:uploaded-kit');
+    });
+  });
+
+  it('should not auto-select when upload is invalid', async () => {
+    const mockSelectKit = vi.fn();
+    const mockUploadKit = vi.fn(() => ({
+      valid: false,
+      kitId: undefined,
+      errors: ['Invalid file'],
+      warnings: [],
+    }));
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        selectKit: mockSelectKit,
+        uploadKit: mockUploadKit,
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(
+      <RecommendationKitStep onContinue={mockOnContinue} onBack={mockOnBack} />,
+    );
+
+    // Simulate file upload with invalid result
+    const fileInput = screen.getByTestId('kit-file-input');
+    const validKitFile = {
+      meta: {
+        name: 'Uploaded Kit',
+        version: '1.0.0',
+        createdAt: '2024-01-01T00:00:00.000Z',
+      },
+      items: [
+        {
+          id: 'test-item',
+          names: { en: 'Test Item', fi: 'Testituote' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: true,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const file = new File([JSON.stringify(validKitFile)], 'test.json', {
+      type: 'application/json',
+    });
+    // Mock file.text() method
+    (file as { text: () => Promise<string> }).text = vi
+      .fn()
+      .mockResolvedValue(JSON.stringify(validKitFile));
+    Object.defineProperty(fileInput, 'files', {
+      value: [file],
+      writable: false,
+    });
+
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(mockUploadKit).toHaveBeenCalled();
+      // Should not auto-select when upload is invalid
+      expect(mockSelectKit).not.toHaveBeenCalled();
+    });
   });
 });

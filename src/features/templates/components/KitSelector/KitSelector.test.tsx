@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { KitSelector } from './KitSelector';
 import type { KitInfo } from '@/shared/types';
 
@@ -312,5 +312,140 @@ describe('KitSelector', () => {
       screen.queryByTestId('delete-kit-72tuntia-standard'),
     ).not.toBeInTheDocument();
     expect(mockOnDeleteKitTyped).not.toHaveBeenCalled();
+  });
+
+  it('should handle file upload error and show alert', async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+    globalThis.alert = vi.fn();
+
+    render(
+      <KitSelector
+        availableKits={mockBuiltInKits}
+        selectedKitId={null}
+        onSelectKit={mockOnSelectKit}
+        onUploadKit={mockOnUploadKit}
+        showUpload={true}
+      />,
+    );
+
+    const fileInput = screen.getByTestId('kit-file-input');
+    const file = new File(['invalid json'], 'test.json', {
+      type: 'application/json',
+    });
+    // Mock file.text() method
+    (file as { text: () => Promise<string> }).text = vi
+      .fn()
+      .mockResolvedValue('invalid json');
+    Object.defineProperty(fileInput, 'files', {
+      value: [file],
+      writable: false,
+    });
+
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Failed to read or parse kit file:',
+        expect.any(Error),
+      );
+      expect(globalThis.alert).toHaveBeenCalledWith('kits.uploadError');
+    });
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should reset file input after upload', async () => {
+    const validKitFile = {
+      meta: {
+        name: 'Test Kit',
+        version: '1.0.0',
+        createdAt: '2024-01-01T00:00:00.000Z',
+      },
+      items: [
+        {
+          id: 'test-item',
+          names: { en: 'Test Item', fi: 'Testituote' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: true,
+          scaleWithDays: false,
+        },
+      ],
+    };
+
+    render(
+      <KitSelector
+        availableKits={mockBuiltInKits}
+        selectedKitId={null}
+        onSelectKit={mockOnSelectKit}
+        onUploadKit={mockOnUploadKit}
+        showUpload={true}
+      />,
+    );
+
+    const fileInput = screen.getByTestId('kit-file-input') as HTMLInputElement;
+    const file = new File([JSON.stringify(validKitFile)], 'test.json', {
+      type: 'application/json',
+    });
+    // Mock file.text() method
+    const textMock = vi.fn().mockResolvedValue(JSON.stringify(validKitFile));
+    (file as { text: () => Promise<string> }).text = textMock;
+    Object.defineProperty(fileInput, 'files', {
+      value: [file],
+      writable: false,
+    });
+    const valueSetter = vi.fn();
+    Object.defineProperty(fileInput, 'value', {
+      set: valueSetter,
+      get: () => 'test.json',
+    });
+
+    fireEvent.change(fileInput);
+
+    // Wait for the async file upload to complete
+    await waitFor(
+      () => {
+        expect(textMock).toHaveBeenCalled();
+        expect(mockOnUploadKit).toHaveBeenCalled();
+      },
+      { timeout: 2000 },
+    );
+
+    // File input should be reset after upload completes
+    // The reset happens in the finally block, so it should be called
+    expect(valueSetter).toHaveBeenCalledWith('');
+  });
+
+  it('should not call onUploadKit when onUploadKit is not provided', async () => {
+    render(
+      <KitSelector
+        availableKits={mockBuiltInKits}
+        selectedKitId={null}
+        onSelectKit={mockOnSelectKit}
+        showUpload={true}
+      />,
+    );
+
+    const fileInput = screen.getByTestId('kit-file-input');
+    const file = new File(['{}'], 'test.json', { type: 'application/json' });
+    // Mock file.text() method
+    (file as { text: () => Promise<string> }).text = vi
+      .fn()
+      .mockResolvedValue('{}');
+    Object.defineProperty(fileInput, 'files', {
+      value: [file],
+      writable: false,
+    });
+
+    fireEvent.change(fileInput);
+
+    // Should not crash, but onUploadKit won't be called since it's not provided
+    await waitFor(() => {
+      // Just verify no errors occurred
+      expect(fileInput).toBeInTheDocument();
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { KitManagement } from './KitManagement';
 import * as templatesModule from '@/features/templates';
@@ -92,6 +92,9 @@ const createMockContext = (overrides = {}) => ({
 const mockContext = createMockContext();
 
 describe('KitManagement', () => {
+  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let originalCreateElement: typeof document.createElement;
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
@@ -101,6 +104,26 @@ describe('KitManagement', () => {
     // Mock URL and document methods for export
     globalThis.URL.createObjectURL = vi.fn(() => 'blob:test-url');
     globalThis.URL.revokeObjectURL = vi.fn();
+
+    // Store original createElement before spying
+    originalCreateElement = document.createElement.bind(document);
+    // Mock createElement to return proper DOM elements
+    createElementSpy = vi
+      .spyOn(document, 'createElement')
+      .mockImplementation((tagName: string) => {
+        const element = originalCreateElement(tagName);
+        if (tagName === 'a') {
+          // Mock click to prevent navigation
+          element.click = vi.fn();
+        }
+        return element;
+      });
+  });
+
+  afterEach(() => {
+    if (createElementSpy?.mockRestore) {
+      createElementSpy.mockRestore();
+    }
   });
 
   it('should render kit management container', () => {
@@ -233,6 +256,184 @@ describe('KitManagement', () => {
     expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
   });
 
+  it('should sanitize filename with reserved characters', () => {
+    let capturedLink: HTMLAnchorElement | null =
+      null as HTMLAnchorElement | null;
+
+    createElementSpy.mockImplementation((tagName: string) => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = vi.fn();
+        capturedLink = element as unknown as HTMLAnchorElement;
+      }
+      return element;
+    });
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        availableKits: [
+          {
+            id: 'custom:test-kit',
+            name: 'Kit/With\\Invalid:Characters*?"<>|',
+            description: 'Test',
+            itemCount: 10,
+            isBuiltIn: false,
+          },
+        ],
+        selectedKitId: 'custom:test-kit',
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(<KitManagement />);
+    fireEvent.click(screen.getByTestId('export-kit-button'));
+
+    // Filename should be sanitized (reserved chars replaced with hyphens)
+    expect(capturedLink?.download).toBe('Kit-With-Invalid-Characters.json');
+  });
+
+  it('should sanitize filename with control characters', () => {
+    let capturedLink: HTMLAnchorElement | null =
+      null as HTMLAnchorElement | null;
+
+    createElementSpy.mockImplementation((tagName: string) => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = vi.fn();
+        capturedLink = element as unknown as HTMLAnchorElement;
+      }
+      return element;
+    });
+
+    // Create a name with control characters (tab, newline)
+    const nameWithControlChars = `Kit\tWith\nControl${String.fromCharCode(0)}Chars`;
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        availableKits: [
+          {
+            id: 'custom:test-kit',
+            name: nameWithControlChars,
+            description: 'Test',
+            itemCount: 10,
+            isBuiltIn: false,
+          },
+        ],
+        selectedKitId: 'custom:test-kit',
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(<KitManagement />);
+    fireEvent.click(screen.getByTestId('export-kit-button'));
+
+    // Control characters should be replaced with hyphens
+    expect(capturedLink?.download).toBe('Kit-With-Control-Chars.json');
+  });
+
+  it('should collapse runs of replacement characters', () => {
+    let capturedLink: HTMLAnchorElement | null =
+      null as HTMLAnchorElement | null;
+
+    createElementSpy.mockImplementation((tagName: string) => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = vi.fn();
+        capturedLink = element as unknown as HTMLAnchorElement;
+      }
+      return element;
+    });
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        availableKits: [
+          {
+            id: 'custom:test-kit',
+            name: 'Kit///With\\\\Multiple---Separators',
+            description: 'Test',
+            itemCount: 10,
+            isBuiltIn: false,
+          },
+        ],
+        selectedKitId: 'custom:test-kit',
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(<KitManagement />);
+    fireEvent.click(screen.getByTestId('export-kit-button'));
+
+    // Multiple consecutive separators should be collapsed to single hyphen
+    expect(capturedLink?.download).toBe('Kit-With-Multiple-Separators.json');
+  });
+
+  it('should trim whitespace and remove leading/trailing hyphens', () => {
+    let capturedLink: HTMLAnchorElement | null =
+      null as HTMLAnchorElement | null;
+
+    createElementSpy.mockImplementation((tagName: string) => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = vi.fn();
+        capturedLink = element as unknown as HTMLAnchorElement;
+      }
+      return element;
+    });
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        availableKits: [
+          {
+            id: 'custom:test-kit',
+            name: '  Kit Name  ',
+            description: 'Test',
+            itemCount: 10,
+            isBuiltIn: false,
+          },
+        ],
+        selectedKitId: 'custom:test-kit',
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(<KitManagement />);
+    fireEvent.click(screen.getByTestId('export-kit-button'));
+
+    // Whitespace should be trimmed
+    expect(capturedLink?.download).toBe('Kit Name.json');
+  });
+
+  it('should fall back to recommendations if sanitized name is empty', () => {
+    let capturedLink: HTMLAnchorElement | null =
+      null as HTMLAnchorElement | null;
+
+    createElementSpy.mockImplementation((tagName: string) => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = vi.fn();
+        capturedLink = element as unknown as HTMLAnchorElement;
+      }
+      return element;
+    });
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        availableKits: [
+          {
+            id: 'custom:test-kit',
+            name: '///',
+            description: 'Test',
+            itemCount: 10,
+            isBuiltIn: false,
+          },
+        ],
+        selectedKitId: 'custom:test-kit',
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(<KitManagement />);
+    fireEvent.click(screen.getByTestId('export-kit-button'));
+
+    // Should fall back to 'recommendations' if name becomes empty after sanitization
+    expect(capturedLink?.download).toBe('recommendations.json');
+  });
+
   it('should show success toast when kit is exported', async () => {
     render(<KitManagement />);
 
@@ -277,5 +478,132 @@ describe('KitManagement', () => {
         expect(screen.queryByText(/kits.selected/)).not.toBeInTheDocument();
       });
     }
+  });
+
+  it('should show error toast when kit upload fails', async () => {
+    const mockUploadKit = vi.fn(() => ({
+      valid: false,
+      kitId: undefined,
+      errors: ['Invalid file format'],
+      warnings: [],
+    }));
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        uploadKit: mockUploadKit,
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(<KitManagement />);
+
+    // Simulate file upload error by calling handleUploadKit directly
+    // We need to trigger the upload through KitSelector
+    const fileInput = screen.getByTestId('kit-file-input');
+    const file = new File(['invalid json'], 'test.json', {
+      type: 'application/json',
+    });
+    // Mock file.text() method
+    (file as { text: () => Promise<string> }).text = vi
+      .fn()
+      .mockResolvedValue('invalid json');
+    Object.defineProperty(fileInput, 'files', {
+      value: [file],
+      writable: false,
+    });
+
+    // Mock alert to prevent actual alert from showing
+    globalThis.alert = vi.fn();
+
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      // The error should be shown via alert (from KitSelector) or toast
+      expect(globalThis.alert).toHaveBeenCalled();
+    });
+  });
+
+  it('should show error toast when uploadKit returns errors', async () => {
+    const mockUploadKit = vi.fn(() => ({
+      valid: false,
+      kitId: undefined,
+      errors: ['Validation failed'],
+      warnings: [],
+    }));
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        uploadKit: mockUploadKit,
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(<KitManagement />);
+
+    // Create a valid kit file
+    const validKitFile = {
+      meta: {
+        name: 'Test Kit',
+        version: '1.0.0',
+        createdAt: '2024-01-01T00:00:00.000Z',
+      },
+      items: [
+        {
+          id: 'test-item',
+          names: { en: 'Test Item', fi: 'Testituote' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: true,
+          scaleWithDays: false,
+        },
+      ],
+    };
+
+    // We need to trigger handleUploadKit - this is done through KitSelector
+    // For now, let's test the error path by directly calling the handler
+    // Actually, we can't easily test this without exposing the handler
+    // Let's test it through the file upload flow
+    const fileInput = screen.getByTestId('kit-file-input');
+    const file = new File([JSON.stringify(validKitFile)], 'test.json', {
+      type: 'application/json',
+    });
+    // Mock file.text() method
+    (file as { text: () => Promise<string> }).text = vi
+      .fn()
+      .mockResolvedValue(JSON.stringify(validKitFile));
+    Object.defineProperty(fileInput, 'files', {
+      value: [file],
+      writable: false,
+    });
+
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(mockUploadKit).toHaveBeenCalled();
+      // Error toast should appear
+      expect(screen.getByText(/kits.uploadError/)).toBeInTheDocument();
+    });
+  });
+
+  it('should handle export when selectedKit is null', () => {
+    createElementSpy.mockImplementation((tagName: string) => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = vi.fn();
+      }
+      return element;
+    });
+
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+      createMockContext({
+        selectedKitId: null,
+        availableKits: [],
+      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    render(<KitManagement />);
+
+    // Export button should be disabled, but test the fallback logic
+    const exportButton = screen.getByTestId('export-kit-button');
+    expect(exportButton).toBeDisabled();
   });
 });

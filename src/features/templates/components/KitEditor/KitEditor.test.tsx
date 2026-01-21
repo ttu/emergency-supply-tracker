@@ -2,7 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { KitEditor } from './KitEditor';
 import * as templatesModule from '@/features/templates';
-import type { RecommendedItemDefinition, KitInfo } from '@/shared/types';
+import type {
+  RecommendedItemDefinition,
+  KitInfo,
+  ImportedRecommendedItem,
+  RecommendedItemsFile,
+} from '@/shared/types';
 import { createProductTemplateId } from '@/shared/types';
 
 vi.mock('react-i18next', () => ({
@@ -352,6 +357,80 @@ describe('KitEditor', () => {
       // Should be back to main view
       expect(screen.queryByTestId('item-editor')).not.toBeInTheDocument();
       expect(screen.getByText('kitEditor.title')).toBeInTheDocument();
+    });
+
+    it('should handle editing item when original item has names', () => {
+      // Mock exportRecommendedItems to return item with names
+      const itemWithNames: ImportedRecommendedItem = {
+        id: createProductTemplateId('water'),
+        names: { en: 'Water', fi: 'Vesi' },
+        category: 'water-beverages',
+        baseQuantity: 3,
+        unit: 'liters',
+        scaleWithPeople: true,
+        scaleWithDays: true,
+      };
+
+      const mockFile: RecommendedItemsFile = {
+        meta: { name: 'Test Kit', version: '1.0.0', createdAt: '2024-01-01' },
+        items: [itemWithNames],
+      };
+      mockContext.exportRecommendedItems.mockReturnValue(
+        mockFile as ReturnType<typeof mockContext.exportRecommendedItems>,
+      );
+
+      render(<KitEditor isOpen={true} onClose={mockOnClose} />);
+
+      // Open edit form
+      fireEvent.click(screen.getByTestId('edit-item-water'));
+
+      // ItemEditor should be shown with the item data
+      expect(screen.getByTestId('item-editor')).toBeInTheDocument();
+    });
+
+    it('should handle editing item when original item has i18nKey', () => {
+      // Mock exportRecommendedItems to return item with i18nKey
+      const itemWithI18nKey: ImportedRecommendedItem = {
+        id: createProductTemplateId('water'),
+        i18nKey: 'products.water',
+        category: 'water-beverages',
+        baseQuantity: 3,
+        unit: 'liters',
+        scaleWithPeople: true,
+        scaleWithDays: true,
+      };
+
+      const mockFile: RecommendedItemsFile = {
+        meta: { name: 'Test Kit', version: '1.0.0', createdAt: '2024-01-01' },
+        items: [itemWithI18nKey],
+      };
+      mockContext.exportRecommendedItems.mockReturnValue(
+        mockFile as ReturnType<typeof mockContext.exportRecommendedItems>,
+      );
+
+      render(<KitEditor isOpen={true} onClose={mockOnClose} />);
+
+      // Open edit form
+      fireEvent.click(screen.getByTestId('edit-item-water'));
+
+      // ItemEditor should be shown
+      expect(screen.getByTestId('item-editor')).toBeInTheDocument();
+    });
+
+    it('should handle editing item when original item not found in kit file', () => {
+      // Mock exportRecommendedItems to return empty items array
+      mockContext.exportRecommendedItems.mockReturnValue({
+        meta: { name: 'Test Kit', version: '1.0.0', createdAt: '2024-01-01' },
+        items: [],
+      });
+
+      render(<KitEditor isOpen={true} onClose={mockOnClose} />);
+
+      // Open edit form
+      fireEvent.click(screen.getByTestId('edit-item-water'));
+
+      // ItemEditor should still be shown, using getItemDisplayName fallback
+      expect(screen.getByTestId('item-editor')).toBeInTheDocument();
     });
 
     it('should display per-person tag for items that scale with people', () => {
