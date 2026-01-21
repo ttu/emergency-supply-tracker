@@ -26,7 +26,7 @@ All design documents are located in the [`docs/design-docs/`](./design-docs/) di
    - Quantity management
 
 3. **[Recommended Items System](./design-docs/003-recommended-items.md)**
-   - Built-in 70-item recommendations
+   - Built-in 81-item recommendations
    - Custom recommendations import/export
    - Item scaling rules (scaleWithPeople, scaleWithDays)
    - Multi-language support
@@ -81,7 +81,7 @@ All design documents are located in the [`docs/design-docs/`](./design-docs/) di
     - Template-based item creation
 
 11. **[Category Management](./design-docs/011-category-management.md)**
-    - Standard 9 categories
+    - Standard 10 categories
     - Custom category creation
     - Category icons and metadata
     - Category-based filtering

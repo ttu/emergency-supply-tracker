@@ -8,7 +8,7 @@
 
 ## Summary
 
-The Category Management system provides 9 standard emergency supply categories based on 72tuntia.fi guidelines, plus support for custom user-created categories. Categories organize items, provide visual indicators, and enable filtering and navigation.
+The Category Management system provides 10 standard emergency supply categories based on 72tuntia.fi guidelines, plus support for custom user-created categories. Categories organize items, provide visual indicators, and enable filtering and navigation.
 
 ---
 
@@ -16,7 +16,7 @@ The Category Management system provides 9 standard emergency supply categories b
 
 Emergency supplies are organized into logical categories (water, food, medical, etc.). The application provides:
 
-- 9 standard categories (based on 72tuntia.fi)
+- 10 standard categories (based on 72tuntia.fi)
 - Custom category creation for special needs
 - Category-based navigation and filtering
 - Visual category indicators (icons, colors)
@@ -27,7 +27,7 @@ Emergency supplies are organized into logical categories (water, food, medical, 
 
 ### Goals
 
-- ✅ 9 standard categories with icons
+- ✅ 10 standard categories with icons
 - ✅ Custom category creation
 - ✅ Category-based item organization
 - ✅ Category navigation (tabs, filters)
@@ -68,6 +68,7 @@ const STANDARD_CATEGORIES: StandardCategory[] = [
   { id: 'hygiene-sanitation', icon: '🧼', nameKey: 'hygiene-sanitation' },
   { id: 'tools-supplies', icon: '🔧', nameKey: 'tools-supplies' },
   { id: 'cash-documents', icon: '💰', nameKey: 'cash-documents' },
+  { id: 'pets', icon: '🐕', nameKey: 'pets' },
 ];
 ```
 
@@ -151,11 +152,11 @@ interface CustomCategory {
 
 ### Alternative 1: No Custom Categories
 
-**Approach:** Only support 9 standard categories.
+**Approach:** Only support 10 standard categories.
 
 **Rejected because:**
 
-- Users may need special categories (pets, hobbies)
+- Users may need special categories (hobbies, special equipment)
 - Flexibility is valuable
 - Easy to implement
 

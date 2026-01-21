@@ -113,6 +113,7 @@
     "formSubtitle": "Adjust the details for your household",
     "adults": "Adults",
     "children": "Children",
+    "pets": "Pets",
     "supplyDays": "Supply Duration (days)",
     "supplyDaysHelper": "Recommended: 3-7 days",
     "useFreezer": "Use Freezer",
@@ -128,6 +129,8 @@
       "adultsMax": "Maximum {{max}} adults allowed",
       "childrenNegative": "Cannot be negative",
       "childrenMax": "Maximum {{max}} children allowed",
+      "petsNegative": "Cannot be negative",
+      "petsMax": "Maximum {{max}} pets allowed",
       "supplyDaysMin": "At least {{min}} day is required",
       "supplyDaysMax": "Maximum {{max}} days allowed"
     }
@@ -201,6 +204,7 @@
     "household": {
       "adults": "Adults",
       "children": "Children",
+      "pets": "Pets",
       "supplyDays": "Supply Duration (days)",
       "useFreezer": "Use Freezer",
       "freezerHoldTime": "Freezer Hold Time (hours)",

@@ -322,6 +322,7 @@ describe('Dashboard', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },

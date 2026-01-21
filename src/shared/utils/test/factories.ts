@@ -35,6 +35,7 @@ export function createMockHousehold(
   return {
     adults: faker.number.int({ min: 1, max: 5 }),
     children: faker.number.int({ min: 0, max: 4 }),
+    pets: faker.number.int({ min: 0, max: 3 }),
     supplyDurationDays: faker.number.int({ min: 3, max: 14 }),
     useFreezer: faker.datatype.boolean(),
     ...overrides,
@@ -184,6 +185,7 @@ export function createMockRecommendedItem(
     unit: faker.helpers.arrayElement(VALID_UNITS),
     scaleWithPeople: faker.datatype.boolean(),
     scaleWithDays: faker.datatype.boolean(),
+    scaleWithPets: faker.datatype.boolean(),
     ...overrides,
   };
 }

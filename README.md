@@ -6,9 +6,9 @@ A web-based emergency supply tracking application that helps households manage t
 
 ### Core Features
 
-- **Household Configuration**: Configure adults, children, supply duration, and freezer usage
-- **9 Standard Categories**: Water & Beverages, Food, Cooking & Heat, Light & Power, Communication & Info, Medical & Health, Hygiene & Sanitation, Tools & Supplies, Cash & Documents
-- **70 Recommended Items**: Based on 72tuntia.fi guidelines with automatic quantity calculations
+- **Household Configuration**: Configure adults, children, pets, supply duration, and freezer usage
+- **10 Standard Categories**: Water & Beverages, Food, Cooking & Heat, Light & Power, Communication & Info, Medical & Health, Hygiene & Sanitation, Tools & Supplies, Cash & Documents, Pets
+- **81 Recommended Items**: Based on 72tuntia.fi guidelines with automatic quantity calculations
 - **Item Management**: Add, edit, delete, and track quantities and expiration dates
 - **Status Indicators**: Visual indicators (OK / Warning / Critical) for supply status
 - **Expiration Tracking**: Alerts for items expiring soon or already expired

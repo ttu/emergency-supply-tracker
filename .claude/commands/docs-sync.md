@@ -58,7 +58,7 @@ Verify these match:
 
 Verify these match:
 
-- [ ] All 9 standard category IDs listed
+- [ ] All 10 standard category IDs listed
 - [ ] Category names match
 - [ ] Category icons match (if documented)
 - [ ] Order matches (if relevant)

@@ -83,6 +83,7 @@ describe('ShoppingListExport', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },
@@ -115,6 +116,7 @@ describe('ShoppingListExport', () => {
         household: {
           adults: 2,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },
@@ -133,6 +135,7 @@ describe('ShoppingListExport', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },
@@ -162,6 +165,7 @@ describe('ShoppingListExport', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },
@@ -193,6 +197,7 @@ describe('ShoppingListExport', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },
@@ -234,6 +239,7 @@ describe('ShoppingListExport', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },
@@ -279,6 +285,7 @@ describe('ShoppingListExport', () => {
         household: {
           adults: 1,
           children: 0,
+          pets: 0,
           supplyDurationDays: 3,
           useFreezer: false,
         },

@@ -98,7 +98,7 @@ type ItemStatus = 'ok' | 'warning' | 'critical';
 
 ### StandardCategoryId
 
-Identifiers for the 9 standard supply categories:
+Identifiers for the 10 standard supply categories:
 
 ```typescript
 type StandardCategoryId =
@@ -110,7 +110,8 @@ type StandardCategoryId =
   | 'medical-health'
   | 'hygiene-sanitation'
   | 'tools-supplies'
-  | 'cash-documents';
+  | 'cash-documents'
+  | 'pets';
 ```
 
 ### ProductKind
@@ -146,6 +147,7 @@ Defines the household composition and supply requirements:
 interface HouseholdConfig {
   adults: number; // Number of adults (default: 2)
   children: number; // Number of children (default: 0)
+  pets: number; // Number of pets (default: 0)
   supplyDurationDays: number; // Target supply duration (default: 7)
   useFreezer: boolean; // Use freezer for emergency supplies (default: false)
   freezerHoldTimeHours?: number; // Optional: freezer holdover time
@@ -158,6 +160,7 @@ interface HouseholdConfig {
 | -------------------- | ------- |
 | `adults`             | 2       |
 | `children`           | 0       |
+| `pets`               | 0       |
 | `supplyDurationDays` | 7       |
 | `useFreezer`         | false   |
 
@@ -316,6 +319,7 @@ interface RecommendedItemDefinition {
   unit: Unit; // Measurement unit
   scaleWithPeople: boolean; // Multiply by household size
   scaleWithDays: boolean; // Multiply by duration
+  scaleWithPets?: boolean; // Multiply by pet count (for pet-specific items)
   requiresFreezer?: boolean; // Only applicable if useFreezer
   defaultExpirationMonths?: number; // Default shelf life
   // Weight and calorie tracking for food items
@@ -336,12 +340,13 @@ Items can scale based on:
 
 - **People**: `scaleWithPeople: true` - quantity increases with household size
 - **Duration**: `scaleWithDays: true` - quantity increases with supply duration
+- **Pets**: `scaleWithPets: true` - quantity increases with pet count (for pet-specific items)
 
 ---
 
 ## Custom Recommendations File
 
-Users can import custom recommendations from JSON files to replace the built-in 70-item list. This enables country-specific or organization-specific recommendation sets.
+Users can import custom recommendations from JSON files to replace the built-in 81-item list. This enables country-specific or organization-specific recommendation sets.
 
 ### LocalizedNames
 
@@ -366,6 +371,7 @@ interface ImportedRecommendedItem {
   unit: Unit; // Measurement unit
   scaleWithPeople: boolean; // Multiply by household size
   scaleWithDays: boolean; // Multiply by duration
+  scaleWithPets?: boolean; // Multiply by pet count (for pet-specific items)
   requiresFreezer?: boolean; // Only applicable if useFreezer
   defaultExpirationMonths?: number; // Default shelf life
   weightGramsPerUnit?: number; // Weight per unit for calorie calc
@@ -414,7 +420,7 @@ interface RecommendedItemsFile {
 Sample recommendation files are available in `public/samples/`:
 
 - `recommendations-template.json` - Minimal template with 4 example items
-- `recommendations-default.json` - Full 70 built-in items exported as JSON
+- `recommendations-default.json` - Full 81 built-in items exported as JSON
 
 ---
 
@@ -460,7 +466,7 @@ interface AppData {
 
 ## Standard Categories
 
-The 9 built-in supply categories:
+The 10 built-in supply categories:
 
 | ID                   | Name                 | Icon |
 | -------------------- | -------------------- | ---- |
@@ -473,6 +479,7 @@ The 9 built-in supply categories:
 | `hygiene-sanitation` | Hygiene & Sanitation | 🧼   |
 | `tools-supplies`     | Tools & Supplies     | 🔧   |
 | `cash-documents`     | Cash & Documents     | 💰   |
+| `pets`               | Pets                 | 🐾   |
 
 Standard categories are always available and not stored in `customCategories`. Only user-created categories are persisted.
 
@@ -511,6 +518,11 @@ if (scaleWithPeople) {
 if (scaleWithDays) {
   // Multiply by supply duration in days
   quantity *= supplyDurationDays;
+}
+
+if (scaleWithPets) {
+  // Multiply by pet count (for pet-specific items)
+  quantity *= pets * PET_REQUIREMENT_MULTIPLIER;
 }
 
 recommendedQuantity = Math.ceil(quantity);

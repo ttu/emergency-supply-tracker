@@ -11,12 +11,15 @@ vi.mock('react-i18next', () => ({
         'household.title': 'Household Configuration',
         'household.adults': 'Adults',
         'household.children': 'Children',
+        'household.pets': 'Pets',
         'household.supplyDays': 'Supply Duration (days)',
         'household.useFreezer': 'Use Freezer',
         'household.errors.adultsMin': 'At least {{min}} adult is required',
         'household.errors.adultsMax': 'Maximum {{max}} adults allowed',
         'household.errors.childrenNegative': 'Cannot be negative',
         'household.errors.childrenMax': 'Maximum {{max}} children allowed',
+        'household.errors.petsNegative': 'Cannot be negative',
+        'household.errors.petsMax': 'Maximum {{max}} pets allowed',
         'household.errors.supplyDaysMin': 'At least {{min}} day is required',
         'household.errors.supplyDaysMax': 'Maximum {{max}} days allowed',
         'actions.save': 'Save',
@@ -89,6 +92,7 @@ describe('HouseholdForm', () => {
     expect(onSubmit).toHaveBeenCalledWith({
       adults: 2,
       children: 1,
+      pets: 0,
       supplyDays: 10,
       useFreezer: true,
     });
@@ -121,6 +125,34 @@ describe('HouseholdForm', () => {
     fireEvent.submit(form!);
 
     expect(screen.getByText('Maximum 20 children allowed')).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows validation error for negative pets', () => {
+    const onSubmit = vi.fn();
+    const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
+
+    const petsInput = screen.getByLabelText(/Pets/i);
+    const form = container.querySelector('form');
+
+    fireEvent.change(petsInput, { target: { value: '-1' } });
+    fireEvent.submit(form!);
+
+    expect(screen.getByText('Cannot be negative')).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows validation error for too many pets', () => {
+    const onSubmit = vi.fn();
+    const { container } = render(<HouseholdForm onSubmit={onSubmit} />);
+
+    const petsInput = screen.getByLabelText(/Pets/i);
+    const form = container.querySelector('form');
+
+    fireEvent.change(petsInput, { target: { value: '25' } });
+    fireEvent.submit(form!);
+
+    expect(screen.getByText('Maximum 20 pets allowed')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 

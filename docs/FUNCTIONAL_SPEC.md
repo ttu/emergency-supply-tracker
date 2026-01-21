@@ -86,7 +86,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 ### 2. Supply Categories
 
-#### 9 Standard Categories (based on 72tuntia.fi)
+#### 10 Standard Categories (based on 72tuntia.fi)
 
 | ID                   | Name                 | Icon             | Description                               |
 | -------------------- | -------------------- | ---------------- | ----------------------------------------- |
@@ -99,6 +99,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 | `hygiene-sanitation` | Hygiene & Sanitation | :soap:           | Toilet paper, soap, wipes                 |
 | `tools-supplies`     | Tools & Supplies     | :wrench:         | Bucket, containers, duct tape             |
 | `cash-documents`     | Cash & Documents     | :moneybag:       | Cash, document copies                     |
+| `pets`               | Pets                 | :dog:            | Pet food, bowls, carriers, medications    |
 
 #### Custom Categories
 
@@ -161,7 +162,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 ### 4. Recommended Items
 
-70 recommended items across 9 categories. See [RECOMMENDED_ITEMS.md](RECOMMENDED_ITEMS.md) for complete list.
+81 recommended items across 10 categories. See [RECOMMENDED_ITEMS.md](RECOMMENDED_ITEMS.md) for complete list.
 
 **Key examples:**
 
@@ -175,7 +176,7 @@ Total Multiplier = (adults × 1.0 + children × 0.75) × (days ÷ 3)
 
 #### Custom Recommendations
 
-Users can import custom recommendation sets from JSON files to replace the built-in 70-item list. This enables:
+Users can import custom recommendation sets from JSON files to replace the built-in 81-item list. This enables:
 
 - **Country-specific recommendations**: Different countries have different preparedness guidelines
 - **Organization recommendations**: Companies, municipalities, or groups can share standardized kits
@@ -233,7 +234,7 @@ Users can import custom recommendation sets from JSON files to replace the built
 Sample recommendation files are available in `public/samples/`:
 
 - `recommendations-template.json` - Minimal template with 4 example items
-- `recommendations-default.json` - Full 70 built-in items exported as JSON
+- `recommendations-default.json` - Full 81 built-in items exported as JSON
 
 ---
 
@@ -333,7 +334,7 @@ A comprehensive help page with frequently asked questions and guidance.
 
 - `DashboardHeader`: Household summary, overall preparedness %
 - `AlertBanner`: Expired/expiring/missing items
-- `CategoryGrid`: 9 category cards with status indicators
+- `CategoryGrid`: 10 category cards with status indicators
 
 **Category Card shows:**
 
@@ -433,7 +434,7 @@ A comprehensive help page with frequently asked questions and guidance.
 **Recommended Items:**
 
 - `RecommendationsStatus`: Shows current recommendations source
-  - "Built-in (70 items)" or "Custom: {name} ({count} items)"
+  - "Built-in (81 items)" or "Custom: {name} ({count} items)"
   - Reset to default button (when using custom)
 - `ImportRecommendationsButton`: Import custom recommendations from JSON
   - File upload

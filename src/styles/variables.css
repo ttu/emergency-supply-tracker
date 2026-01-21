@@ -96,6 +96,7 @@
   /* Status colors - Refined palette */
   --color-success: #10b981;
   --color-success-light: #34d399;
+  --color-success-dark: #047857; /* Darker green for WCAG AA contrast with white text */
   --color-success-alpha: rgba(16, 185, 129, 0.1);
   --color-on-success: #ffffff; /* Text color on success background - WCAG AA compliant */
 
@@ -155,6 +156,7 @@
   /* Status colors - Adjusted for dark theme (more subdued) */
   --color-success: #34d399;
   --color-success-light: #6ee7b7;
+  --color-success-dark: #047857; /* Darker green for WCAG AA contrast with white text */
   --color-success-alpha: rgba(52, 211, 153, 0.08);
   --color-on-success: #ffffff; /* Text color on success background - WCAG AA compliant */
 
@@ -261,6 +263,7 @@
 
   --color-success: #10b981;
   --color-success-light: #34d399;
+  --color-success-dark: #047857; /* Darker green for WCAG AA contrast with white text */
   --color-success-alpha: rgba(16, 185, 129, 0.15);
 
   --color-warning: #f59e0b;
@@ -312,6 +315,7 @@
 
   --color-success: #10b981;
   --color-success-light: #34d399;
+  --color-success-dark: #047857; /* Darker green for WCAG AA contrast with white text */
   --color-success-alpha: rgba(16, 185, 129, 0.15);
 
   --color-warning: #f59e0b;
@@ -363,6 +367,7 @@
 
   --color-success: #10b981;
   --color-success-light: #34d399;
+  --color-success-dark: #047857; /* Darker green for WCAG AA contrast with white text */
   --color-success-alpha: rgba(16, 185, 129, 0.1);
 
   --color-warning: #f59e0b;
@@ -414,6 +419,7 @@
 
   --color-success: #10b981;
   --color-success-light: #34d399;
+  --color-success-dark: #047857; /* Darker green for WCAG AA contrast with white text */
   --color-success-alpha: rgba(16, 185, 129, 0.15);
 
   --color-warning: #f59e0b;
@@ -465,6 +471,7 @@
 
   --color-success: #10b981;
   --color-success-light: #34d399;
+  --color-success-dark: #047857; /* Darker green for WCAG AA contrast with white text */
   --color-success-alpha: rgba(16, 185, 129, 0.1);
 
   --color-warning: #f59e0b;
@@ -516,6 +523,7 @@
 
   --color-success: #10b981;
   --color-success-light: #34d399;
+  --color-success-dark: #047857; /* Darker green for WCAG AA contrast with white text */
   --color-success-alpha: rgba(16, 185, 129, 0.1);
 
   --color-warning: #f59e0b;

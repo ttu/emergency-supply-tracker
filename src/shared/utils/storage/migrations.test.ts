@@ -123,6 +123,7 @@ describe('migrations', () => {
         household: {
           adults: 3,
           children: 2,
+          pets: 0,
           supplyDurationDays: 14,
           useFreezer: true,
         },
@@ -215,6 +216,7 @@ describe('migrations', () => {
         household: {
           adults: 2,
           children: 0,
+          pets: 0,
           supplyDurationDays: 7,
           useFreezer: false,
         },
@@ -243,6 +245,7 @@ describe('migrations', () => {
         household: {
           adults: 2,
           children: 0,
+          pets: 0,
           supplyDurationDays: 7,
           useFreezer: false,
         },
@@ -344,6 +347,7 @@ describe('migrations', () => {
         household: {
           adults: 3,
           children: 2,
+          pets: 0,
           supplyDurationDays: 14,
           useFreezer: true,
         },

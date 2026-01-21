@@ -41,6 +41,7 @@ describe('SettingsProvider', () => {
       household: {
         adults: 2,
         children: 0,
+        pets: 0,
         supplyDurationDays: 7,
         useFreezer: false,
       },
@@ -79,6 +80,7 @@ describe('SettingsProvider', () => {
       household: {
         adults: 2,
         children: 0,
+        pets: 0,
         supplyDurationDays: 7,
         useFreezer: false,
       },
@@ -117,6 +119,7 @@ describe('SettingsProvider', () => {
       household: {
         adults: 2,
         children: 0,
+        pets: 0,
         supplyDurationDays: 7,
         useFreezer: false,
       },

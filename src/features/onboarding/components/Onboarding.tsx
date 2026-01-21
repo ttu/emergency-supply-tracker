@@ -39,6 +39,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
     const config: HouseholdConfig = {
       adults: data.adults,
       children: data.children,
+      pets: data.pets,
       supplyDurationDays: data.supplyDays,
       useFreezer: data.useFreezer,
     };
@@ -113,6 +114,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
               ? {
                   adults: selectedPreset.adults,
                   children: selectedPreset.children,
+                  pets: selectedPreset.pets,
                   supplyDays: HOUSEHOLD_DEFAULTS.supplyDays,
                   useFreezer: HOUSEHOLD_DEFAULTS.useFreezer,
                 }

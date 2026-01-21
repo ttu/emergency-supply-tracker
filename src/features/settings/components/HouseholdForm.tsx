@@ -70,6 +70,17 @@ export function HouseholdForm() {
         />
 
         <Input
+          id="pets"
+          type="number"
+          label={t('settings.household.pets')}
+          value={household.pets.toString()}
+          onChange={(e) =>
+            handleChange('pets', Number.parseInt(e.target.value, 10) || 0)
+          }
+          min={0}
+        />
+
+        <Input
           id="supplyDurationDays"
           type="number"
           label={t('settings.household.supplyDays')}

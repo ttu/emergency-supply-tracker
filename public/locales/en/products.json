@@ -92,5 +92,15 @@
   "dust-masks": "Dust Masks or N95 Respirators",
   "cash": "Cash (Small Bills and Coins)",
   "document-copies": "Copies of Important Documents",
-  "contact-list": "Emergency Contact List"
+  "contact-list": "Emergency Contact List",
+  "pet-food-dry": "Pet Food (Dry)",
+  "pet-food-wet": "Pet Food (Wet/Canned)",
+  "pet-water-bowl": "Pet Water Bowl",
+  "pet-food-bowl": "Pet Food Bowl",
+  "pet-carrier": "Pet Carrier/Crate",
+  "pet-leash-collar": "Pet Leash & Collar",
+  "pet-waste-bags": "Pet Waste Bags",
+  "pet-medications": "Pet Medications",
+  "pet-comfort-items": "Pet Comfort Items (Blanket/Toy)",
+  "pet-vaccination-records": "Pet Vaccination/Health Records"
 }

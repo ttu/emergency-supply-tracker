@@ -195,6 +195,10 @@ export function calculateCategoryShortages(
       recommendedQty *= household.supplyDurationDays;
     }
 
+    if (recItem.scaleWithPets) {
+      recommendedQty *= household.pets;
+    }
+
     // Track drinking water separately for water-beverages category
     if (isWaterCategory && recItem.id === 'bottled-water') {
       drinkingWaterNeeded = recommendedQty;

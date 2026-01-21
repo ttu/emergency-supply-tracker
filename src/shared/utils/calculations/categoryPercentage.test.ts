@@ -1,29 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { calculateCategoryPercentage } from './categoryPercentage';
-import type {
-  InventoryItem,
-  HouseholdConfig,
-  RecommendedItemDefinition,
-} from '@/shared/types';
+import type { InventoryItem, RecommendedItemDefinition } from '@/shared/types';
 import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
   createDateOnly,
 } from '@/shared/types';
-
-// Helper to create mock household
-function createMockHousehold(
-  overrides: Partial<HouseholdConfig> = {},
-): HouseholdConfig {
-  return {
-    adults: 1,
-    children: 0,
-    supplyDurationDays: 3,
-    useFreezer: true,
-    ...overrides,
-  };
-}
+import { createMockHousehold } from '@/shared/utils/test/factories';
 
 // Helper to create mock inventory item
 function createMockInventoryItem(
@@ -273,7 +257,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // 1 adult * 2000 kcal * 3 days = 6000 kcal needed
@@ -308,7 +294,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // Need 6000 kcal, have 2 kg rice = 7200 kcal
@@ -338,7 +326,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 2,
         children: 2, // Children = 0.75 multiplier
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // (2 * 1.0 + 2 * 0.75) * 2000 * 3 = 3.5 * 2000 * 3 = 21000 kcal needed
@@ -369,7 +359,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // Need 6000 kcal
@@ -401,7 +393,10 @@ describe('calculateCategoryPercentage', () => {
     it('calculates percentage based on quantities for tools category', () => {
       const household = createMockHousehold({
         adults: 1,
+        children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // Need: 1 flashlight + 4 batteries = 5 items
@@ -438,7 +433,13 @@ describe('calculateCategoryPercentage', () => {
     });
 
     it('returns 100% when category is fully stocked', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       const items = [
         createMockInventoryItem({
@@ -468,7 +469,13 @@ describe('calculateCategoryPercentage', () => {
     });
 
     it('handles partial quantities correctly', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       // Need: 1 flashlight + 4 batteries = 5 items
       // Have: 0.5 flashlight (partial) + 2 batteries = 2.5 items
@@ -508,7 +515,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 2,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // 2 adults * 3 L/day * 3 days = 18 L needed (using default 3L/person/day)
@@ -539,7 +548,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // 1 adult * 3 L/day * 3 days = 9 L needed
@@ -569,7 +580,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 2,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // (1 * 1.0 + 2 * 0.75) * 3 L/day * 3 days = 2.5 * 9 = 22.5 L needed
@@ -603,7 +616,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // Cooking-heat has mixed units (pieces, canisters, boxes), so uses item type counting
@@ -652,7 +667,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 6, // 6 days = 2x base (3 days)
+        useFreezer: true,
       });
 
       // Need: 3 item types (stove: 1, fuel: 1*2=2, matches: 2)
@@ -703,7 +720,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // Need: 2 flashlights + 1 headlamp (scales with people) + 20 batteries = 23 items
@@ -750,7 +769,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 2,
         children: 1,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // Need: 2 flashlights + 3 headlamps (2 adults + 1 child) + 20 batteries = 25 items
@@ -793,7 +814,13 @@ describe('calculateCategoryPercentage', () => {
 
   describe('communication-info category', () => {
     it('calculates percentage for communication-info category', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       // Need: 1 battery radio + 1 hand-crank radio = 2 items
       // Have: 1 battery radio = 1 item
@@ -822,7 +849,13 @@ describe('calculateCategoryPercentage', () => {
     });
 
     it('returns 100% when both radios are stocked', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       const items = [
         createMockInventoryItem({
@@ -859,7 +892,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // Medical-health has mixed units (pieces, days, pieces), so uses item type counting
@@ -907,7 +942,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 2,
         children: 1,
+        pets: 0,
         supplyDurationDays: 6, // 6 days = 2x base (3 days)
+        useFreezer: true,
       });
 
       // Need: 3 item types (first-aid-kit: 1, prescription-meds: (2*1.0 + 1*0.75)*2 = 5.5 -> 6, bandages: 20)
@@ -958,7 +995,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
+        pets: 0,
         supplyDurationDays: 3,
+        useFreezer: true,
       });
 
       // Hygiene-sanitation has mixed units (rolls, pieces), so uses item type counting
@@ -1006,7 +1045,9 @@ describe('calculateCategoryPercentage', () => {
       const household = createMockHousehold({
         adults: 2,
         children: 1,
+        pets: 0,
         supplyDurationDays: 6, // 6 days = 2x base (3 days)
+        useFreezer: true,
       });
 
       // Need: 3 item types (toilet-paper: (2*1.0 + 1*0.75)*2 = 5.5 -> 6, soap: 2, toothbrush: (2*1.0 + 1*0.75) = 2.75 -> 3)
@@ -1054,7 +1095,13 @@ describe('calculateCategoryPercentage', () => {
 
   describe('cash-documents category', () => {
     it('calculates percentage for cash-documents category (item type counting)', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       // Cash-documents has mixed units (euros, sets), so uses item type counting
       // Need: 2 item types (cash: 300 euros, document-copies: 1 set)
@@ -1092,7 +1139,13 @@ describe('calculateCategoryPercentage', () => {
     });
 
     it('returns 100% when fully stocked', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       const items = [
         createMockInventoryItem({
@@ -1126,7 +1179,13 @@ describe('calculateCategoryPercentage', () => {
 
   describe('disabled recommended items', () => {
     it('excludes disabled recommended items from calculation', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       const items = [
         createMockInventoryItem({
@@ -1224,7 +1283,13 @@ describe('calculateCategoryPercentage', () => {
 
   describe('edge cases', () => {
     it('returns 100% for category with items but no recommended items', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       const items = [
         createMockInventoryItem({
@@ -1247,7 +1312,13 @@ describe('calculateCategoryPercentage', () => {
     });
 
     it('returns 0% for empty category with no recommended items', () => {
-      const household = createMockHousehold();
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
 
       const result = calculateCategoryPercentage(
         'empty-category',

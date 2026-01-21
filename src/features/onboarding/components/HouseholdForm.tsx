@@ -13,6 +13,7 @@ function parseIntOrDefault(value: string, defaultValue: number): number {
 export interface HouseholdData {
   adults: number;
   children: number;
+  pets: number;
   supplyDays: number;
   useFreezer: boolean;
 }
@@ -32,6 +33,7 @@ export function HouseholdForm({
   const [formData, setFormData] = useState<HouseholdData>({
     adults: initialData?.adults ?? HOUSEHOLD_DEFAULTS.adults,
     children: initialData?.children ?? HOUSEHOLD_DEFAULTS.children,
+    pets: initialData?.pets ?? HOUSEHOLD_DEFAULTS.pets,
     supplyDays: initialData?.supplyDays ?? HOUSEHOLD_DEFAULTS.supplyDays,
     useFreezer: initialData?.useFreezer ?? HOUSEHOLD_DEFAULTS.useFreezer,
   });
@@ -60,6 +62,15 @@ export function HouseholdForm({
     if (formData.children > HOUSEHOLD_LIMITS.children.max) {
       newErrors.children = t('household.errors.childrenMax', {
         max: HOUSEHOLD_LIMITS.children.max,
+      });
+    }
+
+    if (formData.pets < HOUSEHOLD_LIMITS.pets.min) {
+      newErrors.pets = t('household.errors.petsNegative');
+    }
+    if (formData.pets > HOUSEHOLD_LIMITS.pets.max) {
+      newErrors.pets = t('household.errors.petsMax', {
+        max: HOUSEHOLD_LIMITS.pets.max,
       });
     }
 
@@ -144,6 +155,22 @@ export function HouseholdForm({
                 )
               }
               error={errors.children}
+            />
+
+            <Input
+              id="pets"
+              label={t('household.pets')}
+              type="number"
+              min={HOUSEHOLD_LIMITS.pets.min}
+              max={HOUSEHOLD_LIMITS.pets.max}
+              value={formData.pets}
+              onChange={(e) =>
+                handleChange(
+                  'pets',
+                  parseIntOrDefault(e.target.value, HOUSEHOLD_DEFAULTS.pets),
+                )
+              }
+              error={errors.pets}
             />
 
             <Input

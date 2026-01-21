@@ -24,9 +24,9 @@ This document describes AI agent workflows and patterns used in the Emergency Su
 
 **Key Features:**
 
-- Track supplies across 9 categories (water-beverages, food, cooking-heat, light-power, communication-info, medical-health, hygiene-sanitation, tools-supplies, cash-documents)
-- Household configuration (adults, children, supply duration, freezer)
-- 71 recommended items based on 72tuntia.fi guidelines
+- Track supplies across 10 categories (water-beverages, food, cooking-heat, light-power, communication-info, medical-health, hygiene-sanitation, tools-supplies, cash-documents, pets)
+- Household configuration (adults, children, pets, supply duration, freezer)
+- 81 recommended items based on 72tuntia.fi guidelines
 - Expiration tracking and alerts
 - Product templates (built-in + custom) with barcode support
 - Import/Export data (JSON)
@@ -259,7 +259,7 @@ The `docs/` folder contains up-to-date documentation that reflects the actual im
 | ---------------------------------------------------------- | --------------------------------------------- |
 | **[docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md)**             | TypeScript types and data structures          |
 | **[docs/FUNCTIONAL_SPEC.md](docs/FUNCTIONAL_SPEC.md)**     | Features, workflows, and UI components        |
-| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 71 recommended items with current data    |
+| **[docs/RECOMMENDED_ITEMS.md](docs/RECOMMENDED_ITEMS.md)** | All 81 recommended items with current data    |
 | **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**           | React component structure                     |
 | **[docs/TECHNICAL_SPEC.md](docs/TECHNICAL_SPEC.md)**       | Technology stack and configuration            |
 | **[docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)**   | Testing approach, Vitest, Playwright          |
