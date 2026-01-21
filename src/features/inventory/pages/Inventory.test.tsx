@@ -8,6 +8,7 @@ import {
   createMockInventoryItem,
   createMockAppData,
   createMockHousehold,
+  within,
 } from '@/test';
 import { Inventory } from './Inventory';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
@@ -47,7 +48,11 @@ describe('Inventory Page', () => {
   it('should show category navigation', () => {
     renderWithProviders(<Inventory />);
 
-    expect(screen.getByText('inventory.allCategories')).toBeInTheDocument();
+    // Scope to sidebar to avoid duplicates from drawer
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    expect(
+      within(sidebar).getByText('inventory.allCategories'),
+    ).toBeInTheDocument();
   });
 
   it('should show filter bar', () => {
@@ -127,7 +132,11 @@ describe('Inventory Page', () => {
   it('should filter items by category', () => {
     renderWithProviders(<Inventory />);
 
-    const allCategoriesButton = screen.getByText('inventory.allCategories');
+    // Scope to sidebar to avoid duplicates from drawer
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const allCategoriesButton = within(sidebar).getByText(
+      'inventory.allCategories',
+    );
     expect(allCategoriesButton).toBeInTheDocument();
 
     // Category filtering is tested through component logic
@@ -413,8 +422,9 @@ describe('Inventory Page with items', () => {
       />,
     );
 
-    // Click on a different category
-    const foodCategory = screen.getByTestId('sidemenu-item-food');
+    // Click on a different category (scope to sidebar)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const foodCategory = within(sidebar).getByTestId('sidemenu-item-food');
     fireEvent.click(foodCategory);
 
     expect(onCategoryChange).toHaveBeenCalledWith('food');
@@ -428,8 +438,9 @@ describe('Inventory Page with items', () => {
     expect(screen.getByText('Test Water')).toBeInTheDocument();
     expect(screen.queryByText('Expired Food')).not.toBeInTheDocument();
 
-    // Click on a different category - uses local state setter
-    const foodCategory = screen.getByTestId('sidemenu-item-food');
+    // Click on a different category - uses local state setter (scope to sidebar)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const foodCategory = within(sidebar).getByTestId('sidemenu-item-food');
     fireEvent.click(foodCategory);
 
     // Should now show food item (local state changed)
@@ -441,8 +452,11 @@ describe('Inventory Page with items', () => {
     // Render without onCategoryChange - uses local state
     renderWithProviders(<Inventory selectedCategoryId="water-beverages" />);
 
-    // Click on All Categories button
-    const allCategoriesButton = screen.getByText('inventory.allCategories');
+    // Click on All Categories button (scope to sidebar)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const allCategoriesButton = within(sidebar).getByText(
+      'inventory.allCategories',
+    );
     fireEvent.click(allCategoriesButton);
 
     // Should now show all items

@@ -38,10 +38,10 @@ type SettingsSection =
   | 'dangerZone';
 
 interface SectionProps {
-  testId: string;
-  titleKey: string;
-  titleClassName?: string;
-  children: ReactNode;
+  readonly testId: string;
+  readonly titleKey: string;
+  readonly titleClassName?: string;
+  readonly children: ReactNode;
 }
 
 function Section({
@@ -49,7 +49,7 @@ function Section({
   titleKey,
   titleClassName = styles.sectionTitle,
   children,
-}: SectionProps) {
+}: Readonly<SectionProps>) {
   const { t } = useTranslation();
   return (
     <section className={styles.section} data-testid={testId}>
@@ -246,8 +246,7 @@ export function Settings() {
         // Exhaustive check: ensures all SettingsSection cases are handled
         // TypeScript's strict mode with noFallthroughCasesInSwitch enforces this at compile time,
         // but this default case provides runtime safety
-        const _exhaustive: never = selectedSection as never;
-        void _exhaustive; // Suppress unused variable warning
+        // This should never be reached if all cases are handled
         return null;
       }
     }

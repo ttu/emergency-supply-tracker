@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import React from 'react';
 import App from './App';
 import { createMockAppData } from '@/shared/utils/test/factories';
@@ -106,9 +106,11 @@ describe('App', () => {
     fireEvent.click(settingsButton);
 
     // Should show settings sections (wait for lazy loading)
+    // Scope to sidebar to avoid duplicates from drawer
     await waitFor(() => {
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
       expect(
-        screen.getByText('settings.sections.household'),
+        within(sidebar).getByText('settings.sections.household'),
       ).toBeInTheDocument();
     });
     // Dashboard content should not be visible
@@ -128,8 +130,10 @@ describe('App', () => {
     // Go to settings
     fireEvent.click(screen.getByText('navigation.settings'));
     await waitFor(() => {
+      // Scope to sidebar to avoid duplicates from drawer
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
       expect(
-        screen.getByText('settings.sections.household'),
+        within(sidebar).getByText('settings.sections.household'),
       ).toBeInTheDocument();
     });
 
@@ -210,7 +214,9 @@ describe('App', () => {
     });
 
     // The category should be selected in the SideMenu (has aria-current="page")
-    const categoryNavButton = screen.getByTestId(
+    // Scope to sidebar to avoid duplicates from drawer
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const categoryNavButton = within(sidebar).getByTestId(
       'sidemenu-item-water-beverages',
     );
     expect(categoryNavButton).toHaveAttribute('aria-current', 'page');

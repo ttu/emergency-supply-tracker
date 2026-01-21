@@ -11,14 +11,14 @@ export interface SideMenuItem {
 }
 
 export interface SideMenuProps {
-  items: SideMenuItem[];
-  selectedId: string;
-  onSelect: (id: string) => void;
-  ariaLabel: string;
-  showAllOption?: {
-    id: string;
-    label: string;
-    icon?: string;
+  readonly items: readonly SideMenuItem[];
+  readonly selectedId: string;
+  readonly onSelect: (id: string) => void;
+  readonly ariaLabel: string;
+  readonly showAllOption?: {
+    readonly id: string;
+    readonly label: string;
+    readonly icon?: string;
   };
 }
 
@@ -28,7 +28,7 @@ export function SideMenu({
   onSelect,
   ariaLabel,
   showAllOption,
-}: SideMenuProps) {
+}: Readonly<SideMenuProps>) {
   const { t } = useTranslation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const drawerId = useId();
@@ -51,7 +51,7 @@ export function SideMenu({
 
   const { containerRef, handleKeyDown, getItemProps } = useKeyboardNavigation({
     itemCount: allItems.length,
-    currentIndex: currentIndex >= 0 ? currentIndex : 0,
+    currentIndex: Math.max(currentIndex, 0),
     onIndexChange: handleIndexChange,
     orientation: 'vertical',
     loop: true,
@@ -68,9 +68,13 @@ export function SideMenu({
       className={styles.menu}
       role="navigation"
       aria-label={ariaLabel}
-      onKeyDown={handleKeyDown}
     >
-      <ul className={styles.list} role="menubar" aria-orientation="vertical">
+      <div
+        className={styles.list}
+        role="menubar"
+        aria-orientation="vertical"
+        onKeyDown={handleKeyDown}
+      >
         {allItems.map((item, index) => {
           const isActive = item.id === selectedId;
           const itemProps = getItemProps(index);
@@ -92,7 +96,7 @@ export function SideMenu({
             </li>
           );
         })}
-      </ul>
+      </div>
     </nav>
   );
 

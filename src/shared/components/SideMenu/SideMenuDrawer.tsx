@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import styles from './SideMenu.module.css';
 
 interface SideMenuDrawerProps {
-  id?: string;
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
+  readonly id?: string;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly children: ReactNode;
 }
 
 export function SideMenuDrawer({
@@ -15,17 +15,29 @@ export function SideMenuDrawer({
   isOpen,
   onClose,
   children,
-}: SideMenuDrawerProps) {
+}: Readonly<SideMenuDrawerProps>) {
   const { t } = useTranslation();
-  const drawerRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLDialogElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
-  // Focus management
+  // Focus management and dialog open/close
   useEffect(() => {
+    const dialog = drawerRef.current;
+    if (!dialog) return;
+
     if (isOpen) {
       previousFocusRef.current = document.activeElement as HTMLElement;
-      drawerRef.current?.focus();
+      if (typeof dialog.showModal === 'function') {
+        dialog.showModal();
+      }
+      // Focus after a short delay to ensure dialog is fully rendered
+      setTimeout(() => {
+        dialog.focus();
+      }, 0);
     } else {
+      if (typeof dialog.close === 'function') {
+        dialog.close();
+      }
       previousFocusRef.current?.focus();
     }
   }, [isOpen]);
@@ -81,39 +93,37 @@ export function SideMenuDrawer({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const drawerContent = (
-    <div
-      className={styles.drawerOverlay}
-      onMouseDown={onClose}
-      data-testid="sidemenu-drawer-overlay"
+    <dialog
+      ref={drawerRef}
+      id={id}
+      className={styles.drawer}
+      aria-label={t('sideMenu.menuLabel')}
+      onCancel={(e) => {
+        e.preventDefault();
+        onClose();
+      }}
+      onClick={(e) => {
+        // Close dialog when clicking the backdrop (the dialog element itself)
+        if (e.target === drawerRef.current) {
+          onClose();
+        }
+      }}
+      data-testid="sidemenu-drawer"
     >
-      <div
-        ref={drawerRef}
-        id={id}
-        className={styles.drawer}
-        onMouseDown={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t('sideMenu.menuLabel')}
-        tabIndex={-1}
-        data-testid="sidemenu-drawer"
-      >
-        <div className={styles.drawerHeader}>
-          <button
-            type="button"
-            className={styles.closeButton}
-            onClick={onClose}
-            aria-label={t('sideMenu.closeMenu')}
-            data-testid="sidemenu-close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div className={styles.drawerContent}>{children}</div>
+      <div className={styles.drawerHeader}>
+        <button
+          type="button"
+          className={styles.closeButton}
+          onClick={onClose}
+          aria-label={t('sideMenu.closeMenu')}
+          data-testid="sidemenu-close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-    </div>
+      <div className={styles.drawerContent}>{children}</div>
+    </dialog>
   );
 
   return createPortal(drawerContent, document.body);

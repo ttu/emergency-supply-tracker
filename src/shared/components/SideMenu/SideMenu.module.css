@@ -109,14 +109,26 @@
   transition: all var(--transition-fast);
 }
 
-/* Drawer overlay */
-.drawerOverlay {
+/* Drawer dialog element */
+.drawer {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: var(--z-modal);
+  width: 280px;
+  max-width: 80vw;
+  height: 100%;
+  margin: 0;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: var(--color-background);
+  box-shadow: var(--shadow-xl);
+  animation: slideIn var(--transition-base) ease-out;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+}
+
+.drawer::backdrop {
+  background: rgba(0, 0, 0, 0.5);
   animation: fadeIn var(--transition-fast) ease-out;
 }
 
@@ -127,19 +139,6 @@
   to {
     opacity: 1;
   }
-}
-
-/* Drawer panel */
-.drawer {
-  position: relative;
-  width: 280px;
-  max-width: 80vw;
-  height: 100%;
-  background: var(--color-background);
-  box-shadow: var(--shadow-xl);
-  animation: slideIn var(--transition-base) ease-out;
-  display: flex;
-  flex-direction: column;
 }
 
 @keyframes slideIn {
