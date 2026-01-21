@@ -306,9 +306,7 @@ export function importFromJSON(json: string): AppData {
   if (!data.selectedRecommendationKit) {
     data.selectedRecommendationKit = DEFAULT_KIT_ID;
   }
-  if (!data.uploadedRecommendationKits) {
-    data.uploadedRecommendationKits = [];
-  }
+  data.uploadedRecommendationKits ??= [];
 
   // customRecommendedItems is optional - preserve if present, otherwise leave undefined
 

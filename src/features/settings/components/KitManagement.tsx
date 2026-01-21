@@ -91,7 +91,7 @@ export function KitManagement() {
     link.download = `${selectedKit?.name || 'recommendations'}.json`;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
     URL.revokeObjectURL(url);
 
     setToastMessage(t('kits.exportSuccess') as string);

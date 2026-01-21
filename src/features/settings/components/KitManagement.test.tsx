@@ -99,8 +99,8 @@ describe('KitManagement', () => {
     );
 
     // Mock URL and document methods for export
-    global.URL.createObjectURL = vi.fn(() => 'blob:test-url');
-    global.URL.revokeObjectURL = vi.fn();
+    globalThis.URL.createObjectURL = vi.fn(() => 'blob:test-url');
+    globalThis.URL.revokeObjectURL = vi.fn();
   });
 
   it('should render kit management container', () => {
@@ -206,10 +206,10 @@ describe('KitManagement', () => {
     expect(screen.getByText('kits.deleteConfirm.title')).toBeInTheDocument();
 
     // Find cancel button - ConfirmDialog uses 'buttons.cancel'
-    const cancelButtons = screen
+    const cancelButton = screen
       .getAllByRole('button')
-      .filter((btn) => btn.textContent === 'buttons.cancel');
-    fireEvent.click(cancelButtons[0]);
+      .find((btn) => btn.textContent === 'buttons.cancel');
+    fireEvent.click(cancelButton!);
 
     await waitFor(() => {
       expect(
@@ -230,7 +230,7 @@ describe('KitManagement', () => {
     fireEvent.click(screen.getByTestId('export-kit-button'));
 
     expect(mockContext.exportRecommendedItems).toHaveBeenCalled();
-    expect(global.URL.createObjectURL).toHaveBeenCalled();
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
   });
 
   it('should show success toast when kit is exported', async () => {
@@ -266,12 +266,12 @@ describe('KitManagement', () => {
     });
 
     // Find and close the toast - Toast component has a close button
-    const toastCloseButtons = screen
+    const toastCloseButton = screen
       .getAllByRole('button')
-      .filter((btn) => btn.getAttribute('aria-label') === 'actions.close');
+      .find((btn) => btn.getAttribute('aria-label') === 'actions.close');
 
-    if (toastCloseButtons.length > 0) {
-      fireEvent.click(toastCloseButtons[0]);
+    if (toastCloseButton) {
+      fireEvent.click(toastCloseButton);
 
       await waitFor(() => {
         expect(screen.queryByText(/kits.selected/)).not.toBeInTheDocument();
