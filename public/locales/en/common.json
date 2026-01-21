@@ -459,7 +459,7 @@
     "githubLink": "Visit GitHub Repository",
     "gettingStarted": {
       "question": "How do I get started?",
-      "answer": "Start by configuring your household information in Settings. Then add items to your inventory either from recommended templates or create custom items. The dashboard will show your preparedness score and any alerts."
+      "answer": "When you open the app for the first time, you'll be guided through an onboarding process. The process will help you:\n\n1. Select your language (English/Finnish)\n2. Choose a household preset or configure it manually\n3. Set up your household information (adults, children, supply duration)\n4. Add recommended items to your inventory or start with an empty inventory\n\nAfter onboarding, you can start using the app. You can modify household settings later from the Settings tab."
     },
     "householdSize": {
       "question": "Why does household size matter?",
@@ -496,6 +496,10 @@
     "preparednessScore": {
       "question": "How is the preparedness score calculated?",
       "answer": "The score is based on the percentage of recommended items you have in adequate quantities. It considers: stocked items vs. recommended items, current quantities vs. recommended quantities, and expiration status. A score of 80% or higher indicates good preparedness."
+    },
+    "howIsItFree": {
+      "question": "How can this be free?",
+      "answer": "• This application was developed for personal use and is shared openly for others to benefit from\n• AI has significantly accelerated development, so development has been quite fast. Status 01/2026: About 50 hours of work time invested\n• Running costs are minimal, as the app runs entirely in the browser\n• Hosted on GitHub Pages (free)\n• CI/CD and project management on GitHub (free)\n• Development and other tools (free)\n• The only cost is the domain, approximately $10 per year"
     },
     "tips": {
       "tip1": "Set realistic supply duration (72 hours minimum, 2 weeks recommended)",
