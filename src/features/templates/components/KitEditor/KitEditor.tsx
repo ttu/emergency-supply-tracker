@@ -138,44 +138,58 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
     return recommendedItems.find((item) => item.id === itemToDelete);
   }, [itemToDelete, recommendedItems]);
 
-  if (!isOpen) {
-    return null;
-  }
+  // Helper function to get name/i18nKey for item editor
+  const getItemNameOrI18nKey = useCallback(
+    (
+      originalItem: ImportedRecommendedItem | undefined,
+      editingItem: RecommendedItemDefinition,
+    ) => {
+      if (originalItem?.names) {
+        return { names: originalItem.names };
+      }
+      if (originalItem?.i18nKey) {
+        return { i18nKey: originalItem.i18nKey };
+      }
+      const displayName = getItemDisplayName(editingItem);
+      return {
+        names: {
+          en: displayName,
+          fi: displayName,
+        },
+      };
+    },
+    [getItemDisplayName],
+  );
 
-  // Show item editor if editing or adding
-  if (editingItem || isAddingItem) {
-    // Get the original item from kit file to preserve names/i18nKey
+  // Helper to prepare item for editor
+  const prepareItemForEditor = useCallback(():
+    | ImportedRecommendedItem
+    | undefined => {
+    if (!editingItem) return undefined;
+
     const kitFile = exportRecommendedItems();
-    const originalItem = editingItem
-      ? kitFile.items.find((item) => item.id === editingItem.id)
-      : undefined;
+    const originalItem = kitFile.items.find(
+      (item) => item.id === editingItem.id,
+    );
 
-    // Convert to ImportedRecommendedItem format for editor, preserving original names
-    const itemForEditor: ImportedRecommendedItem | undefined = editingItem
-      ? {
-          id: editingItem.id,
-          // Preserve original names/i18nKey from the kit file
-          ...(originalItem?.names
-            ? { names: originalItem.names }
-            : originalItem?.i18nKey
-              ? { i18nKey: originalItem.i18nKey }
-              : {
-                  names: {
-                    en: getItemDisplayName(editingItem),
-                    fi: getItemDisplayName(editingItem),
-                  },
-                }),
-          category: editingItem.category,
-          baseQuantity: editingItem.baseQuantity,
-          unit: editingItem.unit,
-          scaleWithPeople: editingItem.scaleWithPeople,
-          scaleWithDays: editingItem.scaleWithDays,
-          requiresFreezer: editingItem.requiresFreezer,
-          defaultExpirationMonths: editingItem.defaultExpirationMonths,
-          weightGramsPerUnit: editingItem.weightGramsPerUnit,
-          caloriesPer100g: editingItem.caloriesPer100g,
-        }
-      : undefined;
+    return {
+      id: editingItem.id,
+      ...getItemNameOrI18nKey(originalItem, editingItem),
+      category: editingItem.category,
+      baseQuantity: editingItem.baseQuantity,
+      unit: editingItem.unit,
+      scaleWithPeople: editingItem.scaleWithPeople,
+      scaleWithDays: editingItem.scaleWithDays,
+      requiresFreezer: editingItem.requiresFreezer,
+      defaultExpirationMonths: editingItem.defaultExpirationMonths,
+      weightGramsPerUnit: editingItem.weightGramsPerUnit,
+      caloriesPer100g: editingItem.caloriesPer100g,
+    };
+  }, [editingItem, exportRecommendedItems, getItemNameOrI18nKey]);
+
+  // Render item editor modal
+  const renderItemEditor = () => {
+    const itemForEditor = prepareItemForEditor();
 
     return (
       <div className={styles.overlay} data-testid="kit-editor-modal">
@@ -189,6 +203,15 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
         </div>
       </div>
     );
+  };
+
+  if (!isOpen) {
+    return null;
+  }
+
+  // Show item editor if editing or adding
+  if (editingItem || isAddingItem) {
+    return renderItemEditor();
   }
 
   return (

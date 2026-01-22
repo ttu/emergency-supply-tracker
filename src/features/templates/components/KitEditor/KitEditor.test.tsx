@@ -49,7 +49,7 @@ const mockBuiltInKits: KitInfo[] = [
     id: '72tuntia-standard',
     name: 'Standard Kit',
     description: 'Standard emergency kit',
-    itemCount: 71,
+    itemCount: 2,
     isBuiltIn: true,
   },
 ];

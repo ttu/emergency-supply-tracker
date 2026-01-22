@@ -62,14 +62,19 @@ function updateKitItems(
 
 /** Generate a UUID v4 */
 function generateUuid(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
-    /[xy]/g,
-    (c: string) => {
+  const template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+  let result = '';
+  for (let i = 0; i < template.length; i++) {
+    const c = template[i];
+    if (c === 'x' || c === 'y') {
       const r = Math.trunc(Math.random() * 16);
       const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    },
-  );
+      result += v.toString(16);
+    } else {
+      result += c;
+    }
+  }
+  return result;
 }
 
 export function RecommendedItemsProvider({
@@ -275,10 +280,9 @@ export function RecommendedItemsProvider({
       }
 
       const uuid = getCustomKitUuid(selectedKitId);
+      const addItem = (items: ImportedRecommendedItem[]) => [...items, item];
       setUploadedKits((prev) =>
-        prev.map((kit) =>
-          updateKitItems(kit, uuid, (items) => [...items, item]),
-        ),
+        prev.map((kit) => updateKitItems(kit, uuid, addItem)),
       );
     },
     [selectedKitId],
@@ -292,12 +296,10 @@ export function RecommendedItemsProvider({
       }
 
       const uuid = getCustomKitUuid(selectedKitId);
+      const updateItem = (items: ImportedRecommendedItem[]) =>
+        items.map((i) => (i.id === itemId ? { ...i, ...updates } : i));
       setUploadedKits((prev) =>
-        prev.map((kit) =>
-          updateKitItems(kit, uuid, (items) =>
-            items.map((i) => (i.id === itemId ? { ...i, ...updates } : i)),
-          ),
-        ),
+        prev.map((kit) => updateKitItems(kit, uuid, updateItem)),
       );
     },
     [selectedKitId],
@@ -311,12 +313,10 @@ export function RecommendedItemsProvider({
       }
 
       const uuid = getCustomKitUuid(selectedKitId);
+      const removeItem = (items: ImportedRecommendedItem[]) =>
+        items.filter((i) => i.id !== itemId);
       setUploadedKits((prev) =>
-        prev.map((kit) =>
-          updateKitItems(kit, uuid, (items) =>
-            items.filter((i) => i.id !== itemId),
-          ),
-        ),
+        prev.map((kit) => updateKitItems(kit, uuid, removeItem)),
       );
     },
     [selectedKitId],

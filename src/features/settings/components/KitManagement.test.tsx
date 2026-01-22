@@ -274,7 +274,7 @@ describe('KitManagement', () => {
         availableKits: [
           {
             id: 'custom:test-kit',
-            name: 'Kit/With\\Invalid:Characters*?"<>|',
+            name: String.raw`Kit/With\Invalid:Characters*?"<>|`,
             description: 'Test',
             itemCount: 10,
             isBuiltIn: false,
@@ -305,7 +305,7 @@ describe('KitManagement', () => {
     });
 
     // Create a name with control characters (tab, newline)
-    const nameWithControlChars = `Kit\tWith\nControl${String.fromCharCode(0)}Chars`;
+    const nameWithControlChars = `Kit\tWith\nControl${String.fromCodePoint(0)}Chars`;
 
     vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
       createMockContext({
@@ -347,7 +347,7 @@ describe('KitManagement', () => {
         availableKits: [
           {
             id: 'custom:test-kit',
-            name: 'Kit///With\\\\Multiple---Separators',
+            name: String.raw`Kit///With\\Multiple---Separators`,
             description: 'Test',
             itemCount: 10,
             isBuiltIn: false,

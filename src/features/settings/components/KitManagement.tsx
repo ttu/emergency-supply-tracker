@@ -21,16 +21,17 @@ function sanitizeFileName(name: string): string {
   // Replace reserved characters: / \ : * ? " < > |
   // Also replace control characters (char codes < 32)
   let sanitized = name
-    .replace(/[/\\:*?"<>|]/g, '-')
+    .replaceAll(/[/\\:*?"<>|]/g, '-')
     // eslint-disable-next-line no-control-regex
-    .replace(/[\x00-\x1F]/g, '-')
+    .replaceAll(/[\x00-\x1F]/g, '-')
     .trim();
 
   // Collapse runs of hyphens/underscores into a single hyphen
-  sanitized = sanitized.replace(/[-_]+/g, '-');
+  sanitized = sanitized.replaceAll(/[-_]+/g, '-');
 
   // Remove leading/trailing hyphens after collapsing
-  sanitized = sanitized.replace(/^-+|-+$/g, '');
+  // Group parts of the regex together to make the intended operator precedence explicit
+  sanitized = sanitized.replaceAll(/(^-+|-+$)/g, '');
 
   // Fall back to 'recommendations' if empty
   return sanitized || 'recommendations';
