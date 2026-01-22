@@ -3,11 +3,13 @@ import { render, screen, act, waitFor } from '@testing-library/react';
 import { RecommendedItemsProvider } from './index';
 import { useRecommendedItems } from '../hooks';
 import * as localStorage from '@/shared/utils/storage/localStorage';
-import { RECOMMENDED_ITEMS } from '../data';
 import type { RecommendedItemsFile, UploadedKit, KitId } from '@/shared/types';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 import { createProductTemplateId, createCustomKitId } from '@/shared/types';
-import { DEFAULT_KIT_ID } from '../kits';
+import { DEFAULT_KIT_ID, getBuiltInKit } from '../kits';
+
+// Get the default kit's item count for assertions
+const DEFAULT_KIT_ITEM_COUNT = getBuiltInKit(DEFAULT_KIT_ID).items.length;
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
@@ -118,7 +120,7 @@ describe('RecommendedItemsProvider', () => {
     );
 
     expect(screen.getByTestId('items-count')).toHaveTextContent(
-      String(RECOMMENDED_ITEMS.length),
+      String(DEFAULT_KIT_ITEM_COUNT),
     );
     expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
     expect(screen.getByTestId('custom-info')).toHaveTextContent('none');
@@ -262,7 +264,7 @@ describe('RecommendedItemsProvider', () => {
     });
 
     expect(exportedFile!.meta.name).toBe('72tuntia.fi Standard Kit');
-    expect(exportedFile!.items.length).toBe(RECOMMENDED_ITEMS.length);
+    expect(exportedFile!.items.length).toBe(DEFAULT_KIT_ITEM_COUNT);
   });
 
   it('should reset to default recommendations via selectKit', async () => {
@@ -292,7 +294,7 @@ describe('RecommendedItemsProvider', () => {
     await waitFor(() => {
       expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
       expect(screen.getByTestId('items-count')).toHaveTextContent(
-        String(RECOMMENDED_ITEMS.length),
+        String(DEFAULT_KIT_ITEM_COUNT),
       );
     });
   });
@@ -980,7 +982,7 @@ describe('RecommendedItemsProvider', () => {
 
       // Should fallback to default items count
       expect(screen.getByTestId('items-count')).toHaveTextContent(
-        String(RECOMMENDED_ITEMS.length),
+        String(DEFAULT_KIT_ITEM_COUNT),
       );
     });
 
@@ -998,7 +1000,7 @@ describe('RecommendedItemsProvider', () => {
 
       // Should fallback to default items
       expect(screen.getByTestId('items-count')).toHaveTextContent(
-        String(RECOMMENDED_ITEMS.length),
+        String(DEFAULT_KIT_ITEM_COUNT),
       );
     });
   });
