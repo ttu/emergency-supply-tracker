@@ -71,7 +71,6 @@ export function SideMenu({
     >
       <ul
         className={styles.list}
-        role="menubar"
         aria-orientation="vertical"
         onKeyDown={handleKeyDown}
         tabIndex={-1}

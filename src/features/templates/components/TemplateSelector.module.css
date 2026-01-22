@@ -31,7 +31,7 @@
 .customItemButton:hover {
   color: var(--color-text);
   border-color: var(--color-text-secondary);
-  background: var(--color-bg-secondary);
+  background: var(--color-background-secondary);
 }
 
 .customItemButton:active {
@@ -52,7 +52,7 @@
 }
 
 .templateList::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: var(--color-background-secondary);
   border-radius: var(--radius-sm);
 }
 
@@ -79,7 +79,7 @@
   align-items: center;
   gap: var(--spacing-md);
   padding: var(--spacing-md);
-  background: var(--color-bg);
+  background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   text-align: left;
@@ -88,7 +88,7 @@
 }
 
 .templateCard:hover {
-  background: var(--color-bg-secondary);
+  background: var(--color-background-secondary);
   border-color: var(--color-primary);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

@@ -146,8 +146,6 @@ test.describe('Accessibility', () => {
       // Use more specific selector for the template modal (not the sidemenu drawer)
       .include('[data-testid="template-selector"]')
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
-      // Skip color-contrast check - pre-existing issue with computed overlay colors
-      .disableRules(['color-contrast'])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);

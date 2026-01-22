@@ -120,9 +120,10 @@ describe('SideMenu', () => {
       />,
     );
 
-    // Keyboard handler is now on the menubar div, not the nav
-    const menubar = screen.getByRole('menubar');
-    fireEvent.keyDown(menubar, { key: 'ArrowDown' });
+    // Keyboard handler is on the ul element
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const list = within(sidebar).getByRole('list');
+    fireEvent.keyDown(list, { key: 'ArrowDown' });
 
     expect(onSelect).toHaveBeenCalledWith('item2');
   });
@@ -138,9 +139,10 @@ describe('SideMenu', () => {
       />,
     );
 
-    // Keyboard handler is now on the menubar div
-    const menubar = screen.getByRole('menubar');
-    fireEvent.keyDown(menubar, { key: 'ArrowUp' });
+    // Keyboard handler is on the ul element
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const list = within(sidebar).getByRole('list');
+    fireEvent.keyDown(list, { key: 'ArrowUp' });
 
     expect(onSelect).toHaveBeenCalledWith('item1');
   });
@@ -156,9 +158,10 @@ describe('SideMenu', () => {
       />,
     );
 
-    // Keyboard handler is now on the menubar div
-    const menubar = screen.getByRole('menubar');
-    fireEvent.keyDown(menubar, { key: 'Home' });
+    // Keyboard handler is on the ul element
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const list = within(sidebar).getByRole('list');
+    fireEvent.keyDown(list, { key: 'Home' });
 
     expect(onSelect).toHaveBeenCalledWith('item1');
   });
@@ -174,9 +177,10 @@ describe('SideMenu', () => {
       />,
     );
 
-    // Keyboard handler is now on the menubar div
-    const menubar = screen.getByRole('menubar');
-    fireEvent.keyDown(menubar, { key: 'End' });
+    // Keyboard handler is on the ul element
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const list = within(sidebar).getByRole('list');
+    fireEvent.keyDown(list, { key: 'End' });
 
     expect(onSelect).toHaveBeenCalledWith('item3');
   });
@@ -192,9 +196,10 @@ describe('SideMenu', () => {
       />,
     );
 
-    // Keyboard handler is now on the menubar div
-    const menubar = screen.getByRole('menubar');
-    fireEvent.keyDown(menubar, { key: 'ArrowDown' });
+    // Keyboard handler is on the ul element
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const list = within(sidebar).getByRole('list');
+    fireEvent.keyDown(list, { key: 'ArrowDown' });
 
     expect(onSelect).toHaveBeenCalledWith('item1');
   });
@@ -313,7 +318,9 @@ describe('SideMenu', () => {
     const nav = screen.getByRole('navigation');
     expect(nav).toHaveAttribute('aria-label', 'Test Menu');
 
-    const menubar = screen.getByRole('menubar');
-    expect(menubar).toHaveAttribute('aria-orientation', 'vertical');
+    // The ul element has aria-orientation but no menubar role
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const list = within(sidebar).getByRole('list');
+    expect(list).toHaveAttribute('aria-orientation', 'vertical');
   });
 });
