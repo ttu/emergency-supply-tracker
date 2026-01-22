@@ -62,18 +62,7 @@ function updateKitItems(
 
 /** Generate a UUID v4 */
 function generateUuid(): string {
-  const template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
-  let result = '';
-  for (const c of template) {
-    if (c === 'x' || c === 'y') {
-      const r = Math.trunc(Math.random() * 16);
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      result += v.toString(16);
-    } else {
-      result += c;
-    }
-  }
-  return result;
+  return crypto.randomUUID();
 }
 
 export function RecommendedItemsProvider({
