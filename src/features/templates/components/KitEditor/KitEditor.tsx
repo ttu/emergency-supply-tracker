@@ -192,10 +192,15 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
       unit: editingItem.unit,
       scaleWithPeople: editingItem.scaleWithPeople,
       scaleWithDays: editingItem.scaleWithDays,
+      scaleWithPets: editingItem.scaleWithPets ?? originalItem?.scaleWithPets,
       requiresFreezer: editingItem.requiresFreezer,
       defaultExpirationMonths: editingItem.defaultExpirationMonths,
       weightGramsPerUnit: editingItem.weightGramsPerUnit,
       caloriesPer100g: editingItem.caloriesPer100g,
+      capacityMah: editingItem.capacityMah ?? originalItem?.capacityMah,
+      capacityWh: editingItem.capacityWh ?? originalItem?.capacityWh,
+      requiresWaterLiters:
+        editingItem.requiresWaterLiters ?? originalItem?.requiresWaterLiters,
     };
   }, [editingItem, exportRecommendedItems, getItemNameOrI18nKey]);
 
