@@ -324,6 +324,7 @@
     "uploadError": "Upload failed: {{error}}",
     "deleteSuccess": "Deleted \"{{name}}\"",
     "exportSuccess": "Kit exported successfully",
+    "defaultFileName": "recommendations",
     "deleteConfirm": {
       "title": "Delete Kit",
       "message": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",

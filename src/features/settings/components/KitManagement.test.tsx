@@ -11,6 +11,8 @@ vi.mock('react-i18next', () => ({
       if (options?.name) return `${key}: ${options.name}`;
       if (options?.count !== undefined) return `${key} (${options.count})`;
       if (options?.error) return `${key}: ${options.error}`;
+      // Return expected translation values for specific keys
+      if (key === 'kits.defaultFileName') return 'recommendations';
       return key;
     },
   }),

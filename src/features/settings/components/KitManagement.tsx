@@ -12,12 +12,13 @@ import styles from './KitManagement.module.css';
  * Sanitizes a string to be used as a filename.
  * Replaces reserved characters and control characters with hyphens,
  * trims whitespace, collapses runs of replacement characters,
- * and falls back to 'recommendations' if the result is empty.
+ * and falls back to the provided fallback string if the result is empty.
  *
  * @param name - The name to sanitize
+ * @param fallback - The fallback string to use if sanitized name is empty (default: 'recommendations')
  * @returns A sanitized filename-safe string
  */
-function sanitizeFileName(name: string): string {
+function sanitizeFileName(name: string, fallback = 'recommendations'): string {
   // Replace reserved characters: / \ : * ? " < > |
   // Also replace control characters (char codes < 32)
   // eslint-disable-next-line no-control-regex
@@ -34,8 +35,8 @@ function sanitizeFileName(name: string): string {
   // Group parts of the regex together to make the intended operator precedence explicit
   sanitized = sanitized.replaceAll(/(^-+|-+$)/g, '');
 
-  // Fall back to 'recommendations' if empty
-  return sanitized || 'recommendations';
+  // Fall back to provided fallback if empty
+  return sanitized || fallback;
 }
 
 export function KitManagement() {
@@ -123,7 +124,8 @@ export function KitManagement() {
 
     // Sanitize the kit name for use as a filename
     const sanitizedName = sanitizeFileName(
-      selectedKit?.name || 'recommendations',
+      selectedKit?.name || '',
+      t('kits.defaultFileName'),
     );
     link.download = `${sanitizedName}.json`;
 

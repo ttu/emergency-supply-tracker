@@ -324,6 +324,7 @@
     "uploadError": "Lataus epäonnistui: {{error}}",
     "deleteSuccess": "Poistettu \"{{name}}\"",
     "exportSuccess": "Paketti viety onnistuneesti",
+    "defaultFileName": "suositukset",
     "deleteConfirm": {
       "title": "Poista paketti",
       "message": "Haluatko varmasti poistaa paketin \"{{name}}\"? Tätä ei voi perua.",
