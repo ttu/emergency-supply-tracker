@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, navigateToSettingsSection } from './fixtures';
 
 test.describe('Advanced Features', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -11,7 +11,7 @@ test.describe('Advanced Features', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Advanced features checkboxes might be in a section or might not be visible
@@ -49,7 +49,7 @@ test.describe('Advanced Features', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Check if checkboxes exist
@@ -85,7 +85,7 @@ test.describe('Advanced Features', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Check if checkboxes exist
@@ -121,7 +121,7 @@ test.describe('Advanced Features', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Check if checkboxes exist
@@ -167,7 +167,7 @@ test.describe('Advanced Features', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Check if checkboxes exist

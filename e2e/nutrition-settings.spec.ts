@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, navigateToSettingsSection } from './fixtures';
 
 test.describe('Nutrition Settings', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -9,7 +9,7 @@ test.describe('Nutrition Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Find daily calories input
@@ -29,7 +29,7 @@ test.describe('Nutrition Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Find daily water input
@@ -49,7 +49,7 @@ test.describe('Nutrition Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Find children percentage input
@@ -69,7 +69,7 @@ test.describe('Nutrition Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Change all nutrition settings
@@ -92,7 +92,7 @@ test.describe('Nutrition Settings', () => {
 
     // Verify settings persisted
     await page.getByTestId('nav-settings').click();
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await page.waitForLoadState('networkidle');
 
     expect(await page.locator('#daily-calories').inputValue()).toBe('2200');
@@ -104,7 +104,7 @@ test.describe('Nutrition Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     const caloriesInput = page.locator('#daily-calories');
@@ -142,7 +142,7 @@ test.describe('Nutrition Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to nutrition section
-    await page.getByTestId('sidemenu-item-nutrition').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Change values

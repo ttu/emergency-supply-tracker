@@ -139,9 +139,11 @@ test.describe('Onboarding Flow', () => {
 
     // Should have items in inventory (at least some recommended items)
     // Note: Items are added with quantity 0, so they may not be visible
-    // But the category should show in the side menu
+    // But the category should show in the side menu (use sidebar for desktop viewport)
     await expect(
-      page.getByTestId('sidemenu-item-water-beverages'),
+      page
+        .getByTestId('sidemenu-sidebar')
+        .getByTestId('sidemenu-item-water-beverages'),
     ).toBeVisible();
   });
 

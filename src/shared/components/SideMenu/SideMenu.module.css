@@ -123,6 +123,10 @@
   background: var(--color-background);
   box-shadow: var(--shadow-xl);
   animation: slideIn var(--transition-base) ease-out;
+}
+
+/* When open, use flexbox layout */
+.drawer[open] {
   display: flex;
   flex-direction: column;
 }
