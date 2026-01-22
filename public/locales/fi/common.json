@@ -565,6 +565,7 @@
     "title": "Muokkaa pakettia",
     "items": "tuotetta",
     "searchPlaceholder": "Hae tuotteita...",
+    "searchLabel": "Hae tuotteita",
     "addItem": "Lisää tuote",
     "editItem": "Muokkaa tuotetta",
     "builtInNotice": "Sisäänrakennettuja paketteja ei voi muokata. Lataa oma paketti tehdäksesi muutoksia.",

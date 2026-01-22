@@ -253,8 +253,10 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
         <div className={styles.toolbar}>
           <input
             type="text"
+            id="kit-editor-search-input"
             className={styles.searchInput}
             placeholder={t('kitEditor.searchPlaceholder')}
+            aria-label={t('kitEditor.searchLabel')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             data-testid="kit-editor-search"

@@ -565,6 +565,7 @@
     "title": "Edit Kit",
     "items": "items",
     "searchPlaceholder": "Search items...",
+    "searchLabel": "Search items",
     "addItem": "Add Item",
     "editItem": "Edit Item",
     "builtInNotice": "Built-in kits cannot be edited. Upload a custom kit to make changes.",
