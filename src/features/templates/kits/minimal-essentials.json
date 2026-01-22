@@ -104,6 +104,108 @@
       "unit": "pieces",
       "scaleWithPeople": false,
       "scaleWithDays": false
+    },
+    {
+      "id": "pet-food-dry",
+      "i18nKey": "products.pet-food-dry",
+      "category": "pets",
+      "baseQuantity": 0.2,
+      "unit": "kilograms",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "scaleWithPets": true,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "pet-food-wet",
+      "i18nKey": "products.pet-food-wet",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "scaleWithPets": true,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "pet-water-bowl",
+      "i18nKey": "products.pet-water-bowl",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-food-bowl",
+      "i18nKey": "products.pet-food-bowl",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-carrier",
+      "i18nKey": "products.pet-carrier",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-leash-collar",
+      "i18nKey": "products.pet-leash-collar",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-waste-bags",
+      "i18nKey": "products.pet-waste-bags",
+      "category": "pets",
+      "baseQuantity": 5,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-medications",
+      "i18nKey": "products.pet-medications",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "days",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-comfort-items",
+      "i18nKey": "products.pet-comfort-items",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-vaccination-records",
+      "i18nKey": "products.pet-vaccination-records",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
     }
   ]
 }

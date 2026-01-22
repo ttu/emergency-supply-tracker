@@ -6,6 +6,7 @@ import type {
 } from '@/shared/types';
 import { useRecommendedItems } from '@/features/templates';
 import { Button } from '@/shared/components/Button';
+import { PET_REQUIREMENT_MULTIPLIER } from '@/shared/utils/constants';
 import styles from './QuickSetupScreen.module.css';
 
 export interface QuickSetupScreenProps {
@@ -31,6 +32,10 @@ export const QuickSetupScreen = ({
     if (item.requiresFreezer && !household.useFreezer) {
       return false;
     }
+    // Skip pet items if pets is 0
+    if (item.scaleWithPets && household.pets === 0) {
+      return false;
+    }
     return true;
   });
 
@@ -46,6 +51,10 @@ export const QuickSetupScreen = ({
     if (item.scaleWithPeople) {
       const totalPeople = household.adults + household.children;
       quantity *= totalPeople;
+    }
+
+    if (item.scaleWithPets) {
+      quantity *= household.pets * PET_REQUIREMENT_MULTIPLIER;
     }
 
     if (item.scaleWithDays) {

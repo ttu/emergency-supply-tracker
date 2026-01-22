@@ -5,6 +5,7 @@ import type {
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
+  PET_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
 
 /**
@@ -40,6 +41,10 @@ export function calculateRecommendedQuantity(
       household.adults * ADULT_REQUIREMENT_MULTIPLIER +
       household.children * childrenMultiplier;
     qty *= peopleMultiplier;
+  }
+
+  if (item.scaleWithPets) {
+    qty *= household.pets * PET_REQUIREMENT_MULTIPLIER;
   }
 
   if (item.scaleWithDays) {
