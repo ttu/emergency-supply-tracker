@@ -69,11 +69,12 @@ export function SideMenu({
       role="navigation"
       aria-label={ariaLabel}
     >
-      <div
+      <ul
         className={styles.list}
         role="menubar"
         aria-orientation="vertical"
         onKeyDown={handleKeyDown}
+        tabIndex={-1}
       >
         {allItems.map((item, index) => {
           const isActive = item.id === selectedId;
@@ -96,7 +97,7 @@ export function SideMenu({
             </li>
           );
         })}
-      </div>
+      </ul>
     </nav>
   );
 

@@ -196,7 +196,7 @@ describe('SideMenuDrawer', () => {
     // The drawer is closed, so it shouldn't have focus
     expect(document.activeElement).not.toBe(drawer);
 
-    document.body.removeChild(button);
+    button.remove();
   });
 
   it('uses provided id prop', () => {

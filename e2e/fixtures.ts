@@ -184,4 +184,4 @@ export async function selectInventoryCategory(page: Page, categoryId: string) {
   await page.waitForTimeout(100);
 }
 
-export { expect, type Page };
+export { expect, type Page } from '@playwright/test';
