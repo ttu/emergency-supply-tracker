@@ -56,12 +56,17 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
     [recommendedItems],
   );
 
-  // Helper to get item display name using context's getItemName
+  // Helper to get item display name using translations for built-in items
   const getItemDisplayName = useCallback(
     (item: RecommendedItemDefinition): string => {
+      // For items with i18nKey in the "products." namespace, use translation
+      if (item.i18nKey && item.i18nKey.startsWith('products.')) {
+        return t(item.i18nKey, { ns: 'products' });
+      }
+      // Fall back to getItemName for custom items or missing keys
       return getItemName(item, i18n.language);
     },
-    [getItemName, i18n.language],
+    [getItemName, i18n.language, t],
   );
 
   // Filter items by search query

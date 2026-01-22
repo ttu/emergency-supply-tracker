@@ -26,6 +26,7 @@ import {
   createProductTemplateId,
   createAlertId,
 } from '@/shared/types';
+import { DEFAULT_KIT_ID } from '@/features/templates/kits';
 
 // Helper to create minimal export metadata for tests
 const createTestExportMetadata = (
@@ -76,7 +77,14 @@ describe('localStorage utilities', () => {
     const mockData = createMockAppData();
     saveAppData(mockData);
     const loaded = getAppData();
-    expect(loaded).toEqual(mockData);
+    // Normalization adds selectedRecommendationKit and uploadedRecommendationKits if missing
+    const expectedData = {
+      ...mockData,
+      selectedRecommendationKit:
+        mockData.selectedRecommendationKit ?? DEFAULT_KIT_ID,
+      uploadedRecommendationKits: mockData.uploadedRecommendationKits ?? [],
+    };
+    expect(loaded).toEqual(expectedData);
   });
 
   it('handles data with empty customCategories array', () => {

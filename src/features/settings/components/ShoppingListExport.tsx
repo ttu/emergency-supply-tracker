@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
-import { useShoppingListExport } from '../hooks';
+import { useShoppingListExport } from '../hooks/useShoppingListExport';
 import styles from './ShoppingListExport.module.css';
 
 export function ShoppingListExport() {

@@ -14,6 +14,12 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       if (options?.name) return `${key}: ${options.name}`;
+      // For products namespace, return a translated name based on the key
+      if (options?.ns === 'products') {
+        const productName = key.replace('products.', '');
+        // Capitalize first letter for display
+        return productName.charAt(0).toUpperCase() + productName.slice(1);
+      }
       if (options?.ns) return key;
       return key;
     },

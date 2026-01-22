@@ -22,10 +22,8 @@ import type {
   RecommendedItemDefinition,
 } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
-import {
-  useCategoryStatuses,
-  useCalculationOptions,
-} from '@/features/dashboard';
+import { useCategoryStatuses } from '@/features/dashboard/hooks/useCategoryStatuses';
+import { useCalculationOptions } from '@/features/dashboard/hooks/useCalculationOptions';
 import styles from './Inventory.module.css';
 
 type SortBy = 'name' | 'quantity' | 'expiration';

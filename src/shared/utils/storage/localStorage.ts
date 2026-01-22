@@ -4,6 +4,8 @@ import type {
   ProductTemplateId,
   Category,
   ProductTemplate,
+  KitId,
+  UploadedKit,
 } from '@/shared/types';
 import type {
   ExportSection,
@@ -164,6 +166,13 @@ export function getAppData(): AppData | undefined {
         (rawData as { disabledRecommendedItems?: string[] })
           .disabledRecommendedItems || []
       ).map(createProductTemplateId),
+      // Normalize kit fields - only set defaults if they're missing from rawData
+      selectedRecommendationKit: ((
+        rawData as { selectedRecommendationKit?: KitId }
+      ).selectedRecommendationKit ?? DEFAULT_KIT_ID) as KitId,
+      uploadedRecommendationKits: ((
+        rawData as { uploadedRecommendationKits?: UploadedKit[] }
+      ).uploadedRecommendationKits ?? []) as UploadedKit[],
     };
 
     // Apply migrations if needed

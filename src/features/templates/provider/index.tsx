@@ -64,8 +64,7 @@ function updateKitItems(
 function generateUuid(): string {
   const template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
   let result = '';
-  for (let i = 0; i < template.length; i++) {
-    const c = template[i];
+  for (const c of template) {
     if (c === 'x' || c === 'y') {
       const r = Math.trunc(Math.random() * 16);
       const v = c === 'x' ? r : (r & 0x3) | 0x8;

@@ -469,15 +469,16 @@ describe('KitManagement', () => {
     // Find and close the toast - Toast component has a close button
     const toastCloseButton = screen
       .getAllByRole('button')
-      .find((btn) => btn.getAttribute('aria-label') === 'actions.close');
+      .find((btn) => btn.getAttribute('aria-label') === 'Close notification');
 
-    if (toastCloseButton) {
-      fireEvent.click(toastCloseButton);
+    expect(toastCloseButton).toBeDefined();
+    expect(toastCloseButton).not.toBeNull();
 
-      await waitFor(() => {
-        expect(screen.queryByText(/kits.selected/)).not.toBeInTheDocument();
-      });
-    }
+    fireEvent.click(toastCloseButton!);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/kits.selected/)).not.toBeInTheDocument();
+    });
   });
 
   it('should show error toast when kit upload fails', async () => {
