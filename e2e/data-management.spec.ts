@@ -202,16 +202,9 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for settings page to fully load - verify the main heading appears
+    // Wait for settings page to fully load and be interactive
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
-
-    // Look for the Recommended Items section (scroll if needed by Playwright's auto-scrolling)
-    await expect(
-      page.getByRole('heading', { name: 'Recommended Items' }),
-    ).toBeVisible({ timeout: 5000 });
-
-    // Verify default status shows Built-in (X items)
-    await expect(page.getByText(/Built-in.*items/i)).toBeVisible();
+    await page.waitForLoadState('networkidle');
 
     // Create custom recommendations file
     const customRecommendations = {
@@ -242,36 +235,30 @@ test.describe('Data Management', () => {
       ],
     };
 
-    // Import the custom recommendations
-    const fileInput = page.getByLabel('Import Recommendations');
-    await fileInput.setInputFiles({
+    // Import the custom recommendations via Kit Selector upload
+    // Set files on the hidden file input - Playwright will wait for it automatically
+    await page.getByTestId('kit-file-input').setInputFiles({
       name: 'custom-recommendations.json',
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(customRecommendations)),
     });
 
-    // Wait for the confirmation dialog to appear
-    const confirmDialog = page.getByRole('alertdialog');
-    await expect(confirmDialog).toBeVisible();
+    // Wait a moment for the async file processing to start
+    await page.waitForTimeout(500);
 
-    // Verify dialog message contains expected info
+    // Upload is async - wait for the kit to be auto-selected
+    // Look for text that contains both kit name and item count (unique to status section)
+    // The status shows: "Test Custom Kit (2 items)"
+    await expect(page.getByText(/Test Custom Kit.*\(2 items\)/)).toBeVisible({
+      timeout: 20000,
+    });
+
+    // Also verify the kit card appears in the kit selector
     await expect(
-      confirmDialog.getByText(/Test Custom Kit.*2 items/),
-    ).toBeVisible();
-
-    // Click the Import button to confirm
-    await confirmDialog.getByRole('button', { name: 'Import' }).click();
-
-    // Wait for import to complete - dialog should close
-    await expect(confirmDialog).not.toBeVisible({ timeout: 5000 });
-
-    // Verify status now shows custom recommendations
-    await expect(page.locator('text=Test Custom Kit')).toBeVisible();
-    await expect(page.locator('text=2 items')).toBeVisible();
-
-    // Verify Reset to Default button appears (use data-testid to avoid matching NutritionSettings reset)
-    await expect(
-      page.getByTestId('reset-recommendations-button'),
+      page
+        .locator('[data-testid="kit-selector"]')
+        .getByText('Test Custom Kit')
+        .first(),
     ).toBeVisible();
   });
 
@@ -279,11 +266,14 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Verify Export Recommendations button is visible
-    const exportButton = page.getByTestId('export-recommendations-button');
+    // Wait for settings page to fully load
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+
+    // Verify Export Kit button is visible in Kit Management section
+    const exportButton = page.getByTestId('export-kit-button');
     await expect(exportButton).toBeVisible();
 
-    // Click Export Recommendations button
+    // Click Export Kit button
     await exportButton.click();
 
     // No error should occur - test passes if button is clickable
@@ -315,45 +305,39 @@ test.describe('Data Management', () => {
       ],
     };
 
-    // Import custom recommendations
-    const fileInput = page.getByLabel('Import Recommendations');
+    // Import custom recommendations via Kit Selector upload
+    const uploadButton = page.getByTestId('upload-kit-button');
+    await expect(uploadButton).toBeVisible();
+
+    const fileInput = page.getByTestId('kit-file-input');
     await fileInput.setInputFiles({
       name: 'temp-recommendations.json',
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(customRecommendations)),
     });
 
-    // Wait for and confirm the import dialog
-    const importDialog = page.getByRole('alertdialog');
-    await expect(importDialog).toBeVisible();
-    await importDialog.getByRole('button', { name: 'Import' }).click();
+    // Upload happens immediately - wait for kit to appear and be auto-selected
+    // Wait for the kit name to appear (use first() to handle multiple matches)
+    await expect(page.getByText('Temporary Kit').first()).toBeVisible({
+      timeout: 10000,
+    });
 
-    // Wait for dialog to close
-    await expect(importDialog).not.toBeVisible({ timeout: 5000 });
+    // Verify it's selected by checking the status section has the kit name
+    const kitManagement = page.locator('[data-testid="kit-management"]');
+    await expect(
+      kitManagement.getByText('Temporary Kit').first(),
+    ).toBeVisible();
 
-    // Verify custom recommendations are active
-    await expect(page.locator('text=Temporary Kit')).toBeVisible();
+    // Reset to default by selecting the default kit (72tuntia-standard)
+    const defaultKitCard = page.getByTestId('kit-card-72tuntia-standard');
+    await expect(defaultKitCard).toBeVisible();
+    await defaultKitCard.click();
 
-    // Click Reset to Default button (use data-testid to avoid matching NutritionSettings reset)
-    const resetButton = page.getByTestId('reset-recommendations-button');
-    await expect(resetButton).toBeVisible();
-    await resetButton.click();
-
-    // Wait for and confirm the reset dialog
-    const resetDialog = page.getByRole('alertdialog');
-    await expect(resetDialog).toBeVisible();
-
-    // Find the confirm button in the reset dialog (it uses the same label as the button)
-    await resetDialog.getByRole('button', { name: /reset/i }).click();
-
-    // Wait for dialog to close
-    await expect(resetDialog).not.toBeVisible({ timeout: 5000 });
-
-    // Verify status shows Built-in again
-    await expect(page.locator('text=/Built-in/')).toBeVisible();
-
-    // Reset button should no longer be visible
-    await expect(resetButton).not.toBeVisible();
+    // Wait for the default kit to be selected - verify it shows in the status section
+    // The status shows the kit name with a "Built-in" badge - use first() to handle multiple matches
+    await expect(kitManagement.getByText(/Built-in/).first()).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test('should display custom recommendation names in inventory', async ({
@@ -385,24 +369,28 @@ test.describe('Data Management', () => {
       ],
     };
 
-    const fileInput = page.getByLabel('Import Recommendations');
+    // Import via Kit Selector upload
+    const uploadButton = page.getByTestId('upload-kit-button');
+    await expect(uploadButton).toBeVisible();
+
+    const fileInput = page.getByTestId('kit-file-input');
     await fileInput.setInputFiles({
       name: 'multilang-recommendations.json',
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(customRecommendations)),
     });
 
-    // Wait for and confirm the import dialog
-    const confirmDialog = page.getByRole('alertdialog');
-    await expect(confirmDialog).toBeVisible();
-    await confirmDialog.getByRole('button', { name: 'Import' }).click();
+    // Upload happens immediately - wait for kit to appear and be auto-selected
+    // Wait for the kit name to appear (use first() to handle multiple matches)
+    await expect(page.getByText('Multi-lang Kit').first()).toBeVisible({
+      timeout: 10000,
+    });
 
-    // Wait for dialog to close
-    await expect(confirmDialog).not.toBeVisible({ timeout: 5000 });
-
-    // Verify import was successful - status should show custom kit name
-    await expect(page.getByText('Multi-lang Kit')).toBeVisible();
-    await expect(page.getByText('1 item')).toBeVisible();
+    // Verify it's selected by checking the status section
+    const kitManagement = page.locator('[data-testid="kit-management"]');
+    await expect(
+      kitManagement.getByText('Multi-lang Kit').first(),
+    ).toBeVisible();
 
     // Navigate to Inventory and select Water & Beverages category
     await page.getByTestId('nav-inventory').click();
@@ -452,6 +440,9 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Wait for settings page to fully load
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+
     // Create invalid recommendations file (missing required fields)
     const invalidRecommendations = {
       meta: {
@@ -461,20 +452,34 @@ test.describe('Data Management', () => {
       items: [],
     };
 
-    const fileInput = page.getByLabel('Import Recommendations');
+    // Set up alert handler to automatically dismiss it
+    page.on('dialog', (dialog) => {
+      dialog.accept();
+    });
+
+    // Try to import invalid file via Kit Selector upload
+    const uploadButton = page.getByTestId('upload-kit-button');
+    await expect(uploadButton).toBeVisible();
+
+    const fileInput = page.getByTestId('kit-file-input');
     await fileInput.setInputFiles({
       name: 'invalid-recommendations.json',
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(invalidRecommendations)),
     });
 
-    // Should show error message (no confirm dialog appears for invalid files)
-    // The error is displayed inline in the component
-    await expect(page.locator('text=/version.*required/i')).toBeVisible({
+    // Wait for alert to be handled and file input to reset
+    await page.waitForTimeout(1000);
+
+    // Should still show Built-in (import failed, default kit remains selected)
+    // Check the current kit status section - use first() to handle potential multiple matches
+    await expect(
+      page
+        .locator('[data-testid="kit-management"]')
+        .getByText(/Built-in/)
+        .first(),
+    ).toBeVisible({
       timeout: 5000,
     });
-
-    // Should still show Built-in (import failed)
-    await expect(page.locator('text=/Built-in/')).toBeVisible();
   });
 });

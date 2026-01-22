@@ -73,6 +73,8 @@ export function KitManagement() {
     (file: RecommendedItemsFile) => {
       const result = uploadKit(file);
       if (result.kitId) {
+        // Auto-select the uploaded kit
+        selectKit(result.kitId);
         setToastMessage(
           t('kits.uploadSuccess', { name: file.meta.name }) as string,
         );
@@ -86,7 +88,7 @@ export function KitManagement() {
         setToastVariant('error');
       }
     },
-    [uploadKit, t],
+    [uploadKit, selectKit, t],
   );
 
   const handleDeleteKit = useCallback((kitId: `custom:${string}`) => {

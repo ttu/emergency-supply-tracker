@@ -46,10 +46,27 @@ test.describe('Onboarding Flow', () => {
     const adultsInput = page.locator('input[type="number"]').first();
     await expect(adultsInput).toHaveValue('2');
 
-    // Submit form to go to Quick Setup (button is "Save")
+    // Submit form to go to Kit Selection (button is "Save")
     await page.getByTestId('household-save-button').click();
 
-    // Step 4: Quick Setup
+    // Step 4: Kit Selection
+    await expect(
+      page.getByTestId('onboarding-recommendation-kit-step'),
+    ).toBeVisible({
+      timeout: 5000,
+    });
+    // Explicitly select the default kit to ensure it's selected
+    const defaultKitCard = page.getByTestId('kit-card-72tuntia-standard');
+    await expect(defaultKitCard).toBeVisible({ timeout: 5000 });
+    await defaultKitCard.click();
+    // Wait a moment for selection to register
+    await page.waitForTimeout(300);
+    // Now continue button should be enabled
+    const continueButton = page.getByTestId('kit-step-continue-button');
+    await expect(continueButton).toBeEnabled({ timeout: 5000 });
+    await continueButton.click();
+
+    // Step 5: Quick Setup
     await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
       timeout: 5000,
     });
@@ -75,6 +92,24 @@ test.describe('Onboarding Flow', () => {
     await page.getByTestId('get-started-button').click();
     await page.getByTestId('preset-single').click();
     await page.getByTestId('household-save-button').click();
+    // Kit Selection step
+    await expect(
+      page.getByTestId('onboarding-recommendation-kit-step'),
+    ).toBeVisible({ timeout: 5000 });
+    // Explicitly select the default kit to ensure it's selected
+    const defaultKitCard = page.getByTestId('kit-card-72tuntia-standard');
+    await expect(defaultKitCard).toBeVisible({ timeout: 5000 });
+    await defaultKitCard.click();
+    // Wait a moment for selection to register
+    await page.waitForTimeout(300);
+    // Now continue button should be enabled
+    const continueButton = page.getByTestId('kit-step-continue-button');
+    await expect(continueButton).toBeEnabled({ timeout: 5000 });
+    await continueButton.click();
+    // Quick Setup step
+    await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
+      timeout: 5000,
+    });
 
     // Select some items first (button is disabled when no items selected)
     // Show details to access item checkboxes
@@ -157,6 +192,24 @@ test.describe('Onboarding Flow', () => {
     await page.getByTestId('get-started-button').click();
     await page.getByTestId('preset-couple').click();
     await page.getByTestId('household-save-button').click();
+    // Kit Selection step
+    await expect(
+      page.getByTestId('onboarding-recommendation-kit-step'),
+    ).toBeVisible({ timeout: 5000 });
+    // Explicitly select the default kit to ensure it's selected
+    const defaultKitCard = page.getByTestId('kit-card-72tuntia-standard');
+    await expect(defaultKitCard).toBeVisible({ timeout: 5000 });
+    await defaultKitCard.click();
+    // Wait a moment for selection to register
+    await page.waitForTimeout(300);
+    // Now continue button should be enabled
+    const continueButton = page.getByTestId('kit-step-continue-button');
+    await expect(continueButton).toBeEnabled({ timeout: 5000 });
+    await continueButton.click();
+    // Quick Setup step
+    await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
+      timeout: 5000,
+    });
     await page.getByTestId('skip-quick-setup-button').click();
 
     // Language should persist - navigation should be in Finnish
