@@ -149,12 +149,19 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
       originalItem: ImportedRecommendedItem | undefined,
       editingItem: RecommendedItemDefinition,
     ) => {
+      // Priority 1: Preserve original item's names if available
       if (originalItem?.names) {
         return { names: originalItem.names };
       }
+      // Priority 2: Preserve original item's i18nKey if available
       if (originalItem?.i18nKey) {
         return { i18nKey: originalItem.i18nKey };
       }
+      // Priority 3: Preserve editingItem's i18nKey if it exists (for built-in items)
+      if (editingItem.i18nKey) {
+        return { i18nKey: editingItem.i18nKey };
+      }
+      // Priority 4: Fallback to display name (for custom items without i18nKey)
       const displayName = getItemDisplayName(editingItem);
       return {
         names: {
