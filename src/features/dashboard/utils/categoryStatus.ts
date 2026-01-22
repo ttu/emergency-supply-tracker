@@ -1,3 +1,12 @@
+/**
+ * Category status calculations for the dashboard.
+ *
+ * This module provides functions to calculate category status summaries,
+ * including shortages, completion percentages, and overall status.
+ *
+ * Uses the Strategy pattern for category-specific calculations (food, water, etc.).
+ */
+
 import type {
   InventoryItem,
   ItemStatus,
@@ -6,47 +15,29 @@ import type {
   Unit,
   RecommendedItemDefinition,
 } from '@/shared/types';
-import { isFoodCategory, isFoodRecommendedItem } from '@/shared/types';
 import { getStatusFromPercentage } from '@/shared/utils/calculations/itemStatus';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import { calculateItemStatus } from '@/features/inventory/utils/status';
-import { calculateTotalWaterRequired } from '@/shared/utils/calculations/water';
 import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
-import {
-  findMatchingItems,
-  sumMatchingItemsCalories,
-} from '@/shared/utils/calculations/itemMatching';
+import { findMatchingItems } from '@/shared/utils/calculations/itemMatching';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
+import {
+  getCategoryStrategy,
+  type CategoryCalculationOptions,
+  type CategoryShortage,
+  type ShortageCalculationResult,
+  type ItemCalculationResult,
+  type CategoryCalculationContext,
+} from '@/shared/utils/calculations/strategies';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
-  PET_REQUIREMENT_MULTIPLIER,
-  DAILY_CALORIES_PER_PERSON,
-  DAILY_WATER_PER_PERSON,
   CRITICAL_PERCENTAGE_THRESHOLD,
   WARNING_PERCENTAGE_THRESHOLD,
 } from '@/shared/utils/constants';
 
-/**
- * Options for category calculations that can be customized by user settings.
- */
-export interface CategoryCalculationOptions {
-  /** Multiplier for children's requirements (default: 0.75) */
-  childrenMultiplier?: number;
-  /** Daily calories per person (default: 2000) */
-  dailyCaloriesPerPerson?: number;
-  /** Daily water per person in liters (default: 3) */
-  dailyWaterPerPerson?: number;
-}
-
-export interface CategoryShortage {
-  itemId: string;
-  itemName: string;
-  actual: number;
-  needed: number;
-  unit: Unit;
-  missing: number;
-}
+// Re-export types for backward compatibility
+export type { CategoryCalculationOptions, CategoryShortage };
 
 export interface CategoryStatusSummary {
   categoryId: string;
@@ -70,65 +61,21 @@ export interface CategoryStatusSummary {
 }
 
 /**
- * Check if a category has enough inventory based on actual vs needed quantities.
- * For food category, uses calorie-based comparison; for others, uses quantity-based.
+ * Build calculation context for strategies.
  */
-function hasEnoughInventory(
-  categoryId: string,
-  shortageInfo: {
-    totalActual: number;
-    totalNeeded: number;
-    totalActualCalories?: number;
-    totalNeededCalories?: number;
-  },
-): boolean {
-  // If nothing is needed, we can't determine if we have enough
-  // This happens when there are no recommended items for the category
-  // In this case, return false (not enough) to show critical status
-  if (shortageInfo.totalNeeded === 0) {
-    return false;
-  }
-
-  if (isFoodCategory(categoryId)) {
-    const neededCalories = shortageInfo.totalNeededCalories ?? 0;
-    if (neededCalories === 0) {
-      return false;
-    }
-    return (shortageInfo.totalActualCalories ?? 0) >= neededCalories;
-  }
-  return shortageInfo.totalActual >= shortageInfo.totalNeeded;
-}
-
-/**
- * Calculate shortages for a category based on recommended items.
- * For the 'food' category, uses calorie-based calculations instead of quantity-based.
- * For the 'water-beverages' category, includes water needed for food preparation.
- */
-export function calculateCategoryShortages(
+function buildCalculationContext(
   categoryId: string,
   items: InventoryItem[],
   household: HouseholdConfig,
   recommendedItems: RecommendedItemDefinition[],
-  disabledRecommendedItems: string[] = [],
-  options: CategoryCalculationOptions = {},
-): {
-  shortages: CategoryShortage[];
-  totalActual: number;
-  totalNeeded: number;
-  primaryUnit?: Unit;
-  totalActualCalories?: number;
-  totalNeededCalories?: number;
-  missingCalories?: number;
-  drinkingWaterNeeded?: number;
-  preparationWaterNeeded?: number;
-} {
+  disabledRecommendedItems: string[],
+  options: CategoryCalculationOptions,
+): CategoryCalculationContext {
   const childrenMultiplier =
     options.childrenMultiplier ?? CHILDREN_REQUIREMENT_MULTIPLIER;
-  const dailyCalories =
-    options.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON;
-  const dailyWater = options.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON;
 
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
+
   // Ensure both sides are strings for comparison (handles branded types)
   const categoryIdStr =
     typeof categoryId === 'string' ? categoryId : String(categoryId);
@@ -141,13 +88,45 @@ export function calculateCategoryShortages(
     );
   });
 
-  // Calculate water needed for food preparation (for water-beverages category)
-  const isWaterCategory = categoryId === 'water-beverages';
-  const preparationWaterNeeded = isWaterCategory
-    ? calculateTotalWaterRequired(items)
-    : 0;
+  // Adults count as 1.0, children use the configurable multiplier
+  const peopleMultiplier =
+    household.adults * ADULT_REQUIREMENT_MULTIPLIER +
+    household.children * childrenMultiplier;
 
-  if (recommendedForCategory.length === 0) {
+  return {
+    categoryId,
+    items,
+    categoryItems,
+    recommendedForCategory,
+    household,
+    disabledRecommendedItems,
+    options,
+    peopleMultiplier,
+  };
+}
+
+/**
+ * Calculate shortages for a category using strategy pattern.
+ */
+export function calculateCategoryShortages(
+  categoryId: string,
+  items: InventoryItem[],
+  household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
+  disabledRecommendedItems: string[] = [],
+  options: CategoryCalculationOptions = {},
+): ShortageCalculationResult {
+  const context = buildCalculationContext(
+    categoryId,
+    items,
+    household,
+    recommendedItems,
+    disabledRecommendedItems,
+    options,
+  );
+
+  // No recommended items for this category
+  if (context.recommendedForCategory.length === 0) {
     return {
       shortages: [],
       totalActual: 0,
@@ -156,199 +135,59 @@ export function calculateCategoryShortages(
     };
   }
 
-  // Adults count as 1.0, children use the configurable multiplier
-  const peopleMultiplier =
-    household.adults * ADULT_REQUIREMENT_MULTIPLIER +
-    household.children * childrenMultiplier;
-  const shortages: CategoryShortage[] = [];
-  let totalActual = 0;
-  let totalNeeded = 0;
+  // Get the appropriate strategy for this category
+  const strategy = getCategoryStrategy(categoryId);
 
-  // Track item types for mixed-unit categories
-  let totalItemTypes = 0;
-  // Track weighted fulfillment for mixed units (to match percentage calculation)
-  let weightedFulfillment = 0;
+  // Calculate results for each recommended item
+  const itemResults: ItemCalculationResult[] = [];
 
-  // Calorie tracking for food category
-  const isFood = isFoodCategory(categoryId);
-  let totalActualCalories = 0;
-  let totalNeededCalories = 0;
-
-  // For food category, calculate needed calories based on people and days
-  // Children use the configurable multiplier for calorie requirements
-  if (isFood) {
-    totalNeededCalories =
-      dailyCalories * peopleMultiplier * household.supplyDurationDays;
-  }
-
-  // Track drinking water separately for water-beverages category
-  let drinkingWaterNeeded = 0;
-
-  // Track units to find the most common one and detect mixed units
-  const unitCounts = new Map<Unit, number>();
-  const uniqueUnits = new Set<Unit>();
-
-  recommendedForCategory.forEach((recItem) => {
-    // For bottled-water, use the user's daily water setting instead of the
-    // hardcoded baseQuantity from recommendedItems
-    let recommendedQty =
-      recItem.id === 'bottled-water' ? dailyWater : recItem.baseQuantity;
-
-    if (recItem.scaleWithPeople) {
-      recommendedQty *= peopleMultiplier;
-    }
-
-    if (recItem.scaleWithPets) {
-      recommendedQty *= household.pets * PET_REQUIREMENT_MULTIPLIER;
-    }
-
-    if (recItem.scaleWithDays) {
-      recommendedQty *= household.supplyDurationDays;
-    }
-
-    // Track drinking water separately for water-beverages category
-    if (isWaterCategory && recItem.id === 'bottled-water') {
-      drinkingWaterNeeded = recommendedQty;
-    }
-
-    // Add water needed for food preparation to bottled-water recommendation
-    if (isWaterCategory && recItem.id === 'bottled-water') {
-      recommendedQty += preparationWaterNeeded;
-    }
-
-    recommendedQty = Math.ceil(recommendedQty);
+  context.recommendedForCategory.forEach((recItem) => {
+    const recommendedQty = strategy.calculateRecommendedQuantity(
+      recItem,
+      context,
+    );
 
     // Skip items with 0 recommended quantity (e.g., pet items when pets is 0)
-    // These items should not contribute to totals or show up in shortages
-    // Check early to avoid unnecessary calculations
     if (recommendedQty === 0) {
       return;
     }
 
-    // Find matching items using shared utility
-    // Matches by itemType or normalized name (excludes custom items from name matching)
-    const matchingItems = findMatchingItems(categoryItems, recItem);
-
-    // If any matching item is marked as enough, treat as having met the requirement
+    // Find matching items
+    const matchingItems = findMatchingItems(context.categoryItems, recItem);
     const hasMarkedAsEnough = matchingItems.some((item) => item.markedAsEnough);
 
-    const actualQty = matchingItems.reduce(
-      (sum, item) => sum + item.quantity,
-      0,
-    );
+    // Calculate actual quantity (and calories for food)
+    const { quantity: actualQty, calories: actualCalories } =
+      strategy.calculateActualQuantity(matchingItems, recItem, context);
 
-    // Calculate calories for food items using shared utility
-    if (
-      isFoodRecommendedItem(recItem) &&
-      recItem.caloriesPerUnit != null &&
-      Number.isFinite(recItem.caloriesPerUnit)
-    ) {
-      const itemCalories = sumMatchingItemsCalories(
-        categoryItems,
-        recItem,
-        recItem.caloriesPerUnit,
-      );
-      totalActualCalories += itemCalories;
-    }
-
-    const missing = Math.max(0, recommendedQty - actualQty);
-
-    // Track unique units and item types
-    uniqueUnits.add(recItem.unit);
-    totalItemTypes++;
-    // Calculate weighted fulfillment (0-1) for this item type
-    // If marked as enough or recommended quantity is zero, treat as fully fulfilled (1.0)
-    // Otherwise, calculate ratio of actual to recommended, capped at 1.0
-    const fulfillmentRatio =
-      hasMarkedAsEnough || recommendedQty === 0
-        ? 1
-        : Math.min(actualQty / recommendedQty, 1);
-    weightedFulfillment += fulfillmentRatio;
-
-    // Track unit frequency
-    unitCounts.set(
-      recItem.unit,
-      (unitCounts.get(recItem.unit) || 0) + recommendedQty,
-    );
-
-    // Add to totals
-    // Always use actual quantities - markedAsEnough only affects requirement satisfaction, not totals
-    totalActual += actualQty;
-    totalNeeded += recommendedQty;
-
-    // Only add to shortages if not marked as enough
-    if (missing > 0 && !hasMarkedAsEnough) {
-      shortages.push({
-        itemId: recItem.id,
-        itemName: recItem.i18nKey,
-        actual: actualQty,
-        needed: recommendedQty,
-        unit: recItem.unit,
-        missing,
-      });
-    }
+    itemResults.push({
+      recItem,
+      recommendedQty,
+      actualQty,
+      matchingItems,
+      hasMarkedAsEnough,
+      unit: recItem.unit,
+      actualCalories,
+    });
   });
 
-  // Find the most common unit by quantity
-  let primaryUnit: Unit | undefined = undefined;
-  let maxCount = 0;
-  unitCounts.forEach((count, unit) => {
-    if (count > maxCount) {
-      maxCount = count;
-      primaryUnit = unit;
-    }
-  });
-
-  // If multiple different units, use item type counts instead
-  // Also use item type counts for communication-info category since each item type
-  // (battery radio, hand-crank radio) represents a distinct preparedness item
-  const hasMixedUnits = uniqueUnits.size > 1;
-  const trackByItemTypes = hasMixedUnits || categoryId === 'communication-info';
-  if (trackByItemTypes) {
-    // Use weighted fulfillment to match the percentage calculation
-    // This ensures the progress bar and item count are consistent
-    totalActual = weightedFulfillment;
-    totalNeeded = totalItemTypes;
-    primaryUnit = undefined; // Signal to show "items" instead of a specific unit
-  }
-
-  // Sort shortages by missing amount (descending)
-  shortages.sort((a, b) => b.missing - a.missing);
-
-  // Return with calorie data for food category
-  if (isFood) {
-    const missingCalories = Math.max(
-      0,
-      totalNeededCalories - totalActualCalories,
-    );
-    return {
-      shortages,
-      totalActual,
-      totalNeeded,
-      primaryUnit,
-      totalActualCalories,
-      totalNeededCalories,
-      missingCalories,
-    };
-  }
-
-  // Return with water breakdown data for water-beverages category
-  if (isWaterCategory) {
-    return {
-      shortages,
-      totalActual,
-      totalNeeded,
-      primaryUnit,
-      drinkingWaterNeeded,
-      preparationWaterNeeded,
-    };
-  }
-
-  return { shortages, totalActual, totalNeeded, primaryUnit };
+  // Aggregate results using the strategy
+  return strategy.aggregateTotals(itemResults, context);
 }
 
 /**
- * Calculate status summary for a category
+ * Check if a category has enough inventory based on strategy logic.
+ */
+function hasEnoughInventory(
+  categoryId: string,
+  result: ShortageCalculationResult,
+): boolean {
+  const strategy = getCategoryStrategy(categoryId);
+  return strategy.hasEnoughInventory(result);
+}
+
+/**
+ * Calculate status summary for a category.
  */
 export function calculateCategoryStatus(
   category: Category,
@@ -385,7 +224,7 @@ export function calculateCategoryStatus(
     else okCount++;
   });
 
-  // Calculate shortages
+  // Calculate shortages using strategy
   const shortageInfo = calculateCategoryShortages(
     category.id,
     items,
@@ -398,20 +237,11 @@ export function calculateCategoryStatus(
   // Check if inventory meets the minimum requirements
   const hasEnough = hasEnoughInventory(category.id, shortageInfo);
 
-  // completionPercentage already comes from calculateCategoryPreparedness()
-  // which uses the unified calculator (calorie-based for food, quantity-based for others)
-  // No need for calorie override anymore
-  const isFood = isFoodCategory(category.id);
+  // Calculate effective percentage
+  // For mixed units categories, use weighted fulfillment for consistency
   let effectivePercentage = completionPercentage;
-
-  // For mixed units categories, calculate percentage from weighted fulfillment
-  // to ensure consistency with the item count display (same logic as getCategoryDisplayStatus)
-  // Check if this is a mixed units category (primaryUnit is undefined) and we have items to track
-  // Skip this check for food category, as food uses calorie-based calculation
-  if (!isFood && !shortageInfo.primaryUnit && shortageInfo.totalNeeded > 0) {
+  if (!shortageInfo.primaryUnit && shortageInfo.totalNeeded > 0) {
     // Use weighted fulfillment ratio to calculate percentage
-    // This ensures the progress bar matches the "X / Y items" display
-    // totalActual is the weighted fulfillment sum, totalNeeded is the number of item types
     const weightedPercentage = Math.round(
       (shortageInfo.totalActual / shortageInfo.totalNeeded) * 100,
     );
@@ -420,7 +250,6 @@ export function calculateCategoryStatus(
 
   // Determine overall category status
   let categoryStatus: ItemStatus;
-
   if (hasEnough) {
     categoryStatus = 'ok';
   } else if (
@@ -454,18 +283,16 @@ export function calculateCategoryStatus(
     totalActual: shortageInfo.totalActual,
     totalNeeded: shortageInfo.totalNeeded,
     primaryUnit: shortageInfo.primaryUnit,
-    // Calorie data for food category
     totalActualCalories: shortageInfo.totalActualCalories,
     totalNeededCalories: shortageInfo.totalNeededCalories,
     missingCalories: shortageInfo.missingCalories,
-    // Water breakdown for water-beverages category
     drinkingWaterNeeded: shortageInfo.drinkingWaterNeeded,
     preparationWaterNeeded: shortageInfo.preparationWaterNeeded,
   };
 }
 
 /**
- * Calculate status summaries for all categories
+ * Calculate status summaries for all categories.
  */
 export function calculateAllCategoryStatuses(
   categories: Category[],
@@ -491,7 +318,7 @@ export function calculateAllCategoryStatuses(
 }
 
 /**
- * Simplified interface for category status display in UI components
+ * Simplified interface for category status display in UI components.
  */
 export interface CategoryDisplayStatus {
   status: ItemStatus;
@@ -531,7 +358,7 @@ export function getCategoryDisplayStatus(
     options,
   );
 
-  // Still need shortage info for detailed display (shortages list, units, etc.)
+  // Calculate shortages using strategy
   const shortageInfo = calculateCategoryShortages(
     categoryId,
     items,
@@ -545,31 +372,21 @@ export function getCategoryDisplayStatus(
   const hasEnough = hasEnoughInventory(categoryId, shortageInfo);
 
   // Use percentage from unified calculator
-  // For mixed units categories, still use weighted fulfillment for consistency with item count display
-  const isFood = isFoodCategory(categoryId);
+  // For mixed units categories, use weighted fulfillment for consistency
   let effectivePercentage = percentageResult.percentage;
-
-  // For mixed units categories, calculate percentage from weighted fulfillment
-  // to ensure consistency with the item count display
-  // Check if this is a mixed units category (primaryUnit is undefined) and we have items to track
-  // Skip this check for food category, as food uses calorie-based calculation
-  if (!isFood && !shortageInfo.primaryUnit && shortageInfo.totalNeeded > 0) {
-    // Use weighted fulfillment ratio to calculate percentage
-    // This ensures the progress bar matches the "X / Y items" display
-    // totalActual is the weighted fulfillment sum, totalNeeded is the number of item types
+  if (!shortageInfo.primaryUnit && shortageInfo.totalNeeded > 0) {
     const weightedPercentage = Math.round(
       (shortageInfo.totalActual / shortageInfo.totalNeeded) * 100,
     );
     effectivePercentage = weightedPercentage;
   }
 
-  // Determine status: if we have enough inventory, the status should be OK
-  // regardless of optional recommended items
+  // Determine status
   const status: ItemStatus = hasEnough
     ? 'ok'
     : getStatusFromPercentage(effectivePercentage);
 
-  // Cap percentage at 100: exact 100 when enough, otherwise capped
+  // Cap percentage at 100
   const completionPercentage = hasEnough
     ? 100
     : Math.min(effectivePercentage, 100);
