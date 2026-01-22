@@ -245,8 +245,10 @@ test.describe('Custom Product Templates', () => {
 
     // Export data
     await page.getByTestId('nav-settings').click();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
     const exportButton = page.getByTestId('export-data-button');
-    await expect(exportButton).toBeVisible();
+    await expect(exportButton).toBeVisible({ timeout: 10000 });
     await exportButton.click();
 
     // Wait for export selection modal to open and click export button

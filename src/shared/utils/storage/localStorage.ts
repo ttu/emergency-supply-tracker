@@ -4,6 +4,8 @@ import type {
   ProductTemplateId,
   Category,
   ProductTemplate,
+  KitId,
+  UploadedKit,
 } from '@/shared/types';
 import type {
   ExportSection,
@@ -20,6 +22,7 @@ import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
 import { UserSettingsFactory } from '@/features/settings/factories/UserSettingsFactory';
 import { STANDARD_CATEGORIES } from '@/features/categories/data';
+import { DEFAULT_KIT_ID } from '@/features/templates/kits';
 import {
   CURRENT_SCHEMA_VERSION,
   migrateToCurrentVersion,
@@ -90,6 +93,8 @@ export function createDefaultAppData(): AppData {
     customTemplates: [],
     dismissedAlertIds: [],
     disabledRecommendedItems: [],
+    selectedRecommendationKit: DEFAULT_KIT_ID,
+    uploadedRecommendationKits: [],
     lastModified: new Date().toISOString(),
   };
 }
@@ -161,6 +166,13 @@ export function getAppData(): AppData | undefined {
         (rawData as { disabledRecommendedItems?: string[] })
           .disabledRecommendedItems || []
       ).map(createProductTemplateId),
+      // Normalize kit fields - only set defaults if they're missing from rawData
+      selectedRecommendationKit:
+        (rawData as { selectedRecommendationKit?: KitId })
+          .selectedRecommendationKit ?? DEFAULT_KIT_ID,
+      uploadedRecommendationKits:
+        (rawData as { uploadedRecommendationKits?: UploadedKit[] })
+          .uploadedRecommendationKits ?? [],
     };
 
     // Apply migrations if needed
@@ -298,6 +310,12 @@ export function importFromJSON(json: string): AppData {
   } else {
     data.disabledRecommendedItems = [];
   }
+
+  // Ensure kit fields are initialized with defaults if absent
+  if (!data.selectedRecommendationKit) {
+    data.selectedRecommendationKit = DEFAULT_KIT_ID;
+  }
+  data.uploadedRecommendationKits ??= [];
 
   // customRecommendedItems is optional - preserve if present, otherwise leave undefined
 

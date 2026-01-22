@@ -1,0 +1,840 @@
+{
+  "meta": {
+    "name": "72tuntia.fi Standard Kit",
+    "version": "1.0.0",
+    "description": "Default 72-hour emergency supply recommendations based on 72tuntia.fi guidelines",
+    "source": "https://72tuntia.fi",
+    "createdAt": "2026-01-12T19:58:45.093Z",
+    "language": "en"
+  },
+  "items": [
+    {
+      "id": "bottled-water",
+      "i18nKey": "products.bottled-water",
+      "category": "water-beverages",
+      "baseQuantity": 3,
+      "unit": "liters",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "long-life-milk",
+      "i18nKey": "products.long-life-milk",
+      "category": "water-beverages",
+      "baseQuantity": 2,
+      "unit": "liters",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "long-life-juice",
+      "i18nKey": "products.long-life-juice",
+      "category": "water-beverages",
+      "baseQuantity": 2,
+      "unit": "liters",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "canned-soup",
+      "i18nKey": "products.canned-soup",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 400,
+      "caloriesPer100g": 50,
+      "caloriesPerUnit": 200
+    },
+    {
+      "id": "canned-vegetables",
+      "i18nKey": "products.canned-vegetables",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 400,
+      "caloriesPer100g": 25,
+      "caloriesPerUnit": 100
+    },
+    {
+      "id": "canned-fish",
+      "i18nKey": "products.canned-fish",
+      "category": "food",
+      "baseQuantity": 0.67,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 36,
+      "weightGramsPerUnit": 150,
+      "caloriesPer100g": 130,
+      "caloriesPerUnit": 195
+    },
+    {
+      "id": "canned-meat",
+      "i18nKey": "products.canned-meat",
+      "category": "food",
+      "baseQuantity": 0.67,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 36,
+      "weightGramsPerUnit": 200,
+      "caloriesPer100g": 150,
+      "caloriesPerUnit": 300
+    },
+    {
+      "id": "pasta",
+      "i18nKey": "products.pasta",
+      "category": "food",
+      "baseQuantity": 0.17,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 350,
+      "caloriesPerUnit": 3500,
+      "requiresWaterLiters": 1
+    },
+    {
+      "id": "rice",
+      "i18nKey": "products.rice",
+      "category": "food",
+      "baseQuantity": 0.17,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 360,
+      "caloriesPerUnit": 3600,
+      "requiresWaterLiters": 1.5
+    },
+    {
+      "id": "oats",
+      "i18nKey": "products.oats",
+      "category": "food",
+      "baseQuantity": 0.17,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 380,
+      "caloriesPerUnit": 3800,
+      "requiresWaterLiters": 2
+    },
+    {
+      "id": "crackers",
+      "i18nKey": "products.crackers",
+      "category": "food",
+      "baseQuantity": 0.67,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 200,
+      "caloriesPer100g": 250,
+      "caloriesPerUnit": 500
+    },
+    {
+      "id": "energy-bars",
+      "i18nKey": "products.energy-bars",
+      "category": "food",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 50,
+      "caloriesPer100g": 500,
+      "caloriesPerUnit": 250
+    },
+    {
+      "id": "spreads",
+      "i18nKey": "products.spreads",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "jars",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 18,
+      "weightGramsPerUnit": 400,
+      "caloriesPer100g": 400,
+      "caloriesPerUnit": 1600
+    },
+    {
+      "id": "dried-fruits",
+      "i18nKey": "products.dried-fruits",
+      "category": "food",
+      "baseQuantity": 0.1,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 300,
+      "caloriesPerUnit": 3000
+    },
+    {
+      "id": "nuts",
+      "i18nKey": "products.nuts",
+      "category": "food",
+      "baseQuantity": 0.1,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 600,
+      "caloriesPerUnit": 6000
+    },
+    {
+      "id": "salt-sugar",
+      "i18nKey": "products.salt-sugar",
+      "category": "food",
+      "baseQuantity": 0.2,
+      "unit": "kilograms",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "coffee-tea",
+      "i18nKey": "products.coffee-tea",
+      "category": "food",
+      "baseQuantity": 0.2,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 18,
+      "requiresWaterLiters": 10
+    },
+    {
+      "id": "frozen-vegetables",
+      "i18nKey": "products.frozen-vegetables",
+      "category": "food",
+      "baseQuantity": 0.34,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "requiresFreezer": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 40,
+      "caloriesPerUnit": 400
+    },
+    {
+      "id": "frozen-meat",
+      "i18nKey": "products.frozen-meat",
+      "category": "food",
+      "baseQuantity": 0.17,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "requiresFreezer": true,
+      "defaultExpirationMonths": 6,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 250,
+      "caloriesPerUnit": 2500
+    },
+    {
+      "id": "frozen-meals",
+      "i18nKey": "products.frozen-meals",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "requiresFreezer": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 400,
+      "caloriesPer100g": 115,
+      "caloriesPerUnit": 460
+    },
+    {
+      "id": "camping-stove",
+      "i18nKey": "products.camping-stove",
+      "category": "cooking-heat",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "stove-fuel",
+      "i18nKey": "products.stove-fuel",
+      "category": "cooking-heat",
+      "baseQuantity": 1,
+      "unit": "canisters",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "matches",
+      "i18nKey": "products.matches",
+      "category": "cooking-heat",
+      "baseQuantity": 2,
+      "unit": "boxes",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "lighter",
+      "i18nKey": "products.lighter",
+      "category": "cooking-heat",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "candles",
+      "i18nKey": "products.candles",
+      "category": "cooking-heat",
+      "baseQuantity": 10,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "fire-starter",
+      "i18nKey": "products.fire-starter",
+      "category": "cooking-heat",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "flashlight",
+      "i18nKey": "products.flashlight",
+      "category": "light-power",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "headlamp",
+      "i18nKey": "products.headlamp",
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "batteries-aa",
+      "i18nKey": "products.batteries-aa",
+      "category": "light-power",
+      "baseQuantity": 20,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "batteries-aaa",
+      "i18nKey": "products.batteries-aaa",
+      "category": "light-power",
+      "baseQuantity": 12,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "batteries-d",
+      "i18nKey": "products.batteries-d",
+      "category": "light-power",
+      "baseQuantity": 8,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "power-bank",
+      "i18nKey": "products.power-bank",
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "charging-cables",
+      "i18nKey": "products.charging-cables",
+      "category": "light-power",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "solar-charger",
+      "i18nKey": "products.solar-charger",
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "power-generator",
+      "i18nKey": "products.power-generator",
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "generator-fuel",
+      "i18nKey": "products.generator-fuel",
+      "category": "light-power",
+      "baseQuantity": 10,
+      "unit": "liters",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "battery-radio",
+      "i18nKey": "products.battery-radio",
+      "category": "communication-info",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "hand-crank-radio",
+      "i18nKey": "products.hand-crank-radio",
+      "category": "communication-info",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "first-aid-kit",
+      "i18nKey": "products.first-aid-kit",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "prescription-meds",
+      "i18nKey": "products.prescription-meds",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "days",
+      "scaleWithPeople": true,
+      "scaleWithDays": true
+    },
+    {
+      "id": "pain-relievers",
+      "i18nKey": "products.pain-relievers",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "fever-reducers",
+      "i18nKey": "products.fever-reducers",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "bandages",
+      "i18nKey": "products.bandages",
+      "category": "medical-health",
+      "baseQuantity": 20,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "disinfectant",
+      "i18nKey": "products.disinfectant",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "thermometer",
+      "i18nKey": "products.thermometer",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "antihistamines",
+      "i18nKey": "products.antihistamines",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "diarrhea-meds",
+      "i18nKey": "products.diarrhea-meds",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "toilet-paper",
+      "i18nKey": "products.toilet-paper",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "rolls",
+      "scaleWithPeople": true,
+      "scaleWithDays": true
+    },
+    {
+      "id": "wet-wipes",
+      "i18nKey": "products.wet-wipes",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "hand-sanitizer",
+      "i18nKey": "products.hand-sanitizer",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "soap",
+      "i18nKey": "products.soap",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "toothbrush",
+      "i18nKey": "products.toothbrush",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "toothpaste",
+      "i18nKey": "products.toothpaste",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "tubes",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "feminine-hygiene",
+      "i18nKey": "products.feminine-hygiene",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 0.34,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": true
+    },
+    {
+      "id": "diapers",
+      "i18nKey": "products.diapers",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 10,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": true
+    },
+    {
+      "id": "garbage-bags",
+      "i18nKey": "products.garbage-bags",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 20,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "paper-towels",
+      "i18nKey": "products.paper-towels",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 2,
+      "unit": "rolls",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "bucket",
+      "i18nKey": "products.bucket",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "water-container",
+      "i18nKey": "products.water-container",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "duct-tape",
+      "i18nKey": "products.duct-tape",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "rolls",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "multi-tool",
+      "i18nKey": "products.multi-tool",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "can-opener",
+      "i18nKey": "products.can-opener",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "plastic-bags",
+      "i18nKey": "products.plastic-bags",
+      "category": "tools-supplies",
+      "baseQuantity": 20,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "aluminum-foil",
+      "i18nKey": "products.aluminum-foil",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "rolls",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "plastic-wrap",
+      "i18nKey": "products.plastic-wrap",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "rolls",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "rope",
+      "i18nKey": "products.rope",
+      "category": "tools-supplies",
+      "baseQuantity": 10,
+      "unit": "meters",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "work-gloves",
+      "i18nKey": "products.work-gloves",
+      "category": "tools-supplies",
+      "baseQuantity": 2,
+      "unit": "pairs",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "whistle",
+      "i18nKey": "products.whistle",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cash",
+      "i18nKey": "products.cash",
+      "category": "cash-documents",
+      "baseQuantity": 300,
+      "unit": "euros",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "document-copies",
+      "i18nKey": "products.document-copies",
+      "category": "cash-documents",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "contact-list",
+      "i18nKey": "products.contact-list",
+      "category": "cash-documents",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "pet-food-dry",
+      "i18nKey": "products.pet-food-dry",
+      "category": "pets",
+      "baseQuantity": 0.2,
+      "unit": "kilograms",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "scaleWithPets": true,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "pet-food-wet",
+      "i18nKey": "products.pet-food-wet",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "scaleWithPets": true,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "pet-water-bowl",
+      "i18nKey": "products.pet-water-bowl",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-food-bowl",
+      "i18nKey": "products.pet-food-bowl",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-carrier",
+      "i18nKey": "products.pet-carrier",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-leash-collar",
+      "i18nKey": "products.pet-leash-collar",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-waste-bags",
+      "i18nKey": "products.pet-waste-bags",
+      "category": "pets",
+      "baseQuantity": 5,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-medications",
+      "i18nKey": "products.pet-medications",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "days",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-comfort-items",
+      "i18nKey": "products.pet-comfort-items",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    },
+    {
+      "id": "pet-vaccination-records",
+      "i18nKey": "products.pet-vaccination-records",
+      "category": "pets",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "scaleWithPets": true
+    }
+  ]
+}

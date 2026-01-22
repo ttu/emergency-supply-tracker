@@ -122,11 +122,17 @@ export function calculateCategoryPreparedness(
   options: CategoryCalculationOptions = {},
 ): number {
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
-  const recommendedForCategory = recommendedItems.filter(
-    (item) =>
-      item.category === categoryId &&
-      !disabledRecommendedItems.includes(item.id),
-  );
+  // Ensure both sides are strings for comparison (handles branded types)
+  const categoryIdStr =
+    typeof categoryId === 'string' ? categoryId : String(categoryId);
+  const recommendedForCategory = recommendedItems.filter((item) => {
+    const itemCategoryStr =
+      typeof item.category === 'string' ? item.category : String(item.category);
+    return (
+      itemCategoryStr === categoryIdStr &&
+      !disabledRecommendedItems.includes(item.id)
+    );
+  });
 
   if (recommendedForCategory.length === 0) {
     return categoryItems.length > 0

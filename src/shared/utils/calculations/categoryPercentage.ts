@@ -23,6 +23,7 @@ import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
+  PET_REQUIREMENT_MULTIPLIER,
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
 } from '@/shared/utils/constants';
@@ -91,11 +92,17 @@ export function calculateCategoryPercentage(
   const dailyWater = options.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON;
 
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
-  const recommendedForCategory = recommendedItems.filter(
-    (item) =>
-      item.category === categoryId &&
-      !disabledRecommendedItems.includes(item.id),
-  );
+  // Ensure both sides are strings for comparison (handles branded types)
+  const categoryIdStr =
+    typeof categoryId === 'string' ? categoryId : String(categoryId);
+  const recommendedForCategory = recommendedItems.filter((item) => {
+    const itemCategoryStr =
+      typeof item.category === 'string' ? item.category : String(item.category);
+    return (
+      itemCategoryStr === categoryIdStr &&
+      !disabledRecommendedItems.includes(item.id)
+    );
+  });
 
   // No recommended items for this category
   if (recommendedForCategory.length === 0) {
@@ -270,6 +277,10 @@ function calculateQuantityCategoryPercentage(
 
     if (recItem.scaleWithPeople) {
       recommendedQty *= peopleMultiplier;
+    }
+
+    if (recItem.scaleWithPets) {
+      recommendedQty *= household.pets * PET_REQUIREMENT_MULTIPLIER;
     }
 
     if (recItem.scaleWithDays) {

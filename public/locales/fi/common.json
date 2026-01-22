@@ -80,6 +80,7 @@
     "save": "Tallenna",
     "cancel": "Peruuta",
     "back": "Takaisin",
+    "continue": "Jatka",
     "export": "Vie",
     "import": "Tuo",
     "clear": "Tyhjennä",
@@ -147,7 +148,8 @@
       "recommendedItems": "Suositellut tuotteet",
       "dataManagement": "Tietojen hallinta",
       "about": "Tietoja",
-      "dangerZone": "Vaaravyöhyke"
+      "dangerZone": "Vaaravyöhyke",
+      "recommendationKits": "Suosituspaketit"
     },
     "nutrition": {
       "description": "Mukauta päivittäiset vaatimukset kalorien ja veden laskelmiin. Nämä arvot vaikuttavat siihen, miten suositellut määrät lasketaan kotitaloudellesi.",
@@ -300,6 +302,35 @@
       "notInFile": "(ei tiedostossa)"
     }
   },
+  "kits": {
+    "selectTitle": "Valitse suosituspaketti",
+    "selectDescription": "Valitse valmiiksi määritelty suosituspaketti tai lataa oma mukautettu paketti.",
+    "currentKit": {
+      "label": "Nykyinen paketti"
+    },
+    "itemCount": "{{count}} tuotetta",
+    "builtIn": "Sisäänrakennettu",
+    "builtInKits": "Sisäänrakennetut paketit",
+    "yourKits": "Omat paketit",
+    "uploadKit": "Lataa paketti",
+    "uploadKitHint": "Lataa mukautettu JSON-pakettitiedosto",
+    "deleteKit": "Poista {{name}}",
+    "noCustomKits": "Ei ladattuja mukautettuja paketteja",
+    "noKitSelected": "Ei pakettia valittuna",
+    "export": "Vie paketti",
+    "selectKit": "Valitse paketti",
+    "selected": "Valittu \"{{name}}\"",
+    "uploadSuccess": "Ladattu \"{{name}}\"",
+    "uploadError": "Lataus epäonnistui: {{error}}",
+    "deleteSuccess": "Poistettu \"{{name}}\"",
+    "exportSuccess": "Paketti viety onnistuneesti",
+    "defaultFileName": "suositukset",
+    "deleteConfirm": {
+      "title": "Poista paketti",
+      "message": "Haluatko varmasti poistaa paketin \"{{name}}\"? Tätä ei voi perua.",
+      "confirm": "Poista"
+    }
+  },
   "errorBoundary": {
     "title": "Jotain meni pieleen",
     "message": "Odottamaton virhe tapahtui. Yritä ladata sivu uudelleen.",
@@ -442,6 +473,10 @@
     "import": {
       "link": "Onko sinulla jo tietoja? Tuo varmuuskopio",
       "button": "Tuo varmuuskopiotiedot"
+    },
+    "kitSelection": {
+      "title": "Valitse suosituspaketti",
+      "subtitle": "Valitse valmis paketti tai lataa oma mukautettu suosituspaketti"
     }
   },
   "accessibility": {
@@ -518,5 +553,54 @@
     "itemUpdated": "Tuote \"{{name}}\" päivitetty",
     "itemDeleted": "Tuote \"{{name}}\" poistettu",
     "itemsBulkAdded": "{{count}} tuotetta lisätty"
+  },
+  "kitSelector": {
+    "builtInKits": "Sisäänrakennetut paketit",
+    "customKits": "Omat paketit",
+    "uploadKit": "Lataa oma paketti",
+    "noCustomKits": "Ei ladattuja omia paketteja",
+    "invalidFile": "Virheellinen tiedostomuoto. Valitse kelvollinen suosituspaketti JSON-tiedosto.",
+    "delete": "Poista"
+  },
+  "kitEditor": {
+    "title": "Muokkaa pakettia",
+    "items": "tuotetta",
+    "searchPlaceholder": "Hae tuotteita...",
+    "searchLabel": "Hae tuotteita",
+    "addItem": "Lisää tuote",
+    "editItem": "Muokkaa tuotetta",
+    "builtInNotice": "Sisäänrakennettuja paketteja ei voi muokata. Lataa oma paketti tehdäksesi muutoksia.",
+    "noSearchResults": "Haku ei tuottanut tuloksia",
+    "noItems": "Tässä paketissa ei ole tuotteita",
+    "perPerson": "per henkilö",
+    "perDay": "per päivä",
+    "baseQuantityRoundingNote": "{{value}} per henkilö, pyöristetty ylöspäin laskelmissa",
+    "deleteItem": {
+      "title": "Poista tuote",
+      "message": "Haluatko varmasti poistaa tuotteen \"{{name}}\"?",
+      "confirm": "Poista"
+    },
+    "names": "Nimet",
+    "nameEn": "Englanninkielinen nimi",
+    "nameFi": "Suomenkielinen nimi",
+    "nameEnPlaceholder": "Syötä englanninkielinen nimi",
+    "nameFiPlaceholder": "Syötä suomenkielinen nimi",
+    "category": "Kategoria",
+    "unit": "Yksikkö",
+    "baseQuantity": "Perusmäärä",
+    "defaultExpirationMonths": "Oletusvanheneminen (kuukautta)",
+    "optional": "Valinnainen",
+    "scaling": "Skaalausasetukset",
+    "scaleWithPeople": "Skaalaa kotitalouden koon mukaan",
+    "scaleWithDays": "Skaalaa varastojakson mukaan",
+    "requiresFreezer": "Vaatii pakastimen",
+    "nutrition": "Ravintotiedot (ruokatuotteet)",
+    "weightGramsPerUnit": "Paino yksikköä kohti (g)",
+    "caloriesPer100g": "Kalorit per 100g",
+    "validation": {
+      "nameRequired": "Vähintään yksi nimi vaaditaan",
+      "idExists": "Tuote tällä tunnuksella on jo olemassa",
+      "quantityPositive": "Määrän on oltava suurempi kuin 0"
+    }
   }
 }

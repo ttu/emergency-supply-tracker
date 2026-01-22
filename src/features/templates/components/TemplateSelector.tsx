@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { RecommendedItemDefinition, Category } from '@/shared/types';
 import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
+import { formatBaseQuantityCompact } from '@/shared/utils/formatting/baseQuantity';
 import styles from './TemplateSelector.module.css';
 
 export interface TemplateSelectorProps {
@@ -124,8 +125,11 @@ export const TemplateSelector = ({
                     {t(template.category, { ns: 'categories' })}
                   </p>
                   <p className={styles.templateQuantity}>
-                    {t('templateSelector.recommended')}: {template.baseQuantity}{' '}
-                    {t(template.unit, { ns: 'units' })}
+                    {t('templateSelector.recommended')}:{' '}
+                    {formatBaseQuantityCompact(
+                      template.baseQuantity,
+                      t(template.unit, { ns: 'units' }),
+                    )}
                   </p>
                 </div>
               </button>

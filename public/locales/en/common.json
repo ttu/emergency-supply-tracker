@@ -80,6 +80,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "back": "Back",
+    "continue": "Continue",
     "export": "Export",
     "import": "Import",
     "clear": "Clear",
@@ -147,7 +148,8 @@
       "recommendedItems": "Recommended Items",
       "dataManagement": "Data Management",
       "about": "About",
-      "dangerZone": "Danger Zone"
+      "dangerZone": "Danger Zone",
+      "recommendationKits": "Recommendation Kits"
     },
     "nutrition": {
       "description": "Customize daily requirements for calorie and water calculations. These values affect how recommended quantities are calculated for your household.",
@@ -300,6 +302,35 @@
       "notInFile": "(not in file)"
     }
   },
+  "kits": {
+    "selectTitle": "Choose a Recommendation Kit",
+    "selectDescription": "Select a pre-configured kit of recommended items or upload your own custom kit.",
+    "currentKit": {
+      "label": "Current Kit"
+    },
+    "itemCount": "{{count}} items",
+    "builtIn": "Built-in",
+    "builtInKits": "Built-in Kits",
+    "yourKits": "Your Kits",
+    "uploadKit": "Upload Kit",
+    "uploadKitHint": "Upload a custom JSON kit file",
+    "deleteKit": "Delete {{name}}",
+    "noCustomKits": "No custom kits uploaded yet",
+    "noKitSelected": "No kit selected",
+    "export": "Export Kit",
+    "selectKit": "Select a Kit",
+    "selected": "Selected \"{{name}}\"",
+    "uploadSuccess": "Uploaded \"{{name}}\"",
+    "uploadError": "Upload failed: {{error}}",
+    "deleteSuccess": "Deleted \"{{name}}\"",
+    "exportSuccess": "Kit exported successfully",
+    "defaultFileName": "recommendations",
+    "deleteConfirm": {
+      "title": "Delete Kit",
+      "message": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
+      "confirm": "Delete"
+    }
+  },
   "errorBoundary": {
     "title": "Something went wrong",
     "message": "An unexpected error occurred. Please try reloading the page.",
@@ -442,6 +473,10 @@
     "import": {
       "link": "Already have data? Import backup",
       "button": "Import backup data"
+    },
+    "kitSelection": {
+      "title": "Choose a Recommendation Kit",
+      "subtitle": "Select a pre-configured kit or upload your own custom recommendations"
     }
   },
   "accessibility": {
@@ -518,5 +553,54 @@
     "itemUpdated": "Item \"{{name}}\" updated",
     "itemDeleted": "Item \"{{name}}\" deleted",
     "itemsBulkAdded": "{{count}} item(s) added"
+  },
+  "kitSelector": {
+    "builtInKits": "Built-in Kits",
+    "customKits": "Custom Kits",
+    "uploadKit": "Upload Custom Kit",
+    "noCustomKits": "No custom kits uploaded yet",
+    "invalidFile": "Invalid file format. Please select a valid recommendation kit JSON file.",
+    "delete": "Delete"
+  },
+  "kitEditor": {
+    "title": "Edit Kit",
+    "items": "items",
+    "searchPlaceholder": "Search items...",
+    "searchLabel": "Search items",
+    "addItem": "Add Item",
+    "editItem": "Edit Item",
+    "builtInNotice": "Built-in kits cannot be edited. Upload a custom kit to make changes.",
+    "noSearchResults": "No items match your search",
+    "noItems": "This kit has no items",
+    "perPerson": "per person",
+    "perDay": "per day",
+    "baseQuantityRoundingNote": "{{value}} per person, rounded up in calculations",
+    "deleteItem": {
+      "title": "Delete Item",
+      "message": "Are you sure you want to delete \"{{name}}\"?",
+      "confirm": "Delete"
+    },
+    "names": "Names",
+    "nameEn": "English Name",
+    "nameFi": "Finnish Name",
+    "nameEnPlaceholder": "Enter English name",
+    "nameFiPlaceholder": "Enter Finnish name",
+    "category": "Category",
+    "unit": "Unit",
+    "baseQuantity": "Base Quantity",
+    "defaultExpirationMonths": "Default Expiration (months)",
+    "optional": "Optional",
+    "scaling": "Scaling Options",
+    "scaleWithPeople": "Scale with household size",
+    "scaleWithDays": "Scale with supply duration",
+    "requiresFreezer": "Requires freezer",
+    "nutrition": "Nutrition (Food Items)",
+    "weightGramsPerUnit": "Weight per unit (g)",
+    "caloriesPer100g": "Calories per 100g",
+    "validation": {
+      "nameRequired": "At least one name is required",
+      "idExists": "An item with this ID already exists",
+      "quantityPositive": "Quantity must be greater than 0"
+    }
   }
 }

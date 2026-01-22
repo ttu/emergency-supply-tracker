@@ -57,6 +57,15 @@ describe('useCategoryStatuses', () => {
 
     vi.mocked(useRecommendedItems).mockReturnValue({
       recommendedItems: [],
+      availableKits: [],
+      selectedKitId: null,
+      selectKit: vi.fn(),
+      uploadKit: vi.fn(),
+      deleteKit: vi.fn(),
+      updateCurrentKitMeta: vi.fn(),
+      addItemToKit: vi.fn(),
+      updateItemInKit: vi.fn(),
+      removeItemFromKit: vi.fn(),
       customRecommendationsInfo: null,
       isUsingCustomRecommendations: false,
       importRecommendedItems: vi.fn(),

@@ -20,6 +20,7 @@ import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
+  PET_REQUIREMENT_MULTIPLIER,
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
   CRITICAL_PERCENTAGE_THRESHOLD,
@@ -128,11 +129,17 @@ export function calculateCategoryShortages(
   const dailyWater = options.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON;
 
   const categoryItems = items.filter((item) => item.categoryId === categoryId);
-  const recommendedForCategory = recommendedItems.filter(
-    (item) =>
-      item.category === categoryId &&
-      !disabledRecommendedItems.includes(item.id),
-  );
+  // Ensure both sides are strings for comparison (handles branded types)
+  const categoryIdStr =
+    typeof categoryId === 'string' ? categoryId : String(categoryId);
+  const recommendedForCategory = recommendedItems.filter((item) => {
+    const itemCategoryStr =
+      typeof item.category === 'string' ? item.category : String(item.category);
+    return (
+      itemCategoryStr === categoryIdStr &&
+      !disabledRecommendedItems.includes(item.id)
+    );
+  });
 
   // Calculate water needed for food preparation (for water-beverages category)
   const isWaterCategory = categoryId === 'water-beverages';
@@ -191,12 +198,12 @@ export function calculateCategoryShortages(
       recommendedQty *= peopleMultiplier;
     }
 
-    if (recItem.scaleWithDays) {
-      recommendedQty *= household.supplyDurationDays;
+    if (recItem.scaleWithPets) {
+      recommendedQty *= household.pets * PET_REQUIREMENT_MULTIPLIER;
     }
 
-    if (recItem.scaleWithPets) {
-      recommendedQty *= household.pets;
+    if (recItem.scaleWithDays) {
+      recommendedQty *= household.supplyDurationDays;
     }
 
     // Track drinking water separately for water-beverages category
@@ -210,6 +217,13 @@ export function calculateCategoryShortages(
     }
 
     recommendedQty = Math.ceil(recommendedQty);
+
+    // Skip items with 0 recommended quantity (e.g., pet items when pets is 0)
+    // These items should not contribute to totals or show up in shortages
+    // Check early to avoid unnecessary calculations
+    if (recommendedQty === 0) {
+      return;
+    }
 
     // Find matching items using shared utility
     // Matches by itemType or normalized name (excludes custom items from name matching)

@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { HouseholdConfig } from '@/shared/types';
-import { RECOMMENDED_ITEMS } from '@/features/templates';
+import type {
+  HouseholdConfig,
+  RecommendedItemDefinition,
+} from '@/shared/types';
+import { useRecommendedItems } from '@/features/templates';
 import { Button } from '@/shared/components/Button';
+import { PET_REQUIREMENT_MULTIPLIER } from '@/shared/utils/constants';
 import styles from './QuickSetupScreen.module.css';
 
 export interface QuickSetupScreenProps {
@@ -19,12 +23,17 @@ export const QuickSetupScreen = ({
   onBack,
 }: QuickSetupScreenProps) => {
   const { t } = useTranslation(['common', 'categories', 'products', 'units']);
+  const { recommendedItems } = useRecommendedItems();
   const [showDetails, setShowDetails] = useState(false);
 
   // Calculate which items will be added
-  const itemsToAdd = RECOMMENDED_ITEMS.filter((item) => {
+  const itemsToAdd = recommendedItems.filter((item) => {
     // Skip frozen items if not using freezer
     if (item.requiresFreezer && !household.useFreezer) {
+      return false;
+    }
+    // Skip pet items if pets is 0
+    if (item.scaleWithPets && household.pets === 0) {
       return false;
     }
     return true;
@@ -36,12 +45,16 @@ export const QuickSetupScreen = ({
   );
 
   // Calculate recommended quantity for an item
-  const calculateQuantity = (item: (typeof RECOMMENDED_ITEMS)[0]): number => {
+  const calculateQuantity = (item: RecommendedItemDefinition): number => {
     let quantity = item.baseQuantity;
 
     if (item.scaleWithPeople) {
       const totalPeople = household.adults + household.children;
       quantity *= totalPeople;
+    }
+
+    if (item.scaleWithPets) {
+      quantity *= household.pets * PET_REQUIREMENT_MULTIPLIER;
     }
 
     if (item.scaleWithDays) {
