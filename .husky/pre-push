@@ -3,6 +3,29 @@ set -e
 
 echo "🔍 Running pre-push validation..."
 
+# Check if branch is rebased on latest main
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Skip check for main branch
+if [ "$current_branch" != "main" ]; then
+  echo "📋 Checking if branch is rebased on main..."
+
+  # Fetch latest main (silently)
+  git fetch origin main --quiet 2>/dev/null || true
+
+  # Check if origin/main is an ancestor of current branch
+  if ! git merge-base --is-ancestor origin/main HEAD 2>/dev/null; then
+    echo "❌ Error: Your branch is not rebased on the latest main."
+    echo ""
+    echo "Please rebase your branch:"
+    echo "  git fetch origin main"
+    echo "  git rebase origin/main"
+    exit 1
+  fi
+
+  echo "✅ Branch is up-to-date with main"
+fi
+
 # i18n translation completeness check
 # (This is the only check not covered by pre-commit)
 npm run validate:i18n
