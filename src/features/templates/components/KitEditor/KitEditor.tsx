@@ -60,7 +60,7 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
   const getItemDisplayName = useCallback(
     (item: RecommendedItemDefinition): string => {
       // For items with i18nKey in the "products." namespace, use translation
-      if (item.i18nKey && item.i18nKey.startsWith('products.')) {
+      if (item.i18nKey?.startsWith('products.')) {
         return t(item.i18nKey, { ns: 'products' });
       }
       // Fall back to getItemName for custom items or missing keys

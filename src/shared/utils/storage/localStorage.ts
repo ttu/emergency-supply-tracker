@@ -167,12 +167,12 @@ export function getAppData(): AppData | undefined {
           .disabledRecommendedItems || []
       ).map(createProductTemplateId),
       // Normalize kit fields - only set defaults if they're missing from rawData
-      selectedRecommendationKit: ((
-        rawData as { selectedRecommendationKit?: KitId }
-      ).selectedRecommendationKit ?? DEFAULT_KIT_ID) as KitId,
-      uploadedRecommendationKits: ((
-        rawData as { uploadedRecommendationKits?: UploadedKit[] }
-      ).uploadedRecommendationKits ?? []) as UploadedKit[],
+      selectedRecommendationKit:
+        (rawData as { selectedRecommendationKit?: KitId })
+          .selectedRecommendationKit ?? DEFAULT_KIT_ID,
+      uploadedRecommendationKits:
+        (rawData as { uploadedRecommendationKits?: UploadedKit[] })
+          .uploadedRecommendationKits ?? [],
     };
 
     // Apply migrations if needed

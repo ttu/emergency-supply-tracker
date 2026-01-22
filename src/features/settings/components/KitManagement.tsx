@@ -21,7 +21,7 @@ function sanitizeFileName(name: string): string {
   // Replace reserved characters: / \ : * ? " < > |
   // Also replace control characters (char codes < 32)
   // eslint-disable-next-line no-control-regex
-  const controlCharRegex = new RegExp('[\x00-\x1F]', 'g'); // Control chars 0-31
+  const controlCharRegex = /[\x00-\x1F]/g; // Control chars 0-31
   let sanitized = name
     .replaceAll(/[/\\:*?"<>|]/g, '-')
     .replaceAll(controlCharRegex, '-')
