@@ -22,9 +22,13 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Wait for Settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
+
     // Verify Export Data button is visible
     const exportButton = page.getByTestId('export-data-button');
-    await expect(exportButton).toBeVisible();
+    await expect(exportButton).toBeVisible({ timeout: 10000 });
 
     // Set up dialog handler to catch any error dialogs
     const dialogs: string[] = [];
@@ -54,6 +58,10 @@ test.describe('Data Management', () => {
   test('should import data', async ({ page }) => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
+
+    // Wait for Settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
 
     // Create test data file with all required fields
     const testData = {
@@ -92,7 +100,12 @@ test.describe('Data Management', () => {
       await dialog.accept();
     });
 
-    // Set file input using data-testid
+    // Wait for import button to be visible (ensures component is loaded)
+    await expect(page.getByTestId('import-data-button')).toBeVisible({
+      timeout: 10000,
+    });
+
+    // Set file input using data-testid (input is hidden but can be accessed)
     const fileInput = page.getByTestId('import-data-file-input');
     await fileInput.setInputFiles({
       name: 'test-import.json',
@@ -139,9 +152,13 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Wait for Settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
+
     // Verify Export Shopping List button is visible and enabled
     const exportButton = page.getByTestId('export-shopping-list-button');
-    await expect(exportButton).toBeVisible();
+    await expect(exportButton).toBeVisible({ timeout: 10000 });
     await expect(exportButton).toBeEnabled();
 
     // Set up dialog handler to catch any error dialogs
@@ -186,9 +203,13 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Wait for Settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
+
     // Verify Clear All Data button is visible using data-testid
     const clearButton = page.getByTestId('clear-data-button');
-    await expect(clearButton).toBeVisible();
+    await expect(clearButton).toBeVisible({ timeout: 10000 });
 
     // Note: The clear functionality uses window.confirm dialogs which are hard to test in Playwright
     // For this E2E test, we'll verify the button exists and is clickable
@@ -203,8 +224,9 @@ test.describe('Data Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Wait for settings page to fully load and be interactive
-    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    await expect(page.getByTestId('kit-management')).toBeVisible();
 
     // Create custom recommendations file
     const customRecommendations = {
@@ -267,11 +289,13 @@ test.describe('Data Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Wait for settings page to fully load
-    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    await expect(page.getByTestId('kit-management')).toBeVisible();
 
     // Verify Export Kit button is visible in Kit Management section
     const exportButton = page.getByTestId('export-kit-button');
-    await expect(exportButton).toBeVisible();
+    await expect(exportButton).toBeVisible({ timeout: 10000 });
 
     // Click Export Kit button
     await exportButton.click();
@@ -284,6 +308,12 @@ test.describe('Data Management', () => {
   test('should reset to default recommendations', async ({ page }) => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
+
+    // Wait for settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    await expect(page.getByTestId('kit-management')).toBeVisible();
+    await expect(page.getByTestId('kit-selector')).toBeVisible();
 
     // First import custom recommendations to enable reset
     const customRecommendations = {
@@ -306,8 +336,10 @@ test.describe('Data Management', () => {
     };
 
     // Import custom recommendations via Kit Selector upload
+    // Wait for kit selector to be fully loaded
+    await expect(page.getByTestId('kit-selector')).toBeVisible();
     const uploadButton = page.getByTestId('upload-kit-button');
-    await expect(uploadButton).toBeVisible();
+    await expect(uploadButton).toBeVisible({ timeout: 10000 });
 
     const fileInput = page.getByTestId('kit-file-input');
     await fileInput.setInputFiles({
@@ -346,6 +378,12 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Wait for settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    await expect(page.getByTestId('kit-management')).toBeVisible();
+    await expect(page.getByTestId('kit-selector')).toBeVisible();
+
     // Import custom recommendations with multi-language names
     const customRecommendations = {
       meta: {
@@ -371,7 +409,7 @@ test.describe('Data Management', () => {
 
     // Import via Kit Selector upload
     const uploadButton = page.getByTestId('upload-kit-button');
-    await expect(uploadButton).toBeVisible();
+    await expect(uploadButton).toBeVisible({ timeout: 10000 });
 
     const fileInput = page.getByTestId('kit-file-input');
     await fileInput.setInputFiles({
@@ -441,7 +479,10 @@ test.describe('Data Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Wait for settings page to fully load
-    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-recommendation-kits')).toBeVisible();
+    await expect(page.getByTestId('kit-management')).toBeVisible();
+    await expect(page.getByTestId('kit-selector')).toBeVisible();
 
     // Create invalid recommendations file (missing required fields)
     const invalidRecommendations = {
@@ -459,7 +500,7 @@ test.describe('Data Management', () => {
 
     // Try to import invalid file via Kit Selector upload
     const uploadButton = page.getByTestId('upload-kit-button');
-    await expect(uploadButton).toBeVisible();
+    await expect(uploadButton).toBeVisible({ timeout: 10000 });
 
     const fileInput = page.getByTestId('kit-file-input');
     await fileInput.setInputFiles({

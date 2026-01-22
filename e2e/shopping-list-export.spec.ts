@@ -23,11 +23,13 @@ test.describe('Shopping List Export Formats', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Wait for Settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
+
     // Find Export Shopping List button
-    const exportButton = page.locator('button', {
-      hasText: /Export Shopping List|Vie ostoslista/i,
-    });
-    await expect(exportButton).toBeVisible();
+    const exportButton = page.getByTestId('export-shopping-list-button');
+    await expect(exportButton).toBeVisible({ timeout: 10000 });
     await expect(exportButton).toBeEnabled();
 
     // Set up download listener
@@ -97,7 +99,10 @@ test.describe('Shopping List Export Formats', () => {
 
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
-    await page.waitForLoadState('networkidle');
+
+    // Wait for Settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
 
     // Verify description shows item count
     // The description should mention the number of items needing restock
@@ -109,10 +114,8 @@ test.describe('Shopping List Export Formats', () => {
     if (descriptionVisible === false) {
       // The export button might be disabled if no items need restocking
       // or the count might be in a different format
-      const exportButton = page.locator('button', {
-        hasText: /Export Shopping List|Vie ostoslista/i,
-      });
-      await expect(exportButton).toBeVisible();
+      const exportButton = page.getByTestId('export-shopping-list-button');
+      await expect(exportButton).toBeVisible({ timeout: 10000 });
     } else {
       await expect(description).toBeVisible();
     }
@@ -139,11 +142,13 @@ test.describe('Shopping List Export Formats', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Wait for Settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
+
     // Export button should be disabled if no items need restocking
-    const exportButton = page.locator('button', {
-      hasText: /Export Shopping List|Vie ostoslista/i,
-    });
-    await expect(exportButton).toBeVisible();
+    const exportButton = page.getByTestId('export-shopping-list-button');
+    await expect(exportButton).toBeVisible({ timeout: 10000 });
 
     // Assert that the export button is disabled when no items need restocking
     await expect(exportButton).toBeDisabled();
@@ -185,11 +190,13 @@ test.describe('Shopping List Export Formats', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Wait for Settings page to fully load
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByTestId('section-data-management')).toBeVisible();
+
     // Export shopping list
-    const exportButton = page.locator('button', {
-      hasText: /Export Shopping List|Vie ostoslista/i,
-    });
-    await expect(exportButton).toBeVisible();
+    const exportButton = page.getByTestId('export-shopping-list-button');
+    await expect(exportButton).toBeVisible({ timeout: 10000 });
 
     // The export should only include items needing restocking
     // This is verified by the export functionality working correctly

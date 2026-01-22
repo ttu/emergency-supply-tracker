@@ -26,13 +26,18 @@ export function formatBaseQuantity(
   const rounded = Math.ceil(baseQuantity);
   const isFractional = baseQuantity !== rounded && baseQuantity % 1 !== 0;
 
-  if (isFractional && showRoundingNote) {
-    // Show rounded value with original fractional value and rounding note
-    // The roundingNote should already contain the baseQuantity value via interpolation
-    return `${rounded} ${unit} (${roundingNote})`;
+  if (isFractional) {
+    // Always round up fractional values for display
+    if (showRoundingNote) {
+      // Show rounded value with original fractional value and rounding note
+      // The roundingNote should already contain the baseQuantity value via interpolation
+      return `${rounded} ${unit} (${roundingNote})`;
+    }
+    // When note is disabled, still show rounded value (not raw fractional)
+    return `${rounded} ${unit}`;
   }
 
-  // For whole numbers or when note is disabled, just show the value
+  // For whole numbers, just show the value
   return `${baseQuantity} ${unit}`;
 }
 

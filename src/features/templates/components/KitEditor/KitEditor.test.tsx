@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { KitEditor } from './KitEditor';
 import * as templatesModule from '@/features/templates';
 import type {
@@ -302,7 +302,7 @@ describe('KitEditor', () => {
       fireEvent.click(cancelButton);
 
       // Dialog should close - the title should no longer be visible
-      await vi.waitFor(() => {
+      await waitFor(() => {
         expect(
           screen.queryByText('kitEditor.deleteItem.title'),
         ).not.toBeInTheDocument();

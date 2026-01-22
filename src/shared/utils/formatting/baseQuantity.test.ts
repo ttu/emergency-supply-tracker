@@ -31,7 +31,8 @@ describe('formatBaseQuantity', () => {
     expect(result).toBe('1 cans (0.67 per person, rounded up in calculations)');
   });
 
-  it('should format fractional values without rounding note when disabled', () => {
+  it('should format fractional values without rounding note when disabled (still rounds)', () => {
+    // Even when note is disabled, fractional values should be rounded for display
     expect(
       formatBaseQuantity(
         0.67,
@@ -39,7 +40,7 @@ describe('formatBaseQuantity', () => {
         '0.67 per person, rounded up in calculations',
         false,
       ),
-    ).toBe('0.67 cans');
+    ).toBe('1 cans');
   });
 
   it('should handle values that round to 1', () => {
