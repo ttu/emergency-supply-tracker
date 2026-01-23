@@ -44,7 +44,7 @@ class ErrorBoundaryComponent extends Component<
   }
 
   handleReload = (): void => {
-    window.location.reload();
+    globalThis.location.reload();
   };
 
   handleReset = (): void => {
@@ -55,7 +55,7 @@ class ErrorBoundaryComponent extends Component<
     const { t } = this.props;
     const data = getAppData();
     if (!data) {
-      alert(t('settings.export.noData'));
+      globalThis.alert(t('settings.export.noData'));
       return;
     }
 
@@ -66,15 +66,15 @@ class ErrorBoundaryComponent extends Component<
 
   handleDeleteData = (): void => {
     const { t } = this.props;
-    if (window.confirm(t('errorBoundary.dataManagement.confirmDelete'))) {
+    if (globalThis.confirm(t('errorBoundary.dataManagement.confirmDelete'))) {
       if (
-        window.confirm(t('errorBoundary.dataManagement.confirmDeleteAgain'))
+        globalThis.confirm(t('errorBoundary.dataManagement.confirmDeleteAgain'))
       ) {
         clearAppData();
         clearErrorLogs();
         clearAnalyticsData();
-        alert(t('errorBoundary.dataManagement.deleteSuccess'));
-        window.location.reload();
+        globalThis.alert(t('errorBoundary.dataManagement.deleteSuccess'));
+        globalThis.location.reload();
       }
     }
   };

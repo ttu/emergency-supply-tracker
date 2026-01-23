@@ -224,7 +224,7 @@ describe('ErrorBoundary', () => {
 
   it('shows alert when trying to download with no data', async () => {
     const user = userEvent.setup();
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
 
     renderWithI18n(
       <ErrorBoundary>
@@ -244,35 +244,45 @@ describe('ErrorBoundary', () => {
       .spyOn(window, 'confirm')
       .mockReturnValueOnce(true)
       .mockReturnValueOnce(true);
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
     const reloadSpy = vi.fn();
+    const originalLocation = globalThis.location;
     Object.defineProperty(window, 'location', {
       value: { reload: reloadSpy },
       writable: true,
     });
 
-    renderWithI18n(
-      <ErrorBoundary>
-        <ThrowError shouldThrow={true} />
-      </ErrorBoundary>,
-    );
+    try {
+      renderWithI18n(
+        <ErrorBoundary>
+          <ThrowError shouldThrow={true} />
+        </ErrorBoundary>,
+      );
 
-    await user.click(screen.getByRole('button', { name: 'Delete All Data' }));
+      await user.click(screen.getByRole('button', { name: 'Delete All Data' }));
 
-    expect(confirmSpy).toHaveBeenCalledTimes(2);
-    expect(alertSpy).toHaveBeenCalledWith(
-      'All data has been cleared. The page will now reload.',
-    );
-    expect(reloadSpy).toHaveBeenCalled();
-
-    confirmSpy.mockRestore();
-    alertSpy.mockRestore();
+      expect(confirmSpy).toHaveBeenCalledTimes(2);
+      expect(alertSpy).toHaveBeenCalledWith(
+        'All data has been cleared. The page will now reload.',
+      );
+      expect(reloadSpy).toHaveBeenCalled();
+    } finally {
+      // Restore original globalThis.location
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+      });
+      confirmSpy.mockRestore();
+      alertSpy.mockRestore();
+    }
   });
 
   it('does not delete data if first confirmation is cancelled', async () => {
     const user = userEvent.setup();
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const confirmSpy = vi
+      .spyOn(globalThis, 'confirm')
+      .mockReturnValueOnce(false);
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
 
     renderWithI18n(
       <ErrorBoundary>
@@ -295,7 +305,7 @@ describe('ErrorBoundary', () => {
       .spyOn(window, 'confirm')
       .mockReturnValueOnce(true)
       .mockReturnValueOnce(false);
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
 
     renderWithI18n(
       <ErrorBoundary>

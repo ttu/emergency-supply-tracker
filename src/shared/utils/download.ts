@@ -23,7 +23,7 @@ export function downloadFile(
   link.download = filename;
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
+  link.remove();
   URL.revokeObjectURL(url);
 }
 
@@ -53,6 +53,6 @@ export function generateTimestampFilename(
   prefix: string,
   extension = 'json',
 ): string {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
   return `${prefix}-${timestamp}.${extension}`;
 }
