@@ -3,6 +3,7 @@ import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
+import type { StandardCategoryId } from '@/shared/types';
 import {
   calculateCategoryPreparedness,
   calculateAllCategoryStatuses,
@@ -23,10 +24,22 @@ export interface UseCategoryStatusesResult {
  * and overall preparedness score into a single reusable hook.
  */
 export function useCategoryStatuses(): UseCategoryStatusesResult {
-  const { items, disabledRecommendedItems } = useInventory();
+  const { items, disabledRecommendedItems, disabledCategories } =
+    useInventory();
   const { household } = useHousehold();
   const { recommendedItems } = useRecommendedItems();
   const calculationOptions = useCalculationOptions();
+
+  // Filter out disabled categories
+  // Cast category.id to StandardCategoryId since STANDARD_CATEGORIES only contains standard categories
+  const enabledCategories = useMemo(
+    () =>
+      STANDARD_CATEGORIES.filter(
+        (category) =>
+          !disabledCategories.includes(category.id as StandardCategoryId),
+      ),
+    [disabledCategories],
+  );
 
   // Calculate per-category preparedness
   // Convert ProductTemplateId[] to string[] for compatibility with calculation functions
@@ -37,7 +50,7 @@ export function useCategoryStatuses(): UseCategoryStatusesResult {
 
   const categoryPreparedness = useMemo(() => {
     const map = new Map<string, number>();
-    STANDARD_CATEGORIES.forEach((category) => {
+    enabledCategories.forEach((category) => {
       const score = calculateCategoryPreparedness(
         category.id,
         items,
@@ -55,13 +68,14 @@ export function useCategoryStatuses(): UseCategoryStatusesResult {
     recommendedItems,
     disabledRecommendedItemsAsStrings,
     calculationOptions,
+    enabledCategories,
   ]);
 
   // Calculate category statuses
   const categoryStatuses = useMemo(
     () =>
       calculateAllCategoryStatuses(
-        STANDARD_CATEGORIES,
+        enabledCategories,
         items,
         categoryPreparedness,
         household,
@@ -70,6 +84,7 @@ export function useCategoryStatuses(): UseCategoryStatusesResult {
         calculationOptions,
       ),
     [
+      enabledCategories,
       items,
       categoryPreparedness,
       household,

@@ -155,6 +155,7 @@ export function createMockAppData(overrides?: Partial<AppData>): AppData {
       ) || [],
     dismissedAlertIds: [] as AppData['dismissedAlertIds'],
     disabledRecommendedItems: [] as AppData['disabledRecommendedItems'],
+    disabledCategories: [] as AppData['disabledCategories'],
     lastModified: faker.date.recent().toISOString(),
     ...overrides,
   };

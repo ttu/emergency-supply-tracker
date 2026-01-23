@@ -35,6 +35,18 @@
   flex: 1;
 }
 
+.categoryHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.categoryActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .deleteSection {
   margin-top: var(--spacing-lg);
   padding-top: var(--spacing-lg);

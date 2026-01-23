@@ -13,6 +13,7 @@ export type { UseShoppingListExportResult } from './hooks';
 export {
   ClearDataButton,
   DebugExport,
+  DisabledCategories,
   DisabledRecommendations,
   ExportButton,
   ExportRecommendationsButton,

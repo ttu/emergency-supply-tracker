@@ -50,6 +50,7 @@ describe('SettingsProvider', () => {
       customTemplates: [],
       dismissedAlertIds: [],
       disabledRecommendedItems: [],
+      disabledCategories: [],
       lastModified: new Date().toISOString(),
     });
     vi.mocked(urlLanguage.getLanguageFromUrl).mockReturnValue(undefined);
@@ -89,6 +90,7 @@ describe('SettingsProvider', () => {
       customTemplates: [],
       dismissedAlertIds: [],
       disabledRecommendedItems: [],
+      disabledCategories: [],
       lastModified: new Date().toISOString(),
     });
     vi.mocked(urlLanguage.getLanguageFromUrl).mockReturnValue(undefined);
@@ -128,6 +130,7 @@ describe('SettingsProvider', () => {
       customTemplates: [],
       dismissedAlertIds: [],
       disabledRecommendedItems: [],
+      disabledCategories: [],
       lastModified: new Date().toISOString(),
     });
     vi.mocked(urlLanguage.getLanguageFromUrl).mockReturnValue('fi');
