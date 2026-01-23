@@ -336,7 +336,16 @@
     "message": "An unexpected error occurred. Please try reloading the page.",
     "details": "Error details",
     "reload": "Reload Page",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "dataManagement": {
+      "title": "Data Management",
+      "description": "If the error persists, you may need to clear your data. We recommend downloading your data first.",
+      "downloadData": "Download Data",
+      "deleteData": "Delete All Data",
+      "confirmDelete": "Are you sure you want to delete all your data? This cannot be undone.",
+      "confirmDeleteAgain": "Last chance! All your emergency supply data will be permanently deleted. Continue?",
+      "deleteSuccess": "All data has been cleared. The page will now reload."
+    }
   },
   "themes": {
     "light": "Light",

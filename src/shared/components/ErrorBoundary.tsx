@@ -1,6 +1,14 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { logErrorBoundary } from '@/shared/utils/errorLogger';
+import {
+  getAppData,
+  exportToJSON,
+  clearAppData,
+} from '@/shared/utils/storage/localStorage';
+import { clearErrorLogs } from '@/shared/utils/errorLogger/storage';
+import { clearAnalyticsData } from '@/shared/utils/analytics/storage';
+import { downloadFile, generateDateFilename } from '@/shared/utils/download';
 import styles from './ErrorBoundary.module.css';
 
 export interface ErrorBoundaryProps extends WithTranslation {
@@ -41,6 +49,34 @@ class ErrorBoundaryComponent extends Component<
 
   handleReset = (): void => {
     this.setState({ hasError: false, error: null });
+  };
+
+  handleDownloadData = (): void => {
+    const { t } = this.props;
+    const data = getAppData();
+    if (!data) {
+      alert(t('settings.export.noData'));
+      return;
+    }
+
+    const json = exportToJSON(data);
+    const filename = generateDateFilename('emergency-supplies');
+    downloadFile(json, filename);
+  };
+
+  handleDeleteData = (): void => {
+    const { t } = this.props;
+    if (window.confirm(t('errorBoundary.dataManagement.confirmDelete'))) {
+      if (
+        window.confirm(t('errorBoundary.dataManagement.confirmDeleteAgain'))
+      ) {
+        clearAppData();
+        clearErrorLogs();
+        clearAnalyticsData();
+        alert(t('errorBoundary.dataManagement.deleteSuccess'));
+        window.location.reload();
+      }
+    }
   };
 
   render(): ReactNode {
@@ -84,6 +120,33 @@ class ErrorBoundaryComponent extends Component<
               >
                 {t('errorBoundary.tryAgain')}
               </button>
+            </div>
+
+            <div className={styles.dataManagement}>
+              <h2 className={styles.dataManagementTitle}>
+                {t('errorBoundary.dataManagement.title')}
+              </h2>
+              <p className={styles.dataManagementDescription}>
+                {t('errorBoundary.dataManagement.description')}
+              </p>
+              <div className={styles.dataManagementActions}>
+                <button
+                  type="button"
+                  className={styles.secondaryButton}
+                  onClick={this.handleDownloadData}
+                  data-testid="error-boundary-download-button"
+                >
+                  {t('errorBoundary.dataManagement.downloadData')}
+                </button>
+                <button
+                  type="button"
+                  className={styles.dangerButton}
+                  onClick={this.handleDeleteData}
+                  data-testid="error-boundary-delete-button"
+                >
+                  {t('errorBoundary.dataManagement.deleteData')}
+                </button>
+              </div>
             </div>
           </div>
         </div>

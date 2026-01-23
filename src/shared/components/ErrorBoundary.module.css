@@ -114,3 +114,54 @@
 .secondaryButton:active {
   transform: scale(0.98);
 }
+
+.dataManagement {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.dataManagementTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.dataManagementDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: var(--line-height-normal);
+}
+
+.dataManagementActions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dangerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: transparent;
+  color: var(--color-error);
+}
+
+.dangerButton:hover {
+  background-color: var(--color-error);
+  color: white;
+}
+
+.dangerButton:active {
+  transform: scale(0.98);
+}
