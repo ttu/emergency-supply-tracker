@@ -731,6 +731,172 @@ describe('Template to InventoryItem conversion', () => {
   });
 });
 
+describe('Inventory Page - Recommended Items Filtering', () => {
+  beforeEach(() => {
+    globalThis.confirm = vi.fn(() => true);
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('should filter pet items based on household pets configuration', () => {
+    // Verify that calculateRecommendedQuantity returns 0 for pet items when pets = 0
+    const petItem = RECOMMENDED_ITEMS.find(
+      (item) => item.id === 'pet-food-dry',
+    );
+    expect(petItem).toBeDefined();
+    expect(petItem!.scaleWithPets).toBe(true);
+
+    const householdNoPets = createMockHousehold({
+      pets: 0,
+      supplyDurationDays: 3,
+    });
+    const householdWithPets = createMockHousehold({
+      pets: 2,
+      supplyDurationDays: 3,
+    });
+
+    const qtyNoPets = calculateRecommendedQuantity(petItem!, householdNoPets);
+    const qtyWithPets = calculateRecommendedQuantity(
+      petItem!,
+      householdWithPets,
+    );
+
+    expect(qtyNoPets).toBe(0);
+    expect(qtyWithPets).toBeGreaterThan(0);
+  });
+
+  it('should verify household from localStorage is loaded correctly', () => {
+    // Setup localStorage with pets = 0
+    const appData = createMockAppData({
+      household: {
+        adults: 2,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: false,
+      },
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+
+    // Verify localStorage is set correctly
+    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    expect(storedData.household.pets).toBe(0);
+
+    // Now filter recommended items as the Inventory component would
+    const household = storedData.household;
+    const petItems = RECOMMENDED_ITEMS.filter(
+      (item) => item.category === 'pets',
+    );
+    const applicablePetItems = petItems.filter((item) => {
+      const qty = calculateRecommendedQuantity(item, household);
+      return qty > 0;
+    });
+
+    expect(petItems.length).toBe(10); // All 10 pet items exist
+    expect(applicablePetItems.length).toBe(0); // None should be applicable when pets = 0
+  });
+
+  it('should verify that initialAppData properly sets localStorage with createMockAppData', () => {
+    // This mimics what renderWithProviders does with initialAppData
+    const initialAppData = {
+      household: {
+        adults: 2,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: false,
+      },
+      items: [],
+    };
+    const data = createMockAppData(initialAppData);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    // Verify the data created by createMockAppData
+    expect(data.household.pets).toBe(0);
+    expect(data.household.adults).toBe(2);
+    expect(data.household.children).toBe(0);
+
+    // Verify localStorage has the correct value
+    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    expect(storedData.household.pets).toBe(0);
+  });
+
+  it('applicableRecommendedItems should filter out pet items when pets = 0', () => {
+    // This test verifies the filtering logic that Inventory uses
+    // to filter out items with 0 recommended quantity
+
+    // Simulate what Inventory.tsx does with applicableRecommendedItems useMemo
+    const household = {
+      adults: 2,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+    };
+    const childrenMultiplier = 0.75; // default value
+
+    const applicableRecommendedItems = RECOMMENDED_ITEMS.filter((item) => {
+      const qty = calculateRecommendedQuantity(
+        item,
+        household,
+        childrenMultiplier,
+      );
+      return qty > 0;
+    });
+
+    // Verify all pet items are filtered out
+    const petItemsInFiltered = applicableRecommendedItems.filter(
+      (item) => item.category === 'pets',
+    );
+    expect(petItemsInFiltered.length).toBe(0);
+
+    // But non-pet items should still be present
+    const nonPetItemsInFiltered = applicableRecommendedItems.filter(
+      (item) => item.category !== 'pets',
+    );
+    expect(nonPetItemsInFiltered.length).toBeGreaterThan(0);
+  });
+
+  it('should show pet items in template selector when household has pets', async () => {
+    // Render with household that has pets using initialAppData
+    renderWithProviders(<Inventory />, {
+      initialAppData: {
+        household: {
+          adults: 2,
+          children: 0,
+          pets: 2,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+        items: [],
+      },
+    });
+
+    // Open template selector
+    const addButton = screen.getByText('inventory.addFromTemplate');
+    fireEvent.click(addButton);
+
+    // Filter by pets category
+    const categorySelect = screen.getByTestId('template-category-select');
+    fireEvent.change(categorySelect, { target: { value: 'pets' } });
+
+    // Should show pet items (not the "no templates" message)
+    await waitFor(() => {
+      expect(
+        screen.queryByText('templateSelector.noTemplates'),
+      ).not.toBeInTheDocument();
+    });
+
+    // Verify at least one pet template card exists
+    const petTemplateCards = screen.getAllByTestId(/^template-card-pet-/);
+    expect(petTemplateCards.length).toBeGreaterThan(0);
+  });
+});
+
 describe('Inventory Page - Mark as Enough', () => {
   const itemWithLowQuantity = createMockInventoryItem({
     id: createItemId('test-item-mark'),

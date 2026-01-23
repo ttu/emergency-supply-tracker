@@ -11,6 +11,7 @@ import {
 } from '@/features/inventory';
 import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
+import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { useRecommendedItems, TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
@@ -67,6 +68,18 @@ export function Inventory({
       ),
     [disabledCategories],
   );
+
+  // Filter out recommended items with 0 quantity (e.g., pet items when pets = 0)
+  const applicableRecommendedItems = useMemo(() => {
+    return recommendedItems.filter((item) => {
+      const qty = calculateRecommendedQuantity(
+        item,
+        household,
+        calculationOptions.childrenMultiplier,
+      );
+      return qty > 0;
+    });
+  }, [recommendedItems, household, calculationOptions.childrenMultiplier]);
 
   // Filter and sort state - use controlled state if provided, otherwise local state
   const [localCategoryId, setLocalCategoryId] = useState<string | undefined>(
@@ -419,7 +432,7 @@ export function Inventory({
           title={t('inventory.selectTemplate')}
         >
           <TemplateSelector
-            templates={recommendedItems}
+            templates={applicableRecommendedItems}
             categories={STANDARD_CATEGORIES}
             onSelectTemplate={handleSelectTemplate}
             onSelectCustom={handleSelectCustomItem}
