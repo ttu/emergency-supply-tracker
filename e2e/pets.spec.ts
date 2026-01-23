@@ -1,4 +1,9 @@
-import { test, expect, expandRecommendedItems } from './fixtures';
+import {
+  test,
+  expect,
+  expandRecommendedItems,
+  navigateToSettingsSection,
+} from './fixtures';
 import { createMockAppData } from '../src/shared/utils/test/factories';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
@@ -13,7 +18,8 @@ test.describe('Pet Support', () => {
     }) => {
       await page.getByTestId('nav-settings').click();
 
-      // Wait for the household section to be visible
+      // Navigate to household section
+      await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
       // Pets input should be visible in household section
@@ -23,6 +29,7 @@ test.describe('Pet Support', () => {
 
     test('should update pets count and persist value', async ({ page }) => {
       await page.getByTestId('nav-settings').click();
+      await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
       // Find pets input and update value
@@ -32,6 +39,7 @@ test.describe('Pet Support', () => {
       // Navigate away and back to verify persistence
       await page.getByTestId('nav-dashboard').click();
       await page.getByTestId('nav-settings').click();
+      await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
       // Verify value persisted
@@ -42,6 +50,7 @@ test.describe('Pet Support', () => {
       page,
     }) => {
       await page.getByTestId('nav-settings').click();
+      await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
       // Click family preset
@@ -57,6 +66,7 @@ test.describe('Pet Support', () => {
     }) => {
       // First set pets to non-zero
       await page.getByTestId('nav-settings').click();
+      await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
       const petsInput = page.locator('#pets');
@@ -330,6 +340,7 @@ test.describe('Pet Support', () => {
 
       // Verify pets value persisted
       await page.getByTestId('nav-settings').click();
+      await navigateToSettingsSection(page, 'household');
       const settingsPetsInput = page.locator('#pets');
       await expect(settingsPetsInput).toHaveValue('2');
     });
