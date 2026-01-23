@@ -5,6 +5,7 @@ import {
   getAppData,
   exportToJSONSelective,
 } from '@/shared/utils/storage/localStorage';
+import { downloadFile, generateDateFilename } from '@/shared/utils/download';
 import { useBackupTracking } from '@/features/dashboard';
 import { ExportSelectionModal } from './ExportSelectionModal';
 import type { ExportSection } from '@/shared/types/exportImport';
@@ -37,15 +38,8 @@ export function ExportButton() {
       if (!appData) return;
 
       const json = exportToJSONSelective(appData, sections);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `emergency-supplies-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      const filename = generateDateFilename('emergency-supplies');
+      downloadFile(json, filename);
 
       // Record the backup date
       recordBackupDate();

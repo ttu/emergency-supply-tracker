@@ -336,7 +336,16 @@
     "message": "Odottamaton virhe tapahtui. Yritä ladata sivu uudelleen.",
     "details": "Virhetiedot",
     "reload": "Lataa sivu uudelleen",
-    "tryAgain": "Yritä uudelleen"
+    "tryAgain": "Yritä uudelleen",
+    "dataManagement": {
+      "title": "Tietojen hallinta",
+      "description": "Jos virhe jatkuu, sinun täytyy ehkä tyhjentää tietosi. Suosittelemme lataamaan tietosi ensin.",
+      "downloadData": "Lataa tiedot",
+      "deleteData": "Poista kaikki tiedot",
+      "confirmDelete": "Haluatko varmasti poistaa kaikki tietosi? Tätä ei voi perua.",
+      "confirmDeleteAgain": "Viimeinen mahdollisuus! Kaikki hätävarastotietosi poistetaan pysyvästi. Jatketaanko?",
+      "deleteSuccess": "Kaikki tiedot on tyhjennetty. Sivu ladataan nyt uudelleen."
+    }
   },
   "themes": {
     "light": "Vaalea",

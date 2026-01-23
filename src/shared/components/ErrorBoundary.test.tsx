@@ -25,6 +25,24 @@ i18n.use(initReactI18next).init({
           details: 'Error details',
           reload: 'Reload Page',
           tryAgain: 'Try Again',
+          dataManagement: {
+            title: 'Data Management',
+            description:
+              'If the error persists, you may need to clear your data. We recommend downloading your data first.',
+            downloadData: 'Download Data',
+            deleteData: 'Delete All Data',
+            confirmDelete:
+              'Are you sure you want to delete all your data? This cannot be undone.',
+            confirmDeleteAgain:
+              'Last chance! All your emergency supply data will be permanently deleted. Continue?',
+            deleteSuccess:
+              'All data has been cleared. The page will now reload.',
+          },
+        },
+        settings: {
+          export: {
+            noData: 'No data to export',
+          },
         },
       },
     },
@@ -181,5 +199,126 @@ describe('ErrorBoundary', () => {
 
     // After reset, should try to render children again
     expect(screen.queryByText('Something went wrong')).not.toBeInTheDocument();
+  });
+
+  it('renders data management section with download and delete buttons', () => {
+    renderWithI18n(
+      <ErrorBoundary>
+        <ThrowError shouldThrow={true} />
+      </ErrorBoundary>,
+    );
+
+    expect(screen.getByText('Data Management')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /If the error persists, you may need to clear your data/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Download Data' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Delete All Data' }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows alert when trying to download with no data', async () => {
+    const user = userEvent.setup();
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
+
+    renderWithI18n(
+      <ErrorBoundary>
+        <ThrowError shouldThrow={true} />
+      </ErrorBoundary>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Download Data' }));
+
+    expect(alertSpy).toHaveBeenCalledWith('No data to export');
+    alertSpy.mockRestore();
+  });
+
+  it('deletes data after double confirmation', async () => {
+    const user = userEvent.setup();
+    const confirmSpy = vi
+      .spyOn(window, 'confirm')
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true);
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
+    const reloadSpy = vi.fn();
+    const originalLocation = globalThis.location;
+    Object.defineProperty(window, 'location', {
+      value: { reload: reloadSpy },
+      writable: true,
+    });
+
+    try {
+      renderWithI18n(
+        <ErrorBoundary>
+          <ThrowError shouldThrow={true} />
+        </ErrorBoundary>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Delete All Data' }));
+
+      expect(confirmSpy).toHaveBeenCalledTimes(2);
+      expect(alertSpy).toHaveBeenCalledWith(
+        'All data has been cleared. The page will now reload.',
+      );
+      expect(reloadSpy).toHaveBeenCalled();
+    } finally {
+      // Restore original globalThis.location
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+      });
+      confirmSpy.mockRestore();
+      alertSpy.mockRestore();
+    }
+  });
+
+  it('does not delete data if first confirmation is cancelled', async () => {
+    const user = userEvent.setup();
+    const confirmSpy = vi
+      .spyOn(globalThis, 'confirm')
+      .mockReturnValueOnce(false);
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
+
+    renderWithI18n(
+      <ErrorBoundary>
+        <ThrowError shouldThrow={true} />
+      </ErrorBoundary>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Delete All Data' }));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(alertSpy).not.toHaveBeenCalled();
+
+    confirmSpy.mockRestore();
+    alertSpy.mockRestore();
+  });
+
+  it('does not delete data if second confirmation is cancelled', async () => {
+    const user = userEvent.setup();
+    const confirmSpy = vi
+      .spyOn(window, 'confirm')
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false);
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
+
+    renderWithI18n(
+      <ErrorBoundary>
+        <ThrowError shouldThrow={true} />
+      </ErrorBoundary>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Delete All Data' }));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(2);
+    expect(alertSpy).not.toHaveBeenCalled();
+
+    confirmSpy.mockRestore();
+    alertSpy.mockRestore();
   });
 });
