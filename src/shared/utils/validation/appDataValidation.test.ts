@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { isValidAppData } from './appDataValidation';
+import { isValidAppData, validateAppDataValues } from './appDataValidation';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
+import type { AppData } from '@/shared/types';
 
 describe('isValidAppData', () => {
   const validAppData = {
@@ -104,5 +105,185 @@ describe('isValidAppData', () => {
       categories: [{ id: 'food', name: 'Food' }],
     };
     expect(isValidAppData(dataWithCategories)).toBe(true);
+  });
+});
+
+describe('validateAppDataValues', () => {
+  const createValidAppData = (): AppData => ({
+    version: CURRENT_SCHEMA_VERSION,
+    household: {
+      adults: 2,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+    },
+    settings: {
+      language: 'en',
+      theme: 'ocean',
+      highContrast: false,
+      advancedFeatures: {
+        calorieTracking: false,
+        powerManagement: false,
+        waterTracking: false,
+      },
+    },
+    customCategories: [],
+    items: [],
+    customTemplates: [],
+    dismissedAlertIds: [],
+    disabledRecommendedItems: [],
+    lastModified: '2024-01-01T00:00:00.000Z',
+  });
+
+  it('returns isValid: true for valid data', () => {
+    const result = validateAppDataValues(createValidAppData());
+    expect(result.isValid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  describe('settings validation', () => {
+    it('detects invalid language', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.language = 'invalid';
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe('settings.language');
+    });
+
+    it('detects invalid theme', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.theme = 'invalid-theme';
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe('settings.theme');
+    });
+
+    it('detects negative dailyCaloriesPerPerson', () => {
+      const data = createValidAppData();
+      data.settings.dailyCaloriesPerPerson = -100;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe('settings.dailyCaloriesPerPerson');
+    });
+
+    it('detects negative dailyWaterPerPerson', () => {
+      const data = createValidAppData();
+      data.settings.dailyWaterPerPerson = -5;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe('settings.dailyWaterPerPerson');
+    });
+
+    it('detects childrenRequirementPercentage out of range (negative)', () => {
+      const data = createValidAppData();
+      data.settings.childrenRequirementPercentage = -10;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe(
+        'settings.childrenRequirementPercentage',
+      );
+    });
+
+    it('detects childrenRequirementPercentage out of range (>100)', () => {
+      const data = createValidAppData();
+      data.settings.childrenRequirementPercentage = 150;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe(
+        'settings.childrenRequirementPercentage',
+      );
+    });
+
+    it('accepts valid optional settings values', () => {
+      const data = createValidAppData();
+      data.settings.dailyCaloriesPerPerson = 2500;
+      data.settings.dailyWaterPerPerson = 3.5;
+      data.settings.childrenRequirementPercentage = 75;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+    });
+  });
+
+  describe('household validation', () => {
+    it('detects negative adults', () => {
+      const data = createValidAppData();
+      data.household.adults = -1;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.adults');
+    });
+
+    it('detects negative children', () => {
+      const data = createValidAppData();
+      data.household.children = -5;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.children');
+    });
+
+    it('detects negative pets', () => {
+      const data = createValidAppData();
+      data.household.pets = -2;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.pets');
+    });
+
+    it('detects negative supplyDurationDays', () => {
+      const data = createValidAppData();
+      data.household.supplyDurationDays = -7;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.supplyDurationDays');
+    });
+
+    it('detects non-finite number', () => {
+      const data = createValidAppData();
+      data.household.adults = Infinity;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.adults');
+    });
+
+    it('detects non-boolean useFreezer', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.household.useFreezer = 'yes';
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.useFreezer');
+    });
+
+    it('accepts valid household values', () => {
+      const data = createValidAppData();
+      data.household.adults = 4;
+      data.household.children = 2;
+      data.household.pets = 1;
+      data.household.supplyDurationDays = 14;
+      data.household.useFreezer = true;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+    });
+  });
+
+  describe('multiple errors', () => {
+    it('collects all validation errors', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.language = 'invalid';
+      // @ts-expect-error - testing invalid value
+      data.settings.theme = 'bad-theme';
+      data.household.adults = -1;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.length).toBeGreaterThanOrEqual(3);
+    });
   });
 });

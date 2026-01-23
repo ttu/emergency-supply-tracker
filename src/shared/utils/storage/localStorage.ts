@@ -30,8 +30,33 @@ import {
   isVersionSupported,
   MigrationError,
 } from './migrations';
+import {
+  validateAppDataValues,
+  type DataValidationResult,
+} from '../validation/appDataValidation';
 
 export const STORAGE_KEY = 'emergencySupplyTracker';
+
+/**
+ * Stores the last data validation result for error reporting.
+ */
+let lastDataValidationResult: DataValidationResult | null = null;
+
+/**
+ * Gets the last data validation result.
+ * Returns null if no validation has been performed or if data was valid.
+ */
+export function getLastDataValidationResult(): DataValidationResult | null {
+  return lastDataValidationResult;
+}
+
+/**
+ * Clears the stored validation result.
+ * Call this after handling validation errors (e.g., after user clears data).
+ */
+export function clearDataValidationResult(): void {
+  lastDataValidationResult = null;
+}
 
 /**
  * Checks if a value looks like a valid template ID (kebab-case).
@@ -197,6 +222,18 @@ export function getAppData(): AppData | undefined {
         return data;
       }
     }
+
+    // Validate data values before returning
+    const validationResult = validateAppDataValues(data);
+    if (!validationResult.isValid) {
+      console.error('Data validation failed:', validationResult.errors);
+      lastDataValidationResult = validationResult;
+      // Return undefined to signal that data is invalid
+      return undefined;
+    }
+
+    // Clear any previous validation errors on successful load
+    lastDataValidationResult = null;
 
     return data;
   } catch (error) {
