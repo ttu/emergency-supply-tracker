@@ -47,7 +47,7 @@ export function DisabledCategories() {
           count: disabledCategoryDetails.length,
         })}
       </p>
-      <ul className={styles.categoryList} role="list">
+      <ul className={styles.categoryList}>
         {disabledCategoryDetails.map((category) => (
           <li key={category.id} className={styles.categoryItem}>
             <div className={styles.categoryContent}>

@@ -54,7 +54,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     (data) => {
       return (data?.disabledCategories || []).filter(
         (id): id is StandardCategoryId =>
-          VALID_CATEGORIES.includes(id as StandardCategoryId),
+          (VALID_CATEGORIES as readonly string[]).includes(id),
       );
     },
   );
