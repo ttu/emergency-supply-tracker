@@ -75,10 +75,11 @@ export function DataErrorPage({ onRetry }: DataErrorPageProps) {
   };
 
   // Format errors for display
-  const errorSummary =
-    validationResult?.errors
-      .map((err) => `${err.field}: ${err.message}`)
-      .join('\n') ?? t('dataError.unknownError');
+  const errorSummary = validationResult?.errors.length
+    ? validationResult.errors
+        .map((err) => `${err.field}: ${err.message}`)
+        .join('\n')
+    : t('dataError.unknownError');
 
   return (
     <div className={styles.container} role="alert">
