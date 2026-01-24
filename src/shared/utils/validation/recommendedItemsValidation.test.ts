@@ -832,4 +832,24 @@ describe('convertToRecommendedItemDefinitions', () => {
     expect(result[0].capacityMah).toBe(10000);
     expect(result[0].capacityWh).toBe(37);
   });
+
+  it('preserves scaleWithPets for pet items', () => {
+    const items: ImportedRecommendedItem[] = [
+      {
+        id: createProductTemplateId('pet-food'),
+        i18nKey: 'products.pet-food',
+        category: 'pets',
+        baseQuantity: 1,
+        unit: 'kilograms',
+        scaleWithPeople: false,
+        scaleWithDays: true,
+        scaleWithPets: true,
+      },
+    ];
+    const result = convertToRecommendedItemDefinitions(items);
+
+    expect(result[0].scaleWithPets).toBe(true);
+    expect(result[0].scaleWithPeople).toBe(false);
+    expect(result[0].scaleWithDays).toBe(true);
+  });
 });

@@ -509,6 +509,7 @@ export function parseRecommendedItemsFile(json: string): RecommendedItemsFile {
  *   - unit: Unit of measurement
  *   - scaleWithPeople: Whether quantity scales with household size
  *   - scaleWithDays: Whether quantity scales with supply duration
+ *   - scaleWithPets?: Whether quantity scales with number of pets
  *   - requiresFreezer?: Whether item requires freezer storage
  *   - defaultExpirationMonths?: Default shelf life in months
  *   - weightGramsPerUnit?: Weight per unit for calculations
@@ -530,6 +531,7 @@ export function convertToRecommendedItemDefinitions(
     unit: item.unit,
     scaleWithPeople: item.scaleWithPeople,
     scaleWithDays: item.scaleWithDays,
+    scaleWithPets: item.scaleWithPets,
     requiresFreezer: item.requiresFreezer,
     defaultExpirationMonths: item.defaultExpirationMonths,
     weightGramsPerUnit: item.weightGramsPerUnit,

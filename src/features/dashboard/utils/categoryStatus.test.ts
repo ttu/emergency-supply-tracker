@@ -2501,3 +2501,52 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
     expect(result.shortages.length).toBe(0);
   });
 });
+
+describe('calculateCategoryShortages - pets category with pets = 0', () => {
+  it('should return empty shortages when pets = 0', () => {
+    const householdWithNoPets = createMockHousehold({
+      pets: 0,
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+    });
+
+    const result = calculateCategoryShortages(
+      'pets',
+      [],
+      householdWithNoPets,
+      RECOMMENDED_ITEMS,
+      [],
+    );
+
+    // When pets = 0, all pet items should have recommendedQty = 0
+    // and should be filtered out, resulting in empty shortages
+    expect(result.shortages).toHaveLength(0);
+    expect(result.totalNeeded).toBe(0);
+    expect(result.totalActual).toBe(0);
+  });
+
+  it('should return shortages when pets > 0', () => {
+    const householdWithPets = createMockHousehold({
+      pets: 2,
+      adults: 2,
+      children: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+    });
+
+    const result = calculateCategoryShortages(
+      'pets',
+      [],
+      householdWithPets,
+      RECOMMENDED_ITEMS,
+      [],
+    );
+
+    // When pets > 0, pet items should have recommendedQty > 0
+    // and should appear as shortages since inventory is empty
+    expect(result.shortages.length).toBeGreaterThan(0);
+    expect(result.totalNeeded).toBeGreaterThan(0);
+  });
+});
