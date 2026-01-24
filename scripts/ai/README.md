@@ -147,7 +147,7 @@ When writing hooks for Claude Code, use these JSON field names:
 }
 ```
 
-**UserPromptSubmit hooks** - two options:
+**UserPromptSubmit hooks** - three options:
 
 1. **Plain text** (simpler) - stdout is added as context:
 
