@@ -38,7 +38,7 @@ test.describe('Pet Support', () => {
       await expect(petsInput).toHaveValue('2');
     });
 
-    test('should set pets to 1 when selecting family preset', async ({
+    test('should set pets to 0 when selecting family preset', async ({
       page,
     }) => {
       await page.getByTestId('nav-settings').click();
@@ -47,9 +47,9 @@ test.describe('Pet Support', () => {
       // Click family preset
       await page.getByTestId('preset-family').click();
 
-      // Pets should be set to 1
+      // Pets should be set to 0
       const petsInput = page.locator('#pets');
-      await expect(petsInput).toHaveValue('1');
+      await expect(petsInput).toHaveValue('0');
     });
 
     test('should set pets to 0 when selecting single preset', async ({
@@ -296,8 +296,8 @@ test.describe('Pet Support', () => {
       const petsInput = page.locator('#pets');
       await expect(petsInput).toBeVisible();
 
-      // Family preset sets pets to 1
-      await expect(petsInput).toHaveValue('1');
+      // Family preset sets pets to 0
+      await expect(petsInput).toHaveValue('0');
 
       // Set pets to 2
       await petsInput.fill('2');

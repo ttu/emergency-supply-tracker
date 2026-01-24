@@ -152,7 +152,7 @@ describe('HouseholdForm', () => {
     ) as HTMLInputElement;
     expect(adultsInput.value).toBe('2');
     expect(childrenInput.value).toBe('2');
-    expect(petsInput.value).toBe('1');
+    expect(petsInput.value).toBe('0');
   });
 
   it('should update children value', () => {

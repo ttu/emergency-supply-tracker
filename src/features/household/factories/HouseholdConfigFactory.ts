@@ -1,15 +1,11 @@
 import type { HouseholdConfig } from '@/shared/types';
+import { HOUSEHOLD_PRESETS, type HouseholdPreset } from '../presets';
 import { HOUSEHOLD_LIMITS } from '../constants';
 
 /**
  * Input for creating a household configuration.
  */
 export type CreateHouseholdConfigInput = HouseholdConfig;
-
-/**
- * Options for creating household config from preset.
- */
-export type HouseholdPreset = 'single' | 'couple' | 'family';
 
 /**
  * Validation error thrown when household config creation fails validation.
@@ -116,31 +112,7 @@ export class HouseholdConfigFactory {
    * @returns HouseholdConfig for the preset
    */
   static createFromPreset(preset: HouseholdPreset): HouseholdConfig {
-    const presets: Record<HouseholdPreset, HouseholdConfig> = {
-      single: {
-        adults: 1,
-        children: 0,
-        pets: 0,
-        supplyDurationDays: 3,
-        useFreezer: false,
-      },
-      couple: {
-        adults: 2,
-        children: 0,
-        pets: 0,
-        supplyDurationDays: 3,
-        useFreezer: true,
-      },
-      family: {
-        adults: 2,
-        children: 2,
-        pets: 1,
-        supplyDurationDays: 3,
-        useFreezer: true,
-      },
-    };
-
-    return this.create(presets[preset]);
+    return this.create(HOUSEHOLD_PRESETS[preset]);
   }
 
   /**
