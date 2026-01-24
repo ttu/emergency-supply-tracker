@@ -244,9 +244,17 @@ describe('validateAppDataValues', () => {
       expect(result.errors[0].field).toBe('household.supplyDurationDays');
     });
 
-    it('detects non-finite number', () => {
+    it('detects non-finite number (Infinity)', () => {
       const data = createValidAppData();
       data.household.adults = Infinity;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.adults');
+    });
+
+    it('detects non-finite number (NaN)', () => {
+      const data = createValidAppData();
+      data.household.adults = NaN;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.adults');
