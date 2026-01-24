@@ -84,7 +84,8 @@
     "export": "Vie",
     "import": "Tuo",
     "clear": "Tyhjennä",
-    "dismiss": "Hylkää"
+    "dismiss": "Hylkää",
+    "dismissAll": "Hylkää kaikki"
   },
   "status": {
     "ok": "OK",

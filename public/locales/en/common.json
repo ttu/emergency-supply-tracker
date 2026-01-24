@@ -84,7 +84,8 @@
     "export": "Export",
     "import": "Import",
     "clear": "Clear",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "dismissAll": "Dismiss all"
   },
   "status": {
     "ok": "OK",

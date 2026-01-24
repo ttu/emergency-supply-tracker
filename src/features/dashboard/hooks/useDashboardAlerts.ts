@@ -14,6 +14,7 @@ export interface UseDashboardAlertsResult {
   activeAlerts: Alert[];
   hiddenAlertsCount: number;
   handleDismissAlert: (alertId: AlertId) => void;
+  handleDismissAllAlerts: () => void;
   handleShowAllAlerts: () => void;
 }
 
@@ -92,6 +93,10 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     [dismissAlert, dismissBackup],
   );
 
+  const handleDismissAllAlerts = useCallback(() => {
+    activeAlerts.forEach((alert) => handleDismissAlert(alert.id));
+  }, [activeAlerts, handleDismissAlert]);
+
   const handleShowAllAlerts = useCallback(() => {
     reactivateAllAlerts();
   }, [reactivateAllAlerts]);
@@ -100,6 +105,7 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     activeAlerts,
     hiddenAlertsCount,
     handleDismissAlert,
+    handleDismissAllAlerts,
     handleShowAllAlerts,
   };
 }

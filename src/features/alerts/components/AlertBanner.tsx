@@ -6,6 +6,7 @@ import styles from './AlertBanner.module.css';
 export interface AlertBannerProps {
   alerts: Alert[];
   onDismiss?: (alertId: string) => void;
+  onDismissAll?: () => void;
 }
 
 const AlertIcon = ({ type }: { type: AlertType }): ReactNode => {
@@ -28,7 +29,11 @@ const getAlertTypeClassName = (type: AlertType): string => {
   return typeClassMap[type];
 };
 
-export const AlertBanner = ({ alerts, onDismiss }: AlertBannerProps) => {
+export const AlertBanner = ({
+  alerts,
+  onDismiss,
+  onDismissAll,
+}: AlertBannerProps) => {
   const { t } = useTranslation();
 
   if (alerts.length === 0) {
@@ -37,7 +42,20 @@ export const AlertBanner = ({ alerts, onDismiss }: AlertBannerProps) => {
 
   return (
     <div className={styles.container} data-testid="alerts-section">
-      <h2 className={styles.title}>{t('dashboard.alerts.title')}</h2>
+      <div className={styles.header}>
+        <h2 className={styles.title}>{t('dashboard.alerts.title')}</h2>
+        {onDismissAll && (
+          <button
+            type="button"
+            className={styles.dismissAllButton}
+            onClick={onDismissAll}
+            data-testid="dismiss-all-alerts"
+            aria-label={t('actions.dismissAll')}
+          >
+            {t('actions.dismissAll')}
+          </button>
+        )}
+      </div>
       <div className={styles.alerts}>
         {alerts.map((alert) => (
           <div

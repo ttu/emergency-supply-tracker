@@ -11,6 +11,7 @@ vi.mock('react-i18next', () => ({
       const translations: Record<string, string> = {
         'dashboard.alerts.title': 'Alerts',
         'actions.dismiss': 'Dismiss',
+        'actions.dismissAll': 'Dismiss all',
       };
       return translations[key] || key;
     },
@@ -119,5 +120,63 @@ describe('AlertBanner', () => {
     );
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('renders Dismiss all button when onDismissAll is provided', () => {
+    render(
+      <AlertBanner
+        alerts={[
+          { id: createAlertId('1'), type: 'warning', message: 'Alert 1' },
+          { id: createAlertId('2'), type: 'info', message: 'Alert 2' },
+        ]}
+        onDismiss={vi.fn()}
+        onDismissAll={vi.fn()}
+      />,
+    );
+
+    const dismissAllButton = screen.getByRole('button', {
+      name: 'Dismiss all',
+    });
+    expect(dismissAllButton).toBeInTheDocument();
+    expect(dismissAllButton).toHaveAttribute(
+      'data-testid',
+      'dismiss-all-alerts',
+    );
+  });
+
+  it('calls onDismissAll when Dismiss all button is clicked', async () => {
+    const user = userEvent.setup();
+    const onDismissAll = vi.fn();
+
+    render(
+      <AlertBanner
+        alerts={[
+          { id: createAlertId('1'), type: 'warning', message: 'Alert 1' },
+          { id: createAlertId('2'), type: 'info', message: 'Alert 2' },
+        ]}
+        onDismiss={vi.fn()}
+        onDismissAll={onDismissAll}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Dismiss all' }));
+
+    expect(onDismissAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not render Dismiss all button when onDismissAll is not provided', () => {
+    render(
+      <AlertBanner
+        alerts={[
+          { id: createAlertId('1'), type: 'warning', message: 'Alert 1' },
+          { id: createAlertId('2'), type: 'info', message: 'Alert 2' },
+        ]}
+        onDismiss={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.queryByRole('button', { name: 'Dismiss all' }),
+    ).not.toBeInTheDocument();
   });
 });

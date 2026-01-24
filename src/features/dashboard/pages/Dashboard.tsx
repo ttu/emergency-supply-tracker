@@ -35,6 +35,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
     activeAlerts,
     hiddenAlertsCount,
     handleDismissAlert,
+    handleDismissAllAlerts,
     handleShowAllAlerts,
   } = useDashboardAlerts();
   const { handleExport: handleExportShoppingList } = useShoppingListExport();
@@ -68,7 +69,11 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
       {/* Alerts Section */}
       {activeAlerts.length > 0 && (
         <section className={styles.alertsSection}>
-          <AlertBanner alerts={activeAlerts} onDismiss={onDismissAlert} />
+          <AlertBanner
+            alerts={activeAlerts}
+            onDismiss={onDismissAlert}
+            onDismissAll={handleDismissAllAlerts}
+          />
         </section>
       )}
 
