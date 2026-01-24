@@ -122,7 +122,7 @@ describe('SideMenu', () => {
 
     // Keyboard handler is on the ul element
     const sidebar = screen.getByTestId('sidemenu-sidebar');
-    const list = within(sidebar).getByRole('list');
+    const list = within(sidebar).getByRole('menu');
     fireEvent.keyDown(list, { key: 'ArrowDown' });
 
     expect(onSelect).toHaveBeenCalledWith('item2');
@@ -141,7 +141,7 @@ describe('SideMenu', () => {
 
     // Keyboard handler is on the ul element
     const sidebar = screen.getByTestId('sidemenu-sidebar');
-    const list = within(sidebar).getByRole('list');
+    const list = within(sidebar).getByRole('menu');
     fireEvent.keyDown(list, { key: 'ArrowUp' });
 
     expect(onSelect).toHaveBeenCalledWith('item1');
@@ -160,7 +160,7 @@ describe('SideMenu', () => {
 
     // Keyboard handler is on the ul element
     const sidebar = screen.getByTestId('sidemenu-sidebar');
-    const list = within(sidebar).getByRole('list');
+    const list = within(sidebar).getByRole('menu');
     fireEvent.keyDown(list, { key: 'Home' });
 
     expect(onSelect).toHaveBeenCalledWith('item1');
@@ -179,7 +179,7 @@ describe('SideMenu', () => {
 
     // Keyboard handler is on the ul element
     const sidebar = screen.getByTestId('sidemenu-sidebar');
-    const list = within(sidebar).getByRole('list');
+    const list = within(sidebar).getByRole('menu');
     fireEvent.keyDown(list, { key: 'End' });
 
     expect(onSelect).toHaveBeenCalledWith('item3');
@@ -198,7 +198,7 @@ describe('SideMenu', () => {
 
     // Keyboard handler is on the ul element
     const sidebar = screen.getByTestId('sidemenu-sidebar');
-    const list = within(sidebar).getByRole('list');
+    const list = within(sidebar).getByRole('menu');
     fireEvent.keyDown(list, { key: 'ArrowDown' });
 
     expect(onSelect).toHaveBeenCalledWith('item1');
@@ -318,9 +318,9 @@ describe('SideMenu', () => {
     const nav = screen.getByRole('navigation');
     expect(nav).toHaveAttribute('aria-label', 'Test Menu');
 
-    // The ul element has aria-orientation but no menubar role
+    // The ul element has role="menu" with aria-orientation
     const sidebar = screen.getByTestId('sidemenu-sidebar');
-    const list = within(sidebar).getByRole('list');
+    const list = within(sidebar).getByRole('menu');
     expect(list).toHaveAttribute('aria-orientation', 'vertical');
   });
 });

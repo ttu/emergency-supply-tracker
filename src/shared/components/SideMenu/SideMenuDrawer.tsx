@@ -27,7 +27,7 @@ export function SideMenuDrawer({
 
     if (isOpen) {
       previousFocusRef.current = document.activeElement as HTMLElement;
-      if (typeof dialog.showModal === 'function') {
+      if (typeof dialog.showModal === 'function' && !dialog.open) {
         dialog.showModal();
       }
       // Focus after a short delay to ensure dialog is fully rendered
@@ -35,7 +35,7 @@ export function SideMenuDrawer({
         dialog.focus();
       }, 0);
     } else {
-      if (typeof dialog.close === 'function') {
+      if (typeof dialog.close === 'function' && dialog.open) {
         dialog.close();
       }
       previousFocusRef.current?.focus();

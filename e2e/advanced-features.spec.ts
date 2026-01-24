@@ -149,9 +149,9 @@ test.describe('Advanced Features', () => {
       // Reload page
       await page.reload({ waitUntil: 'domcontentloaded' });
 
-      // Verify settings persisted
+      // Verify settings persisted - use helper to handle mobile hamburger menu
       await page.getByTestId('nav-settings').click();
-      await page.getByTestId('sidemenu-item-nutrition').click();
+      await navigateToSettingsSection(page, 'nutrition');
       await page.waitForLoadState('networkidle');
       const checkboxAfterReload = page
         .locator('input[type="checkbox"]')
