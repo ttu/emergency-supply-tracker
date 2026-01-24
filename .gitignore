@@ -42,3 +42,9 @@ AGENTS.local.md
 .claude/*.local.json
 *storybook.log
 storybook-static
+
+# AI-generated context files (root only)
+/AI_CONTEXT.md
+/TEST_FAILURES.md
+/DECISION.md
+/HANDOFF.md

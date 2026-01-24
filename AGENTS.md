@@ -583,6 +583,7 @@ npm run validate:all
 /pr-fix                       # Fix PR review issues (CodeRabbit, reviewers, CI failures)
 /issue-implement <number>     # Implement a GitHub issue
 /issue-refine <number|text>   # Refine issue description by validating against codebase
+/handoff                      # Create HANDOFF.md for session continuity
 ```
 
 ---
