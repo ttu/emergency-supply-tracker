@@ -15,7 +15,7 @@ Scripts to reduce Claude Code context usage and improve efficiency.
 | ------------------ | -------------------------------- | ------------------------------------- |
 | `AI_CONTEXT.md`    | Repo summary, scripts, structure | `make_ai_context.sh` (session start)  |
 | `TEST_FAILURES.md` | Parsed test failures             | `test_output.sh` (after failed tests) |
-| `DECISION.md`      | Session state before compaction  | `make_decision.sh` (pre-compact)      |
+| `DECISIONS.md`     | Session state before compaction  | `make_decisions.sh` (pre-compact)     |
 | `HANDOFF.md`       | Session context for continuity   | `/handoff` command (manual)           |
 
 All generated files are in `.gitignore`.
@@ -33,7 +33,7 @@ Hooks are configured in `.claude/settings.json` (version controlled).
 | PreToolUse       | Glob    | `block_unwanted_dirs.sh` | Block wasteful directories   |
 | PreToolUse       | Grep    | `block_unwanted_dirs.sh` | Block wasteful directories   |
 | PostToolUse      | Bash    | `test_output.sh`         | Parse test failures          |
-| PreCompact       | (all)   | `make_decision.sh`       | Generate session state       |
+| PreCompact       | (all)   | `make_decisions.sh`      | Generate session state       |
 
 ## Scripts
 
@@ -53,7 +53,7 @@ Auto-prepends: "Read AI_CONTEXT.md and TEST_FAILURES.md first, avoid node_module
 
 **Event:** PreToolUse (Read, Glob, Grep)
 
-Blocks: node_modules, .git, dist, build, coverage, .next, .nuxt, .cache, .turbo, .vite, storybook-static, **pycache**, venv, vendor
+Blocks: node_modules, .git, dist, build, coverage, .next, .nuxt, .cache, .turbo, .vite, storybook-static, \_\_pycache\_\_, venv, vendor
 
 ### `block_big_reads.sh`
 
@@ -66,11 +66,11 @@ Blocks:
 - Minified files (.min.js, .min.css)
 - Lock files (package-lock.json, yarn.lock, etc.)
 
-### `make_decision.sh`
+### `make_decisions.sh`
 
 **Event:** PreCompact
 
-Generates `DECISION.md` with current session state before context compaction:
+Generates `DECISIONS.md` with current session state before context compaction:
 
 - Current branch and uncommitted changes
 - Modified files (git status)
@@ -97,7 +97,7 @@ npx playwright test ... 2>&1 | cat
 ./scripts/ai/make_ai_context.sh
 
 # Generate session state (also runs before compaction)
-./scripts/ai/make_decision.sh
+./scripts/ai/make_decisions.sh
 
 # Parse test failures manually
 npm test 2>&1 | ./scripts/ai/test_output.sh

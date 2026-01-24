@@ -53,7 +53,7 @@ if [ -z "$TEST_OUTPUT" ]; then
 fi
 
 # Check for failures
-if ! echo "$TEST_OUTPUT" | grep -qiE "fail|error|✕|×"; then
+if ! echo "$TEST_OUTPUT" | grep -qiE "fail|error|✕|×|[0-9]+ failed"; then
     rm -f "$OUT"
     exit 0
 fi

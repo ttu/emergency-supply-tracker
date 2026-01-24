@@ -69,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/ai/make_decision.sh"
+            "command": "bash scripts/ai/make_decisions.sh"
           }
         ]
       }

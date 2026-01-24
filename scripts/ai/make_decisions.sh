@@ -1,9 +1,9 @@
 #!/bin/bash
-# make_decision.sh - Generate session state before context compaction
+# make_decisions.sh - Generate session state before context compaction
 # Hook type: PreCompact or manual
 #
-# Creates DECISION.md with current work state for session continuity.
-# Run manually: ./scripts/ai/make_decision.sh
+# Creates DECISIONS.md with current work state for session continuity.
+# Run manually: ./scripts/ai/make_decisions.sh
 
 set -euo pipefail
 
@@ -17,7 +17,7 @@ fi
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
 cd "$PROJECT_DIR"
 
-OUT="DECISION.md"
+OUT="DECISIONS.md"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 
 # Get trigger type from hook input
@@ -51,7 +51,8 @@ fi
   echo "## Modified Files"
   echo
   echo '```'
-  git status --short 2>/dev/null | head -30 || echo "No changes"
+  STATUS=$(git status --short 2>/dev/null | head -30)
+  echo "${STATUS:-No changes}"
   echo '```'
   echo
 
@@ -59,7 +60,8 @@ fi
   echo "## Changes Summary"
   echo
   echo '```'
-  git diff --stat 2>/dev/null | head -25 || echo "No diff"
+  DIFF_STAT=$(git diff --stat 2>/dev/null | head -25)
+  echo "${DIFF_STAT:-No diff}"
   echo '```'
   echo
 
@@ -68,9 +70,14 @@ fi
     echo "## Branch Commits"
     echo
     echo '```'
-    git log --oneline main.."$BRANCH" 2>/dev/null | head -10 || \
-    git log --oneline master.."$BRANCH" 2>/dev/null | head -10 || \
-    git log --oneline -5 2>/dev/null || echo "No commits"
+    COMMITS=$(git log --oneline main.."$BRANCH" 2>/dev/null | head -10)
+    if [ -z "$COMMITS" ]; then
+      COMMITS=$(git log --oneline master.."$BRANCH" 2>/dev/null | head -10)
+    fi
+    if [ -z "$COMMITS" ]; then
+      COMMITS=$(git log --oneline -5 2>/dev/null)
+    fi
+    echo "${COMMITS:-No commits}"
     echo '```'
     echo
   fi
@@ -90,7 +97,7 @@ fi
   echo "## Recently Modified"
   echo
   echo '```'
-  find . -type f -mmin -60 \
+  RECENT=$(find . -type f -mmin -60 \
     -not -path './node_modules/*' \
     -not -path './.git/*' \
     -not -path './dist/*' \
@@ -100,9 +107,10 @@ fi
     -not -path './storybook-static/*' \
     -not -name '*.log' \
     -not -name 'AI_CONTEXT.md' \
-    -not -name 'DECISION.md' \
+    -not -name 'DECISIONS.md' \
     -not -name 'TEST_FAILURES.md' \
-    2>/dev/null | head -20 || echo "None found"
+    2>/dev/null | head -20)
+  echo "${RECENT:-None found}"
   echo '```'
   echo
 
