@@ -227,6 +227,43 @@ describe('useDashboardAlerts', () => {
     expect(mockDismissBackupReminder).toHaveBeenCalled();
   });
 
+  it('should handle dismissing all alerts', () => {
+    const alert1 = createAlertId('alert-1');
+    const alert2 = createAlertId('alert-2');
+    const mockAlerts = [
+      { id: alert1, type: 'warning' as const, message: 'Alert 1' },
+      { id: alert2, type: 'critical' as const, message: 'Alert 2' },
+    ];
+    vi.mocked(generateDashboardAlerts).mockReturnValue(mockAlerts);
+
+    const { result } = renderHook(() => useDashboardAlerts());
+
+    act(() => {
+      result.current.handleDismissAllAlerts();
+    });
+
+    expect(mockDismissAlert).toHaveBeenCalledWith(alert1);
+    expect(mockDismissAlert).toHaveBeenCalledWith(alert2);
+    expect(mockDismissAlert).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle dismiss all including backup reminder', () => {
+    mockShouldShowBackupReminder.mockReturnValue(true);
+    const alert1 = createAlertId('alert-1');
+    vi.mocked(generateDashboardAlerts).mockReturnValue([
+      { id: alert1, type: 'warning' as const, message: 'Alert 1' },
+    ]);
+
+    const { result } = renderHook(() => useDashboardAlerts());
+
+    act(() => {
+      result.current.handleDismissAllAlerts();
+    });
+
+    expect(mockDismissBackupReminder).toHaveBeenCalled();
+    expect(mockDismissAlert).toHaveBeenCalledWith(alert1);
+  });
+
   it('should handle showing all alerts', () => {
     const { result } = renderHook(() => useDashboardAlerts());
 
