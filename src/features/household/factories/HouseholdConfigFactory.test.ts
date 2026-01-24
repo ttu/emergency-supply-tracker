@@ -301,7 +301,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(config.adults).toBe(2);
       expect(config.children).toBe(2);
-      expect(config.pets).toBe(1);
+      expect(config.pets).toBe(0);
       expect(config.supplyDurationDays).toBe(3);
       expect(config.useFreezer).toBe(true);
     });

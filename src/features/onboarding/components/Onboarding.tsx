@@ -9,8 +9,30 @@ import { QuickSetupScreen } from './QuickSetupScreen';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
 import { useRecommendedItems } from '@/features/templates';
-import { HOUSEHOLD_DEFAULTS } from '@/features/household';
+import { HOUSEHOLD_DEFAULTS, HOUSEHOLD_PRESETS } from '@/features/household';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
+
+function getHouseholdInitialData(
+  preset: HouseholdPreset,
+): Partial<HouseholdData> {
+  if (preset.id === 'custom') {
+    return {
+      adults: preset.adults,
+      children: preset.children,
+      pets: preset.pets,
+      supplyDays: HOUSEHOLD_DEFAULTS.supplyDays,
+      useFreezer: HOUSEHOLD_DEFAULTS.useFreezer,
+    };
+  }
+  const p = HOUSEHOLD_PRESETS[preset.id];
+  return {
+    adults: p.adults,
+    children: p.children,
+    pets: p.pets,
+    supplyDays: p.supplyDurationDays,
+    useFreezer: p.useFreezer,
+  };
+}
 
 export interface OnboardingProps {
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;
@@ -123,15 +145,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       {currentStep === 'household' && (
         <HouseholdForm
           initialData={
-            selectedPreset
-              ? {
-                  adults: selectedPreset.adults,
-                  children: selectedPreset.children,
-                  pets: selectedPreset.pets,
-                  supplyDays: HOUSEHOLD_DEFAULTS.supplyDays,
-                  useFreezer: HOUSEHOLD_DEFAULTS.useFreezer,
-                }
-              : undefined
+            selectedPreset ? getHouseholdInitialData(selectedPreset) : undefined
           }
           onSubmit={handleHouseholdSubmit}
           onBack={() => setCurrentStep('preset')}

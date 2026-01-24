@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '@/shared/components/Card';
 import { Button } from '@/shared/components/Button';
 import { useImportData } from '@/shared/hooks';
+import { HOUSEHOLD_PRESETS } from '@/features/household';
+import type { HouseholdPreset as HouseholdPresetId } from '@/features/household';
 import styles from './HouseholdPresetSelector.module.css';
 
 export interface HouseholdPreset {
@@ -17,11 +19,14 @@ export interface HouseholdPresetSelectorProps {
   onBack?: () => void;
 }
 
-const PRESETS: HouseholdPreset[] = [
-  { id: 'single', adults: 1, children: 0, pets: 0 },
-  { id: 'couple', adults: 2, children: 0, pets: 0 },
-  { id: 'family', adults: 2, children: 2, pets: 1 },
-];
+const PRESET_IDS: HouseholdPresetId[] = ['single', 'couple', 'family'];
+
+const PRESETS: HouseholdPreset[] = PRESET_IDS.map((id) => ({
+  id,
+  adults: HOUSEHOLD_PRESETS[id].adults,
+  children: HOUSEHOLD_PRESETS[id].children,
+  pets: HOUSEHOLD_PRESETS[id].pets,
+}));
 
 export function HouseholdPresetSelector({
   selectedPreset,

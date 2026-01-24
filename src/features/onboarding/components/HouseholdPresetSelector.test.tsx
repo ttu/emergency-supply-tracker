@@ -176,7 +176,7 @@ describe('HouseholdPresetSelector', () => {
       id: 'family',
       adults: 2,
       children: 2,
-      pets: 1,
+      pets: 0,
     });
   });
 
