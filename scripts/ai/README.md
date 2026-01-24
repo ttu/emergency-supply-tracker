@@ -120,7 +120,7 @@ MAX_LINES=1000 MAX_SIZE_KB=50 bash scripts/ai/block_big_reads.sh
 
 ## Claude Code Hook API Reference
 
-Official documentation: https://code.claude.com/docs/en/hooks
+Official documentation: [Claude Code hooks](https://code.claude.com/docs/en/hooks)
 
 When writing hooks for Claude Code, use these JSON field names:
 
@@ -151,7 +151,7 @@ When writing hooks for Claude Code, use these JSON field names:
 
 1. **Plain text** (simpler) - stdout is added as context:
 
-```
+```text
 Instructions to prepend to the prompt.
 ```
 

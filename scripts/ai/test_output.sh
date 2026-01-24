@@ -114,7 +114,7 @@ parse_playwright() {
 
     # Extract failed tests
     echo "### Failed Tests" >> "$OUT"
-    echo "$output" | grep -E "^\s*\d+\).*›|failed" | while read -r line; do
+    echo "$output" | grep -E "^[[:space:]]*[0-9]+\).*›|failed" | while read -r line; do
         echo "- $line" >> "$OUT"
     done
     echo >> "$OUT"
@@ -129,7 +129,7 @@ parse_playwright() {
     # Extract failed test locations
     echo "### Failed Locations" >> "$OUT"
     echo '```' >> "$OUT"
-    echo "$output" | grep -E "at .*\.spec\.(ts|js):\d+" | head -20 >> "$OUT"
+    echo "$output" | grep -E "at .*\.spec\.(ts|js):[0-9]+" | head -20 >> "$OUT"
     echo '```' >> "$OUT"
     echo >> "$OUT"
 }
