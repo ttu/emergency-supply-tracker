@@ -325,6 +325,7 @@ export interface AppData {
   customTemplates: ProductTemplate[];
   dismissedAlertIds: AlertId[]; // Alert IDs that have been dismissed by the user
   disabledRecommendedItems: ProductTemplateId[]; // Product template IDs that have been disabled by the user
+  disabledCategories: StandardCategoryId[]; // Category IDs that have been disabled by the user
   // Kit management (new multi-kit system)
   selectedRecommendationKit?: KitId; // Currently selected kit ID
   uploadedRecommendationKits?: UploadedKit[]; // User-uploaded custom kits

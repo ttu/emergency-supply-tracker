@@ -6,8 +6,13 @@ import type {
   ItemId,
   AlertId,
   ProductTemplateId,
+  StandardCategoryId,
 } from '@/shared/types';
-import { createAlertId, createProductTemplateId } from '@/shared/types';
+import {
+  createAlertId,
+  createProductTemplateId,
+  VALID_CATEGORIES,
+} from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { useLocalStorageSync } from '@/shared/hooks';
 import { InventoryContext } from './context';
@@ -44,6 +49,15 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         createProductTemplateId,
       );
     });
+  const [disabledCategories, setDisabledCategories] = useLocalStorageSync(
+    'disabledCategories',
+    (data) => {
+      return (data?.disabledCategories || []).filter(
+        (id): id is StandardCategoryId =>
+          (VALID_CATEGORIES as readonly string[]).includes(id),
+      );
+    },
+  );
 
   const addItem = useCallback(
     (item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -147,6 +161,26 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     setDisabledRecommendedItems([]);
   }, [setDisabledRecommendedItems]);
 
+  const disableCategory = useCallback(
+    (categoryId: StandardCategoryId) => {
+      setDisabledCategories((prev) =>
+        prev.includes(categoryId) ? prev : [...prev, categoryId],
+      );
+    },
+    [setDisabledCategories],
+  );
+
+  const enableCategory = useCallback(
+    (categoryId: StandardCategoryId) => {
+      setDisabledCategories((prev) => prev.filter((id) => id !== categoryId));
+    },
+    [setDisabledCategories],
+  );
+
+  const enableAllCategories = useCallback(() => {
+    setDisabledCategories([]);
+  }, [setDisabledCategories]);
+
   return (
     <InventoryContext.Provider
       value={{
@@ -164,6 +198,10 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         disableRecommendedItem,
         enableRecommendedItem,
         enableAllRecommendedItems,
+        disabledCategories,
+        disableCategory,
+        enableCategory,
+        enableAllCategories,
       }}
     >
       {children}

@@ -10,6 +10,7 @@ import {
   ShoppingListExport,
   DebugExport,
   ClearDataButton,
+  DisabledCategories,
   DisabledRecommendations,
   OverriddenRecommendations,
   KitManagement,
@@ -71,6 +72,17 @@ export function Settings() {
             {t('settings.sections.disabledRecommendations')}
           </h2>
           <DisabledRecommendations />
+        </section>
+
+        {/* Disabled Categories */}
+        <section
+          className={styles.section}
+          data-testid="section-disabled-categories"
+        >
+          <h2 className={styles.sectionTitle}>
+            {t('settings.sections.disabledCategories')}
+          </h2>
+          <DisabledCategories />
         </section>
 
         {/* Overridden Recommendations */}

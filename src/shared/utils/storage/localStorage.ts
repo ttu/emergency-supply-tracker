@@ -93,6 +93,7 @@ export function createDefaultAppData(): AppData {
     customTemplates: [],
     dismissedAlertIds: [],
     disabledRecommendedItems: [],
+    disabledCategories: [],
     selectedRecommendationKit: DEFAULT_KIT_ID,
     uploadedRecommendationKits: [],
     lastModified: new Date().toISOString(),

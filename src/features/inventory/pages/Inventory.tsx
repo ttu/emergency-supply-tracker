@@ -20,6 +20,7 @@ import type {
   InventoryItem,
   ItemStatus,
   RecommendedItemDefinition,
+  StandardCategoryId,
 } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import { useCategoryStatuses } from '@/features/dashboard/hooks/useCategoryStatuses';
@@ -40,14 +41,32 @@ export function Inventory({
   onCategoryChange,
 }: InventoryProps = {}) {
   const { t, i18n } = useTranslation(['common', 'products']);
-  const { items, addItem, updateItem, deleteItem, disableRecommendedItem } =
-    useInventory();
+  const {
+    items,
+    addItem,
+    updateItem,
+    deleteItem,
+    disableRecommendedItem,
+    disabledCategories,
+    disableCategory,
+  } = useInventory();
   const { household } = useHousehold();
   const { recommendedItems, getItemName } = useRecommendedItems();
 
   // Use shared hook for category statuses (reuses same calculation as Dashboard)
   const { categoryStatuses } = useCategoryStatuses();
   const calculationOptions = useCalculationOptions();
+
+  // Filter out disabled categories
+  // Cast category.id to StandardCategoryId since STANDARD_CATEGORIES only contains standard categories
+  const enabledCategories = useMemo(
+    () =>
+      STANDARD_CATEGORIES.filter(
+        (category) =>
+          !disabledCategories.includes(category.id as StandardCategoryId),
+      ),
+    [disabledCategories],
+  );
 
   // Filter and sort state - use controlled state if provided, otherwise local state
   const [localCategoryId, setLocalCategoryId] = useState<string | undefined>(
@@ -59,13 +78,16 @@ export function Inventory({
     ? controlledCategoryId
     : localCategoryId;
 
-  const handleCategoryChange = (categoryId: string | undefined) => {
-    if (onCategoryChange) {
-      onCategoryChange(categoryId);
-    } else {
-      setLocalCategoryId(categoryId);
-    }
-  };
+  const handleCategoryChange = useCallback(
+    (categoryId: string | undefined) => {
+      if (onCategoryChange) {
+        onCategoryChange(categoryId);
+      } else {
+        setLocalCategoryId(categoryId);
+      }
+    },
+    [onCategoryChange],
+  );
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');
@@ -255,6 +277,15 @@ export function Inventory({
     [disableRecommendedItem],
   );
 
+  // Handler for disabling a category
+  const handleDisableCategory = useCallback(() => {
+    if (selectedCategoryId) {
+      disableCategory(selectedCategoryId as StandardCategoryId);
+      // Clear the selected category after disabling
+      handleCategoryChange(undefined);
+    }
+  }, [selectedCategoryId, disableCategory, handleCategoryChange]);
+
   // Resolver for custom item names in CategoryStatusSummary
   const resolveItemName = useCallback(
     (itemId: string, i18nKey: string): string | undefined => {
@@ -288,7 +319,7 @@ export function Inventory({
 
       <div className={styles.filters}>
         <CategoryNav
-          categories={STANDARD_CATEGORIES}
+          categories={enabledCategories}
           selectedCategoryId={selectedCategoryId}
           onSelectCategory={handleCategoryChange}
         />
@@ -304,25 +335,37 @@ export function Inventory({
 
       <div className={styles.content}>
         {selectedCategoryId && categoryStatus && (
-          <CategoryStatusSummary
-            categoryId={selectedCategoryId}
-            status={categoryStatus.status}
-            completionPercentage={categoryStatus.completionPercentage}
-            totalActual={categoryStatus.totalActual}
-            totalNeeded={categoryStatus.totalNeeded}
-            primaryUnit={categoryStatus.primaryUnit}
-            shortages={categoryStatus.shortages}
-            totalActualCalories={categoryStatus.totalActualCalories}
-            totalNeededCalories={categoryStatus.totalNeededCalories}
-            missingCalories={categoryStatus.missingCalories}
-            drinkingWaterNeeded={categoryStatus.drinkingWaterNeeded}
-            preparationWaterNeeded={categoryStatus.preparationWaterNeeded}
-            onAddToInventory={handleAddRecommendedToInventory}
-            onDisableRecommended={handleDisableRecommendedItem}
-            onMarkAsEnough={handleMarkAsEnough}
-            items={items}
-            resolveItemName={resolveItemName}
-          />
+          <div className={styles.categoryHeader}>
+            <CategoryStatusSummary
+              categoryId={selectedCategoryId}
+              status={categoryStatus.status}
+              completionPercentage={categoryStatus.completionPercentage}
+              totalActual={categoryStatus.totalActual}
+              totalNeeded={categoryStatus.totalNeeded}
+              primaryUnit={categoryStatus.primaryUnit}
+              shortages={categoryStatus.shortages}
+              totalActualCalories={categoryStatus.totalActualCalories}
+              totalNeededCalories={categoryStatus.totalNeededCalories}
+              missingCalories={categoryStatus.missingCalories}
+              drinkingWaterNeeded={categoryStatus.drinkingWaterNeeded}
+              preparationWaterNeeded={categoryStatus.preparationWaterNeeded}
+              onAddToInventory={handleAddRecommendedToInventory}
+              onDisableRecommended={handleDisableRecommendedItem}
+              onMarkAsEnough={handleMarkAsEnough}
+              items={items}
+              resolveItemName={resolveItemName}
+            />
+            <div className={styles.categoryActions}>
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={handleDisableCategory}
+                data-testid="disable-category-button"
+              >
+                {t('inventory.disableCategory')}
+              </Button>
+            </div>
+          </div>
         )}
         <ItemList items={filteredItems} onItemClick={handleEditItem} />
       </div>

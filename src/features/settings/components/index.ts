@@ -1,5 +1,6 @@
 export { ClearDataButton } from './ClearDataButton';
 export { DebugExport } from './DebugExport';
+export { DisabledCategories } from './DisabledCategories';
 export { DisabledRecommendations } from './DisabledRecommendations';
 export { ExportButton } from './ExportButton';
 export { ExportRecommendationsButton } from './ExportRecommendationsButton';

@@ -80,6 +80,9 @@ function TestComponent({
       <div data-testid="disabled-count">
         {context.disabledRecommendedItems.length}
       </div>
+      <div data-testid="disabled-categories-count">
+        {context.disabledCategories.length}
+      </div>
       <button
         onClick={() =>
           context.addItem({
@@ -120,6 +123,15 @@ function TestComponent({
       </button>
       <button onClick={() => context.enableAllRecommendedItems()}>
         Enable All Recommended
+      </button>
+      <button onClick={() => context.disableCategory('food')}>
+        Disable Category
+      </button>
+      <button onClick={() => context.enableCategory('food')}>
+        Enable Category
+      </button>
+      <button onClick={() => context.enableAllCategories()}>
+        Enable All Categories
       </button>
     </div>
   );
@@ -540,5 +552,157 @@ describe('InventoryProvider', () => {
     );
 
     expect(screen.getByTestId('disabled-count')).toHaveTextContent('3');
+  });
+
+  it('should disable category correctly', async () => {
+    const user = userEvent.setup();
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '0',
+    );
+
+    await user.click(screen.getByText('Disable Category'));
+
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '1',
+    );
+  });
+
+  it('should not duplicate disabled category', async () => {
+    const user = userEvent.setup();
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    await user.click(screen.getByText('Disable Category'));
+    await user.click(screen.getByText('Disable Category'));
+
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '1',
+    );
+  });
+
+  it('should enable category correctly', async () => {
+    const user = userEvent.setup();
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: ['food'],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '1',
+    );
+
+    await user.click(screen.getByText('Enable Category'));
+
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '0',
+    );
+  });
+
+  it('should enable all categories correctly', async () => {
+    const user = userEvent.setup();
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: ['food', 'water-beverages', 'cooking-heat'],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '3',
+    );
+
+    await user.click(screen.getByText('Enable All Categories'));
+
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '0',
+    );
+  });
+
+  it('should load disabledCategories from localStorage', () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: ['food', 'water-beverages'],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '2',
+    );
+  });
+
+  it('should filter out invalid category IDs from localStorage', () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: ['food', 'invalid-category', 'water-beverages'],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    // Only valid categories should be loaded (food and water-beverages)
+    expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
+      '2',
+    );
   });
 });

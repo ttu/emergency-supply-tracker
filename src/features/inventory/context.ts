@@ -5,6 +5,7 @@ import type {
   ItemId,
   AlertId,
   ProductTemplateId,
+  StandardCategoryId,
 } from '@/shared/types';
 
 export interface InventoryContextValue {
@@ -26,6 +27,11 @@ export interface InventoryContextValue {
   disableRecommendedItem: (itemId: ProductTemplateId) => void;
   enableRecommendedItem: (itemId: ProductTemplateId) => void;
   enableAllRecommendedItems: () => void;
+  // Disabled categories
+  disabledCategories: StandardCategoryId[];
+  disableCategory: (categoryId: StandardCategoryId) => void;
+  enableCategory: (categoryId: StandardCategoryId) => void;
+  enableAllCategories: () => void;
 }
 
 export const InventoryContext = createContext<

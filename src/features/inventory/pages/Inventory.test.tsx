@@ -858,4 +858,24 @@ describe('Inventory Page - Mark as Enough', () => {
       ).not.toBeInTheDocument();
     });
   });
+
+  it('should disable category when clicking disable category button', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Inventory selectedCategoryId="cooking-heat" />);
+
+    // Verify the disable category button is present
+    const disableButton = screen.getByTestId('disable-category-button');
+    expect(disableButton).toBeInTheDocument();
+
+    // Click the disable button
+    await user.click(disableButton);
+
+    // Category should be deselected (category nav returns to all categories view)
+    await waitFor(() => {
+      // The disable category button should no longer be visible since category is deselected
+      expect(
+        screen.queryByTestId('disable-category-button'),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

@@ -70,6 +70,10 @@ describe('useDashboardAlerts', () => {
       disableRecommendedItem: vi.fn(),
       enableRecommendedItem: vi.fn(),
       enableAllRecommendedItems: vi.fn(),
+      disabledCategories: [],
+      disableCategory: vi.fn(),
+      enableCategory: vi.fn(),
+      enableAllCategories: vi.fn(),
     });
 
     vi.mocked(useHousehold).mockReturnValue({
@@ -179,6 +183,10 @@ describe('useDashboardAlerts', () => {
       disableRecommendedItem: vi.fn(),
       enableRecommendedItem: vi.fn(),
       enableAllRecommendedItems: vi.fn(),
+      disabledCategories: [],
+      disableCategory: vi.fn(),
+      enableCategory: vi.fn(),
+      enableAllCategories: vi.fn(),
     });
 
     const { result } = renderHook(() => useDashboardAlerts());
