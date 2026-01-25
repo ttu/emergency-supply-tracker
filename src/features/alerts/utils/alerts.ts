@@ -2,6 +2,7 @@ import type {
   InventoryItem,
   HouseholdConfig,
   RecommendedItemDefinition,
+  StandardCategoryId,
 } from '@/shared/types';
 import { createAlertId, isFoodCategory } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
@@ -14,7 +15,6 @@ import {
 import { calculateWaterRequirements } from '@/shared/utils/calculations/water';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
-import type { StandardCategoryId } from '@/shared/types';
 import type { Alert, AlertCounts, TranslationFunction } from '../types';
 import { ALERT_PRIORITY } from '../types';
 
