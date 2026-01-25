@@ -369,7 +369,7 @@
     "auto": "Auto"
   },
   "dashboard": {
-    "title": "Emergency Supplies Dashboard",
+    "title": "Emergency Supply Tracker",
     "subtitle": "Tracking supplies for {{people}} people for {{days}} days",
     "alerts": {
       "title": "Alerts"
