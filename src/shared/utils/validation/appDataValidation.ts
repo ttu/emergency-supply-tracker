@@ -63,7 +63,7 @@ function validateSettings(
   ) {
     errors.push({
       field: 'settings.language',
-      message: `Invalid language: "${settings.language}". Must be one of: ${VALID_LANGUAGES.join(', ')}`,
+      message: `Invalid language: "${String(settings.language)}". Must be one of: ${VALID_LANGUAGES.join(', ')}`,
       value: settings.language,
     });
   }
@@ -75,7 +75,7 @@ function validateSettings(
   ) {
     errors.push({
       field: 'settings.theme',
-      message: `Invalid theme: "${settings.theme}". Must be one of: ${VALID_THEMES.join(', ')}`,
+      message: `Invalid theme: "${String(settings.theme)}". Must be one of: ${VALID_THEMES.join(', ')}`,
       value: settings.theme,
     });
   }

@@ -254,7 +254,7 @@ describe('validateAppDataValues', () => {
 
     it('detects non-finite number (NaN)', () => {
       const data = createValidAppData();
-      data.household.adults = NaN;
+      data.household.adults = Number.NaN;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.adults');

@@ -101,7 +101,7 @@ describe('DataErrorPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    window.localStorage.clear();
+    globalThis.localStorage.clear();
     vi.mocked(localStorage.getLastDataValidationResult).mockReturnValue(
       mockValidationResult,
     );
@@ -180,7 +180,7 @@ describe('DataErrorPage', () => {
   it('shows alert when trying to download with no data', async () => {
     const user = userEvent.setup();
     const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
-    window.localStorage.removeItem('emergency-supply-tracker');
+    globalThis.localStorage.removeItem('emergency-supply-tracker');
 
     renderWithI18n(<DataErrorPage />);
     await user.click(screen.getByRole('button', { name: 'Download Data' }));
@@ -192,7 +192,7 @@ describe('DataErrorPage', () => {
   it('downloads data when data exists in localStorage', async () => {
     const user = userEvent.setup();
     const testData = { version: '1.0', items: [] };
-    window.localStorage.setItem(
+    globalThis.localStorage.setItem(
       'emergency-supply-tracker',
       JSON.stringify(testData),
     );
@@ -314,7 +314,10 @@ describe('DataErrorPage', () => {
 
   it('downloads raw JSON when data parsing fails', async () => {
     const user = userEvent.setup();
-    window.localStorage.setItem('emergency-supply-tracker', 'invalid json {{{');
+    globalThis.localStorage.setItem(
+      'emergency-supply-tracker',
+      'invalid json {{{',
+    );
 
     const { downloadFile } = await import('@/shared/utils/download');
 

@@ -182,7 +182,9 @@ function AppContent() {
  * Wrapper component that checks for data validation errors before loading the app.
  * This must be rendered before any providers that try to load data from localStorage.
  */
-function DataValidationGuard({ children }: { children: React.ReactNode }) {
+function DataValidationGuard({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const { hasValidationError, retry } = useDataValidation();
 
   if (hasValidationError) {
