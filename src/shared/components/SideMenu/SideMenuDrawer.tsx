@@ -19,6 +19,7 @@ export function SideMenuDrawer({
   const { t } = useTranslation();
   const drawerRef = useRef<HTMLDialogElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const prevOverflowRef = useRef<string | null>(null);
 
   // Focus management and dialog open/close
   useEffect(() => {
@@ -76,15 +77,24 @@ export function SideMenuDrawer({
 
   // Prevent body scroll when open
   useEffect(() => {
-    const prevOverflow = document.body.style.overflow;
     if (isOpen) {
+      // Only capture the original overflow when first opening
+      if (prevOverflowRef.current === null) {
+        prevOverflowRef.current = document.body.style.overflow;
+      }
       document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = prevOverflow;
+    } else if (prevOverflowRef.current !== null) {
+      // Restore the original overflow when closing
+      document.body.style.overflow = prevOverflowRef.current;
+      prevOverflowRef.current = null;
     }
 
     return () => {
-      document.body.style.overflow = prevOverflow;
+      // Restore on unmount if drawer was open
+      if (prevOverflowRef.current !== null) {
+        document.body.style.overflow = prevOverflowRef.current;
+        prevOverflowRef.current = null;
+      }
     };
   }, [isOpen]);
 
