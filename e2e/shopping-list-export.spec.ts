@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, navigateToSettingsSection } from './fixtures';
 
 test.describe('Shopping List Export Formats', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -23,9 +23,8 @@ test.describe('Shopping List Export Formats', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for Settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    // Navigate to Data Management section
+    await navigateToSettingsSection(page, 'dataManagement');
 
     // Find Export Shopping List button
     const exportButton = page.getByTestId('export-shopping-list-button');
@@ -100,9 +99,9 @@ test.describe('Shopping List Export Formats', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for Settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    // Navigate to Data Management section
+    await navigateToSettingsSection(page, 'dataManagement');
+    await page.waitForLoadState('networkidle');
 
     // Verify description shows item count
     // The description should mention the number of items needing restock
@@ -142,9 +141,8 @@ test.describe('Shopping List Export Formats', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for Settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    // Navigate to Data Management section
+    await navigateToSettingsSection(page, 'dataManagement');
 
     // Export button should be disabled if no items need restocking
     const exportButton = page.getByTestId('export-shopping-list-button');
@@ -190,9 +188,8 @@ test.describe('Shopping List Export Formats', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Wait for Settings page to fully load
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    await expect(page.getByTestId('section-data-management')).toBeVisible();
+    // Navigate to Data Management section
+    await navigateToSettingsSection(page, 'dataManagement');
 
     // Export shopping list
     const exportButton = page.getByTestId('export-shopping-list-button');

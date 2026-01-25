@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, navigateToSettingsSection } from './fixtures';
 
 test.describe('Nutrition Settings', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -7,6 +7,10 @@ test.describe('Nutrition Settings', () => {
 
   test('should change daily calories per person', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Find daily calories input
     const caloriesInput = page.locator('#daily-calories');
@@ -24,6 +28,10 @@ test.describe('Nutrition Settings', () => {
   test('should change daily water per person', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to nutrition section
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
+
     // Find daily water input
     const waterInput = page.locator('#daily-water');
     await expect(waterInput).toBeVisible();
@@ -40,6 +48,10 @@ test.describe('Nutrition Settings', () => {
   test('should change children requirement percentage', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to nutrition section
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
+
     // Find children percentage input
     const childrenInput = page.locator('#children-percentage');
     await expect(childrenInput).toBeVisible();
@@ -55,6 +67,10 @@ test.describe('Nutrition Settings', () => {
 
   test('should persist nutrition settings after reload', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Change all nutrition settings
     const caloriesInput = page.locator('#daily-calories');
@@ -76,6 +92,7 @@ test.describe('Nutrition Settings', () => {
 
     // Verify settings persisted
     await page.getByTestId('nav-settings').click();
+    await navigateToSettingsSection(page, 'nutrition');
     await page.waitForLoadState('networkidle');
 
     expect(await page.locator('#daily-calories').inputValue()).toBe('2200');
@@ -85,6 +102,10 @@ test.describe('Nutrition Settings', () => {
 
   test('should clamp values to valid ranges', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     const caloriesInput = page.locator('#daily-calories');
     const waterInput = page.locator('#daily-water');
@@ -119,6 +140,10 @@ test.describe('Nutrition Settings', () => {
 
   test('should reset to defaults', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Change values
     const caloriesInput = page.locator('#daily-calories');

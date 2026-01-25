@@ -4,6 +4,8 @@ import {
   expandRecommendedItems,
   ensureNoModals,
   waitForCountChange,
+  selectInventoryCategory,
+  navigateToSettingsSection,
 } from './fixtures';
 
 test.describe('Settings', () => {
@@ -16,7 +18,11 @@ test.describe('Settings', () => {
 
     // Verify settings page is visible
     await expect(page.getByTestId('page-settings')).toBeVisible();
+    // Appearance is the default section
     await expect(page.getByTestId('section-appearance')).toBeVisible();
+
+    // Navigate to household section via side menu
+    await navigateToSettingsSection(page, 'household');
     await expect(page.getByTestId('section-household')).toBeVisible();
   });
 
@@ -48,6 +54,10 @@ test.describe('Settings', () => {
   test('should update household configuration', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to household section
+    await navigateToSettingsSection(page, 'household');
+    await expect(page.getByTestId('section-household')).toBeVisible();
+
     // Find household inputs
     const adultsInput = page.locator('input[type="number"]').first();
     await adultsInput.fill('3');
@@ -56,6 +66,7 @@ test.describe('Settings', () => {
     // Navigate away and back to verify persistence
     await page.getByTestId('nav-dashboard').click();
     await page.getByTestId('nav-settings').click();
+    await navigateToSettingsSection(page, 'household');
 
     // Verify value persisted
     await expect(adultsInput).toHaveValue('3');
@@ -63,6 +74,10 @@ test.describe('Settings', () => {
 
   test('should use household presets', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to household section
+    await navigateToSettingsSection(page, 'household');
+    await expect(page.getByTestId('section-household')).toBeVisible();
 
     // Click a preset button (e.g., "Family")
     await page.getByTestId('preset-family').click();
@@ -78,7 +93,10 @@ test.describe('Settings', () => {
   test('should toggle advanced features', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
-    // Find and toggle a feature checkbox
+    // Appearance section is the default and has high contrast checkbox
+    await expect(page.getByTestId('section-appearance')).toBeVisible();
+
+    // Find and toggle the high contrast checkbox
     const featureCheckbox = page.locator('input[type="checkbox"]').first();
     const initialState = await featureCheckbox.isChecked();
 
@@ -93,6 +111,10 @@ test.describe('Settings', () => {
   test('should navigate to GitHub from About section', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to about section
+    await navigateToSettingsSection(page, 'about');
+    await expect(page.getByTestId('section-about')).toBeVisible();
+
     // Find GitHub link
     const githubLink = page.locator('a[href*="github"]');
 
@@ -103,6 +125,9 @@ test.describe('Settings', () => {
 
   test('should display disabled recommendations section', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to disabled recommendations section
+    await navigateToSettingsSection(page, 'disabledRecommendations');
 
     // Verify disabled recommendations section exists
     await expect(
@@ -125,7 +150,8 @@ test.describe('Settings', () => {
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.getByTestId('category-water-beverages').click();
+    // Select Water & Beverages category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -148,6 +174,9 @@ test.describe('Settings', () => {
 
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to disabled recommendations section
+    await navigateToSettingsSection(page, 'disabledRecommendations');
 
     // Should see the Disabled Recommendations section with the item
     await expect(
@@ -172,7 +201,8 @@ test.describe('Settings', () => {
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.getByTestId('category-water-beverages').click();
+    // Select Water & Beverages category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -199,6 +229,12 @@ test.describe('Settings', () => {
     // Navigate to Settings and re-enable the item
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to disabled recommendations section
+    await navigateToSettingsSection(page, 'disabledRecommendations');
+    await expect(
+      page.getByTestId('section-disabled-recommendations'),
+    ).toBeVisible();
+
     // Click Enable button (not Enable All)
     const enableButton = page
       .locator('button', { hasText: /^Enable$/ })
@@ -207,7 +243,7 @@ test.describe('Settings', () => {
 
     // Navigate back to inventory
     await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('category-water-beverages').click();
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items again
     await expandRecommendedItems(page);
@@ -228,7 +264,8 @@ test.describe('Settings', () => {
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    await page.getByTestId('category-water-beverages').click();
+    // Select Water & Beverages category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -255,6 +292,12 @@ test.describe('Settings', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to disabled recommendations section
+    await navigateToSettingsSection(page, 'disabledRecommendations');
+    await expect(
+      page.getByTestId('section-disabled-recommendations'),
+    ).toBeVisible();
+
     // Should see Enable All button
     const enableAllButton = page.locator(
       'button:has-text("Enable All Recommendations")',
@@ -266,7 +309,7 @@ test.describe('Settings', () => {
 
     // Navigate back to inventory
     await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('category-water-beverages').click();
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items again
     await expandRecommendedItems(page);

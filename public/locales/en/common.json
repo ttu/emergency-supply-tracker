@@ -58,7 +58,12 @@
     "dashboard": "Dashboard",
     "inventory": "Inventory",
     "settings": "Settings",
-    "help": "Help"
+    "help": "Help",
+    "sideMenu": {
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "menuLabel": "Navigation menu"
+    }
   },
   "common": {
     "add": "Add",
@@ -139,19 +144,22 @@
   },
   "settings": {
     "title": "Settings",
-    "sections": {
-      "appearance": "Appearance",
-      "household": "Household Configuration",
-      "nutrition": "Nutrition & Requirements",
-      "hiddenAlerts": "Hidden Alerts",
-      "disabledRecommendations": "Disabled Recommendations",
-      "disabledCategories": "Disabled Categories",
-      "overriddenRecommendations": "Overridden Recommendations",
-      "recommendedItems": "Recommended Items",
-      "dataManagement": "Data Management",
-      "about": "About",
-      "dangerZone": "Danger Zone",
-      "recommendationKits": "Recommendation Kits"
+    "navigation": {
+      "menuLabel": "Settings navigation",
+      "sections": {
+        "appearance": "Appearance",
+        "household": "Household Configuration",
+        "nutrition": "Nutrition & Requirements",
+        "hiddenAlerts": "Hidden Alerts",
+        "disabledRecommendations": "Disabled Recommendations",
+        "disabledCategories": "Disabled Categories",
+        "overriddenRecommendations": "Overridden Recommendations",
+        "recommendedItems": "Recommended Items",
+        "dataManagement": "Data Management",
+        "about": "About",
+        "dangerZone": "Danger Zone",
+        "recommendationKits": "Recommendation Kits"
+      }
     },
     "nutrition": {
       "description": "Customize daily requirements for calorie and water calculations. These values affect how recommended quantities are calculated for your household.",

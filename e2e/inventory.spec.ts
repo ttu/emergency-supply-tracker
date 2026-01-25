@@ -4,6 +4,7 @@ import {
   expandRecommendedItems,
   ensureNoModals,
   waitForCountChange,
+  selectInventoryCategory,
 } from './fixtures';
 
 test.describe('Inventory Management', () => {
@@ -182,8 +183,8 @@ test.describe('Inventory Management', () => {
       page.getByRole('button', { name: /Water Item/i }),
     ).toBeVisible();
 
-    // Filter by Food category
-    await page.getByTestId('category-food').click();
+    // Filter by Food category using SideMenu
+    await selectInventoryCategory(page, 'food');
 
     // Food item should be visible - use getByRole to target item card button specifically
     await expect(
@@ -194,8 +195,8 @@ test.describe('Inventory Management', () => {
       page.getByRole('button', { name: /Water Item/i }),
     ).not.toBeVisible();
 
-    // Click All to show all items again
-    await page.getByTestId('category-all').click();
+    // Click All to show all items again using SideMenu
+    await selectInventoryCategory(page, 'all');
     // Use getByRole to target item card buttons specifically
     await expect(
       page.getByRole('button', { name: /Food Item/i }),
@@ -425,8 +426,8 @@ test.describe('Inventory Management', () => {
     // Navigate to Inventory
     await page.getByTestId('nav-inventory').click();
 
-    // Click on Water category to see category status
-    await page.getByTestId('category-water-beverages').click();
+    // Click on Water category to see category status using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -445,8 +446,8 @@ test.describe('Inventory Management', () => {
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    // Click on Water category
-    await page.getByTestId('category-water-beverages').click();
+    // Click on Water category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);
@@ -475,8 +476,8 @@ test.describe('Inventory Management', () => {
     // Ensure no modals are open
     await ensureNoModals(page);
 
-    // Click on Water category
-    await page.getByTestId('category-water-beverages').click();
+    // Click on Water category using SideMenu
+    await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items (they are hidden by default)
     await expandRecommendedItems(page);

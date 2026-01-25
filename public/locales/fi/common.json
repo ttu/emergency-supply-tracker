@@ -58,7 +58,12 @@
     "dashboard": "Etusivu",
     "inventory": "Varasto",
     "settings": "Asetukset",
-    "help": "Ohje"
+    "help": "Ohje",
+    "sideMenu": {
+      "openMenu": "Avaa valikko",
+      "closeMenu": "Sulje valikko",
+      "menuLabel": "Navigointivalikko"
+    }
   },
   "common": {
     "add": "Lisää",
@@ -139,19 +144,22 @@
   },
   "settings": {
     "title": "Asetukset",
-    "sections": {
-      "appearance": "Ulkoasu",
-      "household": "Kotitalouden asetukset",
-      "nutrition": "Ravitsemus & vaatimukset",
-      "hiddenAlerts": "Piilotetut hälytykset",
-      "disabledRecommendations": "Poistetut suositukset",
-      "disabledCategories": "Poistetut kategoriat",
-      "overriddenRecommendations": "Ohitetut suositukset",
-      "recommendedItems": "Suositellut tuotteet",
-      "dataManagement": "Tietojen hallinta",
-      "about": "Tietoja",
-      "dangerZone": "Vaaravyöhyke",
-      "recommendationKits": "Suosituspaketit"
+    "navigation": {
+      "menuLabel": "Asetusten navigointi",
+      "sections": {
+        "appearance": "Ulkoasu",
+        "household": "Kotitalouden asetukset",
+        "nutrition": "Ravitsemus & vaatimukset",
+        "hiddenAlerts": "Piilotetut hälytykset",
+        "disabledRecommendations": "Poistetut suositukset",
+        "disabledCategories": "Poistetut kategoriat",
+        "overriddenRecommendations": "Ohitetut suositukset",
+        "recommendedItems": "Suositellut tuotteet",
+        "dataManagement": "Tietojen hallinta",
+        "about": "Tietoja",
+        "dangerZone": "Vaaravyöhyke",
+        "recommendationKits": "Suosituspaketit"
+      }
     },
     "nutrition": {
       "description": "Mukauta päivittäiset vaatimukset kalorien ja veden laskelmiin. Nämä arvot vaikuttavat siihen, miten suositellut määrät lasketaan kotitaloudellesi.",

@@ -4,6 +4,7 @@ import {
   expect,
   expandRecommendedItems,
   ensureNoModals,
+  selectInventoryCategory,
 } from './fixtures';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
@@ -138,10 +139,8 @@ async function addItemFromTemplate(page: Page) {
   }
 
   await page.getByTestId('template-search-input').fill('water');
-  const waterTemplate = page
-    .locator('button[type="button"]')
-    .filter({ hasText: /water/i })
-    .first();
+  // Use specific template card selector to avoid matching SideMenu items
+  const waterTemplate = page.getByTestId('template-card-bottled-water');
   await expect(waterTemplate).toBeVisible();
   await waterTemplate.click();
 
@@ -151,7 +150,12 @@ async function addItemFromTemplate(page: Page) {
     .waitForSelector('[role="dialog"]', { state: 'hidden' })
     .catch(() => {});
 
-  await expect(page.locator('text=/water/i').first()).toBeVisible({
+  // Scope to main content to avoid matching SideMenu category labels
+  await expect(
+    page
+      .locator('main')
+      .getByRole('heading', { name: /Bottled Water/i, level: 3 }),
+  ).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 }
@@ -186,7 +190,7 @@ async function verifyCustomItemExists(page: Page) {
     .catch(() => false);
 
   if (!customItemVisible) {
-    await page.getByTestId('category-food').click();
+    await selectInventoryCategory(page, 'food');
     const itemVisibleAfterFilter = await page
       .locator('text=Custom Test Item')
       .isVisible()
@@ -211,9 +215,9 @@ async function verifyCustomItemExists(page: Page) {
 
 async function testRecommendedItems(page: Page) {
   await ensureNoModals(page);
-  // Use data-testid for language-agnostic category selection
+  // Use SideMenu for language-agnostic category selection
   // Water category ID is 'water-beverages'
-  await page.getByTestId('category-water-beverages').click();
+  await selectInventoryCategory(page, 'water-beverages');
   await expandRecommendedItems(page);
 
   const addButton = page.locator('button:has-text("+")').first();
@@ -623,7 +627,7 @@ async function runManualEntryWorkflow(page: Page) {
   await editCustomItemIfVisible(page);
 
   // Filter and search
-  await page.getByTestId('category-food').click();
+  await selectInventoryCategory(page, 'food');
   await page.fill('input[placeholder*="Search"]', 'Custom');
   await page.fill('input[placeholder*="Search"]', '');
   await testRecommendedItems(page);

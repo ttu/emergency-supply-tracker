@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, navigateToSettingsSection } from './fixtures';
 
 test.describe('Advanced Features', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -9,6 +9,10 @@ test.describe('Advanced Features', () => {
     page,
   }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section which contains the feature checkboxes
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Advanced features checkboxes might be in a section or might not be visible
     // Check if there are any checkboxes in the settings page
@@ -44,6 +48,10 @@ test.describe('Advanced Features', () => {
   }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to nutrition section which contains the feature checkboxes
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
+
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
     const checkboxCount = await allCheckboxes.count();
@@ -75,6 +83,10 @@ test.describe('Advanced Features', () => {
     page,
   }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section which contains the feature checkboxes
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
@@ -108,6 +120,10 @@ test.describe('Advanced Features', () => {
   }) => {
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to nutrition section which contains the feature checkboxes
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
+
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');
     const checkboxCount = await allCheckboxes.count();
@@ -133,8 +149,9 @@ test.describe('Advanced Features', () => {
       // Reload page
       await page.reload({ waitUntil: 'domcontentloaded' });
 
-      // Verify settings persisted
+      // Verify settings persisted - use helper to handle mobile hamburger menu
       await page.getByTestId('nav-settings').click();
+      await navigateToSettingsSection(page, 'nutrition');
       await page.waitForLoadState('networkidle');
       const checkboxAfterReload = page
         .locator('input[type="checkbox"]')
@@ -148,6 +165,10 @@ test.describe('Advanced Features', () => {
     page,
   }) => {
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to nutrition section which contains the feature checkboxes
+    await navigateToSettingsSection(page, 'nutrition');
+    await expect(page.getByTestId('section-nutrition')).toBeVisible();
 
     // Check if checkboxes exist
     const allCheckboxes = page.locator('input[type="checkbox"]');

@@ -1,3 +1,4 @@
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiddenAlerts } from '@/features/alerts';
 import {
@@ -14,12 +15,254 @@ import {
   DisabledRecommendations,
   OverriddenRecommendations,
   KitManagement,
+  RecommendationsStatus,
+  ImportRecommendationsButton,
+  ExportRecommendationsButton,
 } from '@/features/settings';
+import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
 
+type SettingsSection =
+  | 'appearance'
+  | 'household'
+  | 'nutrition'
+  | 'hiddenAlerts'
+  | 'disabledRecommendations'
+  | 'disabledCategories'
+  | 'overriddenRecommendations'
+  | 'recommendedItems'
+  | 'recommendationKits'
+  | 'dataManagement'
+  | 'about'
+  | 'dangerZone';
+
+interface SectionProps {
+  readonly testId: string;
+  readonly titleKey: string;
+  readonly titleClassName?: string;
+  readonly children: ReactNode;
+}
+
+function Section({
+  testId,
+  titleKey,
+  titleClassName = styles.sectionTitle,
+  children,
+}: Readonly<SectionProps>) {
+  const { t } = useTranslation();
+  return (
+    <section className={styles.section} data-testid={testId}>
+      <h2 className={titleClassName}>{t(titleKey)}</h2>
+      {children}
+    </section>
+  );
+}
+
 export function Settings() {
   const { t } = useTranslation();
+  const [selectedSection, setSelectedSection] =
+    useState<SettingsSection>('appearance');
+
+  const menuItems: SideMenuItem[] = [
+    { id: 'appearance', label: t('settings.navigation.sections.appearance') },
+    { id: 'household', label: t('settings.navigation.sections.household') },
+    { id: 'nutrition', label: t('settings.navigation.sections.nutrition') },
+    {
+      id: 'hiddenAlerts',
+      label: t('settings.navigation.sections.hiddenAlerts'),
+    },
+    {
+      id: 'disabledRecommendations',
+      label: t('settings.navigation.sections.disabledRecommendations'),
+    },
+    {
+      id: 'disabledCategories',
+      label: t('settings.navigation.sections.disabledCategories'),
+    },
+    {
+      id: 'overriddenRecommendations',
+      label: t('settings.navigation.sections.overriddenRecommendations'),
+    },
+    {
+      id: 'recommendedItems',
+      label: t('settings.navigation.sections.recommendedItems'),
+    },
+    {
+      id: 'recommendationKits',
+      label: t('settings.navigation.sections.recommendationKits'),
+    },
+    {
+      id: 'dataManagement',
+      label: t('settings.navigation.sections.dataManagement'),
+    },
+    { id: 'about', label: t('settings.navigation.sections.about') },
+    { id: 'dangerZone', label: t('settings.navigation.sections.dangerZone') },
+  ];
+
+  const renderSection = () => {
+    switch (selectedSection) {
+      case 'appearance':
+        return (
+          <Section
+            testId="section-appearance"
+            titleKey="settings.navigation.sections.appearance"
+          >
+            <div className={styles.appearanceSettings}>
+              <LanguageSelector />
+              <ThemeSelector />
+            </div>
+          </Section>
+        );
+
+      case 'household':
+        return (
+          <Section
+            testId="section-household"
+            titleKey="settings.navigation.sections.household"
+          >
+            <HouseholdForm />
+          </Section>
+        );
+
+      case 'nutrition':
+        return (
+          <Section
+            testId="section-nutrition"
+            titleKey="settings.navigation.sections.nutrition"
+          >
+            <NutritionSettings />
+          </Section>
+        );
+
+      case 'hiddenAlerts':
+        return (
+          <Section
+            testId="section-hidden-alerts"
+            titleKey="settings.navigation.sections.hiddenAlerts"
+          >
+            <HiddenAlerts />
+          </Section>
+        );
+
+      case 'disabledRecommendations':
+        return (
+          <Section
+            testId="section-disabled-recommendations"
+            titleKey="settings.navigation.sections.disabledRecommendations"
+          >
+            <DisabledRecommendations />
+          </Section>
+        );
+
+      case 'disabledCategories':
+        return (
+          <section
+            className={styles.section}
+            data-testid="section-disabled-categories"
+          >
+            <h2 className={styles.sectionTitle}>
+              {t('settings.navigation.sections.disabledCategories')}
+            </h2>
+            <DisabledCategories />
+          </section>
+        );
+
+      case 'overriddenRecommendations':
+        return (
+          <Section
+            testId="section-overridden-recommendations"
+            titleKey="settings.navigation.sections.overriddenRecommendations"
+          >
+            <OverriddenRecommendations />
+          </Section>
+        );
+
+      case 'recommendedItems':
+        return (
+          <Section
+            testId="section-recommended-items"
+            titleKey="settings.navigation.sections.recommendedItems"
+          >
+            <RecommendationsStatus />
+            <div className={styles.dataButtons}>
+              <ImportRecommendationsButton />
+              <ExportRecommendationsButton />
+            </div>
+          </Section>
+        );
+
+      case 'recommendationKits':
+        return (
+          <section
+            className={styles.section}
+            data-testid="section-recommendation-kits"
+          >
+            <h2 className={styles.sectionTitle}>
+              {t('settings.navigation.sections.recommendationKits')}
+            </h2>
+            <KitManagement />
+          </section>
+        );
+
+      case 'dataManagement':
+        return (
+          <Section
+            testId="section-data-management"
+            titleKey="settings.navigation.sections.dataManagement"
+          >
+            <div className={styles.dataButtons}>
+              <ExportButton />
+              <ImportButton />
+              <ShoppingListExport />
+              <DebugExport />
+            </div>
+          </Section>
+        );
+
+      case 'about':
+        return (
+          <Section
+            testId="section-about"
+            titleKey="settings.navigation.sections.about"
+          >
+            <div className={styles.about}>
+              <p className={styles.appName}>{t('app.title')}</p>
+              <p className={styles.version}>
+                {t('settings.about.version')}: {APP_VERSION}
+              </p>
+              <p className={styles.description}>{t('app.tagline')}</p>
+              <a
+                href="https://github.com/ttu/emergency-supply-tracker"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.link}
+              >
+                {t('settings.about.viewOnGitHub')}
+              </a>
+            </div>
+          </Section>
+        );
+
+      case 'dangerZone':
+        return (
+          <Section
+            testId="section-danger-zone"
+            titleKey="settings.navigation.sections.dangerZone"
+            titleClassName={styles.dangerTitle}
+          >
+            <ClearDataButton />
+          </Section>
+        );
+      default: {
+        // Exhaustive check: ensures all SettingsSection cases are handled
+        // TypeScript's strict mode with noFallthroughCasesInSwitch enforces this at compile time,
+        // but this default case provides runtime safety
+        // This should never be reached if all cases are handled
+        return null;
+      }
+    }
+  };
 
   return (
     <div className={styles.container} data-testid="page-settings">
@@ -27,131 +270,15 @@ export function Settings() {
         <h1>{t('navigation.settings')}</h1>
       </header>
 
-      <div className={styles.content}>
-        {/* Appearance Settings */}
-        <section className={styles.section} data-testid="section-appearance">
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.appearance')}
-          </h2>
-          <div className={styles.appearanceSettings}>
-            <LanguageSelector />
-            <ThemeSelector />
-          </div>
-        </section>
+      <div className={styles.layout}>
+        <SideMenu
+          items={menuItems}
+          selectedId={selectedSection}
+          onSelect={(id) => setSelectedSection(id as SettingsSection)}
+          ariaLabel={t('settings.navigation.menuLabel')}
+        />
 
-        {/* Household Configuration */}
-        <section className={styles.section} data-testid="section-household">
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.household')}
-          </h2>
-          <HouseholdForm />
-        </section>
-
-        {/* Nutrition & Requirements */}
-        <section className={styles.section} data-testid="section-nutrition">
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.nutrition')}
-          </h2>
-          <NutritionSettings />
-        </section>
-
-        {/* Hidden Alerts */}
-        <section className={styles.section} data-testid="section-hidden-alerts">
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.hiddenAlerts')}
-          </h2>
-          <HiddenAlerts />
-        </section>
-
-        {/* Disabled Recommendations */}
-        <section
-          className={styles.section}
-          data-testid="section-disabled-recommendations"
-        >
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.disabledRecommendations')}
-          </h2>
-          <DisabledRecommendations />
-        </section>
-
-        {/* Disabled Categories */}
-        <section
-          className={styles.section}
-          data-testid="section-disabled-categories"
-        >
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.disabledCategories')}
-          </h2>
-          <DisabledCategories />
-        </section>
-
-        {/* Overridden Recommendations */}
-        <section
-          className={styles.section}
-          data-testid="section-overridden-recommendations"
-        >
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.overriddenRecommendations')}
-          </h2>
-          <OverriddenRecommendations />
-        </section>
-
-        {/* Recommendation Kits */}
-        <section
-          className={styles.section}
-          data-testid="section-recommendation-kits"
-        >
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.recommendationKits')}
-          </h2>
-          <KitManagement />
-        </section>
-
-        {/* Data Management */}
-        <section
-          className={styles.section}
-          data-testid="section-data-management"
-        >
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.dataManagement')}
-          </h2>
-          <div className={styles.dataButtons}>
-            <ExportButton />
-            <ImportButton />
-            <ShoppingListExport />
-            <DebugExport />
-          </div>
-        </section>
-
-        {/* About */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>
-            {t('settings.sections.about')}
-          </h2>
-          <div className={styles.about}>
-            <p className={styles.appName}>{t('app.title')}</p>
-            <p className={styles.version}>
-              {t('settings.about.version')}: {APP_VERSION}
-            </p>
-            <p className={styles.description}>{t('app.tagline')}</p>
-            <a
-              href="https://github.com/ttu/emergency-supply-tracker"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.link}
-            >
-              {t('settings.about.viewOnGitHub')}
-            </a>
-          </div>
-        </section>
-
-        {/* Danger Zone */}
-        <section className={styles.section}>
-          <h2 className={styles.dangerTitle}>
-            {t('settings.sections.dangerZone')}
-          </h2>
-          <ClearDataButton />
-        </section>
+        <div className={styles.content}>{renderSection()}</div>
       </div>
     </div>
   );

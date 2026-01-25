@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, navigateToSettingsSection } from './fixtures';
 import {
   createMockAppData,
   createMockInventoryItem,
@@ -115,6 +115,9 @@ test.describe('Hidden Alerts Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
+    // Navigate to Hidden Alerts section
+    await navigateToSettingsSection(page, 'hiddenAlerts');
+
     // Should see hidden alerts section (use heading to avoid multiple matches)
     await expect(
       page.getByRole('heading', {
@@ -197,6 +200,9 @@ test.describe('Hidden Alerts Management', () => {
 
     // Go to Settings
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to Hidden Alerts section
+    await navigateToSettingsSection(page, 'hiddenAlerts');
 
     // Find and click reactivate button
     const reactivateButton = page
@@ -292,6 +298,9 @@ test.describe('Hidden Alerts Management', () => {
 
     // Go to Settings
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to Hidden Alerts section
+    await navigateToSettingsSection(page, 'hiddenAlerts');
 
     // Find "Show All Alerts" or "Reactivate All" button
     const reactivateAllButton = page.locator('button', {
@@ -392,6 +401,9 @@ test.describe('Hidden Alerts Management', () => {
 
     // Go to Settings and verify it's in hidden alerts
     await page.getByTestId('nav-settings').click();
+
+    // Navigate to Hidden Alerts section
+    await navigateToSettingsSection(page, 'hiddenAlerts');
     await page.waitForLoadState('networkidle');
 
     // Check if hidden alerts section shows the alert
