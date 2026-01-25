@@ -369,7 +369,7 @@
     "auto": "Automaattinen"
   },
   "dashboard": {
-    "title": "Hätävarastojen hallinta",
+    "title": "Hätävarastojen seuranta",
     "subtitle": "Seurataan varastoja {{people}} henkilölle {{days}} päiväksi",
     "alerts": {
       "title": "Hälytykset"
