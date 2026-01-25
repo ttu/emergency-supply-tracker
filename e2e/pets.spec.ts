@@ -3,6 +3,7 @@ import {
   expect,
   expandRecommendedItems,
   navigateToSettingsSection,
+  selectInventoryCategory,
 } from './fixtures';
 import { createMockAppData } from '../src/shared/utils/test/factories';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
@@ -119,8 +120,9 @@ test.describe('Pet Support', () => {
       // Navigate to inventory
       await page.getByTestId('nav-inventory').click();
 
-      // Pets category should be visible
-      await expect(page.getByTestId('category-pets')).toBeVisible();
+      // Pets category should be visible in the side menu (scope to sidebar for desktop)
+      const sidebar = page.getByTestId('sidemenu-sidebar');
+      await expect(sidebar.getByTestId('sidemenu-item-pets')).toBeVisible();
     });
 
     test('should show pet items in pets category', async ({ page }) => {
@@ -158,7 +160,7 @@ test.describe('Pet Support', () => {
 
       // Navigate to inventory and click pets category
       await page.getByTestId('nav-inventory').click();
-      await page.getByTestId('category-pets').click();
+      await selectInventoryCategory(page, 'pets');
 
       // Expand recommended items
       await expandRecommendedItems(page);
@@ -207,10 +209,11 @@ test.describe('Pet Support', () => {
 
       // Pets category should not be clickable or should show 0 recommended items
       // The category may still exist but clicking should show no items
-      const petsCategory = page.getByTestId('category-pets');
+      const sidebar = page.getByTestId('sidemenu-sidebar');
+      const petsCategory = sidebar.getByTestId('sidemenu-item-pets');
 
       if (await petsCategory.isVisible()) {
-        await petsCategory.click();
+        await selectInventoryCategory(page, 'pets');
 
         // Check if there are no recommended items or section doesn't show
         const recommendedSection = page.locator('text=Recommended:');
@@ -264,7 +267,7 @@ test.describe('Pet Support', () => {
 
       // Navigate to pets category
       await page.getByTestId('nav-inventory').click();
-      await page.getByTestId('category-pets').click();
+      await selectInventoryCategory(page, 'pets');
 
       // Expand recommended items
       await expandRecommendedItems(page);
