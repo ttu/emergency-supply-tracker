@@ -36,6 +36,9 @@ describe('Settings Page', () => {
       within(sidebar).getByTestId('sidemenu-item-disabledRecommendations'),
     ).toBeInTheDocument();
     expect(
+      within(sidebar).getByTestId('sidemenu-item-disabledCategories'),
+    ).toBeInTheDocument();
+    expect(
       within(sidebar).getByTestId('sidemenu-item-overriddenRecommendations'),
     ).toBeInTheDocument();
     expect(
@@ -120,6 +123,24 @@ describe('Settings Page', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText('settings.disabledRecommendations.empty'),
+    ).toBeInTheDocument();
+  });
+
+  it('should navigate to disabled categories section when clicked', () => {
+    renderWithProviders(<Settings />);
+
+    // Click on disabled categories in the menu (scope to sidebar)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    fireEvent.click(
+      within(sidebar).getByTestId('sidemenu-item-disabledCategories'),
+    );
+
+    // Disabled categories section should now be visible
+    expect(
+      screen.getByTestId('section-disabled-categories'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('settings.disabledCategories.empty'),
     ).toBeInTheDocument();
   });
 
@@ -245,6 +266,7 @@ describe('Settings Page', () => {
       'nutrition',
       'hiddenAlerts',
       'disabledRecommendations',
+      'disabledCategories',
       'overriddenRecommendations',
       'recommendedItems',
       'recommendationKits',

@@ -110,7 +110,7 @@ describe('App', () => {
     await waitFor(() => {
       const sidebar = screen.getByTestId('sidemenu-sidebar');
       expect(
-        within(sidebar).getByText('settings.sections.household'),
+        within(sidebar).getByText('settings.navigation.sections.household'),
       ).toBeInTheDocument();
     });
     // Dashboard content should not be visible
@@ -133,7 +133,7 @@ describe('App', () => {
       // Scope to sidebar to avoid duplicates from drawer
       const sidebar = screen.getByTestId('sidemenu-sidebar');
       expect(
-        within(sidebar).getByText('settings.sections.household'),
+        within(sidebar).getByText('settings.navigation.sections.household'),
       ).toBeInTheDocument();
     });
 

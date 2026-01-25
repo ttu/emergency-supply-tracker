@@ -122,7 +122,7 @@ export function SideMenuDrawer({
       ref={drawerRef}
       id={id}
       className={styles.drawer}
-      aria-label={t('sideMenu.menuLabel')}
+      aria-label={t('navigation.sideMenu.menuLabel')}
       onCancel={(e) => {
         e.preventDefault();
         onClose();
@@ -135,7 +135,7 @@ export function SideMenuDrawer({
             type="button"
             className={styles.closeButton}
             onClick={onClose}
-            aria-label={t('sideMenu.closeMenu')}
+            aria-label={t('navigation.sideMenu.closeMenu')}
             data-testid="sidemenu-close"
           >
             <span aria-hidden="true">&times;</span>

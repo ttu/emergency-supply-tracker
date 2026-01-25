@@ -108,7 +108,7 @@ export function SideMenu({
         type="button"
         className={styles.hamburger}
         onClick={() => setIsDrawerOpen(true)}
-        aria-label={t('sideMenu.openMenu')}
+        aria-label={t('navigation.sideMenu.openMenu')}
         aria-expanded={isDrawerOpen}
         aria-controls={drawerId}
         data-testid="sidemenu-hamburger"

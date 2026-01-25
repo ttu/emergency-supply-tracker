@@ -223,6 +223,9 @@ describe('SideMenuDrawer', () => {
     // Native <dialog> element doesn't need role="dialog" - it's implicit
     expect(drawer.tagName).toBe('DIALOG');
     // Native dialog has aria-modal behavior built-in, but we can check aria-label
-    expect(drawer).toHaveAttribute('aria-label', 'sideMenu.menuLabel');
+    expect(drawer).toHaveAttribute(
+      'aria-label',
+      'navigation.sideMenu.menuLabel',
+    );
   });
 });

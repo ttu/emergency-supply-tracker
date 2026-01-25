@@ -65,30 +65,39 @@ export function Settings() {
     useState<SettingsSection>('appearance');
 
   const menuItems: SideMenuItem[] = [
-    { id: 'appearance', label: t('settings.sections.appearance') },
-    { id: 'household', label: t('settings.sections.household') },
-    { id: 'nutrition', label: t('settings.sections.nutrition') },
-    { id: 'hiddenAlerts', label: t('settings.sections.hiddenAlerts') },
+    { id: 'appearance', label: t('settings.navigation.sections.appearance') },
+    { id: 'household', label: t('settings.navigation.sections.household') },
+    { id: 'nutrition', label: t('settings.navigation.sections.nutrition') },
+    {
+      id: 'hiddenAlerts',
+      label: t('settings.navigation.sections.hiddenAlerts'),
+    },
     {
       id: 'disabledRecommendations',
-      label: t('settings.sections.disabledRecommendations'),
+      label: t('settings.navigation.sections.disabledRecommendations'),
     },
     {
       id: 'disabledCategories',
-      label: t('settings.sections.disabledCategories'),
+      label: t('settings.navigation.sections.disabledCategories'),
     },
     {
       id: 'overriddenRecommendations',
-      label: t('settings.sections.overriddenRecommendations'),
+      label: t('settings.navigation.sections.overriddenRecommendations'),
     },
-    { id: 'recommendedItems', label: t('settings.sections.recommendedItems') },
+    {
+      id: 'recommendedItems',
+      label: t('settings.navigation.sections.recommendedItems'),
+    },
     {
       id: 'recommendationKits',
-      label: t('settings.sections.recommendationKits'),
+      label: t('settings.navigation.sections.recommendationKits'),
     },
-    { id: 'dataManagement', label: t('settings.sections.dataManagement') },
-    { id: 'about', label: t('settings.sections.about') },
-    { id: 'dangerZone', label: t('settings.sections.dangerZone') },
+    {
+      id: 'dataManagement',
+      label: t('settings.navigation.sections.dataManagement'),
+    },
+    { id: 'about', label: t('settings.navigation.sections.about') },
+    { id: 'dangerZone', label: t('settings.navigation.sections.dangerZone') },
   ];
 
   const renderSection = () => {
@@ -97,7 +106,7 @@ export function Settings() {
         return (
           <Section
             testId="section-appearance"
-            titleKey="settings.sections.appearance"
+            titleKey="settings.navigation.sections.appearance"
           >
             <div className={styles.appearanceSettings}>
               <LanguageSelector />
@@ -110,7 +119,7 @@ export function Settings() {
         return (
           <Section
             testId="section-household"
-            titleKey="settings.sections.household"
+            titleKey="settings.navigation.sections.household"
           >
             <HouseholdForm />
           </Section>
@@ -120,7 +129,7 @@ export function Settings() {
         return (
           <Section
             testId="section-nutrition"
-            titleKey="settings.sections.nutrition"
+            titleKey="settings.navigation.sections.nutrition"
           >
             <NutritionSettings />
           </Section>
@@ -130,7 +139,7 @@ export function Settings() {
         return (
           <Section
             testId="section-hidden-alerts"
-            titleKey="settings.sections.hiddenAlerts"
+            titleKey="settings.navigation.sections.hiddenAlerts"
           >
             <HiddenAlerts />
           </Section>
@@ -140,7 +149,7 @@ export function Settings() {
         return (
           <Section
             testId="section-disabled-recommendations"
-            titleKey="settings.sections.disabledRecommendations"
+            titleKey="settings.navigation.sections.disabledRecommendations"
           >
             <DisabledRecommendations />
           </Section>
@@ -153,7 +162,7 @@ export function Settings() {
             data-testid="section-disabled-categories"
           >
             <h2 className={styles.sectionTitle}>
-              {t('settings.sections.disabledCategories')}
+              {t('settings.navigation.sections.disabledCategories')}
             </h2>
             <DisabledCategories />
           </section>
@@ -163,7 +172,7 @@ export function Settings() {
         return (
           <Section
             testId="section-overridden-recommendations"
-            titleKey="settings.sections.overriddenRecommendations"
+            titleKey="settings.navigation.sections.overriddenRecommendations"
           >
             <OverriddenRecommendations />
           </Section>
@@ -173,7 +182,7 @@ export function Settings() {
         return (
           <Section
             testId="section-recommended-items"
-            titleKey="settings.sections.recommendedItems"
+            titleKey="settings.navigation.sections.recommendedItems"
           >
             <RecommendationsStatus />
             <div className={styles.dataButtons}>
@@ -190,7 +199,7 @@ export function Settings() {
             data-testid="section-recommendation-kits"
           >
             <h2 className={styles.sectionTitle}>
-              {t('settings.sections.recommendationKits')}
+              {t('settings.navigation.sections.recommendationKits')}
             </h2>
             <KitManagement />
           </section>
@@ -200,7 +209,7 @@ export function Settings() {
         return (
           <Section
             testId="section-data-management"
-            titleKey="settings.sections.dataManagement"
+            titleKey="settings.navigation.sections.dataManagement"
           >
             <div className={styles.dataButtons}>
               <ExportButton />
@@ -213,7 +222,10 @@ export function Settings() {
 
       case 'about':
         return (
-          <Section testId="section-about" titleKey="settings.sections.about">
+          <Section
+            testId="section-about"
+            titleKey="settings.navigation.sections.about"
+          >
             <div className={styles.about}>
               <p className={styles.appName}>{t('app.title')}</p>
               <p className={styles.version}>
@@ -236,7 +248,7 @@ export function Settings() {
         return (
           <Section
             testId="section-danger-zone"
-            titleKey="settings.sections.dangerZone"
+            titleKey="settings.navigation.sections.dangerZone"
             titleClassName={styles.dangerTitle}
           >
             <ClearDataButton />
@@ -263,7 +275,7 @@ export function Settings() {
           items={menuItems}
           selectedId={selectedSection}
           onSelect={(id) => setSelectedSection(id as SettingsSection)}
-          ariaLabel={t('settings.menuLabel')}
+          ariaLabel={t('settings.navigation.menuLabel')}
         />
 
         <div className={styles.content}>{renderSection()}</div>
