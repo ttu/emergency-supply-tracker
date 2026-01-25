@@ -394,7 +394,7 @@ export const ItemForm = ({
                 handleChange('requiresWaterLiters', e.target.value)
               }
               min="0"
-              step="0.1"
+              step={isContinuousUnit('liters') ? '0.1' : '1'}
             />
           </div>
         </>
