@@ -83,10 +83,14 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
   const handleAddItems = (selectedItemIds: Set<string>) => {
     if (!householdConfig) return;
 
-    // Calculate total available items (after filtering for freezer requirements)
+    // Calculate total available items (after filtering for freezer and pet requirements)
     const availableItems = recommendedItems.filter((item) => {
       // Skip frozen items if not using freezer
       if (item.requiresFreezer && !householdConfig.useFreezer) {
+        return false;
+      }
+      // Skip pet items if pets is 0
+      if (item.scaleWithPets && householdConfig.pets === 0) {
         return false;
       }
       return true;
