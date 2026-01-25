@@ -11,7 +11,7 @@ import { downloadFile, generateDateFilename } from '@/shared/utils/download';
 import styles from './ErrorBoundary.module.css';
 
 interface DataErrorPageProps {
-  onRetry?: () => void;
+  readonly onRetry?: () => void;
 }
 
 /**
