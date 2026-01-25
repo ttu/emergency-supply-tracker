@@ -65,8 +65,8 @@ export const Clickable: Story = {
     itemCount: 12,
     status: 'ok',
     completionPercentage: 95,
-    onClick: () => {
-      alert('Category clicked!');
+    onCategoryClick: (categoryId) => {
+      alert(`Category clicked: ${categoryId}`);
     },
   },
 };

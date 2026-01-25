@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InventoryItem } from '@/shared/types';
 import { isFoodItem } from '@/shared/types';
@@ -24,10 +25,10 @@ import styles from './ItemCard.module.css';
 export interface ItemCardProps {
   item: InventoryItem;
   allItems?: InventoryItem[]; // Optional: if provided, calculates total missing across all items of same type
-  onClick?: () => void;
+  onItemClick?: (item: InventoryItem) => void;
 }
 
-export const ItemCard = ({ item, allItems, onClick }: ItemCardProps) => {
+const ItemCardComponent = ({ item, allItems, onItemClick }: ItemCardProps) => {
   const { t } = useTranslation(['common', 'units', 'products']);
   const { household } = useHousehold();
   const { recommendedItems } = useRecommendedItems();
@@ -61,20 +62,12 @@ export const ItemCard = ({ item, allItems, onClick }: ItemCardProps) => {
     ? calculateTotalMissingQuantity(item, allItems, recommendedQuantity)
     : calculateMissingQuantity(item, recommendedQuantity);
 
-  return (
-    <div
-      className={`${styles.card} ${onClick ? styles.clickable : ''}`}
-      onClick={onClick}
-      onKeyDown={(e) => {
-        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-          e.preventDefault();
-          onClick();
-        }
-      }}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      data-testid={`item-card-${item.id}`}
-    >
+  const handleClick = useCallback(() => {
+    onItemClick?.(item);
+  }, [onItemClick, item]);
+
+  const content = (
+    <>
       <div className={styles.header}>
         <h3 className={styles.name}>{item.name}</h3>
         <span className={styles.itemType}>
@@ -150,6 +143,27 @@ export const ItemCard = ({ item, allItems, onClick }: ItemCardProps) => {
           <div className={styles.location}>📍 {item.location}</div>
         )}
       </div>
+    </>
+  );
+
+  if (onItemClick) {
+    return (
+      <button
+        type="button"
+        className={`${styles.card} ${styles.clickable}`}
+        onClick={handleClick}
+        data-testid={`item-card-${item.id}`}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={styles.card} data-testid={`item-card-${item.id}`}>
+      {content}
     </div>
   );
 };
+
+export const ItemCard = memo(ItemCardComponent);
