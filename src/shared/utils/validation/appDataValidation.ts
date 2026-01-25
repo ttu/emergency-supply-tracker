@@ -24,6 +24,19 @@ export interface DataValidationResult {
 const VALID_LANGUAGES = ['en', 'fi'] as const;
 
 /**
+ * Safely converts a value to a string representation for error messages.
+ * Handles objects by using JSON.stringify to avoid "[object Object]".
+ */
+function safeStringify(value: unknown): string {
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+  if (typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+  return String(value);
+}
+
+/**
  * Validates that the given data has the structure of AppData.
  * This is a type guard that checks for required fields and their types.
  *
@@ -63,7 +76,7 @@ function validateSettings(
   ) {
     errors.push({
       field: 'settings.language',
-      message: `Invalid language: "${String(settings.language)}". Must be one of: ${VALID_LANGUAGES.join(', ')}`,
+      message: `Invalid language: "${safeStringify(settings.language)}". Must be one of: ${VALID_LANGUAGES.join(', ')}`,
       value: settings.language,
     });
   }
@@ -75,7 +88,7 @@ function validateSettings(
   ) {
     errors.push({
       field: 'settings.theme',
-      message: `Invalid theme: "${String(settings.theme)}". Must be one of: ${VALID_THEMES.join(', ')}`,
+      message: `Invalid theme: "${safeStringify(settings.theme)}". Must be one of: ${VALID_THEMES.join(', ')}`,
       value: settings.theme,
     });
   }
@@ -83,8 +96,8 @@ function validateSettings(
   // Validate numeric fields
   if (
     settings.dailyCaloriesPerPerson !== undefined &&
-    (typeof settings.dailyCaloriesPerPerson !== 'number' ||
-      settings.dailyCaloriesPerPerson < 0)
+    (!Number.isFinite(settings.dailyCaloriesPerPerson) ||
+      (settings.dailyCaloriesPerPerson as number) < 0)
   ) {
     errors.push({
       field: 'settings.dailyCaloriesPerPerson',
@@ -95,8 +108,8 @@ function validateSettings(
 
   if (
     settings.dailyWaterPerPerson !== undefined &&
-    (typeof settings.dailyWaterPerPerson !== 'number' ||
-      settings.dailyWaterPerPerson < 0)
+    (!Number.isFinite(settings.dailyWaterPerPerson) ||
+      (settings.dailyWaterPerPerson as number) < 0)
   ) {
     errors.push({
       field: 'settings.dailyWaterPerPerson',
@@ -107,9 +120,9 @@ function validateSettings(
 
   if (
     settings.childrenRequirementPercentage !== undefined &&
-    (typeof settings.childrenRequirementPercentage !== 'number' ||
-      settings.childrenRequirementPercentage < 0 ||
-      settings.childrenRequirementPercentage > 100)
+    (!Number.isFinite(settings.childrenRequirementPercentage) ||
+      (settings.childrenRequirementPercentage as number) < 0 ||
+      (settings.childrenRequirementPercentage as number) > 100)
   ) {
     errors.push({
       field: 'settings.childrenRequirementPercentage',
