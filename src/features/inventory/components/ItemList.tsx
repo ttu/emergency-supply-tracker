@@ -34,7 +34,7 @@ export const ItemList = ({
           key={item.id}
           item={item}
           allItems={items}
-          onClick={onItemClick ? () => onItemClick(item) : undefined}
+          onItemClick={onItemClick}
         />
       ))}
     </div>

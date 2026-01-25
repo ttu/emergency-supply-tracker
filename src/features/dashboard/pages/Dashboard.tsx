@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import { useHousehold } from '@/features/household';
@@ -40,18 +41,21 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
   } = useDashboardAlerts();
   const { handleExport: handleExportShoppingList } = useShoppingListExport();
 
-  // Navigation handlers
-  const handleCategoryClick = (categoryId: string) => {
-    onNavigate?.('inventory', { initialCategoryId: categoryId });
-  };
+  // Navigation handlers - memoized to prevent unnecessary re-renders
+  const handleCategoryClick = useCallback(
+    (categoryId: string) => {
+      onNavigate?.('inventory', { initialCategoryId: categoryId });
+    },
+    [onNavigate],
+  );
 
-  const handleAddItems = () => {
+  const handleAddItems = useCallback(() => {
     onNavigate?.('inventory', { openAddModal: true });
-  };
+  }, [onNavigate]);
 
-  const handleViewInventory = () => {
+  const handleViewInventory = useCallback(() => {
     onNavigate?.('inventory');
-  };
+  }, [onNavigate]);
 
   // Alert dismiss handler that converts string to AlertId
   const onDismissAlert = (alertId: string) => {
@@ -138,7 +142,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
           categories={categoryStatuses.map((cat) => ({
             ...cat,
             categoryId: cat.categoryId as never,
-            onClick: () => handleCategoryClick(cat.categoryId),
+            onCategoryClick: handleCategoryClick,
           }))}
         />
       </section>

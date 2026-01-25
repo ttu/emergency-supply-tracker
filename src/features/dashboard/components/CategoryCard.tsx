@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { StandardCategoryId, ItemStatus, Unit } from '@/shared/types';
 import { isFoodCategory } from '@/shared/types';
@@ -19,12 +20,12 @@ export interface CategoryCardProps {
   totalActualCalories?: number;
   totalNeededCalories?: number;
   missingCalories?: number;
-  onClick?: () => void;
+  onCategoryClick?: (categoryId: StandardCategoryId) => void;
   // False when category has no recommendations (except food/water which always calculate)
   hasRecommendations?: boolean;
 }
 
-export const CategoryCard = ({
+const CategoryCardComponent = ({
   categoryId,
   itemCount,
   status,
@@ -36,7 +37,7 @@ export const CategoryCard = ({
   totalActualCalories,
   totalNeededCalories,
   missingCalories,
-  onClick,
+  onCategoryClick,
   hasRecommendations = true,
 }: CategoryCardProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
@@ -100,20 +101,12 @@ export const CategoryCard = ({
   const shortageText = getShortageText();
   const progressText = getProgressText();
 
-  return (
-    <div
-      className={`${styles.card} ${onClick ? styles.clickable : ''}`}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      data-testid={`category-${categoryId}`}
-      onKeyDown={(e) => {
-        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-          e.preventDefault();
-          onClick();
-        }
-      }}
-    >
+  const handleClick = useCallback(() => {
+    onCategoryClick?.(categoryId);
+  }, [onCategoryClick, categoryId]);
+
+  const content = (
+    <>
       <div className={styles.header}>
         <h3 className={styles.title}>{categoryName}</h3>
         <Badge variant={getStatusVariant(status)} size="small">
@@ -161,6 +154,27 @@ export const CategoryCard = ({
           />
         </div>
       )}
+    </>
+  );
+
+  if (onCategoryClick) {
+    return (
+      <button
+        type="button"
+        className={`${styles.card} ${styles.clickable}`}
+        onClick={handleClick}
+        data-testid={`category-${categoryId}`}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={styles.card} data-testid={`category-${categoryId}`}>
+      {content}
     </div>
   );
 };
+
+export const CategoryCard = memo(CategoryCardComponent);

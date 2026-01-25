@@ -122,7 +122,7 @@ export function Inventory({
     return categoryStatuses.find((cs) => cs.categoryId === selectedCategoryId);
   }, [selectedCategoryId, categoryStatuses]);
 
-  // Filter and sort items (memoized to prevent unnecessary re-renders)
+  // Filter and sort items - memoized to prevent unnecessary re-renders
   const filteredItems = useMemo(() => {
     let result = items;
 
@@ -338,8 +338,8 @@ export function Inventory({
     [enabledCategories, t],
   );
 
-  // Memoize the "All Categories" option for SideMenu
-  const showAllOption: SideMenuItem = useMemo(
+  // Memoize showAllOption to prevent unnecessary re-renders
+  const showAllOption = useMemo(
     () => ({
       id: 'all',
       label: t('inventory.allCategories'),
