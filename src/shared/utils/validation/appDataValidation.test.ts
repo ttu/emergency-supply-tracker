@@ -129,6 +129,7 @@ describe('validateAppDataValues', () => {
       },
     },
     customCategories: [],
+    disabledCategories: [],
     items: [],
     customTemplates: [],
     dismissedAlertIds: [],

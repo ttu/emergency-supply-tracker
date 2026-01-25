@@ -5,6 +5,7 @@ import i18n from 'i18next';
 import { initReactI18next, I18nextProvider } from 'react-i18next';
 import { DataErrorPage } from './DataErrorPage';
 import * as localStorage from '@/shared/utils/storage/localStorage';
+import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 // Override the global i18next mock with real implementation for this test
 vi.mock('react-i18next', async () => {
@@ -20,7 +21,6 @@ vi.mock('@/shared/utils/storage/localStorage', async () => {
     getLastDataValidationResult: vi.fn(),
     clearAppData: vi.fn(),
     clearDataValidationResult: vi.fn(),
-    STORAGE_KEY: 'emergency-supply-tracker',
   };
 });
 
@@ -160,7 +160,7 @@ describe('DataErrorPage', () => {
     const user = userEvent.setup();
     const reloadSpy = vi.fn();
     const originalLocation = globalThis.location;
-    Object.defineProperty(window, 'location', {
+    Object.defineProperty(globalThis, 'location', {
       value: { reload: reloadSpy },
       writable: true,
     });
@@ -170,7 +170,7 @@ describe('DataErrorPage', () => {
       await user.click(screen.getByRole('button', { name: 'Reload Page' }));
       expect(reloadSpy).toHaveBeenCalled();
     } finally {
-      Object.defineProperty(window, 'location', {
+      Object.defineProperty(globalThis, 'location', {
         value: originalLocation,
         writable: true,
       });
@@ -180,7 +180,7 @@ describe('DataErrorPage', () => {
   it('shows alert when trying to download with no data', async () => {
     const user = userEvent.setup();
     const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
-    globalThis.localStorage.removeItem('emergency-supply-tracker');
+    globalThis.localStorage.removeItem(STORAGE_KEY);
 
     renderWithI18n(<DataErrorPage />);
     await user.click(screen.getByRole('button', { name: 'Download Data' }));
@@ -192,10 +192,7 @@ describe('DataErrorPage', () => {
   it('downloads data when data exists in localStorage', async () => {
     const user = userEvent.setup();
     const testData = { version: '1.0', items: [] };
-    globalThis.localStorage.setItem(
-      'emergency-supply-tracker',
-      JSON.stringify(testData),
-    );
+    globalThis.localStorage.setItem(STORAGE_KEY, JSON.stringify(testData));
 
     const { downloadFile } = await import('@/shared/utils/download');
 
@@ -208,13 +205,13 @@ describe('DataErrorPage', () => {
   it('deletes data after double confirmation', async () => {
     const user = userEvent.setup();
     const confirmSpy = vi
-      .spyOn(window, 'confirm')
+      .spyOn(globalThis, 'confirm')
       .mockReturnValueOnce(true)
       .mockReturnValueOnce(true);
     const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
     const reloadSpy = vi.fn();
     const originalLocation = globalThis.location;
-    Object.defineProperty(window, 'location', {
+    Object.defineProperty(globalThis, 'location', {
       value: { reload: reloadSpy },
       writable: true,
     });
@@ -229,7 +226,7 @@ describe('DataErrorPage', () => {
       expect(localStorage.clearDataValidationResult).toHaveBeenCalled();
       expect(reloadSpy).toHaveBeenCalled();
     } finally {
-      Object.defineProperty(window, 'location', {
+      Object.defineProperty(globalThis, 'location', {
         value: originalLocation,
         writable: true,
       });
@@ -241,7 +238,7 @@ describe('DataErrorPage', () => {
   it('calls onRetry instead of reload when provided', async () => {
     const user = userEvent.setup();
     const confirmSpy = vi
-      .spyOn(window, 'confirm')
+      .spyOn(globalThis, 'confirm')
       .mockReturnValueOnce(true)
       .mockReturnValueOnce(true);
     const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
@@ -277,7 +274,7 @@ describe('DataErrorPage', () => {
   it('does not delete data if second confirmation is cancelled', async () => {
     const user = userEvent.setup();
     const confirmSpy = vi
-      .spyOn(window, 'confirm')
+      .spyOn(globalThis, 'confirm')
       .mockReturnValueOnce(true)
       .mockReturnValueOnce(false);
     const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
@@ -314,10 +311,7 @@ describe('DataErrorPage', () => {
 
   it('downloads raw JSON when data parsing fails', async () => {
     const user = userEvent.setup();
-    globalThis.localStorage.setItem(
-      'emergency-supply-tracker',
-      'invalid json {{{',
-    );
+    globalThis.localStorage.setItem(STORAGE_KEY, 'invalid json {{{');
 
     const { downloadFile } = await import('@/shared/utils/download');
 
