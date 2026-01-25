@@ -79,7 +79,7 @@ export const AlertBanner = ({
                   className={styles.content}
                   onClick={handleClick}
                   aria-label={t('dashboard.alerts.viewCategory', {
-                    category: alert.itemName,
+                    category: alert.itemName || alert.categoryId || '',
                   })}
                 >
                   <AlertIcon type={alert.type} />

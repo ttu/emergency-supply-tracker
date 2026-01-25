@@ -1,3 +1,5 @@
+import type { AlertId, StandardCategoryId } from '@/shared/types';
+
 /**
  * Alert type indicating severity level
  */
@@ -11,8 +13,6 @@ export const ALERT_PRIORITY: Record<AlertType, number> = {
   warning: 1,
   info: 2,
 };
-
-import type { AlertId, StandardCategoryId } from '@/shared/types';
 
 /**
  * Alert definition
