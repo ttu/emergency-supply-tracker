@@ -347,7 +347,8 @@
     "title": "Hätävarastojen seuranta",
     "subtitle": "Seurataan varastoja {{people}} henkilölle {{days}} päiväksi",
     "alerts": {
-      "title": "Hälytykset"
+      "title": "Hälytykset",
+      "viewCategory": "Näytä {{category}} varastossa"
     },
     "quickActions": "Pikatoiminnot",
     "categoriesOverview": "Kategoriat",

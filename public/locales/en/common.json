@@ -347,7 +347,8 @@
     "title": "Emergency Supply Tracker",
     "subtitle": "Tracking supplies for {{people}} people for {{days}} days",
     "alerts": {
-      "title": "Alerts"
+      "title": "Alerts",
+      "viewCategory": "View {{category}} in inventory"
     },
     "quickActions": "Quick Actions",
     "categoriesOverview": "Categories Overview",

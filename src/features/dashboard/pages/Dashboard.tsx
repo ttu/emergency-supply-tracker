@@ -58,6 +58,11 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
     handleDismissAlert(createAlertId(alertId));
   };
 
+  // Alert click handler that navigates to the category
+  const handleAlertClick = (categoryId: string) => {
+    onNavigate?.('inventory', { initialCategoryId: categoryId });
+  };
+
   return (
     <div className={styles.dashboard} data-testid="page-dashboard">
       <DashboardHeader
@@ -73,6 +78,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
             alerts={activeAlerts}
             onDismiss={onDismissAlert}
             onDismissAll={handleDismissAllAlerts}
+            onAlertClick={handleAlertClick}
           />
         </section>
       )}

@@ -14,6 +14,7 @@ import {
 import { calculateWaterRequirements } from '@/shared/utils/calculations/water';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
+import type { StandardCategoryId } from '@/shared/types';
 import type { Alert, AlertCounts, TranslationFunction } from '../types';
 import { ALERT_PRIORITY } from '../types';
 
@@ -123,6 +124,7 @@ function generateCategoryAlerts(
   const categoryName = t(category.id, { ns: 'categories' });
 
   const categoryIdForAlert = String(category.id);
+  const categoryId = category.id as StandardCategoryId;
 
   // Check for out of stock (quantity/calories = 0)
   const isOutOfStock = isFood
@@ -135,6 +137,7 @@ function generateCategoryAlerts(
       type: 'critical',
       message: t('alerts.stock.outOfStock'),
       itemName: categoryName,
+      categoryId,
     });
   } else if (percentOfRecommended < CRITICALLY_LOW_STOCK_PERCENTAGE) {
     alerts.push({
@@ -144,6 +147,7 @@ function generateCategoryAlerts(
         percent: Math.round(percentOfRecommended),
       }),
       itemName: categoryName,
+      categoryId,
     });
   } else if (percentOfRecommended < LOW_STOCK_PERCENTAGE) {
     alerts.push({
@@ -153,6 +157,7 @@ function generateCategoryAlerts(
         percent: Math.round(percentOfRecommended),
       }),
       itemName: categoryName,
+      categoryId,
     });
   }
 

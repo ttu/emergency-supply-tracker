@@ -7,11 +7,12 @@ import { createAlertId } from '@/shared/types';
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
+    t: (key: string, options?: Record<string, string>) => {
       const translations: Record<string, string> = {
         'dashboard.alerts.title': 'Alerts',
         'actions.dismiss': 'Dismiss',
         'actions.dismissAll': 'Dismiss all',
+        'dashboard.alerts.viewCategory': `View ${options?.category ?? ''} in inventory`,
       };
       return translations[key] || key;
     },
@@ -178,5 +179,94 @@ describe('AlertBanner', () => {
     expect(
       screen.queryByRole('button', { name: 'Dismiss all' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('calls onAlertClick when clicking on a category alert', async () => {
+    const user = userEvent.setup();
+    const onAlertClick = vi.fn();
+
+    render(
+      <AlertBanner
+        alerts={[
+          {
+            id: createAlertId('category-low-stock-water-beverages'),
+            type: 'warning',
+            message: 'Running low',
+            itemName: 'Water & Beverages',
+            categoryId: 'water-beverages',
+          },
+        ]}
+        onAlertClick={onAlertClick}
+      />,
+    );
+
+    const clickableButton = screen.getByRole('button', {
+      name: 'View Water & Beverages in inventory',
+    });
+    await user.click(clickableButton);
+
+    expect(onAlertClick).toHaveBeenCalledWith('water-beverages');
+  });
+
+  it('does not render clickable button for alerts without categoryId', () => {
+    render(
+      <AlertBanner
+        alerts={[
+          {
+            id: createAlertId('expired-item-1'),
+            type: 'critical',
+            message: 'Item has expired',
+            itemName: 'Canned Food',
+          },
+        ]}
+        onAlertClick={vi.fn()}
+      />,
+    );
+
+    // Should not have the clickable button for viewing category
+    expect(
+      screen.queryByRole('button', { name: /View .* in inventory/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not render clickable button when onAlertClick is not provided', () => {
+    render(
+      <AlertBanner
+        alerts={[
+          {
+            id: createAlertId('category-low-stock-water-beverages'),
+            type: 'warning',
+            message: 'Running low',
+            itemName: 'Water & Beverages',
+            categoryId: 'water-beverages',
+          },
+        ]}
+      />,
+    );
+
+    // Should not have the clickable button since onAlertClick is not provided
+    expect(
+      screen.queryByRole('button', { name: /View .* in inventory/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders arrow icon for clickable category alerts', () => {
+    render(
+      <AlertBanner
+        alerts={[
+          {
+            id: createAlertId('category-low-stock-food'),
+            type: 'warning',
+            message: 'Running low',
+            itemName: 'Food',
+            categoryId: 'food',
+          },
+        ]}
+        onAlertClick={vi.fn()}
+      />,
+    );
+
+    // The arrow icon should be visible
+    expect(screen.getByText('→')).toBeInTheDocument();
   });
 });

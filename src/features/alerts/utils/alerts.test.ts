@@ -80,6 +80,8 @@ describe('generateDashboardAlerts', () => {
     expect(expiredAlert?.type).toBe('critical');
     expect(expiredAlert?.message).toBe('Item has expired');
     expect(expiredAlert?.itemName).toBe('Expired Water');
+    // Expiration alerts should not have categoryId (they're item-specific, not category-specific)
+    expect(expiredAlert?.categoryId).toBeUndefined();
   });
 
   it('should generate expiring soon alerts', () => {
@@ -185,6 +187,34 @@ describe('generateDashboardAlerts', () => {
     expect(stockAlert).toBeDefined();
     expect(stockAlert?.type).toBe('critical');
     expect(stockAlert?.message).toBe('No items in stock');
+  });
+
+  it('should include categoryId in category stock alerts for navigation', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Water',
+        categoryId: createCategoryId('water-beverages'),
+        quantity: 0,
+        unit: 'liters',
+        itemType: createProductTemplateId('bottled-water'),
+        neverExpires: false,
+        expirationDate: createDateOnly('2025-12-31'),
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const stockAlert = alerts.find((a) =>
+      a.id.includes('category-out-of-stock'),
+    );
+
+    expect(stockAlert).toBeDefined();
+    expect(stockAlert?.categoryId).toBe('water-beverages');
   });
 
   it('should generate category critically low stock alerts', () => {
