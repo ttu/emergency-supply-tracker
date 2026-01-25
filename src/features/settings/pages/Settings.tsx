@@ -15,9 +15,6 @@ import {
   DisabledRecommendations,
   OverriddenRecommendations,
   KitManagement,
-  RecommendationsStatus,
-  ImportRecommendationsButton,
-  ExportRecommendationsButton,
 } from '@/features/settings';
 import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
 import { APP_VERSION } from '@/shared/utils/version';
@@ -31,7 +28,6 @@ type SettingsSection =
   | 'disabledRecommendations'
   | 'disabledCategories'
   | 'overriddenRecommendations'
-  | 'recommendedItems'
   | 'recommendationKits'
   | 'dataManagement'
   | 'about'
@@ -83,10 +79,6 @@ export function Settings() {
     {
       id: 'overriddenRecommendations',
       label: t('settings.navigation.sections.overriddenRecommendations'),
-    },
-    {
-      id: 'recommendedItems',
-      label: t('settings.navigation.sections.recommendedItems'),
     },
     {
       id: 'recommendationKits',
@@ -175,20 +167,6 @@ export function Settings() {
             titleKey="settings.navigation.sections.overriddenRecommendations"
           >
             <OverriddenRecommendations />
-          </Section>
-        );
-
-      case 'recommendedItems':
-        return (
-          <Section
-            testId="section-recommended-items"
-            titleKey="settings.navigation.sections.recommendedItems"
-          >
-            <RecommendationsStatus />
-            <div className={styles.dataButtons}>
-              <ImportRecommendationsButton />
-              <ExportRecommendationsButton />
-            </div>
           </Section>
         );
 

@@ -42,9 +42,6 @@ describe('Settings Page', () => {
       within(sidebar).getByTestId('sidemenu-item-overriddenRecommendations'),
     ).toBeInTheDocument();
     expect(
-      within(sidebar).getByTestId('sidemenu-item-recommendedItems'),
-    ).toBeInTheDocument();
-    expect(
       within(sidebar).getByTestId('sidemenu-item-recommendationKits'),
     ).toBeInTheDocument();
     expect(
@@ -162,19 +159,6 @@ describe('Settings Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should navigate to recommended items section when clicked', () => {
-    renderWithProviders(<Settings />);
-
-    // Click on recommended items in the menu (scope to sidebar)
-    const sidebar = screen.getByTestId('sidemenu-sidebar');
-    fireEvent.click(
-      within(sidebar).getByTestId('sidemenu-item-recommendedItems'),
-    );
-
-    // Recommended items section should now be visible
-    expect(screen.getByTestId('section-recommended-items')).toBeInTheDocument();
-  });
-
   it('should navigate to recommendation kits section when clicked', () => {
     renderWithProviders(<Settings />);
 
@@ -268,7 +252,6 @@ describe('Settings Page', () => {
       'disabledRecommendations',
       'disabledCategories',
       'overriddenRecommendations',
-      'recommendedItems',
       'recommendationKits',
       'dataManagement',
       'about',

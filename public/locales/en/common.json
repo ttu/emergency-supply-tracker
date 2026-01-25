@@ -154,7 +154,6 @@
         "disabledRecommendations": "Disabled Recommendations",
         "disabledCategories": "Disabled Categories",
         "overriddenRecommendations": "Overridden Recommendations",
-        "recommendedItems": "Recommended Items",
         "dataManagement": "Data Management",
         "about": "About",
         "dangerZone": "Danger Zone",
@@ -268,30 +267,6 @@
       "button": "Export Debug Log",
       "description": "Download diagnostic data for troubleshooting issues",
       "logCount": "{{count}} log entries recorded"
-    },
-    "recommendations": {
-      "status": {
-        "label": "Current recommendations source",
-        "default": "Built-in ({{count}} items)",
-        "custom": "{{name}} ({{count}} items)"
-      },
-      "import": {
-        "button": "Import Recommendations",
-        "description": "Import custom recommended items from a JSON file",
-        "confirmOverwrite": "Replace current recommendations with \"{{name}}\" ({{count}} items)?",
-        "success": "Recommendations imported successfully",
-        "error": "Failed to import recommendations"
-      },
-      "export": {
-        "button": "Export Recommendations",
-        "description": "Export current recommended items as a JSON file for sharing"
-      },
-      "reset": {
-        "button": "Reset to Default",
-        "confirm": "Reset to built-in recommendations? This will remove your custom recommendations.",
-        "success": "Recommendations reset to default.",
-        "error": "Failed to reset recommendations. Please try again."
-      }
     },
     "exportSelection": {
       "title": "Select Data to Export",

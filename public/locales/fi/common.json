@@ -154,7 +154,6 @@
         "disabledRecommendations": "Poistetut suositukset",
         "disabledCategories": "Poistetut kategoriat",
         "overriddenRecommendations": "Ohitetut suositukset",
-        "recommendedItems": "Suositellut tuotteet",
         "dataManagement": "Tietojen hallinta",
         "about": "Tietoja",
         "dangerZone": "Vaaravyöhyke",
@@ -268,30 +267,6 @@
       "button": "Vie virheloki",
       "description": "Lataa diagnostiikkatiedot vianmääritystä varten",
       "logCount": "{{count}} lokimerkintää tallennettu"
-    },
-    "recommendations": {
-      "status": {
-        "label": "Nykyinen suosituslähde",
-        "default": "Sisäänrakennettu ({{count}} tuotetta)",
-        "custom": "{{name}} ({{count}} tuotetta)"
-      },
-      "import": {
-        "button": "Tuo Suositukset",
-        "description": "Tuo mukautetut suositellut tuotteet JSON-tiedostosta",
-        "confirmOverwrite": "Korvataanko nykyiset suositukset kokoelmalla \"{{name}}\" ({{count}} tuotetta)?",
-        "success": "Suositukset tuotu onnistuneesti",
-        "error": "Suositusten tuonti epäonnistui"
-      },
-      "export": {
-        "button": "Vie Suositukset",
-        "description": "Vie nykyiset suositellut tuotteet JSON-tiedostona jakamista varten"
-      },
-      "reset": {
-        "button": "Palauta Oletukset",
-        "confirm": "Palautetaanko sisäänrakennetut suositukset? Tämä poistaa mukautetut suosituksesi.",
-        "success": "Suositukset palautettu oletuksiin.",
-        "error": "Suositusten palautus epäonnistui. Yritä uudelleen."
-      }
     },
     "exportSelection": {
       "title": "Valitse vietävät tiedot",
