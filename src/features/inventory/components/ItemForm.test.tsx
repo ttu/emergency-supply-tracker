@@ -1036,4 +1036,28 @@ describe('ItemForm', () => {
     // Calories should be calculated: 100g * 50kcal/100g = 50kcal
     expect(caloriesInput).toHaveValue(50);
   });
+
+  it('should use continuous unit step for requiresWaterLiters field', () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const categorySelect = document.querySelector(
+      '#categoryId',
+    ) as HTMLSelectElement;
+
+    // Select food category to show water requirement field
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+
+    const waterRequirementInput = document.querySelector(
+      '#requiresWaterLiters',
+    ) as HTMLInputElement;
+
+    // Water requirement should use the same step as continuous units (like liters)
+    expect(waterRequirementInput).toHaveAttribute('step', '0.1');
+  });
 });
