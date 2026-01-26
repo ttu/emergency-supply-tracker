@@ -66,6 +66,7 @@ describe('useCategoryStatuses', () => {
       selectKit: vi.fn(),
       uploadKit: vi.fn(),
       deleteKit: vi.fn(),
+      forkBuiltInKit: vi.fn(),
       updateCurrentKitMeta: vi.fn(),
       addItemToKit: vi.fn(),
       updateItemInKit: vi.fn(),

@@ -52,6 +52,7 @@ const createMockContext = (overrides = {}) => ({
     warnings: [],
   })),
   deleteKit: vi.fn(),
+  forkBuiltInKit: vi.fn(() => 'custom:forked-kit-uuid' as const),
   updateCurrentKitMeta: vi.fn(),
   addItemToKit: vi.fn(),
   updateItemInKit: vi.fn(),

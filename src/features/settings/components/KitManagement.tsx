@@ -5,6 +5,7 @@ import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { Toast } from '@/shared/components/Toast';
 import { useRecommendedItems } from '@/features/templates';
 import { KitSelector } from '@/features/templates/components/KitSelector';
+import { KitEditor } from '@/features/templates/components/KitEditor';
 import type { KitId, RecommendedItemsFile } from '@/shared/types';
 import styles from './KitManagement.module.css';
 
@@ -57,6 +58,7 @@ export function KitManagement() {
   const [toastVariant, setToastVariant] = useState<'success' | 'error'>(
     'success',
   );
+  const [isKitEditorOpen, setIsKitEditorOpen] = useState(false);
 
   const selectedKit = availableKits.find((kit) => kit.id === selectedKitId);
 
@@ -169,6 +171,14 @@ export function KitManagement() {
         <div className={styles.actions}>
           <Button
             variant="secondary"
+            onClick={() => setIsKitEditorOpen(true)}
+            disabled={!selectedKitId}
+            data-testid="view-edit-items-button"
+          >
+            {t('kits.viewEditItems')}
+          </Button>
+          <Button
+            variant="secondary"
             onClick={handleExport}
             disabled={!selectedKitId}
             data-testid="export-kit-button"
@@ -211,6 +221,12 @@ export function KitManagement() {
         message={toastMessage || ''}
         variant={toastVariant}
         onClose={handleCloseToast}
+      />
+
+      {/* Kit Editor Modal */}
+      <KitEditor
+        isOpen={isKitEditorOpen}
+        onClose={() => setIsKitEditorOpen(false)}
       />
     </div>
   );

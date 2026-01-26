@@ -15,6 +15,9 @@ vi.mock('react-i18next', () => ({
       if (key === 'kits.defaultFileName') return 'recommendations';
       return key;
     },
+    i18n: {
+      language: 'en',
+    },
   }),
 }));
 
@@ -69,6 +72,7 @@ const createMockContext = (overrides = {}) => ({
     warnings: [],
   })),
   deleteKit: vi.fn(),
+  forkBuiltInKit: vi.fn(() => 'custom:forked-kit-uuid' as const),
   updateCurrentKitMeta: vi.fn(),
   addItemToKit: vi.fn(),
   updateItemInKit: vi.fn(),
@@ -608,5 +612,61 @@ describe('KitManagement', () => {
     // Export button should be disabled, but test the fallback logic
     const exportButton = screen.getByTestId('export-kit-button');
     expect(exportButton).toBeDisabled();
+  });
+
+  describe('KitEditor integration', () => {
+    it('should have View/Edit Items button', () => {
+      render(<KitManagement />);
+
+      expect(screen.getByTestId('view-edit-items-button')).toBeInTheDocument();
+    });
+
+    it('should enable View/Edit Items button when kit is selected', () => {
+      render(<KitManagement />);
+
+      expect(screen.getByTestId('view-edit-items-button')).not.toBeDisabled();
+    });
+
+    it('should disable View/Edit Items button when no kit is selected', () => {
+      vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
+        createMockContext({
+          selectedKitId: null,
+        }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+      );
+
+      render(<KitManagement />);
+
+      expect(screen.getByTestId('view-edit-items-button')).toBeDisabled();
+    });
+
+    it('should open KitEditor modal when View/Edit Items button is clicked', async () => {
+      render(<KitManagement />);
+
+      fireEvent.click(screen.getByTestId('view-edit-items-button'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('kit-editor-modal')).toBeInTheDocument();
+      });
+    });
+
+    it('should close KitEditor modal when close button is clicked', async () => {
+      render(<KitManagement />);
+
+      // Open the modal
+      fireEvent.click(screen.getByTestId('view-edit-items-button'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('kit-editor-modal')).toBeInTheDocument();
+      });
+
+      // Close the modal
+      fireEvent.click(screen.getByTestId('kit-editor-close'));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByTestId('kit-editor-modal'),
+        ).not.toBeInTheDocument();
+      });
+    });
   });
 });

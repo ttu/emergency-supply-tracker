@@ -15,6 +15,7 @@
 .modal {
   background-color: var(--color-background);
   border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 800px;
@@ -194,7 +195,8 @@
 }
 
 [data-theme='dark'] .tag {
-  background-color: rgba(123, 127, 248, 0.15);
+  background-color: rgba(56, 189, 248, 0.2);
+  color: #7dd3fc;
 }
 
 .itemActions {
@@ -236,11 +238,13 @@
 }
 
 [data-theme='dark'] .editButton {
-  background-color: rgba(123, 127, 248, 0.15);
+  background-color: rgba(123, 127, 248, 0.25);
+  color: #a5b4fc;
 }
 
 [data-theme='dark'] .deleteButton {
-  background-color: rgba(239, 68, 68, 0.15);
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
 }
 
 .emptyState {

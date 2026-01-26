@@ -33,6 +33,7 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
     removeItemFromKit,
     getItemName,
     exportRecommendedItems,
+    forkBuiltInKit,
   } = useRecommendedItems();
 
   const [editingItem, setEditingItem] =
@@ -47,8 +48,17 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
     [availableKits, selectedKitId],
   );
 
-  // Check if current kit is editable (only custom kits can be edited)
-  const isEditable = selectedKitId != null && isCustomKitId(selectedKitId);
+  // Check if current kit is a built-in kit (will need forking to edit)
+  const isBuiltInKit = selectedKitId != null && !isCustomKitId(selectedKitId);
+
+  // Helper to ensure we have an editable kit (forks built-in if needed)
+  const ensureEditableKit = useCallback((): boolean => {
+    if (!selectedKitId) return false;
+    if (isCustomKitId(selectedKitId)) return true;
+    // Fork the built-in kit to create an editable copy
+    const newKitId = forkBuiltInKit();
+    return newKitId !== null;
+  }, [selectedKitId, forkBuiltInKit]);
 
   // Get existing IDs for validation
   const existingIds = useMemo(
@@ -61,7 +71,9 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
     (item: RecommendedItemDefinition): string => {
       // For items with i18nKey in the "products." namespace, use translation
       if (item.i18nKey?.startsWith('products.')) {
-        return t(item.i18nKey, { ns: 'products' });
+        // Extract key after "products." prefix to use with namespace
+        const key = item.i18nKey.substring('products.'.length);
+        return t(key, { ns: 'products' });
       }
       // Fall back to getItemName for custom items or missing keys
       return getItemName(item, i18n.language);
@@ -96,14 +108,19 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
   }, [filteredItems]);
 
   const handleAddItem = useCallback(() => {
+    if (!ensureEditableKit()) return;
     setIsAddingItem(true);
     setEditingItem(null);
-  }, []);
+  }, [ensureEditableKit]);
 
-  const handleEditItem = useCallback((item: RecommendedItemDefinition) => {
-    setEditingItem(item);
-    setIsAddingItem(false);
-  }, []);
+  const handleEditItem = useCallback(
+    (item: RecommendedItemDefinition) => {
+      if (!ensureEditableKit()) return;
+      setEditingItem(item);
+      setIsAddingItem(false);
+    },
+    [ensureEditableKit],
+  );
 
   const handleSaveItem = useCallback(
     (item: ImportedRecommendedItem) => {
@@ -129,10 +146,11 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
 
   const handleConfirmDelete = useCallback(() => {
     if (itemToDelete) {
+      if (!ensureEditableKit()) return;
       removeItemFromKit(itemToDelete);
       setItemToDelete(null);
     }
-  }, [itemToDelete, removeItemFromKit]);
+  }, [itemToDelete, removeItemFromKit, ensureEditableKit]);
 
   const handleCancelDelete = useCallback(() => {
     setItemToDelete(null);
@@ -266,20 +284,18 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             data-testid="kit-editor-search"
           />
-          {isEditable && (
-            <Button
-              variant="primary"
-              onClick={handleAddItem}
-              data-testid="kit-editor-add-item"
-            >
-              {t('kitEditor.addItem')}
-            </Button>
-          )}
+          <Button
+            variant="primary"
+            onClick={handleAddItem}
+            data-testid="kit-editor-add-item"
+          >
+            {t('kitEditor.addItem')}
+          </Button>
         </div>
 
-        {!isEditable && (
-          <div className={styles.notice}>
-            <p>{t('kitEditor.builtInNotice')}</p>
+        {isBuiltInKit && (
+          <div className={styles.notice} data-testid="kit-editor-fork-notice">
+            <p>{t('kitEditor.forkNotice')}</p>
           </div>
         )}
 
@@ -317,28 +333,26 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
                         )}
                       </span>
                     </div>
-                    {isEditable && (
-                      <div className={styles.itemActions}>
-                        <button
-                          type="button"
-                          className={styles.editButton}
-                          onClick={() => handleEditItem(item)}
-                          aria-label={t('actions.edit')}
-                          data-testid={`edit-item-${item.id}`}
-                        >
-                          {t('actions.edit')}
-                        </button>
-                        <button
-                          type="button"
-                          className={styles.deleteButton}
-                          onClick={() => handleDeleteItem(item.id)}
-                          aria-label={t('actions.delete')}
-                          data-testid={`delete-item-${item.id}`}
-                        >
-                          {t('actions.delete')}
-                        </button>
-                      </div>
-                    )}
+                    <div className={styles.itemActions}>
+                      <button
+                        type="button"
+                        className={styles.editButton}
+                        onClick={() => handleEditItem(item)}
+                        aria-label={t('actions.edit')}
+                        data-testid={`edit-item-${item.id}`}
+                      >
+                        {t('actions.edit')}
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.deleteButton}
+                        onClick={() => handleDeleteItem(item.id)}
+                        aria-label={t('actions.delete')}
+                        data-testid={`delete-item-${item.id}`}
+                      >
+                        {t('actions.delete')}
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>

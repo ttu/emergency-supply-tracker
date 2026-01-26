@@ -36,6 +36,9 @@ export interface RecommendedItemsContextValue {
   /** Delete an uploaded custom kit */
   deleteKit: (kitId: `custom:${string}`) => void;
 
+  /** Fork a built-in kit to create an editable custom copy */
+  forkBuiltInKit: () => KitId | null;
+
   // === Kit Editing ===
 
   /** Update metadata of the current kit (name, description) - only for custom kits */

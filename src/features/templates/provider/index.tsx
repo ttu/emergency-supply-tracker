@@ -233,6 +233,42 @@ export function RecommendedItemsProvider({
     [selectedKitId],
   );
 
+  const forkBuiltInKit = useCallback((): KitId | null => {
+    // Only fork if current kit is built-in
+    if (!selectedKitId || isCustomKitId(selectedKitId)) {
+      return selectedKitId;
+    }
+
+    // Get the current built-in kit data
+    if (!currentKitFile) {
+      return null;
+    }
+
+    // Find the current kit info to get the name
+    const currentKitInfo = availableKits.find((k) => k.id === selectedKitId);
+    const baseName = currentKitInfo?.name || 'Kit';
+
+    // Create a new custom kit with modified name
+    const forkedFile: RecommendedItemsFile = {
+      meta: {
+        ...currentKitFile.meta,
+        name: `${baseName} (Custom)`,
+        createdAt: new Date().toISOString(),
+      },
+      items: [...currentKitFile.items],
+    };
+
+    // Upload as a new custom kit
+    const result = uploadKit(forkedFile);
+    if (result.valid && result.kitId) {
+      // Auto-select the new forked kit
+      setSelectedKitId(result.kitId);
+      return result.kitId;
+    }
+
+    return null;
+  }, [selectedKitId, currentKitFile, availableKits, uploadKit]);
+
   // === Kit Editing (only for custom kits) ===
 
   const updateCurrentKitMeta = useCallback(
@@ -390,6 +426,7 @@ export function RecommendedItemsProvider({
         // Custom kit management
         uploadKit,
         deleteKit,
+        forkBuiltInKit,
 
         // Kit editing
         updateCurrentKitMeta,
