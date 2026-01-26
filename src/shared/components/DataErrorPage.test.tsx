@@ -45,12 +45,16 @@ i18n.use(initReactI18next).init({
     en: {
       common: {
         dataError: {
-          title: 'Data Error',
-          message: 'Your saved data could not be loaded due to invalid values.',
-          details: 'Error Details',
-          unknownError: 'Unknown validation error',
-          dataManagementDescription:
-            'You can download your corrupted data for backup, or delete it to start fresh.',
+          page: {
+            title: 'Data Error',
+            message:
+              'Your saved data could not be loaded due to invalid values.',
+            details: 'Error Details',
+            unknownError: 'Unknown validation error',
+            dataManagementDescription:
+              'You can download your corrupted data for backup, or delete it to start fresh.',
+            exportReason: 'Data failed validation on load',
+          },
         },
         errorBoundary: {
           reload: 'Reload Page',
