@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { DataErrorPage } from './DataErrorPage';
-import * as localStorage from '@/shared/utils/storage/localStorage';
+import type { DataValidationResult } from '@/shared/utils/validation/appDataValidation';
 
-// Mock the localStorage functions for Storybook
-const mockValidationResult = {
+// Mock validation results for different story scenarios
+const mockValidationResult: DataValidationResult = {
   isValid: false,
   errors: [
     {
@@ -25,10 +25,6 @@ const mockValidationResult = {
   ],
 };
 
-// Override the getLastDataValidationResult to return mock data
-const originalGetLastDataValidationResult =
-  localStorage.getLastDataValidationResult;
-
 const meta = {
   title: 'Components/Error/DataErrorPage',
   component: DataErrorPage,
@@ -38,26 +34,6 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     onRetry: { action: 'retry clicked' },
-  },
-  decorators: [
-    (Story) => {
-      // Mock the validation result for the story
-      (
-        localStorage as {
-          getLastDataValidationResult: () => typeof mockValidationResult | null;
-        }
-      ).getLastDataValidationResult = () => mockValidationResult;
-
-      return <Story />;
-    },
-  ],
-  // Cleanup after stories
-  beforeEach: () => {
-    (
-      localStorage as {
-        getLastDataValidationResult: typeof originalGetLastDataValidationResult;
-      }
-    ).getLastDataValidationResult = originalGetLastDataValidationResult;
   },
 } satisfies Meta<typeof DataErrorPage>;
 
@@ -69,7 +45,9 @@ type Story = StoryObj<typeof meta>;
  * The details section is collapsed by default but can be expanded to see error details.
  */
 export const Default: Story = {
-  args: {},
+  args: {
+    validationResultOverride: mockValidationResult,
+  },
 };
 
 /**
@@ -78,6 +56,7 @@ export const Default: Story = {
  */
 export const WithRetryCallback: Story = {
   args: {
+    validationResultOverride: mockValidationResult,
     onRetry: () => {},
   },
 };
@@ -86,25 +65,18 @@ export const WithRetryCallback: Story = {
  * State with a single validation error.
  */
 export const SingleError: Story = {
-  decorators: [
-    (Story) => {
-      (
-        localStorage as {
-          getLastDataValidationResult: () => typeof mockValidationResult | null;
-        }
-      ).getLastDataValidationResult = () => ({
-        isValid: false,
-        errors: [
-          {
-            field: 'settings.language',
-            message: 'Invalid language: "de". Must be one of: en, fi',
-            value: 'de',
-          },
-        ],
-      });
-      return <Story />;
+  args: {
+    validationResultOverride: {
+      isValid: false,
+      errors: [
+        {
+          field: 'settings.language',
+          message: 'Invalid language: "de". Must be one of: en, fi',
+          value: 'de',
+        },
+      ],
     },
-  ],
+  },
 };
 
 /**
@@ -112,16 +84,9 @@ export const SingleError: Story = {
  * Shows "Unknown validation error" as the fallback message.
  */
 export const UnknownError: Story = {
-  decorators: [
-    (Story) => {
-      (
-        localStorage as {
-          getLastDataValidationResult: () => typeof mockValidationResult | null;
-        }
-      ).getLastDataValidationResult = () => null;
-      return <Story />;
-    },
-  ],
+  args: {
+    validationResultOverride: null,
+  },
 };
 
 /**
@@ -129,77 +94,63 @@ export const UnknownError: Story = {
  * Also shows "Unknown validation error" as the fallback.
  */
 export const EmptyErrorsArray: Story = {
-  decorators: [
-    (Story) => {
-      (
-        localStorage as {
-          getLastDataValidationResult: () => typeof mockValidationResult | null;
-        }
-      ).getLastDataValidationResult = () => ({
-        isValid: false,
-        errors: [],
-      });
-      return <Story />;
+  args: {
+    validationResultOverride: {
+      isValid: false,
+      errors: [],
     },
-  ],
+  },
 };
 
 /**
  * State with many validation errors to test scrolling behavior.
  */
 export const ManyErrors: Story = {
-  decorators: [
-    (Story) => {
-      (
-        localStorage as {
-          getLastDataValidationResult: () => typeof mockValidationResult | null;
-        }
-      ).getLastDataValidationResult = () => ({
-        isValid: false,
-        errors: [
-          {
-            field: 'settings.theme',
-            message: 'Invalid theme value',
-            value: 'bad',
-          },
-          {
-            field: 'settings.language',
-            message: 'Invalid language value',
-            value: 'xx',
-          },
-          {
-            field: 'household.adults',
-            message: 'adults must be non-negative',
-            value: -1,
-          },
-          {
-            field: 'household.children',
-            message: 'children must be non-negative',
-            value: -2,
-          },
-          {
-            field: 'household.pets',
-            message: 'pets must be non-negative',
-            value: -3,
-          },
-          {
-            field: 'household.supplyDurationDays',
-            message: 'supplyDurationDays must be non-negative',
-            value: -7,
-          },
-          {
-            field: 'settings.dailyCaloriesPerPerson',
-            message: 'dailyCaloriesPerPerson must be non-negative',
-            value: -100,
-          },
-          {
-            field: 'settings.dailyWaterPerPerson',
-            message: 'dailyWaterPerPerson must be non-negative',
-            value: -5,
-          },
-        ],
-      });
-      return <Story />;
+  args: {
+    validationResultOverride: {
+      isValid: false,
+      errors: [
+        {
+          field: 'settings.theme',
+          message: 'Invalid theme value',
+          value: 'bad',
+        },
+        {
+          field: 'settings.language',
+          message: 'Invalid language value',
+          value: 'xx',
+        },
+        {
+          field: 'household.adults',
+          message: 'adults must be non-negative',
+          value: -1,
+        },
+        {
+          field: 'household.children',
+          message: 'children must be non-negative',
+          value: -2,
+        },
+        {
+          field: 'household.pets',
+          message: 'pets must be non-negative',
+          value: -3,
+        },
+        {
+          field: 'household.supplyDurationDays',
+          message: 'supplyDurationDays must be non-negative',
+          value: -7,
+        },
+        {
+          field: 'settings.dailyCaloriesPerPerson',
+          message: 'dailyCaloriesPerPerson must be non-negative',
+          value: -100,
+        },
+        {
+          field: 'settings.dailyWaterPerPerson',
+          message: 'dailyWaterPerPerson must be non-negative',
+          value: -5,
+        },
+      ],
     },
-  ],
+  },
 };
