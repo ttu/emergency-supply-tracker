@@ -8,19 +8,29 @@ import {
 import { clearErrorLogs } from '@/shared/utils/errorLogger/storage';
 import { clearAnalyticsData } from '@/shared/utils/analytics/storage';
 import { downloadFile, generateDateFilename } from '@/shared/utils/download';
+import type { DataValidationResult } from '@/shared/utils/validation/appDataValidation';
 import styles from './ErrorBoundary.module.css';
 
 interface DataErrorPageProps {
   readonly onRetry?: () => void;
+  /** Override for validation result (used in Storybook) */
+  readonly validationResultOverride?: DataValidationResult | null;
 }
 
 /**
  * Page displayed when stored data fails validation.
  * Allows users to download their data before clearing, or to clear and start fresh.
  */
-export function DataErrorPage({ onRetry }: DataErrorPageProps) {
+export function DataErrorPage({
+  onRetry,
+  validationResultOverride,
+}: DataErrorPageProps) {
   const { t } = useTranslation();
-  const validationResult = getLastDataValidationResult();
+  // Use override if provided (for Storybook), otherwise get from localStorage
+  const validationResult =
+    validationResultOverride !== undefined
+      ? validationResultOverride
+      : getLastDataValidationResult();
 
   const handleReload = (): void => {
     globalThis.location.reload();
