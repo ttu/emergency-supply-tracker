@@ -35,6 +35,7 @@ export function DataErrorPage({ onRetry }: DataErrorPageProps) {
     }
 
     // Add error info to the export so user knows why it failed
+    const exportReason = t('dataError.page.exportReason');
     try {
       const rawData = JSON.parse(rawJson);
       const exportData = {
@@ -42,7 +43,7 @@ export function DataErrorPage({ onRetry }: DataErrorPageProps) {
         _exportInfo: {
           exportedAt: new Date().toISOString(),
           validationErrors: validationResult?.errors ?? [],
-          reason: 'Data failed validation on load',
+          reason: exportReason,
         },
       };
       const json = JSON.stringify(exportData, null, 2);
@@ -79,7 +80,7 @@ export function DataErrorPage({ onRetry }: DataErrorPageProps) {
     ? validationResult.errors
         .map((err) => `${err.field}: ${err.message}`)
         .join('\n')
-    : t('dataError.unknownError');
+    : t('dataError.page.unknownError');
 
   return (
     <div className={styles.container} role="alert">
@@ -87,10 +88,12 @@ export function DataErrorPage({ onRetry }: DataErrorPageProps) {
         <div className={styles.icon} aria-hidden="true">
           ⚠️
         </div>
-        <h1 className={styles.title}>{t('dataError.title')}</h1>
-        <p className={styles.message}>{t('dataError.message')}</p>
+        <h1 className={styles.title}>{t('dataError.page.title')}</h1>
+        <p className={styles.message}>{t('dataError.page.message')}</p>
         <details className={styles.details}>
-          <summary className={styles.summary}>{t('dataError.details')}</summary>
+          <summary className={styles.summary}>
+            {t('dataError.page.details')}
+          </summary>
           <pre className={styles.errorText}>{errorSummary}</pre>
         </details>
         <div className={styles.actions}>
@@ -108,7 +111,7 @@ export function DataErrorPage({ onRetry }: DataErrorPageProps) {
             {t('errorBoundary.dataManagement.title')}
           </h2>
           <p className={styles.dataManagementDescription}>
-            {t('dataError.dataManagementDescription')}
+            {t('dataError.page.dataManagementDescription')}
           </p>
           <div className={styles.dataManagementActions}>
             <button

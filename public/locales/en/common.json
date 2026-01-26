@@ -340,11 +340,14 @@
     }
   },
   "dataError": {
-    "title": "Invalid Data Detected",
-    "message": "Your saved data contains invalid values and cannot be loaded. This may happen if the data was manually edited or corrupted.",
-    "details": "Validation errors",
-    "unknownError": "Unknown validation error",
-    "dataManagementDescription": "You can download your data to inspect or fix it manually, or delete all data to start fresh."
+    "page": {
+      "title": "Invalid Data Detected",
+      "message": "Your saved data contains invalid values and cannot be loaded. This may happen if the data was manually edited or corrupted.",
+      "details": "Validation errors",
+      "unknownError": "Unknown validation error",
+      "dataManagementDescription": "You can download your data to inspect or fix it manually, or delete all data to start fresh.",
+      "exportReason": "Data failed validation on load"
+    }
   },
   "themes": {
     "light": "Light",

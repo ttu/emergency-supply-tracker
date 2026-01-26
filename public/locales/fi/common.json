@@ -340,11 +340,14 @@
     }
   },
   "dataError": {
-    "title": "Virheelliset tiedot havaittu",
-    "message": "Tallennetut tietosi sisältävät virheellisiä arvoja eikä niitä voida ladata. Tämä voi johtua siitä, että tietoja on muokattu manuaalisesti tai ne ovat vioittuneet.",
-    "details": "Validointivirheet",
-    "unknownError": "Tuntematon validointivirhe",
-    "dataManagementDescription": "Voit ladata tietosi tarkistaaksesi tai korjataksesi ne manuaalisesti, tai poistaa kaikki tiedot aloittaaksesi alusta."
+    "page": {
+      "title": "Virheelliset tiedot havaittu",
+      "message": "Tallennetut tietosi sisältävät virheellisiä arvoja eikä niitä voida ladata. Tämä voi johtua siitä, että tietoja on muokattu manuaalisesti tai ne ovat vioittuneet.",
+      "details": "Validointivirheet",
+      "unknownError": "Tuntematon validointivirhe",
+      "dataManagementDescription": "Voit ladata tietosi tarkistaaksesi tai korjataksesi ne manuaalisesti, tai poistaa kaikki tiedot aloittaaksesi alusta.",
+      "exportReason": "Tietojen validointi epäonnistui latauksen yhteydessä"
+    }
   },
   "themes": {
     "light": "Vaalea",
