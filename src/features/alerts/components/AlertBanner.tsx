@@ -91,9 +91,6 @@ export const AlertBanner = ({
                     )}
                     {alert.message}
                   </div>
-                  <span className={styles.viewIcon} aria-hidden="true">
-                    →
-                  </span>
                 </button>
               ) : (
                 <div className={styles.content}>

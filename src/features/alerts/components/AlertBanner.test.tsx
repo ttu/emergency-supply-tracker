@@ -249,24 +249,4 @@ describe('AlertBanner', () => {
       screen.queryByRole('button', { name: /View .* in inventory/ }),
     ).not.toBeInTheDocument();
   });
-
-  it('renders arrow icon for clickable category alerts', () => {
-    render(
-      <AlertBanner
-        alerts={[
-          {
-            id: createAlertId('category-low-stock-food'),
-            type: 'warning',
-            message: 'Running low',
-            itemName: 'Food',
-            categoryId: 'food',
-          },
-        ]}
-        onAlertClick={vi.fn()}
-      />,
-    );
-
-    // The arrow icon should be visible
-    expect(screen.getByText('→')).toBeInTheDocument();
-  });
 });

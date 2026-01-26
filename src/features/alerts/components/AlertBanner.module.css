@@ -115,18 +115,6 @@ button.content:focus-visible {
   cursor: pointer;
 }
 
-.viewIcon {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  margin-left: auto;
-  flex-shrink: 0;
-  transition: transform var(--transition-base);
-}
-
-button.content:hover .viewIcon {
-  transform: translateX(2px);
-}
-
 .icon {
   font-size: var(--font-size-xl);
   line-height: 1;
