@@ -7,6 +7,8 @@ export interface AlertBannerProps {
   alerts: Alert[];
   onDismiss?: (alertId: string) => void;
   onDismissAll?: () => void;
+  /** Called when a category alert is clicked. Only fires for alerts with a categoryId. */
+  onAlertClick?: (categoryId: string) => void;
 }
 
 const AlertIcon = ({ type }: { type: AlertType }): ReactNode => {
@@ -33,6 +35,7 @@ export const AlertBanner = ({
   alerts,
   onDismiss,
   onDismissAll,
+  onAlertClick,
 }: AlertBannerProps) => {
   const { t } = useTranslation();
 
@@ -57,31 +60,64 @@ export const AlertBanner = ({
         )}
       </div>
       <div className={styles.alerts}>
-        {alerts.map((alert) => (
-          <div
-            key={alert.id}
-            className={`${styles.alert} ${getAlertTypeClassName(alert.type)}`}
-          >
-            <div className={styles.content}>
-              <AlertIcon type={alert.type} />
-              <div className={styles.message}>
-                {alert.itemName && (
-                  <span className={styles.itemName}>{alert.itemName}: </span>
-                )}
-                {alert.message}
-              </div>
+        {alerts.map((alert) => {
+          const isClickable = Boolean(alert.categoryId && onAlertClick);
+          const handleClick = () => {
+            if (alert.categoryId && onAlertClick) {
+              onAlertClick(alert.categoryId);
+            }
+          };
+
+          return (
+            <div
+              key={alert.id}
+              className={`${styles.alert} ${getAlertTypeClassName(alert.type)} ${isClickable ? styles.clickable : ''}`}
+            >
+              {isClickable ? (
+                <button
+                  type="button"
+                  className={styles.content}
+                  onClick={handleClick}
+                  aria-label={t('dashboard.alerts.viewCategory', {
+                    category: alert.itemName || alert.categoryId || '',
+                  })}
+                >
+                  <AlertIcon type={alert.type} />
+                  <div className={styles.message}>
+                    {alert.itemName && (
+                      <span className={styles.itemName}>
+                        {alert.itemName}:{' '}
+                      </span>
+                    )}
+                    {alert.message}
+                  </div>
+                </button>
+              ) : (
+                <div className={styles.content}>
+                  <AlertIcon type={alert.type} />
+                  <div className={styles.message}>
+                    {alert.itemName && (
+                      <span className={styles.itemName}>
+                        {alert.itemName}:{' '}
+                      </span>
+                    )}
+                    {alert.message}
+                  </div>
+                </div>
+              )}
+              {onDismiss && (
+                <button
+                  type="button"
+                  className={styles.dismissButton}
+                  onClick={() => onDismiss(alert.id)}
+                  aria-label={t('actions.dismiss')}
+                >
+                  ✕
+                </button>
+              )}
             </div>
-            {onDismiss && (
-              <button
-                className={styles.dismissButton}
-                onClick={() => onDismiss(alert.id)}
-                aria-label={t('actions.dismiss')}
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

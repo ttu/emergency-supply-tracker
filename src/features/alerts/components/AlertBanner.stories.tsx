@@ -112,3 +112,37 @@ export const WithDismiss: Story = {
     },
   },
 };
+
+export const ClickableCategoryAlerts: Story = {
+  args: {
+    alerts: [
+      createMockAlert({
+        id: createAlertId('category-low-stock-water-beverages'),
+        type: 'warning',
+        message: 'Running low (35% stocked)',
+        itemName: 'Water & Beverages',
+        categoryId: 'water-beverages',
+      }),
+      createMockAlert({
+        id: createAlertId('category-critically-low-food'),
+        type: 'critical',
+        message: 'Critically low (15% stocked)',
+        itemName: 'Food',
+        categoryId: 'food',
+      }),
+      createMockAlert({
+        id: createAlertId('expired-1'),
+        type: 'critical',
+        message: 'Item has expired',
+        itemName: 'Canned Fish',
+        // No categoryId - this alert is not clickable
+      }),
+    ],
+    onAlertClick: (categoryId) => {
+      console.log('Navigate to category:', categoryId);
+    },
+    onDismiss: (id) => {
+      console.log('Dismissed alert:', id);
+    },
+  },
+};

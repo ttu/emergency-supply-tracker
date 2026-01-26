@@ -1,3 +1,5 @@
+import type { AlertId, StandardCategoryId } from '@/shared/types';
+
 /**
  * Alert type indicating severity level
  */
@@ -12,8 +14,6 @@ export const ALERT_PRIORITY: Record<AlertType, number> = {
   info: 2,
 };
 
-import type { AlertId } from '@/shared/types';
-
 /**
  * Alert definition
  */
@@ -22,6 +22,8 @@ export interface Alert {
   type: AlertType;
   message: string;
   itemName?: string;
+  /** Category ID for category-related alerts (e.g., low stock alerts). When present, the alert can navigate to the category. */
+  categoryId?: StandardCategoryId;
 }
 
 /**

@@ -89,6 +89,30 @@
   gap: var(--spacing-md);
   flex: 1;
   padding-right: var(--spacing-sm);
+  background: none;
+  border: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+button.content {
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+}
+
+button.content:hover {
+  opacity: 0.8;
+}
+
+button.content:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-sm);
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 .icon {
