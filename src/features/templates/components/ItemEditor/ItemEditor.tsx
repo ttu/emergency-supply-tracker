@@ -221,15 +221,11 @@ export function ItemEditor({
     const newErrors: Record<string, string> = {};
 
     // Validation depends on name type
-    if (nameType === 'builtin') {
-      if (!selectedProductKey) {
-        newErrors.name = t('kitEditor.validation.nameRequired');
-      }
-    } else {
+    if (nameType === 'builtin' && !selectedProductKey) {
+      newErrors.name = t('kitEditor.validation.nameRequired');
+    } else if (nameType === 'custom' && !nameEn.trim() && !nameFi.trim()) {
       // At least one custom name is required
-      if (!nameEn.trim() && !nameFi.trim()) {
-        newErrors.name = t('kitEditor.validation.nameRequired');
-      }
+      newErrors.name = t('kitEditor.validation.nameRequired');
     }
 
     // ID must be unique for new items

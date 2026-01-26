@@ -94,7 +94,7 @@ const createMockContext = (overrides = {}) => ({
       i18nKey: item.i18nKey,
     })),
   })),
-  customRecommendationsInfo: null,
+  customRecommendationsInfo: undefined,
   isUsingCustomRecommendations: false,
   importRecommendedItems: vi.fn(() => ({
     valid: true,

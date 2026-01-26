@@ -81,7 +81,7 @@ const createMockContext = (overrides = {}) => ({
     meta: { name: 'Test Kit', version: '1.0.0', createdAt: '2024-01-01' },
     items: [],
   })),
-  customRecommendationsInfo: null,
+  customRecommendationsInfo: undefined,
   isUsingCustomRecommendations: false,
   importRecommendedItems: vi.fn(() => ({
     valid: true,
@@ -163,7 +163,7 @@ describe('KitManagement', () => {
   it('should show no kit selected message when no kit is selected', () => {
     vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
       createMockContext({
-        selectedKitId: null,
+        selectedKitId: undefined,
         availableKits: mockBuiltInKits,
       }) as ReturnType<typeof templatesModule.useRecommendedItems>,
     );
@@ -453,7 +453,7 @@ describe('KitManagement', () => {
   it('should disable export button when no kit is selected', () => {
     vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
       createMockContext({
-        selectedKitId: null,
+        selectedKitId: undefined,
       }) as ReturnType<typeof templatesModule.useRecommendedItems>,
     );
 
@@ -602,7 +602,7 @@ describe('KitManagement', () => {
 
     vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
       createMockContext({
-        selectedKitId: null,
+        selectedKitId: undefined,
         availableKits: [],
       }) as ReturnType<typeof templatesModule.useRecommendedItems>,
     );
@@ -630,7 +630,7 @@ describe('KitManagement', () => {
     it('should disable View/Edit Items button when no kit is selected', () => {
       vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
         createMockContext({
-          selectedKitId: null,
+          selectedKitId: undefined,
         }) as ReturnType<typeof templatesModule.useRecommendedItems>,
       );
 

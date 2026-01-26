@@ -57,7 +57,7 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
     if (isCustomKitId(selectedKitId)) return true;
     // Fork the built-in kit to create an editable copy
     const newKitId = forkBuiltInKit();
-    return newKitId !== null;
+    return newKitId != null;
   }, [selectedKitId, forkBuiltInKit]);
 
   // Get existing IDs for validation

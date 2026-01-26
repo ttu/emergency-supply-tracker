@@ -97,7 +97,7 @@ export function RecommendedItemsProvider({
   const isInitialMount = useRef(true);
 
   // Get current kit file based on selected ID
-  const currentKitFile = useMemo<RecommendedItemsFile | null>(() => {
+  const currentKitFile = useMemo<RecommendedItemsFile | undefined>(() => {
     if (isBuiltInKitId(selectedKitId)) {
       return getBuiltInKit(selectedKitId);
     }
@@ -105,10 +105,10 @@ export function RecommendedItemsProvider({
     if (isCustomKitId(selectedKitId)) {
       const uuid = getCustomKitUuid(selectedKitId);
       const kit = uploadedKits.find((k) => k.id === uuid);
-      return kit?.file ?? null;
+      return kit?.file;
     }
 
-    return null;
+    return undefined;
   }, [selectedKitId, uploadedKits]);
 
   // Build inline names map for custom items
@@ -152,7 +152,7 @@ export function RecommendedItemsProvider({
   // Legacy: custom recommendations info (for backward compatibility)
   const customRecommendationsInfo = useMemo(() => {
     if (!isCustomKitId(selectedKitId) || !currentKitFile) {
-      return null;
+      return undefined;
     }
     return {
       name: currentKitFile.meta.name,
@@ -233,7 +233,7 @@ export function RecommendedItemsProvider({
     [selectedKitId],
   );
 
-  const forkBuiltInKit = useCallback((): KitId | null => {
+  const forkBuiltInKit = useCallback((): KitId | undefined => {
     // Only fork if current kit is built-in
     if (!selectedKitId || isCustomKitId(selectedKitId)) {
       return selectedKitId;
@@ -241,7 +241,7 @@ export function RecommendedItemsProvider({
 
     // Get the current built-in kit data
     if (!currentKitFile) {
-      return null;
+      return undefined;
     }
 
     // Find the current kit info to get the name
@@ -266,7 +266,7 @@ export function RecommendedItemsProvider({
       return result.kitId;
     }
 
-    return null;
+    return undefined;
   }, [selectedKitId, currentKitFile, availableKits, uploadKit]);
 
   // === Kit Editing (only for custom kits) ===

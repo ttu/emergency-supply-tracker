@@ -91,7 +91,7 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useRecommendedItems).mockReturnValue({
       recommendedItems: [],
       availableKits: [],
-      selectedKitId: null,
+      selectedKitId: undefined,
       selectKit: vi.fn(),
       uploadKit: vi.fn(),
       deleteKit: vi.fn(),
@@ -100,7 +100,7 @@ describe('useDashboardAlerts', () => {
       addItemToKit: vi.fn(),
       updateItemInKit: vi.fn(),
       removeItemFromKit: vi.fn(),
-      customRecommendationsInfo: null,
+      customRecommendationsInfo: undefined,
       isUsingCustomRecommendations: false,
       importRecommendedItems: vi.fn(),
       exportRecommendedItems: vi.fn(),

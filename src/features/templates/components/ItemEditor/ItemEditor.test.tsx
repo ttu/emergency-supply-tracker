@@ -355,4 +355,146 @@ describe('ItemEditor', () => {
       screen.queryByText('kitEditor.validation.idExists'),
     ).not.toBeInTheDocument();
   });
+
+  describe('built-in name type selection', () => {
+    const mockItemWithI18nKey: ImportedRecommendedItem = {
+      id: createProductTemplateId('bottled-water-item'),
+      i18nKey: 'products.bottled-water',
+      category: 'water-beverages',
+      baseQuantity: 2,
+      unit: 'liters',
+      scaleWithPeople: true,
+      scaleWithDays: true,
+    };
+
+    it('should show built-in name type selected when editing item with i18nKey', () => {
+      render(
+        <ItemEditor
+          item={mockItemWithI18nKey}
+          onSave={mockOnSave}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      const builtinRadio = screen.getByTestId(
+        'name-type-builtin',
+      ) as HTMLInputElement;
+      expect(builtinRadio.checked).toBe(true);
+
+      // Product key select should be visible
+      expect(screen.getByTestId('item-product-key')).toBeInTheDocument();
+      expect(screen.getByTestId('item-product-key')).toHaveValue(
+        'bottled-water',
+      );
+    });
+
+    it('should show custom name type selected by default for new item', () => {
+      render(<ItemEditor onSave={mockOnSave} onCancel={mockOnCancel} />);
+
+      const customRadio = screen.getByTestId(
+        'name-type-custom',
+      ) as HTMLInputElement;
+      expect(customRadio.checked).toBe(true);
+
+      // Custom name inputs should be visible
+      expect(screen.getByTestId('item-name-en')).toBeInTheDocument();
+      expect(screen.getByTestId('item-name-fi')).toBeInTheDocument();
+    });
+
+    it('should toggle between builtin and custom name types', async () => {
+      render(<ItemEditor onSave={mockOnSave} onCancel={mockOnCancel} />);
+
+      // Initially custom is selected
+      expect(screen.getByTestId('item-name-en')).toBeInTheDocument();
+
+      // Switch to builtin
+      await userEvent.click(screen.getByTestId('name-type-builtin'));
+      expect(screen.getByTestId('item-product-key')).toBeInTheDocument();
+      expect(screen.queryByTestId('item-name-en')).not.toBeInTheDocument();
+
+      // Switch back to custom
+      await userEvent.click(screen.getByTestId('name-type-custom'));
+      expect(screen.getByTestId('item-name-en')).toBeInTheDocument();
+      expect(screen.queryByTestId('item-product-key')).not.toBeInTheDocument();
+    });
+
+    it('should save item with i18nKey when builtin product is selected', async () => {
+      render(<ItemEditor onSave={mockOnSave} onCancel={mockOnCancel} />);
+
+      // Switch to builtin and select a product
+      await userEvent.click(screen.getByTestId('name-type-builtin'));
+      await userEvent.selectOptions(
+        screen.getByTestId('item-product-key'),
+        'canned-soup',
+      );
+      await userEvent.click(screen.getByTestId('item-editor-save'));
+
+      expect(mockOnSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          i18nKey: 'products.canned-soup',
+        }),
+      );
+      // Should not have names property
+      const savedItem = mockOnSave.mock.calls[0][0];
+      expect(savedItem.names).toBeUndefined();
+    });
+
+    it('should show validation error when builtin type selected but no product chosen', async () => {
+      render(<ItemEditor onSave={mockOnSave} onCancel={mockOnCancel} />);
+
+      // Switch to builtin but don't select a product
+      await userEvent.click(screen.getByTestId('name-type-builtin'));
+      await userEvent.click(screen.getByTestId('item-editor-save'));
+
+      expect(
+        screen.getByText('kitEditor.validation.nameRequired'),
+      ).toBeInTheDocument();
+      expect(mockOnSave).not.toHaveBeenCalled();
+    });
+
+    it('should preserve i18nKey when editing item with i18nKey and saving', async () => {
+      render(
+        <ItemEditor
+          item={mockItemWithI18nKey}
+          onSave={mockOnSave}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      // Just change the quantity and save
+      await userEvent.clear(screen.getByTestId('item-base-quantity'));
+      await userEvent.type(screen.getByTestId('item-base-quantity'), '5');
+      await userEvent.click(screen.getByTestId('item-editor-save'));
+
+      expect(mockOnSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          i18nKey: 'products.bottled-water',
+          baseQuantity: 5,
+        }),
+      );
+    });
+
+    it('should allow changing builtin product when editing', async () => {
+      render(
+        <ItemEditor
+          item={mockItemWithI18nKey}
+          onSave={mockOnSave}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      // Change to a different product
+      await userEvent.selectOptions(
+        screen.getByTestId('item-product-key'),
+        'pasta',
+      );
+      await userEvent.click(screen.getByTestId('item-editor-save'));
+
+      expect(mockOnSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          i18nKey: 'products.pasta',
+        }),
+      );
+    });
+  });
 });

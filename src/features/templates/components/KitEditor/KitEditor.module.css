@@ -196,7 +196,7 @@
 
 [data-theme='dark'] .tag {
   background-color: rgba(56, 189, 248, 0.2);
-  color: #7dd3fc;
+  color: #e0f2fe;
 }
 
 .itemActions {
@@ -239,12 +239,12 @@
 
 [data-theme='dark'] .editButton {
   background-color: rgba(123, 127, 248, 0.25);
-  color: #a5b4fc;
+  color: #c7d2fe;
 }
 
 [data-theme='dark'] .deleteButton {
   background-color: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
+  color: #fecaca;
 }
 
 .emptyState {
