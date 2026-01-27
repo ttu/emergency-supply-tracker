@@ -237,11 +237,7 @@ export function calculateCategoryStatus(
     options,
   );
 
-  // Check if inventory meets the minimum requirements
-  const hasEnough = hasEnoughInventory(category.id, shortageInfo);
-
   // Determine if this category has recommendations
-  // Note: food/water categories show percentages regardless (handled by UI)
   const categoryIdStr = String(category.id);
   const recommendedForCategory = recommendedItems.filter(
     (item) =>
@@ -249,6 +245,16 @@ export function calculateCategoryStatus(
       !disabledRecommendedItems.includes(item.id),
   );
   const hasRecommendations = recommendedForCategory.length > 0;
+
+  // Check if inventory meets the minimum requirements
+  // When using "none" kit (no recommendations at all), non-food/non-water categories have nothing to meet
+  const isFood = isFoodCategory(category.id);
+  const isWater = category.id === 'water-beverages';
+  const kitHasNoRecommendations = recommendedItems.length === 0;
+  const hasEnough =
+    kitHasNoRecommendations && !isFood && !isWater
+      ? true
+      : hasEnoughInventory(category.id, shortageInfo);
 
   // Calculate effective percentage
   // For mixed units categories, use weighted fulfillment for consistency
@@ -284,6 +290,39 @@ export function calculateCategoryStatus(
     ? 100
     : Math.min(effectivePercentage, 100);
 
+  // For food/water without recommendations, get calorie/water values from percentage calculation
+  // (shortageInfo won't have these when there are no recommendations)
+  let { totalActualCalories, totalNeededCalories, missingCalories } =
+    shortageInfo;
+  const { drinkingWaterNeeded, preparationWaterNeeded } = shortageInfo;
+  let totalActual = shortageInfo.totalActual;
+  let totalNeeded = shortageInfo.totalNeeded;
+  let primaryUnit = shortageInfo.primaryUnit;
+
+  if (kitHasNoRecommendations) {
+    const percentageResult = calculateCategoryPercentage(
+      category.id,
+      items,
+      household,
+      disabledRecommendedItems,
+      recommendedItems,
+      options,
+    );
+
+    if (isFood) {
+      totalActualCalories = percentageResult.totalActualCalories;
+      totalNeededCalories = percentageResult.totalNeededCalories;
+      missingCalories =
+        totalNeededCalories && totalActualCalories
+          ? Math.max(0, totalNeededCalories - totalActualCalories)
+          : undefined;
+    } else if (isWater) {
+      totalActual = percentageResult.totalActual;
+      totalNeeded = percentageResult.totalNeeded;
+      primaryUnit = 'liters';
+    }
+  }
+
   return {
     categoryId: category.id,
     itemCount: categoryItems.length,
@@ -293,14 +332,14 @@ export function calculateCategoryStatus(
     warningCount,
     okCount,
     shortages: shortageInfo.shortages,
-    totalActual: shortageInfo.totalActual,
-    totalNeeded: shortageInfo.totalNeeded,
-    primaryUnit: shortageInfo.primaryUnit,
-    totalActualCalories: shortageInfo.totalActualCalories,
-    totalNeededCalories: shortageInfo.totalNeededCalories,
-    missingCalories: shortageInfo.missingCalories,
-    drinkingWaterNeeded: shortageInfo.drinkingWaterNeeded,
-    preparationWaterNeeded: shortageInfo.preparationWaterNeeded,
+    totalActual,
+    totalNeeded,
+    primaryUnit,
+    totalActualCalories,
+    totalNeededCalories,
+    missingCalories,
+    drinkingWaterNeeded,
+    preparationWaterNeeded,
     hasRecommendations,
   };
 }
@@ -385,7 +424,14 @@ export function getCategoryDisplayStatus(
   );
 
   // Check if inventory meets the minimum requirements
-  const hasEnough = hasEnoughInventory(categoryId, shortageInfo);
+  // When using "none" kit (no recommendations at all), non-food/non-water categories have nothing to meet
+  const isFood = isFoodCategory(categoryId);
+  const isWater = categoryId === 'water-beverages';
+  const kitHasNoRecommendations = recommendedItems.length === 0;
+  const hasEnough =
+    kitHasNoRecommendations && !isFood && !isWater
+      ? true
+      : hasEnoughInventory(categoryId, shortageInfo);
 
   // Use percentage from unified calculator
   // For mixed units categories, use weighted fulfillment for consistency
@@ -410,15 +456,11 @@ export function getCategoryDisplayStatus(
   // For categories without recommendations, use values from percentage calculation
   // (shortageInfo will be empty because there are no recommendations to match)
   // Food uses totalActualCalories/totalNeededCalories which are already from percentageResult
-  const isWater = categoryId === 'water-beverages';
-  const isFood = isFoodCategory(categoryId);
-  const noRecommendations = !percentageResult.hasRecommendations;
-
   let totalActual = shortageInfo.totalActual;
   let totalNeeded = shortageInfo.totalNeeded;
   let primaryUnit = shortageInfo.primaryUnit;
 
-  if (noRecommendations) {
+  if (kitHasNoRecommendations) {
     if (isWater) {
       // Water: use liters from percentage calculation
       totalActual = percentageResult.totalActual;
