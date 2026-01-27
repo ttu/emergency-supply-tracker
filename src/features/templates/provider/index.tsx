@@ -244,16 +244,14 @@ export function RecommendedItemsProvider({
       return undefined;
     }
 
-    // Find the current kit info to get the name
-    const currentKitInfo = availableKits.find((k) => k.id === selectedKitId);
-    const baseName = currentKitInfo?.name || 'Kit';
-
-    // Create a new custom kit with modified name
+    // Create a new custom kit preserving the original name
+    // The forkedFrom field indicates this was forked from a built-in kit
+    // Display components can add localized suffixes when rendering
     const forkedFile: RecommendedItemsFile = {
       meta: {
         ...currentKitFile.meta,
-        name: `${baseName} (Custom)`,
         createdAt: new Date().toISOString(),
+        forkedFrom: selectedKitId,
       },
       items: [...currentKitFile.items],
     };
@@ -267,7 +265,7 @@ export function RecommendedItemsProvider({
     }
 
     return undefined;
-  }, [selectedKitId, currentKitFile, availableKits, uploadKit]);
+  }, [selectedKitId, currentKitFile, uploadKit]);
 
   // === Kit Editing (only for custom kits) ===
 

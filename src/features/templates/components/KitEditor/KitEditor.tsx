@@ -146,7 +146,11 @@ export function KitEditor({ isOpen, onClose }: KitEditorProps) {
 
   const handleConfirmDelete = useCallback(() => {
     if (itemToDelete) {
-      if (!ensureEditableKit()) return;
+      if (!ensureEditableKit()) {
+        // Clear pending deletion even if fork fails to close the dialog
+        setItemToDelete(null);
+        return;
+      }
       removeItemFromKit(itemToDelete);
       setItemToDelete(null);
     }

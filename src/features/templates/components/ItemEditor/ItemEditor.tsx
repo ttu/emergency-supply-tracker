@@ -149,6 +149,11 @@ const extractProductKey = (i18nKey: string | undefined): string => {
   return i18nKey.startsWith('products.') ? i18nKey.substring(9) : i18nKey;
 };
 
+/** Check if a unit is continuous (allows decimal values with 0.1 step) */
+const isContinuousUnit = (unit: string): boolean => {
+  return ['kilograms', 'liters', 'grams', 'meters'].includes(unit);
+};
+
 export function ItemEditor({
   item,
   onSave,
@@ -270,15 +275,18 @@ export function ItemEditor({
         scaleWithDays,
       };
 
-      // Set name based on type
+      // Set name based on type - explicitly clear the opposite field to prevent stale data
       if (nameType === 'builtin') {
         savedItem.i18nKey = `products.${selectedProductKey}`;
+        // Explicitly clear names when using built-in product key
+        delete savedItem.names;
       } else {
         savedItem.names = {
-          ...item?.names,
           en: nameEn.trim() || nameFi.trim(),
           fi: nameFi.trim() || nameEn.trim(),
         };
+        // Explicitly clear i18nKey when using custom names
+        delete savedItem.i18nKey;
       }
 
       if (requiresFreezer) {
@@ -308,7 +316,6 @@ export function ItemEditor({
     [
       validate,
       id,
-      item,
       nameType,
       selectedProductKey,
       nameEn,
@@ -486,8 +493,8 @@ export function ItemEditor({
               className={styles.input}
               value={baseQuantity}
               onChange={(e) => setBaseQuantity(e.target.value)}
-              min="0.01"
-              step="0.01"
+              min={isContinuousUnit(unit) ? '0.1' : '1'}
+              step={isContinuousUnit(unit) ? '0.1' : '1'}
               data-testid="item-base-quantity"
             />
             {errors.baseQuantity && (

@@ -56,9 +56,9 @@
 }
 
 [data-theme='dark'] .badge {
-  background-color: rgba(123, 127, 248, 0.2);
+  background-color: rgba(123, 127, 248, 0.25);
   border-color: var(--color-primary);
-  color: var(--color-primary-light);
+  color: var(--color-text);
 }
 
 .description {

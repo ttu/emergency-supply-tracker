@@ -1027,11 +1027,11 @@ describe('RecommendedItemsProvider', () => {
       expect(result).toBe(currentKitId);
     });
 
-    it('should return undefined when selectedKitId is falsy', () => {
-      // This edge case handles when selectedKitId is somehow undefined
+    it('should fork default kit when selectedRecommendationKit is undefined', () => {
+      // When selectedRecommendationKit is undefined, provider falls back to DEFAULT_KIT_ID
       mockGetAppData.mockReturnValue({
         uploadedRecommendationKits: [],
-        selectedRecommendationKit: '' as KitId,
+        selectedRecommendationKit: undefined,
       });
 
       let forkFn!: ReturnType<typeof useRecommendedItems>['forkBuiltInKit'];
@@ -1051,8 +1051,9 @@ describe('RecommendedItemsProvider', () => {
         result = forkFn();
       });
 
-      // Should return the falsy selectedKitId (empty string is falsy, returns as-is)
-      expect(result).toBe('');
+      // Should fork the default built-in kit and return the new custom kit ID
+      expect(result).toBeDefined();
+      expect(result).toMatch(/^custom:/);
     });
   });
 
