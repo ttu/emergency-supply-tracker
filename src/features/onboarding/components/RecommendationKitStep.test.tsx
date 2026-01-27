@@ -52,6 +52,7 @@ const createMockContext = (overrides = {}) => ({
     warnings: [],
   })),
   deleteKit: vi.fn(),
+  forkBuiltInKit: vi.fn(() => 'custom:forked-kit-uuid' as const),
   updateCurrentKitMeta: vi.fn(),
   addItemToKit: vi.fn(),
   updateItemInKit: vi.fn(),
@@ -60,7 +61,7 @@ const createMockContext = (overrides = {}) => ({
     meta: { name: 'Test Kit', version: '1.0.0', createdAt: '2024-01-01' },
     items: [],
   })),
-  customRecommendationsInfo: null,
+  customRecommendationsInfo: undefined,
   isUsingCustomRecommendations: false,
   importRecommendedItems: vi.fn(() => ({
     valid: true,
@@ -147,7 +148,7 @@ describe('RecommendationKitStep', () => {
   it('should disable continue button when no kit is selected', () => {
     vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
       createMockContext({
-        selectedKitId: null,
+        selectedKitId: undefined,
       }) as ReturnType<typeof templatesModule.useRecommendedItems>,
     );
 

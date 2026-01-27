@@ -97,7 +97,7 @@ export function RecommendedItemsProvider({
   const isInitialMount = useRef(true);
 
   // Get current kit file based on selected ID
-  const currentKitFile = useMemo<RecommendedItemsFile | null>(() => {
+  const currentKitFile = useMemo<RecommendedItemsFile | undefined>(() => {
     if (isBuiltInKitId(selectedKitId)) {
       return getBuiltInKit(selectedKitId);
     }
@@ -105,10 +105,10 @@ export function RecommendedItemsProvider({
     if (isCustomKitId(selectedKitId)) {
       const uuid = getCustomKitUuid(selectedKitId);
       const kit = uploadedKits.find((k) => k.id === uuid);
-      return kit?.file ?? null;
+      return kit?.file;
     }
 
-    return null;
+    return undefined;
   }, [selectedKitId, uploadedKits]);
 
   // Build inline names map for custom items
@@ -152,7 +152,7 @@ export function RecommendedItemsProvider({
   // Legacy: custom recommendations info (for backward compatibility)
   const customRecommendationsInfo = useMemo(() => {
     if (!isCustomKitId(selectedKitId) || !currentKitFile) {
-      return null;
+      return undefined;
     }
     return {
       name: currentKitFile.meta.name,
@@ -232,6 +232,40 @@ export function RecommendedItemsProvider({
     },
     [selectedKitId],
   );
+
+  const forkBuiltInKit = useCallback((): KitId | undefined => {
+    // Only fork if current kit is built-in
+    if (!selectedKitId || isCustomKitId(selectedKitId)) {
+      return selectedKitId;
+    }
+
+    // Get the current built-in kit data
+    if (!currentKitFile) {
+      return undefined;
+    }
+
+    // Create a new custom kit preserving the original name
+    // The forkedFrom field indicates this was forked from a built-in kit
+    // Display components can add localized suffixes when rendering
+    const forkedFile: RecommendedItemsFile = {
+      meta: {
+        ...currentKitFile.meta,
+        createdAt: new Date().toISOString(),
+        forkedFrom: selectedKitId,
+      },
+      items: [...currentKitFile.items],
+    };
+
+    // Upload as a new custom kit
+    const result = uploadKit(forkedFile);
+    if (result.valid && result.kitId) {
+      // Auto-select the new forked kit
+      setSelectedKitId(result.kitId);
+      return result.kitId;
+    }
+
+    return undefined;
+  }, [selectedKitId, currentKitFile, uploadKit]);
 
   // === Kit Editing (only for custom kits) ===
 
@@ -390,6 +424,7 @@ export function RecommendedItemsProvider({
         // Custom kit management
         uploadKit,
         deleteKit,
+        forkBuiltInKit,
 
         // Kit editing
         updateCurrentKitMeta,

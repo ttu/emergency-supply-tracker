@@ -967,6 +967,96 @@ describe('RecommendedItemsProvider', () => {
     });
   });
 
+  describe('forkBuiltInKit', () => {
+    it('should fork a built-in kit and create a custom copy', async () => {
+      let forkFn!: ReturnType<typeof useRecommendedItems>['forkBuiltInKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              forkFn = ctx.forkBuiltInKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Initially using built-in kit
+      expect(screen.getByTestId('is-custom')).toHaveTextContent('false');
+
+      let forkedKitId: ReturnType<typeof forkFn>;
+      act(() => {
+        forkedKitId = forkFn();
+      });
+
+      await waitFor(() => {
+        // Should now be using custom kit
+        expect(screen.getByTestId('is-custom')).toHaveTextContent('true');
+        // Should return the new custom kit ID
+        expect(forkedKitId).toBeDefined();
+        expect(forkedKitId).toMatch(/^custom:/);
+      });
+    });
+
+    it('should return current kit ID when already using custom kit', () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit],
+        selectedRecommendationKit: createCustomKitId('test-kit-uuid'),
+      });
+
+      let forkFn!: ReturnType<typeof useRecommendedItems>['forkBuiltInKit'];
+      let currentKitId!: KitId | undefined;
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              forkFn = ctx.forkBuiltInKit;
+              currentKitId = ctx.selectedKitId;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      let result: ReturnType<typeof forkFn>;
+      act(() => {
+        result = forkFn();
+      });
+
+      // Should return the existing custom kit ID
+      expect(result).toBe(currentKitId);
+    });
+
+    it('should fork default kit when selectedRecommendationKit is undefined', () => {
+      // When selectedRecommendationKit is undefined, provider falls back to DEFAULT_KIT_ID
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [],
+        selectedRecommendationKit: undefined,
+      });
+
+      let forkFn!: ReturnType<typeof useRecommendedItems>['forkBuiltInKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              forkFn = ctx.forkBuiltInKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      let result: ReturnType<typeof forkFn>;
+      act(() => {
+        result = forkFn();
+      });
+
+      // Should fork the default built-in kit and return the new custom kit ID
+      expect(result).toBeDefined();
+      expect(result).toMatch(/^custom:/);
+    });
+  });
+
   describe('edge cases', () => {
     it('should fallback to default kit when custom kit is not found', () => {
       mockGetAppData.mockReturnValue({

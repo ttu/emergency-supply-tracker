@@ -51,7 +51,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
       />,
     );
@@ -63,7 +63,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
       />,
     );
@@ -77,7 +77,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={[...mockBuiltInKits, ...mockCustomKits]}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
       />,
     );
@@ -90,7 +90,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onUploadKit={mockOnUploadKit}
         showUpload={true}
@@ -105,7 +105,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onUploadKit={mockOnUploadKit}
         showUpload={false}
@@ -119,7 +119,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         showUpload={true}
       />,
@@ -132,7 +132,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
       />,
     );
@@ -160,7 +160,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={[...mockBuiltInKits, ...mockCustomKits]}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onDeleteKit={mockOnDeleteKit}
         showDelete={true}
@@ -174,7 +174,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onDeleteKit={mockOnDeleteKit}
         showDelete={true}
@@ -190,7 +190,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={[...mockBuiltInKits, ...mockCustomKits]}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onDeleteKit={mockOnDeleteKit}
         showDelete={true}
@@ -206,7 +206,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         showUpload={false}
       />,
@@ -219,7 +219,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onUploadKit={mockOnUploadKit}
         showUpload={true}
@@ -236,7 +236,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onUploadKit={mockOnUploadKit}
         showUpload={true}
@@ -255,7 +255,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onUploadKit={mockOnUploadKit}
         showUpload={true}
@@ -276,7 +276,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={allKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
       />,
     );
@@ -300,7 +300,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onDeleteKit={mockOnDeleteKitTyped}
         showDelete={true}
@@ -324,7 +324,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onUploadKit={mockOnUploadKit}
         showUpload={true}
@@ -381,7 +381,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         onUploadKit={mockOnUploadKit}
         showUpload={true}
@@ -425,7 +425,7 @@ describe('KitSelector', () => {
     render(
       <KitSelector
         availableKits={mockBuiltInKits}
-        selectedKitId={null}
+        selectedKitId={undefined}
         onSelectKit={mockOnSelectKit}
         showUpload={true}
       />,

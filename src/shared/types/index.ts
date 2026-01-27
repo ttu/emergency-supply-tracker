@@ -257,6 +257,7 @@ export interface RecommendedItemsFileMeta {
   source?: string; // e.g., "72tuntia.fi", URL
   createdAt: string; // ISO timestamp
   language?: 'en' | 'fi'; // Primary language of inline names
+  forkedFrom?: string; // Built-in kit ID this was forked from (for display purposes)
 }
 
 // Recommended Items File (for import/export)

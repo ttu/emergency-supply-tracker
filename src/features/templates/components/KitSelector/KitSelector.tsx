@@ -8,7 +8,7 @@ import styles from './KitSelector.module.css';
 
 export interface KitSelectorProps {
   readonly availableKits: KitInfo[];
-  readonly selectedKitId: KitId | null;
+  readonly selectedKitId: KitId | undefined;
   readonly onSelectKit: (kitId: KitId) => void;
   readonly onUploadKit?: (file: RecommendedItemsFile) => void;
   readonly onDeleteKit?: (kitId: `custom:${string}`) => void;

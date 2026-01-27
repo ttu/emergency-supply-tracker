@@ -48,11 +48,17 @@
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   padding: var(--spacing-xs) var(--spacing-sm);
-  background-color: var(--color-surface-elevated);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
   border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-primary);
   white-space: nowrap;
+}
+
+[data-theme='dark'] .badge {
+  background-color: rgba(123, 127, 248, 0.25);
+  border-color: var(--color-primary);
+  color: var(--color-text);
 }
 
 .description {

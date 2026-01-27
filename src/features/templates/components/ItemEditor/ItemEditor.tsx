@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import type {
@@ -8,6 +8,115 @@ import type {
 } from '@/shared/types';
 import { VALID_UNITS, VALID_CATEGORIES } from '@/shared/types';
 import styles from './ItemEditor.module.css';
+
+// List of available built-in product translation keys
+const BUILT_IN_PRODUCT_KEYS = [
+  'bottled-water',
+  'long-life-milk',
+  'long-life-juice',
+  'canned-soup',
+  'canned-vegetables',
+  'canned-beans',
+  'canned-fish',
+  'canned-meat',
+  'pasta',
+  'rice',
+  'oats',
+  'oatmeal',
+  'crackers',
+  'energy-bars',
+  'cookies',
+  'spreads',
+  'peanut-butter',
+  'jam',
+  'dried-fruits',
+  'nuts',
+  'salt-sugar',
+  'coffee-tea',
+  'frozen-vegetables',
+  'frozen-meat',
+  'frozen-meals',
+  'frozen-bread',
+  'instant-coffee',
+  'sugar',
+  'camping-stove',
+  'stove-fuel',
+  'matches',
+  'lighter',
+  'candles',
+  'fire-starter',
+  'flashlight',
+  'headlamp',
+  'batteries-aa',
+  'batteries-aaa',
+  'batteries-d',
+  'batteries-9v',
+  'power-bank',
+  'charging-cables',
+  'solar-charger',
+  'power-generator',
+  'generator-fuel',
+  'battery-radio',
+  'hand-crank-radio',
+  'first-aid-kit',
+  'prescription-meds',
+  'pain-relievers',
+  'fever-reducers',
+  'bandages',
+  'disinfectant',
+  'antiseptic',
+  'thermometer',
+  'antihistamines',
+  'diarrhea-meds',
+  'tweezers-scissors',
+  'allergy-meds',
+  'anti-diarrheal',
+  'rehydration-salts',
+  'toilet-paper',
+  'wet-wipes',
+  'hand-sanitizer',
+  'soap',
+  'toothbrush',
+  'toothpaste',
+  'shampoo',
+  'deodorant',
+  'feminine-hygiene',
+  'diapers',
+  'garbage-bags',
+  'paper-towels',
+  'trash-bags',
+  'bucket',
+  'water-container',
+  'water-purification',
+  'duct-tape',
+  'multi-tool',
+  'can-opener',
+  'plastic-bags',
+  'aluminum-foil',
+  'plastic-wrap',
+  'rope',
+  'plastic-sheeting',
+  'rope-cord',
+  'whistle',
+  'emergency-blanket',
+  'work-gloves',
+  'dust-masks',
+  'cash',
+  'document-copies',
+  'contact-list',
+  'pet-food-dry',
+  'pet-food-wet',
+  'pet-water-bowl',
+  'pet-food-bowl',
+  'pet-carrier',
+  'pet-leash-collar',
+  'pet-waste-bags',
+  'pet-medications',
+  'pet-comfort-items',
+  'pet-vaccination-records',
+] as const;
+
+type NameType = 'builtin' | 'custom';
 
 export interface ItemEditorProps {
   readonly item?: ImportedRecommendedItem;
@@ -34,14 +143,29 @@ const parsePositiveInt = (value: string): number | undefined => {
   return !Number.isNaN(num) && num > 0 ? num : undefined;
 };
 
+/** Extract product key from i18nKey (e.g., "products.bottled-water" -> "bottled-water") */
+const extractProductKey = (i18nKey: string | undefined): string => {
+  if (!i18nKey) return '';
+  return i18nKey.startsWith('products.') ? i18nKey.substring(9) : i18nKey;
+};
+
+/** Check if a unit is continuous (allows decimal values with 0.1 step) */
+const isContinuousUnit = (unit: string): boolean => {
+  return ['kilograms', 'liters', 'grams', 'meters'].includes(unit);
+};
+
 export function ItemEditor({
   item,
   onSave,
   onCancel,
   existingIds = new Set(),
 }: ItemEditorProps) {
-  const { t } = useTranslation(['common', 'categories', 'units']);
+  const { t } = useTranslation(['common', 'categories', 'units', 'products']);
   const isEditing = !!item;
+
+  // Determine initial name type based on item data
+  const initialNameType: NameType = item?.i18nKey ? 'builtin' : 'custom';
+  const initialProductKey = extractProductKey(item?.i18nKey);
 
   // Form state - use initializer function to guarantee unique ID at mount
   const [id] = useState(() => {
@@ -52,8 +176,14 @@ export function ItemEditor({
     } while (existingIds.has(candidate));
     return candidate;
   });
+
+  // Name type state
+  const [nameType, setNameType] = useState<NameType>(initialNameType);
+  const [selectedProductKey, setSelectedProductKey] =
+    useState(initialProductKey);
   const [nameEn, setNameEn] = useState(item?.names?.en || '');
   const [nameFi, setNameFi] = useState(item?.names?.fi || '');
+
   const [category, setCategory] = useState<StandardCategoryId>(
     item?.category || 'food',
   );
@@ -83,11 +213,23 @@ export function ItemEditor({
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Sort product keys alphabetically by their translated names
+  const sortedProductKeys = useMemo(() => {
+    return [...BUILT_IN_PRODUCT_KEYS].sort((a, b) => {
+      const nameA = t(a, { ns: 'products' });
+      const nameB = t(b, { ns: 'products' });
+      return nameA.localeCompare(nameB);
+    });
+  }, [t]);
+
   const validate = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // At least one name is required
-    if (!nameEn.trim() && !nameFi.trim()) {
+    // Validation depends on name type
+    if (nameType === 'builtin' && !selectedProductKey) {
+      newErrors.name = t('kitEditor.validation.nameRequired');
+    } else if (nameType === 'custom' && !nameEn.trim() && !nameFi.trim()) {
+      // At least one custom name is required
       newErrors.name = t('kitEditor.validation.nameRequired');
     }
 
@@ -104,7 +246,17 @@ export function ItemEditor({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [nameEn, nameFi, id, baseQuantity, isEditing, existingIds, t]);
+  }, [
+    nameType,
+    selectedProductKey,
+    nameEn,
+    nameFi,
+    id,
+    baseQuantity,
+    isEditing,
+    existingIds,
+    t,
+  ]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -116,17 +268,26 @@ export function ItemEditor({
 
       const savedItem: ImportedRecommendedItem = {
         id: id as ImportedRecommendedItem['id'],
-        names: {
-          ...item?.names,
-          en: nameEn.trim() || nameFi.trim(),
-          fi: nameFi.trim() || nameEn.trim(),
-        },
         category,
         baseQuantity: Number.parseFloat(baseQuantity),
         unit,
         scaleWithPeople,
         scaleWithDays,
       };
+
+      // Set name based on type - explicitly clear the opposite field to prevent stale data
+      if (nameType === 'builtin') {
+        savedItem.i18nKey = `products.${selectedProductKey}`;
+        // Explicitly clear names when using built-in product key
+        delete savedItem.names;
+      } else {
+        savedItem.names = {
+          en: nameEn.trim() || nameFi.trim(),
+          fi: nameFi.trim() || nameEn.trim(),
+        };
+        // Explicitly clear i18nKey when using custom names
+        delete savedItem.i18nKey;
+      }
 
       if (requiresFreezer) {
         savedItem.requiresFreezer = true;
@@ -155,7 +316,8 @@ export function ItemEditor({
     [
       validate,
       id,
-      item,
+      nameType,
+      selectedProductKey,
       nameEn,
       nameFi,
       category,
@@ -188,36 +350,89 @@ export function ItemEditor({
       {/* Names Section */}
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>{t('kitEditor.names')}</h4>
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <label htmlFor="nameEn" className={styles.label}>
-              {t('kitEditor.nameEn')}
-            </label>
+
+        {/* Name Type Toggle */}
+        <div className={styles.radioGroup} data-testid="name-type-selector">
+          <label className={styles.radio}>
             <input
-              type="text"
-              id="nameEn"
-              className={styles.input}
-              value={nameEn}
-              onChange={(e) => setNameEn(e.target.value)}
-              placeholder={t('kitEditor.nameEnPlaceholder')}
-              data-testid="item-name-en"
+              type="radio"
+              name="nameType"
+              value="builtin"
+              checked={nameType === 'builtin'}
+              onChange={() => setNameType('builtin')}
+              data-testid="name-type-builtin"
             />
-          </div>
-          <div className={styles.field}>
-            <label htmlFor="nameFi" className={styles.label}>
-              {t('kitEditor.nameFi')}
-            </label>
+            <span>{t('kitEditor.useBuiltInName')}</span>
+          </label>
+          <label className={styles.radio}>
             <input
-              type="text"
-              id="nameFi"
-              className={styles.input}
-              value={nameFi}
-              onChange={(e) => setNameFi(e.target.value)}
-              placeholder={t('kitEditor.nameFiPlaceholder')}
-              data-testid="item-name-fi"
+              type="radio"
+              name="nameType"
+              value="custom"
+              checked={nameType === 'custom'}
+              onChange={() => setNameType('custom')}
+              data-testid="name-type-custom"
             />
-          </div>
+            <span>{t('kitEditor.useCustomName')}</span>
+          </label>
         </div>
+
+        {/* Built-in Product Selector */}
+        {nameType === 'builtin' && (
+          <div className={styles.field}>
+            <label htmlFor="productKey" className={styles.label}>
+              {t('kitEditor.builtInProduct')}
+            </label>
+            <select
+              id="productKey"
+              className={styles.select}
+              value={selectedProductKey}
+              onChange={(e) => setSelectedProductKey(e.target.value)}
+              data-testid="item-product-key"
+            >
+              <option value="">{t('kitEditor.selectProduct')}</option>
+              {sortedProductKeys.map((key) => (
+                <option key={key} value={key}>
+                  {t(key, { ns: 'products' })}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Custom Name Inputs */}
+        {nameType === 'custom' && (
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label htmlFor="nameEn" className={styles.label}>
+                {t('kitEditor.nameEn')}
+              </label>
+              <input
+                type="text"
+                id="nameEn"
+                className={styles.input}
+                value={nameEn}
+                onChange={(e) => setNameEn(e.target.value)}
+                placeholder={t('kitEditor.nameEnPlaceholder')}
+                data-testid="item-name-en"
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="nameFi" className={styles.label}>
+                {t('kitEditor.nameFi')}
+              </label>
+              <input
+                type="text"
+                id="nameFi"
+                className={styles.input}
+                value={nameFi}
+                onChange={(e) => setNameFi(e.target.value)}
+                placeholder={t('kitEditor.nameFiPlaceholder')}
+                data-testid="item-name-fi"
+              />
+            </div>
+          </div>
+        )}
         {errors.name && <p className={styles.error}>{errors.name}</p>}
       </div>
 
@@ -278,8 +493,8 @@ export function ItemEditor({
               className={styles.input}
               value={baseQuantity}
               onChange={(e) => setBaseQuantity(e.target.value)}
-              min="0.01"
-              step="0.01"
+              min={isContinuousUnit(unit) ? '0.1' : '1'}
+              step={isContinuousUnit(unit) ? '0.1' : '1'}
               data-testid="item-base-quantity"
             />
             {errors.baseQuantity && (

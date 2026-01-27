@@ -23,7 +23,7 @@ export interface RecommendedItemsContextValue {
   availableKits: KitInfo[];
 
   /** Currently selected kit ID */
-  selectedKitId: KitId | null;
+  selectedKitId: KitId | undefined;
 
   /** Select a different kit */
   selectKit: (kitId: KitId) => void;
@@ -35,6 +35,9 @@ export interface RecommendedItemsContextValue {
 
   /** Delete an uploaded custom kit */
   deleteKit: (kitId: `custom:${string}`) => void;
+
+  /** Fork a built-in kit to create an editable custom copy */
+  forkBuiltInKit: () => KitId | undefined;
 
   // === Kit Editing ===
 
@@ -62,12 +65,14 @@ export interface RecommendedItemsContextValue {
 
   // === Legacy/Backward Compat ===
 
-  /** @deprecated Use selectedKitId !== null && isCustomKitId(selectedKitId) */
-  customRecommendationsInfo: {
-    name: string;
-    version: string;
-    itemCount: number;
-  } | null;
+  /** @deprecated Use selectedKitId !== undefined && isCustomKitId(selectedKitId) */
+  customRecommendationsInfo:
+    | {
+        name: string;
+        version: string;
+        itemCount: number;
+      }
+    | undefined;
 
   /** @deprecated Use !isBuiltInKitId(selectedKitId) */
   isUsingCustomRecommendations: boolean;

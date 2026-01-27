@@ -82,6 +82,7 @@ const createMockContext = (overrides = {}) => ({
     warnings: [],
   })),
   deleteKit: vi.fn(),
+  forkBuiltInKit: vi.fn(() => 'custom:forked-kit-uuid' as const),
   updateCurrentKitMeta: vi.fn(),
   addItemToKit: vi.fn(),
   updateItemInKit: vi.fn(),
@@ -93,7 +94,7 @@ const createMockContext = (overrides = {}) => ({
       i18nKey: item.i18nKey,
     })),
   })),
-  customRecommendationsInfo: null,
+  customRecommendationsInfo: undefined,
   isUsingCustomRecommendations: false,
   importRecommendedItems: vi.fn(() => ({
     valid: true,
@@ -196,23 +197,40 @@ describe('KitEditor', () => {
     expect(screen.getByText('kitEditor.noSearchResults')).toBeInTheDocument();
   });
 
-  it('should show notice for built-in kits (not editable)', () => {
+  it('should show fork notice for built-in kits', () => {
     render(<KitEditor isOpen={true} onClose={mockOnClose} />);
 
-    expect(screen.getByText('kitEditor.builtInNotice')).toBeInTheDocument();
+    expect(screen.getByTestId('kit-editor-fork-notice')).toBeInTheDocument();
+    expect(screen.getByText('kitEditor.forkNotice')).toBeInTheDocument();
   });
 
-  it('should not show add item button for built-in kits', () => {
+  it('should show add item button for built-in kits', () => {
     render(<KitEditor isOpen={true} onClose={mockOnClose} />);
 
-    expect(screen.queryByTestId('kit-editor-add-item')).not.toBeInTheDocument();
+    expect(screen.getByTestId('kit-editor-add-item')).toBeInTheDocument();
   });
 
-  it('should not show edit/delete buttons for built-in kit items', () => {
+  it('should show edit/delete buttons for built-in kit items', () => {
     render(<KitEditor isOpen={true} onClose={mockOnClose} />);
 
-    expect(screen.queryByTestId('edit-item-water')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('delete-item-water')).not.toBeInTheDocument();
+    expect(screen.getByTestId('edit-item-water')).toBeInTheDocument();
+    expect(screen.getByTestId('delete-item-water')).toBeInTheDocument();
+  });
+
+  it('should call forkBuiltInKit when editing a built-in kit item', () => {
+    render(<KitEditor isOpen={true} onClose={mockOnClose} />);
+
+    fireEvent.click(screen.getByTestId('edit-item-water'));
+
+    expect(mockContext.forkBuiltInKit).toHaveBeenCalled();
+  });
+
+  it('should call forkBuiltInKit when adding item to built-in kit', () => {
+    render(<KitEditor isOpen={true} onClose={mockOnClose} />);
+
+    fireEvent.click(screen.getByTestId('kit-editor-add-item'));
+
+    expect(mockContext.forkBuiltInKit).toHaveBeenCalled();
   });
 
   describe('with custom kit selected', () => {
@@ -232,12 +250,20 @@ describe('KitEditor', () => {
       expect(screen.getByTestId('kit-editor-add-item')).toBeInTheDocument();
     });
 
-    it('should not show built-in notice for custom kits', () => {
+    it('should not show fork notice for custom kits', () => {
       render(<KitEditor isOpen={true} onClose={mockOnClose} />);
 
       expect(
-        screen.queryByText('kitEditor.builtInNotice'),
+        screen.queryByTestId('kit-editor-fork-notice'),
       ).not.toBeInTheDocument();
+    });
+
+    it('should not call forkBuiltInKit when editing custom kit items', () => {
+      render(<KitEditor isOpen={true} onClose={mockOnClose} />);
+
+      fireEvent.click(screen.getByTestId('edit-item-water'));
+
+      expect(mockContext.forkBuiltInKit).not.toHaveBeenCalled();
     });
 
     it('should show edit buttons for custom kit items', () => {
