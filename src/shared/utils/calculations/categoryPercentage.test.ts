@@ -1281,8 +1281,418 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
+  describe('categories without recommendations', () => {
+    it('calculates calorie-based percentage for food category without recommendations', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // 1 adult * 2000 kcal * 3 days = 6000 kcal needed
+      // 1 kg rice = 3600 kcal = 60%
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          name: 'Rice',
+          categoryId: createCategoryId('food'),
+          quantity: 1,
+          caloriesPerUnit: 3600,
+          unit: 'kilograms',
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.percentage).toBe(60);
+      expect(result.totalActualCalories).toBe(3600);
+      expect(result.totalNeededCalories).toBe(6000);
+      expect(result.hasEnough).toBe(false);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('returns 100% for food category without recommendations when enough calories', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // Need 6000 kcal, have 2 kg rice = 7200 kcal
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('food'),
+          quantity: 2,
+          caloriesPerUnit: 3600,
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.percentage).toBe(120);
+      expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('calculates water-based percentage for water category without recommendations', () => {
+      const household = createMockHousehold({
+        adults: 2,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // 2 adults * 3 L/day * 3 days = 18 L needed (no prep water since no food items)
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('water-beverages'),
+          quantity: 9, // 50%
+          unit: 'liters',
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'water-beverages',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.totalNeeded).toBe(18);
+      expect(result.totalActual).toBe(9);
+      expect(result.percentage).toBe(50);
+      expect(result.hasEnough).toBe(false);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('returns 100% for water category without recommendations when enough water', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // 1 adult * 3 L/day * 3 days = 9 L needed
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('water-beverages'),
+          quantity: 10,
+          unit: 'liters',
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'water-beverages',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.percentage).toBe(111); // 10/9 * 100 = 111%
+      expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('scales food calorie needs with household size without recommendations', () => {
+      const household = createMockHousehold({
+        adults: 2,
+        children: 2, // Children = 0.75 multiplier
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // (2 * 1.0 + 2 * 0.75) * 2000 * 3 = 3.5 * 2000 * 3 = 21000 kcal needed
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('food'),
+          quantity: 3, // 3 kg rice = 10800 kcal
+          caloriesPerUnit: 3600,
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.totalNeededCalories).toBe(21000);
+      expect(result.totalActualCalories).toBe(10800);
+      expect(result.percentage).toBe(51);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('scales water needs with children without recommendations', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 2,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // (1 * 1.0 + 2 * 0.75) * 3 L/day * 3 days = 2.5 * 9 = 22.5 L needed
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('water-beverages'),
+          quantity: 11, // ~48% of 22.5
+          unit: 'liters',
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'water-beverages',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.totalNeeded).toBe(22.5);
+      expect(result.totalActual).toBe(11);
+      expect(result.percentage).toBe(49);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('returns 100% for empty food category with zero household', () => {
+      const household = createMockHousehold({
+        adults: 0,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      const result = calculateCategoryPercentage(
+        'food',
+        [],
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      // No people = no calories needed = 100%
+      expect(result.percentage).toBe(100);
+      expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('returns 100% for empty water category with zero household', () => {
+      const household = createMockHousehold({
+        adults: 0,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      const result = calculateCategoryPercentage(
+        'water-beverages',
+        [],
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      // No people = no water needed = 100%
+      expect(result.percentage).toBe(100);
+      expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('sums calories from multiple food items without recommendations', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // Need 6000 kcal, have 3600 + 1200 = 4800 kcal = 80%
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('food'),
+          quantity: 1,
+          caloriesPerUnit: 3600,
+        }),
+        createMockInventoryItem({
+          id: createItemId('2'),
+          categoryId: createCategoryId('food'),
+          quantity: 2,
+          caloriesPerUnit: 600, // 2 * 600 = 1200 kcal
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.totalActualCalories).toBe(4800);
+      expect(result.totalNeededCalories).toBe(6000);
+      expect(result.percentage).toBe(80);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('ignores food items without caloriesPerUnit when no recommendations', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // Need 6000 kcal, only item with caloriesPerUnit is counted
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('food'),
+          quantity: 1,
+          caloriesPerUnit: 3600,
+        }),
+        createMockInventoryItem({
+          id: createItemId('2'),
+          categoryId: createCategoryId('food'),
+          quantity: 10,
+          caloriesPerUnit: undefined, // No calories, should be ignored
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.totalActualCalories).toBe(3600);
+      expect(result.percentage).toBe(60);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('only counts water items in liters without recommendations', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // Need 9 L, have 5 L (pieces item should be ignored)
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('water-beverages'),
+          quantity: 5,
+          unit: 'liters',
+        }),
+        createMockInventoryItem({
+          id: createItemId('2'),
+          categoryId: createCategoryId('water-beverages'),
+          quantity: 10,
+          unit: 'pieces', // Not liters, should be ignored
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'water-beverages',
+        items,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      expect(result.totalActual).toBe(5);
+      expect(result.totalNeeded).toBe(9);
+      expect(result.percentage).toBe(56);
+      expect(result.hasRecommendations).toBe(false);
+    });
+
+    it('includes preparation water from food items in water calculation', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      // Need 9 L drinking + preparation water from food items
+      // Food items with requiresWaterLiters add to preparation water
+      const allItems = [
+        createMockInventoryItem({
+          id: createItemId('1'),
+          categoryId: createCategoryId('water-beverages'),
+          quantity: 12,
+          unit: 'liters',
+        }),
+        createMockInventoryItem({
+          id: createItemId('2'),
+          categoryId: createCategoryId('food'),
+          name: 'Dry pasta',
+          quantity: 2,
+          requiresWaterLiters: 1.5, // 2 * 1.5 = 3 L prep water needed
+        }),
+      ];
+
+      const result = calculateCategoryPercentage(
+        'water-beverages',
+        allItems,
+        household,
+        [],
+        [], // No recommended items
+      );
+
+      // 9 L drinking + 3 L prep = 12 L needed, have 12 L = 100%
+      expect(result.totalNeeded).toBe(12);
+      expect(result.totalActual).toBe(12);
+      expect(result.percentage).toBe(100);
+      expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+    });
+  });
+
   describe('edge cases', () => {
-    it('returns 100% for category with items but no recommended items', () => {
+    it('returns 0% with hasEnough=true for category with items but no recommended items', () => {
+      // When there are no recommendations, there are no requirements to meet
+      // percentage is 0 (nothing to measure against), hasEnough is true (no requirements)
       const household = createMockHousehold({
         adults: 1,
         children: 0,
@@ -1307,11 +1717,14 @@ describe('calculateCategoryPercentage', () => {
         [], // No recommended items
       );
 
-      expect(result.percentage).toBe(100);
+      expect(result.percentage).toBe(0);
       expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+      expect(result.totalActual).toBe(1); // Item count
     });
 
-    it('returns 0% for empty category with no recommended items', () => {
+    it('returns 0% with hasEnough=true for empty category with no recommended items', () => {
+      // When there are no recommendations, there are no requirements to meet
       const household = createMockHousehold({
         adults: 1,
         children: 0,
@@ -1329,7 +1742,9 @@ describe('calculateCategoryPercentage', () => {
       );
 
       expect(result.percentage).toBe(0);
-      expect(result.hasEnough).toBe(false);
+      expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+      expect(result.totalActual).toBe(0); // No items
     });
   });
 });

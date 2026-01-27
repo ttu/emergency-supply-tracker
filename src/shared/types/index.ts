@@ -272,6 +272,7 @@ export interface RecommendedItemsFile {
 export const BUILT_IN_KIT_IDS = [
   '72tuntia-standard',
   'minimal-essentials',
+  'none',
 ] as const;
 
 export type BuiltInKitId = (typeof BUILT_IN_KIT_IDS)[number];

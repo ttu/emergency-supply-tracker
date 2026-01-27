@@ -37,6 +37,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'food',
@@ -49,6 +50,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
     ];
     const score =
@@ -69,6 +71,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'food',
@@ -81,6 +84,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
     ];
     const score =
@@ -101,6 +105,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'food',
@@ -113,6 +118,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
     ];
     const score =
@@ -133,6 +139,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'food',
@@ -145,6 +152,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'cooking',
@@ -157,6 +165,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'light',
@@ -169,6 +178,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'communication',
@@ -181,6 +191,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'medical',
@@ -193,6 +204,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'hygiene',
@@ -205,6 +217,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'tools',
@@ -217,6 +230,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
       {
         categoryId: 'cash',
@@ -229,6 +243,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         shortages: [],
         totalActual: 0,
         totalNeeded: 0,
+        hasRecommendations: true,
       },
     ];
     const score =

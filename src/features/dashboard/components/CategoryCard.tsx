@@ -20,6 +20,8 @@ export interface CategoryCardProps {
   totalNeededCalories?: number;
   missingCalories?: number;
   onClick?: () => void;
+  // False when category has no recommendations (except food/water which always calculate)
+  hasRecommendations?: boolean;
 }
 
 export const CategoryCard = ({
@@ -35,12 +37,17 @@ export const CategoryCard = ({
   totalNeededCalories,
   missingCalories,
   onClick,
+  hasRecommendations = true,
 }: CategoryCardProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
 
   const categoryName = t(categoryId, { ns: 'categories' });
 
   const isFood = isFoodCategory(categoryId);
+  const isWater = categoryId === 'water-beverages';
+
+  // Show percentage for categories with recommendations, or food/water (which always calculate)
+  const showPercentage = hasRecommendations || isFood || isWater;
 
   // Format shortage summary - show calories for food, items for others
   const getShortageText = (): string | undefined => {
@@ -123,12 +130,21 @@ export const CategoryCard = ({
             {progressText || `${itemCount} ${t('dashboard.category.items')}`}
           </span>
         </div>
-        <div className={styles.statItem}>
-          <span className={styles.statLabel}>
-            {t('dashboard.category.completion')}
-          </span>
-          <span className={styles.statValue}>{completionPercentage}%</span>
-        </div>
+        {showPercentage ? (
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>
+              {t('dashboard.category.completion')}
+            </span>
+            <span className={styles.statValue}>{completionPercentage}%</span>
+          </div>
+        ) : (
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>
+              {t('dashboard.category.items')}
+            </span>
+            <span className={styles.statValue}>{itemCount}</span>
+          </div>
+        )}
       </div>
 
       {shortageText && status !== 'ok' && (
@@ -137,12 +153,14 @@ export const CategoryCard = ({
         </div>
       )}
 
-      <div className={styles.progressBar}>
-        <div
-          className={`${styles.progressFill} ${styles[`progress${status.charAt(0).toUpperCase()}${status.slice(1)}`]}`}
-          style={{ width: `${Math.min(completionPercentage, 100)}%` }}
-        />
-      </div>
+      {showPercentage && (
+        <div className={styles.progressBar}>
+          <div
+            className={`${styles.progressFill} ${styles[`progress${status.charAt(0).toUpperCase()}${status.slice(1)}`]}`}
+            style={{ width: `${Math.min(completionPercentage, 100)}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 };

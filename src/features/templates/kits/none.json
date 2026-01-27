@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "name": "No Recommendations",
+    "version": "1.0.0",
+    "description": "Track supplies without item recommendations. Food and water calculations still work based on household needs.",
+    "source": "Custom",
+    "createdAt": "2026-01-27T00:00:00.000Z",
+    "language": "en"
+  },
+  "items": []
+}
