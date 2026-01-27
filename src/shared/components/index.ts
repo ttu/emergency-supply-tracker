@@ -2,6 +2,7 @@
 export { Badge } from './Badge';
 export { Button } from './Button';
 export { Card } from './Card';
+export { DataErrorPage } from './DataErrorPage';
 export { ErrorBoundary } from './ErrorBoundary';
 export { Input } from './Input';
 export { LanguageSwitcher } from './LanguageSwitcher';
