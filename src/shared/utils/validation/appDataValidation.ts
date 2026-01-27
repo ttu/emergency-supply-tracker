@@ -30,10 +30,13 @@ const VALID_LANGUAGES = ['en', 'fi'] as const;
 function safeStringify(value: unknown): string {
   if (value === null) return 'null';
   if (value === undefined) return 'undefined';
-  if (typeof value === 'object') {
-    return JSON.stringify(value);
+  const type = typeof value;
+  // Handle primitives directly
+  if (type === 'string' || type === 'number' || type === 'boolean') {
+    return String(value);
   }
-  return String(value);
+  // Use JSON.stringify for objects, arrays, and any other types
+  return JSON.stringify(value);
 }
 
 /**
