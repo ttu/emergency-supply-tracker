@@ -58,6 +58,8 @@ export interface CategoryStatusSummary {
   // Water breakdown for water-beverages category
   drinkingWaterNeeded?: number;
   preparationWaterNeeded?: number;
+  // False when category has no recommendations (except food/water which always calculate)
+  hasRecommendations: boolean;
 }
 
 /**
@@ -237,6 +239,18 @@ export function calculateCategoryStatus(
   // Check if inventory meets the minimum requirements
   const hasEnough = hasEnoughInventory(category.id, shortageInfo);
 
+  // Determine if this category has recommendations
+  // Food and water always have recommendations (they use household-based calculations)
+  const categoryIdStr = String(category.id);
+  const isFoodOrWater =
+    categoryIdStr === 'food' || categoryIdStr === 'water-beverages';
+  const recommendedForCategory = recommendedItems.filter(
+    (item) =>
+      String(item.category) === categoryIdStr &&
+      !disabledRecommendedItems.includes(item.id),
+  );
+  const hasRecommendations = isFoodOrWater || recommendedForCategory.length > 0;
+
   // Calculate effective percentage
   // For mixed units categories, use weighted fulfillment for consistency
   let effectivePercentage = completionPercentage;
@@ -288,6 +302,7 @@ export function calculateCategoryStatus(
     missingCalories: shortageInfo.missingCalories,
     drinkingWaterNeeded: shortageInfo.drinkingWaterNeeded,
     preparationWaterNeeded: shortageInfo.preparationWaterNeeded,
+    hasRecommendations,
   };
 }
 
@@ -334,6 +349,8 @@ export interface CategoryDisplayStatus {
   // Water breakdown for water-beverages category
   drinkingWaterNeeded?: number;
   preparationWaterNeeded?: number;
+  // False when category has no recommendations (except food/water which always calculate)
+  hasRecommendations: boolean;
 }
 
 /**
@@ -391,12 +408,30 @@ export function getCategoryDisplayStatus(
     ? 100
     : Math.min(effectivePercentage, 100);
 
+  // For water without recommendations, use values from percentage calculation
+  // (shortageInfo will be empty because there are no recommendations to match)
+  // Food uses totalActualCalories/totalNeededCalories which are already from percentageResult
+  const isWater = categoryId === 'water-beverages';
+  const noRecommendations = !percentageResult.hasRecommendations;
+
+  let totalActual = shortageInfo.totalActual;
+  let totalNeeded = shortageInfo.totalNeeded;
+  let primaryUnit = shortageInfo.primaryUnit;
+
+  if (noRecommendations && isWater) {
+    // Water: use liters from percentage calculation
+    totalActual = percentageResult.totalActual;
+    totalNeeded = percentageResult.totalNeeded;
+    primaryUnit = 'liters';
+  }
+  // Food uses totalActualCalories/totalNeededCalories, not totalActual/totalNeeded
+
   return {
     status,
     completionPercentage,
-    totalActual: shortageInfo.totalActual,
-    totalNeeded: shortageInfo.totalNeeded,
-    primaryUnit: shortageInfo.primaryUnit,
+    totalActual,
+    totalNeeded,
+    primaryUnit,
     shortages: shortageInfo.shortages,
     totalActualCalories: percentageResult.totalActualCalories,
     totalNeededCalories: percentageResult.totalNeededCalories,
@@ -411,5 +446,6 @@ export function getCategoryDisplayStatus(
         : undefined,
     drinkingWaterNeeded: shortageInfo.drinkingWaterNeeded,
     preparationWaterNeeded: shortageInfo.preparationWaterNeeded,
+    hasRecommendations: percentageResult.hasRecommendations,
   };
 }

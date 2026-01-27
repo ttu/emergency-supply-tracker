@@ -61,6 +61,8 @@ export interface CategoryPercentageResult {
   totalActualCalories?: number;
   /** For food category: total needed calories */
   totalNeededCalories?: number;
+  /** False when category has no recommendations (except food/water which always calculate) */
+  hasRecommendations: boolean;
 }
 
 /**
@@ -104,20 +106,43 @@ export function calculateCategoryPercentage(
     );
   });
 
-  // No recommended items for this category
-  if (recommendedForCategory.length === 0) {
-    return {
-      percentage: categoryItems.length > 0 ? 100 : 0,
-      totalActual: 0,
-      totalNeeded: 0,
-      hasEnough: categoryItems.length > 0,
-    };
-  }
-
-  // Calculate people multiplier
+  // Calculate people multiplier (needed for food/water even without recommendations)
   const peopleMultiplier =
     household.adults * ADULT_REQUIREMENT_MULTIPLIER +
     household.children * childrenMultiplier;
+
+  // No recommended items for this category
+  if (recommendedForCategory.length === 0) {
+    // Food category: still calculate calorie-based percentage using household needs
+    if (isFoodCategory(categoryId)) {
+      return calculateFoodCategoryPercentageWithoutRecommendations(
+        categoryItems,
+        household,
+        peopleMultiplier,
+        dailyCalories,
+      );
+    }
+
+    // Water category: still calculate water-based percentage using household needs
+    if (categoryId === 'water-beverages') {
+      return calculateWaterCategoryPercentageWithoutRecommendations(
+        categoryItems,
+        items,
+        household,
+        peopleMultiplier,
+        dailyWater,
+      );
+    }
+
+    // Other categories: no percentage calculation, just count items
+    return {
+      percentage: 0,
+      totalActual: categoryItems.length,
+      totalNeeded: 0,
+      hasEnough: true, // No requirements to meet
+      hasRecommendations: false,
+    };
+  }
 
   // Food category uses calorie-based calculation
   if (isFoodCategory(categoryId)) {
@@ -245,6 +270,7 @@ function calculateFoodCategoryPercentage(
     hasEnough: totalActualCalories >= totalNeededCalories,
     totalActualCalories,
     totalNeededCalories,
+    hasRecommendations: true,
   };
 }
 
@@ -330,5 +356,77 @@ function calculateQuantityCategoryPercentage(
     totalActual,
     totalNeeded,
     hasEnough: totalActual >= totalNeeded,
+    hasRecommendations: true,
+  };
+}
+
+/**
+ * Calculate food category percentage without recommendations.
+ * Uses calorie-based calculation based on household needs.
+ */
+function calculateFoodCategoryPercentageWithoutRecommendations(
+  categoryItems: InventoryItem[],
+  household: HouseholdConfig,
+  peopleMultiplier: number,
+  dailyCalories: number,
+): CategoryPercentageResult {
+  const totalNeededCalories =
+    dailyCalories * peopleMultiplier * household.supplyDurationDays;
+
+  // Calculate total actual calories from all food items with caloriesPerUnit
+  let totalActualCalories = 0;
+  categoryItems.forEach((item) => {
+    if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
+      totalActualCalories += calculateItemTotalCalories(item);
+    }
+  });
+
+  const percentage =
+    totalNeededCalories > 0
+      ? Math.round((totalActualCalories / totalNeededCalories) * 100)
+      : 100;
+
+  return {
+    percentage,
+    totalActual: totalActualCalories,
+    totalNeeded: totalNeededCalories,
+    hasEnough: totalActualCalories >= totalNeededCalories,
+    totalActualCalories,
+    totalNeededCalories,
+    hasRecommendations: false,
+  };
+}
+
+/**
+ * Calculate water category percentage without recommendations.
+ * Uses water-based calculation based on household needs.
+ */
+function calculateWaterCategoryPercentageWithoutRecommendations(
+  categoryItems: InventoryItem[],
+  allItems: InventoryItem[],
+  household: HouseholdConfig,
+  peopleMultiplier: number,
+  dailyWater: number,
+): CategoryPercentageResult {
+  const drinkingWaterNeeded =
+    dailyWater * peopleMultiplier * household.supplyDurationDays;
+  const preparationWaterNeeded = calculateTotalWaterRequired(allItems);
+  const totalNeeded = drinkingWaterNeeded + preparationWaterNeeded;
+
+  // Sum all water from category items (assume liters for water items)
+  const totalActual = categoryItems.reduce(
+    (sum, item) => sum + (item.unit === 'liters' ? item.quantity : 0),
+    0,
+  );
+
+  const percentage =
+    totalNeeded > 0 ? Math.round((totalActual / totalNeeded) * 100) : 100;
+
+  return {
+    percentage,
+    totalActual,
+    totalNeeded,
+    hasEnough: totalActual >= totalNeeded,
+    hasRecommendations: false,
   };
 }

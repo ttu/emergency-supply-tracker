@@ -28,7 +28,6 @@ import {
   randomChildrenMinOne,
   randomSupplyDurationDaysLong,
   randomQuantitySmall,
-  randomQuantityMedium,
   randomQuantityLarge,
   randomQuantityFloat,
   randomLessThan,
@@ -72,6 +71,7 @@ describe('calculateCategoryStatus', () => {
       missingCalories: undefined,
       drinkingWaterNeeded: undefined,
       preparationWaterNeeded: undefined,
+      hasRecommendations: false,
     });
   });
 
@@ -1159,14 +1159,20 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
     expect(resultWithDisabled.status).toBe('ok');
   });
 
-  it('should show ok status when all recommended items are disabled and there is inventory', () => {
-    const quantity = randomQuantityMedium();
+  it('should still calculate water needs based on household when all recommended items are disabled', () => {
+    // Water-beverages category always calculates based on household needs (3L/person/day)
+    // even when all specific recommendations are disabled
+    const waterNeeded =
+      (household.adults + household.children * 0.75) *
+      household.supplyDurationDays *
+      DAILY_WATER_PER_PERSON;
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
-        quantity,
+        quantity: Math.ceil(waterNeeded) + 5, // Enough water to meet household needs
+        unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
       }),
     ];
@@ -1179,9 +1185,11 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
       ['bottled-water', 'long-life-milk', 'long-life-juice'],
     );
 
-    // When all items are disabled, status should be ok
+    // Even with all recommendations disabled, water category still calculates based on household
+    // With enough water to meet household needs, status should be ok
     expect(result.shortages.length).toBe(0);
     expect(result.status).toBe('ok');
+    expect(result.hasRecommendations).toBe(false);
   });
 });
 

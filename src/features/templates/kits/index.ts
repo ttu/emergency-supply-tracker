@@ -14,11 +14,13 @@ import type {
 // Import built-in kit JSON files
 import standard72h from './72tuntia-standard.json' with { type: 'json' };
 import minimal from './minimal-essentials.json' with { type: 'json' };
+import none from './none.json' with { type: 'json' };
 
 /** Map of built-in kit IDs to their data */
 export const BUILT_IN_KITS: Record<BuiltInKitId, RecommendedItemsFile> = {
   '72tuntia-standard': standard72h as RecommendedItemsFile,
   'minimal-essentials': minimal as RecommendedItemsFile,
+  none: none as RecommendedItemsFile,
 };
 
 /** Default kit ID for new users */

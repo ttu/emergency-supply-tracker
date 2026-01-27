@@ -1282,7 +1282,9 @@ describe('calculateCategoryPercentage', () => {
   });
 
   describe('edge cases', () => {
-    it('returns 100% for category with items but no recommended items', () => {
+    it('returns 0% with hasEnough=true for category with items but no recommended items', () => {
+      // When there are no recommendations, there are no requirements to meet
+      // percentage is 0 (nothing to measure against), hasEnough is true (no requirements)
       const household = createMockHousehold({
         adults: 1,
         children: 0,
@@ -1307,11 +1309,14 @@ describe('calculateCategoryPercentage', () => {
         [], // No recommended items
       );
 
-      expect(result.percentage).toBe(100);
+      expect(result.percentage).toBe(0);
       expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+      expect(result.totalActual).toBe(1); // Item count
     });
 
-    it('returns 0% for empty category with no recommended items', () => {
+    it('returns 0% with hasEnough=true for empty category with no recommended items', () => {
+      // When there are no recommendations, there are no requirements to meet
       const household = createMockHousehold({
         adults: 1,
         children: 0,
@@ -1329,7 +1334,9 @@ describe('calculateCategoryPercentage', () => {
       );
 
       expect(result.percentage).toBe(0);
-      expect(result.hasEnough).toBe(false);
+      expect(result.hasEnough).toBe(true);
+      expect(result.hasRecommendations).toBe(false);
+      expect(result.totalActual).toBe(0); // No items
     });
   });
 });
