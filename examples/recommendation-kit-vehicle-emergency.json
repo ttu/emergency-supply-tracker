@@ -1,0 +1,404 @@
+{
+  "meta": {
+    "name": "Vehicle Emergency Kit",
+    "version": "1.0.0",
+    "description": "Essential supplies to keep in your car for roadside emergencies, breakdowns, and unexpected delays",
+    "source": "Custom",
+    "createdAt": "2026-01-27T10:00:00.000Z",
+    "language": "en"
+  },
+  "items": [
+    {
+      "id": "bottled-water",
+      "i18nKey": "products.bottled-water",
+      "category": "water-beverages",
+      "baseQuantity": 2,
+      "unit": "liters",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "electrolyte-drinks",
+      "names": {
+        "en": "Electrolyte Drink Packets",
+        "fi": "Elektrolyyttijuomajauheet"
+      },
+      "category": "water-beverages",
+      "baseQuantity": 4,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "energy-bars",
+      "i18nKey": "products.energy-bars",
+      "category": "food",
+      "baseQuantity": 4,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 50,
+      "caloriesPer100g": 500,
+      "caloriesPerUnit": 250
+    },
+    {
+      "id": "trail-mix-pouches",
+      "names": {
+        "en": "Trail Mix Pouches",
+        "fi": "Polkusekoituspussit"
+      },
+      "category": "food",
+      "baseQuantity": 2,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 100,
+      "caloriesPer100g": 450,
+      "caloriesPerUnit": 450
+    },
+    {
+      "id": "crackers",
+      "i18nKey": "products.crackers",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 200,
+      "caloriesPer100g": 250,
+      "caloriesPerUnit": 500
+    },
+    {
+      "id": "hard-candy",
+      "names": {
+        "en": "Hard Candy",
+        "fi": "Kovaa karkkia"
+      },
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 200,
+      "caloriesPer100g": 390,
+      "caloriesPerUnit": 780
+    },
+    {
+      "id": "flashlight",
+      "i18nKey": "products.flashlight",
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "warning-triangle",
+      "names": {
+        "en": "Reflective Warning Triangle",
+        "fi": "Varoituskolmio"
+      },
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "emergency-road-flares",
+      "names": {
+        "en": "LED Emergency Road Flares",
+        "fi": "LED-hätävilkut"
+      },
+      "category": "light-power",
+      "baseQuantity": 3,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "batteries-aa",
+      "i18nKey": "products.batteries-aa",
+      "category": "light-power",
+      "baseQuantity": 8,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "car-phone-charger",
+      "names": {
+        "en": "Car Phone Charger",
+        "fi": "Autolaturi puhelimelle"
+      },
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "jump-starter-pack",
+      "names": {
+        "en": "Portable Jump Starter",
+        "fi": "Kannettava apukäynnistin"
+      },
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "first-aid-kit",
+      "i18nKey": "products.first-aid-kit",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "motion-sickness-tablets",
+      "names": {
+        "en": "Motion Sickness Tablets",
+        "fi": "Matkapahoinvointitabletit"
+      },
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "pain-relievers",
+      "i18nKey": "products.pain-relievers",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "sunscreen",
+      "names": {
+        "en": "Sunscreen SPF 30+",
+        "fi": "Aurinkovoide SPF 30+"
+      },
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "insect-repellent",
+      "names": {
+        "en": "Insect Repellent Spray",
+        "fi": "Hyönteiskarkote"
+      },
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "wet-wipes",
+      "i18nKey": "products.wet-wipes",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "hand-sanitizer",
+      "i18nKey": "products.hand-sanitizer",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "tissues",
+      "names": {
+        "en": "Travel Tissue Packs",
+        "fi": "Matkaneulaliinoja"
+      },
+      "category": "hygiene-sanitation",
+      "baseQuantity": 3,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "plastic-bags",
+      "i18nKey": "products.plastic-bags",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 5,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "jumper-cables",
+      "names": {
+        "en": "Jumper Cables",
+        "fi": "Apukaapelit"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "tire-repair-kit",
+      "names": {
+        "en": "Tire Repair Kit",
+        "fi": "Rengaspaikkaussarja"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "tow-strap",
+      "names": {
+        "en": "Tow Strap",
+        "fi": "Hinausliina"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "multi-tool",
+      "i18nKey": "products.multi-tool",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "duct-tape",
+      "i18nKey": "products.duct-tape",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "rolls",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "work-gloves",
+      "i18nKey": "products.work-gloves",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pairs",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "emergency-blanket",
+      "names": {
+        "en": "Emergency Mylar Blanket",
+        "fi": "Hätäpeitto"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "hi-vis-vest",
+      "names": {
+        "en": "High-Visibility Safety Vest",
+        "fi": "Heijastinliivi"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "windshield-washer-fluid",
+      "names": {
+        "en": "Windshield Washer Fluid",
+        "fi": "Tuulilasinpesuneste"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 2,
+      "unit": "liters",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "seatbelt-cutter-window-breaker",
+      "names": {
+        "en": "Seatbelt Cutter & Window Breaker",
+        "fi": "Turvavöiden leikkuri ja lasinrikkoija"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cash",
+      "i18nKey": "products.cash",
+      "category": "cash-documents",
+      "baseQuantity": 100,
+      "unit": "euros",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "roadside-assistance-card",
+      "names": {
+        "en": "Roadside Assistance Card",
+        "fi": "Tiepalvelukortti"
+      },
+      "category": "cash-documents",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "paper-map",
+      "names": {
+        "en": "Paper Road Map",
+        "fi": "Paperinen tiekartta"
+      },
+      "category": "cash-documents",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    }
+  ]
+}

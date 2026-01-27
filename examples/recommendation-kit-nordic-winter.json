@@ -1,0 +1,430 @@
+{
+  "meta": {
+    "name": "Nordic Winter Preparedness Kit",
+    "version": "1.0.0",
+    "description": "Emergency supplies tailored for harsh Nordic winter conditions including extreme cold, power outages, and snowstorms",
+    "source": "Custom",
+    "createdAt": "2026-01-27T10:00:00.000Z",
+    "language": "en"
+  },
+  "items": [
+    {
+      "id": "bottled-water",
+      "i18nKey": "products.bottled-water",
+      "category": "water-beverages",
+      "baseQuantity": 3,
+      "unit": "liters",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12
+    },
+    {
+      "id": "hot-chocolate-mix",
+      "names": {
+        "en": "Hot Chocolate Mix",
+        "fi": "Kaakaojauhe"
+      },
+      "category": "water-beverages",
+      "baseQuantity": 0.5,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 18
+    },
+    {
+      "id": "instant-warm-drinks",
+      "names": {
+        "en": "Instant Warm Drink Packets",
+        "fi": "Pikajuomajauheet"
+      },
+      "category": "water-beverages",
+      "baseQuantity": 10,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "canned-soup",
+      "i18nKey": "products.canned-soup",
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 24,
+      "weightGramsPerUnit": 400,
+      "caloriesPer100g": 50,
+      "caloriesPerUnit": 200
+    },
+    {
+      "id": "hearty-stew-cans",
+      "names": {
+        "en": "Hearty Beef Stew Cans",
+        "fi": "Lihapata-säilykkeet"
+      },
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "cans",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 36,
+      "weightGramsPerUnit": 500,
+      "caloriesPer100g": 120,
+      "caloriesPerUnit": 600
+    },
+    {
+      "id": "porridge-packets",
+      "names": {
+        "en": "Instant Porridge Packets",
+        "fi": "Pikakaurapuurot"
+      },
+      "category": "food",
+      "baseQuantity": 2,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 35,
+      "caloriesPer100g": 370,
+      "caloriesPerUnit": 130,
+      "requiresWaterLiters": 0.2
+    },
+    {
+      "id": "energy-bars",
+      "i18nKey": "products.energy-bars",
+      "category": "food",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 50,
+      "caloriesPer100g": 500,
+      "caloriesPerUnit": 250
+    },
+    {
+      "id": "nuts",
+      "i18nKey": "products.nuts",
+      "category": "food",
+      "baseQuantity": 0.1,
+      "unit": "kilograms",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 1000,
+      "caloriesPer100g": 600,
+      "caloriesPerUnit": 6000
+    },
+    {
+      "id": "chocolate-bars",
+      "names": {
+        "en": "Chocolate Bars",
+        "fi": "Suklaapatukat"
+      },
+      "category": "food",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 12,
+      "weightGramsPerUnit": 100,
+      "caloriesPer100g": 550,
+      "caloriesPerUnit": 550
+    },
+    {
+      "id": "camping-stove",
+      "i18nKey": "products.camping-stove",
+      "category": "cooking-heat",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "stove-fuel",
+      "i18nKey": "products.stove-fuel",
+      "category": "cooking-heat",
+      "baseQuantity": 2,
+      "unit": "canisters",
+      "scaleWithPeople": false,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "hand-warmers",
+      "names": {
+        "en": "Disposable Hand Warmers",
+        "fi": "Kertakäyttöiset kädenlämmittimet"
+      },
+      "category": "cooking-heat",
+      "baseQuantity": 4,
+      "unit": "pairs",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "emergency-heat-packs",
+      "names": {
+        "en": "Body Heat Packs",
+        "fi": "Vartalonlämmittimet"
+      },
+      "category": "cooking-heat",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": true,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "matches",
+      "i18nKey": "products.matches",
+      "category": "cooking-heat",
+      "baseQuantity": 2,
+      "unit": "boxes",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "candles",
+      "i18nKey": "products.candles",
+      "category": "cooking-heat",
+      "baseQuantity": 20,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "flashlight",
+      "i18nKey": "products.flashlight",
+      "category": "light-power",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "headlamp",
+      "i18nKey": "products.headlamp",
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "batteries-aa",
+      "i18nKey": "products.batteries-aa",
+      "category": "light-power",
+      "baseQuantity": 24,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 60
+    },
+    {
+      "id": "power-bank",
+      "i18nKey": "products.power-bank",
+      "category": "light-power",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "lithium-batteries-cold-rated",
+      "names": {
+        "en": "Cold-Rated Lithium Batteries",
+        "fi": "Kylmänkestävät litiumparistot"
+      },
+      "category": "light-power",
+      "baseQuantity": 8,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 120
+    },
+    {
+      "id": "battery-radio",
+      "i18nKey": "products.battery-radio",
+      "category": "communication-info",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "first-aid-kit",
+      "i18nKey": "products.first-aid-kit",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "frostbite-cream",
+      "names": {
+        "en": "Frostbite Prevention Cream",
+        "fi": "Paleltumien ehkäisyvoide"
+      },
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "tubes",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "lip-balm-cold-weather",
+      "names": {
+        "en": "Cold Weather Lip Balm",
+        "fi": "Huulirasva pakkaseen"
+      },
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "pain-relievers",
+      "i18nKey": "products.pain-relievers",
+      "category": "medical-health",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "toilet-paper",
+      "i18nKey": "products.toilet-paper",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "rolls",
+      "scaleWithPeople": true,
+      "scaleWithDays": true
+    },
+    {
+      "id": "wet-wipes",
+      "i18nKey": "products.wet-wipes",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "packages",
+      "scaleWithPeople": true,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "hand-sanitizer",
+      "i18nKey": "products.hand-sanitizer",
+      "category": "hygiene-sanitation",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "emergency-blanket",
+      "names": {
+        "en": "Emergency Thermal Blanket",
+        "fi": "Hätäpeitto (avaruuspeitto)"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "wool-blanket",
+      "names": {
+        "en": "Wool Blanket",
+        "fi": "Villahuopa"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "snow-shovel",
+      "names": {
+        "en": "Collapsible Snow Shovel",
+        "fi": "Kokoontaitettava lumilapio"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "ice-scraper",
+      "names": {
+        "en": "Ice Scraper",
+        "fi": "Jääraappa"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "duct-tape",
+      "i18nKey": "products.duct-tape",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "rolls",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "multi-tool",
+      "i18nKey": "products.multi-tool",
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "tow-rope",
+      "names": {
+        "en": "Heavy-Duty Tow Rope",
+        "fi": "Hinausköysi"
+      },
+      "category": "tools-supplies",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cash",
+      "i18nKey": "products.cash",
+      "category": "cash-documents",
+      "baseQuantity": 300,
+      "unit": "euros",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "document-copies",
+      "i18nKey": "products.document-copies",
+      "category": "cash-documents",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    }
+  ]
+}
