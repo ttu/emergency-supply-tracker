@@ -28,9 +28,9 @@ export function DataErrorPage({
   const { t } = useTranslation();
   // Use override if provided (for Storybook), otherwise get from localStorage
   const validationResult =
-    validationResultOverride !== undefined
-      ? validationResultOverride
-      : getLastDataValidationResult();
+    validationResultOverride === undefined
+      ? getLastDataValidationResult()
+      : validationResultOverride;
 
   const handleReload = (): void => {
     globalThis.location.reload();
