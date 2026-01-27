@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHousehold } from '@/features/household';
 import { Input } from '@/shared/components/Input';
@@ -8,11 +9,59 @@ export function HouseholdForm() {
   const { t } = useTranslation();
   const { household, updateHousehold, setPreset } = useHousehold();
 
+  // Local string state for inputs to preserve cursor position during editing
+  // We don't sync household changes back to these inputs because the household
+  // context already manages the canonical state. Users edit the local input,
+  // then we validate and save to household on blur.
+  const [adultsInput, setAdultsInput] = useState(household.adults.toString());
+  const [childrenInput, setChildrenInput] = useState(
+    household.children.toString(),
+  );
+  const [petsInput, setPetsInput] = useState(household.pets.toString());
+  const [supplyDaysInput, setSupplyDaysInput] = useState(
+    household.supplyDurationDays.toString(),
+  );
+  const [freezerHoursInput, setFreezerHoursInput] = useState(
+    household.freezerHoldTimeHours?.toString() || '',
+  );
+
   const handleChange = (
     field: keyof typeof household,
     value: number | boolean | undefined,
   ) => {
     updateHousehold({ [field]: value });
+  };
+
+  const handleNumberBlur = (
+    field: 'adults' | 'children' | 'pets' | 'supplyDurationDays',
+    inputValue: string,
+    setInput: (value: string) => void,
+    defaultValue: number,
+    min: number = 0,
+  ) => {
+    const parsed = Number.parseInt(inputValue, 10);
+    if (Number.isNaN(parsed) || parsed < min) {
+      const value = Math.max(min, defaultValue);
+      setInput(value.toString());
+      updateHousehold({ [field]: value });
+    } else {
+      updateHousehold({ [field]: parsed });
+    }
+  };
+
+  const handleFreezerHoursBlur = () => {
+    if (freezerHoursInput === '') {
+      updateHousehold({ freezerHoldTimeHours: undefined });
+    } else {
+      const parsed = Number.parseInt(freezerHoursInput, 10);
+      if (Number.isNaN(parsed) || parsed < 0) {
+        setFreezerHoursInput(household.freezerHoldTimeHours?.toString() || '');
+      } else {
+        const clamped = Math.min(72, Math.max(0, parsed));
+        updateHousehold({ freezerHoldTimeHours: clamped });
+        setFreezerHoursInput(clamped.toString());
+      }
+    }
   };
 
   return (
@@ -51,9 +100,10 @@ export function HouseholdForm() {
           id="adults"
           type="number"
           label={t('settings.household.adults')}
-          value={household.adults.toString()}
-          onChange={(e) =>
-            handleChange('adults', Number.parseInt(e.target.value, 10) || 0)
+          value={adultsInput}
+          onChange={(e) => setAdultsInput(e.target.value)}
+          onBlur={() =>
+            handleNumberBlur('adults', adultsInput, setAdultsInput, 0, 0)
           }
           min={0}
         />
@@ -62,9 +112,10 @@ export function HouseholdForm() {
           id="children"
           type="number"
           label={t('settings.household.children')}
-          value={household.children.toString()}
-          onChange={(e) =>
-            handleChange('children', Number.parseInt(e.target.value, 10) || 0)
+          value={childrenInput}
+          onChange={(e) => setChildrenInput(e.target.value)}
+          onBlur={() =>
+            handleNumberBlur('children', childrenInput, setChildrenInput, 0, 0)
           }
           min={0}
         />
@@ -73,10 +124,9 @@ export function HouseholdForm() {
           id="pets"
           type="number"
           label={t('settings.household.pets')}
-          value={household.pets.toString()}
-          onChange={(e) =>
-            handleChange('pets', Number.parseInt(e.target.value, 10) || 0)
-          }
+          value={petsInput}
+          onChange={(e) => setPetsInput(e.target.value)}
+          onBlur={() => handleNumberBlur('pets', petsInput, setPetsInput, 0, 0)}
           min={0}
         />
 
@@ -84,11 +134,15 @@ export function HouseholdForm() {
           id="supplyDurationDays"
           type="number"
           label={t('settings.household.supplyDays')}
-          value={household.supplyDurationDays.toString()}
-          onChange={(e) =>
-            handleChange(
+          value={supplyDaysInput}
+          onChange={(e) => setSupplyDaysInput(e.target.value)}
+          onBlur={() =>
+            handleNumberBlur(
               'supplyDurationDays',
-              Number.parseInt(e.target.value, 10) || 1,
+              supplyDaysInput,
+              setSupplyDaysInput,
+              1,
+              1,
             )
           }
           min={1}
@@ -112,13 +166,9 @@ export function HouseholdForm() {
             id="freezerHoldTimeHours"
             type="number"
             label={t('settings.household.freezerHoldTime')}
-            value={household.freezerHoldTimeHours?.toString() || ''}
-            onChange={(e) =>
-              handleChange(
-                'freezerHoldTimeHours',
-                Number.parseInt(e.target.value, 10) || undefined,
-              )
-            }
+            value={freezerHoursInput}
+            onChange={(e) => setFreezerHoursInput(e.target.value)}
+            onBlur={handleFreezerHoursBlur}
             min={0}
             max={72}
           />

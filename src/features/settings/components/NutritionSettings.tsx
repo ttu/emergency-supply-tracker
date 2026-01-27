@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/features/settings';
 import {
@@ -26,38 +27,82 @@ export function NutritionSettings() {
     settings.childrenRequirementPercentage ??
     CHILDREN_REQUIREMENT_MULTIPLIER * 100;
 
+  // Local string state for inputs to preserve cursor position during editing
+  const [caloriesInput, setCaloriesInput] = useState(dailyCalories.toString());
+  const [waterInput, setWaterInput] = useState(dailyWater.toString());
+  const [percentageInput, setPercentageInput] = useState(
+    childrenPercentage.toString(),
+  );
+
+  // Sync local state when settings change externally (e.g., reset to defaults)
+  useEffect(() => {
+    setCaloriesInput(dailyCalories.toString());
+  }, [dailyCalories]);
+
+  useEffect(() => {
+    setWaterInput(dailyWater.toString());
+  }, [dailyWater]);
+
+  useEffect(() => {
+    setPercentageInput(childrenPercentage.toString());
+  }, [childrenPercentage]);
+
   const handleCaloriesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number.parseInt(e.target.value, 10);
+    setCaloriesInput(e.target.value);
+  };
+
+  const handleCaloriesBlur = () => {
+    const value = Number.parseInt(caloriesInput, 10);
     if (!Number.isNaN(value)) {
       const clamped = Math.max(
         LIMITS.dailyCalories.min,
         Math.min(LIMITS.dailyCalories.max, value),
       );
       updateSettings({ dailyCaloriesPerPerson: clamped });
+      setCaloriesInput(clamped.toString());
+    } else {
+      // Reset to current value if invalid
+      setCaloriesInput(dailyCalories.toString());
     }
   };
 
   const handleWaterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number.parseFloat(e.target.value);
+    setWaterInput(e.target.value);
+  };
+
+  const handleWaterBlur = () => {
+    const value = Number.parseFloat(waterInput);
     if (!Number.isNaN(value)) {
       const clamped = Math.max(
         LIMITS.dailyWater.min,
         Math.min(LIMITS.dailyWater.max, value),
       );
       updateSettings({ dailyWaterPerPerson: clamped });
+      setWaterInput(clamped.toString());
+    } else {
+      // Reset to current value if invalid
+      setWaterInput(dailyWater.toString());
     }
   };
 
   const handleChildrenPercentageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const value = Number.parseInt(e.target.value, 10);
+    setPercentageInput(e.target.value);
+  };
+
+  const handleChildrenPercentageBlur = () => {
+    const value = Number.parseInt(percentageInput, 10);
     if (!Number.isNaN(value)) {
       const clamped = Math.max(
         LIMITS.childrenPercentage.min,
         Math.min(LIMITS.childrenPercentage.max, value),
       );
       updateSettings({ childrenRequirementPercentage: clamped });
+      setPercentageInput(clamped.toString());
+    } else {
+      // Reset to current value if invalid
+      setPercentageInput(childrenPercentage.toString());
     }
   };
 
@@ -84,8 +129,9 @@ export function NutritionSettings() {
           <input
             id="daily-calories"
             type="number"
-            value={dailyCalories}
+            value={caloriesInput}
             onChange={handleCaloriesChange}
+            onBlur={handleCaloriesBlur}
             min={LIMITS.dailyCalories.min}
             max={LIMITS.dailyCalories.max}
             step={LIMITS.dailyCalories.step}
@@ -109,8 +155,9 @@ export function NutritionSettings() {
           <input
             id="daily-water"
             type="number"
-            value={dailyWater}
+            value={waterInput}
             onChange={handleWaterChange}
+            onBlur={handleWaterBlur}
             min={LIMITS.dailyWater.min}
             max={LIMITS.dailyWater.max}
             step={LIMITS.dailyWater.step}
@@ -136,8 +183,9 @@ export function NutritionSettings() {
           <input
             id="children-percentage"
             type="number"
-            value={childrenPercentage}
+            value={percentageInput}
             onChange={handleChildrenPercentageChange}
+            onBlur={handleChildrenPercentageBlur}
             min={LIMITS.childrenPercentage.min}
             max={LIMITS.childrenPercentage.max}
             step={LIMITS.childrenPercentage.step}
