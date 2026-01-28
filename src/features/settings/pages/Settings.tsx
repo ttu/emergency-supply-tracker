@@ -16,6 +16,7 @@ import {
   OverriddenRecommendations,
   KitManagement,
 } from '@/features/settings';
+import { CloudSyncSection } from '@/features/cloudSync';
 import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
@@ -29,6 +30,7 @@ type SettingsSection =
   | 'disabledCategories'
   | 'overriddenRecommendations'
   | 'recommendationKits'
+  | 'cloudSync'
   | 'dataManagement'
   | 'about'
   | 'dangerZone';
@@ -83,6 +85,10 @@ export function Settings() {
     {
       id: 'recommendationKits',
       label: t('settings.navigation.sections.recommendationKits'),
+    },
+    {
+      id: 'cloudSync',
+      label: t('settings.navigation.sections.cloudSync'),
     },
     {
       id: 'dataManagement',
@@ -181,6 +187,16 @@ export function Settings() {
             </h2>
             <KitManagement />
           </section>
+        );
+
+      case 'cloudSync':
+        return (
+          <Section
+            testId="section-cloud-sync"
+            titleKey="settings.navigation.sections.cloudSync"
+          >
+            <CloudSyncSection />
+          </Section>
         );
 
       case 'dataManagement':
