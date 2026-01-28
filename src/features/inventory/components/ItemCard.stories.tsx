@@ -23,7 +23,7 @@ const meta = {
     ),
   ],
   argTypes: {
-    onClick: { action: 'clicked' },
+    onItemClick: { action: 'item clicked' },
   },
 } satisfies Meta<typeof ItemCard>;
 
@@ -117,6 +117,6 @@ export const NoLocation: Story = {
 export const ClickableCard: Story = {
   args: {
     item: baseItem,
-    onClick: () => console.log('Card clicked'),
+    onItemClick: (item) => console.log('Card clicked', item.name),
   },
 };

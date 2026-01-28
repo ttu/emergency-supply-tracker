@@ -115,37 +115,34 @@ describe('ItemCard', () => {
     expect(screen.getByText(/📅/)).toBeInTheDocument();
   });
 
-  it('should be clickable when onClick is provided', () => {
-    const onClick = vi.fn();
+  it('should be clickable when onItemClick is provided', () => {
+    const onItemClick = vi.fn();
     const { container } = renderWithProviders(
-      <ItemCard item={baseItem} onClick={onClick} />,
+      <ItemCard item={baseItem} onItemClick={onItemClick} />,
     );
 
     const card = container.firstChild as HTMLElement;
     fireEvent.click(card);
 
-    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onItemClick).toHaveBeenCalledTimes(1);
+    expect(onItemClick).toHaveBeenCalledWith(baseItem);
   });
 
-  it('should handle keyboard events when clickable', () => {
-    const onClick = vi.fn();
+  it('should render as button when onItemClick is provided', () => {
+    const onItemClick = vi.fn();
     const { container } = renderWithProviders(
-      <ItemCard item={baseItem} onClick={onClick} />,
+      <ItemCard item={baseItem} onItemClick={onItemClick} />,
     );
 
     const card = container.firstChild as HTMLElement;
-    fireEvent.keyDown(card, { key: 'Enter' });
-    expect(onClick).toHaveBeenCalledTimes(1);
-
-    fireEvent.keyDown(card, { key: ' ' });
-    expect(onClick).toHaveBeenCalledTimes(2);
+    expect(card.tagName).toBe('BUTTON');
+    expect(card).toHaveAttribute('type', 'button');
   });
 
-  it('should not be interactive when onClick is not provided', () => {
+  it('should render as div when onItemClick is not provided', () => {
     const { container } = renderWithProviders(<ItemCard item={baseItem} />);
     const card = container.firstChild as HTMLElement;
-    expect(card).not.toHaveAttribute('role', 'button');
-    expect(card).not.toHaveAttribute('tabIndex');
+    expect(card.tagName).toBe('DIV');
   });
 
   it('should display capacity in mAh when provided', () => {

@@ -138,9 +138,9 @@ describe('CategoryCard', () => {
     expect(screen.getByText('OK')).toBeInTheDocument();
   });
 
-  it('calls onClick when card is clicked', async () => {
+  it('calls onCategoryClick when card is clicked', async () => {
     const user = userEvent.setup();
-    const onClick = vi.fn();
+    const onCategoryClick = vi.fn();
 
     render(
       <CategoryCard
@@ -148,31 +148,31 @@ describe('CategoryCard', () => {
         itemCount={12}
         status="ok"
         completionPercentage={95}
-        onClick={onClick}
+        onCategoryClick={onCategoryClick}
       />,
     );
 
     const card = screen.getByRole('button');
     await user.click(card);
 
-    expect(onClick).toHaveBeenCalled();
+    expect(onCategoryClick).toHaveBeenCalledWith('water-beverages');
   });
 
-  it('has button role when onClick is provided', () => {
+  it('has button role when onCategoryClick is provided', () => {
     render(
       <CategoryCard
         categoryId="food"
         itemCount={10}
         status="ok"
         completionPercentage={90}
-        onClick={() => {}}
+        onCategoryClick={() => {}}
       />,
     );
 
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
-  it('does not have button role when onClick is not provided', () => {
+  it('does not have button role when onCategoryClick is not provided', () => {
     render(
       <CategoryCard
         categoryId="food"
@@ -187,7 +187,7 @@ describe('CategoryCard', () => {
 
   it('handles keyboard interaction when clickable', async () => {
     const user = userEvent.setup();
-    const onClick = vi.fn();
+    const onCategoryClick = vi.fn();
 
     render(
       <CategoryCard
@@ -195,7 +195,7 @@ describe('CategoryCard', () => {
         itemCount={10}
         status="ok"
         completionPercentage={90}
-        onClick={onClick}
+        onCategoryClick={onCategoryClick}
       />,
     );
 
@@ -203,7 +203,7 @@ describe('CategoryCard', () => {
     card.focus();
     await user.keyboard('{Enter}');
 
-    expect(onClick).toHaveBeenCalled();
+    expect(onCategoryClick).toHaveBeenCalledWith('food');
   });
 
   it('renders calories for food category', () => {
