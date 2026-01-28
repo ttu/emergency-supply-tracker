@@ -36,6 +36,9 @@ reports/mutation
 *.sln
 *.sw?
 
+# Git worktrees
+.worktrees
+
 # Personal AI agent workflows
 AGENTS.local.md
 .claude/settings.local.json
