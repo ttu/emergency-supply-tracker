@@ -245,7 +245,7 @@ export interface ImportedRecommendedItem {
   id: ProductTemplateId;
   i18nKey?: string; // Use built-in translation key (e.g., "products.bottled-water")
   names?: LocalizedNames; // OR inline localized names: { en: "Water", fi: "Vesi" }
-  category: StandardCategoryId;
+  category: StandardCategoryId | string; // Standard category ID or custom category ID
   baseQuantity: number;
   unit: Unit;
   scaleWithPeople: boolean;
@@ -282,6 +282,7 @@ export interface RecommendedItemsFileMeta {
 // Recommended Items File (for import/export)
 export interface RecommendedItemsFile {
   meta: RecommendedItemsFileMeta;
+  categories?: ImportedCategory[]; // Custom category definitions
   items: ImportedRecommendedItem[];
 }
 
