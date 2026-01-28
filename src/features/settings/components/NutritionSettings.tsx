@@ -53,17 +53,17 @@ export function NutritionSettings() {
 
   const handleCaloriesBlur = () => {
     const value = Number.parseInt(caloriesInput, 10);
-    if (!Number.isNaN(value)) {
-      const clamped = Math.max(
-        LIMITS.dailyCalories.min,
-        Math.min(LIMITS.dailyCalories.max, value),
-      );
-      updateSettings({ dailyCaloriesPerPerson: clamped });
-      setCaloriesInput(clamped.toString());
-    } else {
+    if (Number.isNaN(value)) {
       // Reset to current value if invalid
       setCaloriesInput(dailyCalories.toString());
+      return;
     }
+    const clamped = Math.max(
+      LIMITS.dailyCalories.min,
+      Math.min(LIMITS.dailyCalories.max, value),
+    );
+    updateSettings({ dailyCaloriesPerPerson: clamped });
+    setCaloriesInput(clamped.toString());
   };
 
   const handleWaterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,17 +72,17 @@ export function NutritionSettings() {
 
   const handleWaterBlur = () => {
     const value = Number.parseFloat(waterInput);
-    if (!Number.isNaN(value)) {
-      const clamped = Math.max(
-        LIMITS.dailyWater.min,
-        Math.min(LIMITS.dailyWater.max, value),
-      );
-      updateSettings({ dailyWaterPerPerson: clamped });
-      setWaterInput(clamped.toString());
-    } else {
+    if (Number.isNaN(value)) {
       // Reset to current value if invalid
       setWaterInput(dailyWater.toString());
+      return;
     }
+    const clamped = Math.max(
+      LIMITS.dailyWater.min,
+      Math.min(LIMITS.dailyWater.max, value),
+    );
+    updateSettings({ dailyWaterPerPerson: clamped });
+    setWaterInput(clamped.toString());
   };
 
   const handleChildrenPercentageChange = (
@@ -93,17 +93,17 @@ export function NutritionSettings() {
 
   const handleChildrenPercentageBlur = () => {
     const value = Number.parseInt(percentageInput, 10);
-    if (!Number.isNaN(value)) {
-      const clamped = Math.max(
-        LIMITS.childrenPercentage.min,
-        Math.min(LIMITS.childrenPercentage.max, value),
-      );
-      updateSettings({ childrenRequirementPercentage: clamped });
-      setPercentageInput(clamped.toString());
-    } else {
+    if (Number.isNaN(value)) {
       // Reset to current value if invalid
       setPercentageInput(childrenPercentage.toString());
+      return;
     }
+    const clamped = Math.max(
+      LIMITS.childrenPercentage.min,
+      Math.min(LIMITS.childrenPercentage.max, value),
+    );
+    updateSettings({ childrenRequirementPercentage: clamped });
+    setPercentageInput(clamped.toString());
   };
 
   const handleResetToDefaults = () => {
