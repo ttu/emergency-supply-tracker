@@ -130,8 +130,27 @@ export interface UserSettings {
 export interface Category {
   id: CategoryId;
   name: string;
+  names?: LocalizedNames; // Localized names for custom categories
   icon?: string;
   isCustom: boolean;
+  description?: string; // Current language description
+  descriptions?: LocalizedNames; // Localized descriptions
+  sortOrder?: number; // Position in category lists
+  color?: string; // Hex color for category accent
+  sourceKitId?: KitId; // Which kit imported this category
+}
+
+/**
+ * Category definition in imported kit files.
+ * Used for custom categories defined in recommendation kits.
+ */
+export interface ImportedCategory {
+  id: string;
+  names: LocalizedNames;
+  icon: string;
+  description?: LocalizedNames;
+  sortOrder?: number;
+  color?: string;
 }
 
 /**
