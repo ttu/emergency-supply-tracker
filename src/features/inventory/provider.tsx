@@ -1,4 +1,4 @@
-import { useState, ReactNode, useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type {
   InventoryItem,
@@ -7,13 +7,15 @@ import type {
   AlertId,
   ProductTemplateId,
   StandardCategoryId,
+  CategoryId,
 } from '@/shared/types';
 import {
   createAlertId,
   createProductTemplateId,
   VALID_CATEGORIES,
 } from '@/shared/types';
-import { STANDARD_CATEGORIES } from '@/features/categories';
+import { STANDARD_CATEGORIES, canDeleteCategory } from '@/features/categories';
+import { CategoryFactory } from '@/features/categories/factories/CategoryFactory';
 import { useLocalStorageSync } from '@/shared/hooks';
 import { InventoryContext } from './context';
 import {
@@ -36,7 +38,12 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useLocalStorageSync('items', (data) => {
     return data?.items || [];
   });
-  const [categories] = useState<Category[]>(STANDARD_CATEGORIES);
+  const [customCategories, setCustomCategories] = useLocalStorageSync(
+    'customCategories',
+    (data) => {
+      return data?.customCategories || [];
+    },
+  );
   const [dismissedAlertIds, setDismissedAlertIds] = useLocalStorageSync(
     'dismissedAlertIds',
     (data) => {
@@ -181,11 +188,65 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     setDisabledCategories([]);
   }, [setDisabledCategories]);
 
+  // Combine standard and custom categories, filtering out disabled standard ones
+  const categories = useMemo(() => {
+    const disabledSet = new Set(disabledCategories);
+    const activeStandard = STANDARD_CATEGORIES.filter(
+      (c) => !disabledSet.has(c.id as StandardCategoryId),
+    );
+    return [...activeStandard, ...customCategories];
+  }, [disabledCategories, customCategories]);
+
+  // Add custom category
+  const addCustomCategory = useCallback(
+    (input: Omit<Category, 'id'>) => {
+      const newCategory = CategoryFactory.createCustom(input, customCategories);
+      setCustomCategories((prev) => [...prev, newCategory]);
+      showNotification(
+        t('notifications.categoryAdded', { name: input.name }),
+        'success',
+      );
+    },
+    [customCategories, setCustomCategories, showNotification, t],
+  );
+
+  // Update custom category
+  const updateCustomCategory = useCallback(
+    (id: CategoryId, updates: Partial<Category>) => {
+      setCustomCategories((prev) =>
+        prev.map((cat) => (cat.id === id ? { ...cat, ...updates } : cat)),
+      );
+      showNotification(t('notifications.categoryUpdated'), 'success');
+    },
+    [setCustomCategories, showNotification, t],
+  );
+
+  // Delete custom category
+  const deleteCustomCategory = useCallback(
+    (id: CategoryId): { success: boolean; error?: string } => {
+      const result = canDeleteCategory(id, items);
+      if (!result.canDelete) {
+        return {
+          success: false,
+          error: t('settings.categories.deleteBlocked', {
+            count: result.blockingItems?.length,
+          }),
+        };
+      }
+
+      setCustomCategories((prev) => prev.filter((cat) => cat.id !== id));
+      showNotification(t('notifications.categoryDeleted'), 'success');
+      return { success: true };
+    },
+    [items, setCustomCategories, showNotification, t],
+  );
+
   return (
     <InventoryContext.Provider
       value={{
         items,
         categories,
+        customCategories,
         addItem,
         addItems,
         updateItem,
@@ -202,6 +263,9 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         disableCategory,
         enableCategory,
         enableAllCategories,
+        addCustomCategory,
+        updateCustomCategory,
+        deleteCustomCategory,
       }}
     >
       {children}

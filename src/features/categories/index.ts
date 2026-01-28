@@ -1,5 +1,13 @@
 // Data
-export { STANDARD_CATEGORIES, getCategoryById } from './data';
+export {
+  STANDARD_CATEGORIES,
+  getCategoryById,
+  getCategoryByIdFromAppData,
+  getAllCategories,
+  getCategoryDisplayName,
+  canDeleteCategory,
+  isStandardCategory,
+} from './data';
 
 // Factories
 export {
