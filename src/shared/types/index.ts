@@ -209,7 +209,7 @@ export interface ProductTemplate {
 export interface RecommendedItemDefinition {
   id: ProductTemplateId; // Recommended items are product templates
   i18nKey: string;
-  category: StandardCategoryId;
+  category: StandardCategoryId | string; // Standard category ID or custom category ID
   baseQuantity: number;
   unit: Unit;
   scaleWithPeople: boolean;
