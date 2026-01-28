@@ -189,6 +189,28 @@
       "reactivate": "Palauta",
       "reactivateAll": "Palauta kaikki kategoriat"
     },
+    "customCategories": {
+      "title": "Omat kategoriat",
+      "description": "Luo omia kategorioita tuotteille, jotka eivät sovi vakiokategorioihin.",
+      "empty": "Ei omia kategorioita",
+      "add": "Lisää kategoria",
+      "edit": "Muokkaa",
+      "delete": "Poista",
+      "deleteConfirm": "Haluatko varmasti poistaa tämän kategorian?",
+      "deleteBlocked": "Ei voi poistaa: {{count}} tuotetta käyttää tätä kategoriaa",
+      "form": {
+        "name": "Kategorian nimi",
+        "namePlaceholder": "Syötä kategorian nimi",
+        "icon": "Kuvake",
+        "iconPlaceholder": "Syötä emoji",
+        "color": "Väri (valinnainen)",
+        "colorPlaceholder": "#3498db",
+        "save": "Tallenna kategoria",
+        "cancel": "Peruuta"
+      },
+      "standardCategories": "Vakiokategoriat",
+      "standardDescription": "Sisäänrakennetut kategoriat, joita ei voi muokata tai poistaa."
+    },
     "overriddenRecommendations": {
       "empty": "Ei ohitettuja suosituksia",
       "description": "Sinulla on {{count}} ohitettua suositusta. Nämä tuotteet on merkitty riittäviksi, vaikka niiden määrä on alle suositellun määrän.",
@@ -578,7 +600,10 @@
     "itemAdded": "Tuote \"{{name}}\" lisätty",
     "itemUpdated": "Tuote \"{{name}}\" päivitetty",
     "itemDeleted": "Tuote \"{{name}}\" poistettu",
-    "itemsBulkAdded": "{{count}} tuotetta lisätty"
+    "itemsBulkAdded": "{{count}} tuotetta lisätty",
+    "categoryAdded": "Kategoria \"{{name}}\" lisätty",
+    "categoryUpdated": "Kategoria päivitetty",
+    "categoryDeleted": "Kategoria poistettu"
   },
   "kitSelector": {
     "builtInKits": "Sisäänrakennetut paketit",
