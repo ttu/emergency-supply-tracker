@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "exportMetadata": {
+    "exportedAt": "2026-01-29T12:00:00.000Z",
+    "appVersion": "1.0.0",
+    "itemCount": 0,
+    "categoryCount": 2,
+    "includedSections": ["customCategories"]
+  },
+  "customCategories": [
+    {
+      "id": "garden-supplies",
+      "name": "Garden Supplies",
+      "names": {
+        "en": "Garden Supplies",
+        "fi": "Puutarhatarvikkeet"
+      },
+      "icon": "🌱",
+      "isCustom": true,
+      "descriptions": {
+        "en": "Seeds, tools and supplies for emergency gardening",
+        "fi": "Siemenet, työkalut ja tarvikkeet hätäviljelyyn"
+      },
+      "sortOrder": 80,
+      "color": "#90EE90"
+    },
+    {
+      "id": "winter-gear",
+      "name": "Winter Gear",
+      "names": {
+        "en": "Winter Gear",
+        "fi": "Talvivarusteet"
+      },
+      "icon": "❄️",
+      "isCustom": true,
+      "descriptions": {
+        "en": "Cold weather survival equipment",
+        "fi": "Kylmän sään selviytymisvälineet"
+      },
+      "sortOrder": 90,
+      "color": "#87CEEB"
+    }
+  ],
+  "lastModified": "2026-01-29T12:00:00.000Z"
+}

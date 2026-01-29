@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "exportMetadata": {
+    "exportedAt": "2026-01-29T12:00:00.000Z",
+    "appVersion": "1.0.0",
+    "itemCount": 4,
+    "categoryCount": 2,
+    "includedSections": ["items", "household", "settings", "customCategories"]
+  },
+  "household": {
+    "adults": 2,
+    "children": 2,
+    "pets": 0,
+    "supplyDurationDays": 7,
+    "useFreezer": true,
+    "freezerHoldTimeHours": 24
+  },
+  "settings": {
+    "language": "fi",
+    "theme": "dark",
+    "highContrast": false,
+    "advancedFeatures": {
+      "calorieTracking": true,
+      "powerManagement": true,
+      "waterTracking": true
+    },
+    "onboardingCompleted": true,
+    "dailyCaloriesPerPerson": 2000,
+    "dailyWaterPerPerson": 3,
+    "childrenRequirementPercentage": 75
+  },
+  "customCategories": [
+    {
+      "id": "mökki-tarvikkeet",
+      "name": "Mökkitarvikkeet",
+      "names": {
+        "en": "Cottage Supplies",
+        "fi": "Mökkitarvikkeet"
+      },
+      "icon": "🏡",
+      "isCustom": true,
+      "descriptions": {
+        "en": "Emergency supplies for summer cottage",
+        "fi": "Hätätarvikkeet kesämökille"
+      },
+      "sortOrder": 100,
+      "color": "#8B4513"
+    },
+    {
+      "id": "talvivalmius",
+      "name": "Talvivalmius",
+      "names": {
+        "en": "Winter Preparedness",
+        "fi": "Talvivalmius"
+      },
+      "icon": "🧣",
+      "isCustom": true,
+      "descriptions": {
+        "en": "Items for winter power outages and cold weather",
+        "fi": "Tarvikkeet talven sähkökatkoksiin ja pakkasiin"
+      },
+      "sortOrder": 110,
+      "color": "#4169E1"
+    }
+  ],
+  "items": [
+    {
+      "id": "item-mokki-001",
+      "name": "Polttopuut",
+      "categoryId": "mökki-tarvikkeet",
+      "quantity": 100,
+      "unit": "kilograms",
+      "status": "ok",
+      "notes": "Kuivaa koivua"
+    },
+    {
+      "id": "item-mokki-002",
+      "name": "Öljylamppu",
+      "categoryId": "mökki-tarvikkeet",
+      "quantity": 2,
+      "unit": "pieces",
+      "status": "ok",
+      "notes": "Varaöljy mukana"
+    },
+    {
+      "id": "item-talvi-001",
+      "name": "Lämpöpeitto",
+      "categoryId": "talvivalmius",
+      "quantity": 4,
+      "unit": "pieces",
+      "status": "ok",
+      "notes": "Yksi per perheenjäsen"
+    },
+    {
+      "id": "item-talvi-002",
+      "name": "Käsilämmittimet",
+      "categoryId": "talvivalmius",
+      "quantity": 20,
+      "unit": "pairs",
+      "expirationDate": "2028-01-01",
+      "status": "ok",
+      "notes": "Kertakäyttöiset"
+    }
+  ],
+  "customTemplates": [],
+  "dismissedAlertIds": [],
+  "disabledRecommendedItems": [],
+  "lastModified": "2026-01-29T12:00:00.000Z"
+}

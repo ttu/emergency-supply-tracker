@@ -1,0 +1,143 @@
+{
+  "version": "1.0.0",
+  "exportMetadata": {
+    "exportedAt": "2026-01-29T12:00:00.000Z",
+    "appVersion": "1.0.0",
+    "itemCount": 6,
+    "categoryCount": 3,
+    "includedSections": ["items", "household", "settings", "customCategories"]
+  },
+  "household": {
+    "adults": 2,
+    "children": 1,
+    "pets": 1,
+    "supplyDurationDays": 3,
+    "useFreezer": true,
+    "freezerHoldTimeHours": 48
+  },
+  "settings": {
+    "language": "en",
+    "theme": "light",
+    "highContrast": false,
+    "advancedFeatures": {
+      "calorieTracking": true,
+      "powerManagement": false,
+      "waterTracking": true
+    },
+    "onboardingCompleted": true,
+    "dailyCaloriesPerPerson": 2000,
+    "dailyWaterPerPerson": 3,
+    "childrenRequirementPercentage": 75
+  },
+  "customCategories": [
+    {
+      "id": "baby-supplies",
+      "name": "Baby Supplies",
+      "names": {
+        "en": "Baby Supplies",
+        "fi": "Vauvatarvikkeet"
+      },
+      "icon": "🍼",
+      "isCustom": true,
+      "descriptions": {
+        "en": "Essential items for infants and toddlers",
+        "fi": "Välttämättömät tarvikkeet vauvoille ja taaperoille"
+      },
+      "sortOrder": 50,
+      "color": "#FFB6C1"
+    },
+    {
+      "id": "vehicle-emergency",
+      "name": "Vehicle Emergency",
+      "names": {
+        "en": "Vehicle Emergency",
+        "fi": "Ajoneuvon hätätarvikkeet"
+      },
+      "icon": "🚗",
+      "isCustom": true,
+      "descriptions": {
+        "en": "Emergency supplies for vehicles",
+        "fi": "Hätätarvikkeet ajoneuvoihin"
+      },
+      "sortOrder": 60,
+      "color": "#4682B4"
+    },
+    {
+      "id": "outdoor-gear",
+      "name": "Outdoor Gear",
+      "names": {
+        "en": "Outdoor Gear",
+        "fi": "Ulkoiluvarusteet"
+      },
+      "icon": "⛺",
+      "isCustom": true,
+      "descriptions": {
+        "en": "Camping and outdoor survival equipment",
+        "fi": "Retkeily- ja ulkoiluselviytymisvälineet"
+      },
+      "sortOrder": 70,
+      "color": "#228B22"
+    }
+  ],
+  "items": [
+    {
+      "id": "item-baby-001",
+      "name": "Diapers (Size 3)",
+      "categoryId": "baby-supplies",
+      "quantity": 50,
+      "unit": "pieces",
+      "status": "ok",
+      "notes": "For emergency use"
+    },
+    {
+      "id": "item-baby-002",
+      "name": "Baby Formula",
+      "categoryId": "baby-supplies",
+      "quantity": 2,
+      "unit": "cans",
+      "expirationDate": "2027-06-15",
+      "status": "ok",
+      "notes": "Powder formula, add water"
+    },
+    {
+      "id": "item-vehicle-001",
+      "name": "Jumper Cables",
+      "categoryId": "vehicle-emergency",
+      "quantity": 1,
+      "unit": "sets",
+      "status": "ok",
+      "notes": "Heavy duty, 4 gauge"
+    },
+    {
+      "id": "item-vehicle-002",
+      "name": "Emergency Road Flares",
+      "categoryId": "vehicle-emergency",
+      "quantity": 6,
+      "unit": "pieces",
+      "expirationDate": "2028-12-01",
+      "status": "ok"
+    },
+    {
+      "id": "item-outdoor-001",
+      "name": "Emergency Tent",
+      "categoryId": "outdoor-gear",
+      "quantity": 1,
+      "unit": "pieces",
+      "status": "ok",
+      "notes": "2-person lightweight tent"
+    },
+    {
+      "id": "item-outdoor-002",
+      "name": "Sleeping Bags",
+      "categoryId": "outdoor-gear",
+      "quantity": 3,
+      "unit": "pieces",
+      "status": "ok",
+      "notes": "Rated to -5°C"
+    }
+  ],
+  "customTemplates": [],
+  "dismissedAlertIds": [],
+  "disabledRecommendedItems": [],
+  "lastModified": "2026-01-29T12:00:00.000Z"
+}
