@@ -1,6 +1,9 @@
 import type { ImportedCategory } from '@/shared/types';
 import { VALID_CATEGORIES } from '@/shared/types';
-import type { ValidationError, ValidationWarning } from './recommendedItemsValidation';
+import type {
+  ValidationError,
+  ValidationWarning,
+} from './recommendedItemsValidation';
 
 /**
  * Validates a category ID is kebab-case, 3-50 characters.

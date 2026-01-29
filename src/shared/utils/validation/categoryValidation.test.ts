@@ -159,7 +159,10 @@ describe('categoryValidation', () => {
     });
 
     it('rejects missing names', () => {
-      const result = validateImportedCategory({ id: 'test-cat', icon: '⛺' }, 0);
+      const result = validateImportedCategory(
+        { id: 'test-cat', icon: '⛺' },
+        0,
+      );
       expect(result.errors).toContainEqual(
         expect.objectContaining({ code: 'INVALID_CATEGORY_NAMES' }),
       );
@@ -212,8 +215,9 @@ describe('categoryValidation', () => {
           { ...validCategory, icon: emoji },
           0,
         );
-        expect(result.errors.filter((e) => e.code === 'INVALID_CATEGORY_ICON'))
-          .toHaveLength(0);
+        expect(
+          result.errors.filter((e) => e.code === 'INVALID_CATEGORY_ICON'),
+        ).toHaveLength(0);
       }
     });
 
@@ -280,9 +284,7 @@ describe('categoryValidation', () => {
     });
 
     it('detects conflict with standard categories', () => {
-      const categories = [
-        { id: 'food', names: { en: 'My Food' }, icon: '🍕' },
-      ];
+      const categories = [{ id: 'food', names: { en: 'My Food' }, icon: '🍕' }];
       const result = validateImportedCategories(categories);
       expect(result.errors).toContainEqual(
         expect.objectContaining({ code: 'CATEGORY_CONFLICTS_STANDARD' }),
