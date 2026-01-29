@@ -73,7 +73,13 @@ export const ItemForm = ({
   templateCaloriesPer100g,
   templateRequiresWaterLiters,
 }: ItemFormProps) => {
-  const { t } = useTranslation(['common', 'categories', 'units', 'products']);
+  const { t, i18n } = useTranslation([
+    'common',
+    'categories',
+    'units',
+    'products',
+  ]);
+  const currentLang = (i18n?.language || 'en') as 'en' | 'fi';
 
   // Calculate default weight and calories from template
   // Always display weight in grams (even when unit is kilograms, as package labels often use grams)
@@ -257,11 +263,18 @@ export const ItemForm = ({
     }
   };
 
-  const categoryOptions = categories.map((cat) => ({
-    value: cat.id,
-    label: t(cat.id, { ns: 'categories' }),
-    icon: cat.icon,
-  }));
+  const categoryOptions = categories.map((cat) => {
+    // Custom categories have names object, standard categories use translations
+    const label =
+      cat.names && (cat.names[currentLang] || cat.names.en)
+        ? cat.names[currentLang] || cat.names.en
+        : t(cat.id, { ns: 'categories' });
+    return {
+      value: cat.id,
+      label,
+      icon: cat.icon,
+    };
+  });
 
   // Common units shown in the form (subset of VALID_UNITS for better UX)
   const COMMON_UNITS: Unit[] = [

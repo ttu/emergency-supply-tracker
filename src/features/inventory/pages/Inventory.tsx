@@ -50,6 +50,7 @@ export function Inventory({
     disableRecommendedItem,
     disabledCategories,
     disableCategory,
+    customCategories,
   } = useInventory();
   const { household } = useHousehold();
   const { recommendedItems, getItemName } = useRecommendedItems();
@@ -67,6 +68,12 @@ export function Inventory({
           !disabledCategories.includes(category.id as StandardCategoryId),
       ),
     [disabledCategories],
+  );
+
+  // Combine standard and custom categories for the item form
+  const allCategories = useMemo(
+    () => [...STANDARD_CATEGORIES, ...customCategories],
+    [customCategories],
   );
 
   // Filter out recommended items with 0 quantity (e.g., pet items when pets = 0)
@@ -446,7 +453,7 @@ export function Inventory({
         >
           <ItemForm
             item={editingItem}
-            categories={STANDARD_CATEGORIES}
+            categories={allCategories}
             onSubmit={editingItem?.id ? handleUpdateItem : handleAddItem}
             onCancel={handleCancelForm}
             defaultCategoryId={selectedCategoryId}
@@ -484,7 +491,7 @@ export function Inventory({
         >
           <TemplateSelector
             templates={applicableRecommendedItems}
-            categories={STANDARD_CATEGORIES}
+            categories={allCategories}
             onSelectTemplate={handleSelectTemplate}
             onSelectCustom={handleSelectCustomItem}
             initialCategoryId={selectedCategoryId || ''}

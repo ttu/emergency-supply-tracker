@@ -28,7 +28,13 @@ export const TemplateSelector = ({
   onSelectCustom,
   initialCategoryId = '',
 }: TemplateSelectorProps) => {
-  const { t } = useTranslation(['common', 'categories', 'products', 'units']);
+  const { t, i18n } = useTranslation([
+    'common',
+    'categories',
+    'products',
+    'units',
+  ]);
+  const currentLang = (i18n?.language || 'en') as 'en' | 'fi';
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] =
     useState<string>(initialCategoryId);
@@ -54,11 +60,18 @@ export const TemplateSelector = ({
 
   const categoryOptions = [
     { value: '', label: t('inventory.allCategories') },
-    ...categories.map((cat) => ({
-      value: cat.id,
-      label: t(cat.id, { ns: 'categories' }),
-      icon: cat.icon,
-    })),
+    ...categories.map((cat) => {
+      // Custom categories have names object, standard categories use translations
+      const label =
+        cat.names && (cat.names[currentLang] || cat.names.en)
+          ? cat.names[currentLang] || cat.names.en
+          : t(cat.id, { ns: 'categories' });
+      return {
+        value: cat.id,
+        label,
+        icon: cat.icon,
+      };
+    }),
   ];
 
   const handleTemplateClick = (template: RecommendedItemDefinition) => {
