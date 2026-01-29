@@ -35,6 +35,7 @@ export function CategoriesSection() {
     if (editingCategory) {
       // Update existing category
       updateCustomCategory(editingCategory.id, {
+        name: data.names.en, // Keep name in sync with names.en
         names: data.names,
         icon: data.icon,
         descriptions: data.descriptions,

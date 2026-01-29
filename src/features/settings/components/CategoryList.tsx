@@ -30,7 +30,10 @@ export function CategoryList({ onEdit }: CategoryListProps) {
       t('settings.customCategories.confirmDelete'),
     );
     if (confirmed) {
-      deleteCustomCategory(category.id);
+      const result = deleteCustomCategory(category.id);
+      if (!result.success && result.error) {
+        window.alert(result.error);
+      }
     }
   };
 

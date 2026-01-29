@@ -151,10 +151,11 @@ describe('standardCategories', () => {
       };
       const appData = {
         customCategories: [customCategory],
-        disabledCategories: [],
+        disabledCategories: ['custom-cat'], // Custom category in disabled list
       } as unknown as AppData;
 
       const result = getAllCategories(appData);
+      // Custom category should still be present even though it's in disabledCategories
       expect(result.find((c) => c.id === 'custom-cat')).toBeDefined();
     });
   });
