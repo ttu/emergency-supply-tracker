@@ -16,6 +16,7 @@ test.describe('Custom Categories', () => {
     // Create app data with a custom category
     const customCategory = createMockCategory({
       name: 'Custom Category',
+      names: { en: 'Custom Category', fi: 'Mukautettu kategoria' },
       icon: '⭐',
       isCustom: true,
     });
@@ -47,10 +48,12 @@ test.describe('Custom Categories', () => {
     // Navigate to Inventory
     await page.getByTestId('nav-inventory').click();
 
-    // Note: Custom categories might not be fully integrated into UI navigation yet
-    // This test verifies the data structure supports custom categories
-    // Custom categories are stored and can be used when creating items
     await expect(page.getByTestId('page-inventory')).toBeVisible();
+
+    // Verify custom category is visible in the sidebar
+    await expect(
+      page.getByTestId('sidemenu-sidebar').getByText('Custom Category'),
+    ).toBeVisible();
 
     // Verify custom category exists in data
     const storedData = await page.evaluate((key) => {

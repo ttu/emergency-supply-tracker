@@ -59,15 +59,16 @@ export function Inventory({
   const { categoryStatuses } = useCategoryStatuses();
   const calculationOptions = useCalculationOptions();
 
-  // Filter out disabled categories
-  // Cast category.id to StandardCategoryId since STANDARD_CATEGORIES only contains standard categories
+  // Filter out disabled standard categories and include all custom categories
   const enabledCategories = useMemo(
-    () =>
-      STANDARD_CATEGORIES.filter(
+    () => [
+      ...STANDARD_CATEGORIES.filter(
         (category) =>
           !disabledCategories.includes(category.id as StandardCategoryId),
       ),
-    [disabledCategories],
+      ...customCategories, // Custom categories are always enabled
+    ],
+    [disabledCategories, customCategories],
   );
 
   // Combine standard and custom categories for the item form
@@ -335,27 +336,30 @@ export function Inventory({
   );
 
   // Convert categories to SideMenu items (only enabled categories)
-  // i18n.language in deps so memos recompute when language changes (t() output changes)
-  const categoryMenuItems: SideMenuItem[] = useMemo(
-    () =>
-      enabledCategories.map((category) => ({
+  const categoryMenuItems: SideMenuItem[] = useMemo(() => {
+    const currentLang = i18n.language as 'en' | 'fi';
+    return enabledCategories.map((category) => {
+      // Custom categories have names object, standard categories use translations
+      const label =
+        category.names && (category.names[currentLang] || category.names.en)
+          ? category.names[currentLang] || category.names.en
+          : t(category.id, { ns: 'categories' });
+      return {
         id: category.id,
-        label: t(category.id, { ns: 'categories' }),
+        label,
         icon: category.icon,
-      })),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- i18n.language for translation updates
-    [enabledCategories, t, i18n.language],
-  );
+      };
+    });
+  }, [enabledCategories, t, i18n.language]);
 
-  // Memoize showAllOption to prevent unnecessary re-renders
-  const showAllOption = useMemo(
+  // Memoize the "All Categories" option for SideMenu
+  const showAllOption: SideMenuItem = useMemo(
     () => ({
       id: 'all',
       label: t('inventory.allCategories'),
       icon: '📦',
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- i18n.language for translation updates
-    [t, i18n.language],
+    [t],
   );
 
   const handleSideMenuCategoryChange = useCallback(
