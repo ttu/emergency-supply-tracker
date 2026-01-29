@@ -1,6 +1,19 @@
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { HouseholdForm } from './HouseholdForm';
+import { useHousehold } from '@/features/household';
 import { renderWithHousehold } from '@/test';
+
+// Test probe component to verify household context state
+function HouseholdStateProbe() {
+  const { household } = useHousehold();
+  return (
+    <div data-testid="household-state">
+      <span data-testid="household-adults">{household.adults}</span>
+      <span data-testid="household-children">{household.children}</span>
+      <span data-testid="household-pets">{household.pets}</span>
+    </div>
+  );
+}
 
 describe('HouseholdForm', () => {
   it('should render household form fields', () => {
@@ -112,42 +125,59 @@ describe('HouseholdForm', () => {
   });
 
   it('should apply single preset (preset updates underlying household)', async () => {
-    renderWithHousehold(<HouseholdForm />);
+    renderWithHousehold(
+      <>
+        <HouseholdForm />
+        <HouseholdStateProbe />
+      </>,
+    );
 
     const singleButton = screen.getByText('settings.household.presets.single');
     fireEvent.click(singleButton);
 
-    // Note: Input values don't automatically sync when household changes externally.
-    // This is intentional to preserve cursor position during editing. Presets
-    // work at the household context level, not the input level.
+    // Verify the household context state actually changed to single preset values
     await waitFor(() => {
-      expect(singleButton).toBeInTheDocument();
+      expect(screen.getByTestId('household-adults')).toHaveTextContent('1');
+      expect(screen.getByTestId('household-children')).toHaveTextContent('0');
+      expect(screen.getByTestId('household-pets')).toHaveTextContent('0');
     });
   });
 
   it('should apply couple preset (preset updates underlying household)', async () => {
-    renderWithHousehold(<HouseholdForm />);
+    renderWithHousehold(
+      <>
+        <HouseholdForm />
+        <HouseholdStateProbe />
+      </>,
+    );
 
     const coupleButton = screen.getByText('settings.household.presets.couple');
     fireEvent.click(coupleButton);
 
-    // Note: Input values don't automatically sync when household changes externally.
-    // This is intentional to preserve cursor position during editing.
+    // Verify the household context state actually changed to couple preset values
     await waitFor(() => {
-      expect(coupleButton).toBeInTheDocument();
+      expect(screen.getByTestId('household-adults')).toHaveTextContent('2');
+      expect(screen.getByTestId('household-children')).toHaveTextContent('0');
+      expect(screen.getByTestId('household-pets')).toHaveTextContent('0');
     });
   });
 
   it('should apply family preset (preset updates underlying household)', async () => {
-    renderWithHousehold(<HouseholdForm />);
+    renderWithHousehold(
+      <>
+        <HouseholdForm />
+        <HouseholdStateProbe />
+      </>,
+    );
 
     const familyButton = screen.getByText('settings.household.presets.family');
     fireEvent.click(familyButton);
 
-    // Note: Input values don't automatically sync when household changes externally.
-    // This is intentional to preserve cursor position during editing.
+    // Verify the household context state actually changed to family preset values
     await waitFor(() => {
-      expect(familyButton).toBeInTheDocument();
+      expect(screen.getByTestId('household-adults')).toHaveTextContent('2');
+      expect(screen.getByTestId('household-children')).toHaveTextContent('2');
+      expect(screen.getByTestId('household-pets')).toHaveTextContent('0');
     });
   });
 
