@@ -153,6 +153,7 @@
         "hiddenAlerts": "Hidden Alerts",
         "disabledRecommendations": "Disabled Recommendations",
         "disabledCategories": "Disabled Categories",
+        "customCategories": "Custom Categories",
         "overriddenRecommendations": "Overridden Recommendations",
         "dataManagement": "Data Management",
         "about": "About",
@@ -191,22 +192,37 @@
     },
     "customCategories": {
       "title": "Custom Categories",
-      "description": "Create your own categories to organize items that don't fit standard categories.",
-      "empty": "No custom categories created",
+      "description": "You have {{count}} custom category/categories.",
+      "empty": "No custom categories. Add one to get started.",
       "add": "Add Category",
+      "addCategory": "Add Category",
       "edit": "Edit",
       "delete": "Delete",
-      "deleteConfirm": "Are you sure you want to delete this category?",
+      "confirmDelete": "Are you sure you want to delete this category?",
       "deleteBlocked": "Cannot delete: {{count}} item(s) use this category",
       "form": {
-        "name": "Category Name",
-        "namePlaceholder": "Enter category name",
+        "title": {
+          "create": "Create Custom Category",
+          "edit": "Edit Custom Category"
+        },
+        "nameEn": "Name (English)",
+        "nameFi": "Name (Finnish)",
         "icon": "Icon",
-        "iconPlaceholder": "Enter an emoji",
-        "color": "Color (optional)",
-        "colorPlaceholder": "#3498db",
-        "save": "Save Category",
-        "cancel": "Cancel"
+        "iconHelper": "Enter an emoji",
+        "descriptionEn": "Description (English)",
+        "descriptionFi": "Description (Finnish)",
+        "color": "Color",
+        "sortOrder": "Sort Order",
+        "sortOrderHelper": "Higher numbers appear later",
+        "save": "Save",
+        "cancel": "Cancel",
+        "idPreview": "ID: custom-",
+        "error": {
+          "nameRequired": "English name is required",
+          "iconRequired": "Icon is required",
+          "iconInvalid": "Icon must be an emoji",
+          "idExists": "A category with this ID already exists"
+        }
       },
       "standardCategories": "Standard Categories",
       "standardDescription": "Built-in categories that cannot be edited or deleted."

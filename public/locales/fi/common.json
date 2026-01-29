@@ -153,6 +153,7 @@
         "hiddenAlerts": "Piilotetut hälytykset",
         "disabledRecommendations": "Poistetut suositukset",
         "disabledCategories": "Poistetut kategoriat",
+        "customCategories": "Omat kategoriat",
         "overriddenRecommendations": "Ohitetut suositukset",
         "dataManagement": "Tietojen hallinta",
         "about": "Tietoja",
@@ -191,22 +192,37 @@
     },
     "customCategories": {
       "title": "Omat kategoriat",
-      "description": "Luo omia kategorioita tuotteille, jotka eivät sovi vakiokategorioihin.",
-      "empty": "Ei omia kategorioita",
+      "description": "Sinulla on {{count}} omaa kategoriaa.",
+      "empty": "Ei omia kategorioita. Lisää yksi aloittaaksesi.",
       "add": "Lisää kategoria",
+      "addCategory": "Lisää kategoria",
       "edit": "Muokkaa",
       "delete": "Poista",
-      "deleteConfirm": "Haluatko varmasti poistaa tämän kategorian?",
+      "confirmDelete": "Haluatko varmasti poistaa tämän kategorian?",
       "deleteBlocked": "Ei voi poistaa: {{count}} tuotetta käyttää tätä kategoriaa",
       "form": {
-        "name": "Kategorian nimi",
-        "namePlaceholder": "Syötä kategorian nimi",
+        "title": {
+          "create": "Luo oma kategoria",
+          "edit": "Muokkaa kategoriaa"
+        },
+        "nameEn": "Nimi (englanti)",
+        "nameFi": "Nimi (suomi)",
         "icon": "Kuvake",
-        "iconPlaceholder": "Syötä emoji",
-        "color": "Väri (valinnainen)",
-        "colorPlaceholder": "#3498db",
-        "save": "Tallenna kategoria",
-        "cancel": "Peruuta"
+        "iconHelper": "Syötä emoji",
+        "descriptionEn": "Kuvaus (englanti)",
+        "descriptionFi": "Kuvaus (suomi)",
+        "color": "Väri",
+        "sortOrder": "Järjestysnumero",
+        "sortOrderHelper": "Suuremmat numerot näkyvät myöhemmin",
+        "save": "Tallenna",
+        "cancel": "Peruuta",
+        "idPreview": "ID: custom-",
+        "error": {
+          "nameRequired": "Englanninkielinen nimi vaaditaan",
+          "iconRequired": "Kuvake vaaditaan",
+          "iconInvalid": "Kuvakkeen täytyy olla emoji",
+          "idExists": "Tällä ID:llä on jo kategoria"
+        }
       },
       "standardCategories": "Vakiokategoriat",
       "standardDescription": "Sisäänrakennetut kategoriat, joita ei voi muokata tai poistaa."
