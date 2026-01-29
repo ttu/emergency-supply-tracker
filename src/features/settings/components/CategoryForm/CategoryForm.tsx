@@ -29,6 +29,8 @@ function toKebabCase(str: string): string {
     .replace(/-+/g, '-');
 }
 
+const DEFAULT_CATEGORY_ICON = '📦';
+
 function isValidEmoji(str: string): boolean {
   // Comprehensive emoji regex covering common emoji ranges
   const emojiRegex =
@@ -73,9 +75,8 @@ export function CategoryForm({
       newErrors.nameEn = t('settings.customCategories.form.error.nameRequired');
     }
 
-    if (!icon.trim()) {
-      newErrors.icon = t('settings.customCategories.form.error.iconRequired');
-    } else if (!isValidEmoji(icon.trim())) {
+    // Icon is optional - if provided, must be a valid emoji
+    if (icon.trim() && !isValidEmoji(icon.trim())) {
       newErrors.icon = t('settings.customCategories.form.error.iconInvalid');
     }
 
@@ -103,7 +104,7 @@ export function CategoryForm({
 
     const data: CategoryFormData = {
       names: { en: nameEn.trim() },
-      icon: icon.trim(),
+      icon: icon.trim() || DEFAULT_CATEGORY_ICON,
     };
 
     if (nameFi.trim()) {
@@ -161,8 +162,8 @@ export function CategoryForm({
           value={icon}
           onChange={(e) => setIcon(e.target.value)}
           error={errors.icon}
+          placeholder={DEFAULT_CATEGORY_ICON}
           helperText={t('settings.customCategories.form.iconHelper')}
-          required
         />
 
         {generatedId && (

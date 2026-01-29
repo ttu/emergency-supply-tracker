@@ -89,7 +89,7 @@ describe('CategoryForm', () => {
     expect(screen.getByText('English name is required')).toBeInTheDocument();
   });
 
-  it('validates icon is required', async () => {
+  it('uses default icon when none provided', async () => {
     const user = userEvent.setup();
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
@@ -100,8 +100,28 @@ describe('CategoryForm', () => {
     );
     await user.click(screen.getByRole('button', { name: /save/i }));
 
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        names: expect.objectContaining({ en: 'Test Category' }),
+        icon: '📦', // Default icon
+      }),
+    );
+  });
+
+  it('validates invalid icon format', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(
+      screen.getByLabelText(/Name \(English\)/i),
+      'Test Category',
+    );
+    await user.type(screen.getByLabelText(/Icon/i), 'not-an-emoji');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+
     expect(mockOnSubmit).not.toHaveBeenCalled();
-    expect(screen.getByText('Icon is required')).toBeInTheDocument();
+    expect(screen.getByText('Icon must be an emoji')).toBeInTheDocument();
   });
 
   it('submits valid form data', async () => {
