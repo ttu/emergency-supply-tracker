@@ -3,11 +3,15 @@ import { VALID_THEMES } from '@/shared/types';
 
 /**
  * Validation error details for data validation.
+ * When message is an i18n key, use interpolation for placeholder values in the UI.
  */
 export interface DataValidationError {
   field: string;
+  /** i18n key or fallback message; translated in UI when key exists */
   message: string;
   value?: unknown;
+  /** Optional interpolation for i18n when message is a key (e.g. value, allowed, field) */
+  interpolation?: Record<string, string | number>;
 }
 
 /**
@@ -22,6 +26,10 @@ export interface DataValidationResult {
  * Valid language values for settings.
  */
 const VALID_LANGUAGES = ['en', 'fi'] as const;
+
+/** Valid range for childrenRequirementPercentage (0–100). */
+const CHILDREN_REQUIREMENT_MIN = 0;
+const CHILDREN_REQUIREMENT_MAX = 100;
 
 /**
  * Safely converts a value to a string representation for error messages.
@@ -79,8 +87,12 @@ function validateSettings(
   ) {
     errors.push({
       field: 'settings.language',
-      message: `Invalid language: "${safeStringify(settings.language)}". Must be one of: ${VALID_LANGUAGES.join(', ')}`,
+      message: 'validation.settings.languageInvalid',
       value: settings.language,
+      interpolation: {
+        value: safeStringify(settings.language),
+        allowed: VALID_LANGUAGES.join(', '),
+      },
     });
   }
 
@@ -91,8 +103,12 @@ function validateSettings(
   ) {
     errors.push({
       field: 'settings.theme',
-      message: `Invalid theme: "${safeStringify(settings.theme)}". Must be one of: ${VALID_THEMES.join(', ')}`,
+      message: 'validation.settings.themeInvalid',
       value: settings.theme,
+      interpolation: {
+        value: safeStringify(settings.theme),
+        allowed: VALID_THEMES.join(', '),
+      },
     });
   }
 
@@ -104,7 +120,7 @@ function validateSettings(
   ) {
     errors.push({
       field: 'settings.dailyCaloriesPerPerson',
-      message: 'dailyCaloriesPerPerson must be a non-negative number',
+      message: 'validation.settings.dailyCaloriesPerPerson',
       value: settings.dailyCaloriesPerPerson,
     });
   }
@@ -116,7 +132,7 @@ function validateSettings(
   ) {
     errors.push({
       field: 'settings.dailyWaterPerPerson',
-      message: 'dailyWaterPerPerson must be a non-negative number',
+      message: 'validation.settings.dailyWaterPerPerson',
       value: settings.dailyWaterPerPerson,
     });
   }
@@ -124,13 +140,14 @@ function validateSettings(
   if (
     settings.childrenRequirementPercentage !== undefined &&
     (!Number.isFinite(settings.childrenRequirementPercentage) ||
-      (settings.childrenRequirementPercentage as number) < 0 ||
-      (settings.childrenRequirementPercentage as number) > 100)
+      (settings.childrenRequirementPercentage as number) <
+        CHILDREN_REQUIREMENT_MIN ||
+      (settings.childrenRequirementPercentage as number) >
+        CHILDREN_REQUIREMENT_MAX)
   ) {
     errors.push({
       field: 'settings.childrenRequirementPercentage',
-      message:
-        'childrenRequirementPercentage must be a number between 0 and 100',
+      message: 'validation.settings.childrenRequirementPercentage',
       value: settings.childrenRequirementPercentage,
     });
   }
@@ -154,8 +171,9 @@ function validateHousehold(
       if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
         errors.push({
           field: `household.${field}`,
-          message: `${field} must be a non-negative number`,
+          message: 'validation.household.nonNegativeNumber',
           value,
+          interpolation: { field },
         });
       }
     }
@@ -168,7 +186,7 @@ function validateHousehold(
   ) {
     errors.push({
       field: 'household.useFreezer',
-      message: 'useFreezer must be a boolean',
+      message: 'validation.household.useFreezerBoolean',
       value: household.useFreezer,
     });
   }

@@ -11,6 +11,11 @@ import { downloadFile, generateDateFilename } from '@/shared/utils/download';
 import type { DataValidationResult } from '@/shared/utils/validation/appDataValidation';
 import styles from './ErrorBoundary.module.css';
 
+/** Basename for exported file when data failed validation (user-visible filename). */
+const EXPORT_BASENAME_CORRUPTED = 'emergency-supplies-corrupted';
+/** Basename for exported raw JSON when parse fails (user-visible filename). */
+const EXPORT_BASENAME_RAW = 'emergency-supplies-raw';
+
 interface DataErrorPageProps {
   readonly onRetry?: () => void;
   /** Override for validation result (used in Storybook) */
@@ -57,11 +62,11 @@ export function DataErrorPage({
         },
       };
       const json = JSON.stringify(exportData, null, 2);
-      const filename = generateDateFilename('emergency-supplies-corrupted');
+      const filename = generateDateFilename(EXPORT_BASENAME_CORRUPTED);
       downloadFile(json, filename);
     } catch {
       // If parsing fails, export the raw JSON as-is
-      const filename = generateDateFilename('emergency-supplies-raw');
+      const filename = generateDateFilename(EXPORT_BASENAME_RAW);
       downloadFile(rawJson, filename);
     }
   };
@@ -85,10 +90,15 @@ export function DataErrorPage({
     }
   };
 
-  // Format errors for display
+  // Format errors for display (translate message when it is an i18n key)
   const errorSummary = validationResult?.errors.length
     ? validationResult.errors
-        .map((err) => `${err.field}: ${err.message}`)
+        .map((err) => {
+          const opts = err.interpolation
+            ? { ...err.interpolation, defaultValue: err.message }
+            : { defaultValue: err.message };
+          return `${err.field}: ${t(err.message, opts)}`;
+        })
         .join('\n')
     : t('dataError.page.unknownError');
 

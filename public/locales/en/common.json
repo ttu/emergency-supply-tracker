@@ -339,6 +339,19 @@
       "deleteSuccess": "All data has been cleared. The page will now reload."
     }
   },
+  "validation": {
+    "settings": {
+      "languageInvalid": "Invalid language: \"{{value}}\". Must be one of: {{allowed}}.",
+      "themeInvalid": "Invalid theme: \"{{value}}\". Must be one of: {{allowed}}.",
+      "dailyCaloriesPerPerson": "dailyCaloriesPerPerson must be a finite non-negative number",
+      "dailyWaterPerPerson": "dailyWaterPerPerson must be a finite non-negative number",
+      "childrenRequirementPercentage": "childrenRequirementPercentage must be a number between 0 and 100"
+    },
+    "household": {
+      "nonNegativeNumber": "{{field}} must be a non-negative number",
+      "useFreezerBoolean": "useFreezer must be a boolean"
+    }
+  },
   "dataError": {
     "page": {
       "title": "Invalid Data Detected",

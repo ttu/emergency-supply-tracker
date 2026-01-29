@@ -339,6 +339,19 @@
       "deleteSuccess": "Kaikki tiedot on tyhjennetty. Sivu ladataan nyt uudelleen."
     }
   },
+  "validation": {
+    "settings": {
+      "languageInvalid": "Virheellinen kieli: \"{{value}}\". Sallitut arvot: {{allowed}}.",
+      "themeInvalid": "Virheellinen teema: \"{{value}}\". Sallitut arvot: {{allowed}}.",
+      "dailyCaloriesPerPerson": "dailyCaloriesPerPerson on oltava äärellinen ei-negatiivinen luku",
+      "dailyWaterPerPerson": "dailyWaterPerPerson on oltava äärellinen ei-negatiivinen luku",
+      "childrenRequirementPercentage": "childrenRequirementPercentage on oltava luku välillä 0–100"
+    },
+    "household": {
+      "nonNegativeNumber": "{{field}} on oltava ei-negatiivinen luku",
+      "useFreezerBoolean": "useFreezer on oltava totuusarvo"
+    }
+  },
   "dataError": {
     "page": {
       "title": "Virheelliset tiedot havaittu",
