@@ -72,11 +72,19 @@ test.describe('Pet Support', () => {
 
       const petsInput = page.locator('#pets');
       await petsInput.fill('3');
+      // Blur the input to persist the change
+      await petsInput.blur();
 
       // Click single preset
       await page.getByTestId('preset-single').click();
 
-      // Pets should be set to 0
+      // Navigate away and back to verify the preset was applied at the household level
+      // Input values don't auto-sync, but navigating forces a fresh read from context
+      await page.getByTestId('nav-dashboard').click();
+      await page.getByTestId('nav-settings').click();
+      await navigateToSettingsSection(page, 'household');
+
+      // After re-navigating, the pets input should reflect the preset value (0)
       await expect(petsInput).toHaveValue('0');
     });
   });
