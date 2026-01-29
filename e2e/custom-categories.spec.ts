@@ -330,6 +330,94 @@ test.describe('Custom Categories', () => {
     }
   });
 
+  test('should navigate to custom categories section in settings', async ({
+    page,
+  }) => {
+    const appData = createMockAppData({
+      settings: {
+        onboardingCompleted: true,
+        language: 'en',
+        theme: 'light',
+        highContrast: false,
+        advancedFeatures: {
+          calorieTracking: false,
+          powerManagement: false,
+          waterTracking: false,
+        },
+      },
+    });
+
+    await page.goto('/');
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
+    await page.reload({ waitUntil: 'domcontentloaded' });
+
+    // Navigate to Settings
+    await page.getByTestId('nav-settings').click();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
+
+    // Navigate to Custom Categories section
+    await navigateToSettingsSection(page, 'customCategories');
+    await expect(page.getByTestId('section-custom-categories')).toBeVisible();
+
+    // Should show empty state or add button
+    const addButton = page.getByRole('button', { name: /add category/i });
+    await expect(addButton).toBeVisible();
+  });
+
+  test('should create a new custom category via settings', async ({ page }) => {
+    const appData = createMockAppData({
+      settings: {
+        onboardingCompleted: true,
+        language: 'en',
+        theme: 'light',
+        highContrast: false,
+        advancedFeatures: {
+          calorieTracking: false,
+          powerManagement: false,
+          waterTracking: false,
+        },
+      },
+    });
+
+    await page.goto('/');
+    await page.evaluate(
+      ({ data, key }) => {
+        localStorage.setItem(key, JSON.stringify(data));
+      },
+      { data: appData, key: STORAGE_KEY },
+    );
+    await page.reload({ waitUntil: 'domcontentloaded' });
+
+    // Navigate to Settings -> Custom Categories
+    await page.getByTestId('nav-settings').click();
+    await navigateToSettingsSection(page, 'customCategories');
+
+    // Click Add Category
+    const addButton = page.getByRole('button', { name: /add category/i });
+    await addButton.click();
+
+    // Fill in the form
+    await page.fill('input[id*="name"]', 'Test Category');
+    await page.locator('input').filter({ hasText: '' }).nth(1).fill('🧪');
+
+    // Submit the form
+    await page.getByRole('button', { name: /save/i }).click();
+
+    // Verify the category was created
+    const storedData = await page.evaluate((key) => {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    }, STORAGE_KEY);
+
+    expect(storedData?.customCategories).toBeDefined();
+    expect(storedData?.customCategories.length).toBeGreaterThan(0);
+  });
+
   test('should handle custom category in data import/export', async ({
     page,
   }) => {
