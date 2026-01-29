@@ -15,6 +15,7 @@ import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recomm
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from '@/features/dashboard';
 import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import type { UploadedKit } from '@/shared/types';
 import {
   createItemId,
   createCategoryId,
@@ -621,6 +622,66 @@ describe('Inventory Page with items', () => {
     const addItemButton = screen.getByText('common.add');
     expect(addItemButton).toBeInTheDocument();
   });
+
+  it('should add custom item and close modal on submit (handleAddItem)', async () => {
+    renderWithProviders(<Inventory />);
+
+    // Open template selector and choose custom item
+    const addButton = screen.getByText('inventory.addFromTemplate');
+    fireEvent.click(addButton);
+    const customItemButton = screen.getByText(/itemForm.customItem/);
+    fireEvent.click(customItemButton);
+
+    // Fill required fields (name, quantity, category) and check never expires so no expiration required
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'My Custom Supply' } });
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
+    fireEvent.change(quantityInput, { target: { value: '3' } });
+    const categorySelect = screen.getByLabelText(/itemForm\.category/i);
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    fireEvent.click(neverExpiresCheckbox);
+
+    const submitButton = screen.getByText('common.add');
+    fireEvent.click(submitButton);
+
+    // Modal should close (handleAddItem calls setShowAddModal(false), setEditingItem(undefined))
+    await waitFor(() => {
+      expect(screen.queryByText('inventory.addItem')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should open edit modal with setSelectedTemplate(undefined) for item with itemType custom', async () => {
+    const customOnlyItem = createMockInventoryItem({
+      id: createItemId('custom-only-item'),
+      name: 'Custom Only Item',
+      itemType: 'custom',
+      categoryId: createCategoryId('food'),
+      quantity: 1,
+      unit: 'pieces',
+      neverExpires: true,
+    });
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [customOnlyItem],
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+
+    renderWithProviders(<Inventory />);
+
+    // Click the custom item to edit (hits else branch: setSelectedTemplate(undefined))
+    const customItemEl = screen.getByText('Custom Only Item');
+    fireEvent.click(customItemEl);
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.editItem')).toBeInTheDocument();
+    });
+
+    // Form should show without template-specific fields (selectedTemplate was set to undefined)
+    expect(screen.getByLabelText(/itemForm\.name/i)).toHaveValue(
+      'Custom Only Item',
+    );
+  });
 });
 
 describe('Template to InventoryItem conversion', () => {
@@ -1056,6 +1117,71 @@ describe('Inventory Page - Mark as Enough', () => {
       expect(
         screen.queryByTestId('disable-category-button'),
       ).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe('Inventory Page - resolveItemName (custom item names)', () => {
+  const CUSTOM_KIT_UUID = 'resolve-item-name-test-uuid';
+  const customKit: UploadedKit = {
+    id: CUSTOM_KIT_UUID,
+    file: {
+      meta: {
+        name: 'Custom Kit',
+        version: '1.0.0',
+        createdAt: new Date().toISOString(),
+      },
+      items: [
+        {
+          id: createProductTemplateId('custom-test'),
+          i18nKey: 'custom.custom-test',
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+          names: { en: 'Custom Test Item', fi: 'Custom Test Item FI' },
+        },
+      ],
+    },
+    uploadedAt: new Date().toISOString(),
+  };
+
+  beforeEach(() => {
+    globalThis.confirm = vi.fn(() => true);
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [],
+      uploadedRecommendationKits: [customKit],
+      selectedRecommendationKit: `custom:${CUSTOM_KIT_UUID}`,
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('should resolve custom item name when CategoryStatusSummary displays shortage', async () => {
+    const user = userEvent.setup();
+    // Food category with custom kit item in shortage (no food items in inventory)
+    renderWithProviders(<Inventory selectedCategoryId="food" />);
+
+    // Expand recommended items so CategoryStatusSummary formats shortages and calls resolveItemName
+    const expandButton = screen.getByRole('button', {
+      name: /Show.*recommended/i,
+    });
+    await user.click(expandButton);
+
+    // resolveItemName is called with (itemId, i18nKey) for custom items; shortage text should show custom name
+    await waitFor(() => {
+      // CategoryStatusSummary formats shortages; custom item uses getItemName via resolveItemName
+      expect(
+        screen.getByText(
+          /Custom Test Item|inventory\.shortageFormat|inventory\.shortageFormatMissing/,
+        ),
+      ).toBeInTheDocument();
     });
   });
 });

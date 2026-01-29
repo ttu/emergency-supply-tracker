@@ -122,7 +122,7 @@ export function Inventory({
     return categoryStatuses.find((cs) => cs.categoryId === selectedCategoryId);
   }, [selectedCategoryId, categoryStatuses]);
 
-  // Filter and sort items (memoized to prevent unnecessary re-renders)
+  // Filter and sort items - memoized to prevent unnecessary re-renders
   const filteredItems = useMemo(() => {
     let result = items;
 
@@ -328,6 +328,7 @@ export function Inventory({
   );
 
   // Convert categories to SideMenu items (only enabled categories)
+  // i18n.language in deps so memos recompute when language changes (t() output changes)
   const categoryMenuItems: SideMenuItem[] = useMemo(
     () =>
       enabledCategories.map((category) => ({
@@ -335,17 +336,19 @@ export function Inventory({
         label: t(category.id, { ns: 'categories' }),
         icon: category.icon,
       })),
-    [enabledCategories, t],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- i18n.language for translation updates
+    [enabledCategories, t, i18n.language],
   );
 
-  // Memoize the "All Categories" option for SideMenu
-  const showAllOption: SideMenuItem = useMemo(
+  // Memoize showAllOption to prevent unnecessary re-renders
+  const showAllOption = useMemo(
     () => ({
       id: 'all',
       label: t('inventory.allCategories'),
       icon: '📦',
     }),
-    [t],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- i18n.language for translation updates
+    [t, i18n.language],
   );
 
   const handleSideMenuCategoryChange = useCallback(

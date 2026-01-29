@@ -1,3 +1,10 @@
+/* Reset button styles when card is a button */
+button.card {
+  font: inherit;
+  text-align: inherit;
+  width: 100%;
+}
+
 .card {
   background-color: var(--color-background);
   border: 1px solid var(--color-border);

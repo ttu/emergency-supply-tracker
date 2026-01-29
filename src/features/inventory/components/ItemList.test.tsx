@@ -13,12 +13,12 @@ import {
 vi.mock('./ItemCard', () => ({
   ItemCard: ({
     item,
-    onClick,
+    onItemClick,
   }: {
     item: InventoryItem;
-    onClick?: () => void;
+    onItemClick?: (item: InventoryItem) => void;
   }) => (
-    <div data-testid={`item-${item.id}`} onClick={onClick}>
+    <div data-testid={`item-${item.id}`} onClick={() => onItemClick?.(item)}>
       {item.name}
     </div>
   ),

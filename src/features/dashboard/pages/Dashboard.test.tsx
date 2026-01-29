@@ -38,7 +38,7 @@ vi.mock('@/features/dashboard', async () => {
       categories: Array<{
         categoryId: string;
         categoryName: string;
-        onClick?: () => void;
+        onCategoryClick?: (categoryId: string) => void;
       }>;
     }) => (
       <div data-testid="category-grid">
@@ -46,7 +46,7 @@ vi.mock('@/features/dashboard', async () => {
           <button
             key={cat.categoryId}
             data-testid={`category-${cat.categoryId}`}
-            onClick={cat.onClick}
+            onClick={() => cat.onCategoryClick?.(cat.categoryId)}
           >
             {cat.categoryName}
           </button>
