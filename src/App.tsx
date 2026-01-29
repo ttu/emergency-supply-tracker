@@ -6,11 +6,12 @@ import { HouseholdProvider, useHousehold } from '@/features/household';
 import { InventoryProvider, useInventory } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
 import { SettingsEffects } from './components/SettingsEffects';
-import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
+import { ErrorBoundary, DataErrorPage } from '@/shared/components';
 import { Navigation, PageType } from '@/shared/components/Navigation';
 import { NotificationBar } from '@/shared/components/NotificationBar';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { composeProviders } from '@/shared/utils/composeProviders';
+import { useDataValidation } from '@/shared/hooks';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import './App.css';
 
@@ -177,6 +178,22 @@ function AppContent() {
   );
 }
 
+/**
+ * Wrapper component that checks for data validation errors before loading the app.
+ * This must be rendered before any providers that try to load data from localStorage.
+ */
+function DataValidationGuard({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const { hasValidationError, retry } = useDataValidation();
+
+  if (hasValidationError) {
+    return <DataErrorPage onRetry={retry} />;
+  }
+
+  return <>{children}</>;
+}
+
 function App() {
   // Track app launch on mount
   useEffect(() => {
@@ -184,9 +201,11 @@ function App() {
   }, []);
 
   return (
-    <AppProviders>
-      <AppContent />
-    </AppProviders>
+    <DataValidationGuard>
+      <AppProviders>
+        <AppContent />
+      </AppProviders>
+    </DataValidationGuard>
   );
 }
 

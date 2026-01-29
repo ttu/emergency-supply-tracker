@@ -122,55 +122,64 @@ export function Inventory({
     return categoryStatuses.find((cs) => cs.categoryId === selectedCategoryId);
   }, [selectedCategoryId, categoryStatuses]);
 
-  // Filter items
-  let filteredItems = items;
+  // Filter and sort items (memoized to prevent unnecessary re-renders)
+  const filteredItems = useMemo(() => {
+    let result = items;
 
-  // Filter by category
-  if (selectedCategoryId) {
-    filteredItems = filteredItems.filter(
-      (item) => item.categoryId === selectedCategoryId,
-    );
-  }
-
-  // Filter by search query
-  if (searchQuery) {
-    filteredItems = filteredItems.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }
-
-  // Filter by status
-  if (statusFilter !== 'all') {
-    filteredItems = filteredItems.filter((item) => {
-      const recommendedQuantity = getRecommendedQuantityForItem(
-        item,
-        household,
-        recommendedItems,
-        calculationOptions.childrenMultiplier,
-      );
-      const status = calculateItemStatus(item, recommendedQuantity);
-      return status === statusFilter;
-    });
-  }
-
-  // Sort items
-  filteredItems = [...filteredItems].sort((a, b) => {
-    switch (sortBy) {
-      case 'name':
-        return a.name.localeCompare(b.name);
-      case 'quantity':
-        return b.quantity - a.quantity;
-      case 'expiration':
-        if (a.neverExpires && b.neverExpires) return 0;
-        if (a.neverExpires) return 1;
-        if (b.neverExpires) return -1;
-        // Compare date-only strings directly to avoid timezone issues
-        // Date-only strings (YYYY-MM-DD) can be compared lexicographically
-        return (a.expirationDate || '').localeCompare(b.expirationDate || '');
-      default:
-        return 0;
+    // Filter by category
+    if (selectedCategoryId) {
+      result = result.filter((item) => item.categoryId === selectedCategoryId);
     }
-  });
+
+    // Filter by search query
+    if (searchQuery) {
+      result = result.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+
+    // Filter by status
+    if (statusFilter !== 'all') {
+      result = result.filter((item) => {
+        const recommendedQuantity = getRecommendedQuantityForItem(
+          item,
+          household,
+          recommendedItems,
+          calculationOptions.childrenMultiplier,
+        );
+        const status = calculateItemStatus(item, recommendedQuantity);
+        return status === statusFilter;
+      });
+    }
+
+    // Sort items
+    return [...result].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'quantity':
+          return b.quantity - a.quantity;
+        case 'expiration':
+          if (a.neverExpires && b.neverExpires) return 0;
+          if (a.neverExpires) return 1;
+          if (b.neverExpires) return -1;
+          // Compare date-only strings directly to avoid timezone issues
+          // Date-only strings (YYYY-MM-DD) can be compared lexicographically
+          return (a.expirationDate || '').localeCompare(b.expirationDate || '');
+        default:
+          return 0;
+      }
+    });
+  }, [
+    items,
+    selectedCategoryId,
+    searchQuery,
+    statusFilter,
+    sortBy,
+    household,
+    recommendedItems,
+    calculationOptions.childrenMultiplier,
+  ]);
 
   const handleAddItem = (
     itemData: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
@@ -205,17 +214,20 @@ export function Inventory({
     [updateItem],
   );
 
-  const handleEditItem = (item: InventoryItem) => {
-    setEditingItem(item);
-    // If item has a template, set it so weight/calorie calculations work
-    if (item.itemType && item.itemType !== 'custom') {
-      const template = recommendedItems.find((t) => t.id === item.itemType);
-      setSelectedTemplate(template);
-    } else {
-      setSelectedTemplate(undefined);
-    }
-    setShowAddModal(true);
-  };
+  const handleEditItem = useCallback(
+    (item: InventoryItem) => {
+      setEditingItem(item);
+      // If item has a template, set it so weight/calorie calculations work
+      if (item.itemType && item.itemType !== 'custom') {
+        const template = recommendedItems.find((t) => t.id === item.itemType);
+        setSelectedTemplate(template);
+      } else {
+        setSelectedTemplate(undefined);
+      }
+      setShowAddModal(true);
+    },
+    [recommendedItems],
+  );
 
   const handleCopyItem = () => {
     if (editingItem) {
@@ -316,18 +328,33 @@ export function Inventory({
   );
 
   // Convert categories to SideMenu items (only enabled categories)
-  const categoryMenuItems: SideMenuItem[] = enabledCategories.map(
-    (category) => ({
-      id: category.id,
-      label: t(category.id, { ns: 'categories' }),
-      icon: category.icon,
-    }),
+  const categoryMenuItems: SideMenuItem[] = useMemo(
+    () =>
+      enabledCategories.map((category) => ({
+        id: category.id,
+        label: t(category.id, { ns: 'categories' }),
+        icon: category.icon,
+      })),
+    [enabledCategories, t],
   );
 
-  const handleSideMenuCategoryChange = (id: string) => {
-    // If 'all' is selected, clear the category filter
-    handleCategoryChange(id === 'all' ? undefined : id);
-  };
+  // Memoize the "All Categories" option for SideMenu
+  const showAllOption: SideMenuItem = useMemo(
+    () => ({
+      id: 'all',
+      label: t('inventory.allCategories'),
+      icon: '📦',
+    }),
+    [t],
+  );
+
+  const handleSideMenuCategoryChange = useCallback(
+    (id: string) => {
+      // If 'all' is selected, clear the category filter
+      handleCategoryChange(id === 'all' ? undefined : id);
+    },
+    [handleCategoryChange],
+  );
 
   return (
     <div className={styles.container} data-testid="page-inventory">
@@ -350,11 +377,7 @@ export function Inventory({
           selectedId={selectedCategoryId || 'all'}
           onSelect={handleSideMenuCategoryChange}
           ariaLabel={t('accessibility.categoryNavigation')}
-          showAllOption={{
-            id: 'all',
-            label: t('inventory.allCategories'),
-            icon: '📦',
-          }}
+          showAllOption={showAllOption}
         />
 
         <div className={styles.main}>

@@ -339,6 +339,29 @@
       "deleteSuccess": "Kaikki tiedot on tyhjennetty. Sivu ladataan nyt uudelleen."
     }
   },
+  "validation": {
+    "settings": {
+      "languageInvalid": "Virheellinen kieli: \"{{value}}\". Sallitut arvot: {{allowed}}.",
+      "themeInvalid": "Virheellinen teema: \"{{value}}\". Sallitut arvot: {{allowed}}.",
+      "dailyCaloriesPerPerson": "dailyCaloriesPerPerson on oltava äärellinen ei-negatiivinen luku",
+      "dailyWaterPerPerson": "dailyWaterPerPerson on oltava äärellinen ei-negatiivinen luku",
+      "childrenRequirementPercentage": "childrenRequirementPercentage on oltava luku välillä 0–100"
+    },
+    "household": {
+      "nonNegativeNumber": "{{field}} on oltava ei-negatiivinen luku",
+      "useFreezerBoolean": "useFreezer on oltava totuusarvo"
+    }
+  },
+  "dataError": {
+    "page": {
+      "title": "Virheelliset tiedot havaittu",
+      "message": "Tallennetut tietosi sisältävät virheellisiä arvoja eikä niitä voida ladata. Tämä voi johtua siitä, että tietoja on muokattu manuaalisesti tai ne ovat vioittuneet.",
+      "details": "Validointivirheet",
+      "unknownError": "Tuntematon validointivirhe",
+      "dataManagementDescription": "Voit ladata tietosi tarkistaaksesi tai korjataksesi ne manuaalisesti, tai poistaa kaikki tiedot aloittaaksesi alusta.",
+      "exportReason": "Tietojen validointi epäonnistui latauksen yhteydessä"
+    }
+  },
   "themes": {
     "light": "Vaalea",
     "dark": "Tumma",

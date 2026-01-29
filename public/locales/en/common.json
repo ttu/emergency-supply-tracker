@@ -339,6 +339,29 @@
       "deleteSuccess": "All data has been cleared. The page will now reload."
     }
   },
+  "validation": {
+    "settings": {
+      "languageInvalid": "Invalid language: \"{{value}}\". Must be one of: {{allowed}}.",
+      "themeInvalid": "Invalid theme: \"{{value}}\". Must be one of: {{allowed}}.",
+      "dailyCaloriesPerPerson": "dailyCaloriesPerPerson must be a finite non-negative number",
+      "dailyWaterPerPerson": "dailyWaterPerPerson must be a finite non-negative number",
+      "childrenRequirementPercentage": "childrenRequirementPercentage must be a number between 0 and 100"
+    },
+    "household": {
+      "nonNegativeNumber": "{{field}} must be a non-negative number",
+      "useFreezerBoolean": "useFreezer must be a boolean"
+    }
+  },
+  "dataError": {
+    "page": {
+      "title": "Invalid Data Detected",
+      "message": "Your saved data contains invalid values and cannot be loaded. This may happen if the data was manually edited or corrupted.",
+      "details": "Validation errors",
+      "unknownError": "Unknown validation error",
+      "dataManagementDescription": "You can download your data to inspect or fix it manually, or delete all data to start fresh.",
+      "exportReason": "Data failed validation on load"
+    }
+  },
   "themes": {
     "light": "Light",
     "dark": "Dark",
