@@ -11,6 +11,9 @@ export type { UseShoppingListExportResult } from './hooks';
 
 // Components
 export {
+  CategoriesSection,
+  CategoryForm,
+  CategoryList,
   ClearDataButton,
   DebugExport,
   DisabledCategories,

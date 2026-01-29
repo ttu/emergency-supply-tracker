@@ -1,3 +1,7 @@
+export { CategoriesSection } from './CategoriesSection';
+export { CategoryForm } from './CategoryForm';
+export type { CategoryFormData, CategoryFormProps } from './CategoryForm';
+export { CategoryList } from './CategoryList';
 export { ClearDataButton } from './ClearDataButton';
 export { DebugExport } from './DebugExport';
 export { DisabledCategories } from './DisabledCategories';

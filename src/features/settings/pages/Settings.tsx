@@ -15,6 +15,7 @@ import {
   DisabledRecommendations,
   OverriddenRecommendations,
   KitManagement,
+  CategoriesSection,
 } from '@/features/settings';
 import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
 import { APP_VERSION } from '@/shared/utils/version';
@@ -27,6 +28,7 @@ type SettingsSection =
   | 'hiddenAlerts'
   | 'disabledRecommendations'
   | 'disabledCategories'
+  | 'customCategories'
   | 'overriddenRecommendations'
   | 'recommendationKits'
   | 'dataManagement'
@@ -75,6 +77,10 @@ export function Settings() {
     {
       id: 'disabledCategories',
       label: t('settings.navigation.sections.disabledCategories'),
+    },
+    {
+      id: 'customCategories',
+      label: t('settings.navigation.sections.customCategories'),
     },
     {
       id: 'overriddenRecommendations',
@@ -157,6 +163,16 @@ export function Settings() {
               {t('settings.navigation.sections.disabledCategories')}
             </h2>
             <DisabledCategories />
+          </section>
+        );
+
+      case 'customCategories':
+        return (
+          <section
+            className={styles.section}
+            data-testid="section-custom-categories"
+          >
+            <CategoriesSection />
           </section>
         );
 
