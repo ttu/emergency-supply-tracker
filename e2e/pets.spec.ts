@@ -78,11 +78,14 @@ test.describe('Pet Support', () => {
       // Click single preset
       await page.getByTestId('preset-single').click();
 
-      // Note: Input values don't automatically sync when household changes via presets
-      // This is intentional to preserve cursor position. Presets work at the household
-      // context level. If we navigated away and came back, the value would be 0.
-      // For this test, we verify the preset was applied by checking navigation works.
-      await expect(page.getByTestId('nav-dashboard')).toBeVisible();
+      // Navigate away and back to verify the preset was applied at the household level
+      // Input values don't auto-sync, but navigating forces a fresh read from context
+      await page.getByTestId('nav-dashboard').click();
+      await page.getByTestId('nav-settings').click();
+      await navigateToSettingsSection(page, 'household');
+
+      // After re-navigating, the pets input should reflect the preset value (0)
+      await expect(petsInput).toHaveValue('0');
     });
   });
 

@@ -38,6 +38,7 @@ export function HouseholdForm() {
     setInput: (value: string) => void,
     defaultValue: number,
     min: number = 0,
+    max?: number,
   ) => {
     const parsed = Number.parseInt(inputValue, 10);
     if (Number.isNaN(parsed) || parsed < min) {
@@ -45,7 +46,11 @@ export function HouseholdForm() {
       setInput(value.toString());
       updateHousehold({ [field]: value });
     } else {
-      updateHousehold({ [field]: parsed });
+      const clamped = max !== undefined ? Math.min(max, parsed) : parsed;
+      if (clamped !== parsed) {
+        setInput(clamped.toString());
+      }
+      updateHousehold({ [field]: clamped });
     }
   };
 
@@ -143,6 +148,7 @@ export function HouseholdForm() {
               setSupplyDaysInput,
               1,
               1,
+              365,
             )
           }
           min={1}

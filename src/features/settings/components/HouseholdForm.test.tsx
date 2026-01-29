@@ -239,4 +239,110 @@ describe('HouseholdForm', () => {
     fireEvent.blur(supplyDaysInput);
     expect(supplyDaysInput.value).toBe('1');
   });
+
+  it('should clamp supply days to maximum 365 on blur', () => {
+    renderWithHousehold(<HouseholdForm />);
+
+    const supplyDaysInput = screen.getByLabelText(
+      'settings.household.supplyDays',
+    ) as HTMLInputElement;
+    fireEvent.change(supplyDaysInput, { target: { value: '500' } });
+    // Value exceeds max during editing
+    expect(supplyDaysInput.value).toBe('500');
+    // Clamped to 365 on blur
+    fireEvent.blur(supplyDaysInput);
+    expect(supplyDaysInput.value).toBe('365');
+  });
+
+  it('should accept valid supply days value on blur', () => {
+    renderWithHousehold(<HouseholdForm />);
+
+    const supplyDaysInput = screen.getByLabelText(
+      'settings.household.supplyDays',
+    ) as HTMLInputElement;
+    fireEvent.change(supplyDaysInput, { target: { value: '30' } });
+    fireEvent.blur(supplyDaysInput);
+    // Valid value should be accepted as-is
+    expect(supplyDaysInput.value).toBe('30');
+  });
+
+  it('should handle freezer hours validation on blur', () => {
+    // Start with freezer enabled
+    renderWithHousehold(<HouseholdForm />, {
+      initialAppData: {
+        household: {
+          adults: 2,
+          children: 0,
+          pets: 0,
+          supplyDurationDays: 3,
+          useFreezer: true,
+          freezerHoldTimeHours: 24,
+        },
+      },
+    });
+
+    const freezerInput = screen.getByLabelText(
+      'settings.household.freezerHoldTime',
+    ) as HTMLInputElement;
+
+    // Test exceeding max (72)
+    fireEvent.change(freezerInput, { target: { value: '100' } });
+    fireEvent.blur(freezerInput);
+    expect(freezerInput.value).toBe('72');
+  });
+
+  it('should handle empty freezer hours as undefined on blur', () => {
+    // Start with freezer enabled
+    renderWithHousehold(<HouseholdForm />, {
+      initialAppData: {
+        household: {
+          adults: 2,
+          children: 0,
+          pets: 0,
+          supplyDurationDays: 3,
+          useFreezer: true,
+          freezerHoldTimeHours: 24,
+        },
+      },
+    });
+
+    const freezerInput = screen.getByLabelText(
+      'settings.household.freezerHoldTime',
+    ) as HTMLInputElement;
+
+    // Clear the input
+    fireEvent.change(freezerInput, { target: { value: '' } });
+    fireEvent.blur(freezerInput);
+    // Empty value should remain empty (undefined in context)
+    expect(freezerInput.value).toBe('');
+  });
+
+  it('should handle invalid freezer hours on blur', () => {
+    // Start with freezer enabled and a valid value
+    renderWithHousehold(<HouseholdForm />, {
+      initialAppData: {
+        household: {
+          adults: 2,
+          children: 0,
+          pets: 0,
+          supplyDurationDays: 3,
+          useFreezer: true,
+          freezerHoldTimeHours: 24,
+        },
+      },
+    });
+
+    const freezerInput = screen.getByLabelText(
+      'settings.household.freezerHoldTime',
+    ) as HTMLInputElement;
+
+    // Verify initial value
+    expect(freezerInput.value).toBe('24');
+
+    // Enter invalid value (negative)
+    fireEvent.change(freezerInput, { target: { value: '-5' } });
+    fireEvent.blur(freezerInput);
+    // Should reset to previous valid value
+    expect(freezerInput.value).toBe('24');
+  });
 });
