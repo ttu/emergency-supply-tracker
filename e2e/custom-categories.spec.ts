@@ -401,9 +401,9 @@ test.describe('Custom Categories', () => {
     const addButton = page.getByRole('button', { name: /add category/i });
     await addButton.click();
 
-    // Fill in the form
-    await page.fill('input[id*="name"]', 'Test Category');
-    await page.locator('input').filter({ hasText: '' }).nth(1).fill('🧪');
+    // Fill in the form - use label to find input
+    await page.getByLabel(/name \(english\)/i).fill('Test Category');
+    await page.getByLabel(/icon/i).fill('🧪');
 
     // Submit the form
     await page.getByRole('button', { name: /save/i }).click();
