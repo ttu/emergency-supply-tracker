@@ -14,19 +14,19 @@ export interface CategoryFormData {
 }
 
 export interface CategoryFormProps {
-  initialCategory?: Category;
-  onSubmit: (data: CategoryFormData) => void;
-  onCancel: () => void;
-  existingIds?: string[];
+  readonly initialCategory?: Category;
+  readonly onSubmit: (data: CategoryFormData) => void;
+  readonly onCancel: () => void;
+  readonly existingIds?: string[];
 }
 
 function toKebabCase(str: string): string {
   return str
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
+    .replaceAll(/[^\w\s-]/g, '')
+    .replaceAll(/\s+/g, '-')
+    .replaceAll(/-+/g, '-');
 }
 
 const DEFAULT_CATEGORY_ICON = '📦';
@@ -131,7 +131,7 @@ export function CategoryForm({
     }
 
     if (sortOrder) {
-      data.sortOrder = parseInt(sortOrder, 10);
+      data.sortOrder = Number.parseInt(sortOrder, 10);
     }
 
     onSubmit(data);

@@ -877,7 +877,7 @@ describe('Custom Category Management', () => {
     );
 
     // Standard categories only (10)
-    const initialCount = parseInt(
+    const initialCount = Number.parseInt(
       screen.getByTestId('total-categories-count').textContent || '0',
     );
     expect(initialCount).toBe(10);

@@ -5,7 +5,7 @@ import type { Category } from '@/shared/types';
 import styles from './CategoryList.module.css';
 
 export interface CategoryListProps {
-  onEdit: (category: Category) => void;
+  readonly onEdit: (category: Category) => void;
 }
 
 export function CategoryList({ onEdit }: CategoryListProps) {
@@ -26,13 +26,13 @@ export function CategoryList({ onEdit }: CategoryListProps) {
   };
 
   const handleDelete = (category: Category) => {
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       t('settings.customCategories.confirmDelete'),
     );
     if (confirmed) {
       const result = deleteCustomCategory(category.id);
       if (!result.success && result.error) {
-        window.alert(result.error);
+        globalThis.alert(result.error);
       }
     }
   };
