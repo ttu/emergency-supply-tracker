@@ -135,7 +135,11 @@ export const TemplateSelector = ({
                     })}
                   </h3>
                   <p className={styles.templateCategory}>
-                    {t(template.category, { ns: 'categories' })}
+                    {category?.names
+                      ? category.names[currentLang] ||
+                        category.names.en ||
+                        category.name
+                      : t(template.category, { ns: 'categories' })}
                   </p>
                   <p className={styles.templateQuantity}>
                     {t('templateSelector.recommended')}:{' '}

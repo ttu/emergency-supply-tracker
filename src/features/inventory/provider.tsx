@@ -228,7 +228,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       if (!result.canDelete) {
         return {
           success: false,
-          error: t('settings.categories.deleteBlocked', {
+          error: t('settings.customCategories.deleteBlocked', {
             count: result.blockingItems?.length,
           }),
         };
