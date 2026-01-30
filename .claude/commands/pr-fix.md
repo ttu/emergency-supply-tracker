@@ -113,6 +113,31 @@ When fixing a PR, check these in order:
      - `fix: address review feedback` if fixing multiple sources
    - Optionally run `/verify` for full verification if requested
 
+## Resolving Comments We Won't Fix
+
+For CodeRabbit comments that won't be addressed, reply with an explanation so they're marked as resolved:
+
+1. Get comment IDs with context:
+
+   ```bash
+   gh api "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]") | {id: .id, path: .path, line: .line, body: (.body | split("\n")[0:2] | join(" "))}]'
+   ```
+
+2. Reply to a comment explaining why it won't be fixed:
+
+   ```bash
+   gh api "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments/{comment_id}/replies" \
+     -f body="Won't fix: <explanation>"
+   ```
+
+3. Common reasons for not fixing:
+   - **Planning docs**: "This is a planning document. Markdown lint for docs/plans/ is not enforced in CI."
+   - **Test patterns**: "The current test pattern works correctly and is consistent with the codebase."
+   - **Design decisions**: "This is a deliberate design choice for <reason>."
+   - **Future work**: "Won't fix in this PR. This requires significant refactoring and can be addressed in a separate PR."
+   - **Nice-to-have**: "Nice-to-have but not required. The component has comprehensive test coverage."
+
 ## Safety Rules
 
 - **NEVER** perform git write operations on `main` branch
