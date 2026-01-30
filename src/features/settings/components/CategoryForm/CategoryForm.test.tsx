@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CategoryForm } from './CategoryForm';
@@ -234,5 +234,82 @@ describe('CategoryForm', () => {
     await user.click(screen.getByRole('button', { name: /save/i }));
 
     expect(mockOnSubmit).toHaveBeenCalled();
+  });
+
+  it('includes descriptions when provided', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(
+      screen.getByLabelText(/Name \(English\)/i),
+      'Test Category',
+    );
+    await user.type(screen.getByLabelText(/Icon/i), '🎯');
+    await user.type(
+      screen.getByLabelText(/Description \(English\)/i),
+      'English description',
+    );
+    await user.type(
+      screen.getByLabelText(/Description \(Finnish\)/i),
+      'Suomenkielinen kuvaus',
+    );
+    await user.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        descriptions: {
+          en: 'English description',
+          fi: 'Suomenkielinen kuvaus',
+        },
+      }),
+    );
+  });
+
+  it('includes color when provided', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(
+      screen.getByLabelText(/Name \(English\)/i),
+      'Test Category',
+    );
+    await user.type(screen.getByLabelText(/Icon/i), '🎯');
+
+    // Change color input value using fireEvent (color inputs don't support clear/type)
+    const colorInput = screen.getByLabelText(/Color/i);
+    fireEvent.change(colorInput, { target: { value: '#ff5500' } });
+    await user.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        color: '#ff5500',
+      }),
+    );
+  });
+
+  it('includes sort order when provided', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(
+      screen.getByLabelText(/Name \(English\)/i),
+      'Test Category',
+    );
+    await user.type(screen.getByLabelText(/Icon/i), '🎯');
+
+    // Change sort order
+    const sortOrderInput = screen.getByLabelText(/Sort Order/i);
+    await user.clear(sortOrderInput);
+    await user.type(sortOrderInput, '50');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sortOrder: 50,
+      }),
+    );
   });
 });

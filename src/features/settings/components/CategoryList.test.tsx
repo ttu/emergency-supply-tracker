@@ -28,7 +28,9 @@ vi.mock('react-i18next', () => ({
 
 // Mock the inventory hook
 const mockUpdateCustomCategory = vi.fn();
-const mockDeleteCustomCategory = vi.fn(() => ({ success: true }));
+const mockDeleteCustomCategory = vi.fn(
+  () => ({ success: true }) as { success: boolean; error?: string },
+);
 
 const mockCustomCategories: Category[] = [
   {
@@ -123,6 +125,30 @@ describe('CategoryList', () => {
     expect(mockDeleteCustomCategory).not.toHaveBeenCalled();
 
     confirmSpy.mockRestore();
+  });
+
+  it('should show alert when deletion fails', () => {
+    // Mock window.confirm to return true
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    // Mock window.alert
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    // Mock deleteCustomCategory to return failure
+    mockDeleteCustomCategory.mockReturnValueOnce({
+      success: false,
+      error: 'Category has items assigned',
+    });
+
+    render(<CategoryList onEdit={mockOnEdit} />);
+
+    const deleteButtons = screen.getAllByRole('button', { name: /Delete/i });
+    fireEvent.click(deleteButtons[0]);
+
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(mockDeleteCustomCategory).toHaveBeenCalled();
+    expect(alertSpy).toHaveBeenCalledWith('Category has items assigned');
+
+    confirmSpy.mockRestore();
+    alertSpy.mockRestore();
   });
 
   it('should render categories in a list', () => {
