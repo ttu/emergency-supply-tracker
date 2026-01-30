@@ -59,9 +59,24 @@ When fixing a PR, check these in order:
    - Look for `<details><summary>🛠️` sections for suggested fixes
 
 5. Check SonarCloud issues:
-   - Check the SonarCloud link from `gh pr checks` output
-   - Or visit: `https://sonarcloud.io/project/issues?id=ttu_emergency-supply-tracker&pullRequest={pr_number}`
-   - Identify code smells, bugs, security hotspots
+
+   ```bash
+   # Fetch all SonarCloud issues for the PR via API
+   # Use WebFetch tool with this URL:
+   # https://sonarcloud.io/api/issues/search?componentKeys=ttu_emergency-supply-tracker&pullRequest={pr_number}&resolved=false
+   ```
+
+   - Use WebFetch to get the JSON response and parse all issues
+   - Each issue has: severity (BLOCKER, CRITICAL, MAJOR, MINOR, INFO), type (BUG, VULNERABILITY, CODE_SMELL), file path, line number, and message
+   - Or visit web UI: `https://sonarcloud.io/project/issues?id=ttu_emergency-supply-tracker&pullRequest={pr_number}`
+   - Fix issues by priority: BLOCKER > CRITICAL > MAJOR > MINOR
+   - Common fixes:
+     - `window.X` → `globalThis.X` (prefer globalThis)
+     - `parseInt()` → `Number.parseInt()` (use Number methods)
+     - `str.replace(/g/)` → `str.replaceAll()` (use replaceAll for global)
+     - Add `readonly` to interface props
+     - Remove unnecessary character class brackets in regex `[X]` → `X`
+   - Union type overrides (e.g., `StandardCategoryId | string`) may be intentional - skip if by design
 
 6. Check Codecov coverage:
    - Check the Codecov link from `gh pr checks` output
