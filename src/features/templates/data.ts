@@ -223,6 +223,16 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     requiresWaterLiters: 10, // ~10 liters per kg for brewing (about 50 cups per kg)
   },
   {
+    id: createProductTemplateId('spices'),
+    i18nKey: 'products.spices',
+    category: 'food',
+    baseQuantity: 0.1,
+    unit: 'kilograms',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    defaultExpirationMonths: 24,
+  },
+  {
     id: createProductTemplateId('frozen-vegetables'),
     i18nKey: 'products.frozen-vegetables',
     category: 'food',

@@ -218,6 +218,16 @@
       "requiresWaterLiters": 10
     },
     {
+      "id": "spices",
+      "i18nKey": "products.spices",
+      "category": "food",
+      "baseQuantity": 0.1,
+      "unit": "kilograms",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
       "id": "frozen-vegetables",
       "i18nKey": "products.frozen-vegetables",
       "category": "food",

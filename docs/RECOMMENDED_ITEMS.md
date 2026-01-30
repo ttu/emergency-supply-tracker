@@ -55,6 +55,7 @@ Items can scale based on household configuration:
 | `nuts`              | Nuts                    | 0.1      | kilograms | People, Days | 12 months  | 6000          |
 | `salt-sugar`        | Salt & Sugar            | 0.2      | kilograms | -            | -          | -             |
 | `coffee-tea`        | Coffee & Tea            | 0.2      | kilograms | People       | 18 months  | -             |
+| `spices`            | Spices                  | 0.1      | kilograms | -            | 24 months  | -             |
 
 ### Frozen Items (requires freezer)
 
