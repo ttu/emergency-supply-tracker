@@ -17,6 +17,7 @@ vi.mock('react-i18next', () => ({
         'settings.customCategories.addCategory': 'Add Category',
         'settings.customCategories.confirmDelete':
           'Are you sure you want to delete this category?',
+        'settings.customCategories.deleteFailed': 'Delete failed',
       };
       return translations[key] || key;
     },
@@ -152,7 +153,9 @@ describe('CategoryList', () => {
 
     expect(confirmSpy).toHaveBeenCalled();
     expect(mockDeleteCustomCategory).toHaveBeenCalled();
-    expect(alertSpy).toHaveBeenCalledWith('Category has items assigned');
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Delete failed: Category has items assigned',
+    );
 
     confirmSpy.mockRestore();
     alertSpy.mockRestore();

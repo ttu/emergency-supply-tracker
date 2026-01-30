@@ -200,6 +200,7 @@
       "delete": "Poista",
       "confirmDelete": "Haluatko varmasti poistaa tämän kategorian?",
       "deleteBlocked": "Ei voi poistaa: {{count}} tuotetta käyttää tätä kategoriaa",
+      "deleteFailed": "Poisto epäonnistui",
       "form": {
         "title": {
           "create": "Luo oma kategoria",

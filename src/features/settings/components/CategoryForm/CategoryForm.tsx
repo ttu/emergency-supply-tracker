@@ -31,7 +31,6 @@ function toKebabCase(str: string): string {
 }
 
 const DEFAULT_CATEGORY_ICON = '📦';
-const DEFAULT_SORT_ORDER = 100;
 const SORT_ORDER_MIN = 0;
 const SORT_ORDER_MAX = 999;
 
@@ -64,7 +63,9 @@ export function CategoryForm({
   );
   const [color, setColor] = useState(initialCategory?.color || '');
   const [sortOrder, setSortOrder] = useState(
-    initialCategory?.sortOrder?.toString() ?? DEFAULT_SORT_ORDER.toString(),
+    initialCategory?.sortOrder != null
+      ? initialCategory.sortOrder.toString()
+      : '',
   );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -124,8 +125,17 @@ export function CategoryForm({
       data.color = color.trim();
     }
 
-    if (sortOrder) {
-      data.sortOrder = Number.parseInt(sortOrder, 10);
+    // Only include sortOrder if user entered a value
+    if (sortOrder.trim()) {
+      const parsedSortOrder = Number.parseInt(sortOrder, 10);
+      // Validate within allowed range
+      if (
+        !Number.isNaN(parsedSortOrder) &&
+        parsedSortOrder >= SORT_ORDER_MIN &&
+        parsedSortOrder <= SORT_ORDER_MAX
+      ) {
+        data.sortOrder = parsedSortOrder;
+      }
     }
 
     onSubmit(data);

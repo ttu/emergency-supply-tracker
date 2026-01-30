@@ -32,7 +32,9 @@ export function CategoryList({ onEdit }: CategoryListProps) {
     if (confirmed) {
       const result = deleteCustomCategory(category.id);
       if (!result.success && result.error) {
-        globalThis.alert(result.error);
+        globalThis.alert(
+          `${t('settings.customCategories.deleteFailed')}: ${result.error}`,
+        );
       }
     }
   };

@@ -39,6 +39,18 @@ export const TemplateSelector = ({
   const [selectedCategoryId, setSelectedCategoryId] =
     useState<string>(initialCategoryId);
 
+  /**
+   * Get localized category label for a category ID.
+   * Handles both custom categories (with names object) and standard categories (using translations).
+   */
+  const getCategoryLabel = (categoryId: string): string => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (category?.names && (category.names[currentLang] || category.names.en)) {
+      return category.names[currentLang] || category.names.en || category.name;
+    }
+    return t(categoryId, { ns: 'categories' });
+  };
+
   const filteredTemplates = templates
     .filter((template) => {
       // Normalize i18nKey to extract the key part (removes 'products.' or 'custom.' prefix)
@@ -60,18 +72,11 @@ export const TemplateSelector = ({
 
   const categoryOptions = [
     { value: '', label: t('inventory.allCategories') },
-    ...categories.map((cat) => {
-      // Custom categories have names object, standard categories use translations
-      const label =
-        cat.names && (cat.names[currentLang] || cat.names.en)
-          ? cat.names[currentLang] || cat.names.en
-          : t(cat.id, { ns: 'categories' });
-      return {
-        value: cat.id,
-        label,
-        icon: cat.icon,
-      };
-    }),
+    ...categories.map((cat) => ({
+      value: cat.id,
+      label: getCategoryLabel(cat.id),
+      icon: cat.icon,
+    })),
   ];
 
   const handleTemplateClick = (template: RecommendedItemDefinition) => {
@@ -135,11 +140,7 @@ export const TemplateSelector = ({
                     })}
                   </h3>
                   <p className={styles.templateCategory}>
-                    {category?.names
-                      ? category.names[currentLang] ||
-                        category.names.en ||
-                        category.name
-                      : t(template.category, { ns: 'categories' })}
+                    {getCategoryLabel(template.category)}
                   </p>
                   <p className={styles.templateQuantity}>
                     {t('templateSelector.recommended')}:{' '}
