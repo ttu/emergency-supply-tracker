@@ -706,3 +706,226 @@ describe('InventoryProvider', () => {
     );
   });
 });
+
+describe('Custom Category Management', () => {
+  let mockGetAppData: Mock;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetAppData = vi.mocked(localStorage.getAppData);
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [],
+    });
+  });
+
+  // Test component that exposes custom category functionality
+  function CustomCategoryTestComponent() {
+    const {
+      customCategories,
+      categories,
+      items,
+      addCustomCategory,
+      updateCustomCategory,
+      deleteCustomCategory,
+      addItem,
+    } = useInventory();
+
+    return (
+      <div>
+        <span data-testid="custom-categories-count">
+          {customCategories.length}
+        </span>
+        <span data-testid="total-categories-count">{categories.length}</span>
+        <span data-testid="custom-category-names">
+          {customCategories.map((c) => c.name).join(',')}
+        </span>
+        <button
+          onClick={() =>
+            addCustomCategory({
+              name: 'Test Category',
+              icon: '🏕️',
+              isCustom: true,
+            })
+          }
+        >
+          Add Custom Category
+        </button>
+        <button
+          onClick={() => {
+            if (customCategories[0]) {
+              updateCustomCategory(customCategories[0].id, { name: 'Updated' });
+            }
+          }}
+        >
+          Update Category
+        </button>
+        <button
+          onClick={() => {
+            if (customCategories[0]) {
+              deleteCustomCategory(customCategories[0].id);
+            }
+          }}
+        >
+          Delete Category
+        </button>
+        <button
+          onClick={() => {
+            if (customCategories[0]) {
+              addItem({
+                name: 'Test Item',
+                categoryId: customCategories[0].id,
+                quantity: 1,
+                unit: 'pieces',
+                itemType: 'custom',
+              });
+            }
+          }}
+        >
+          Add Item To Custom Category
+        </button>
+        <span data-testid="items-count">{items.length}</span>
+      </div>
+    );
+  }
+
+  it('should add a custom category', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomCategoryTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('custom-categories-count')).toHaveTextContent(
+      '0',
+    );
+
+    await user.click(screen.getByText('Add Custom Category'));
+
+    expect(screen.getByTestId('custom-categories-count')).toHaveTextContent(
+      '1',
+    );
+    expect(screen.getByTestId('custom-category-names')).toHaveTextContent(
+      'Test Category',
+    );
+  });
+
+  it('should update a custom category', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomCategoryTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    // First add a category
+    await user.click(screen.getByText('Add Custom Category'));
+    expect(screen.getByTestId('custom-category-names')).toHaveTextContent(
+      'Test Category',
+    );
+
+    // Then update it
+    await user.click(screen.getByText('Update Category'));
+    expect(screen.getByTestId('custom-category-names')).toHaveTextContent(
+      'Updated',
+    );
+  });
+
+  it('should delete a custom category when no items use it', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomCategoryTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    // Add a category
+    await user.click(screen.getByText('Add Custom Category'));
+    expect(screen.getByTestId('custom-categories-count')).toHaveTextContent(
+      '1',
+    );
+
+    // Delete it
+    await user.click(screen.getByText('Delete Category'));
+    expect(screen.getByTestId('custom-categories-count')).toHaveTextContent(
+      '0',
+    );
+  });
+
+  it('should include custom categories in total categories count', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomCategoryTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    // Standard categories only (10)
+    const initialCount = Number.parseInt(
+      screen.getByTestId('total-categories-count').textContent || '0',
+    );
+    expect(initialCount).toBe(10);
+
+    // Add custom category
+    await user.click(screen.getByText('Add Custom Category'));
+
+    // Now 11 categories
+    expect(screen.getByTestId('total-categories-count')).toHaveTextContent(
+      '11',
+    );
+  });
+
+  it('should load custom categories from localStorage', () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [
+        {
+          id: createCategoryId('custom-1'),
+          name: 'Custom One',
+          icon: '🏕️',
+          isCustom: true,
+        },
+        {
+          id: createCategoryId('custom-2'),
+          name: 'Custom Two',
+          icon: '🚗',
+          isCustom: true,
+        },
+      ],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomCategoryTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('custom-categories-count')).toHaveTextContent(
+      '2',
+    );
+    expect(screen.getByTestId('total-categories-count')).toHaveTextContent(
+      '12',
+    );
+  });
+});

@@ -74,6 +74,10 @@ describe('useDashboardAlerts', () => {
       disableCategory: vi.fn(),
       enableCategory: vi.fn(),
       enableAllCategories: vi.fn(),
+      customCategories: [],
+      addCustomCategory: vi.fn(),
+      updateCustomCategory: vi.fn(),
+      deleteCustomCategory: vi.fn(() => ({ success: true })),
     });
 
     vi.mocked(useHousehold).mockReturnValue({
@@ -188,6 +192,10 @@ describe('useDashboardAlerts', () => {
       disableCategory: vi.fn(),
       enableCategory: vi.fn(),
       enableAllCategories: vi.fn(),
+      customCategories: [],
+      addCustomCategory: vi.fn(),
+      updateCustomCategory: vi.fn(),
+      deleteCustomCategory: vi.fn(() => ({ success: true })),
     });
 
     const { result } = renderHook(() => useDashboardAlerts());

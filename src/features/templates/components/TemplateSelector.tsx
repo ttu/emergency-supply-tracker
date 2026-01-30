@@ -28,10 +28,28 @@ export const TemplateSelector = ({
   onSelectCustom,
   initialCategoryId = '',
 }: TemplateSelectorProps) => {
-  const { t } = useTranslation(['common', 'categories', 'products', 'units']);
+  const { t, i18n } = useTranslation([
+    'common',
+    'categories',
+    'products',
+    'units',
+  ]);
+  const currentLang = (i18n?.language || 'en') as 'en' | 'fi';
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] =
     useState<string>(initialCategoryId);
+
+  /**
+   * Get localized category label for a category ID.
+   * Handles both custom categories (with names object) and standard categories (using translations).
+   */
+  const getCategoryLabel = (categoryId: string): string => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (category?.names && (category.names[currentLang] || category.names.en)) {
+      return category.names[currentLang] || category.names.en || category.name;
+    }
+    return t(categoryId, { ns: 'categories' });
+  };
 
   const filteredTemplates = templates
     .filter((template) => {
@@ -56,7 +74,7 @@ export const TemplateSelector = ({
     { value: '', label: t('inventory.allCategories') },
     ...categories.map((cat) => ({
       value: cat.id,
-      label: t(cat.id, { ns: 'categories' }),
+      label: getCategoryLabel(cat.id),
       icon: cat.icon,
     })),
   ];
@@ -122,7 +140,7 @@ export const TemplateSelector = ({
                     })}
                   </h3>
                   <p className={styles.templateCategory}>
-                    {t(template.category, { ns: 'categories' })}
+                    {getCategoryLabel(template.category)}
                   </p>
                   <p className={styles.templateQuantity}>
                     {t('templateSelector.recommended')}:{' '}

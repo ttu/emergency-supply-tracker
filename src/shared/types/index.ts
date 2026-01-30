@@ -130,8 +130,27 @@ export interface UserSettings {
 export interface Category {
   id: CategoryId;
   name: string;
+  names?: LocalizedNames; // Localized names for custom categories
   icon?: string;
   isCustom: boolean;
+  description?: string; // Current language description
+  descriptions?: LocalizedNames; // Localized descriptions
+  sortOrder?: number; // Position in category lists
+  color?: string; // Hex color for category accent
+  sourceKitId?: KitId; // Which kit imported this category
+}
+
+/**
+ * Category definition in imported kit files.
+ * Used for custom categories defined in recommendation kits.
+ */
+export interface ImportedCategory {
+  id: string;
+  names: LocalizedNames;
+  icon: string;
+  description?: LocalizedNames;
+  sortOrder?: number;
+  color?: string;
 }
 
 /**
@@ -190,7 +209,7 @@ export interface ProductTemplate {
 export interface RecommendedItemDefinition {
   id: ProductTemplateId; // Recommended items are product templates
   i18nKey: string;
-  category: StandardCategoryId;
+  category: StandardCategoryId | string; // Standard category ID or custom category ID
   baseQuantity: number;
   unit: Unit;
   scaleWithPeople: boolean;
@@ -226,7 +245,7 @@ export interface ImportedRecommendedItem {
   id: ProductTemplateId;
   i18nKey?: string; // Use built-in translation key (e.g., "products.bottled-water")
   names?: LocalizedNames; // OR inline localized names: { en: "Water", fi: "Vesi" }
-  category: StandardCategoryId;
+  category: StandardCategoryId | string; // Standard category ID or custom category ID
   baseQuantity: number;
   unit: Unit;
   scaleWithPeople: boolean;
@@ -263,6 +282,7 @@ export interface RecommendedItemsFileMeta {
 // Recommended Items File (for import/export)
 export interface RecommendedItemsFile {
   meta: RecommendedItemsFileMeta;
+  categories?: ImportedCategory[]; // Custom category definitions
   items: ImportedRecommendedItem[];
 }
 

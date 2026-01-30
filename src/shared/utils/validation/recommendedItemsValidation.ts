@@ -1,15 +1,19 @@
 import type {
-  StandardCategoryId,
   Unit,
   RecommendedItemsFile,
   ImportedRecommendedItem,
   RecommendedItemDefinition,
+  ImportedCategory,
 } from '@/shared/types';
 import {
   createProductTemplateId,
   VALID_CATEGORIES,
   VALID_UNITS,
 } from '@/shared/types';
+import {
+  validateImportedCategories,
+  getValidCategoryIds,
+} from './categoryValidation';
 
 export interface ValidationError {
   path: string;
@@ -29,11 +33,11 @@ export interface ValidationResult {
   warnings: ValidationWarning[];
 }
 
-function isValidCategory(value: unknown): value is StandardCategoryId {
-  return (
-    typeof value === 'string' &&
-    VALID_CATEGORIES.includes(value as StandardCategoryId)
-  );
+function isValidCategoryInSet(
+  value: unknown,
+  validCategoryIds: Set<string>,
+): boolean {
+  return typeof value === 'string' && validCategoryIds.has(value);
 }
 
 function isValidUnit(value: unknown): value is Unit {
@@ -133,6 +137,7 @@ function validateItem(
   index: number,
   errors: ValidationError[],
   warnings: ValidationWarning[],
+  validCategoryIds: Set<string>,
 ): void {
   const path = `items[${index}]`;
 
@@ -208,11 +213,11 @@ function validateItem(
     }
   }
 
-  // Required: category
-  if (!isValidCategory(i.category)) {
+  // Required: category (must be a standard category or defined in categories array)
+  if (!isValidCategoryInSet(i.category, validCategoryIds)) {
     errors.push({
       path: `${path}.category`,
-      message: `Invalid category: ${String(i.category)}. Must be one of: ${VALID_CATEGORIES.join(', ')}`,
+      message: `Invalid category: ${String(i.category)}. Must be a standard category or defined in categories array`,
       code: 'INVALID_CATEGORY',
     });
   }
@@ -413,6 +418,27 @@ export function validateRecommendedItemsFile(data: unknown): ValidationResult {
   // Validate meta
   validateMeta(d.meta, errors);
 
+  // Validate categories array if present
+  let validCategoryIds = new Set<string>(VALID_CATEGORIES);
+  if (d.categories !== undefined) {
+    if (Array.isArray(d.categories)) {
+      const categoryResult = validateImportedCategories(d.categories);
+      errors.push(...categoryResult.errors);
+      warnings.push(...categoryResult.warnings);
+
+      // Build valid category IDs including custom ones
+      validCategoryIds = getValidCategoryIds(
+        d.categories as ImportedCategory[],
+      );
+    } else {
+      errors.push({
+        path: 'categories',
+        message: 'Categories must be an array',
+        code: 'INVALID_CATEGORIES',
+      });
+    }
+  }
+
   // Validate items array
   if (!Array.isArray(d.items)) {
     errors.push({
@@ -444,7 +470,7 @@ export function validateRecommendedItemsFile(data: unknown): ValidationResult {
           }
         }
       }
-      validateItem(item, index, errors, warnings);
+      validateItem(item, index, errors, warnings, validCategoryIds);
     });
   }
 

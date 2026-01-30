@@ -184,7 +184,7 @@ export function ItemEditor({
   const [nameEn, setNameEn] = useState(item?.names?.en || '');
   const [nameFi, setNameFi] = useState(item?.names?.fi || '');
 
-  const [category, setCategory] = useState<StandardCategoryId>(
+  const [category, setCategory] = useState<StandardCategoryId | string>(
     item?.category || 'food',
   );
   const [baseQuantity, setBaseQuantity] = useState(

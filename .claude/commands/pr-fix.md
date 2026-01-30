@@ -32,22 +32,51 @@ When fixing a PR, check these in order:
    gh pr checks {pr_number} --repo ttu/emergency-supply-tracker
    ```
 
-3. Fetch all review comments from the PR:
+3. Fetch CodeRabbit review comments from the PR:
 
    ```bash
-   gh api --paginate repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments
-   gh pr view {pr_number} --json reviews,comments
+   # Get CodeRabbit inline review comments (code suggestions) - use --paginate for PRs with many comments
+   gh api --paginate "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]") | {path: .path, line: .line, body: .body}]'
+
+   # Count total CodeRabbit comments
+   gh api --paginate "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]")] | length'
+
+   # Get CodeRabbit summary comment from issue comments (get latest by created_at)
+   gh api --paginate "repos/ttu/emergency-supply-tracker/issues/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]")] | sort_by(.created_at) | last | .body' | head -500
    ```
 
 4. Parse the CodeRabbit comments and identify actionable issues:
-   - Look for comments from "coderabbitai" or containing CodeRabbit suggestions
-   - Ignore comments marked with "✅ Addressed" as they are already resolved
-   - Focus on unresolved issues that require code changes
+   - Bot username is **"coderabbitai[bot]"** (not "coderabbitai")
+   - Review comments are in PR comments API (`/pulls/{pr_number}/comments`)
+   - Summary is in issue comments API (`/issues/{pr_number}/comments`)
+   - Ignore comments where body contains "✅" as they are already resolved
+   - Focus on issues marked with severity indicators:
+     - 🟠 Major - Should fix
+     - 🟡 Minor - Nice to fix
+   - Look for `<details><summary>🛠️` sections for suggested fixes
 
 5. Check SonarCloud issues:
-   - Check the SonarCloud link from `gh pr checks` output
-   - Or visit: `https://sonarcloud.io/project/issues?id=ttu_emergency-supply-tracker&pullRequest={pr_number}`
-   - Identify code smells, bugs, security hotspots
+
+   ```bash
+   # Fetch all SonarCloud issues for the PR via API
+   # Use WebFetch tool with this URL:
+   # https://sonarcloud.io/api/issues/search?componentKeys=ttu_emergency-supply-tracker&pullRequest={pr_number}&resolved=false
+   ```
+
+   - Use WebFetch to get the JSON response and parse all issues
+   - Each issue has: severity (BLOCKER, CRITICAL, MAJOR, MINOR, INFO), type (BUG, VULNERABILITY, CODE_SMELL), file path, line number, and message
+   - Or visit web UI: `https://sonarcloud.io/project/issues?id=ttu_emergency-supply-tracker&pullRequest={pr_number}`
+   - Fix issues by priority: BLOCKER > CRITICAL > MAJOR > MINOR
+   - Common fixes:
+     - `window.X` → `globalThis.X` (prefer globalThis)
+     - `parseInt()` → `Number.parseInt()` (use Number methods)
+     - `str.replace(/g/)` → `str.replaceAll()` (use replaceAll for global)
+     - Add `readonly` to interface props
+     - Remove unnecessary character class brackets in regex `[X]` → `X`
+   - Union type overrides (e.g., `StandardCategoryId | string`) may be intentional - skip if by design
 
 6. Check Codecov coverage:
    - Check the Codecov link from `gh pr checks` output
@@ -56,7 +85,17 @@ When fixing a PR, check these in order:
    - Check if new code needs additional tests
 
 7. Check human reviewer comments:
-   - Look for comments not from bots (coderabbitai, codecov, sonarcloud)
+
+   ```bash
+   # List all commenters to identify humans vs bots
+   gh api "repos/ttu/emergency-supply-tracker/issues/{pr_number}/comments" \
+     --jq '[.[].user.login] | unique'
+
+   # Get non-bot comments (filter out known bots)
+   gh api "repos/ttu/emergency-supply-tracker/issues/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login | IN("coderabbitai[bot]", "codecov[bot]", "sonarqubecloud[bot]", "github-actions[bot]") | not)]'
+   ```
+
    - Address requested changes from human reviewers
 
 8. For each issue:
@@ -73,6 +112,31 @@ When fixing a PR, check these in order:
      - `fix: address SonarCloud issues` for SonarCloud issues
      - `fix: address review feedback` if fixing multiple sources
    - Optionally run `/verify` for full verification if requested
+
+## Resolving Comments We Won't Fix
+
+For CodeRabbit comments that won't be addressed, reply with an explanation so they're marked as resolved:
+
+1. Get comment IDs with context:
+
+   ```bash
+   gh api "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]") | {id: .id, path: .path, line: .line, body: (.body | split("\n")[0:2] | join(" "))}]'
+   ```
+
+2. Reply to a comment explaining why it won't be fixed:
+
+   ```bash
+   gh api "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments/{comment_id}/replies" \
+     -f body="Won't fix: <explanation>"
+   ```
+
+3. Common reasons for not fixing:
+   - **Planning docs**: "This is a planning document. Markdown lint for docs/plans/ is not enforced in CI."
+   - **Test patterns**: "The current test pattern works correctly and is consistent with the codebase."
+   - **Design decisions**: "This is a deliberate design choice for <reason>."
+   - **Future work**: "Won't fix in this PR. This requires significant refactoring and can be addressed in a separate PR."
+   - **Nice-to-have**: "Nice-to-have but not required. The component has comprehensive test coverage."
 
 ## Safety Rules
 

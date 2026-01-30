@@ -1,0 +1,304 @@
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { CategoryForm } from './CategoryForm';
+import type { Category } from '@/shared/types';
+import { createCategoryId } from '@/shared/types';
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'settings.customCategories.form.title.create': 'Create Custom Category',
+        'settings.customCategories.form.title.edit': 'Edit Custom Category',
+        'settings.customCategories.form.nameEn': 'Name (English)',
+        'settings.customCategories.form.nameFi': 'Name (Finnish)',
+        'settings.customCategories.form.icon': 'Icon',
+        'settings.customCategories.form.iconHelper': 'Enter an emoji',
+        'settings.customCategories.form.descriptionEn': 'Description (English)',
+        'settings.customCategories.form.descriptionFi': 'Description (Finnish)',
+        'settings.customCategories.form.color': 'Color',
+        'settings.customCategories.form.sortOrder': 'Sort Order',
+        'settings.customCategories.form.sortOrderHelper':
+          'Higher numbers appear later',
+        'settings.customCategories.form.save': 'Save',
+        'settings.customCategories.form.cancel': 'Cancel',
+        'settings.customCategories.form.idPreview': 'ID: custom-',
+        'settings.customCategories.form.error.nameRequired':
+          'English name is required',
+        'settings.customCategories.form.error.iconRequired': 'Icon is required',
+        'settings.customCategories.form.error.iconInvalid':
+          'Icon must be an emoji',
+        'settings.customCategories.form.error.idExists':
+          'A category with this ID already exists',
+        'settings.customCategories.form.error.nameExists':
+          'A category with this name already exists',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
+describe('CategoryForm', () => {
+  const mockOnSubmit = vi.fn();
+  const mockOnCancel = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders create form when no initial category', () => {
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    expect(screen.getByTestId('category-form-title')).toHaveTextContent(
+      'Create Custom Category',
+    );
+    expect(screen.getByTestId('category-name-en')).toBeInTheDocument();
+    expect(screen.getByTestId('category-icon')).toBeInTheDocument();
+  });
+
+  it('renders edit form with populated values', () => {
+    const category: Category = {
+      id: createCategoryId('custom-camping'),
+      name: 'Camping Gear',
+      names: { en: 'Camping Gear', fi: 'Retkeilyvarusteet' },
+      icon: '🏕️',
+      sortOrder: 100,
+      isCustom: true,
+    };
+
+    render(
+      <CategoryForm
+        initialCategory={category}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    expect(screen.getByTestId('category-form-title')).toHaveTextContent(
+      'Edit Custom Category',
+    );
+    expect(screen.getByTestId('category-name-en')).toHaveValue('Camping Gear');
+    expect(screen.getByTestId('category-name-fi')).toHaveValue(
+      'Retkeilyvarusteet',
+    );
+    expect(screen.getByTestId('category-icon')).toHaveValue('🏕️');
+  });
+
+  it('validates required fields', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText('English name is required')).toBeInTheDocument();
+  });
+
+  it('uses default icon when none provided', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        names: expect.objectContaining({ en: 'Test Category' }),
+        icon: '📦', // Default icon
+      }),
+    );
+  });
+
+  it('validates invalid icon format', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), 'not-an-emoji');
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText('Icon must be an emoji')).toBeInTheDocument();
+  });
+
+  it('submits valid form data', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(screen.getByTestId('category-name-en'), 'New Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        names: expect.objectContaining({ en: 'New Category' }),
+        icon: '🎯',
+      }),
+    );
+  });
+
+  it('calls onCancel when cancel clicked', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.click(screen.getByTestId('category-form-cancel'));
+
+    expect(mockOnCancel).toHaveBeenCalled();
+  });
+
+  it('generates ID preview from English name', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(
+      screen.getByTestId('category-name-en'),
+      'My Custom Category',
+    );
+
+    expect(screen.getByTestId('category-id-preview')).toHaveTextContent(
+      /my-custom-category/i,
+    );
+  });
+
+  it('includes Finnish name when provided', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-name-fi'), 'Testiluokka');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        names: { en: 'Test Category', fi: 'Testiluokka' },
+      }),
+    );
+  });
+
+  it('validates duplicate category name', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <CategoryForm
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        existingNames={['test category']}
+      />,
+    );
+
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(
+      screen.getByText('A category with this name already exists'),
+    ).toBeInTheDocument();
+  });
+
+  it('allows editing when name does not conflict with existing names', async () => {
+    const user = userEvent.setup();
+    const category: Category = {
+      id: createCategoryId('custom-camping'),
+      name: 'Camping',
+      names: { en: 'Camping', fi: 'Retkeily' },
+      icon: '🏕️',
+      sortOrder: 100,
+      isCustom: true,
+    };
+
+    render(
+      <CategoryForm
+        initialCategory={category}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        existingNames={['travel']}
+      />,
+    );
+
+    // Modify the name - 'Camping Gear' is different from 'travel'
+    await user.clear(screen.getByTestId('category-name-en'));
+    await user.type(screen.getByTestId('category-name-en'), 'Camping Gear');
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).toHaveBeenCalled();
+  });
+
+  it('includes descriptions when provided', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+    await user.type(
+      screen.getByTestId('category-description-en'),
+      'English description',
+    );
+    await user.type(
+      screen.getByTestId('category-description-fi'),
+      'Suomenkielinen kuvaus',
+    );
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        descriptions: {
+          en: 'English description',
+          fi: 'Suomenkielinen kuvaus',
+        },
+      }),
+    );
+  });
+
+  it('includes color when provided', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+
+    // Change color input value using fireEvent (color inputs don't support clear/type)
+    const colorInput = screen.getByTestId('category-color');
+    fireEvent.change(colorInput, { target: { value: '#ff5500' } });
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        color: '#ff5500',
+      }),
+    );
+  });
+
+  it('includes sort order when provided', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+
+    // Change sort order
+    const sortOrderInput = screen.getByTestId('category-sort-order');
+    await user.clear(sortOrderInput);
+    await user.type(sortOrderInput, '50');
+    await user.click(screen.getByTestId('category-form-save'));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sortOrder: 50,
+      }),
+    );
+  });
+});

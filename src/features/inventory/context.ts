@@ -6,11 +6,13 @@ import type {
   AlertId,
   ProductTemplateId,
   StandardCategoryId,
+  CategoryId,
 } from '@/shared/types';
 
 export interface InventoryContextValue {
   items: InventoryItem[];
   categories: Category[];
+  customCategories: Category[];
   addItem: (
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
   ) => void;
@@ -32,6 +34,13 @@ export interface InventoryContextValue {
   disableCategory: (categoryId: StandardCategoryId) => void;
   enableCategory: (categoryId: StandardCategoryId) => void;
   enableAllCategories: () => void;
+  // Custom categories
+  addCustomCategory: (category: Omit<Category, 'id'>) => void;
+  updateCustomCategory: (id: CategoryId, updates: Partial<Category>) => void;
+  deleteCustomCategory: (id: CategoryId) => {
+    success: boolean;
+    error?: string;
+  };
 }
 
 export const InventoryContext = createContext<

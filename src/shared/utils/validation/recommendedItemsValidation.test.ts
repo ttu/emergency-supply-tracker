@@ -853,3 +853,221 @@ describe('convertToRecommendedItemDefinitions', () => {
     expect(result[0].scaleWithDays).toBe(true);
   });
 });
+
+describe('validateRecommendedItemsFile with custom categories', () => {
+  const validMeta = {
+    name: 'Test Kit',
+    version: '1.0.0',
+    createdAt: '2026-01-28T00:00:00Z',
+  };
+
+  it('accepts items using custom categories defined in file', () => {
+    const data = {
+      meta: validMeta,
+      categories: [
+        { id: 'camping-gear', names: { en: 'Camping' }, icon: '⛺' },
+      ],
+      items: [
+        {
+          id: 'tent',
+          names: { en: 'Tent' },
+          category: 'camping-gear',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it('accepts items using standard categories alongside custom categories', () => {
+    const data = {
+      meta: validMeta,
+      categories: [
+        { id: 'camping-gear', names: { en: 'Camping' }, icon: '⛺' },
+      ],
+      items: [
+        {
+          id: 'tent',
+          names: { en: 'Tent' },
+          category: 'camping-gear',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+        {
+          id: 'water',
+          names: { en: 'Water' },
+          category: 'water-beverages',
+          baseQuantity: 3,
+          unit: 'liters',
+          scaleWithPeople: true,
+          scaleWithDays: true,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true);
+  });
+
+  it('rejects items using undefined custom category', () => {
+    const data = {
+      meta: validMeta,
+      items: [
+        {
+          id: 'tent',
+          names: { en: 'Tent' },
+          category: 'undefined-category',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: 'INVALID_CATEGORY' }),
+    );
+  });
+
+  it('validates category definitions and reports errors', () => {
+    const data = {
+      meta: validMeta,
+      categories: [{ id: 'invalid id', names: { en: 'Test' }, icon: '⛺' }],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: 'INVALID_CATEGORY_ID' }),
+    );
+  });
+
+  it('rejects categories that conflict with standard categories', () => {
+    const data = {
+      meta: validMeta,
+      categories: [{ id: 'food', names: { en: 'My Food' }, icon: '🍕' }],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: 'CATEGORY_CONFLICTS_STANDARD' }),
+    );
+  });
+
+  it('rejects duplicate category IDs', () => {
+    const data = {
+      meta: validMeta,
+      categories: [
+        { id: 'camping-gear', names: { en: 'Camping' }, icon: '⛺' },
+        { id: 'camping-gear', names: { en: 'Camping 2' }, icon: '🏕️' },
+      ],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'camping-gear',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: 'DUPLICATE_CATEGORY_ID' }),
+    );
+  });
+
+  it('rejects non-array categories field', () => {
+    const data = {
+      meta: validMeta,
+      categories: 'not-an-array',
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: 'INVALID_CATEGORIES' }),
+    );
+  });
+
+  it('accepts empty categories array', () => {
+    const data = {
+      meta: validMeta,
+      categories: [],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true);
+  });
+
+  it('accepts kit without categories field (optional)', () => {
+    const data = {
+      meta: validMeta,
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'food',
+          baseQuantity: 1,
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true);
+  });
+});

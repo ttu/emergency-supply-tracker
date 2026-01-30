@@ -153,6 +153,7 @@
         "hiddenAlerts": "Piilotetut hälytykset",
         "disabledRecommendations": "Poistetut suositukset",
         "disabledCategories": "Poistetut kategoriat",
+        "customCategories": "Omat kategoriat",
         "overriddenRecommendations": "Ohitetut suositukset",
         "dataManagement": "Tietojen hallinta",
         "about": "Tietoja",
@@ -188,6 +189,45 @@
       "description": "Sinulla on {{count}} poistettua kategoriaa. Nämä kategoriat eivät näy kojelaudalla tai laskelmissa.",
       "reactivate": "Palauta",
       "reactivateAll": "Palauta kaikki kategoriat"
+    },
+    "customCategories": {
+      "title": "Omat kategoriat",
+      "description": "Sinulla on {{count}} omaa kategoriaa.",
+      "empty": "Ei omia kategorioita. Lisää yksi aloittaaksesi.",
+      "add": "Lisää kategoria",
+      "addCategory": "Lisää kategoria",
+      "edit": "Muokkaa",
+      "delete": "Poista",
+      "confirmDelete": "Haluatko varmasti poistaa tämän kategorian?",
+      "deleteBlocked": "Ei voi poistaa: {{count}} tuotetta käyttää tätä kategoriaa",
+      "deleteFailed": "Poisto epäonnistui",
+      "form": {
+        "title": {
+          "create": "Luo oma kategoria",
+          "edit": "Muokkaa kategoriaa"
+        },
+        "nameEn": "Nimi (englanti)",
+        "nameFi": "Nimi (suomi)",
+        "icon": "Kuvake",
+        "iconHelper": "Syötä emoji",
+        "descriptionEn": "Kuvaus (englanti)",
+        "descriptionFi": "Kuvaus (suomi)",
+        "color": "Väri",
+        "sortOrder": "Järjestysnumero",
+        "sortOrderHelper": "Suuremmat numerot näkyvät myöhemmin",
+        "save": "Tallenna",
+        "cancel": "Peruuta",
+        "idPreview": "ID: custom-",
+        "error": {
+          "nameRequired": "Englanninkielinen nimi vaaditaan",
+          "iconRequired": "Kuvake vaaditaan",
+          "iconInvalid": "Kuvakkeen täytyy olla emoji",
+          "idExists": "Tällä ID:llä on jo kategoria",
+          "nameExists": "Tällä nimellä on jo kategoria"
+        }
+      },
+      "standardCategories": "Vakiokategoriat",
+      "standardDescription": "Sisäänrakennetut kategoriat, joita ei voi muokata tai poistaa."
     },
     "overriddenRecommendations": {
       "empty": "Ei ohitettuja suosituksia",
@@ -578,7 +618,10 @@
     "itemAdded": "Tuote \"{{name}}\" lisätty",
     "itemUpdated": "Tuote \"{{name}}\" päivitetty",
     "itemDeleted": "Tuote \"{{name}}\" poistettu",
-    "itemsBulkAdded": "{{count}} tuotetta lisätty"
+    "itemsBulkAdded": "{{count}} tuotetta lisätty",
+    "categoryAdded": "Kategoria \"{{name}}\" lisätty",
+    "categoryUpdated": "Kategoria päivitetty",
+    "categoryDeleted": "Kategoria poistettu"
   },
   "kitSelector": {
     "builtInKits": "Sisäänrakennetut paketit",

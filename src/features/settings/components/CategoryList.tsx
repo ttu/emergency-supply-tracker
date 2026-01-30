@@ -1,0 +1,110 @@
+import { useTranslation } from 'react-i18next';
+import { useInventory } from '@/features/inventory';
+import { Button } from '@/shared/components/Button';
+import type { Category } from '@/shared/types';
+import styles from './CategoryList.module.css';
+
+export interface CategoryListProps {
+  readonly onEdit: (category: Category) => void;
+}
+
+export function CategoryList({ onEdit }: CategoryListProps) {
+  const { t, i18n } = useTranslation('common');
+  const { customCategories, deleteCustomCategory } = useInventory();
+
+  const getCategoryName = (category: Category): string => {
+    const lang = i18n.language as 'en' | 'fi';
+    if (category.names) {
+      return (
+        category.names[lang] ||
+        category.names.en ||
+        category.name ||
+        category.id
+      );
+    }
+    return category.name || category.id;
+  };
+
+  const handleDelete = (category: Category) => {
+    const confirmed = globalThis.confirm(
+      t('settings.customCategories.confirmDelete'),
+    );
+    if (confirmed) {
+      const result = deleteCustomCategory(category.id);
+      if (!result.success && result.error) {
+        globalThis.alert(
+          `${t('settings.customCategories.deleteFailed')}: ${result.error}`,
+        );
+      }
+    }
+  };
+
+  if (customCategories.length === 0) {
+    return (
+      <div className={styles.container} data-testid="category-list-empty">
+        <p className={styles.emptyMessage}>
+          {t('settings.customCategories.empty')}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container} data-testid="category-list">
+      <p className={styles.description} data-testid="category-list-description">
+        {t('settings.customCategories.description', {
+          count: customCategories.length,
+        })}
+      </p>
+      <ul className={styles.categoryList}>
+        {customCategories.map((category) => {
+          const name = getCategoryName(category);
+          return (
+            <li
+              key={category.id}
+              className={styles.categoryItem}
+              data-testid={`category-item-${category.id}`}
+            >
+              <div className={styles.categoryContent}>
+                <span
+                  className={styles.categoryIcon}
+                  data-testid={`category-icon-${category.id}`}
+                >
+                  {category.icon}
+                </span>
+                <span
+                  className={styles.categoryName}
+                  data-testid={`category-name-${category.id}`}
+                >
+                  {name}
+                </span>
+              </div>
+              <div className={styles.buttonGroup}>
+                <Button
+                  variant="secondary"
+                  size="small"
+                  className={styles.actionButton}
+                  onClick={() => onEdit(category)}
+                  aria-label={`${t('settings.customCategories.edit')}: ${name}`}
+                  data-testid={`edit-category-${category.id}`}
+                >
+                  {t('settings.customCategories.edit')}
+                </Button>
+                <Button
+                  variant="danger"
+                  size="small"
+                  className={styles.actionButton}
+                  onClick={() => handleDelete(category)}
+                  aria-label={`${t('settings.customCategories.delete')}: ${name}`}
+                  data-testid={`delete-category-${category.id}`}
+                >
+                  {t('settings.customCategories.delete')}
+                </Button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
