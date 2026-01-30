@@ -107,7 +107,7 @@ describe('CategoryList', () => {
 
   it('should call deleteCustomCategory when clicking delete button and confirming', () => {
     // Mock globalThis.confirm to return true
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
 
     render(<CategoryList onEdit={mockOnEdit} />);
 
@@ -123,7 +123,7 @@ describe('CategoryList', () => {
 
   it('should not delete category when cancel is clicked in confirm dialog', () => {
     // Mock globalThis.confirm to return false
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(false);
 
     render(<CategoryList onEdit={mockOnEdit} />);
 
@@ -137,9 +137,9 @@ describe('CategoryList', () => {
 
   it('should show alert when deletion fails', () => {
     // Mock globalThis.confirm to return true
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
     // Mock globalThis.alert
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
     // Mock deleteCustomCategory to return failure
     mockDeleteCustomCategory.mockReturnValueOnce({
       success: false,

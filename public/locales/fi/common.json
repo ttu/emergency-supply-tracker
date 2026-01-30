@@ -221,7 +221,8 @@
           "nameRequired": "Englanninkielinen nimi vaaditaan",
           "iconRequired": "Kuvake vaaditaan",
           "iconInvalid": "Kuvakkeen täytyy olla emoji",
-          "idExists": "Tällä ID:llä on jo kategoria"
+          "idExists": "Tällä ID:llä on jo kategoria",
+          "nameExists": "Tällä nimellä on jo kategoria"
         }
       },
       "standardCategories": "Vakiokategoriat",

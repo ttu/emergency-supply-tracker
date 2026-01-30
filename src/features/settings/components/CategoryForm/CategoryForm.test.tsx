@@ -32,6 +32,8 @@ vi.mock('react-i18next', () => ({
           'Icon must be an emoji',
         'settings.customCategories.form.error.idExists':
           'A category with this ID already exists',
+        'settings.customCategories.form.error.nameExists':
+          'A category with this name already exists',
       };
       return translations[key] || key;
     },
@@ -183,14 +185,14 @@ describe('CategoryForm', () => {
     );
   });
 
-  it('validates duplicate category ID', async () => {
+  it('validates duplicate category name', async () => {
     const user = userEvent.setup();
 
     render(
       <CategoryForm
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        existingIds={['custom-test-category']}
+        existingNames={['test category']}
       />,
     );
 
@@ -200,11 +202,11 @@ describe('CategoryForm', () => {
 
     expect(mockOnSubmit).not.toHaveBeenCalled();
     expect(
-      screen.getByText('A category with this ID already exists'),
+      screen.getByText('A category with this name already exists'),
     ).toBeInTheDocument();
   });
 
-  it('allows editing without ID conflict for same category', async () => {
+  it('allows editing when name does not conflict with existing names', async () => {
     const user = userEvent.setup();
     const category: Category = {
       id: createCategoryId('custom-camping'),
@@ -220,11 +222,11 @@ describe('CategoryForm', () => {
         initialCategory={category}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
-        existingIds={['custom-camping', 'custom-travel']}
+        existingNames={['travel']}
       />,
     );
 
-    // Modify the name but keep the same base
+    // Modify the name - 'Camping Gear' is different from 'travel'
     await user.clear(screen.getByTestId('category-name-en'));
     await user.type(screen.getByTestId('category-name-en'), 'Camping Gear');
     await user.click(screen.getByTestId('category-form-save'));

@@ -421,13 +421,7 @@ export function validateRecommendedItemsFile(data: unknown): ValidationResult {
   // Validate categories array if present
   let validCategoryIds = new Set<string>(VALID_CATEGORIES);
   if (d.categories !== undefined) {
-    if (!Array.isArray(d.categories)) {
-      errors.push({
-        path: 'categories',
-        message: 'Categories must be an array',
-        code: 'INVALID_CATEGORIES',
-      });
-    } else {
+    if (Array.isArray(d.categories)) {
       const categoryResult = validateImportedCategories(d.categories);
       errors.push(...categoryResult.errors);
       warnings.push(...categoryResult.warnings);
@@ -436,6 +430,12 @@ export function validateRecommendedItemsFile(data: unknown): ValidationResult {
       validCategoryIds = getValidCategoryIds(
         d.categories as ImportedCategory[],
       );
+    } else {
+      errors.push({
+        path: 'categories',
+        message: 'Categories must be an array',
+        code: 'INVALID_CATEGORIES',
+      });
     }
   }
 

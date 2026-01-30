@@ -17,7 +17,8 @@ export interface CategoryFormProps {
   readonly initialCategory?: Category;
   readonly onSubmit: (data: CategoryFormData) => void;
   readonly onCancel: () => void;
-  readonly existingIds?: string[];
+  /** Existing category names (lowercase) for duplicate checking */
+  readonly existingNames?: string[];
 }
 
 function toKebabCase(str: string): string {
@@ -47,7 +48,7 @@ export function CategoryForm({
   initialCategory,
   onSubmit,
   onCancel,
-  existingIds = [],
+  existingNames = [],
 }: CategoryFormProps) {
   const { t } = useTranslation();
   const isEditing = !!initialCategory;
@@ -85,17 +86,10 @@ export function CategoryForm({
       newErrors.icon = t('settings.customCategories.form.error.iconInvalid');
     }
 
-    // Check for duplicate ID (but allow editing the same category)
-    if (generatedId && !isEditing) {
-      if (existingIds.includes(generatedId)) {
-        newErrors.nameEn = t('settings.customCategories.form.error.idExists');
-      }
-    } else if (generatedId && isEditing) {
-      // When editing, allow the same ID but not other existing IDs
-      const otherIds = existingIds.filter((id) => id !== initialCategory?.id);
-      if (otherIds.includes(generatedId)) {
-        newErrors.nameEn = t('settings.customCategories.form.error.idExists');
-      }
+    // Check for duplicate name (case-insensitive)
+    const normalizedName = nameEn.trim().toLowerCase();
+    if (normalizedName && existingNames.includes(normalizedName)) {
+      newErrors.nameEn = t('settings.customCategories.form.error.nameExists');
     }
 
     setErrors(newErrors);

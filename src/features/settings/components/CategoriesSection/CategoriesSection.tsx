@@ -57,7 +57,10 @@ export function CategoriesSection() {
     handleClose();
   };
 
-  const existingIds = customCategories.map((c) => c.id as string);
+  // Collect existing category names (lowercase) for duplicate checking
+  const existingNames = customCategories.map(
+    (c) => c.names?.en?.toLowerCase() || c.name.toLowerCase(),
+  );
 
   return (
     <section className={styles.section}>
@@ -75,10 +78,15 @@ export function CategoriesSection() {
           initialCategory={editingCategory || undefined}
           onSubmit={handleSubmit}
           onCancel={handleClose}
-          existingIds={
+          existingNames={
             editingCategory
-              ? existingIds.filter((id) => id !== editingCategory.id)
-              : existingIds
+              ? existingNames.filter(
+                  (name) =>
+                    name !==
+                    (editingCategory.names?.en?.toLowerCase() ||
+                      editingCategory.name.toLowerCase()),
+                )
+              : existingNames
           }
         />
       </Modal>

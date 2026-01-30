@@ -221,7 +221,8 @@
           "nameRequired": "English name is required",
           "iconRequired": "Icon is required",
           "iconInvalid": "Icon must be an emoji",
-          "idExists": "A category with this ID already exists"
+          "idExists": "A category with this ID already exists",
+          "nameExists": "A category with this name already exists"
         }
       },
       "standardCategories": "Standard Categories",
