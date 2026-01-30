@@ -28,14 +28,15 @@ export class CategoryValidationError extends Error {
 
 /**
  * Validates that an icon is a valid emoji (basic check).
- * Checks if the string contains emoji characters.
+ * Checks if the entire string is an emoji character.
  */
 function isValidEmoji(icon: string): boolean {
-  // Basic emoji validation - check for emoji Unicode ranges
+  // Basic emoji validation - anchored to match entire string
+  // Allows optional variation selector (U+FE0F) after base emoji
   // This is a simplified check; full emoji validation is complex
   const emojiRegex =
-    /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FA6F}]|[\u{1FA70}-\u{1FAFF}]/u;
-  return emojiRegex.test(icon);
+    /^(?:[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FA6F}]|[\u{1FA70}-\u{1FAFF}])\uFE0F?$/u;
+  return emojiRegex.test(icon.trim());
 }
 
 /**

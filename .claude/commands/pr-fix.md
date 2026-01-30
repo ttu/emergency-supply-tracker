@@ -35,17 +35,17 @@ When fixing a PR, check these in order:
 3. Fetch CodeRabbit review comments from the PR:
 
    ```bash
-   # Get CodeRabbit inline review comments (code suggestions)
-   gh api "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
+   # Get CodeRabbit inline review comments (code suggestions) - use --paginate for PRs with many comments
+   gh api --paginate "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
      --jq '[.[] | select(.user.login == "coderabbitai[bot]") | {path: .path, line: .line, body: .body}]'
 
    # Count total CodeRabbit comments
-   gh api "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
+   gh api --paginate "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
      --jq '[.[] | select(.user.login == "coderabbitai[bot]")] | length'
 
-   # Get CodeRabbit summary comment from issue comments
-   gh api "repos/ttu/emergency-supply-tracker/issues/{pr_number}/comments" \
-     --jq '[.[] | select(.user.login == "coderabbitai[bot]")] | .[0].body' | head -500
+   # Get CodeRabbit summary comment from issue comments (get latest by created_at)
+   gh api --paginate "repos/ttu/emergency-supply-tracker/issues/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]")] | sort_by(.created_at) | last | .body' | head -500
    ```
 
 4. Parse the CodeRabbit comments and identify actionable issues:

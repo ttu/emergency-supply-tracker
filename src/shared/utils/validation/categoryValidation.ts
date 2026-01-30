@@ -25,10 +25,11 @@ export function isValidHexColor(color: string): boolean {
  * Covers common emoji ranges including symbols, pictographs, and flags.
  */
 function isValidEmoji(icon: string): boolean {
-  // Match common emoji ranges
+  // Match common emoji ranges - anchored to match entire string
+  // Allows optional variation selector (U+FE0F) after base emoji
   const emojiRegex =
-    /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FA6F}]|[\u{1FA70}-\u{1FAFF}]|\u{2B50}/u;
-  return emojiRegex.test(icon);
+    /^(?:[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FA6F}]|[\u{1FA70}-\u{1FAFF}]|\u{2B50})\uFE0F?$/u;
+  return emojiRegex.test(icon.trim());
 }
 
 export interface CategoryValidationResult {
@@ -177,7 +178,9 @@ export function getValidCategoryIds(
 ): Set<string> {
   const validIds = new Set<string>(VALID_CATEGORIES);
   if (customCategories) {
-    customCategories.forEach((cat) => validIds.add(cat.id));
+    customCategories.forEach((cat) => {
+      validIds.add(cat.id);
+    });
   }
   return validIds;
 }
