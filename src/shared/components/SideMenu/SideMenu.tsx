@@ -1,4 +1,4 @@
-import { useCallback, useId, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useId, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useKeyboardNavigation } from '@/shared/hooks/useKeyboardNavigation';
@@ -11,6 +11,12 @@ export interface SideMenuItem {
   icon?: string;
 }
 
+export interface SideMenuGroup {
+  id: string;
+  label: string;
+  items: readonly SideMenuItem[];
+}
+
 export interface HamburgerButtonProps {
   readonly onClick: () => void;
   readonly isOpen: boolean;
@@ -18,7 +24,8 @@ export interface HamburgerButtonProps {
 }
 
 export interface SideMenuProps {
-  readonly items: readonly SideMenuItem[];
+  readonly items?: readonly SideMenuItem[];
+  readonly groups?: readonly SideMenuGroup[];
   readonly selectedId: string;
   readonly onSelect: (id: string) => void;
   readonly ariaLabel: string;
@@ -37,6 +44,7 @@ export interface SideMenuProps {
 
 export function SideMenu({
   items,
+  groups,
   selectedId,
   onSelect,
   ariaLabel,
@@ -48,10 +56,16 @@ export function SideMenu({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const drawerId = useId();
 
-  const allItems = useMemo(
-    () => (showAllOption ? [showAllOption, ...items] : items),
-    [showAllOption, items],
-  );
+  // Flatten groups to items for keyboard navigation
+  const allItems = useMemo(() => {
+    if (groups) {
+      const flatItems = groups.flatMap((group) => group.items);
+      return showAllOption ? [showAllOption, ...flatItems] : flatItems;
+    }
+    const itemsList = items ?? [];
+    return showAllOption ? [showAllOption, ...itemsList] : itemsList;
+  }, [groups, items, showAllOption]);
+
   const currentIndex = allItems.findIndex((item) => item.id === selectedId);
 
   const handleIndexChange = useCallback(
@@ -77,6 +91,69 @@ export function SideMenu({
     setIsDrawerOpen(false);
   };
 
+  // Track item index across groups for keyboard navigation
+  let itemIndex = showAllOption ? 1 : 0;
+
+  const renderMenuItem = (item: SideMenuItem, index: number): ReactNode => {
+    const isActive = item.id === selectedId;
+    const itemProps = getItemProps(index);
+
+    return (
+      <li key={item.id} role="none">
+        <button
+          type="button"
+          role="menuitem"
+          className={`${styles.item} ${isActive ? styles.active : ''}`}
+          onClick={() => handleItemClick(item.id)}
+          aria-current={isActive ? 'page' : undefined}
+          tabIndex={itemProps.tabIndex}
+          data-testid={`sidemenu-item-${item.id}`}
+        >
+          {item.icon && <span className={styles.icon}>{item.icon}</span>}
+          <span className={styles.label}>{item.label}</span>
+        </button>
+      </li>
+    );
+  };
+
+  const renderGroupedMenu = (): ReactNode => {
+    if (!groups) return null;
+
+    return groups.map((group, groupIndex) => {
+      const groupItems = group.items.map((item) => {
+        const element = renderMenuItem(item, itemIndex);
+        itemIndex++;
+        return element;
+      });
+
+      return (
+        <li key={group.id} role="none" className={styles.group}>
+          <span
+            className={styles.groupLabel}
+            id={`group-${group.id}`}
+            data-testid={`sidemenu-group-${group.id}`}
+          >
+            {group.label}
+          </span>
+          <ul
+            className={styles.groupItems}
+            role="group"
+            aria-labelledby={`group-${group.id}`}
+          >
+            {groupItems}
+          </ul>
+          {groupIndex < groups.length - 1 && (
+            <div className={styles.groupDivider} aria-hidden="true" />
+          )}
+        </li>
+      );
+    });
+  };
+
+  const renderFlatMenu = (): ReactNode => {
+    return allItems.map((item, index) => renderMenuItem(item, index));
+  };
+
   const menuContent = (
     <nav
       ref={containerRef as React.RefObject<HTMLElement>}
@@ -91,27 +168,7 @@ export function SideMenu({
         onKeyDown={handleKeyDown}
         tabIndex={-1}
       >
-        {allItems.map((item, index) => {
-          const isActive = item.id === selectedId;
-          const itemProps = getItemProps(index);
-
-          return (
-            <li key={item.id} role="none">
-              <button
-                type="button"
-                role="menuitem"
-                className={`${styles.item} ${isActive ? styles.active : ''}`}
-                onClick={() => handleItemClick(item.id)}
-                aria-current={isActive ? 'page' : undefined}
-                tabIndex={itemProps.tabIndex}
-                data-testid={`sidemenu-item-${item.id}`}
-              >
-                {item.icon && <span className={styles.icon}>{item.icon}</span>}
-                <span className={styles.label}>{item.label}</span>
-              </button>
-            </li>
-          );
-        })}
+        {groups ? renderGroupedMenu() : renderFlatMenu()}
       </ul>
     </nav>
   );

@@ -70,6 +70,41 @@
   text-overflow: ellipsis;
 }
 
+/* Group styles */
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.groupLabel {
+  display: block;
+  padding: var(--spacing-xs) var(--spacing-md);
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary);
+  user-select: none;
+}
+
+.group:first-child .groupLabel {
+  margin-top: 0;
+}
+
+.groupItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.groupDivider {
+  display: none;
+}
+
 /* Hamburger button - hidden on desktop */
 .hamburger {
   display: none;

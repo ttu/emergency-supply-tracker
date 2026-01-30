@@ -9,7 +9,6 @@ import {
   NutritionSettings,
   ExportButton,
   ImportButton,
-  ShoppingListExport,
   DebugExport,
   ClearDataButton,
   DisabledCategories,
@@ -19,7 +18,7 @@ import {
   CategoriesSection,
 } from '@/features/settings';
 import { GitHubIcon } from '@/shared/components';
-import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
+import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
 
@@ -34,6 +33,7 @@ type SettingsSection =
   | 'overriddenRecommendations'
   | 'recommendationKits'
   | 'dataManagement'
+  | 'debugLog'
   | 'about'
   | 'dangerZone';
 
@@ -68,40 +68,80 @@ export function Settings() {
   const [hamburgerContainer, setHamburgerContainer] =
     useState<HTMLDivElement | null>(null);
 
-  const menuItems: SideMenuItem[] = [
-    { id: 'appearance', label: t('settings.navigation.sections.appearance') },
-    { id: 'household', label: t('settings.navigation.sections.household') },
-    { id: 'nutrition', label: t('settings.navigation.sections.nutrition') },
+  const menuGroups: SideMenuGroup[] = [
     {
-      id: 'hiddenAlerts',
-      label: t('settings.navigation.sections.hiddenAlerts'),
+      id: 'general',
+      label: t('settings.navigation.groups.general'),
+      items: [
+        {
+          id: 'appearance',
+          label: t('settings.navigation.sections.appearance'),
+        },
+        { id: 'about', label: t('settings.navigation.sections.about') },
+      ],
     },
     {
-      id: 'disabledRecommendations',
-      label: t('settings.navigation.sections.disabledRecommendations'),
+      id: 'household',
+      label: t('settings.navigation.groups.household'),
+      items: [
+        { id: 'household', label: t('settings.navigation.sections.household') },
+        { id: 'nutrition', label: t('settings.navigation.sections.nutrition') },
+      ],
     },
     {
-      id: 'disabledCategories',
-      label: t('settings.navigation.sections.disabledCategories'),
+      id: 'recommendations',
+      label: t('settings.navigation.groups.recommendations'),
+      items: [
+        {
+          id: 'recommendationKits',
+          label: t('settings.navigation.sections.recommendationKits'),
+        },
+        {
+          id: 'disabledRecommendations',
+          label: t('settings.navigation.sections.disabledRecommendations'),
+        },
+        {
+          id: 'overriddenRecommendations',
+          label: t('settings.navigation.sections.overriddenRecommendations'),
+        },
+        {
+          id: 'hiddenAlerts',
+          label: t('settings.navigation.sections.hiddenAlerts'),
+        },
+      ],
     },
     {
-      id: 'customCategories',
-      label: t('settings.navigation.sections.customCategories'),
+      id: 'categories',
+      label: t('settings.navigation.groups.categories'),
+      items: [
+        {
+          id: 'disabledCategories',
+          label: t('settings.navigation.sections.disabledCategories'),
+        },
+        {
+          id: 'customCategories',
+          label: t('settings.navigation.sections.customCategories'),
+        },
+      ],
     },
     {
-      id: 'overriddenRecommendations',
-      label: t('settings.navigation.sections.overriddenRecommendations'),
+      id: 'data',
+      label: t('settings.navigation.groups.data'),
+      items: [
+        {
+          id: 'dataManagement',
+          label: t('settings.navigation.sections.dataManagement'),
+        },
+        {
+          id: 'debugLog',
+          label: t('settings.navigation.sections.debugLog'),
+        },
+        {
+          id: 'dangerZone',
+          label: t('settings.navigation.sections.dangerZone'),
+        },
+      ],
     },
-    {
-      id: 'recommendationKits',
-      label: t('settings.navigation.sections.recommendationKits'),
-    },
-    {
-      id: 'dataManagement',
-      label: t('settings.navigation.sections.dataManagement'),
-    },
-    { id: 'about', label: t('settings.navigation.sections.about') },
-    { id: 'dangerZone', label: t('settings.navigation.sections.dangerZone') },
   ];
 
   const renderSection = () => {
@@ -214,9 +254,17 @@ export function Settings() {
             <div className={styles.dataButtons}>
               <ExportButton />
               <ImportButton />
-              <ShoppingListExport />
-              <DebugExport />
             </div>
+          </Section>
+        );
+
+      case 'debugLog':
+        return (
+          <Section
+            testId="section-debug-log"
+            titleKey="settings.navigation.sections.debugLog"
+          >
+            <DebugExport />
           </Section>
         );
 
@@ -275,7 +323,7 @@ export function Settings() {
 
       <div className={styles.layout}>
         <SideMenu
-          items={menuItems}
+          groups={menuGroups}
           selectedId={selectedSection}
           onSelect={(id) => setSelectedSection(id as SettingsSection)}
           ariaLabel={t('settings.navigation.menuLabel')}

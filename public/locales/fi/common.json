@@ -146,6 +146,13 @@
     "title": "Asetukset",
     "navigation": {
       "menuLabel": "Asetusten navigointi",
+      "groups": {
+        "general": "Yleinen",
+        "household": "Kotitalous",
+        "recommendations": "Suositukset",
+        "categories": "Kategoriat",
+        "data": "Tiedot"
+      },
       "sections": {
         "appearance": "Ulkoasu",
         "household": "Kotitalouden asetukset",
