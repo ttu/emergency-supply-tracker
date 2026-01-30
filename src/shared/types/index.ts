@@ -12,6 +12,8 @@ export type {
   ProductTemplateId,
   AlertId,
   DateOnly,
+  Quantity,
+  Percentage,
 } from './branded';
 export {
   createItemId,
@@ -19,9 +21,13 @@ export {
   createProductTemplateId,
   createAlertId,
   createDateOnly,
+  createQuantity,
+  createPercentage,
   isItemId,
   isCategoryId,
   isDateOnly,
+  isQuantity,
+  isPercentage,
 } from './branded';
 
 // Core types
