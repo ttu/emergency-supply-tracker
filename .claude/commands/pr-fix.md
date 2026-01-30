@@ -32,17 +32,31 @@ When fixing a PR, check these in order:
    gh pr checks {pr_number} --repo ttu/emergency-supply-tracker
    ```
 
-3. Fetch all review comments from the PR:
+3. Fetch CodeRabbit review comments from the PR:
 
    ```bash
-   gh api --paginate repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments
-   gh pr view {pr_number} --json reviews,comments
+   # Get CodeRabbit inline review comments (code suggestions)
+   gh api "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]") | {path: .path, line: .line, body: .body}]'
+
+   # Count total CodeRabbit comments
+   gh api "repos/ttu/emergency-supply-tracker/pulls/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]")] | length'
+
+   # Get CodeRabbit summary comment from issue comments
+   gh api "repos/ttu/emergency-supply-tracker/issues/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login == "coderabbitai[bot]")] | .[0].body' | head -500
    ```
 
 4. Parse the CodeRabbit comments and identify actionable issues:
-   - Look for comments from "coderabbitai" or containing CodeRabbit suggestions
-   - Ignore comments marked with "✅ Addressed" as they are already resolved
-   - Focus on unresolved issues that require code changes
+   - Bot username is **"coderabbitai[bot]"** (not "coderabbitai")
+   - Review comments are in PR comments API (`/pulls/{pr_number}/comments`)
+   - Summary is in issue comments API (`/issues/{pr_number}/comments`)
+   - Ignore comments where body contains "✅" as they are already resolved
+   - Focus on issues marked with severity indicators:
+     - 🟠 Major - Should fix
+     - 🟡 Minor - Nice to fix
+   - Look for `<details><summary>🛠️` sections for suggested fixes
 
 5. Check SonarCloud issues:
    - Check the SonarCloud link from `gh pr checks` output
@@ -56,7 +70,17 @@ When fixing a PR, check these in order:
    - Check if new code needs additional tests
 
 7. Check human reviewer comments:
-   - Look for comments not from bots (coderabbitai, codecov, sonarcloud)
+
+   ```bash
+   # List all commenters to identify humans vs bots
+   gh api "repos/ttu/emergency-supply-tracker/issues/{pr_number}/comments" \
+     --jq '[.[].user.login] | unique'
+
+   # Get non-bot comments (filter out known bots)
+   gh api "repos/ttu/emergency-supply-tracker/issues/{pr_number}/comments" \
+     --jq '[.[] | select(.user.login | IN("coderabbitai[bot]", "codecov[bot]", "sonarqubecloud[bot]", "github-actions[bot]") | not)]'
+   ```
+
    - Address requested changes from human reviewers
 
 8. For each issue:
