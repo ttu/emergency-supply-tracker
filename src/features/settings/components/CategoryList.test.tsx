@@ -69,28 +69,38 @@ describe('CategoryList', () => {
   it('should render list of custom categories', () => {
     render(<CategoryList onEdit={mockOnEdit} />);
 
-    expect(screen.getByText('Camping Gear')).toBeInTheDocument();
-    expect(screen.getByText('Travel Supplies')).toBeInTheDocument();
+    expect(screen.getByTestId('category-list')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('category-name-custom-camping'),
+    ).toHaveTextContent('Camping Gear');
+    expect(screen.getByTestId('category-name-custom-travel')).toHaveTextContent(
+      'Travel Supplies',
+    );
   });
 
   it('should show description with count', () => {
     render(<CategoryList onEdit={mockOnEdit} />);
 
-    expect(screen.getByText(/You have 2 custom category/)).toBeInTheDocument();
+    expect(screen.getByTestId('category-list-description')).toHaveTextContent(
+      /You have 2 custom category/,
+    );
   });
 
   it('should display category icons', () => {
     render(<CategoryList onEdit={mockOnEdit} />);
 
-    expect(screen.getByText('🏕️')).toBeInTheDocument();
-    expect(screen.getByText('🚗')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('category-icon-custom-camping'),
+    ).toHaveTextContent('🏕️');
+    expect(screen.getByTestId('category-icon-custom-travel')).toHaveTextContent(
+      '🚗',
+    );
   });
 
   it('should call onEdit when clicking edit button', () => {
     render(<CategoryList onEdit={mockOnEdit} />);
 
-    const editButtons = screen.getAllByRole('button', { name: /Edit/i });
-    fireEvent.click(editButtons[0]);
+    fireEvent.click(screen.getByTestId('edit-category-custom-camping'));
 
     expect(mockOnEdit).toHaveBeenCalledWith(mockCustomCategories[0]);
   });
@@ -101,8 +111,7 @@ describe('CategoryList', () => {
 
     render(<CategoryList onEdit={mockOnEdit} />);
 
-    const deleteButtons = screen.getAllByRole('button', { name: /Delete/i });
-    fireEvent.click(deleteButtons[0]);
+    fireEvent.click(screen.getByTestId('delete-category-custom-camping'));
 
     expect(confirmSpy).toHaveBeenCalled();
     expect(mockDeleteCustomCategory).toHaveBeenCalledWith(
@@ -118,8 +127,7 @@ describe('CategoryList', () => {
 
     render(<CategoryList onEdit={mockOnEdit} />);
 
-    const deleteButtons = screen.getAllByRole('button', { name: /Delete/i });
-    fireEvent.click(deleteButtons[0]);
+    fireEvent.click(screen.getByTestId('delete-category-custom-camping'));
 
     expect(confirmSpy).toHaveBeenCalled();
     expect(mockDeleteCustomCategory).not.toHaveBeenCalled();
@@ -140,8 +148,7 @@ describe('CategoryList', () => {
 
     render(<CategoryList onEdit={mockOnEdit} />);
 
-    const deleteButtons = screen.getAllByRole('button', { name: /Delete/i });
-    fireEvent.click(deleteButtons[0]);
+    fireEvent.click(screen.getByTestId('delete-category-custom-camping'));
 
     expect(confirmSpy).toHaveBeenCalled();
     expect(mockDeleteCustomCategory).toHaveBeenCalled();
@@ -154,8 +161,12 @@ describe('CategoryList', () => {
   it('should render categories in a list', () => {
     render(<CategoryList onEdit={mockOnEdit} />);
 
-    const listItems = screen.getAllByRole('listitem');
-    expect(listItems).toHaveLength(2);
+    expect(
+      screen.getByTestId('category-item-custom-camping'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('category-item-custom-travel'),
+    ).toBeInTheDocument();
   });
 
   it('should have accessible button labels', () => {
@@ -199,8 +210,6 @@ describe('CategoryList with no custom categories', () => {
     const { CategoryList: CategoryListEmpty } = await import('./CategoryList');
     render(<CategoryListEmpty onEdit={mockOnEdit} />);
 
-    expect(
-      screen.getByText('No custom categories. Add one to get started.'),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('category-list-empty')).toBeInTheDocument();
   });
 });

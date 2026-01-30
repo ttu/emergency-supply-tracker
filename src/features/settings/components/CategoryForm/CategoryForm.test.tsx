@@ -49,9 +49,11 @@ describe('CategoryForm', () => {
   it('renders create form when no initial category', () => {
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    expect(screen.getByText('Create Custom Category')).toBeInTheDocument();
-    expect(screen.getByLabelText(/Name \(English\)/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Icon/i)).toBeInTheDocument();
+    expect(screen.getByTestId('category-form-title')).toHaveTextContent(
+      'Create Custom Category',
+    );
+    expect(screen.getByTestId('category-name-en')).toBeInTheDocument();
+    expect(screen.getByTestId('category-icon')).toBeInTheDocument();
   });
 
   it('renders edit form with populated values', () => {
@@ -72,10 +74,14 @@ describe('CategoryForm', () => {
       />,
     );
 
-    expect(screen.getByText('Edit Custom Category')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Camping Gear')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Retkeilyvarusteet')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('🏕️')).toBeInTheDocument();
+    expect(screen.getByTestId('category-form-title')).toHaveTextContent(
+      'Edit Custom Category',
+    );
+    expect(screen.getByTestId('category-name-en')).toHaveValue('Camping Gear');
+    expect(screen.getByTestId('category-name-fi')).toHaveValue(
+      'Retkeilyvarusteet',
+    );
+    expect(screen.getByTestId('category-icon')).toHaveValue('🏕️');
   });
 
   it('validates required fields', async () => {
@@ -83,7 +89,7 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).not.toHaveBeenCalled();
     expect(screen.getByText('English name is required')).toBeInTheDocument();
@@ -94,11 +100,8 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    await user.type(
-      screen.getByLabelText(/Name \(English\)/i),
-      'Test Category',
-    );
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -113,12 +116,9 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    await user.type(
-      screen.getByLabelText(/Name \(English\)/i),
-      'Test Category',
-    );
-    await user.type(screen.getByLabelText(/Icon/i), 'not-an-emoji');
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), 'not-an-emoji');
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).not.toHaveBeenCalled();
     expect(screen.getByText('Icon must be an emoji')).toBeInTheDocument();
@@ -129,9 +129,9 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    await user.type(screen.getByLabelText(/Name \(English\)/i), 'New Category');
-    await user.type(screen.getByLabelText(/Icon/i), '🎯');
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.type(screen.getByTestId('category-name-en'), 'New Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -146,7 +146,7 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    await user.click(screen.getByRole('button', { name: /cancel/i }));
+    await user.click(screen.getByTestId('category-form-cancel'));
 
     expect(mockOnCancel).toHaveBeenCalled();
   });
@@ -157,11 +157,13 @@ describe('CategoryForm', () => {
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
     await user.type(
-      screen.getByLabelText(/Name \(English\)/i),
+      screen.getByTestId('category-name-en'),
       'My Custom Category',
     );
 
-    expect(screen.getByText(/my-custom-category/i)).toBeInTheDocument();
+    expect(screen.getByTestId('category-id-preview')).toHaveTextContent(
+      /my-custom-category/i,
+    );
   });
 
   it('includes Finnish name when provided', async () => {
@@ -169,13 +171,10 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    await user.type(
-      screen.getByLabelText(/Name \(English\)/i),
-      'Test Category',
-    );
-    await user.type(screen.getByLabelText(/Name \(Finnish\)/i), 'Testiluokka');
-    await user.type(screen.getByLabelText(/Icon/i), '🎯');
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-name-fi'), 'Testiluokka');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -195,12 +194,9 @@ describe('CategoryForm', () => {
       />,
     );
 
-    await user.type(
-      screen.getByLabelText(/Name \(English\)/i),
-      'Test Category',
-    );
-    await user.type(screen.getByLabelText(/Icon/i), '🎯');
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).not.toHaveBeenCalled();
     expect(
@@ -229,9 +225,9 @@ describe('CategoryForm', () => {
     );
 
     // Modify the name but keep the same base
-    await user.clear(screen.getByLabelText(/Name \(English\)/i));
-    await user.type(screen.getByLabelText(/Name \(English\)/i), 'Camping Gear');
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.clear(screen.getByTestId('category-name-en'));
+    await user.type(screen.getByTestId('category-name-en'), 'Camping Gear');
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).toHaveBeenCalled();
   });
@@ -241,20 +237,17 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
     await user.type(
-      screen.getByLabelText(/Name \(English\)/i),
-      'Test Category',
-    );
-    await user.type(screen.getByLabelText(/Icon/i), '🎯');
-    await user.type(
-      screen.getByLabelText(/Description \(English\)/i),
+      screen.getByTestId('category-description-en'),
       'English description',
     );
     await user.type(
-      screen.getByLabelText(/Description \(Finnish\)/i),
+      screen.getByTestId('category-description-fi'),
       'Suomenkielinen kuvaus',
     );
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -271,16 +264,13 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    await user.type(
-      screen.getByLabelText(/Name \(English\)/i),
-      'Test Category',
-    );
-    await user.type(screen.getByLabelText(/Icon/i), '🎯');
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
 
     // Change color input value using fireEvent (color inputs don't support clear/type)
-    const colorInput = screen.getByLabelText(/Color/i);
+    const colorInput = screen.getByTestId('category-color');
     fireEvent.change(colorInput, { target: { value: '#ff5500' } });
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -294,17 +284,14 @@ describe('CategoryForm', () => {
 
     render(<CategoryForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    await user.type(
-      screen.getByLabelText(/Name \(English\)/i),
-      'Test Category',
-    );
-    await user.type(screen.getByLabelText(/Icon/i), '🎯');
+    await user.type(screen.getByTestId('category-name-en'), 'Test Category');
+    await user.type(screen.getByTestId('category-icon'), '🎯');
 
     // Change sort order
-    const sortOrderInput = screen.getByLabelText(/Sort Order/i);
+    const sortOrderInput = screen.getByTestId('category-sort-order');
     await user.clear(sortOrderInput);
     await user.type(sortOrderInput, '50');
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.click(screen.getByTestId('category-form-save'));
 
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({

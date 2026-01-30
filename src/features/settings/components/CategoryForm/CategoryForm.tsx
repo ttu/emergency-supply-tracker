@@ -133,8 +133,13 @@ export function CategoryForm({
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      <h3 className={styles.title}>
+    <form
+      className={styles.form}
+      onSubmit={handleSubmit}
+      noValidate
+      data-testid="category-form"
+    >
+      <h3 className={styles.title} data-testid="category-form-title">
         {isEditing
           ? t('settings.customCategories.form.title.edit')
           : t('settings.customCategories.form.title.create')}
@@ -148,6 +153,7 @@ export function CategoryForm({
           error={errors.nameEn}
           required
           fullWidth
+          data-testid="category-name-en"
         />
 
         <Input
@@ -155,6 +161,7 @@ export function CategoryForm({
           value={nameFi}
           onChange={(e) => setNameFi(e.target.value)}
           fullWidth
+          data-testid="category-name-fi"
         />
 
         <Input
@@ -164,10 +171,11 @@ export function CategoryForm({
           error={errors.icon}
           placeholder={DEFAULT_CATEGORY_ICON}
           helperText={t('settings.customCategories.form.iconHelper')}
+          data-testid="category-icon"
         />
 
         {generatedId && (
-          <p className={styles.idPreview}>
+          <p className={styles.idPreview} data-testid="category-id-preview">
             {t('settings.customCategories.form.idPreview')}
             {generatedId.replace('custom-', '')}
           </p>
@@ -178,6 +186,7 @@ export function CategoryForm({
           value={descriptionEn}
           onChange={(e) => setDescriptionEn(e.target.value)}
           fullWidth
+          data-testid="category-description-en"
         />
 
         <Input
@@ -185,6 +194,7 @@ export function CategoryForm({
           value={descriptionFi}
           onChange={(e) => setDescriptionFi(e.target.value)}
           fullWidth
+          data-testid="category-description-fi"
         />
 
         <Input
@@ -192,6 +202,7 @@ export function CategoryForm({
           type="color"
           value={color || '#6b7280'}
           onChange={(e) => setColor(e.target.value)}
+          data-testid="category-color"
         />
 
         <Input
@@ -202,14 +213,24 @@ export function CategoryForm({
           helperText={t('settings.customCategories.form.sortOrderHelper')}
           min={0}
           max={999}
+          data-testid="category-sort-order"
         />
       </div>
 
       <div className={styles.buttons}>
-        <Button type="button" variant="secondary" onClick={onCancel}>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onCancel}
+          data-testid="category-form-cancel"
+        >
           {t('settings.customCategories.form.cancel')}
         </Button>
-        <Button type="submit" variant="primary">
+        <Button
+          type="submit"
+          variant="primary"
+          data-testid="category-form-save"
+        >
           {t('settings.customCategories.form.save')}
         </Button>
       </div>

@@ -39,7 +39,7 @@ export function CategoryList({ onEdit }: CategoryListProps) {
 
   if (customCategories.length === 0) {
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid="category-list-empty">
         <p className={styles.emptyMessage}>
           {t('settings.customCategories.empty')}
         </p>
@@ -48,8 +48,8 @@ export function CategoryList({ onEdit }: CategoryListProps) {
   }
 
   return (
-    <div className={styles.container}>
-      <p className={styles.description}>
+    <div className={styles.container} data-testid="category-list">
+      <p className={styles.description} data-testid="category-list-description">
         {t('settings.customCategories.description', {
           count: customCategories.length,
         })}
@@ -58,10 +58,24 @@ export function CategoryList({ onEdit }: CategoryListProps) {
         {customCategories.map((category) => {
           const name = getCategoryName(category);
           return (
-            <li key={category.id} className={styles.categoryItem}>
+            <li
+              key={category.id}
+              className={styles.categoryItem}
+              data-testid={`category-item-${category.id}`}
+            >
               <div className={styles.categoryContent}>
-                <span className={styles.categoryIcon}>{category.icon}</span>
-                <span className={styles.categoryName}>{name}</span>
+                <span
+                  className={styles.categoryIcon}
+                  data-testid={`category-icon-${category.id}`}
+                >
+                  {category.icon}
+                </span>
+                <span
+                  className={styles.categoryName}
+                  data-testid={`category-name-${category.id}`}
+                >
+                  {name}
+                </span>
               </div>
               <div className={styles.buttonGroup}>
                 <Button
@@ -70,6 +84,7 @@ export function CategoryList({ onEdit }: CategoryListProps) {
                   className={styles.actionButton}
                   onClick={() => onEdit(category)}
                   aria-label={`${t('settings.customCategories.edit')}: ${name}`}
+                  data-testid={`edit-category-${category.id}`}
                 >
                   {t('settings.customCategories.edit')}
                 </Button>
@@ -79,6 +94,7 @@ export function CategoryList({ onEdit }: CategoryListProps) {
                   className={styles.actionButton}
                   onClick={() => handleDelete(category)}
                   aria-label={`${t('settings.customCategories.delete')}: ${name}`}
+                  data-testid={`delete-category-${category.id}`}
                 >
                   {t('settings.customCategories.delete')}
                 </Button>
