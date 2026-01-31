@@ -47,7 +47,9 @@
   gap: var(--spacing-sm);
   overflow-y: auto;
   max-height: 50vh;
-  padding-right: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  margin: calc(-1 * var(--spacing-xs));
+  margin-bottom: 0;
 }
 
 .templateList::-webkit-scrollbar {
