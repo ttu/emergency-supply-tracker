@@ -202,7 +202,7 @@ describe('Settings Page', () => {
     // About section should now be visible
     expect(screen.getByTestId('section-about')).toBeInTheDocument();
     expect(screen.getByText('app.title')).toBeInTheDocument();
-    expect(screen.getByText('settings.about.viewOnGitHub')).toBeInTheDocument();
+    expect(screen.getByText('help.githubLink')).toBeInTheDocument();
   });
 
   it('should navigate to danger zone section when clicked', () => {
@@ -224,7 +224,7 @@ describe('Settings Page', () => {
     const sidebar = screen.getByTestId('sidemenu-sidebar');
     fireEvent.click(within(sidebar).getByTestId('sidemenu-item-about'));
 
-    const link = screen.getByText('settings.about.viewOnGitHub');
+    const link = screen.getByText('help.githubLink');
     expect(link).toHaveAttribute(
       'href',
       'https://github.com/ttu/emergency-supply-tracker',

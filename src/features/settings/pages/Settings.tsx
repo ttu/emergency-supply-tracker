@@ -18,6 +18,7 @@ import {
   KitManagement,
   CategoriesSection,
 } from '@/features/settings';
+import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
@@ -237,7 +238,8 @@ export function Settings() {
                 rel="noopener noreferrer"
                 className={styles.link}
               >
-                {t('settings.about.viewOnGitHub')}
+                <GitHubIcon className={styles.githubIcon} />
+                {t('help.githubLink')}
               </a>
             </div>
           </Section>
