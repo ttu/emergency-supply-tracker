@@ -52,6 +52,7 @@ vi.mock('react-i18next', () => ({
       changeLanguage: mockChangeLanguage,
     },
   }),
+  withTranslation: () => (Component: unknown) => Component,
 }));
 
 describe('Onboarding', () => {
