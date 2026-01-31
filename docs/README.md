@@ -16,6 +16,8 @@ This folder contains up-to-date documentation that reflects the current implemen
 | [CODE_QUALITY.md](CODE_QUALITY.md)           | ESLint, Prettier, and CI/CD configuration                                            |
 | [CODE_COVERAGE.md](CODE_COVERAGE.md)         | Coverage thresholds, Codecov, and PR requirements                                    |
 
+**[ai-agent/](ai-agent/)** – Workflows, conventions, code review checklist, collaboration tips, version control, and commands for AI-assisted development. See [AGENTS.md](../AGENTS.md) for the compact entry point.
+
 ## Source of Truth
 
 Each document references the source code files it documents:
