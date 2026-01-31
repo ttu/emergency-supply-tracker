@@ -501,5 +501,51 @@ describe('SideMenu', () => {
       fireEvent.keyDown(list, { key: 'ArrowDown' });
       expect(onSelect).toHaveBeenCalledWith('item3');
     });
+
+    it('renders showAllOption in grouped menu', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="all"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+          showAllOption={{ id: 'all', label: 'All Items', icon: '📦' }}
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+
+      // Verify showAllOption is rendered
+      expect(within(sidebar).getByText('All Items')).toBeInTheDocument();
+      expect(within(sidebar).getByText('📦')).toBeInTheDocument();
+
+      const allItem = within(sidebar).getByTestId('sidemenu-item-all');
+      expect(allItem).toHaveAttribute('aria-current', 'page');
+
+      // Verify groups are also rendered
+      expect(within(sidebar).getByText('Group 1')).toBeInTheDocument();
+      expect(within(sidebar).getByText('Item 1')).toBeInTheDocument();
+    });
+
+    it('handles keyboard navigation with showAllOption in grouped menu', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="all"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+          showAllOption={{ id: 'all', label: 'All Items', icon: '📦' }}
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+      const list = within(sidebar).getByRole('menu');
+
+      // Navigate from 'all' to first item in first group
+      fireEvent.keyDown(list, { key: 'ArrowDown' });
+      expect(onSelect).toHaveBeenCalledWith('item1');
+    });
   });
 });

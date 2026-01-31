@@ -62,10 +62,10 @@ test.describe('Shopping List Export Formats', () => {
     }
   });
 
-  test('should show correct item count in shopping list description', async ({
+  test('should show export button on Dashboard with multiple inventory items', async ({
     page,
   }) => {
-    // Add multiple items needing restocking
+    // Add multiple items to inventory
     await page.getByTestId('nav-inventory').click();
 
     // Add first item

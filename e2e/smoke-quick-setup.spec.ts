@@ -412,6 +412,8 @@ async function testDataManagementQuickSetup(page: Page) {
   await page.waitForLoadState('networkidle');
   const shoppingListButton = page.getByTestId('quick-export-shopping-list');
   if (await shoppingListButton.isVisible().catch(() => false)) {
+    // Handle potential "no items need restocking" alert
+    page.once('dialog', (dialog) => dialog.accept());
     await shoppingListButton.click();
     await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
   }

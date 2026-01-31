@@ -92,7 +92,7 @@ export function SideMenu({
   };
 
   // Track item index across groups for keyboard navigation
-  let itemIndex = showAllOption ? 1 : 0;
+  let itemIndex = 0;
 
   const renderMenuItem = (item: SideMenuItem, index: number): ReactNode => {
     const isActive = item.id === selectedId;
@@ -119,14 +119,23 @@ export function SideMenu({
   const renderGroupedMenu = (): ReactNode => {
     if (!groups) return null;
 
-    return groups.map((group, groupIndex) => {
+    const elements: ReactNode[] = [];
+
+    // Render showAllOption first if provided
+    if (showAllOption) {
+      elements.push(renderMenuItem(showAllOption, itemIndex));
+      itemIndex++;
+    }
+
+    // Render groups
+    groups.forEach((group, groupIndex) => {
       const groupItems = group.items.map((item) => {
         const element = renderMenuItem(item, itemIndex);
         itemIndex++;
         return element;
       });
 
-      return (
+      elements.push(
         <li key={group.id} role="none" className={styles.group}>
           <span
             className={styles.groupLabel}
@@ -145,9 +154,11 @@ export function SideMenu({
           {groupIndex < groups.length - 1 && (
             <div className={styles.groupDivider} aria-hidden="true" />
           )}
-        </li>
+        </li>,
       );
     });
+
+    return elements;
   };
 
   const renderFlatMenu = (): ReactNode => {
