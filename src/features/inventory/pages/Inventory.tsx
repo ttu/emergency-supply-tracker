@@ -370,11 +370,16 @@ export function Inventory({
     [handleCategoryChange],
   );
 
+  // Use callback ref to get the hamburger container element (triggers re-render when set)
+  const [hamburgerContainer, setHamburgerContainer] =
+    useState<HTMLDivElement | null>(null);
+
   return (
     <div className={styles.container} data-testid="page-inventory">
       <header className={styles.header}>
         <h1>{t('navigation.inventory')}</h1>
         <div className={styles.headerActions}>
+          <div ref={setHamburgerContainer} />
           <Button
             variant="primary"
             onClick={() => setShowTemplateModal(true)}
@@ -392,6 +397,7 @@ export function Inventory({
           onSelect={handleSideMenuCategoryChange}
           ariaLabel={t('accessibility.categoryNavigation')}
           showAllOption={showAllOption}
+          hamburgerContainer={hamburgerContainer}
         />
 
         <div className={styles.main}>
