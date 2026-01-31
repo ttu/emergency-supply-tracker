@@ -12,9 +12,10 @@ if [ -z "$1" ]; then
 fi
 
 BRANCH_NAME="$1"
-WORKTREE_DIR="../est-${BRANCH_NAME}"
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+WORKTREE_DIR="${REPO_DIR}/.worktrees/${BRANCH_NAME}"
 
+mkdir -p "${REPO_DIR}/.worktrees"
 echo "Creating worktree at ${WORKTREE_DIR} with branch ${BRANCH_NAME}..."
 git worktree add "${WORKTREE_DIR}" -b "${BRANCH_NAME}"
 
