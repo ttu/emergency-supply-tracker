@@ -107,25 +107,40 @@ Code:
 ## Commands
 
 ```bash
-npm run dev              # dev server
-npm run storybook        # Storybook
-npm run test             # Vitest
-npm run test:watch       # watch
-npm run test:coverage    # coverage
-npm run test:e2e         # Playwright
-npm run test:e2e:ui      # Playwright UI
-npm run test:storybook   # Storybook tests
-npm run test:a11y        # a11y
-npm run test:mutation    # mutation
-npm run test:all         # all tests
-npm run type-check       # TS
-npm run lint / lint:fix  # ESLint
-npm run format / format:check  # Prettier
-npm run validate         # format + type + lint + test + build
-npm run validate:all     # + storybook + e2e
-npm run validate:i18n    # i18n keys
-npm run build / preview  # build
-npm run build-storybook  # Storybook build
+npm run dev                        # dev server
+npm run build                      # production build
+npm run preview                    # preview build
+npm run lint                       # ESLint
+npm run lint:fix                   # ESLint fix
+npm run format                     # Prettier write
+npm run format:check               # Prettier check
+npm run type-check                 # TS (source)
+npm run type-check:test            # TS (test config)
+npm run type-check:stories          # TS (storybook config)
+npm run type-check:all             # TS (all configs)
+npm run test                       # Vitest unit
+npm run test:watch                 # Vitest watch
+npm run test:coverage              # Vitest coverage
+npm run test:mutation               # Stryker mutation
+npm run test:mutation:ci           # Stryker mutation CI
+npm run test:e2e                   # Playwright (chromium)
+npm run test:e2e:all               # Playwright (all browsers)
+npm run test:e2e:ui                 # Playwright UI
+npm run test:e2e:headed             # Playwright headed
+npm run test:e2e:smoke              # Playwright smoke (quick-setup + manual-entry)
+npm run test:e2e:smoke:quick-setup # Playwright smoke quick-setup
+npm run test:e2e:smoke:manual-entry # Playwright smoke manual-entry
+npm run test:e2e:smoke:deployed    # Playwright smoke deployed
+npm run test:a11y                   # Playwright a11y
+npm run test:storybook              # Vitest storybook
+npm run test:all                    # Vitest all projects
+npm run validate                    # format + type + lint + test + build
+npm run validate:all                # validate + storybook + e2e
+npm run validate:i18n               # i18n keys
+npm run generate:og-image           # generate OG image
+npm run prepare                     # husky
+npm run storybook                   # Storybook dev
+npm run build-storybook             # Storybook build
 ```
 
 **Before commit:** `npm run validate:all` (format + type + lint + test + build + storybook + e2e).
