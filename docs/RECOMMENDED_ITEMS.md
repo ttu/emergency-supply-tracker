@@ -4,7 +4,7 @@
 > **Last Updated:** 2026-01-15
 > **Source of Truth:** `src/features/templates/data.ts`
 
-This document lists all 81 recommended emergency supply items based on Finnish emergency preparedness guidelines (72tuntia.fi).
+This document lists all 82 recommended emergency supply items based on Finnish emergency preparedness guidelines (72tuntia.fi).
 
 ---
 
@@ -193,7 +193,7 @@ Pet supplies for emergency preparedness. These items only appear when household 
 | Category             | Item Count |
 | -------------------- | ---------- |
 | Water & Beverages    | 3          |
-| Food                 | 17         |
+| Food                 | 18         |
 | Cooking & Heat       | 6          |
 | Light & Power        | 10         |
 | Communication & Info | 2          |
@@ -202,7 +202,7 @@ Pet supplies for emergency preparedness. These items only appear when household 
 | Tools & Supplies     | 11         |
 | Cash & Documents     | 3          |
 | Pets                 | 10         |
-| **Total**            | **81**     |
+| **Total**            | **82**     |
 
 ---
 
