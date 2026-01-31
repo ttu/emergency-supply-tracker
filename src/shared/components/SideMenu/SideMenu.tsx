@@ -1,4 +1,5 @@
 import { useCallback, useId, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useKeyboardNavigation } from '@/shared/hooks/useKeyboardNavigation';
 import { SideMenuDrawer } from './SideMenuDrawer';
@@ -8,6 +9,12 @@ export interface SideMenuItem {
   id: string;
   label: string;
   icon?: string;
+}
+
+export interface HamburgerButtonProps {
+  readonly onClick: () => void;
+  readonly isOpen: boolean;
+  readonly drawerId: string;
 }
 
 export interface SideMenuProps {
@@ -20,6 +27,12 @@ export interface SideMenuProps {
     readonly label: string;
     readonly icon?: string;
   };
+  /** Render prop for custom hamburger button placement. If provided, the default hamburger is not rendered. */
+  readonly renderHamburgerButton?: (
+    props: HamburgerButtonProps,
+  ) => React.ReactNode;
+  /** Container element to render the hamburger button into via portal. */
+  readonly hamburgerContainer?: HTMLElement | null;
 }
 
 export function SideMenu({
@@ -28,6 +41,8 @@ export function SideMenu({
   onSelect,
   ariaLabel,
   showAllOption,
+  renderHamburgerButton,
+  hamburgerContainer,
 }: Readonly<SideMenuProps>) {
   const { t } = useTranslation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -101,24 +116,36 @@ export function SideMenu({
     </nav>
   );
 
+  const hamburgerButton = renderHamburgerButton ? (
+    renderHamburgerButton({
+      onClick: () => setIsDrawerOpen(true),
+      isOpen: isDrawerOpen,
+      drawerId,
+    })
+  ) : (
+    <button
+      type="button"
+      className={styles.hamburger}
+      onClick={() => setIsDrawerOpen(true)}
+      aria-label={t('navigation.sideMenu.openMenu')}
+      aria-expanded={isDrawerOpen}
+      aria-controls={drawerId}
+      data-testid="sidemenu-hamburger"
+    >
+      <span className={styles.hamburgerIcon}>
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+  );
+
   return (
     <>
-      {/* Mobile hamburger button */}
-      <button
-        type="button"
-        className={styles.hamburger}
-        onClick={() => setIsDrawerOpen(true)}
-        aria-label={t('navigation.sideMenu.openMenu')}
-        aria-expanded={isDrawerOpen}
-        aria-controls={drawerId}
-        data-testid="sidemenu-hamburger"
-      >
-        <span className={styles.hamburgerIcon}>
-          <span></span>
-          <span></span>
-          <span></span>
-        </span>
-      </button>
+      {/* Mobile hamburger button - render in portal if container provided, otherwise inline */}
+      {hamburgerContainer
+        ? createPortal(hamburgerButton, hamburgerContainer)
+        : hamburgerButton}
 
       {/* Desktop sidebar */}
       <aside className={styles.sidebar} data-testid="sidemenu-sidebar">

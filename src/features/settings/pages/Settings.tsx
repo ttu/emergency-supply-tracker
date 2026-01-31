@@ -1,4 +1,5 @@
-import { ReactNode, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiddenAlerts } from '@/features/alerts';
 import {
@@ -61,6 +62,10 @@ export function Settings() {
   const { t } = useTranslation();
   const [selectedSection, setSelectedSection] =
     useState<SettingsSection>('appearance');
+
+  // Use callback ref to get the hamburger container element (triggers re-render when set)
+  const [hamburgerContainer, setHamburgerContainer] =
+    useState<HTMLDivElement | null>(null);
 
   const menuItems: SideMenuItem[] = [
     { id: 'appearance', label: t('settings.navigation.sections.appearance') },
@@ -262,6 +267,7 @@ export function Settings() {
     <div className={styles.container} data-testid="page-settings">
       <header className={styles.header}>
         <h1>{t('navigation.settings')}</h1>
+        <div className={styles.headerActions} ref={setHamburgerContainer} />
       </header>
 
       <div className={styles.layout}>
@@ -270,6 +276,7 @@ export function Settings() {
           selectedId={selectedSection}
           onSelect={(id) => setSelectedSection(id as SettingsSection)}
           ariaLabel={t('settings.navigation.menuLabel')}
+          hamburgerContainer={hamburgerContainer}
         />
 
         <div className={styles.content}>{renderSection()}</div>

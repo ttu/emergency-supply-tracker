@@ -323,4 +323,63 @@ describe('SideMenu', () => {
     const list = within(sidebar).getByRole('menu');
     expect(list).toHaveAttribute('aria-orientation', 'vertical');
   });
+
+  it('renders custom hamburger button when renderHamburgerButton is provided', () => {
+    const onSelect = vi.fn();
+    const renderHamburgerButton = vi.fn(({ onClick }) => (
+      <button data-testid="custom-hamburger" onClick={onClick}>
+        Custom Menu
+      </button>
+    ));
+
+    render(
+      <SideMenu
+        items={mockItems}
+        selectedId="item1"
+        onSelect={onSelect}
+        ariaLabel="Test Menu"
+        renderHamburgerButton={renderHamburgerButton}
+      />,
+    );
+
+    // Should render custom hamburger instead of default
+    expect(screen.getByTestId('custom-hamburger')).toBeInTheDocument();
+    expect(screen.queryByTestId('sidemenu-hamburger')).not.toBeInTheDocument();
+
+    // Custom hamburger should open drawer when clicked
+    fireEvent.click(screen.getByTestId('custom-hamburger'));
+    expect(screen.getByTestId('sidemenu-drawer')).toBeInTheDocument();
+  });
+
+  it('renders hamburger button in portal when hamburgerContainer is provided', () => {
+    const onSelect = vi.fn();
+
+    // Create a container element for the portal
+    const container = document.createElement('div');
+    container.setAttribute('data-testid', 'hamburger-portal-target');
+    document.body.appendChild(container);
+
+    render(
+      <SideMenu
+        items={mockItems}
+        selectedId="item1"
+        onSelect={onSelect}
+        ariaLabel="Test Menu"
+        hamburgerContainer={container}
+      />,
+    );
+
+    // Hamburger should be rendered inside the portal container
+    const portalTarget = screen.getByTestId('hamburger-portal-target');
+    expect(
+      within(portalTarget).getByTestId('sidemenu-hamburger'),
+    ).toBeInTheDocument();
+
+    // Opening drawer should still work
+    fireEvent.click(within(portalTarget).getByTestId('sidemenu-hamburger'));
+    expect(screen.getByTestId('sidemenu-drawer')).toBeInTheDocument();
+
+    // Cleanup
+    document.body.removeChild(container);
+  });
 });

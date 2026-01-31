@@ -8,6 +8,9 @@
 }
 
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: var(--spacing-md);
 }
 
@@ -15,6 +18,10 @@
   margin: 0;
   font-size: 2rem;
   color: var(--color-text);
+}
+
+.headerActions {
+  display: none;
 }
 
 .layout {
@@ -108,14 +115,12 @@
     padding: var(--spacing-md);
   }
 
-  .header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-  }
-
   .header h1 {
     font-size: 1.5rem;
+  }
+
+  .headerActions {
+    display: block;
   }
 
   .layout {
