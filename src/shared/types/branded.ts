@@ -177,20 +177,25 @@ export type Quantity = number & { readonly __brand: 'Quantity' };
 export type Percentage = number & { readonly __brand: 'Percentage' };
 
 /**
- * Creates a Quantity from a number, validating it is non-negative.
+ * Creates a Quantity from a number, validating it is a finite non-negative number.
  *
- * @param value - A non-negative number
+ * @param value - A finite non-negative number
  * @returns Quantity branded type
- * @throws Error if the value is negative or NaN
+ * @throws Error if the value is negative, NaN, or Infinity
  */
 export function createQuantity(value: number): Quantity {
   if (Number.isNaN(value)) {
-    throw new Error(
+    throw new TypeError(
       `Invalid quantity: ${value}. Quantity must be a valid number.`,
     );
   }
+  if (!Number.isFinite(value)) {
+    throw new TypeError(
+      `Invalid quantity: ${value}. Quantity must be a finite number.`,
+    );
+  }
   if (value < 0) {
-    throw new Error(
+    throw new TypeError(
       `Invalid quantity: ${value}. Quantity must be non-negative.`,
     );
   }
@@ -206,12 +211,12 @@ export function createQuantity(value: number): Quantity {
  */
 export function createPercentage(value: number): Percentage {
   if (Number.isNaN(value)) {
-    throw new Error(
+    throw new TypeError(
       `Invalid percentage: ${value}. Percentage must be a valid number.`,
     );
   }
   if (value < 0 || value > 100) {
-    throw new Error(
+    throw new TypeError(
       `Invalid percentage: ${value}. Percentage must be between 0 and 100.`,
     );
   }
@@ -219,10 +224,10 @@ export function createPercentage(value: number): Percentage {
 }
 
 /**
- * Type guard to check if a value is a valid Quantity (non-negative number).
+ * Type guard to check if a value is a valid Quantity (finite non-negative number).
  */
 export function isQuantity(value: unknown): value is Quantity {
-  return typeof value === 'number' && !Number.isNaN(value) && value >= 0;
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0;
 }
 
 /**
