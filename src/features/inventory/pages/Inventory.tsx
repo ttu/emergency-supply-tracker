@@ -378,17 +378,21 @@ export function Inventory({
     <div className={styles.container} data-testid="page-inventory">
       <header className={styles.header}>
         <h1>{t('navigation.inventory')}</h1>
-        <div className={styles.headerActions}>
-          <div ref={setHamburgerContainer} />
-          <Button
-            variant="primary"
-            onClick={() => setShowTemplateModal(true)}
-            data-testid="add-item-button"
-          >
-            {t('inventory.addFromTemplate')}
-          </Button>
-        </div>
+        <div
+          className={styles.hamburgerContainer}
+          ref={setHamburgerContainer}
+        />
       </header>
+
+      <div className={styles.addItemRow}>
+        <Button
+          variant="primary"
+          onClick={() => setShowTemplateModal(true)}
+          data-testid="add-item-button"
+        >
+          {t('inventory.addFromTemplate')}
+        </Button>
+      </div>
 
       <div className={styles.layout}>
         <SideMenu

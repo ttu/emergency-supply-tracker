@@ -267,7 +267,7 @@ export function Settings() {
     <div className={styles.container} data-testid="page-settings">
       <header className={styles.header}>
         <h1>{t('navigation.settings')}</h1>
-        <div ref={setHamburgerContainer} />
+        <div className={styles.headerActions} ref={setHamburgerContainer} />
       </header>
 
       <div className={styles.layout}>

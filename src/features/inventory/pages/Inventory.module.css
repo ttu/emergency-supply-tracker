@@ -20,9 +20,13 @@
   color: var(--color-text);
 }
 
-.headerActions {
+.hamburgerContainer {
+  display: none;
+}
+
+.addItemRow {
   display: flex;
-  gap: var(--spacing-sm);
+  justify-content: flex-end;
 }
 
 .layout {
@@ -74,18 +78,12 @@
     padding: var(--spacing-md);
   }
 
-  .header {
-    flex-direction: row;
-    align-items: center;
-  }
-
   .header h1 {
     font-size: 1.5rem;
-    flex: 1;
   }
 
-  .headerActions {
-    flex-direction: row;
+  .hamburgerContainer {
+    display: block;
   }
 
   .layout {
