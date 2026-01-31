@@ -293,19 +293,20 @@ describe('branded types', () => {
 
     it('throws error for negative infinity', () => {
       expect(() => createQuantity(-Infinity)).toThrow(
-        'Invalid quantity: -Infinity. Quantity must be non-negative.',
+        'Invalid quantity: -Infinity. Quantity must be a finite number.',
       );
     });
 
     it('throws error for NaN', () => {
-      expect(() => createQuantity(NaN)).toThrow(
+      expect(() => createQuantity(Number.NaN)).toThrow(
         'Invalid quantity: NaN. Quantity must be a valid number.',
       );
     });
 
-    it('accepts positive infinity', () => {
-      const qty = createQuantity(Infinity);
-      expect(qty).toBe(Infinity);
+    it('throws error for positive infinity', () => {
+      expect(() => createQuantity(Infinity)).toThrow(
+        'Invalid quantity: Infinity. Quantity must be a finite number.',
+      );
     });
   });
 
@@ -332,7 +333,7 @@ describe('branded types', () => {
     });
 
     it('returns false for NaN', () => {
-      expect(isQuantity(NaN)).toBe(false);
+      expect(isQuantity(Number.NaN)).toBe(false);
     });
 
     it('returns false for non-number values', () => {
@@ -343,8 +344,9 @@ describe('branded types', () => {
       expect(isQuantity([])).toBe(false);
     });
 
-    it('returns true for positive infinity', () => {
-      expect(isQuantity(Infinity)).toBe(true);
+    it('returns false for infinity', () => {
+      expect(isQuantity(Infinity)).toBe(false);
+      expect(isQuantity(-Infinity)).toBe(false);
     });
   });
 
@@ -397,7 +399,7 @@ describe('branded types', () => {
     });
 
     it('throws error for NaN', () => {
-      expect(() => createPercentage(NaN)).toThrow(
+      expect(() => createPercentage(Number.NaN)).toThrow(
         'Invalid percentage: NaN. Percentage must be a valid number.',
       );
     });
@@ -445,7 +447,7 @@ describe('branded types', () => {
     });
 
     it('returns false for NaN', () => {
-      expect(isPercentage(NaN)).toBe(false);
+      expect(isPercentage(Number.NaN)).toBe(false);
     });
 
     it('returns false for infinity', () => {
