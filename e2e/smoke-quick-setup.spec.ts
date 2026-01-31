@@ -391,6 +391,7 @@ async function changeHouseholdToSinglePerson(page: Page) {
 }
 
 async function testDataManagementQuickSetup(page: Page) {
+  // Export data (on Settings page)
   const exportButton = page.getByTestId('export-data-button');
   if (await exportButton.isVisible().catch(() => false)) {
     await exportButton.click();
@@ -406,15 +407,18 @@ async function testDataManagementQuickSetup(page: Page) {
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
   }
 
-  const shoppingListButton = page.getByTestId('export-shopping-list-button');
+  // Export shopping list (on Dashboard Quick Actions)
+  await page.getByTestId('nav-dashboard').click();
+  await page.waitForLoadState('networkidle');
+  const shoppingListButton = page.getByTestId('quick-export-shopping-list');
   if (await shoppingListButton.isVisible().catch(() => false)) {
-    const isEnabled = await shoppingListButton.isEnabled();
-    if (isEnabled) {
-      await shoppingListButton.click();
-      await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
-    }
+    await shoppingListButton.click();
+    await page.waitForTimeout(TIMEOUTS.LONG_DELAY);
   }
 
+  // Export recommendations (back on Settings page)
+  await page.getByTestId('nav-settings').click();
+  await page.waitForLoadState('networkidle');
   const exportRecsButton = page.getByTestId('export-recommendations-button');
   if (await exportRecsButton.isVisible().catch(() => false)) {
     await exportRecsButton.click();

@@ -1,4 +1,4 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import { test, expect } from './fixtures';
 
 test.describe('Shopping List Export Formats', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -20,16 +20,12 @@ test.describe('Shopping List Export Formats', () => {
     await page.fill('input[name="quantity"]', '0');
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    // Navigate to Dashboard where the shopping list export button is
+    await page.getByTestId('nav-dashboard').click();
 
-    // Navigate to Data Management section
-    await navigateToSettingsSection(page, 'dataManagement');
-
-    // Find Export Shopping List button
-    const exportButton = page.getByTestId('export-shopping-list-button');
+    // Find Export Shopping List button in Quick Actions
+    const exportButton = page.getByTestId('quick-export-shopping-list');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
-    await expect(exportButton).toBeEnabled();
 
     // Set up download listener
     const downloadPromise = page
@@ -96,33 +92,16 @@ test.describe('Shopping List Export Formats', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to Data Management section
-    await navigateToSettingsSection(page, 'dataManagement');
+    // Navigate to Dashboard where the shopping list export button is
+    await page.getByTestId('nav-dashboard').click();
     await page.waitForLoadState('networkidle');
 
-    // Verify description shows item count
-    // The description should mention the number of items needing restock
-    // Look for text containing numbers and "item" or "items"
-    const description = page.locator(String.raw`text=/\d+.*item/i`);
-    const descriptionVisible = await description.isVisible().catch(() => false);
-
-    // If description not visible, check if export button shows item count
-    if (descriptionVisible === false) {
-      // The export button might be disabled if no items need restocking
-      // or the count might be in a different format
-      const exportButton = page.getByTestId('export-shopping-list-button');
-      await expect(exportButton).toBeVisible({ timeout: 10000 });
-    } else {
-      await expect(description).toBeVisible();
-    }
+    // The export button should be visible on Dashboard
+    const exportButton = page.getByTestId('quick-export-shopping-list');
+    await expect(exportButton).toBeVisible({ timeout: 10000 });
   });
 
-  test('should disable export button when no items need restocking', async ({
-    page,
-  }) => {
+  test('should show alert when no items need restocking', async ({ page }) => {
     // Ensure we have items but all are fully stocked
     await page.getByTestId('nav-inventory').click();
     await page.getByTestId('add-item-button').click();
@@ -138,18 +117,26 @@ test.describe('Shopping List Export Formats', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    // Navigate to Dashboard where the shopping list export button is
+    await page.getByTestId('nav-dashboard').click();
 
-    // Navigate to Data Management section
-    await navigateToSettingsSection(page, 'dataManagement');
+    // Set up dialog handler to catch the "no items need restocking" alert
+    const dialogs: string[] = [];
+    page.on('dialog', async (dialog) => {
+      dialogs.push(dialog.message());
+      await dialog.accept();
+    });
 
-    // Export button should be disabled if no items need restocking
-    const exportButton = page.getByTestId('export-shopping-list-button');
+    // Export button should be visible
+    const exportButton = page.getByTestId('quick-export-shopping-list');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
 
-    // Assert that the export button is disabled when no items need restocking
-    await expect(exportButton).toBeDisabled();
+    // Click export button - should show alert since no items need restocking
+    await exportButton.click();
+    await page.waitForTimeout(500);
+
+    // Verify the "no items need restocking" alert was shown
+    expect(dialogs.some((msg) => msg.includes('restock'))).toBe(true);
   });
 
   test('should include only items needing restocking in export', async ({
@@ -185,19 +172,39 @@ test.describe('Shopping List Export Formats', () => {
     await page.fill('input[name="quantity"]', '20');
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to Data Management section
-    await navigateToSettingsSection(page, 'dataManagement');
+    // Navigate to Dashboard where the shopping list export button is
+    await page.getByTestId('nav-dashboard').click();
 
     // Export shopping list
-    const exportButton = page.getByTestId('export-shopping-list-button');
+    const exportButton = page.getByTestId('quick-export-shopping-list');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
 
-    // The export should only include items needing restocking
-    // This is verified by the export functionality working correctly
-    // Detailed content verification is done in unit tests
-    await expect(exportButton).toBeEnabled();
+    // Set up download listener
+    const downloadPromise = page
+      .waitForEvent('download', { timeout: 5000 })
+      .catch(() => null);
+
+    // Click export button
+    await exportButton.click();
+
+    // Wait for download (if browser supports it)
+    const download = await downloadPromise;
+
+    if (download) {
+      // Verify file content (read the downloaded file)
+      const path = await download.path();
+      if (path) {
+        const fs = await import('node:fs/promises');
+        const content = await fs.readFile(path, 'utf-8');
+
+        // Verify only the item needing restocking (rice) is included, not the fully stocked item
+        expect(content).toMatch(/rice/i);
+        // Canned fish has 20 units, more than recommended, so it should NOT be in the list
+        expect(content).not.toMatch(/canned fish/i);
+      }
+    } else {
+      // If download event doesn't fire, verify button works
+      await expect(exportButton).toBeVisible();
+    }
   });
 });
