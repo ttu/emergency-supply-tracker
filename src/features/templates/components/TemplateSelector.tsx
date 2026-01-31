@@ -111,7 +111,7 @@ export const TemplateSelector = ({
         onClick={onSelectCustom}
         data-testid="custom-item-button"
       >
-        ➕ {t('itemForm.customItem')}
+        + {t('itemForm.customItem')}
       </button>
 
       <div className={styles.templateList}>

@@ -12,30 +12,33 @@
 }
 
 .customItemButton {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: transparent;
-  color: var(--color-text);
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: 0.8125rem;
-  font-weight: 400;
+  padding: var(--spacing-md);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
-  align-self: flex-start;
+  gap: var(--spacing-sm);
+  width: 100%;
+  box-shadow: var(--shadow-sm);
 }
 
 .customItemButton:hover {
-  color: var(--color-text);
-  border-color: var(--color-text-secondary);
-  background: var(--color-background-secondary);
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .customItemButton:active {
-  transform: scale(0.98);
+  background: var(--color-primary-active);
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
 }
 
 .templateList {
@@ -44,7 +47,9 @@
   gap: var(--spacing-sm);
   overflow-y: auto;
   max-height: 50vh;
-  padding-right: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  margin: calc(-1 * var(--spacing-xs));
+  margin-bottom: 0;
 }
 
 .templateList::-webkit-scrollbar {

@@ -111,7 +111,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
             onClick={handleAddItems}
             data-testid="quick-add-items"
           >
-            ➕ {t('dashboard.addItems')}
+            + {t('dashboard.addItems')}
           </Button>
           <Button
             variant="secondary"
