@@ -86,6 +86,13 @@
   color: var(--color-text);
 }
 
+.tagline {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
 .version {
   margin: 0;
   color: var(--color-text-secondary);

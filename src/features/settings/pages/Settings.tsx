@@ -228,10 +228,11 @@ export function Settings() {
           >
             <div className={styles.about}>
               <p className={styles.appName}>{t('app.title')}</p>
+              <p className={styles.tagline}>{t('app.tagline')}</p>
               <p className={styles.version}>
                 {t('settings.about.version')}: {APP_VERSION}
               </p>
-              <p className={styles.description}>{t('app.tagline')}</p>
+              <p className={styles.description}>{t('help.contactText')}</p>
               <a
                 href="https://github.com/ttu/emergency-supply-tracker"
                 target="_blank"
