@@ -163,6 +163,7 @@
         "customCategories": "Custom Categories",
         "overriddenRecommendations": "Overridden Recommendations",
         "dataManagement": "Data Management",
+        "debugLog": "Debug Log",
         "about": "About",
         "dangerZone": "Danger Zone",
         "recommendationKits": "Recommendation Kits"

@@ -163,6 +163,7 @@
         "customCategories": "Omat kategoriat",
         "overriddenRecommendations": "Ohitetut suositukset",
         "dataManagement": "Tietojen hallinta",
+        "debugLog": "Virheloki",
         "about": "Tietoja",
         "dangerZone": "Vaaravyöhyke",
         "recommendationKits": "Suosituspaketit"
