@@ -162,7 +162,7 @@ npm run build-storybook  # Storybook build
 4. Check test files for usage patterns
 5. Ask AI with specific context
 
-**Quick refs:** "How to structure a category component?" → ARCHITECTURE.md. "Recommended quantity calculation?" → DATA_SCHEMA.md. "LocalStorage persistence tests?" → TESTING_STRATEGY.md. "What are the 81 recommended items?" → RECOMMENDED_ITEMS.md. "What are the 81 recommended items?" → RECOMMENDED_ITEMS.md.
+**Quick refs:** "How to structure a category component?" → ARCHITECTURE.md. "Recommended quantity calculation?" → DATA_SCHEMA.md. "LocalStorage persistence tests?" → TESTING_STRATEGY.md. "What are the 81 recommended items?" → RECOMMENDED_ITEMS.md.
 
 ---
 

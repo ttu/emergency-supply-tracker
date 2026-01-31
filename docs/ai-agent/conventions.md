@@ -12,7 +12,7 @@ See [ARCHITECTURE.md](../ARCHITECTURE.md) for full structure. Summary:
 
 ## File Organization (Feature Slice)
 
-```
+```text
 src/
 ├── features/[feature]/
 │   ├── components/   [Component].tsx, .stories.tsx, .test.tsx, .module.css

@@ -4,7 +4,7 @@
 
 ## Commit Message Format
 
-```
+```text
 type: description
 
 - Detail 1
