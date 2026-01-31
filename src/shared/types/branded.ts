@@ -147,3 +147,98 @@ export function isDateOnly(value: unknown): value is DateOnly {
     date.getDate() === day
   );
 }
+
+/**
+ * Branded type for non-negative quantity values.
+ *
+ * Used for inventory item quantities, recommended quantities, and other
+ * count-based fields where negative values are invalid.
+ *
+ * @example
+ * ```typescript
+ * const qty = createQuantity(5);
+ * // qty is Quantity, not just number
+ * ```
+ */
+export type Quantity = number & { readonly __brand: 'Quantity' };
+
+/**
+ * Branded type for percentage values (0-100 inclusive).
+ *
+ * Used for fields like childrenRequirementPercentage where values
+ * must be within a valid percentage range.
+ *
+ * @example
+ * ```typescript
+ * const pct = createPercentage(75);
+ * // pct is Percentage, not just number
+ * ```
+ */
+export type Percentage = number & { readonly __brand: 'Percentage' };
+
+/**
+ * Creates a Quantity from a number, validating it is a finite non-negative number.
+ *
+ * @param value - A finite non-negative number
+ * @returns Quantity branded type
+ * @throws Error if the value is negative, NaN, or Infinity
+ */
+export function createQuantity(value: number): Quantity {
+  if (Number.isNaN(value)) {
+    throw new TypeError(
+      `Invalid quantity: ${value}. Quantity must be a valid number.`,
+    );
+  }
+  if (!Number.isFinite(value)) {
+    throw new TypeError(
+      `Invalid quantity: ${value}. Quantity must be a finite number.`,
+    );
+  }
+  if (value < 0) {
+    throw new TypeError(
+      `Invalid quantity: ${value}. Quantity must be non-negative.`,
+    );
+  }
+  return value as Quantity;
+}
+
+/**
+ * Creates a Percentage from a number, validating it is between 0 and 100.
+ *
+ * @param value - A number between 0 and 100 (inclusive)
+ * @returns Percentage branded type
+ * @throws Error if the value is outside the valid range or NaN
+ */
+export function createPercentage(value: number): Percentage {
+  if (Number.isNaN(value)) {
+    throw new TypeError(
+      `Invalid percentage: ${value}. Percentage must be a valid number.`,
+    );
+  }
+  if (value < 0 || value > 100) {
+    throw new TypeError(
+      `Invalid percentage: ${value}. Percentage must be between 0 and 100.`,
+    );
+  }
+  return value as Percentage;
+}
+
+/**
+ * Type guard to check if a value is a valid Quantity (finite non-negative number).
+ */
+export function isQuantity(value: unknown): value is Quantity {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0;
+}
+
+/**
+ * Type guard to check if a value is a valid Percentage (0-100 inclusive).
+ */
+export function isPercentage(value: unknown): value is Percentage {
+  return (
+    typeof value === 'number' &&
+    !Number.isNaN(value) &&
+    Number.isFinite(value) &&
+    value >= 0 &&
+    value <= 100
+  );
+}
