@@ -27,6 +27,7 @@ vi.mock('react-i18next', () => ({
       return translations[key] || key;
     },
   }),
+  withTranslation: () => (Component: unknown) => Component,
 }));
 
 describe('NutritionSettings', () => {

@@ -46,6 +46,7 @@ vi.mock('react-i18next', () => ({
       return key;
     },
   }),
+  withTranslation: () => (Component: unknown) => Component,
 }));
 
 const mockReactivateAlert = vi.fn();

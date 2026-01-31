@@ -560,7 +560,7 @@
     "faqTitle": "Frequently Asked Questions",
     "quickTipsTitle": "Quick Tips",
     "contactTitle": "Need More Help?",
-    "contactText": "If you have questions, found a bug, or have a new feature idea, please visit our GitHub repository.",
+    "contactText": "Report bugs, suggest features, leave feedback, or contribute—visit our GitHub repository to participate and help improve the app.",
     "githubLink": "Visit GitHub Repository",
     "gettingStarted": {
       "question": "How do I get started?",

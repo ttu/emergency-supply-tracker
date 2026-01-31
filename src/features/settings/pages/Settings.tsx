@@ -18,6 +18,7 @@ import {
   KitManagement,
   CategoriesSection,
 } from '@/features/settings';
+import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
@@ -227,17 +228,19 @@ export function Settings() {
           >
             <div className={styles.about}>
               <p className={styles.appName}>{t('app.title')}</p>
+              <p className={styles.tagline}>{t('app.tagline')}</p>
               <p className={styles.version}>
                 {t('settings.about.version')}: {APP_VERSION}
               </p>
-              <p className={styles.description}>{t('app.tagline')}</p>
+              <p className={styles.description}>{t('help.contactText')}</p>
               <a
                 href="https://github.com/ttu/emergency-supply-tracker"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.link}
               >
-                {t('settings.about.viewOnGitHub')}
+                <GitHubIcon className={styles.githubIcon} />
+                {t('help.githubLink')}
               </a>
             </div>
           </Section>

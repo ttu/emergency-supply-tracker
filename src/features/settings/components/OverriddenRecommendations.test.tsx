@@ -43,6 +43,7 @@ vi.mock('react-i18next', () => ({
       return translations[key] || key;
     },
   }),
+  withTranslation: () => (Component: unknown) => Component,
 }));
 
 const renderWithProviders = (component: React.ReactElement) => {

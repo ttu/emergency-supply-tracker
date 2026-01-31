@@ -4,6 +4,7 @@ export { Button } from './Button';
 export { Card } from './Card';
 export { DataErrorPage } from './DataErrorPage';
 export { ErrorBoundary } from './ErrorBoundary';
+export { GitHubIcon } from './GitHubIcon';
 export { Input } from './Input';
 export { LanguageSwitcher } from './LanguageSwitcher';
 export { Modal } from './Modal';
