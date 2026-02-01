@@ -74,6 +74,7 @@ describe('ClearDataButton', () => {
   });
 
   it('should clear data when both confirmations are accepted', () => {
+    vi.useFakeTimers();
     globalThis.confirm = vi.fn(() => true);
     const reloadSpy = vi.fn();
     globalThis.location.reload = reloadSpy;
@@ -88,10 +89,12 @@ describe('ClearDataButton', () => {
     expect(errorLoggerStorage.clearErrorLogs).toHaveBeenCalled();
     expect(analyticsStorage.clearAnalyticsData).toHaveBeenCalled();
     expect(mockShowNotification).toHaveBeenCalledWith(
-      'notifications.dataCleared',
+      'notifications.data.cleared',
       'success',
     );
-    // window.location.reload should be called
+    expect(reloadSpy).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(800);
     expect(reloadSpy).toHaveBeenCalled();
+    vi.useRealTimers();
   });
 });

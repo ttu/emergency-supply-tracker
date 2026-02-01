@@ -638,7 +638,9 @@
     "backupSuccess": "Data exported successfully",
     "importSuccess": "Data imported successfully",
     "importError": "Import failed",
-    "dataCleared": "All data cleared",
+    "data": {
+      "cleared": "All data cleared"
+    },
     "recommendationHidden": "Recommendation hidden",
     "recommendationShown": "Recommendation shown",
     "categoryHidden": "Category hidden",

@@ -638,7 +638,9 @@
     "backupSuccess": "Tiedot viety onnistuneesti",
     "importSuccess": "Tiedot tuotu onnistuneesti",
     "importError": "Tuonti epäonnistui",
-    "dataCleared": "Kaikki tiedot tyhjennetty",
+    "data": {
+      "cleared": "Kaikki tiedot tyhjennetty"
+    },
     "recommendationHidden": "Suositus piilotettu",
     "recommendationShown": "Suositus näytetty",
     "categoryHidden": "Kategoria piilotettu",

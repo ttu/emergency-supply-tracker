@@ -6,6 +6,8 @@ import { clearErrorLogs } from '@/shared/utils/errorLogger/storage';
 import { clearAnalyticsData } from '@/shared/utils/analytics/storage';
 import styles from './ClearDataButton.module.css';
 
+const RELOAD_DELAY_MS = 800;
+
 export function ClearDataButton() {
   const { t } = useTranslation();
   const { showNotification } = useNotification();
@@ -16,9 +18,9 @@ export function ClearDataButton() {
         clearAppData();
         clearErrorLogs();
         clearAnalyticsData();
-        showNotification(t('notifications.dataCleared'), 'success');
-        // Reload to reset to default state
-        window.location.reload();
+        showNotification(t('notifications.data.cleared'), 'success');
+        // Reload after a short delay so the notification is visible
+        window.setTimeout(() => window.location.reload(), RELOAD_DELAY_MS);
       }
     }
   };
