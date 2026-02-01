@@ -16,6 +16,7 @@ import {
   createProductTemplateId,
   createAlertId,
   createDateOnly,
+  createQuantity,
 } from '@/shared/types';
 import type { Alert } from '@/features/alerts/types';
 import { faker } from '@faker-js/faker';
@@ -91,7 +92,9 @@ export function createMockInventoryItem(
       faker.helpers.slugify(faker.commerce.productName()).toLowerCase(),
     ), // Template ID (kebab-case)
     categoryId: createCategoryId(faker.helpers.arrayElement(VALID_CATEGORIES)),
-    quantity: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
+    quantity: createQuantity(
+      faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
+    ),
     unit: faker.helpers.arrayElement(VALID_UNITS),
     expirationDate: faker.helpers.maybe(
       () => createDateOnly(faker.date.future().toISOString().split('T')[0]),
@@ -182,7 +185,9 @@ export function createMockRecommendedItem(
     id: createProductTemplateId(faker.string.alphanumeric(10)),
     i18nKey: `products.${faker.string.alphanumeric(10).toLowerCase()}`,
     category: faker.helpers.arrayElement(VALID_CATEGORIES),
-    baseQuantity: faker.number.float({ min: 0.1, max: 10, fractionDigits: 2 }),
+    baseQuantity: createQuantity(
+      faker.number.float({ min: 0.1, max: 10, fractionDigits: 2 }),
+    ),
     unit: faker.helpers.arrayElement(VALID_UNITS),
     scaleWithPeople: faker.datatype.boolean(),
     scaleWithDays: faker.datatype.boolean(),

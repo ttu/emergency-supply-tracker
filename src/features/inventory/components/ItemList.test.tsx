@@ -7,6 +7,7 @@ import {
   createCategoryId,
   createProductTemplateId,
   createDateOnly,
+  createQuantity,
 } from '@/shared/types';
 
 // Mock ItemCard component
@@ -39,7 +40,7 @@ describe('ItemList', () => {
       name: 'Item 1',
       itemType: createProductTemplateId('bottled-water'),
       categoryId: createCategoryId('water-beverages'),
-      quantity: 10,
+      quantity: createQuantity(10),
       unit: 'liters',
 
       neverExpires: false,
@@ -52,7 +53,7 @@ describe('ItemList', () => {
       name: 'Item 2',
       itemType: createProductTemplateId('canned-food'),
       categoryId: createCategoryId('food'),
-      quantity: 5,
+      quantity: createQuantity(5),
       unit: 'cans',
 
       neverExpires: true,

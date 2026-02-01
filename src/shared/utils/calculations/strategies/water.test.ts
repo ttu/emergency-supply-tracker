@@ -9,7 +9,11 @@ import {
   createMockHousehold,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
-import { createCategoryId, createProductTemplateId } from '@/shared/types';
+import {
+  createCategoryId,
+  createProductTemplateId,
+  createQuantity,
+} from '@/shared/types';
 import type { RecommendedItemDefinition } from '@/shared/types';
 
 describe('WaterCategoryStrategy', () => {
@@ -55,7 +59,7 @@ describe('WaterCategoryStrategy', () => {
         id: createProductTemplateId('bottled-water'),
         i18nKey: 'products.bottled-water',
         category: 'water-beverages',
-        baseQuantity: 1, // This should be ignored
+        baseQuantity: createQuantity(1), // This should be ignored
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -74,7 +78,7 @@ describe('WaterCategoryStrategy', () => {
         id: createProductTemplateId('sports-drink'),
         i18nKey: 'products.sports-drink',
         category: 'water-beverages',
-        baseQuantity: 2,
+        baseQuantity: createQuantity(2),
         unit: 'bottles',
         scaleWithPeople: true,
         scaleWithDays: false,
@@ -96,7 +100,7 @@ describe('WaterCategoryStrategy', () => {
           createMockInventoryItem({
             categoryId: createCategoryId('food'),
             itemType: createProductTemplateId('instant-noodles'),
-            quantity: 5,
+            quantity: createQuantity(5),
             requiresWaterLiters: 0.5, // 0.5L per unit
           }),
         ],
@@ -106,7 +110,7 @@ describe('WaterCategoryStrategy', () => {
         id: createProductTemplateId('bottled-water'),
         i18nKey: 'products.bottled-water',
         category: 'water-beverages',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -132,7 +136,7 @@ describe('WaterCategoryStrategy', () => {
         id: createProductTemplateId('bottled-water'),
         i18nKey: 'products.bottled-water',
         category: 'water-beverages',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -161,15 +165,15 @@ describe('WaterCategoryStrategy', () => {
 
     it('should sum quantities of matching items', () => {
       const matchingItems = [
-        createMockInventoryItem({ quantity: 10 }),
-        createMockInventoryItem({ quantity: 5 }),
+        createMockInventoryItem({ quantity: createQuantity(10) }),
+        createMockInventoryItem({ quantity: createQuantity(5) }),
       ];
 
       const recItem: RecommendedItemDefinition = {
         id: createProductTemplateId('bottled-water'),
         i18nKey: 'products.bottled-water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -192,7 +196,7 @@ describe('WaterCategoryStrategy', () => {
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
           itemType: createProductTemplateId('instant-rice'),
-          quantity: 4,
+          quantity: createQuantity(4),
           requiresWaterLiters: 0.25,
         }),
       ],
@@ -216,7 +220,7 @@ describe('WaterCategoryStrategy', () => {
             id: createProductTemplateId('bottled-water'),
             i18nKey: 'products.bottled-water',
             category: 'water-beverages',
-            baseQuantity: 3,
+            baseQuantity: createQuantity(3),
             unit: 'liters',
             scaleWithPeople: true,
             scaleWithDays: true,
@@ -246,7 +250,7 @@ describe('WaterCategoryStrategy', () => {
             id: createProductTemplateId('bottled-water'),
             i18nKey: 'products.bottled-water',
             category: 'water-beverages',
-            baseQuantity: 3,
+            baseQuantity: createQuantity(3),
             unit: 'liters',
             scaleWithPeople: true,
             scaleWithDays: true,

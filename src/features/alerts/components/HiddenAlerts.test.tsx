@@ -18,6 +18,7 @@ import {
   createCategoryId,
   createAlertId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 
 // Mock i18next
@@ -129,7 +130,7 @@ describe('HiddenAlerts', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       itemType: createProductTemplateId('bottled-water'),
     });
 
@@ -155,7 +156,7 @@ describe('HiddenAlerts', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       itemType: createProductTemplateId('bottled-water'),
     });
 
@@ -193,7 +194,7 @@ describe('HiddenAlerts', () => {
         id: createItemId('item-1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5, // 5L out of 9L needed
+        quantity: createQuantity(5), // 5L out of 9L needed
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: true,
@@ -202,7 +203,7 @@ describe('HiddenAlerts', () => {
         id: createItemId('item-2'),
         name: 'Milk',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0, // 0L out of 2L needed
+        quantity: createQuantity(0), // 0L out of 2L needed
         unit: 'liters',
         itemType: createProductTemplateId('long-life-milk'),
         neverExpires: true,
@@ -211,7 +212,7 @@ describe('HiddenAlerts', () => {
         id: createItemId('item-3'),
         name: 'Juice',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0, // 0L out of 2L needed
+        quantity: createQuantity(0), // 0L out of 2L needed
         unit: 'liters',
         itemType: createProductTemplateId('long-life-juice'),
         neverExpires: true,
@@ -239,7 +240,7 @@ describe('HiddenAlerts', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       itemType: createProductTemplateId('bottled-water'),
     });
 
@@ -261,7 +262,7 @@ describe('HiddenAlerts', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       itemType: createProductTemplateId('bottled-water'),
     });
 
@@ -283,14 +284,14 @@ describe('HiddenAlerts', () => {
         id: createItemId('item-1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0,
+        quantity: createQuantity(0),
         itemType: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         name: 'Food',
         categoryId: createCategoryId('food'),
-        quantity: 0,
+        quantity: createQuantity(0),
         itemType: createProductTemplateId('canned-soup'),
         // Food category uses calorie-based alerts, so with 0 calories it generates
         // category-critically-low-food, not category-out-of-stock-food
@@ -316,14 +317,14 @@ describe('HiddenAlerts', () => {
         id: createItemId('item-1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0,
+        quantity: createQuantity(0),
         itemType: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         name: 'Food',
         categoryId: createCategoryId('food'),
-        quantity: 0,
+        quantity: createQuantity(0),
         itemType: createProductTemplateId('canned-soup'),
         // Food category uses calorie-based alerts, so with 0 calories it generates
         // category-critically-low-food, not category-out-of-stock-food
@@ -351,7 +352,7 @@ describe('HiddenAlerts', () => {
       id: createItemId('item-1'),
       name: 'Bottled Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       itemType: createProductTemplateId('bottled-water'),
     });
 
@@ -371,7 +372,7 @@ describe('HiddenAlerts', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       itemType: createProductTemplateId('bottled-water'),
     });
 
@@ -391,7 +392,7 @@ describe('HiddenAlerts', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 10,
+      quantity: createQuantity(10),
       itemType: createProductTemplateId('bottled-water'),
       neverExpires: true,
     });
@@ -413,7 +414,7 @@ describe('HiddenAlerts', () => {
       id: createItemId('item-1'),
       name: 'Canned Food',
       categoryId: createCategoryId('food'),
-      quantity: 5,
+      quantity: createQuantity(5),
       itemType: createProductTemplateId('bottled-water'),
       neverExpires: false,
       expirationDate: createDateOnly(

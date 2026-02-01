@@ -10,6 +10,7 @@ import {
   createCategoryId,
   createProductTemplateId,
   createDateOnly,
+  createQuantity,
   isFoodCategory,
   isPowerCategory,
 } from '@/shared/types';
@@ -197,7 +198,7 @@ export const ItemForm = ({
       name: formData.name.trim(),
       itemType,
       categoryId: createCategoryId(formData.categoryId),
-      quantity: Number.parseFloat(formData.quantity),
+      quantity: createQuantity(Number.parseFloat(formData.quantity)),
       unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
       neverExpires: formData.neverExpires,
       expirationDate: (() => {

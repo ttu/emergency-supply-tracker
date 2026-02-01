@@ -34,7 +34,8 @@ export function calculateRecommendedQuantity(
   household: HouseholdConfig,
   childrenMultiplier: number = CHILDREN_REQUIREMENT_MULTIPLIER,
 ): number {
-  let qty = item.baseQuantity;
+  // Use regular number for calculations (Quantity is for storage/input boundaries)
+  let qty: number = item.baseQuantity;
 
   if (item.scaleWithPeople) {
     const peopleMultiplier =

@@ -6,7 +6,7 @@ import type {
   Unit,
   StandardCategoryId,
 } from '@/shared/types';
-import { VALID_UNITS, VALID_CATEGORIES } from '@/shared/types';
+import { VALID_UNITS, VALID_CATEGORIES, createQuantity } from '@/shared/types';
 import styles from './ItemEditor.module.css';
 
 // List of available built-in product translation keys
@@ -269,7 +269,7 @@ export function ItemEditor({
       const savedItem: ImportedRecommendedItem = {
         id: id as ImportedRecommendedItem['id'],
         category,
-        baseQuantity: Number.parseFloat(baseQuantity),
+        baseQuantity: createQuantity(Number.parseFloat(baseQuantity)),
         unit,
         scaleWithPeople,
         scaleWithDays,

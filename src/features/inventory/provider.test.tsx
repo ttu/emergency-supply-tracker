@@ -13,6 +13,7 @@ import {
   createCategoryId,
   createProductTemplateId,
   createAlertId,
+  createQuantity,
 } from '@/shared/types';
 
 // Mock localStorage utilities
@@ -89,7 +90,7 @@ function TestComponent({
             name: 'Test Item',
             itemType: 'custom',
             categoryId: createCategoryId('food'),
-            quantity: 5,
+            quantity: createQuantity(5),
             unit: 'pieces',
 
             neverExpires: true,
@@ -778,7 +779,7 @@ describe('Custom Category Management', () => {
               addItem({
                 name: 'Test Item',
                 categoryId: customCategories[0].id,
-                quantity: 1,
+                quantity: createQuantity(1),
                 unit: 'pieces',
                 itemType: 'custom',
               });

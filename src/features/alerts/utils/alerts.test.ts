@@ -13,6 +13,7 @@ import {
   createDateOnly,
   createProductTemplateId,
   createAlertId,
+  createQuantity,
 } from '@/shared/types';
 
 // Mock translation function
@@ -166,7 +167,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0,
+        quantity: createQuantity(0),
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -195,7 +196,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0,
+        quantity: createQuantity(0),
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -223,7 +224,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5,
+        quantity: createQuantity(5),
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -263,7 +264,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5, // 5L out of 13L total = 38.5% (warning threshold)
+        quantity: createQuantity(5), // 5L out of 13L total = 38.5% (warning threshold)
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -273,7 +274,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('2'),
         name: 'Milk',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0, // 0L out of 2L needed
+        quantity: createQuantity(0), // 0L out of 2L needed
         unit: 'liters',
         itemType: createProductTemplateId('long-life-milk'),
         neverExpires: true,
@@ -282,7 +283,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('3'),
         name: 'Juice',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0, // 0L out of 2L needed
+        quantity: createQuantity(0), // 0L out of 2L needed
         unit: 'liters',
         itemType: createProductTemplateId('long-life-juice'),
         neverExpires: true,
@@ -322,7 +323,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 30, // 30L water (more than 18L needed)
+        quantity: createQuantity(30), // 30L water (more than 18L needed)
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -332,7 +333,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('2'),
         name: 'Milk',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 10, // 10L milk (more than 4L needed)
+        quantity: createQuantity(10), // 10L milk (more than 4L needed)
         unit: 'liters',
         itemType: createProductTemplateId('long-life-milk'),
         neverExpires: false,
@@ -342,7 +343,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('3'),
         name: 'Juice',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 10, // 10L juice (more than 4L needed)
+        quantity: createQuantity(10), // 10L juice (more than 4L needed)
         unit: 'liters',
         itemType: createProductTemplateId('long-life-juice'),
         neverExpires: false,
@@ -374,7 +375,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('2'),
         name: 'Critical Item',
         categoryId: createCategoryId('water'),
-        quantity: 0, // Out of stock for critical alert
+        quantity: createQuantity(0), // Out of stock for critical alert
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
         expirationDate: createDateOnly('2024-12-01'),
@@ -451,7 +452,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('1'),
         name: 'Bottled Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5, // 5L out of 18L needed = 28% (warning threshold)
+        quantity: createQuantity(5), // 5L out of 18L needed = 28% (warning threshold)
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -461,7 +462,7 @@ describe('generateDashboardAlerts', () => {
         id: createItemId('2'),
         name: 'Juice',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 3, // 3L out of 4L needed = 75% (ok)
+        quantity: createQuantity(3), // 3L out of 4L needed = 75% (ok)
         // Combined: 8L out of 22L = 36% (warning threshold)
         unit: 'liters',
         itemType: createProductTemplateId('long-life-juice'),
@@ -579,7 +580,7 @@ describe('water shortage alerts', () => {
         id: createItemId('1'),
         name: 'Bottled Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5,
+        quantity: createQuantity(5),
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -589,7 +590,7 @@ describe('water shortage alerts', () => {
         id: createItemId('2'),
         name: 'Pasta',
         categoryId: createCategoryId('food'),
-        quantity: 10,
+        quantity: createQuantity(10),
         unit: 'kilograms',
         itemType: createProductTemplateId('pasta'), // 1.0 L/kg water requirement
         neverExpires: false,
@@ -619,7 +620,7 @@ describe('water shortage alerts', () => {
         id: createItemId('1'),
         name: 'Bottled Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 50,
+        quantity: createQuantity(50),
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -629,7 +630,7 @@ describe('water shortage alerts', () => {
         id: createItemId('2'),
         name: 'Pasta',
         categoryId: createCategoryId('food'),
-        quantity: 5,
+        quantity: createQuantity(5),
         unit: 'kilograms',
         itemType: createProductTemplateId('pasta'), // 1.0 L/kg water requirement = 5L needed
         neverExpires: false,
@@ -728,7 +729,7 @@ describe('food category calorie-based alerts', () => {
         name: 'Rice',
         categoryId: createCategoryId('food'),
         itemType: createProductTemplateId('rice'), // Set itemType to match recommended item ID
-        quantity: 2, // 2 kg
+        quantity: createQuantity(2), // 2 kg
         caloriesPerUnit: 3600, // 3600 calories per kg
         unit: 'kilograms',
         neverExpires: false,
@@ -765,7 +766,7 @@ describe('food category calorie-based alerts', () => {
         name: 'Rice',
         categoryId: createCategoryId('food'),
         itemType: createProductTemplateId('rice'), // Set itemType to match recommended item ID
-        quantity: 0.4, // 0.4 kg = 1440 calories (24% of 6000)
+        quantity: createQuantity(0.4), // 0.4 kg = 1440 calories (24% of 6000)
         caloriesPerUnit: 3600, // 3600 calories per kg
         unit: 'kilograms',
         neverExpires: false,
@@ -810,7 +811,7 @@ describe('food category calorie-based alerts', () => {
         name: 'Rice',
         categoryId: createCategoryId('food'),
         itemType: createProductTemplateId('rice'), // Set itemType to match recommended item ID
-        quantity: 1, // 1 kg = 3600 calories
+        quantity: createQuantity(1), // 1 kg = 3600 calories
         caloriesPerUnit: 3600,
         unit: 'kilograms',
         neverExpires: false,
@@ -821,7 +822,7 @@ describe('food category calorie-based alerts', () => {
         name: 'Pasta',
         categoryId: createCategoryId('food'),
         itemType: createProductTemplateId('pasta'), // Set itemType to match recommended item ID
-        quantity: 1, // 1 kg = 1200 calories (but pasta has 3500 per kg, let me fix this)
+        quantity: createQuantity(1), // 1 kg = 1200 calories (but pasta has 3500 per kg, let me fix this)
         caloriesPerUnit: 1200, // Actually pasta is 3500 per kg, but let's use 1200 for this test
         unit: 'kilograms',
         neverExpires: false,
@@ -861,7 +862,7 @@ describe('food category calorie-based alerts', () => {
         name: 'Rice',
         categoryId: createCategoryId('food'),
         itemType: createProductTemplateId('rice'),
-        quantity: 2, // 2 kg = 7200 calories (enough for 1 adult for 3 days = 6000 calories)
+        quantity: createQuantity(2), // 2 kg = 7200 calories (enough for 1 adult for 3 days = 6000 calories)
         caloriesPerUnit: 3600,
         unit: 'kilograms',
         neverExpires: false,
@@ -924,7 +925,7 @@ describe('alert and category display consistency', () => {
         name: 'Rice',
         categoryId: createCategoryId('food'),
         itemType: createProductTemplateId('rice'),
-        quantity: 0.5, // 0.5 kg = 1800 calories = 30% of needed
+        quantity: createQuantity(0.5), // 0.5 kg = 1800 calories = 30% of needed
         caloriesPerUnit: 3600, // 1 kg = 3600 calories
         unit: 'kilograms',
         neverExpires: false,

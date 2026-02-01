@@ -14,6 +14,7 @@ import {
   createDateOnly,
   createAlertId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 
 // Mock i18next
@@ -188,7 +189,7 @@ describe('Dashboard', () => {
       id: createItemId('1'),
       name: 'Out of Stock Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       unit: 'liters', // 'gallons' is not a valid unit
 
       neverExpires: true,
@@ -213,7 +214,7 @@ describe('Dashboard', () => {
       id: createItemId('1'),
       name: 'Out of Stock Item',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       unit: 'liters', // 'gallons' is not a valid unit
 
       neverExpires: true,
@@ -257,7 +258,7 @@ describe('Dashboard', () => {
       id: createItemId('1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 28,
+      quantity: createQuantity(28),
       unit: 'liters', // 'gallons' is not a valid unit
 
       neverExpires: false,
@@ -310,7 +311,7 @@ describe('Dashboard', () => {
       id: createItemId('1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 1, // Below recommended for household (3L × 1 adult × 3 days = 9L)
+      quantity: createQuantity(1), // Below recommended for household (3L × 1 adult × 3 days = 9L)
       unit: 'liters',
       neverExpires: true,
       itemType: createProductTemplateId('bottled-water'),
@@ -357,7 +358,7 @@ describe('Dashboard', () => {
       id: createItemId('1'),
       name: 'Out of Stock Item',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 0,
+      quantity: createQuantity(0),
       unit: 'liters', // 'gallons' is not a valid unit
 
       neverExpires: true,

@@ -21,6 +21,7 @@ import {
   createCategoryId,
   createProductTemplateId,
   createDateOnly,
+  createQuantity,
 } from '@/shared/types';
 
 // Mock i18next
@@ -341,7 +342,7 @@ describe('Inventory Page with items', () => {
     name: 'Test Water',
     itemType: createProductTemplateId('bottled-water'),
     categoryId: createCategoryId('water-beverages'),
-    quantity: 10, // Used in sorting test
+    quantity: createQuantity(10), // Used in sorting test
 
     expirationDate: createDateOnly(
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
@@ -355,7 +356,7 @@ describe('Inventory Page with items', () => {
     name: 'Expired Food',
     itemType: createProductTemplateId('canned-soup'),
     categoryId: createCategoryId('food'),
-    quantity: 5, // Used in sorting test
+    quantity: createQuantity(5), // Used in sorting test
     expirationDate: createDateOnly(
       new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
         .toISOString()
@@ -368,7 +369,7 @@ describe('Inventory Page with items', () => {
     name: 'Batteries',
     itemType: createProductTemplateId('batteries'),
     categoryId: createCategoryId('light-power'),
-    quantity: 20, // Used in sorting test (highest)
+    quantity: createQuantity(20), // Used in sorting test (highest)
 
     neverExpires: true,
   });
@@ -657,7 +658,7 @@ describe('Inventory Page with items', () => {
       name: 'Custom Only Item',
       itemType: 'custom',
       categoryId: createCategoryId('food'),
-      quantity: 1,
+      quantity: createQuantity(1),
       unit: 'pieces',
       neverExpires: true,
     });
@@ -699,7 +700,7 @@ describe('Template to InventoryItem conversion', () => {
       name: 'Bottled Water', // translated name
       itemType: createProductTemplateId(template.id),
       categoryId: template.category,
-      quantity: 0,
+      quantity: createQuantity(0),
       unit: template.unit,
       neverExpires: !template.defaultExpirationMonths,
       expirationDate: template.defaultExpirationMonths
@@ -732,7 +733,7 @@ describe('Template to InventoryItem conversion', () => {
       name: 'Canned Soup',
       itemType: createProductTemplateId(template.id),
       categoryId: template.category,
-      quantity: 0,
+      quantity: createQuantity(0),
       unit: template.unit,
       neverExpires: !template.defaultExpirationMonths,
       expirationDate: template.defaultExpirationMonths
@@ -768,7 +769,7 @@ describe('Template to InventoryItem conversion', () => {
       name: 'Bottled Water',
       itemType: createProductTemplateId('bottled-water'), // This enables matching
       categoryId: createCategoryId('water-beverages'),
-      quantity: expectedQuantity, // Needed for calculation
+      quantity: createQuantity(expectedQuantity), // Needed for calculation
     });
 
     // Item with itemType 'custom' (won't match by template ID)
@@ -777,7 +778,7 @@ describe('Template to InventoryItem conversion', () => {
       name: 'Bottled Water',
       itemType: 'custom',
       categoryId: createCategoryId('water-beverages'),
-      quantity: expectedQuantity, // Needed for calculation
+      quantity: createQuantity(expectedQuantity), // Needed for calculation
       // itemType is 'custom' - this won't match by template ID
     });
 
@@ -978,7 +979,7 @@ describe('Inventory Page - Mark as Enough', () => {
     name: 'Test Candles',
     itemType: createProductTemplateId('candles'), // Match the recommended item
     categoryId: createCategoryId('cooking-heat'), // Candles are in cooking-heat category
-    quantity: 4,
+    quantity: createQuantity(4),
     unit: 'pieces',
     neverExpires: true,
     markedAsEnough: false,
@@ -1136,7 +1137,7 @@ describe('Inventory Page - resolveItemName (custom item names)', () => {
           id: createProductTemplateId('custom-test'),
           i18nKey: 'custom.custom-test',
           category: 'food',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,

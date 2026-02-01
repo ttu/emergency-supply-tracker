@@ -10,8 +10,10 @@ import {
   createProductTemplateId,
   createItemId,
   createDateOnly,
+  createQuantity,
   type HouseholdConfig,
   type ProductTemplateId,
+  type Quantity,
 } from '@/shared/types';
 import {
   createMockHousehold,
@@ -34,7 +36,7 @@ describe('InventoryItemFactory', () => {
   beforeEach(() => {
     household = createMockHousehold();
 
-    const quantity = randomQuantitySmall();
+    const quantity = createQuantity(randomQuantitySmall());
     validInput = {
       name: 'Test Item',
       itemType: createProductTemplateId('test-item'),
@@ -175,7 +177,8 @@ describe('InventoryItemFactory', () => {
       expect(() => {
         InventoryItemFactory.create({
           ...validInput,
-          quantity: -1,
+          // Use type assertion to test factory validation (bypassing branded type validation)
+          quantity: -1 as unknown as Quantity,
         });
       }).toThrow(InventoryItemValidationError);
     });
@@ -301,7 +304,7 @@ describe('InventoryItemFactory', () => {
     it('allows zero for numeric fields', () => {
       const item = InventoryItemFactory.create({
         ...validInput,
-        quantity: 0,
+        quantity: createQuantity(0),
         weightGrams: 0,
         caloriesPerUnit: 0,
       });
@@ -319,7 +322,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -343,7 +346,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('canned-food'),
         i18nKey: 'products.canned-food',
         category: 'food',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'cans',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -362,7 +365,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -384,13 +387,13 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
       });
 
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const item = InventoryItemFactory.createFromTemplate(
         template,
         household,
@@ -407,7 +410,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('canned-food'),
         i18nKey: 'products.canned-food',
         category: 'food',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'cans',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -431,7 +434,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('canned-food'),
         i18nKey: 'products.canned-food',
         category: 'food',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'cans',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -456,7 +459,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('flashlight'),
         i18nKey: 'products.flashlight',
         category: 'light-power',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'pieces',
         scaleWithPeople: false,
         scaleWithDays: false,
@@ -474,7 +477,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -501,7 +504,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -529,7 +532,7 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('flashlight'),
         i18nKey: 'products.flashlight',
         category: 'light-power',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'pieces',
         scaleWithPeople: false,
         scaleWithDays: false,
@@ -564,13 +567,13 @@ describe('InventoryItemFactory', () => {
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
       });
 
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const draft = InventoryItemFactory.createDraftFromTemplate(
         template,
         household,
@@ -588,7 +591,7 @@ describe('InventoryItemFactory', () => {
 
   describe('createFromFormData', () => {
     it('creates item from form data', () => {
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const weightGrams = faker.number.int({ min: 50, max: 500 });
       const caloriesPerUnit = faker.number.int({ min: 100, max: 500 });
       const formData: CreateFromFormInput = {
@@ -622,7 +625,7 @@ describe('InventoryItemFactory', () => {
     });
 
     it('uses CUSTOM_ITEM_TYPE when itemType is empty', () => {
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const formData: CreateFromFormInput = {
         name: 'Custom Item',
         itemType: '',
@@ -638,7 +641,7 @@ describe('InventoryItemFactory', () => {
     });
 
     it('handles neverExpires=true correctly', () => {
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const formData: CreateFromFormInput = {
         name: 'Test Item',
         itemType: 'test-item',
@@ -656,7 +659,7 @@ describe('InventoryItemFactory', () => {
     });
 
     it('handles empty expiration date string by converting to undefined', () => {
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const formData: CreateFromFormInput = {
         name: 'Test Item',
         itemType: 'test-item',
@@ -675,7 +678,7 @@ describe('InventoryItemFactory', () => {
     });
 
     it('handles whitespace-only expiration date string', () => {
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const formData: CreateFromFormInput = {
         name: 'Test Item',
         itemType: 'test-item',
@@ -694,7 +697,7 @@ describe('InventoryItemFactory', () => {
     });
 
     it('uses itemType from form data', () => {
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const formData: CreateFromFormInput = {
         name: 'Test Item',
         itemType: 'template-1',
@@ -712,7 +715,7 @@ describe('InventoryItemFactory', () => {
 
   describe('createCustomItem', () => {
     it('creates custom item with CUSTOM_ITEM_TYPE', () => {
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const input: Omit<CreateItemInput, 'itemType'> = {
         name: 'Custom Item',
         categoryId: createCategoryId('food'),
@@ -728,7 +731,7 @@ describe('InventoryItemFactory', () => {
     });
 
     it('allows custom itemType override', () => {
-      const quantity = randomQuantitySmall();
+      const quantity = createQuantity(randomQuantitySmall());
       const input: Omit<CreateItemInput, 'itemType'> & {
         itemType?: ProductTemplateId | 'custom';
       } = {

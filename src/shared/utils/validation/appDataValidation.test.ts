@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { isValidAppData, validateAppDataValues } from './appDataValidation';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
-import type { AppData } from '@/shared/types';
+import type { AppData, Percentage } from '@/shared/types';
+import { createPercentage } from '@/shared/types';
 
 describe('isValidAppData', () => {
   const validAppData = {
@@ -184,7 +185,9 @@ describe('validateAppDataValues', () => {
 
     it('detects childrenRequirementPercentage out of range (negative)', () => {
       const data = createValidAppData();
-      data.settings.childrenRequirementPercentage = -10;
+      // Use type assertion to test invalid value (deliberately testing validation)
+      data.settings.childrenRequirementPercentage =
+        -10 as unknown as Percentage;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe(
@@ -194,7 +197,9 @@ describe('validateAppDataValues', () => {
 
     it('detects childrenRequirementPercentage out of range (>100)', () => {
       const data = createValidAppData();
-      data.settings.childrenRequirementPercentage = 150;
+      // Use type assertion to test invalid value (deliberately testing validation)
+      data.settings.childrenRequirementPercentage =
+        150 as unknown as Percentage;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe(
@@ -206,7 +211,7 @@ describe('validateAppDataValues', () => {
       const data = createValidAppData();
       data.settings.dailyCaloriesPerPerson = 2500;
       data.settings.dailyWaterPerPerson = 3.5;
-      data.settings.childrenRequirementPercentage = 75;
+      data.settings.childrenRequirementPercentage = createPercentage(75);
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(true);
     });

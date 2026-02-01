@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ItemEditor } from './ItemEditor';
 import type { ImportedRecommendedItem } from '@/shared/types';
-import { createProductTemplateId } from '@/shared/types';
+import { createProductTemplateId, createQuantity } from '@/shared/types';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -23,7 +23,7 @@ describe('ItemEditor', () => {
     id: createProductTemplateId('test-item'),
     names: { en: 'Test Item', fi: 'Testituote' },
     category: 'food',
-    baseQuantity: 5,
+    baseQuantity: createQuantity(5),
     unit: 'pieces',
     scaleWithPeople: true,
     scaleWithDays: false,
@@ -110,7 +110,7 @@ describe('ItemEditor', () => {
     expect(mockOnSave).toHaveBeenCalledWith(
       expect.objectContaining({
         names: { en: 'New Item', fi: 'Uusi tuote' },
-        baseQuantity: 10,
+        baseQuantity: createQuantity(10),
         category: 'food',
         unit: 'pieces',
         scaleWithPeople: true,
@@ -361,7 +361,7 @@ describe('ItemEditor', () => {
       id: createProductTemplateId('bottled-water-item'),
       i18nKey: 'products.bottled-water',
       category: 'water-beverages',
-      baseQuantity: 2,
+      baseQuantity: createQuantity(2),
       unit: 'liters',
       scaleWithPeople: true,
       scaleWithDays: true,
@@ -469,7 +469,7 @@ describe('ItemEditor', () => {
       expect(mockOnSave).toHaveBeenCalledWith(
         expect.objectContaining({
           i18nKey: 'products.bottled-water',
-          baseQuantity: 5,
+          baseQuantity: createQuantity(5),
         }),
       );
     });

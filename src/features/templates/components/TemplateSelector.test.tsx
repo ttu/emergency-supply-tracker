@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { TemplateSelector } from './TemplateSelector';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import type { RecommendedItemDefinition } from '@/shared/types';
-import { createProductTemplateId } from '@/shared/types';
+import { createProductTemplateId, createQuantity } from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -23,7 +23,7 @@ describe('TemplateSelector', () => {
       id: createProductTemplateId('water-1'),
       i18nKey: 'products.bottled-water',
       category: 'water-beverages',
-      baseQuantity: 14,
+      baseQuantity: createQuantity(14),
       unit: 'liters',
       scaleWithPeople: true,
       scaleWithDays: true,
@@ -32,7 +32,7 @@ describe('TemplateSelector', () => {
       id: createProductTemplateId('food-1'),
       i18nKey: 'products.canned-beans',
       category: 'food',
-      baseQuantity: 5,
+      baseQuantity: createQuantity(5),
       unit: 'cans',
       scaleWithPeople: true,
       scaleWithDays: true,
@@ -41,7 +41,7 @@ describe('TemplateSelector', () => {
       id: createProductTemplateId('first-aid-1'),
       i18nKey: 'products.first-aid-kit',
       category: 'medical-health',
-      baseQuantity: 1,
+      baseQuantity: createQuantity(1),
       unit: 'pieces',
       scaleWithPeople: false,
       scaleWithDays: false,

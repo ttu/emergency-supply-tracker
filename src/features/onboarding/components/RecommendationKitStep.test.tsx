@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RecommendationKitStep } from './RecommendationKitStep';
 import * as templatesModule from '@/features/templates';
 import type { KitInfo, RecommendedItemDefinition } from '@/shared/types';
-import { createProductTemplateId } from '@/shared/types';
+import { createProductTemplateId, createQuantity } from '@/shared/types';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -34,7 +34,7 @@ const mockRecommendedItems: RecommendedItemDefinition[] = [
     i18nKey: 'products.water',
     category: 'water-beverages',
     unit: 'liters',
-    baseQuantity: 3,
+    baseQuantity: createQuantity(3),
     scaleWithPeople: true,
     scaleWithDays: true,
   },
@@ -235,7 +235,7 @@ describe('RecommendationKitStep', () => {
           id: 'test-item',
           names: { en: 'Test Item', fi: 'Testituote' },
           category: 'food',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: true,
           scaleWithDays: false,
@@ -296,7 +296,7 @@ describe('RecommendationKitStep', () => {
           id: 'test-item',
           names: { en: 'Test Item', fi: 'Testituote' },
           category: 'food',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: true,
           scaleWithDays: false,

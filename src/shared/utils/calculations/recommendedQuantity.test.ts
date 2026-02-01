@@ -7,7 +7,7 @@ import {
   createMockHousehold,
   createMockRecommendedItem,
 } from '@/shared/utils/test/factories';
-import { createProductTemplateId } from '@/shared/types';
+import { createProductTemplateId, createQuantity } from '@/shared/types';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
   CHILDREN_REQUIREMENT_MULTIPLIER,
@@ -33,7 +33,7 @@ describe('calculateRecommendedQuantity', () => {
       id: createProductTemplateId('water'),
       i18nKey: 'products.water',
       category: 'water-beverages',
-      baseQuantity,
+      baseQuantity: createQuantity(baseQuantity),
       unit: 'liters',
       scaleWithPeople: true,
       scaleWithDays: true,
@@ -52,7 +52,7 @@ describe('calculateRecommendedQuantity', () => {
       id: createProductTemplateId('flashlight'),
       i18nKey: 'products.flashlight',
       category: 'light-power',
-      baseQuantity,
+      baseQuantity: createQuantity(baseQuantity),
       unit: 'pieces',
       scaleWithPeople: false,
       scaleWithDays: false,
@@ -70,7 +70,7 @@ describe('calculateRecommendedQuantity', () => {
       id: createProductTemplateId('pet-water-bowl'),
       i18nKey: 'products.pet-water-bowl',
       category: 'pets',
-      baseQuantity,
+      baseQuantity: createQuantity(baseQuantity),
       unit: 'pieces',
       scaleWithPeople: false,
       scaleWithDays: false,
@@ -88,7 +88,7 @@ describe('calculateRecommendedQuantity', () => {
       id: createProductTemplateId('pet-food-dry'),
       i18nKey: 'products.pet-food-dry',
       category: 'pets',
-      baseQuantity,
+      baseQuantity: createQuantity(baseQuantity),
       unit: 'kilograms',
       scaleWithPeople: false,
       scaleWithDays: true,
@@ -111,7 +111,7 @@ describe('calculateRecommendedQuantity', () => {
       id: createProductTemplateId('pet-water-bowl'),
       i18nKey: 'products.pet-water-bowl',
       category: 'pets',
-      baseQuantity,
+      baseQuantity: createQuantity(baseQuantity),
       unit: 'pieces',
       scaleWithPeople: false,
       scaleWithDays: false,

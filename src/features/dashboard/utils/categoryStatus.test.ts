@@ -16,6 +16,7 @@ import {
   createCategoryId,
   createDateOnly,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
@@ -126,7 +127,7 @@ describe('calculateCategoryStatus', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        quantity: 0,
+        quantity: createQuantity(0),
         unit: 'liters', // 'gallons' is not a valid unit
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -136,7 +137,7 @@ describe('calculateCategoryStatus', () => {
         id: createItemId('2'),
         name: 'Water Bottles',
         categoryId: createCategoryId('water'),
-        quantity: 10,
+        quantity: createQuantity(10),
         unit: 'bottles',
         itemType: createProductTemplateId('long-life-milk'),
         neverExpires: false,
@@ -146,7 +147,7 @@ describe('calculateCategoryStatus', () => {
         id: createItemId('3'),
         name: 'Water Purification',
         categoryId: createCategoryId('water'),
-        quantity: 5,
+        quantity: createQuantity(5),
         unit: 'pieces', // 'tablets' is not a valid unit
         neverExpires: false,
         expirationDate: createDateOnly('2025-12-31'),
@@ -175,7 +176,7 @@ describe('calculateCategoryStatus', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        quantity: 0,
+        quantity: createQuantity(0),
         unit: 'liters', // 'gallons' is not a valid unit
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: true,
@@ -200,7 +201,7 @@ describe('calculateCategoryStatus', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        quantity: 28,
+        quantity: createQuantity(28),
         unit: 'liters', // 'gallons' is not a valid unit
         itemType: createProductTemplateId('bottled-water'),
         neverExpires: false,
@@ -210,7 +211,7 @@ describe('calculateCategoryStatus', () => {
         id: createItemId('2'),
         name: 'Food',
         categoryId: createCategoryId('food'),
-        quantity: 10,
+        quantity: createQuantity(10),
         unit: 'cans',
         itemType: createProductTemplateId('canned-soup'),
         neverExpires: false,
@@ -464,7 +465,7 @@ describe('calculateCategoryShortages', () => {
       // Items include pasta which requires 1L per kg for preparation
       // Use a fixed value (2.0) instead of random to avoid floating-point precision issues
       // that can cause Math.ceil() to round incorrectly (e.g., 86.9999999999 -> 86 instead of 87)
-      const pastaQuantity = 2.0;
+      const pastaQuantity = createQuantity(2.0);
       const items: InventoryItem[] = [
         createMockInventoryItem({
           id: createItemId('1'),
@@ -552,7 +553,7 @@ describe('calculateCategoryShortages', () => {
     const needed = Math.ceil(
       DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
     );
-    const actual = randomLessThan(needed);
+    const actual = createQuantity(randomLessThan(needed));
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -585,11 +586,15 @@ describe('calculateCategoryShortages', () => {
     const peopleMultiplier =
       household.adults * ADULT_REQUIREMENT_MULTIPLIER +
       household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
-    const waterNeeded = Math.ceil(
-      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    const waterNeeded = createQuantity(
+      Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          household.supplyDurationDays,
+      ),
     );
-    const milkNeeded = Math.ceil(2 * peopleMultiplier);
-    const juiceNeeded = Math.ceil(2 * peopleMultiplier);
+    const milkNeeded = createQuantity(Math.ceil(2 * peopleMultiplier));
+    const juiceNeeded = createQuantity(Math.ceil(2 * peopleMultiplier));
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -655,13 +660,13 @@ describe('calculateCategoryShortages', () => {
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
-        quantity: 50, // missing 4
+        quantity: createQuantity(50), // missing 4
         itemType: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('water-beverages'),
-        quantity: 0, // missing all
+        quantity: createQuantity(0), // missing all
         itemType: createProductTemplateId('long-life-milk'),
       }),
     ];
@@ -683,8 +688,8 @@ describe('calculateCategoryShortages', () => {
   });
 
   it('should calculate calories for food category', () => {
-    const soupQuantity = randomQuantitySmall();
-    const pastaQuantity = randomQuantityFloat();
+    const soupQuantity = createQuantity(randomQuantitySmall());
+    const pastaQuantity = createQuantity(randomQuantityFloat());
     const soupCalories = 200;
     const pastaCalories = 3500;
 
@@ -737,7 +742,9 @@ describe('calculateCategoryShortages', () => {
       peopleMultiplier * household.supplyDurationDays * 2000,
     );
     // Create items with enough calories (more than needed)
-    const riceQuantity = Math.ceil((neededCalories / 3600) * 1.2); // 20% more than needed
+    const riceQuantity = createQuantity(
+      Math.ceil((neededCalories / 3600) * 1.2),
+    ); // 20% more than needed
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -768,7 +775,7 @@ describe('calculateCategoryShortages', () => {
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
-        quantity: 54,
+        quantity: createQuantity(54),
         itemType: createProductTemplateId('bottled-water'),
       }),
     ];
@@ -814,7 +821,7 @@ describe('calculateCategoryStatus - inventory-based status', () => {
     const milkNeeded = Math.ceil(2 * peopleMultiplier);
     const juiceNeeded = Math.ceil(2 * peopleMultiplier);
     const totalNeeded = needed + milkNeeded + juiceNeeded;
-    const actual = randomMoreThan(totalNeeded); // More than total needed
+    const actual = createQuantity(randomMoreThan(totalNeeded)); // More than total needed
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -853,7 +860,7 @@ describe('calculateCategoryStatus - inventory-based status', () => {
     const needed = Math.ceil(
       DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
     );
-    const actual = randomLessThan(needed); // Less than needed
+    const actual = createQuantity(randomLessThan(needed)); // Less than needed
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -893,7 +900,9 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       peopleMultiplier * household.supplyDurationDays * 2000,
     );
     // Create items with enough calories (more than needed)
-    const riceQuantity = Math.ceil((neededCalories / 3600) * 1.2);
+    const riceQuantity = createQuantity(
+      Math.ceil((neededCalories / 3600) * 1.2),
+    );
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -933,7 +942,9 @@ describe('calculateCategoryStatus - inventory-based status', () => {
     );
     // Create items with insufficient calories (less than 30% to trigger critical)
     // Use 20% of needed calories to ensure critical status
-    const riceQuantity = Math.max(0.1, (neededCalories / 3600) * 0.2); // 20% of needed
+    const riceQuantity = createQuantity(
+      Math.max(0.1, (neededCalories / 3600) * 0.2),
+    ); // 20% of needed
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -988,14 +999,14 @@ describe('calculateCategoryStatus - inventory-based status', () => {
       createMockInventoryItem({
         id: createItemId('cash-1'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 300, // 100% of 300 euros
+        quantity: createQuantity(300), // 100% of 300 euros
         unit: 'euros',
         itemType: createProductTemplateId('cash'),
       }),
       createMockInventoryItem({
         id: createItemId('docs-1'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 1, // 100% of 1 sets
+        quantity: createQuantity(1), // 100% of 1 sets
         unit: 'sets',
         itemType: createProductTemplateId('document-copies'),
       }),
@@ -1134,7 +1145,7 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
     const needed = Math.ceil(
       DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
     );
-    const actual = needed + randomQuantitySmall(); // Enough or more
+    const actual = createQuantity(needed + randomQuantitySmall()); // Enough or more
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -1171,7 +1182,7 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('water-beverages'),
-        quantity: Math.ceil(waterNeeded) + 5, // Enough water to meet household needs
+        quantity: createQuantity(Math.ceil(waterNeeded) + 5), // Enough water to meet household needs
         unit: 'liters',
         itemType: createProductTemplateId('bottled-water'),
       }),
@@ -1203,7 +1214,7 @@ describe('calculateCategoryShortages - communication-info category', () => {
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('communication-info'),
-        quantity: 1,
+        quantity: createQuantity(1),
         unit: 'pieces',
         itemType: createProductTemplateId('battery-radio'),
       }),
@@ -1229,14 +1240,14 @@ describe('calculateCategoryShortages - communication-info category', () => {
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('communication-info'),
-        quantity: 1,
+        quantity: createQuantity(1),
         unit: 'pieces',
         itemType: createProductTemplateId('battery-radio'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('communication-info'),
-        quantity: 1,
+        quantity: createQuantity(1),
         unit: 'pieces',
         itemType: createProductTemplateId('hand-crank-radio'),
       }),
@@ -1262,7 +1273,7 @@ describe('calculateCategoryShortages - communication-info category', () => {
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('communication-info'),
-        quantity: 5,
+        quantity: createQuantity(5),
         unit: 'pieces',
         itemType: createProductTemplateId('battery-radio'),
       }),
@@ -1293,7 +1304,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         name: 'Battery Radio',
         itemType: 'custom', // Custom item
         categoryId: createCategoryId('communication-info'),
-        quantity: 2,
+        quantity: createQuantity(2),
         unit: 'pieces',
         // itemType is 'custom' - this is a custom item
       });
@@ -1332,7 +1343,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
           name,
           itemType: 'custom',
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         });
 
@@ -1366,7 +1377,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         name: 'My Custom Battery Radio', // Different name
         itemType: createProductTemplateId('battery-radio'), // This enables matching
         categoryId: createCategoryId('communication-info'),
-        quantity: 0, // Not enough, so it appears in shortages
+        quantity: createQuantity(0), // Not enough, so it appears in shortages
         unit: 'pieces',
       });
 
@@ -1395,14 +1406,14 @@ describe('calculateCategoryShortages - item matching logic', () => {
           id: createItemId('item-1'),
           name: 'Radio 1',
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           itemType: createProductTemplateId('battery-radio'),
         }),
         createMockInventoryItem({
           id: createItemId('item-2'),
           name: 'Radio 2',
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           itemType: createProductTemplateId('battery-radio'),
         }),
       ];
@@ -1432,7 +1443,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         id: createItemId('item-1'),
         name: 'My Radio',
         categoryId: createCategoryId('communication-info'),
-        quantity: 0, // Has 0, needs 1
+        quantity: createQuantity(0), // Has 0, needs 1
         itemType: createProductTemplateId('battery-radio'),
       });
 
@@ -1462,7 +1473,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         name: 'Some Radio',
         itemType: createProductTemplateId('battery-radio'), // itemType matches
         categoryId: createCategoryId('communication-info'),
-        quantity: 0, // Not enough, so it appears in shortages
+        quantity: createQuantity(0), // Not enough, so it appears in shortages
         unit: 'pieces',
         // itemType matches
       });
@@ -1492,7 +1503,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         name: 'Battery Radio', // Name normalizes to 'battery-radio'
         itemType: createProductTemplateId('some-other-type'), // Not 'custom', but also not matching
         categoryId: createCategoryId('communication-info'),
-        quantity: 0, // Not enough, so it appears in shortages
+        quantity: createQuantity(0), // Not enough, so it appears in shortages
         unit: 'pieces',
         // itemType is 'custom'
       });
@@ -1530,7 +1541,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
           name,
           itemType: createProductTemplateId('some-type'), // Not 'custom'
           categoryId: createCategoryId('communication-info'),
-          quantity: 0, // Not enough, so it appears in shortages
+          quantity: createQuantity(0), // Not enough, so it appears in shortages
           unit: 'pieces',
         });
 
@@ -1564,7 +1575,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         name: 'Battery Radio', // Name would match 'battery-radio' if not custom
         itemType: createProductTemplateId('hand-crank-radio'), // But itemType matches different item
         categoryId: createCategoryId('communication-info'),
-        quantity: 0, // Not enough, so it appears in shortages
+        quantity: createQuantity(0), // Not enough, so it appears in shortages
         unit: 'pieces',
       });
 
@@ -1597,7 +1608,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         name: 'Battery Radio',
         itemType: 'custom',
         categoryId: createCategoryId('communication-info'),
-        quantity: 1,
+        quantity: createQuantity(1),
         unit: 'pieces',
         markedAsEnough: true, // Marked as enough
       });
@@ -1625,7 +1636,7 @@ describe('calculateCategoryShortages - item matching logic', () => {
         name: 'Battery Radio',
         itemType: createProductTemplateId('battery-radio'),
         categoryId: createCategoryId('communication-info'),
-        quantity: 1,
+        quantity: createQuantity(1),
         unit: 'pieces',
         // Needs 2, has 1
         markedAsEnough: true, // But marked as enough
@@ -1652,7 +1663,7 @@ describe('getCategoryDisplayStatus', () => {
   const household = createMockHousehold();
 
   it('should return all display data for a category', () => {
-    const quantity = randomQuantityLarge();
+    const quantity = createQuantity(randomQuantityLarge());
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -1696,7 +1707,7 @@ describe('getCategoryDisplayStatus', () => {
   });
 
   it('should include calorie data for food category', () => {
-    const quantity = randomQuantityFloat();
+    const quantity = createQuantity(randomQuantityFloat());
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -1722,7 +1733,7 @@ describe('getCategoryDisplayStatus', () => {
   });
 
   it('should not include calorie data for non-food categories', () => {
-    const quantity = randomQuantityLarge();
+    const quantity = createQuantity(randomQuantityLarge());
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -1751,13 +1762,17 @@ describe('getCategoryDisplayStatus', () => {
     const peopleMultiplier =
       household.adults * ADULT_REQUIREMENT_MULTIPLIER +
       household.children * CHILDREN_REQUIREMENT_MULTIPLIER;
-    const waterNeeded = Math.ceil(
-      DAILY_WATER_PER_PERSON * peopleMultiplier * household.supplyDurationDays,
+    const waterNeeded = createQuantity(
+      Math.ceil(
+        DAILY_WATER_PER_PERSON *
+          peopleMultiplier *
+          household.supplyDurationDays,
+      ),
     );
-    const milkNeeded = Math.ceil(2 * peopleMultiplier);
-    const juiceNeeded = Math.ceil(2 * peopleMultiplier);
+    const milkNeeded = createQuantity(Math.ceil(2 * peopleMultiplier));
+    const juiceNeeded = createQuantity(Math.ceil(2 * peopleMultiplier));
     const totalNeeded = waterNeeded + milkNeeded + juiceNeeded;
-    const actual = randomMoreThan(totalNeeded); // More than needed
+    const actual = createQuantity(randomMoreThan(totalNeeded)); // More than needed
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -1794,7 +1809,9 @@ describe('getCategoryDisplayStatus', () => {
       peopleMultiplier * household.supplyDurationDays * 2000,
     );
     // Create items with enough calories (more than needed)
-    const riceQuantity = Math.ceil((neededCalories / 3600) * 1.2);
+    const riceQuantity = createQuantity(
+      Math.ceil((neededCalories / 3600) * 1.2),
+    );
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -1830,7 +1847,7 @@ describe('getCategoryDisplayStatus', () => {
     // Create items with exactly 50% of needed calories
     const targetPercentage = 50;
     const targetCalories = (neededCalories * targetPercentage) / 100;
-    const riceQuantity = targetCalories / 3600; // 3600 cal per unit of rice
+    const riceQuantity = createQuantity(targetCalories / 3600); // 3600 cal per unit of rice
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -1868,7 +1885,9 @@ describe('getCategoryDisplayStatus', () => {
     // to guarantee 'critical' status. randomPercentageLow() can return 30, which could result
     // in exactly 30% completion, causing getStatusFromPercentage(30) to return 'warning' instead of 'critical'.
     const criticalPercentage = 25; // Fixed value < 30% to ensure critical status
-    const actual = Math.floor((needed * criticalPercentage) / 100);
+    const actual = createQuantity(
+      Math.floor((needed * criticalPercentage) / 100),
+    );
 
     const items: InventoryItem[] = [
       createMockInventoryItem({
@@ -1909,14 +1928,14 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 150, // 50% of 300 euros
+          quantity: createQuantity(150), // 50% of 300 euros
           unit: 'euros',
           itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 1, // 100% of 1 sets
+          quantity: createQuantity(1), // 100% of 1 sets
           unit: 'sets',
           itemType: createProductTemplateId('document-copies'),
         }),
@@ -1945,14 +1964,14 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 100, // 33% of 300 euros
+          quantity: createQuantity(100), // 33% of 300 euros
           unit: 'euros',
           itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 1, // 100% of 1 sets
+          quantity: createQuantity(1), // 100% of 1 sets
           unit: 'sets',
           itemType: createProductTemplateId('document-copies'),
         }),
@@ -1982,21 +2001,21 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 300, // 100% of 300 euros
+          quantity: createQuantity(300), // 100% of 300 euros
           unit: 'euros',
           itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 1, // 100% of 1 sets
+          quantity: createQuantity(1), // 100% of 1 sets
           unit: 'sets',
           itemType: createProductTemplateId('document-copies'),
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 1, // 100% of 1 pieces
+          quantity: createQuantity(1), // 100% of 1 pieces
           unit: 'pieces',
           itemType: createProductTemplateId('contact-list'),
         }),
@@ -2024,7 +2043,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 150, // 50% of 300 euros
+          quantity: createQuantity(150), // 50% of 300 euros
           unit: 'euros',
           itemType: createProductTemplateId('cash'),
           markedAsEnough: true,
@@ -2032,7 +2051,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 0, // 0% of 1 sets
+          quantity: createQuantity(0), // 0% of 1 sets
           unit: 'sets',
           itemType: createProductTemplateId('document-copies'),
           markedAsEnough: true,
@@ -2062,21 +2081,21 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 0,
+          quantity: createQuantity(0),
           unit: 'euros',
           itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 0,
+          quantity: createQuantity(0),
           unit: 'sets',
           itemType: createProductTemplateId('document-copies'),
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 0,
+          quantity: createQuantity(0),
           unit: 'pieces',
           itemType: createProductTemplateId('contact-list'),
         }),
@@ -2102,14 +2121,14 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 150, // 50% of 300
+          quantity: createQuantity(150), // 50% of 300
           unit: 'euros',
           itemType: createProductTemplateId('cash'),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
-          quantity: 1, // 100% of 1
+          quantity: createQuantity(1), // 100% of 1
           unit: 'sets',
           itemType: createProductTemplateId('document-copies'),
         }),
@@ -2148,7 +2167,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
           itemType: createProductTemplateId('battery-radio'),
         }),
@@ -2175,7 +2194,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
           itemType: createProductTemplateId('battery-radio'),
         }),
@@ -2223,14 +2242,14 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 150, // 50% of 300
+        quantity: createQuantity(150), // 50% of 300
         unit: 'euros',
         itemType: createProductTemplateId('cash'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 1, // 100% of 1
+        quantity: createQuantity(1), // 100% of 1
         unit: 'sets',
         itemType: createProductTemplateId('document-copies'),
       }),
@@ -2259,14 +2278,14 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 300, // 100% of 300 euros
+        quantity: createQuantity(300), // 100% of 300 euros
         unit: 'euros',
         itemType: createProductTemplateId('cash'),
       }),
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 1, // 100% of 1 sets
+        quantity: createQuantity(1), // 100% of 1 sets
         unit: 'sets',
         itemType: createProductTemplateId('document-copies'),
       }),
@@ -2300,7 +2319,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         id: createItemId('cash-1'),
         name: 'Cash (Small Bills and Coins)',
         categoryId: createCategoryId('cash-documents'),
-        quantity: 300, // 100% of recommended 300 euros
+        quantity: createQuantity(300), // 100% of recommended 300 euros
         unit: 'euros',
         itemType: createProductTemplateId('cash'),
       }),
@@ -2308,7 +2327,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         id: createItemId('docs-1'),
         name: 'Copies of Important Documents',
         categoryId: createCategoryId('cash-documents'),
-        quantity: 1, // 100% of recommended 1 sets
+        quantity: createQuantity(1), // 100% of recommended 1 sets
         unit: 'sets',
         itemType: createProductTemplateId('document-copies'),
       }),
@@ -2343,7 +2362,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         id: createItemId('cash-1'),
         name: 'Cash',
         categoryId: createCategoryId('cash-documents'),
-        quantity: 300,
+        quantity: createQuantity(300),
         unit: 'euros',
         // itemType is 'custom' - won't match 'cash' recommended item
       }),
@@ -2351,7 +2370,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         id: createItemId('docs-1'),
         name: 'Documents',
         categoryId: createCategoryId('cash-documents'),
-        quantity: 1,
+        quantity: createQuantity(1),
         unit: 'sets',
         // itemType is 'custom' - won't match 'document-copies' recommended item
       }),
@@ -2418,7 +2437,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
           createMockInventoryItem({
             id: createItemId('cash'),
             categoryId: createCategoryId('cash-documents'),
-            quantity: testCase.cash,
+            quantity: createQuantity(testCase.cash),
             unit: 'euros',
             itemType: createProductTemplateId('cash'),
           }),
@@ -2429,7 +2448,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
           createMockInventoryItem({
             id: createItemId('docs'),
             categoryId: createCategoryId('cash-documents'),
-            quantity: testCase.documents,
+            quantity: createQuantity(testCase.documents),
             unit: 'sets',
             itemType: createProductTemplateId('document-copies'),
           }),
@@ -2440,7 +2459,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
           createMockInventoryItem({
             id: createItemId('contact'),
             categoryId: createCategoryId('cash-documents'),
-            quantity: testCase.contactList,
+            quantity: createQuantity(testCase.contactList),
             unit: 'pieces',
             itemType: createProductTemplateId('contact-list'),
           }),
@@ -2470,7 +2489,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       createMockInventoryItem({
         id: createItemId('1'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 50, // Less than recommended, but marked as enough
+        quantity: createQuantity(50), // Less than recommended, but marked as enough
         unit: 'euros',
         itemType: createProductTemplateId('cash'),
         markedAsEnough: true,
@@ -2478,7 +2497,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       createMockInventoryItem({
         id: createItemId('2'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 0, // None, but marked as enough
+        quantity: createQuantity(0), // None, but marked as enough
         unit: 'sets',
         itemType: createProductTemplateId('document-copies'),
         markedAsEnough: true,
@@ -2486,7 +2505,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       createMockInventoryItem({
         id: createItemId('3'),
         categoryId: createCategoryId('cash-documents'),
-        quantity: 0, // None, but marked as enough
+        quantity: createQuantity(0), // None, but marked as enough
         unit: 'pieces',
         itemType: createProductTemplateId('contact-list'),
         markedAsEnough: true,

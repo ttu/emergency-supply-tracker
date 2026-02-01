@@ -27,7 +27,8 @@ export function calculateBaseRecommendedQuantity(
   recItem: RecommendedItemDefinition,
   context: CategoryCalculationContext,
 ): number {
-  let qty = recItem.baseQuantity;
+  // Use regular number for calculations (Quantity is for storage/input boundaries)
+  let qty: number = recItem.baseQuantity;
 
   if (recItem.scaleWithPeople) {
     qty *= context.peopleMultiplier;

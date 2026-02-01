@@ -12,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 import { ExportButton } from './ExportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { createMockAppData } from '@/shared/utils/test/factories';
-import { createItemId, createCategoryId } from '@/shared/types';
+import { createItemId, createCategoryId, createQuantity } from '@/shared/types';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
@@ -201,7 +201,7 @@ describe('ExportButton', () => {
           name: 'Test Item 1',
           itemType: 'custom',
           categoryId: createCategoryId('food'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
           createdAt: '2024-01-01',
           updatedAt: '2024-01-01',
@@ -211,7 +211,7 @@ describe('ExportButton', () => {
           name: 'Test Item 2',
           itemType: 'custom',
           categoryId: createCategoryId('food'),
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'pieces',
           createdAt: '2024-01-01',
           updatedAt: '2024-01-01',

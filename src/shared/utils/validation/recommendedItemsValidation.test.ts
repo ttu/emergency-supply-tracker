@@ -7,8 +7,9 @@ import {
 import type {
   RecommendedItemsFile,
   ImportedRecommendedItem,
+  Quantity,
 } from '../../types';
-import { createProductTemplateId } from '../../types';
+import { createProductTemplateId, createQuantity } from '../../types';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 
 function createValidFile(
@@ -26,7 +27,7 @@ function createValidFile(
         id: createProductTemplateId('test-item'),
         names: { en: 'Test Item' },
         category: 'food',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'pieces',
         scaleWithPeople: true,
         scaleWithDays: false,
@@ -42,7 +43,7 @@ function createValidItem(
     id: createProductTemplateId('test-item'),
     names: { en: 'Test Item' },
     category: 'food',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'pieces',
     scaleWithPeople: true,
     scaleWithDays: false,
@@ -84,7 +85,7 @@ describe('validateRecommendedItemsFile', () => {
             id: createProductTemplateId('bottled-water'),
             i18nKey: 'products.bottled-water',
             category: 'water-beverages',
-            baseQuantity: 3,
+            baseQuantity: createQuantity(3),
             unit: 'liters',
             scaleWithPeople: true,
             scaleWithDays: true,
@@ -170,7 +171,7 @@ describe('validateRecommendedItemsFile', () => {
               sv: 'Komplett objekt',
             },
             category: 'food',
-            baseQuantity: 2.5,
+            baseQuantity: createQuantity(2.5),
             unit: 'kilograms',
             scaleWithPeople: true,
             scaleWithDays: true,
@@ -202,7 +203,7 @@ describe('validateRecommendedItemsFile', () => {
               fr: 'Eau',
             },
             category: 'water-beverages',
-            baseQuantity: 3,
+            baseQuantity: createQuantity(3),
             unit: 'liters',
             scaleWithPeople: true,
             scaleWithDays: true,
@@ -364,7 +365,7 @@ describe('validateRecommendedItemsFile', () => {
             id: createProductTemplateId('no-english'),
             names: { fi: 'Suomeksi' }, // missing 'en'
             category: 'food',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: true,
             scaleWithDays: false,
@@ -386,7 +387,7 @@ describe('validateRecommendedItemsFile', () => {
             id: createProductTemplateId('invalid-names'),
             names: 'not an object' as unknown as Record<string, string>,
             category: 'food',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: true,
             scaleWithDays: false,
@@ -427,7 +428,8 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects negative baseQuantity', () => {
       const file = createValidFile({
-        items: [createValidItem({ baseQuantity: -1 })],
+        // Use type assertion to test invalid value (deliberately testing validation)
+        items: [createValidItem({ baseQuantity: -1 as unknown as Quantity })],
       });
       const result = validateRecommendedItemsFile(file);
 
@@ -497,7 +499,7 @@ describe('validateRecommendedItemsFile', () => {
             id: createProductTemplateId('empty-i18n'),
             i18nKey: '   ', // empty after trim
             category: 'food',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: true,
             scaleWithDays: false,
@@ -514,7 +516,7 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects zero baseQuantity', () => {
       const file = createValidFile({
-        items: [createValidItem({ baseQuantity: 0 })],
+        items: [createValidItem({ baseQuantity: createQuantity(0) })],
       });
       const result = validateRecommendedItemsFile(file);
 
@@ -526,7 +528,10 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects non-finite baseQuantity (Infinity)', () => {
       const file = createValidFile({
-        items: [createValidItem({ baseQuantity: Infinity })],
+        // Use type assertion to test invalid value (deliberately testing validation)
+        items: [
+          createValidItem({ baseQuantity: Infinity as unknown as Quantity }),
+        ],
       });
       const result = validateRecommendedItemsFile(file);
 
@@ -538,7 +543,8 @@ describe('validateRecommendedItemsFile', () => {
 
     it('rejects non-finite baseQuantity (NaN)', () => {
       const file = createValidFile({
-        items: [createValidItem({ baseQuantity: NaN })],
+        // Use type assertion to test invalid value (deliberately testing validation)
+        items: [createValidItem({ baseQuantity: NaN as unknown as Quantity })],
       });
       const result = validateRecommendedItemsFile(file);
 
@@ -656,7 +662,7 @@ describe('validateRecommendedItemsFile', () => {
             id: createProductTemplateId('empty-name'),
             names: { en: 'Valid', fi: '   ' }, // empty Finnish name
             category: 'food',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: true,
             scaleWithDays: false,
@@ -770,7 +776,7 @@ describe('convertToRecommendedItemDefinitions', () => {
         id: createProductTemplateId('bottled-water'),
         i18nKey: 'products.bottled-water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -789,7 +795,7 @@ describe('convertToRecommendedItemDefinitions', () => {
         id: createProductTemplateId('custom-item'),
         names: { en: 'Custom Item', fi: 'Mukautettu' },
         category: 'food',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'pieces',
         scaleWithPeople: true,
         scaleWithDays: false,
@@ -807,7 +813,7 @@ describe('convertToRecommendedItemDefinitions', () => {
         id: createProductTemplateId('complete-item'),
         names: { en: 'Complete Item' },
         category: 'food',
-        baseQuantity: 2,
+        baseQuantity: createQuantity(2),
         unit: 'kilograms',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -839,7 +845,7 @@ describe('convertToRecommendedItemDefinitions', () => {
         id: createProductTemplateId('pet-food'),
         i18nKey: 'products.pet-food',
         category: 'pets',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'kilograms',
         scaleWithPeople: false,
         scaleWithDays: true,
@@ -872,7 +878,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'tent',
           names: { en: 'Tent' },
           category: 'camping-gear',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -895,7 +901,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'tent',
           names: { en: 'Tent' },
           category: 'camping-gear',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -904,7 +910,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'water',
           names: { en: 'Water' },
           category: 'water-beverages',
-          baseQuantity: 3,
+          baseQuantity: createQuantity(3),
           unit: 'liters',
           scaleWithPeople: true,
           scaleWithDays: true,
@@ -923,7 +929,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'tent',
           names: { en: 'Tent' },
           category: 'undefined-category',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -946,7 +952,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'item1',
           names: { en: 'Item' },
           category: 'food',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -969,7 +975,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'item1',
           names: { en: 'Item' },
           category: 'food',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -995,7 +1001,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'item1',
           names: { en: 'Item' },
           category: 'camping-gear',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -1018,7 +1024,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'item1',
           names: { en: 'Item' },
           category: 'food',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -1041,7 +1047,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'item1',
           names: { en: 'Item' },
           category: 'food',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -1060,7 +1066,7 @@ describe('validateRecommendedItemsFile with custom categories', () => {
           id: 'item1',
           names: { en: 'Item' },
           category: 'food',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,

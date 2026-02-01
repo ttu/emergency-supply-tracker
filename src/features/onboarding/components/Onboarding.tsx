@@ -7,6 +7,7 @@ import type { HouseholdData } from './HouseholdForm';
 import { RecommendationKitStep } from './RecommendationKitStep';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
+import { createQuantity } from '@/shared/types';
 import type { HouseholdPreset } from './HouseholdPresetSelector';
 import { useRecommendedItems } from '@/features/templates';
 import { HOUSEHOLD_DEFAULTS, HOUSEHOLD_PRESETS } from '@/features/household';
@@ -98,7 +99,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
 
     // Determine quantity: 0 if all items are selected, 1 if some are selected
     const allItemsSelected = selectedItemIds.size === availableItems.length;
-    const quantity = allItemsSelected ? 0 : 1;
+    const quantity = createQuantity(allItemsSelected ? 0 : 1);
 
     // Calculate and create inventory items from selected recommended items
     const items: InventoryItem[] = recommendedItems

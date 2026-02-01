@@ -8,7 +8,7 @@ import type {
   ImportedRecommendedItem,
   RecommendedItemsFile,
 } from '@/shared/types';
-import { createProductTemplateId } from '@/shared/types';
+import { createProductTemplateId, createQuantity } from '@/shared/types';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -35,7 +35,7 @@ const mockRecommendedItems: RecommendedItemDefinition[] = [
     i18nKey: 'products.water',
     category: 'water-beverages',
     unit: 'liters',
-    baseQuantity: 3,
+    baseQuantity: createQuantity(3),
     scaleWithPeople: true,
     scaleWithDays: true,
   },
@@ -44,7 +44,7 @@ const mockRecommendedItems: RecommendedItemDefinition[] = [
     i18nKey: 'products.rice',
     category: 'food',
     unit: 'kilograms',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     scaleWithPeople: true,
     scaleWithDays: false,
   },
@@ -397,7 +397,7 @@ describe('KitEditor', () => {
         id: createProductTemplateId('water'),
         names: { en: 'Water', fi: 'Vesi' },
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -426,7 +426,7 @@ describe('KitEditor', () => {
         id: createProductTemplateId('water'),
         i18nKey: 'products.water',
         category: 'water-beverages',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         unit: 'liters',
         scaleWithPeople: true,
         scaleWithDays: true,

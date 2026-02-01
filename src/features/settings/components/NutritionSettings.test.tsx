@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { NutritionSettings } from './NutritionSettings';
 import { SettingsContext } from '@/features/settings';
 import { createMockSettings } from '@/shared/utils/test/factories';
+import { createPercentage } from '@/shared/types';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
@@ -42,7 +43,9 @@ describe('NutritionSettings', () => {
     },
     dailyCaloriesPerPerson: DAILY_CALORIES_PER_PERSON,
     dailyWaterPerPerson: DAILY_WATER_PER_PERSON,
-    childrenRequirementPercentage: CHILDREN_REQUIREMENT_MULTIPLIER * 100,
+    childrenRequirementPercentage: createPercentage(
+      CHILDREN_REQUIREMENT_MULTIPLIER * 100,
+    ),
   });
 
   const renderWithContext = (
@@ -121,7 +124,7 @@ describe('NutritionSettings', () => {
     fireEvent.change(childrenInput, { target: { value: '80' } });
 
     expect(updateSettings).toHaveBeenCalledWith({
-      childrenRequirementPercentage: 80,
+      childrenRequirementPercentage: createPercentage(80),
     });
   });
 
@@ -157,7 +160,7 @@ describe('NutritionSettings', () => {
       ...defaultSettings,
       dailyCaloriesPerPerson: 2500,
       dailyWaterPerPerson: 4,
-      childrenRequirementPercentage: 80,
+      childrenRequirementPercentage: createPercentage(80),
     });
     renderWithContext(customSettings, updateSettings);
 

@@ -3,7 +3,7 @@ import {
   createMockInventoryItem,
   createMockRecommendedItem,
 } from '@/shared/utils/test/factories';
-import { createProductTemplateId } from '@/shared/types';
+import { createProductTemplateId, createQuantity } from '@/shared/types';
 import {
   findMatchingItems,
   findMatchingItemsByType,
@@ -148,13 +148,16 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: bottledWaterId,
-          quantity: 5,
+          quantity: createQuantity(5),
         }),
         createMockInventoryItem({
           itemType: bottledWaterId,
-          quantity: 3,
+          quantity: createQuantity(3),
         }),
-        createMockInventoryItem({ itemType: cannedFoodId, quantity: 10 }),
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: createQuantity(10),
+        }),
       ];
       const recommendedItem = createMockRecommendedItem({ id: bottledWaterId });
 
@@ -168,7 +171,10 @@ describe('itemMatching', () => {
       const cannedFoodId = createProductTemplateId('canned-food');
 
       const items = [
-        createMockInventoryItem({ itemType: cannedFoodId, quantity: 10 }),
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: createQuantity(10),
+        }),
       ];
       const recommendedItem = createMockRecommendedItem({ id: bottledWaterId });
 
@@ -186,12 +192,12 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: bottledWaterId,
-          quantity: 5,
+          quantity: createQuantity(5),
         }),
         createMockInventoryItem({
           itemType: otherTypeId,
           name: 'Bottled Water',
-          quantity: 3,
+          quantity: createQuantity(3),
         }),
       ];
 
@@ -264,12 +270,12 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: cannedFoodId,
-          quantity: 2,
+          quantity: createQuantity(2),
           caloriesPerUnit: 500,
         }),
         createMockInventoryItem({
           itemType: cannedFoodId,
-          quantity: 3,
+          quantity: createQuantity(3),
           caloriesPerUnit: 300,
         }),
       ];
@@ -289,7 +295,7 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: cannedFoodId,
-          quantity: 2,
+          quantity: createQuantity(2),
           caloriesPerUnit: undefined,
         }),
       ];
@@ -306,7 +312,7 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: cannedFoodId,
-          quantity: 5,
+          quantity: createQuantity(5),
           caloriesPerUnit: 0, // Zero calories (e.g., water)
         }),
       ];
@@ -328,7 +334,7 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: bottledWaterId,
-          quantity: 5,
+          quantity: createQuantity(5),
           caloriesPerUnit: 0,
         }),
       ];
@@ -348,13 +354,13 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: cannedFoodId,
-          quantity: 2,
+          quantity: createQuantity(2),
           caloriesPerUnit: 500,
         }),
         createMockInventoryItem({
           itemType: otherTypeId,
           name: 'Canned Food',
-          quantity: 3,
+          quantity: createQuantity(3),
           caloriesPerUnit: 300,
         }),
       ];
@@ -371,7 +377,7 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: cannedFoodId,
-          quantity: 3,
+          quantity: createQuantity(3),
           caloriesPerUnit: undefined,
         }),
       ];
@@ -387,7 +393,7 @@ describe('itemMatching', () => {
       const items = [
         createMockInventoryItem({
           itemType: cannedFoodId,
-          quantity: 5,
+          quantity: createQuantity(5),
           caloriesPerUnit: 0, // Zero calories (e.g., water)
         }),
       ];

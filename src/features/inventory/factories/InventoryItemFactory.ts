@@ -5,12 +5,14 @@ import type {
   Unit,
   ProductTemplateId,
   DateOnly,
+  Quantity,
 } from '@/shared/types';
 import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
   createDateOnly,
+  createQuantity,
 } from '@/shared/types';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { isTemplateId } from '@/shared/utils/storage/localStorage';
@@ -36,7 +38,7 @@ export interface CreateFromTemplateOptions {
   /**
    * Initial quantity (defaults to 0)
    */
-  quantity?: number;
+  quantity?: Quantity;
   /**
    * Custom expiration date override
    */
@@ -231,7 +233,7 @@ export class InventoryItemFactory {
       name: options.name ?? template.i18nKey, // Caller should translate this
       itemType,
       categoryId: createCategoryId(template.category),
-      quantity: options.quantity ?? 0,
+      quantity: options.quantity ?? createQuantity(0),
       unit: template.unit,
       expirationDate,
       neverExpires: !template.defaultExpirationMonths,
@@ -262,7 +264,7 @@ export class InventoryItemFactory {
       name: formData.name,
       itemType,
       categoryId: createCategoryId(formData.categoryId),
-      quantity: formData.quantity,
+      quantity: createQuantity(formData.quantity),
       unit: formData.unit,
       neverExpires: formData.neverExpires,
       expirationDate: (() => {

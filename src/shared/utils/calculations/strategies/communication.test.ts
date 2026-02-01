@@ -9,7 +9,7 @@ import {
   createMockHousehold,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
-import { createProductTemplateId } from '@/shared/types';
+import { createProductTemplateId, createQuantity } from '@/shared/types';
 import type { RecommendedItemDefinition } from '@/shared/types';
 
 describe('CommunicationCategoryStrategy', () => {
@@ -55,7 +55,7 @@ describe('CommunicationCategoryStrategy', () => {
         id: createProductTemplateId('battery-radio'),
         i18nKey: 'products.battery-radio',
         category: 'communication-info',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'pieces',
         scaleWithPeople: false,
         scaleWithDays: false,
@@ -73,7 +73,7 @@ describe('CommunicationCategoryStrategy', () => {
         id: createProductTemplateId('whistle'),
         i18nKey: 'products.whistle',
         category: 'communication-info',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'pieces',
         scaleWithPeople: true,
         scaleWithDays: false,
@@ -102,15 +102,15 @@ describe('CommunicationCategoryStrategy', () => {
 
     it('should sum quantities of matching items', () => {
       const matchingItems = [
-        createMockInventoryItem({ quantity: 1 }),
-        createMockInventoryItem({ quantity: 2 }),
+        createMockInventoryItem({ quantity: createQuantity(1) }),
+        createMockInventoryItem({ quantity: createQuantity(2) }),
       ];
 
       const recItem: RecommendedItemDefinition = {
         id: createProductTemplateId('battery-radio'),
         i18nKey: 'products.battery-radio',
         category: 'communication-info',
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'pieces',
         scaleWithPeople: false,
         scaleWithDays: false,
@@ -145,7 +145,7 @@ describe('CommunicationCategoryStrategy', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -161,7 +161,7 @@ describe('CommunicationCategoryStrategy', () => {
             id: createProductTemplateId('hand-crank-radio'),
             i18nKey: 'products.hand-crank-radio',
             category: 'communication-info',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -177,7 +177,7 @@ describe('CommunicationCategoryStrategy', () => {
             id: createProductTemplateId('whistle'),
             i18nKey: 'products.whistle',
             category: 'communication-info',
-            baseQuantity: 2,
+            baseQuantity: createQuantity(2),
             unit: 'pieces',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -206,7 +206,7 @@ describe('CommunicationCategoryStrategy', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -233,7 +233,7 @@ describe('CommunicationCategoryStrategy', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -249,7 +249,7 @@ describe('CommunicationCategoryStrategy', () => {
             id: createProductTemplateId('hand-crank-radio'),
             i18nKey: 'products.hand-crank-radio',
             category: 'communication-info',
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -276,7 +276,7 @@ describe('CommunicationCategoryStrategy', () => {
             id: createProductTemplateId('item-a'),
             i18nKey: 'products.item-a',
             category: 'communication-info',
-            baseQuantity: 2,
+            baseQuantity: createQuantity(2),
             unit: 'pieces',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -292,7 +292,7 @@ describe('CommunicationCategoryStrategy', () => {
             id: createProductTemplateId('item-b'),
             i18nKey: 'products.item-b',
             category: 'communication-info',
-            baseQuantity: 5,
+            baseQuantity: createQuantity(5),
             unit: 'pieces',
             scaleWithPeople: false,
             scaleWithDays: false,

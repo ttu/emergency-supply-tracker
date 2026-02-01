@@ -6,6 +6,7 @@ import {
   createCategoryId,
   createProductTemplateId,
   createDateOnly,
+  createQuantity,
 } from '@/shared/types';
 import { createMockHousehold } from '@/shared/utils/test/factories';
 
@@ -16,7 +17,7 @@ function createMockInventoryItem(
   return {
     id: createItemId('test-item'),
     name: 'Test Item',
-    quantity: 1,
+    quantity: createQuantity(1),
     categoryId: createCategoryId('food'),
     itemType: createProductTemplateId('test'),
     unit: 'pieces',
@@ -34,7 +35,7 @@ const mockFoodRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('rice'),
     i18nKey: 'rice',
     category: 'food',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'kilograms',
     scaleWithPeople: true,
     scaleWithDays: true,
@@ -46,7 +47,7 @@ const mockFoodRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('canned-beans'),
     i18nKey: 'cannedBeans',
     category: 'food',
-    baseQuantity: 2,
+    baseQuantity: createQuantity(2),
     unit: 'cans',
     scaleWithPeople: true,
     scaleWithDays: false,
@@ -61,7 +62,7 @@ const mockWaterRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('bottled-water'),
     i18nKey: 'bottledWater',
     category: 'water-beverages',
-    baseQuantity: 3,
+    baseQuantity: createQuantity(3),
     unit: 'liters',
     scaleWithPeople: true,
     scaleWithDays: true,
@@ -73,7 +74,7 @@ const mockToolsRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('flashlight'),
     i18nKey: 'flashlight',
     category: 'tools-supplies',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -82,7 +83,7 @@ const mockToolsRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('batteries'),
     i18nKey: 'batteries',
     category: 'tools-supplies',
-    baseQuantity: 4,
+    baseQuantity: createQuantity(4),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -94,7 +95,7 @@ const mockCookingHeatRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('camping-stove'),
     i18nKey: 'camping-stove',
     category: 'cooking-heat',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -103,7 +104,7 @@ const mockCookingHeatRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('stove-fuel'),
     i18nKey: 'stove-fuel',
     category: 'cooking-heat',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'canisters',
     scaleWithPeople: false,
     scaleWithDays: true,
@@ -112,7 +113,7 @@ const mockCookingHeatRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('matches'),
     i18nKey: 'matches',
     category: 'cooking-heat',
-    baseQuantity: 2,
+    baseQuantity: createQuantity(2),
     unit: 'boxes',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -124,7 +125,7 @@ const mockLightPowerRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('flashlight'),
     i18nKey: 'flashlight',
     category: 'light-power',
-    baseQuantity: 2,
+    baseQuantity: createQuantity(2),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -133,7 +134,7 @@ const mockLightPowerRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('headlamp'),
     i18nKey: 'headlamp',
     category: 'light-power',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'pieces',
     scaleWithPeople: true,
     scaleWithDays: false,
@@ -142,7 +143,7 @@ const mockLightPowerRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('batteries-aa'),
     i18nKey: 'batteries-aa',
     category: 'light-power',
-    baseQuantity: 20,
+    baseQuantity: createQuantity(20),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -154,7 +155,7 @@ const mockCommunicationRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('battery-radio'),
     i18nKey: 'battery-radio',
     category: 'communication-info',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -163,7 +164,7 @@ const mockCommunicationRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('hand-crank-radio'),
     i18nKey: 'hand-crank-radio',
     category: 'communication-info',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -175,7 +176,7 @@ const mockMedicalHealthRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('first-aid-kit'),
     i18nKey: 'first-aid-kit',
     category: 'medical-health',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -184,7 +185,7 @@ const mockMedicalHealthRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('prescription-meds'),
     i18nKey: 'prescription-meds',
     category: 'medical-health',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'days',
     scaleWithPeople: true,
     scaleWithDays: true,
@@ -193,7 +194,7 @@ const mockMedicalHealthRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('bandages'),
     i18nKey: 'bandages',
     category: 'medical-health',
-    baseQuantity: 20,
+    baseQuantity: createQuantity(20),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -205,7 +206,7 @@ const mockHygieneSanitationRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('toilet-paper'),
     i18nKey: 'toilet-paper',
     category: 'hygiene-sanitation',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'rolls',
     scaleWithPeople: true,
     scaleWithDays: true,
@@ -214,7 +215,7 @@ const mockHygieneSanitationRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('soap'),
     i18nKey: 'soap',
     category: 'hygiene-sanitation',
-    baseQuantity: 2,
+    baseQuantity: createQuantity(2),
     unit: 'pieces',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -223,7 +224,7 @@ const mockHygieneSanitationRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('toothbrush'),
     i18nKey: 'toothbrush',
     category: 'hygiene-sanitation',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'pieces',
     scaleWithPeople: true,
     scaleWithDays: false,
@@ -235,7 +236,7 @@ const mockCashDocumentsRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('cash'),
     i18nKey: 'cash',
     category: 'cash-documents',
-    baseQuantity: 300,
+    baseQuantity: createQuantity(300),
     unit: 'euros',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -244,7 +245,7 @@ const mockCashDocumentsRecommendedItems: RecommendedItemDefinition[] = [
     id: createProductTemplateId('document-copies'),
     i18nKey: 'document-copies',
     category: 'cash-documents',
-    baseQuantity: 1,
+    baseQuantity: createQuantity(1),
     unit: 'sets',
     scaleWithPeople: false,
     scaleWithDays: false,
@@ -270,7 +271,7 @@ describe('calculateCategoryPercentage', () => {
           name: 'Rice',
           categoryId: createCategoryId('food'),
           itemType: createProductTemplateId('rice'),
-          quantity: 1,
+          quantity: createQuantity(1),
           caloriesPerUnit: 3600,
           unit: 'kilograms',
         }),
@@ -305,7 +306,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('food'),
           itemType: createProductTemplateId('rice'),
-          quantity: 2,
+          quantity: createQuantity(2),
           caloriesPerUnit: 3600,
         }),
       ];
@@ -337,7 +338,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('food'),
           itemType: createProductTemplateId('rice'),
-          quantity: 3, // 3 kg rice = 10800 kcal
+          quantity: createQuantity(3), // 3 kg rice = 10800 kcal
           caloriesPerUnit: 3600,
         }),
       ];
@@ -371,7 +372,7 @@ describe('calculateCategoryPercentage', () => {
           categoryId: createCategoryId('food'),
           itemType: createProductTemplateId('custom-food'),
           name: 'Custom Food',
-          quantity: 2,
+          quantity: createQuantity(2),
           caloriesPerUnit: 1500, // 3000 kcal total
         }),
       ];
@@ -406,14 +407,14 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('tools-supplies'),
           itemType: createProductTemplateId('flashlight'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('tools-supplies'),
           itemType: createProductTemplateId('batteries'),
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'pieces',
         }),
       ];
@@ -446,13 +447,13 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('tools-supplies'),
           itemType: createProductTemplateId('flashlight'),
-          quantity: 1,
+          quantity: createQuantity(1),
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('tools-supplies'),
           itemType: createProductTemplateId('batteries'),
-          quantity: 4,
+          quantity: createQuantity(4),
         }),
       ];
 
@@ -484,14 +485,14 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('tools-supplies'),
           itemType: createProductTemplateId('flashlight'),
-          quantity: 0.5,
+          quantity: createQuantity(0.5),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('tools-supplies'),
           itemType: createProductTemplateId('batteries'),
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'pieces',
         }),
       ];
@@ -526,7 +527,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('water-beverages'),
           itemType: createProductTemplateId('bottled-water'),
-          quantity: 9, // 50%
+          quantity: createQuantity(9), // 50%
           unit: 'liters',
         }),
       ];
@@ -559,7 +560,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('water-beverages'),
           itemType: createProductTemplateId('bottled-water'),
-          quantity: 9,
+          quantity: createQuantity(9),
           unit: 'liters',
         }),
       ];
@@ -592,7 +593,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('water-beverages'),
           itemType: createProductTemplateId('bottled-water'),
-          quantity: 11.5, // ~50% of 23
+          quantity: createQuantity(11.5), // ~50% of 23
           unit: 'liters',
         }),
       ];
@@ -629,21 +630,21 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('cooking-heat'),
           itemType: createProductTemplateId('camping-stove'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cooking-heat'),
           itemType: createProductTemplateId('stove-fuel'),
-          quantity: 1, // Need 3 (scales with days)
+          quantity: createQuantity(1), // Need 3 (scales with days)
           unit: 'canisters',
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('cooking-heat'),
           itemType: createProductTemplateId('matches'),
-          quantity: 1, // Need 2
+          quantity: createQuantity(1), // Need 2
           unit: 'boxes',
         }),
       ];
@@ -679,21 +680,21 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('cooking-heat'),
           itemType: createProductTemplateId('camping-stove'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cooking-heat'),
           itemType: createProductTemplateId('stove-fuel'),
-          quantity: 2, // Need 2 (1 * 2 days)
+          quantity: createQuantity(2), // Need 2 (1 * 2 days)
           unit: 'canisters',
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('cooking-heat'),
           itemType: createProductTemplateId('matches'),
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'boxes',
         }),
       ];
@@ -732,21 +733,21 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('light-power'),
           itemType: createProductTemplateId('flashlight'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('light-power'),
           itemType: createProductTemplateId('headlamp'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('light-power'),
           itemType: createProductTemplateId('batteries-aa'),
-          quantity: 10,
+          quantity: createQuantity(10),
           unit: 'pieces',
         }),
       ];
@@ -780,21 +781,21 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('light-power'),
           itemType: createProductTemplateId('flashlight'),
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('light-power'),
           itemType: createProductTemplateId('headlamp'),
-          quantity: 3,
+          quantity: createQuantity(3),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('light-power'),
           itemType: createProductTemplateId('batteries-aa'),
-          quantity: 20,
+          quantity: createQuantity(20),
           unit: 'pieces',
         }),
       ];
@@ -829,7 +830,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('communication-info'),
           itemType: createProductTemplateId('battery-radio'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
       ];
@@ -862,14 +863,14 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('communication-info'),
           itemType: createProductTemplateId('battery-radio'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('communication-info'),
           itemType: createProductTemplateId('hand-crank-radio'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
       ];
@@ -905,21 +906,21 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('medical-health'),
           itemType: createProductTemplateId('first-aid-kit'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('medical-health'),
           itemType: createProductTemplateId('prescription-meds'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'days',
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('medical-health'),
           itemType: createProductTemplateId('bandages'),
-          quantity: 10, // Need 20
+          quantity: createQuantity(10), // Need 20
           unit: 'pieces',
         }),
       ];
@@ -954,21 +955,21 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('medical-health'),
           itemType: createProductTemplateId('first-aid-kit'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('medical-health'),
           itemType: createProductTemplateId('prescription-meds'),
-          quantity: 6, // (2*1.0 + 1*0.75) * 2 = 5.5 -> Math.ceil = 6
+          quantity: createQuantity(6), // (2*1.0 + 1*0.75) * 2 = 5.5 -> Math.ceil = 6
           unit: 'days',
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('medical-health'),
           itemType: createProductTemplateId('bandages'),
-          quantity: 20,
+          quantity: createQuantity(20),
           unit: 'pieces',
         }),
       ];
@@ -1008,21 +1009,21 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('hygiene-sanitation'),
           itemType: createProductTemplateId('toilet-paper'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'rolls',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('hygiene-sanitation'),
           itemType: createProductTemplateId('soap'),
-          quantity: 1, // Need 2
+          quantity: createQuantity(1), // Need 2
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('hygiene-sanitation'),
           itemType: createProductTemplateId('toothbrush'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         }),
       ];
@@ -1057,21 +1058,21 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('hygiene-sanitation'),
           itemType: createProductTemplateId('toilet-paper'),
-          quantity: 6, // (2*1.0 + 1*0.75) * 2 = 5.5 -> Math.ceil = 6
+          quantity: createQuantity(6), // (2*1.0 + 1*0.75) * 2 = 5.5 -> Math.ceil = 6
           unit: 'rolls',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('hygiene-sanitation'),
           itemType: createProductTemplateId('soap'),
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'pieces',
         }),
         createMockInventoryItem({
           id: createItemId('3'),
           categoryId: createCategoryId('hygiene-sanitation'),
           itemType: createProductTemplateId('toothbrush'),
-          quantity: 3, // (2*1.0 + 1*0.75) = 2.75 -> Math.ceil = 3
+          quantity: createQuantity(3), // (2*1.0 + 1*0.75) = 2.75 -> Math.ceil = 3
           unit: 'pieces',
         }),
       ];
@@ -1111,14 +1112,14 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('cash-documents'),
           itemType: createProductTemplateId('cash'),
-          quantity: 150, // Less than 300 needed
+          quantity: createQuantity(150), // Less than 300 needed
           unit: 'euros',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
           itemType: createProductTemplateId('document-copies'),
-          quantity: 1, // Meets requirement
+          quantity: createQuantity(1), // Meets requirement
           unit: 'sets',
         }),
       ];
@@ -1152,14 +1153,14 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('cash-documents'),
           itemType: createProductTemplateId('cash'),
-          quantity: 300,
+          quantity: createQuantity(300),
           unit: 'euros',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('cash-documents'),
           itemType: createProductTemplateId('document-copies'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'sets',
         }),
       ];
@@ -1192,7 +1193,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('tools-supplies'),
           itemType: createProductTemplateId('flashlight'),
-          quantity: 1,
+          quantity: createQuantity(1),
         }),
       ];
 
@@ -1224,7 +1225,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('food'),
           itemType: createProductTemplateId('rice'),
-          quantity: 1,
+          quantity: createQuantity(1),
           // Item doesn't have caloriesPerUnit, should use recommendation's value
           caloriesPerUnit: undefined,
           unit: 'kilograms',
@@ -1260,7 +1261,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           categoryId: createCategoryId('food'),
           itemType: createProductTemplateId('rice'),
-          quantity: 1,
+          quantity: createQuantity(1),
           caloriesPerUnit: 4000, // Custom calories per unit
           unit: 'kilograms',
         }),
@@ -1298,7 +1299,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('1'),
           name: 'Rice',
           categoryId: createCategoryId('food'),
-          quantity: 1,
+          quantity: createQuantity(1),
           caloriesPerUnit: 3600,
           unit: 'kilograms',
         }),
@@ -1333,7 +1334,7 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('food'),
-          quantity: 2,
+          quantity: createQuantity(2),
           caloriesPerUnit: 3600,
         }),
       ];
@@ -1365,7 +1366,7 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('water-beverages'),
-          quantity: 9, // 50%
+          quantity: createQuantity(9), // 50%
           unit: 'liters',
         }),
       ];
@@ -1399,7 +1400,7 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('water-beverages'),
-          quantity: 10,
+          quantity: createQuantity(10),
           unit: 'liters',
         }),
       ];
@@ -1431,7 +1432,7 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('food'),
-          quantity: 3, // 3 kg rice = 10800 kcal
+          quantity: createQuantity(3), // 3 kg rice = 10800 kcal
           caloriesPerUnit: 3600,
         }),
       ];
@@ -1464,7 +1465,7 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('water-beverages'),
-          quantity: 11, // ~48% of 22.5
+          quantity: createQuantity(11), // ~48% of 22.5
           unit: 'liters',
         }),
       ];
@@ -1543,13 +1544,13 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('food'),
-          quantity: 1,
+          quantity: createQuantity(1),
           caloriesPerUnit: 3600,
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('food'),
-          quantity: 2,
+          quantity: createQuantity(2),
           caloriesPerUnit: 600, // 2 * 600 = 1200 kcal
         }),
       ];
@@ -1582,13 +1583,13 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('food'),
-          quantity: 1,
+          quantity: createQuantity(1),
           caloriesPerUnit: 3600,
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('food'),
-          quantity: 10,
+          quantity: createQuantity(10),
           caloriesPerUnit: undefined, // No calories, should be ignored
         }),
       ];
@@ -1620,13 +1621,13 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('water-beverages'),
-          quantity: 5,
+          quantity: createQuantity(5),
           unit: 'liters',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('water-beverages'),
-          quantity: 10,
+          quantity: createQuantity(10),
           unit: 'pieces', // Not liters, should be ignored
         }),
       ];
@@ -1660,14 +1661,14 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('water-beverages'),
-          quantity: 12,
+          quantity: createQuantity(12),
           unit: 'liters',
         }),
         createMockInventoryItem({
           id: createItemId('2'),
           categoryId: createCategoryId('food'),
           name: 'Dry pasta',
-          quantity: 2,
+          quantity: createQuantity(2),
           requiresWaterLiters: 1.5, // 2 * 1.5 = 3 L prep water needed
         }),
       ];
@@ -1705,7 +1706,7 @@ describe('calculateCategoryPercentage', () => {
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('custom-category'),
-          quantity: 5,
+          quantity: createQuantity(5),
         }),
       ];
 

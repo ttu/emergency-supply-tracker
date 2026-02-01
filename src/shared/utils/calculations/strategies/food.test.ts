@@ -9,7 +9,11 @@ import {
   createMockHousehold,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
-import { createCategoryId, createProductTemplateId } from '@/shared/types';
+import {
+  createCategoryId,
+  createProductTemplateId,
+  createQuantity,
+} from '@/shared/types';
 import type { RecommendedItemDefinition } from '@/shared/types';
 
 describe('FoodCategoryStrategy', () => {
@@ -55,7 +59,7 @@ describe('FoodCategoryStrategy', () => {
         id: createProductTemplateId('canned-beans'),
         i18nKey: 'products.canned-beans',
         category: 'food',
-        baseQuantity: 2,
+        baseQuantity: createQuantity(2),
         unit: 'cans',
         scaleWithPeople: true,
         scaleWithDays: true,
@@ -87,12 +91,12 @@ describe('FoodCategoryStrategy', () => {
       const matchingItems = [
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
-          quantity: 5,
+          quantity: createQuantity(5),
           caloriesPerUnit: 200,
         }),
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
-          quantity: 3,
+          quantity: createQuantity(3),
           caloriesPerUnit: 150,
         }),
       ];
@@ -101,7 +105,7 @@ describe('FoodCategoryStrategy', () => {
         id: createProductTemplateId('canned-food'),
         i18nKey: 'products.canned-food',
         category: 'food',
-        baseQuantity: 10,
+        baseQuantity: createQuantity(10),
         unit: 'cans',
         scaleWithPeople: false,
         scaleWithDays: false,
@@ -123,7 +127,7 @@ describe('FoodCategoryStrategy', () => {
       const matchingItems = [
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
-          quantity: 5,
+          quantity: createQuantity(5),
           caloriesPerUnit: undefined,
         }),
       ];
@@ -132,7 +136,7 @@ describe('FoodCategoryStrategy', () => {
         id: createProductTemplateId('canned-food'),
         i18nKey: 'products.canned-food',
         category: 'food',
-        baseQuantity: 10,
+        baseQuantity: createQuantity(10),
         unit: 'cans',
         scaleWithPeople: false,
         scaleWithDays: false,
@@ -154,7 +158,7 @@ describe('FoodCategoryStrategy', () => {
       const matchingItems = [
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
-          quantity: 5,
+          quantity: createQuantity(5),
           caloriesPerUnit: 200,
         }),
       ];
@@ -163,7 +167,7 @@ describe('FoodCategoryStrategy', () => {
         id: createProductTemplateId('mystery-food'),
         i18nKey: 'products.mystery-food',
         category: 'food',
-        baseQuantity: 10,
+        baseQuantity: createQuantity(10),
         unit: 'cans',
         scaleWithPeople: false,
         scaleWithDays: false,
@@ -205,7 +209,7 @@ describe('FoodCategoryStrategy', () => {
             id: createProductTemplateId('canned-beans'),
             i18nKey: 'products.canned-beans',
             category: 'food',
-            baseQuantity: 5,
+            baseQuantity: createQuantity(5),
             unit: 'cans',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -235,7 +239,7 @@ describe('FoodCategoryStrategy', () => {
             id: createProductTemplateId('item-a'),
             i18nKey: 'products.item-a',
             category: 'food',
-            baseQuantity: 10,
+            baseQuantity: createQuantity(10),
             unit: 'cans',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -252,7 +256,7 @@ describe('FoodCategoryStrategy', () => {
             id: createProductTemplateId('item-b'),
             i18nKey: 'products.item-b',
             category: 'food',
-            baseQuantity: 5,
+            baseQuantity: createQuantity(5),
             unit: 'cans',
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -281,7 +285,7 @@ describe('FoodCategoryStrategy', () => {
             id: createProductTemplateId('canned-soup'),
             i18nKey: 'products.canned-soup',
             category: 'food',
-            baseQuantity: 10,
+            baseQuantity: createQuantity(10),
             unit: 'cans',
             scaleWithPeople: false,
             scaleWithDays: false,

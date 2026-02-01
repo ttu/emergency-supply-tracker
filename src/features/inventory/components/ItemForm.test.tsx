@@ -3,7 +3,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ItemForm } from './ItemForm';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
-import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createDateOnly,
+  createQuantity,
+} from '@/shared/types';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -47,7 +52,7 @@ describe('ItemForm', () => {
       id: createItemId('1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 20,
+      quantity: createQuantity(20),
       unit: 'liters',
       neverExpires: false,
       expirationDate: createDateOnly('2025-12-31'),
@@ -260,7 +265,7 @@ describe('ItemForm', () => {
         name: 'Test Item',
         itemType: 'custom',
         categoryId: 'water-beverages',
-        quantity: 10,
+        quantity: createQuantity(10),
         unit: 'pieces',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -311,7 +316,7 @@ describe('ItemForm', () => {
         name: 'Test Item',
         itemType: 'custom',
         categoryId: 'water-beverages',
-        quantity: 10,
+        quantity: createQuantity(10),
         unit: 'pieces',
         neverExpires: false,
         expirationDate: '2025-12-31',
@@ -376,7 +381,7 @@ describe('ItemForm', () => {
         name: 'Test Item',
         itemType: 'custom',
         categoryId: 'water-beverages',
-        quantity: 10,
+        quantity: createQuantity(10),
         unit: 'pieces',
         neverExpires: true,
         expirationDate: undefined,
@@ -395,7 +400,7 @@ describe('ItemForm', () => {
       id: createItemId('1'),
       name: 'Test Item',
       categoryId: createCategoryId('food'),
-      quantity: 5,
+      quantity: createQuantity(5),
       unit: 'pieces',
       neverExpires: false,
       expirationDate: createDateOnly('2025-12-31'),
@@ -640,7 +645,7 @@ describe('ItemForm', () => {
       id: createItemId('1'),
       name: 'Power Bank',
       categoryId: createCategoryId('light-power'),
-      quantity: 1,
+      quantity: createQuantity(1),
       unit: 'pieces',
       neverExpires: true,
       capacityMah: 20000,
@@ -911,7 +916,7 @@ describe('ItemForm', () => {
       id: createItemId('1'),
       name: 'Test Food',
       categoryId: createCategoryId('food'),
-      quantity: 1,
+      quantity: createQuantity(1),
       unit: 'kilograms',
       weightGrams: 1500,
       neverExpires: true,
@@ -987,7 +992,7 @@ describe('ItemForm', () => {
         expect.objectContaining({
           name: 'Test Food',
           categoryId: 'food',
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'kilograms',
           weightGrams: 100, // Weight entered in grams (as on package labels)
         }),

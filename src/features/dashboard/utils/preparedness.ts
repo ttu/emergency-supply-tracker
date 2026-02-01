@@ -61,7 +61,8 @@ export function calculatePreparednessScore(
   const recommendedQuantities = new Map<string, number>();
 
   recommendedForHousehold.forEach((recItem) => {
-    let quantity = recItem.baseQuantity;
+    // Use regular number for calculations (Quantity is for storage/input boundaries)
+    let quantity: number = recItem.baseQuantity;
 
     if (recItem.scaleWithPeople) {
       quantity *= totalPeople;
