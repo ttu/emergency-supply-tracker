@@ -5,6 +5,7 @@ import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { generateDashboardAlerts, type Alert } from '@/features/alerts';
 import { useBackupTracking } from './useBackupTracking';
+import { useNotification } from '@/shared/hooks/useNotification';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { createAlertId, type AlertId } from '@/shared/types';
 
@@ -24,6 +25,7 @@ export interface UseDashboardAlertsResult {
  */
 export function useDashboardAlerts(): UseDashboardAlertsResult {
   const { t } = useTranslation();
+  const { showNotification } = useNotification();
   const { items, dismissedAlertIds, dismissAlert, reactivateAllAlerts } =
     useInventory();
   const { household } = useHousehold();
@@ -100,11 +102,12 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
       if (alertId === BACKUP_REMINDER_ALERT_ID) {
         dismissBackup();
         setBackupReminderDismissed(true);
+        showNotification(t('notifications.backupReminderDismissed'), 'success');
       } else {
         dismissAlert(alertId);
       }
     },
-    [dismissAlert, dismissBackup],
+    [dismissAlert, dismissBackup, showNotification, t],
   );
 
   const handleDismissAllAlerts = useCallback(() => {

@@ -22,6 +22,10 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
   createDefaultAppData: vi.fn(() => createMockAppData()),
 }));
 
+vi.mock('@/shared/hooks/useNotification', () => ({
+  useNotification: () => ({ showNotification: vi.fn() }),
+}));
+
 describe('ExportButton', () => {
   let createElementSpy: ReturnType<typeof vi.spyOn>;
 

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
+import { useNotification } from '@/shared/hooks/useNotification';
 import { clearAppData } from '@/shared/utils/storage/localStorage';
 import { clearErrorLogs } from '@/shared/utils/errorLogger/storage';
 import { clearAnalyticsData } from '@/shared/utils/analytics/storage';
@@ -7,6 +8,7 @@ import styles from './ClearDataButton.module.css';
 
 export function ClearDataButton() {
   const { t } = useTranslation();
+  const { showNotification } = useNotification();
 
   const handleClear = () => {
     if (window.confirm(t('settings.clearData.confirmMessage'))) {
@@ -14,7 +16,7 @@ export function ClearDataButton() {
         clearAppData();
         clearErrorLogs();
         clearAnalyticsData();
-        alert(t('settings.clearData.success'));
+        showNotification(t('notifications.dataCleared'), 'success');
         // Reload to reset to default state
         window.location.reload();
       }

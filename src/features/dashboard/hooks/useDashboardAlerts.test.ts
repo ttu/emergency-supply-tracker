@@ -29,6 +29,10 @@ vi.mock('@/features/alerts', () => ({
   generateDashboardAlerts: vi.fn(),
 }));
 
+vi.mock('@/shared/hooks/useNotification', () => ({
+  useNotification: () => ({ showNotification: vi.fn() }),
+}));
+
 // Mock the useBackupTracking hook
 const mockShouldShowBackupReminder = vi.fn();
 const mockDismissBackupReminder = vi.fn();

@@ -5,6 +5,7 @@ import {
   saveAppData,
 } from '@/shared/utils/storage/localStorage';
 import { isValidAppData } from '@/shared/utils/validation';
+import { useNotification } from './useNotification';
 
 interface UseImportDataOptions {
   onImportSuccess?: () => void;
@@ -29,6 +30,7 @@ export function useImportData(
 ): UseImportDataReturn {
   const { onImportSuccess, skipConfirmation = false } = options;
   const { t } = useTranslation();
+  const { showNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = useCallback(
@@ -46,7 +48,7 @@ export function useImportData(
         const data = importFromJSON(json);
 
         if (!isValidAppData(data)) {
-          alert(t('settings.import.invalidFormat'));
+          showNotification(t('notifications.importError'), 'error');
           return;
         }
 
@@ -55,17 +57,17 @@ export function useImportData(
           globalThis.confirm(t('settings.import.confirmOverwrite'))
         ) {
           saveAppData(data);
-          alert(t('settings.import.success'));
+          showNotification(t('notifications.importSuccess'), 'success');
           onImportSuccess?.();
           // Reload to reflect changes
           globalThis.location.reload();
         }
       } catch (error) {
         console.error('Import error:', error);
-        alert(t('settings.import.error'));
+        showNotification(t('notifications.importError'), 'error');
       }
     },
-    [t, onImportSuccess, skipConfirmation],
+    [t, onImportSuccess, skipConfirmation, showNotification],
   );
 
   const triggerFileInput = useCallback(() => {

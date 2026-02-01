@@ -630,7 +630,19 @@
     "itemsBulkAdded": "{{count}} tuotetta lisätty",
     "categoryAdded": "Kategoria \"{{name}}\" lisätty",
     "categoryUpdated": "Kategoria päivitetty",
-    "categoryDeleted": "Kategoria poistettu"
+    "categoryDeleted": "Kategoria poistettu",
+    "alertDismissed": "Ilmoitus suljettu",
+    "alertRestored": "Ilmoitus palautettu",
+    "allAlertsRestored": "Kaikki ilmoitukset palautettu",
+    "backupReminderDismissed": "Varmuuskopiointimuistutus suljettu",
+    "backupSuccess": "Tiedot viety onnistuneesti",
+    "importSuccess": "Tiedot tuotu onnistuneesti",
+    "importError": "Tuonti epäonnistui",
+    "dataCleared": "Kaikki tiedot tyhjennetty",
+    "recommendationHidden": "Suositus piilotettu",
+    "recommendationShown": "Suositus näytetty",
+    "categoryHidden": "Kategoria piilotettu",
+    "categoryShown": "Kategoria näytetty"
   },
   "kitSelector": {
     "builtInKits": "Sisäänrakennetut paketit",

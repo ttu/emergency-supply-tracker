@@ -7,6 +7,7 @@ import {
 } from '@/shared/utils/storage/localStorage';
 import { downloadFile, generateDateFilename } from '@/shared/utils/download';
 import { useBackupTracking } from '@/features/dashboard';
+import { useNotification } from '@/shared/hooks/useNotification';
 import { ExportSelectionModal } from './ExportSelectionModal';
 import type { ExportSection } from '@/shared/types/exportImport';
 import type { AppData } from '@/shared/types';
@@ -14,6 +15,7 @@ import styles from './ExportButton.module.css';
 
 export function ExportButton() {
   const { t } = useTranslation();
+  const { showNotification } = useNotification();
   const { recordBackupDate } = useBackupTracking();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [appData, setAppData] = useState<AppData | null>(null);
@@ -43,8 +45,9 @@ export function ExportButton() {
 
       // Record the backup date
       recordBackupDate();
+      showNotification(t('notifications.backupSuccess'), 'success');
     },
-    [appData, recordBackupDate],
+    [appData, recordBackupDate, showNotification, t],
   );
 
   return (

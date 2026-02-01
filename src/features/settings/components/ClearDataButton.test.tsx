@@ -10,6 +10,11 @@ vi.mock('@/shared/utils/storage/localStorage');
 vi.mock('@/shared/utils/errorLogger/storage');
 vi.mock('@/shared/utils/analytics/storage');
 
+const mockShowNotification = vi.fn();
+vi.mock('@/shared/hooks/useNotification', () => ({
+  useNotification: () => ({ showNotification: mockShowNotification }),
+}));
+
 // Store original console.error to restore later
 const originalConsoleError = console.error;
 
@@ -82,7 +87,10 @@ describe('ClearDataButton', () => {
     expect(localStorage.clearAppData).toHaveBeenCalled();
     expect(errorLoggerStorage.clearErrorLogs).toHaveBeenCalled();
     expect(analyticsStorage.clearAnalyticsData).toHaveBeenCalled();
-    expect(globalThis.alert).toHaveBeenCalledWith('settings.clearData.success');
+    expect(mockShowNotification).toHaveBeenCalledWith(
+      'notifications.dataCleared',
+      'success',
+    );
     // window.location.reload should be called
     expect(reloadSpy).toHaveBeenCalled();
   });

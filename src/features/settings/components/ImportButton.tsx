@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
+import { useNotification } from '@/shared/hooks/useNotification';
 import {
   parseImportJSON,
   mergeImportData,
@@ -22,6 +23,7 @@ interface ImportButtonProps {
 
 export function ImportButton({ onImportSuccess }: ImportButtonProps) {
   const { t } = useTranslation();
+  const { showNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [importData, setImportData] = useState<PartialExportData | null>(null);
@@ -46,7 +48,7 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
       const reader = new FileReader();
       reader.onerror = () => {
         console.error('Import error:', reader.error);
-        alert(t('settings.import.error'));
+        showNotification(t('notifications.importError'), 'error');
       };
       reader.onload = (event) => {
         try {
@@ -54,7 +56,7 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
           const data = parseImportJSON(json);
 
           if (!validateImportData(data)) {
-            alert(t('settings.import.invalidFormat'));
+            showNotification(t('notifications.importError'), 'error');
             return;
           }
 
@@ -63,7 +65,7 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
           setIsModalOpen(true);
         } catch (error) {
           console.error('Import error:', error);
-          alert(t('settings.import.error'));
+          showNotification(t('notifications.importError'), 'error');
         }
       };
 
@@ -74,7 +76,7 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
         fileInputRef.current.value = '';
       }
     },
-    [t],
+    [t, showNotification],
   );
 
   const handleCloseModal = useCallback(() => {
@@ -96,7 +98,7 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
         // Save merged data
         saveAppData(merged);
 
-        alert(t('settings.import.success'));
+        showNotification(t('notifications.importSuccess'), 'success');
 
         if (onImportSuccess) {
           onImportSuccess();
@@ -106,12 +108,12 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
         window.location.reload();
       } catch (error) {
         console.error('Import merge error:', error);
-        alert(t('settings.import.error'));
+        showNotification(t('notifications.importError'), 'error');
       }
 
       handleCloseModal();
     },
-    [importData, t, onImportSuccess, handleCloseModal],
+    [importData, t, onImportSuccess, handleCloseModal, showNotification],
   );
 
   const handleClick = () => {

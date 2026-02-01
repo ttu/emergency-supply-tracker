@@ -20,6 +20,11 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
   createDefaultAppData: vi.fn(),
 }));
 
+const mockShowNotification = vi.fn();
+vi.mock('@/shared/hooks/useNotification', () => ({
+  useNotification: () => ({ showNotification: mockShowNotification }),
+}));
+
 // Helper to create a file with mocked text() method
 function createMockFile(content: string, name = 'data.json'): File {
   const file = new File([content], name, { type: 'application/json' });
@@ -211,7 +216,10 @@ describe('ImportButton', () => {
     await waitFor(() => {
       expect(mockMergeImportData).toHaveBeenCalled();
       expect(mockSaveAppData).toHaveBeenCalledWith(mergedData);
-      expect(globalThis.alert).toHaveBeenCalledWith('settings.import.success');
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        'notifications.importSuccess',
+        'success',
+      );
       expect(onImportSuccess).toHaveBeenCalled();
     });
   });
@@ -236,8 +244,9 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(globalThis.alert).toHaveBeenCalledWith(
-        'settings.import.invalidFormat',
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        'notifications.importError',
+        'error',
       );
     });
 
@@ -314,7 +323,10 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(globalThis.alert).toHaveBeenCalledWith('settings.import.error');
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        'notifications.importError',
+        'error',
+      );
     });
   });
 
@@ -395,8 +407,9 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(globalThis.alert).toHaveBeenCalledWith(
-        'settings.import.invalidFormat',
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        'notifications.importError',
+        'error',
       );
     });
   });
@@ -414,8 +427,9 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(globalThis.alert).toHaveBeenCalledWith(
-        'settings.import.invalidFormat',
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        'notifications.importError',
+        'error',
       );
     });
   });
