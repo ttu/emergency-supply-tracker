@@ -28,8 +28,11 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     useInventory();
   const { household } = useHousehold();
   const { recommendedItems } = useRecommendedItems();
-  const { shouldShowBackupReminder, dismissBackupReminder: dismissBackup } =
-    useBackupTracking();
+  const {
+    lastBackupDate,
+    shouldShowBackupReminder,
+    dismissBackupReminder: dismissBackup,
+  } = useBackupTracking();
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
 
   // Generate alerts (including water shortage alerts)
@@ -48,12 +51,23 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     const lastModified = appData?.lastModified ?? new Date().toISOString();
     if (!shouldShowBackupReminder(items.length, lastModified)) return undefined;
 
+    const message =
+      lastBackupDate === undefined
+        ? t('alerts.backup.neverBackedUpMessage')
+        : t('alerts.backup.reminderMessage');
+
     return {
       id: BACKUP_REMINDER_ALERT_ID,
       type: 'info',
-      message: t('alerts.backup.reminderMessage'),
+      message,
     };
-  }, [backupReminderDismissed, t, items, shouldShowBackupReminder]);
+  }, [
+    backupReminderDismissed,
+    t,
+    items,
+    lastBackupDate,
+    shouldShowBackupReminder,
+  ]);
 
   // Combine all alerts with backup reminder first
   const combinedAlerts = useMemo(() => {

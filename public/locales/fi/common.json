@@ -111,7 +111,8 @@
       "preparationShortage": "Tarvitaan {{liters}}L lisää vettä ruoan valmistukseen"
     },
     "backup": {
-      "reminderMessage": "Viimeisimmästä varmuuskopiosta on yli kuukausi. Harkitse tietojen vientiä muutosten menettämisen välttämiseksi."
+      "reminderMessage": "Viimeisimmästä varmuuskopiosta on yli kuukausi. Harkitse tietojen vientiä muutosten menettämisen välttämiseksi.",
+      "neverBackedUpMessage": "Et ole koskaan varmuuskopioinut tietojasi. Muista käyttää Asetuksista varmuuskopiointia."
     }
   },
   "household": {
