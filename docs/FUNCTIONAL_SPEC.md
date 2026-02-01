@@ -448,18 +448,17 @@ A comprehensive help page with frequently asked questions and guidance.
 - `ExportButton`: Export data as JSON
 - `ImportButton`: Import data from JSON
 - `ShoppingListExport`: Export shopping list (TXT/Markdown/CSV)
-- `DebugExport`: Export error logs (Advanced)
-- `ClearDataButton`: Clear all data with confirmation (Danger Zone, Advanced)
+
+**Advanced:**
+
+- `DebugExport`: Export error logs
+- `ClearDataButton`: Clear all data with confirmation (Danger Zone)
 
 **About:**
 
 - App version display
 - Link to GitHub repository
 - App description
-
-**Danger Zone:**
-
-- `ClearDataButton`: Clear all data with confirmation (placed in separate "Danger Zone" section)
 
 ---
 
