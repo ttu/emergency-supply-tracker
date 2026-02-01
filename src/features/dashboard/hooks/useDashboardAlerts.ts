@@ -102,7 +102,10 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
       if (alertId === BACKUP_REMINDER_ALERT_ID) {
         dismissBackup();
         setBackupReminderDismissed(true);
-        showNotification(t('notifications.backupReminderDismissed'), 'success');
+        showNotification(
+          t('notifications.backup.reminderDismissed'),
+          'success',
+        );
       } else {
         dismissAlert(alertId);
       }

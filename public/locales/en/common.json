@@ -634,7 +634,9 @@
     "alertDismissed": "Alert dismissed",
     "alertRestored": "Alert restored",
     "allAlertsRestored": "All alerts restored",
-    "backupReminderDismissed": "Backup reminder dismissed",
+    "backup": {
+      "reminderDismissed": "Backup reminder dismissed"
+    },
     "backupSuccess": "Data exported successfully",
     "importSuccess": "Data imported successfully",
     "importError": "Import failed",

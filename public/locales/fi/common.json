@@ -634,7 +634,9 @@
     "alertDismissed": "Ilmoitus suljettu",
     "alertRestored": "Ilmoitus palautettu",
     "allAlertsRestored": "Kaikki ilmoitukset palautettu",
-    "backupReminderDismissed": "Varmuuskopiointimuistutus suljettu",
+    "backup": {
+      "reminderDismissed": "Varmuuskopiointimuistutus suljettu"
+    },
     "backupSuccess": "Tiedot viety onnistuneesti",
     "importSuccess": "Tiedot tuotu onnistuneesti",
     "importError": "Tuonti epäonnistui",
