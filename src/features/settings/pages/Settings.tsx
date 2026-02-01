@@ -286,7 +286,8 @@ export function Settings() {
                   href="mailto:help@emergencysupplytracker.com"
                   className={styles.link}
                 >
-                  {t('help.contactEmailLabel')} (help@emergencysupplytracker.com)
+                  {t('help.contactEmailLabel')}{' '}
+                  (help@emergencysupplytracker.com)
                 </a>
                 <a
                   href="https://github.com/ttu/emergency-supply-tracker"
