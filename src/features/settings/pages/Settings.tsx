@@ -282,6 +282,12 @@ export function Settings() {
               </p>
               <p className={styles.description}>{t('help.contactText')}</p>
               <a
+                href="mailto:help@emergencysupplytracker.com"
+                className={styles.link}
+              >
+                {t('help.contactEmailLabel')} (help@emergencysupplytracker.com)
+              </a>
+              <a
                 href="https://github.com/ttu/emergency-supply-tracker"
                 target="_blank"
                 rel="noopener noreferrer"

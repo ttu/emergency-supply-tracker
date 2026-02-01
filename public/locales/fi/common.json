@@ -113,6 +113,10 @@
     "backup": {
       "reminderMessage": "Viimeisimmästä varmuuskopiosta on yli kuukausi. Harkitse tietojen vientiä muutosten menettämisen välttämiseksi.",
       "neverBackedUpMessage": "Et ole koskaan varmuuskopioinut tietojasi. Muista käyttää Asetuksista varmuuskopiointia."
+    },
+    "notifications": {
+      "releaseTesting": "Sovellus on juuri julkaistu; testaus on vielä käynnissä. Ilmoita ongelmista: help@emergencysupplytracker.com",
+      "welcome": "Uutta: voit seurata hätävarastoja dashboardilta. Piilota tämä sulkemalla ilmoitus."
     }
   },
   "household": {
@@ -569,8 +573,9 @@
     "faqTitle": "Usein kysytyt kysymykset",
     "quickTipsTitle": "Pikavinkki",
     "contactTitle": "Tarvitsetko lisää apua?",
-    "contactText": "Ilmoita bugeista, ehdota ominaisuuksia, jätä palautetta tai osallistu koodilla—käy GitHub-sivustollamme osallistuaksesi ja parantaaksesi sovellusta.",
+    "contactText": "Ilmoita bugeista, ehdota ominaisuuksia, jätä palautetta tai osallistu koodilla—käy GitHub-sivustollamme tai lähetä sähköpostia.",
     "githubLink": "Käy GitHub-sivustolla",
+    "contactEmailLabel": "Lähetä sähköpostia",
     "gettingStarted": {
       "question": "Miten aloitan?",
       "answer": "Kun avaat sovelluksen ensimmäisen kerran, ohjataan sinut onboarding-prosessiin. Prosessi opastaa sinua:\n\n1. Valitsemaan kielen (suomi/englanti)\n2. Valitsemaan kotitalouden esiasetuksen tai määrittämään sen manuaalisesti\n3. Määrittämään kotitalouden tiedot (aikuiset, lapset, varastojakso)\n4. Lisäämään suositellut tuotteet varastoon tai aloittamaan tyhjällä varastolla\n\nOnboardingin jälkeen voit aloittaa käyttämään sovellusta. Voit muokata kotitalouden asetuksia myöhemmin Asetukset-välilehdeltä."

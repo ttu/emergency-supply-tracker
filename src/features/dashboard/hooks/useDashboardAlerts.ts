@@ -5,11 +5,15 @@ import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { generateDashboardAlerts, type Alert } from '@/features/alerts';
 import { useBackupTracking } from './useBackupTracking';
+import { useSeenNotifications } from './useSeenNotifications';
+import { APP_NOTIFICATIONS } from '../constants/notifications';
 import { useNotification } from '@/shared/hooks/useNotification';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { createAlertId, type AlertId } from '@/shared/types';
 
 const BACKUP_REMINDER_ALERT_ID = createAlertId('backup-reminder');
+
+const NOTIFICATION_IDS = new Set(APP_NOTIFICATIONS.map((n) => n.id));
 
 export interface UseDashboardAlertsResult {
   activeAlerts: Alert[];
@@ -25,7 +29,6 @@ export interface UseDashboardAlertsResult {
  */
 export function useDashboardAlerts(): UseDashboardAlertsResult {
   const { t } = useTranslation();
-  const { showNotification } = useNotification();
   const { items, dismissedAlertIds, dismissAlert, reactivateAllAlerts } =
     useInventory();
   const { household } = useHousehold();
@@ -35,6 +38,8 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     shouldShowBackupReminder,
     dismissBackupReminder: dismissBackup,
   } = useBackupTracking();
+  const { seenNotificationIds, markNotificationSeen } = useSeenNotifications();
+  const { showNotification } = useNotification();
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
 
   // Generate alerts (including water shortage alerts)
@@ -71,14 +76,26 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     shouldShowBackupReminder,
   ]);
 
-  // Combine all alerts with backup reminder first
-  const combinedAlerts = useMemo(() => {
-    const alerts = [...allAlerts];
-    if (backupReminderAlert) {
-      alerts.unshift(backupReminderAlert);
-    }
-    return alerts;
-  }, [allAlerts, backupReminderAlert]);
+  // App notifications (hardcoded); filter out seen
+  const notificationAlerts = useMemo(() => {
+    return APP_NOTIFICATIONS.filter((n) => !seenNotificationIds.has(n.id)).map(
+      (n) => ({
+        id: n.id,
+        type: n.type,
+        message: t(n.messageKey),
+      }),
+    ) as Alert[];
+  }, [seenNotificationIds, t]);
+
+  // Combine: backup first, then notifications, then inventory alerts
+  const combinedAlerts = useMemo(
+    () => [
+      ...(backupReminderAlert ? [backupReminderAlert] : []),
+      ...notificationAlerts,
+      ...allAlerts,
+    ],
+    [allAlerts, backupReminderAlert, notificationAlerts],
+  );
 
   // Filter out dismissed alerts
   const dismissedSet = useMemo(
@@ -106,11 +123,13 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
           t('notifications.backup.reminderDismissed'),
           'success',
         );
+      } else if (NOTIFICATION_IDS.has(alertId)) {
+        markNotificationSeen(alertId);
       } else {
         dismissAlert(alertId);
       }
     },
-    [dismissAlert, dismissBackup, showNotification, t],
+    [dismissAlert, dismissBackup, markNotificationSeen, showNotification, t],
   );
 
   const handleDismissAllAlerts = useCallback(() => {
