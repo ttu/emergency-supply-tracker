@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  waitForAppReady,
+} from './fixtures';
 import {
   createMockAppData,
   createMockProductTemplate,
@@ -242,6 +247,7 @@ test.describe('Custom Product Templates', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Export data
     await page.getByTestId('nav-settings').click();
@@ -258,7 +264,9 @@ test.describe('Custom Product Templates', () => {
     await exportModalButton.click();
 
     // Wait for modal to close and download to complete
-    await page.waitForTimeout(500);
+    await page
+      .locator('[role="dialog"]')
+      .waitFor({ state: 'hidden', timeout: 5000 });
 
     // Verify custom template is in exported data
     // Custom templates are included in the export format

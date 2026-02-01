@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  waitForAppReady,
+} from './fixtures';
 import { createMockAppData } from '../src/shared/utils/test/factories';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
@@ -214,6 +219,7 @@ test.describe('Backup Reminder', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Should see backup reminder
     await expect(page.getByText(/backup|Backup|varmuuskopio/i)).toBeVisible({
@@ -234,12 +240,18 @@ test.describe('Backup Reminder', () => {
     await expect(exportModalButton).toBeVisible({ timeout: 5000 });
     await exportModalButton.click();
 
-    // Wait for modal to close and export to complete
-    await page.waitForTimeout(500);
+    // Wait for modal to close and backup date to be persisted
+    await page
+      .locator('[role="dialog"]')
+      .waitFor({ state: 'hidden', timeout: 5000 });
+    await page.waitForTimeout(1000);
 
     // Navigate back to Dashboard
     await page.getByTestId('nav-dashboard').click();
     await page.waitForLoadState('networkidle');
+    await page
+      .getByTestId('page-dashboard')
+      .waitFor({ state: 'visible', timeout: 5000 });
 
     // Reminder should be gone (backup date was recorded)
     // The backup reminder logic checks if data was modified after backup
@@ -247,7 +259,7 @@ test.describe('Backup Reminder', () => {
     // the condition lastModified <= lastBackupDate should be true, so reminder should not show
     await expect(page.getByText(/backup|Backup|varmuuskopio/i)).not.toBeVisible(
       {
-        timeout: 3000,
+        timeout: 5000,
       },
     );
   });

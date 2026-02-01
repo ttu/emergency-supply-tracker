@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  waitForAppReady,
+} from './fixtures';
 import {
   createMockAppData,
   createMockCategory,
@@ -44,16 +49,22 @@ test.describe('Custom Categories', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Navigate to Inventory
     await page.getByTestId('nav-inventory').click();
 
-    await expect(page.getByTestId('page-inventory')).toBeVisible();
+    await expect(page.getByTestId('page-inventory')).toBeVisible({
+      timeout: 10000,
+    });
 
-    // Verify custom category is visible in the sidebar
+    // Verify custom category is visible in the sidebar (inventory uses SideMenu for categories)
+    await expect(page.getByTestId('sidemenu-sidebar')).toBeVisible({
+      timeout: 10000,
+    });
     await expect(
       page.getByTestId('sidemenu-sidebar').getByText('Custom Category'),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 5000 });
 
     // Verify custom category exists in data
     const storedData = await page.evaluate((key) => {
@@ -95,6 +106,7 @@ test.describe('Custom Categories', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Navigate to Inventory
     await page.getByTestId('nav-inventory').click();
@@ -163,9 +175,11 @@ test.describe('Custom Categories', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Reload again
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Custom category should still exist
     // Verify by checking localStorage or trying to use it
@@ -223,6 +237,7 @@ test.describe('Custom Categories', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Custom category should appear on dashboard
     // Dashboard shows category cards, custom categories should be included
@@ -303,6 +318,7 @@ test.describe('Custom Categories', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Navigate to Inventory
     await page.getByTestId('nav-inventory').click();
@@ -358,6 +374,7 @@ test.describe('Custom Categories', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
@@ -365,11 +382,13 @@ test.describe('Custom Categories', () => {
 
     // Navigate to Custom Categories section
     await navigateToSettingsSection(page, 'customCategories');
-    await expect(page.getByTestId('section-custom-categories')).toBeVisible();
+    await expect(page.getByTestId('section-custom-categories')).toBeVisible({
+      timeout: 10000,
+    });
 
     // Should show empty state or add button
     const addButton = page.getByRole('button', { name: /add category/i });
-    await expect(addButton).toBeVisible();
+    await expect(addButton).toBeVisible({ timeout: 5000 });
   });
 
   test('should create a new custom category via settings', async ({ page }) => {
@@ -395,6 +414,7 @@ test.describe('Custom Categories', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Navigate to Settings -> Custom Categories
     await page.getByTestId('nav-settings').click();
@@ -454,6 +474,7 @@ test.describe('Custom Categories', () => {
       { data: appData, key: STORAGE_KEY },
     );
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForAppReady(page);
 
     // Export data
     await page.getByTestId('nav-settings').click();
@@ -470,7 +491,9 @@ test.describe('Custom Categories', () => {
     await exportModalButton.click();
 
     // Wait for modal to close and download to complete
-    await page.waitForTimeout(500);
+    await page
+      .locator('[role="dialog"]')
+      .waitFor({ state: 'hidden', timeout: 5000 });
 
     // Verify custom category is in exported data
     // This is tested via the export functionality

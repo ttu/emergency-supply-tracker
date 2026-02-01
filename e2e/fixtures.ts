@@ -108,6 +108,15 @@ export async function ensureNoModals(page: Page) {
   }
 }
 
+// Wait for the main app shell to be ready (nav visible) after goto/reload.
+// Prevents flaky "waiting for nav-inventory" timeouts when React hasn't painted yet.
+export async function waitForAppReady(page: Page) {
+  await page.getByTestId('nav-inventory').waitFor({
+    state: 'visible',
+    timeout: 15000,
+  });
+}
+
 // Extended test with setup helper
 export const test = base.extend<{
   setupApp: () => Promise<void>;
@@ -124,6 +133,8 @@ export const test = base.extend<{
         { data: defaultAppData, key: STORAGE_KEY },
       );
       await page.reload({ waitUntil: 'domcontentloaded' });
+      // Wait for app shell so nav is visible before tests interact
+      await waitForAppReady(page);
       // Close any modals after reload
       await closeAnyOpenModals(page);
     };
@@ -133,10 +144,15 @@ export const test = base.extend<{
 });
 
 // Helper to navigate to a specific section in Settings page
-// Settings page uses SideMenu with sections
+// Settings page uses SideMenu with sections (lazy-loaded; wait for menu to be ready)
 export async function navigateToSettingsSection(page: Page, sectionId: string) {
   const viewport = page.viewportSize();
   const isMobile = viewport && viewport.width < 768;
+
+  // Wait for Settings page to be fully loaded (lazy-loaded component)
+  await page
+    .getByTestId('page-settings')
+    .waitFor({ state: 'visible', timeout: 10000 });
 
   // On mobile, we need to open the hamburger menu first
   if (isMobile) {
@@ -148,12 +164,9 @@ export async function navigateToSettingsSection(page: Page, sectionId: string) {
     }
   }
 
-  // Scope selector to drawer (mobile) or sidebar (desktop) to avoid strict mode violations
-  const menuContainer = isMobile
-    ? page.getByTestId('sidemenu-drawer')
-    : page.getByTestId('sidemenu-sidebar');
-  const menuItem = menuContainer.getByTestId(`sidemenu-item-${sectionId}`);
-  await expect(menuItem).toBeVisible({ timeout: 5000 });
+  // Find the menu item (in sidebar on desktop or drawer on mobile after opening hamburger)
+  const menuItem = page.getByTestId(`sidemenu-item-${sectionId}`);
+  await expect(menuItem).toBeVisible({ timeout: 10000 });
   await menuItem.click();
   await page.waitForTimeout(100);
 }

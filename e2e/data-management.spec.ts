@@ -12,7 +12,7 @@ test.describe('Backup & Transfer', () => {
   });
 
   test('should export data', async ({ page }) => {
-    // Add some test data first
+    // setupApp already waited for app ready
     await page.getByTestId('nav-inventory').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
@@ -25,8 +25,11 @@ test.describe('Backup & Transfer', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Settings
+    // Navigate to Settings and wait for page to load
     await page.getByTestId('nav-settings').click();
+    await page
+      .getByTestId('page-settings')
+      .waitFor({ state: 'visible', timeout: 10000 });
 
     // Navigate to Backup & Transfer section
     await navigateToSettingsSection(page, 'backupTransfer');
@@ -61,8 +64,11 @@ test.describe('Backup & Transfer', () => {
   });
 
   test('should import data', async ({ page }) => {
-    // Navigate to Settings
+    // Navigate to Settings and wait for page to load
     await page.getByTestId('nav-settings').click();
+    await page
+      .getByTestId('page-settings')
+      .waitFor({ state: 'visible', timeout: 10000 });
 
     // Navigate to Backup & Transfer section
     await navigateToSettingsSection(page, 'backupTransfer');
