@@ -6,7 +6,7 @@ import {
   selectInventoryCategory,
 } from './fixtures';
 
-test.describe('Data Management', () => {
+test.describe('Backup & Transfer', () => {
   test.beforeEach(async ({ setupApp }) => {
     await setupApp();
   });
@@ -28,8 +28,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Navigate to Data Management section
-    await navigateToSettingsSection(page, 'dataManagement');
+    // Navigate to Backup & Transfer section
+    await navigateToSettingsSection(page, 'backupTransfer');
 
     // Verify Export Data button is visible
     const exportButton = page.getByTestId('export-data-button');
@@ -64,8 +64,8 @@ test.describe('Data Management', () => {
     // Navigate to Settings
     await page.getByTestId('nav-settings').click();
 
-    // Navigate to Data Management section
-    await navigateToSettingsSection(page, 'dataManagement');
+    // Navigate to Backup & Transfer section
+    await navigateToSettingsSection(page, 'backupTransfer');
 
     // Create test data file with all required fields
     const testData = {

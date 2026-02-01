@@ -152,7 +152,7 @@
         "household": "Kotitalous",
         "recommendations": "Suositukset",
         "categories": "Kategoriat",
-        "data": "Tiedot"
+        "advanced": "Lisäasetukset"
       },
       "sections": {
         "appearance": "Ulkoasu",
@@ -163,7 +163,7 @@
         "disabledCategories": "Poistetut kategoriat",
         "customCategories": "Omat kategoriat",
         "overriddenRecommendations": "Ohitetut suositukset",
-        "dataManagement": "Tietojen hallinta",
+        "backupTransfer": "Varmuuskopiointi ja siirto",
         "debugLog": "Virheloki",
         "about": "Tietoja",
         "dangerZone": "Vaaravyöhyke",
@@ -597,7 +597,7 @@
     },
     "exportImport": {
       "question": "Miten varmuuskopioin tietoni?",
-      "answer": "Mene Asetukset → Tietojen hallinta ja napsauta 'Vie tiedot'. Tämä lataa JSON-tiedoston kaikilla tiedoillasi. Voit tuoda tämän tiedoston myöhemmin palauttaaksesi tietosi tai siirtääksesi ne toiseen laitteeseen."
+      "answer": "Mene Asetukset → Yleinen → Varmuuskopiointi ja siirto ja napsauta 'Vie tiedot'. Tämä lataa JSON-tiedoston kaikilla tiedoillasi. Voit tuoda tämän tiedoston myöhemmin palauttaaksesi tietosi tai siirtääksesi ne toiseen laitteeseen."
     },
     "dataStorage": {
       "question": "Mihin tietoni tallennetaan?",
@@ -605,7 +605,7 @@
     },
     "shoppingList": {
       "question": "Miten luon ostoslistan?",
-      "answer": "Mene Asetukset → Tietojen hallinta ja napsauta 'Vie ostoslista'. Tämä luo tekstitiedoston, jossa luetellaan kaikki täydennystä vaativat tuotteet kategoriaan ryhmiteltynä nykyisillä ja suositelluilla määrillä."
+      "answer": "Mene Asetukset → Yleinen → Varmuuskopiointi ja siirto ja napsauta 'Vie ostoslista'. Tämä luo tekstitiedoston, jossa luetellaan kaikki täydennystä vaativat tuotteet kategoriaan ryhmiteltynä nykyisillä ja suositelluilla määrillä."
     },
     "preparednessScore": {
       "question": "Miten valmiuspisteet lasketaan?",

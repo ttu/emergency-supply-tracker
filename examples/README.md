@@ -34,7 +34,7 @@ A Finnish language example with:
 ## How to Import
 
 1. Go to **Settings** in the app
-2. Scroll down to **Data Management**
+2. Open **General** → **Backup & Transfer**
 3. Click **Import Data**
 4. Select one of these JSON files
 5. Confirm the import

@@ -115,17 +115,20 @@ interface UserSettings {
    - Export current recommendations
    - Reset to default
 
-8. **Data Management**
+8. **Backup & Transfer** (General)
    - Export data (JSON)
    - Import data (JSON)
    - Export shopping list (TXT/MD/CSV)
+
+9. **Advanced** (Debug log, Danger Zone)
    - Export debug logs
    - Clear all data (Danger Zone)
 
-9. **About**
-   - App version
-   - GitHub repository link
-   - App description
+10. **About**
+
+- App version
+- GitHub repository link
+- App description
 
 ### Settings Persistence
 

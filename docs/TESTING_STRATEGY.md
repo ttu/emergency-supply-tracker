@@ -148,7 +148,7 @@ E2E tests are organized by feature:
 - `e2e/inventory.spec.ts` - Inventory management tests
 - `e2e/settings.spec.ts` - Settings page tests
 - `e2e/navigation.spec.ts` - Navigation and routing tests
-- `e2e/data-management.spec.ts` - Import/export functionality
+- `e2e/data-management.spec.ts` - Backup & Transfer (import/export) functionality
 - `e2e/a11y.spec.ts` - Accessibility tests (excluded from default e2e run)
 
 **Note:** `a11y.spec.ts` is excluded from the default E2E test run (`npm run test:e2e`) to avoid duplication. Accessibility tests run in a separate CI job. To run a11y tests explicitly, use: `npx playwright test e2e/a11y.spec.ts`

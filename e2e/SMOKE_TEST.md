@@ -26,7 +26,7 @@ Tests the **guided onboarding experience** with comprehensive phases:
 5. **Dashboard Alerts** - View alerts for insufficient quantities, dismiss alerts
 6. **Settings - All Features** - Language, theme, advanced features, household config changes
 7. **Re-enable Disabled Recommendation** - Navigate to Settings → Re-enable previously disabled item
-8. **Data Management** - Export data, shopping list, recommendations
+8. **Backup & Transfer** - Export data, shopping list, recommendations
 9. **Navigation & Persistence** - Verify data persists after reload
 10. **Final Verification** - Dashboard loads with all sections
 
@@ -48,7 +48,7 @@ Tests the **DIY manual entry experience** with 8 comprehensive phases:
 3. **Inventory Management** - Add from template, add custom item, edit, filter, search, recommended items (add/disable)
 4. **Dashboard Alerts** - View alerts, dismiss alerts
 5. **Settings - All Features** - Language, theme, high contrast, household config, presets, advanced features, nutrition settings
-6. **Data Management** - Export data, export shopping list, export recommendations
+6. **Backup & Transfer** - Export data, export shopping list, export recommendations
 7. **Navigation & Persistence** - Navigate all pages, verify data and settings persist after reload
 8. **Final Verification** - Dashboard loads with all sections
 
@@ -170,7 +170,7 @@ For GitHub Actions or other CI systems, you can add this to your workflow:
 - Uses household presets (changes Family → Single Person)
 - Verifies recommended quantities recalculate
 
-### Phase 6: Data Management
+### Phase 6: Backup & Transfer
 
 - Exports all app data
 - Exports shopping list
