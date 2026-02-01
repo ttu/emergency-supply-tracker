@@ -13,14 +13,17 @@ export function ClearDataButton() {
   const { showNotification } = useNotification();
 
   const handleClear = () => {
-    if (window.confirm(t('settings.clearData.confirmMessage'))) {
-      if (window.confirm(t('settings.clearData.confirmAgain'))) {
+    if (globalThis.confirm(t('settings.clearData.confirmMessage'))) {
+      if (globalThis.confirm(t('settings.clearData.confirmAgain'))) {
         clearAppData();
         clearErrorLogs();
         clearAnalyticsData();
         showNotification(t('notifications.data.cleared'), 'success');
         // Reload after a short delay so the notification is visible
-        window.setTimeout(() => window.location.reload(), RELOAD_DELAY_MS);
+        globalThis.setTimeout(
+          () => globalThis.location.reload(),
+          RELOAD_DELAY_MS,
+        );
       }
     }
   };
