@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useDashboardAlerts } from './useDashboardAlerts';
-import { createAlertId } from '@/shared/types';
+import { createAlertId, createDateOnly } from '@/shared/types';
 
 vi.mock('@/features/inventory', () => ({
   useInventory: vi.fn(),
@@ -49,6 +49,7 @@ import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { generateDashboardAlerts } from '@/features/alerts';
+import { useBackupTracking } from './useBackupTracking';
 
 describe('useDashboardAlerts', () => {
   const mockDismissAlert = vi.fn();
@@ -140,6 +141,27 @@ describe('useDashboardAlerts', () => {
       createAlertId('backup-reminder'),
     );
     expect(result.current.activeAlerts[0].type).toBe('info');
+    expect(result.current.activeAlerts[0].message).toBe(
+      'alerts.backup.neverBackedUpMessage',
+    );
+  });
+
+  it('should show reminderMessage when user has already backed up', () => {
+    vi.mocked(useBackupTracking).mockReturnValue({
+      lastBackupDate: createDateOnly('2025-01-01'),
+      backupReminderDismissedUntil: undefined,
+      shouldShowBackupReminder: mockShouldShowBackupReminder,
+      recordBackupDate: mockRecordBackupDate,
+      dismissBackupReminder: mockDismissBackupReminder,
+    });
+    mockShouldShowBackupReminder.mockReturnValue(true);
+
+    const { result } = renderHook(() => useDashboardAlerts());
+
+    expect(result.current.activeAlerts).toHaveLength(1);
+    expect(result.current.activeAlerts[0].message).toBe(
+      'alerts.backup.reminderMessage',
+    );
   });
 
   it('should include generated alerts', () => {

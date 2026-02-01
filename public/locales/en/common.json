@@ -111,7 +111,8 @@
       "preparationShortage": "Need {{liters}}L more water for food preparation"
     },
     "backup": {
-      "reminderMessage": "It's been over a month since your last backup. Consider exporting your data to avoid losing changes."
+      "reminderMessage": "It's been over a month since your last backup. Consider exporting your data to avoid losing changes.",
+      "neverBackedUpMessage": "You have never backed up your data. Remember to use the backup functionality from Settings."
     }
   },
   "household": {
