@@ -281,21 +281,23 @@ export function Settings() {
                 {t('settings.about.version')}: {APP_VERSION}
               </p>
               <p className={styles.description}>{t('help.contactText')}</p>
-              <a
-                href="mailto:help@emergencysupplytracker.com"
-                className={styles.link}
-              >
-                {t('help.contactEmailLabel')} (help@emergencysupplytracker.com)
-              </a>
-              <a
-                href="https://github.com/ttu/emergency-supply-tracker"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.link}
-              >
-                <GitHubIcon className={styles.githubIcon} />
-                {t('help.githubLink')}
-              </a>
+              <div className={styles.contactLinks}>
+                <a
+                  href="mailto:help@emergencysupplytracker.com"
+                  className={styles.link}
+                >
+                  {t('help.contactEmailLabel')} (help@emergencysupplytracker.com)
+                </a>
+                <a
+                  href="https://github.com/ttu/emergency-supply-tracker"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.link}
+                >
+                  <GitHubIcon className={styles.githubIcon} />
+                  {t('help.githubLink')}
+                </a>
+              </div>
             </div>
           </Section>
         );

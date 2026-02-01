@@ -17,9 +17,4 @@ export const APP_NOTIFICATIONS: AppNotificationDefinition[] = [
     messageKey: 'alerts.notifications.releaseTesting',
     type: 'info',
   },
-  {
-    id: createAlertId('app-notification-welcome'),
-    messageKey: 'alerts.notifications.welcome',
-    type: 'info',
-  },
 ];

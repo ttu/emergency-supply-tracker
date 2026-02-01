@@ -106,21 +106,23 @@ export function Help() {
         <section className={styles.section} aria-labelledby="contact-heading">
           <h2 id="contact-heading">{t('help.contactTitle')}</h2>
           <p>{t('help.contactText')}</p>
-          <a
-            href="mailto:help@emergencysupplytracker.com"
-            className={styles.link}
-          >
-            {t('help.contactEmailLabel')} (help@emergencysupplytracker.com)
-          </a>
-          <a
-            href="https://github.com/ttu/emergency-supply-tracker"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.link}
-          >
-            <GitHubIcon className={styles.githubIcon} />
-            {t('help.githubLink')}
-          </a>
+          <div className={styles.contactLinks}>
+            <a
+              href="mailto:help@emergencysupplytracker.com"
+              className={styles.link}
+            >
+              {t('help.contactEmailLabel')} (help@emergencysupplytracker.com)
+            </a>
+            <a
+              href="https://github.com/ttu/emergency-supply-tracker"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.link}
+            >
+              <GitHubIcon className={styles.githubIcon} />
+              {t('help.githubLink')}
+            </a>
+          </div>
         </section>
       </main>
     </div>

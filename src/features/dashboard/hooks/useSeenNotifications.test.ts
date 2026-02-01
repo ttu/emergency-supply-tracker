@@ -29,7 +29,7 @@ describe('useSeenNotifications', () => {
   });
 
   it('should load seen IDs from localStorage on mount', () => {
-    const id = createAlertId('app-notification-welcome');
+    const id = createAlertId('app-notification-release-testing');
     getItemSpy.mockImplementation((key: string) => {
       if (key === STORAGE_KEY) return JSON.stringify([String(id)]);
       return null;
@@ -45,7 +45,7 @@ describe('useSeenNotifications', () => {
     getItemSpy.mockReturnValue(null);
 
     const { result } = renderHook(() => useSeenNotifications());
-    const id = createAlertId('app-notification-welcome');
+    const id = createAlertId('app-notification-release-testing');
 
     expect(result.current.seenNotificationIds.has(id)).toBe(false);
 
@@ -64,7 +64,7 @@ describe('useSeenNotifications', () => {
     getItemSpy.mockReturnValue(null);
 
     const { result } = renderHook(() => useSeenNotifications());
-    const id = createAlertId('app-notification-welcome');
+    const id = createAlertId('app-notification-release-testing');
 
     act(() => {
       result.current.markNotificationSeen(id);

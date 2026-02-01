@@ -115,8 +115,7 @@
       "neverBackedUpMessage": "Et ole koskaan varmuuskopioinut tietojasi. Muista käyttää Asetuksista varmuuskopiointia."
     },
     "notifications": {
-      "releaseTesting": "Sovellus on juuri julkaistu; testaus on vielä käynnissä. Ilmoita ongelmista: help@emergencysupplytracker.com",
-      "welcome": "Uutta: voit seurata hätävarastoja dashboardilta. Piilota tämä sulkemalla ilmoitus."
+      "releaseTesting": "Sovellus on juuri julkaistu; testaus on vielä käynnissä. Ilmoita ongelmista: help@emergencysupplytracker.com"
     }
   },
   "household": {

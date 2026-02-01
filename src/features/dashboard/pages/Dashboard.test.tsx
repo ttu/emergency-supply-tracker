@@ -387,17 +387,17 @@ describe('Dashboard', () => {
     renderWithProviders(<Dashboard />);
 
     const notificationAlert = screen.getByTestId(
-      'alert-app-notification-welcome',
+      'alert-app-notification-release-testing',
     );
     expect(notificationAlert).toBeInTheDocument();
 
     const dismissButton = screen.getByTestId(
-      'dismiss-app-notification-welcome',
+      'dismiss-app-notification-release-testing',
     );
     fireEvent.click(dismissButton);
 
     expect(
-      screen.queryByTestId('alert-app-notification-welcome'),
+      screen.queryByTestId('alert-app-notification-release-testing'),
     ).not.toBeInTheDocument();
   });
 

@@ -114,6 +114,13 @@
   line-height: 1;
 }
 
+.contactLinks {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .link {
   display: inline-flex;
   align-items: center;

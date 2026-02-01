@@ -145,7 +145,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
@@ -156,7 +155,7 @@ describe('useDashboardAlerts', () => {
     expect(result.current.hiddenAlertsCount).toBe(0);
   });
 
-  it('should include app notifications when not seen', () => {
+  it('should include app notification when not seen', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set(),
       markNotificationSeen: mockMarkNotificationSeen,
@@ -167,34 +166,27 @@ describe('useDashboardAlerts', () => {
     const releaseNotification = result.current.activeAlerts.find(
       (a) => String(a.id) === 'app-notification-release-testing',
     );
-    const welcomeNotification = result.current.activeAlerts.find(
-      (a) => String(a.id) === 'app-notification-welcome',
-    );
     expect(releaseNotification).toBeDefined();
     expect(releaseNotification?.type).toBe('info');
     expect(releaseNotification?.message).toBe(
       'alerts.notifications.releaseTesting',
     );
-    expect(welcomeNotification).toBeDefined();
-    expect(welcomeNotification?.type).toBe('info');
-    expect(welcomeNotification?.message).toBe('alerts.notifications.welcome');
   });
 
   it('should not include app notification when seen', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
 
     const { result } = renderHook(() => useDashboardAlerts());
 
-    const welcomeNotification = result.current.activeAlerts.find(
-      (a) => String(a.id) === 'app-notification-welcome',
+    const releaseNotification = result.current.activeAlerts.find(
+      (a) => String(a.id) === 'app-notification-release-testing',
     );
-    expect(welcomeNotification).toBeUndefined();
+    expect(releaseNotification).toBeUndefined();
   });
 
   it('should call markNotificationSeen when dismissing app notification', () => {
@@ -204,7 +196,7 @@ describe('useDashboardAlerts', () => {
     });
 
     const { result } = renderHook(() => useDashboardAlerts());
-    const notificationId = createAlertId('app-notification-welcome');
+    const notificationId = createAlertId('app-notification-release-testing');
 
     act(() => {
       result.current.handleDismissAlert(notificationId);
@@ -219,7 +211,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
@@ -248,7 +239,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
@@ -265,7 +255,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
@@ -292,7 +281,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
@@ -344,7 +332,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
@@ -368,7 +355,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
@@ -387,7 +373,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });
@@ -415,7 +400,6 @@ describe('useDashboardAlerts', () => {
     vi.mocked(useSeenNotifications).mockReturnValue({
       seenNotificationIds: new Set([
         createAlertId('app-notification-release-testing'),
-        createAlertId('app-notification-welcome'),
       ]),
       markNotificationSeen: mockMarkNotificationSeen,
     });

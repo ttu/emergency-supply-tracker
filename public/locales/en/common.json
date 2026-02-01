@@ -115,8 +115,7 @@
       "neverBackedUpMessage": "You have never backed up your data. Remember to use the backup functionality from Settings."
     },
     "notifications": {
-      "releaseTesting": "This app was just released; we're still testing. Report problems via help@emergencysupplytracker.com",
-      "welcome": "New: you can now track your emergency supplies from the dashboard. Dismiss this to hide it."
+      "releaseTesting": "This app was just released; we're still testing. Report problems via help@emergencysupplytracker.com"
     }
   },
   "household": {
