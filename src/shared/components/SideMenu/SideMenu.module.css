@@ -8,6 +8,8 @@
 .menu {
   position: sticky;
   top: var(--spacing-lg);
+  max-height: calc(100vh - var(--spacing-lg) * 2);
+  overflow-y: auto;
 }
 
 .list {

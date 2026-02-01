@@ -146,7 +146,6 @@ export function SideMenu({
           </span>
           <ul
             className={styles.groupItems}
-            role="group"
             aria-labelledby={`group-${group.id}`}
           >
             {groupItems}

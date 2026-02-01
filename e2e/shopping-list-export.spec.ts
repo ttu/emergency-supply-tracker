@@ -120,23 +120,20 @@ test.describe('Shopping List Export Formats', () => {
     // Navigate to Dashboard where the shopping list export button is
     await page.getByTestId('nav-dashboard').click();
 
-    // Set up dialog handler to catch the "no items need restocking" alert
-    const dialogs: string[] = [];
-    page.on('dialog', async (dialog) => {
-      dialogs.push(dialog.message());
-      await dialog.accept();
-    });
-
     // Export button should be visible
     const exportButton = page.getByTestId('quick-export-shopping-list');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
 
-    // Click export button - should show alert since no items need restocking
-    await exportButton.click();
-    await page.waitForTimeout(500);
+    // Set up dialog listener before triggering the action
+    const dialogPromise = page.waitForEvent('dialog', { timeout: 5000 });
 
-    // Verify the "no items need restocking" alert was shown
-    expect(dialogs.some((msg) => msg.includes('restock'))).toBe(true);
+    // Click export button - don't await since it will block until dialog is dismissed
+    exportButton.click();
+
+    // Wait for the dialog and verify the message
+    const dialog = await dialogPromise;
+    expect(dialog.message()).toContain('restock');
+    await dialog.accept();
   });
 
   test('should include only items needing restocking in export', async ({
