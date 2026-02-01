@@ -19,6 +19,7 @@ import {
 } from '@/features/settings';
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
+import { CONTACT_EMAIL } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
 
@@ -283,11 +284,10 @@ export function Settings() {
               <p className={styles.description}>{t('help.contactText')}</p>
               <div className={styles.contactLinks}>
                 <a
-                  href="mailto:help@emergencysupplytracker.com"
+                  href={`mailto:${CONTACT_EMAIL}`}
                   className={styles.link}
                 >
-                  {t('help.contactEmailLabel')}{' '}
-                  (help@emergencysupplytracker.com)
+                  {t('help.contactEmailLabel', { email: CONTACT_EMAIL })}
                 </a>
                 <a
                   href="https://github.com/ttu/emergency-supply-tracker"

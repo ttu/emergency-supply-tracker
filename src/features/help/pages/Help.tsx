@@ -1,4 +1,5 @@
 import { GitHubIcon } from '@/shared/components';
+import { CONTACT_EMAIL } from '@/shared/utils/constants';
 import { useTranslation } from 'react-i18next';
 import styles from './Help.module.css';
 
@@ -108,10 +109,10 @@ export function Help() {
           <p>{t('help.contactText')}</p>
           <div className={styles.contactLinks}>
             <a
-              href="mailto:help@emergencysupplytracker.com"
+              href={`mailto:${CONTACT_EMAIL}`}
               className={styles.link}
             >
-              {t('help.contactEmailLabel')} (help@emergencysupplytracker.com)
+              {t('help.contactEmailLabel', { email: CONTACT_EMAIL })}
             </a>
             <a
               href="https://github.com/ttu/emergency-supply-tracker"

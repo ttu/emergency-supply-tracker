@@ -574,7 +574,7 @@
     "contactTitle": "Need More Help?",
     "contactText": "Report bugs, suggest features, leave feedback, or contribute—visit our GitHub repository or email us.",
     "githubLink": "Visit GitHub Repository",
-    "contactEmailLabel": "Email us",
+    "contactEmailLabel": "Email us ({{email}})",
     "gettingStarted": {
       "question": "How do I get started?",
       "answer": "When you open the app for the first time, you'll be guided through an onboarding process. The process will help you:\n\n1. Select your language (English/Finnish)\n2. Choose a household preset or configure it manually\n3. Set up your household information (adults, children, supply duration)\n4. Add recommended items to your inventory or start with an empty inventory\n\nAfter onboarding, you can start using the app. You can modify household settings later from the Settings tab."
