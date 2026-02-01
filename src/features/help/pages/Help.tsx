@@ -108,10 +108,7 @@ export function Help() {
           <h2 id="contact-heading">{t('help.contactTitle')}</h2>
           <p>{t('help.contactText')}</p>
           <div className={styles.contactLinks}>
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className={styles.link}
-            >
+            <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link}>
               {t('help.contactEmailLabel', { email: CONTACT_EMAIL })}
             </a>
             <a
