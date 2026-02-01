@@ -146,6 +146,13 @@
     "title": "Asetukset",
     "navigation": {
       "menuLabel": "Asetusten navigointi",
+      "groups": {
+        "general": "Yleinen",
+        "household": "Kotitalous",
+        "recommendations": "Suositukset",
+        "categories": "Kategoriat",
+        "data": "Tiedot"
+      },
       "sections": {
         "appearance": "Ulkoasu",
         "household": "Kotitalouden asetukset",
@@ -156,6 +163,7 @@
         "customCategories": "Omat kategoriat",
         "overriddenRecommendations": "Ohitetut suositukset",
         "dataManagement": "Tietojen hallinta",
+        "debugLog": "Virheloki",
         "about": "Tietoja",
         "dangerZone": "Vaaravyöhyke",
         "recommendationKits": "Suosituspaketit"

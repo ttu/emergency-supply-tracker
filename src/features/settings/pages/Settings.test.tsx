@@ -187,9 +187,6 @@ describe('Settings Page', () => {
     expect(screen.getByTestId('section-data-management')).toBeInTheDocument();
     expect(screen.getByText('settings.export.button')).toBeInTheDocument();
     expect(screen.getByText('settings.import.button')).toBeInTheDocument();
-    expect(
-      screen.getByText('settings.shoppingList.button'),
-    ).toBeInTheDocument();
   });
 
   it('should navigate to about section when clicked', () => {

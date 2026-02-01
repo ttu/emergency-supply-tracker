@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
-import { SideMenu, SideMenuItem } from './SideMenu';
+import { SideMenu, SideMenuItem, SideMenuGroup } from './SideMenu';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -13,6 +13,25 @@ const mockItems: SideMenuItem[] = [
   { id: 'item1', label: 'Item 1' },
   { id: 'item2', label: 'Item 2', icon: '🔧' },
   { id: 'item3', label: 'Item 3' },
+];
+
+const mockGroups: SideMenuGroup[] = [
+  {
+    id: 'group1',
+    label: 'Group 1',
+    items: [
+      { id: 'item1', label: 'Item 1' },
+      { id: 'item2', label: 'Item 2' },
+    ],
+  },
+  {
+    id: 'group2',
+    label: 'Group 2',
+    items: [
+      { id: 'item3', label: 'Item 3' },
+      { id: 'item4', label: 'Item 4' },
+    ],
+  },
 ];
 
 describe('SideMenu', () => {
@@ -381,5 +400,152 @@ describe('SideMenu', () => {
 
     // Cleanup
     document.body.removeChild(container);
+  });
+
+  describe('grouped menu', () => {
+    it('renders group headers and items', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="item1"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+
+      // Check group labels are rendered
+      expect(within(sidebar).getByText('Group 1')).toBeInTheDocument();
+      expect(within(sidebar).getByText('Group 2')).toBeInTheDocument();
+
+      // Check items are rendered
+      expect(within(sidebar).getByText('Item 1')).toBeInTheDocument();
+      expect(within(sidebar).getByText('Item 2')).toBeInTheDocument();
+      expect(within(sidebar).getByText('Item 3')).toBeInTheDocument();
+      expect(within(sidebar).getByText('Item 4')).toBeInTheDocument();
+    });
+
+    it('renders group test ids', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="item1"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+      expect(
+        within(sidebar).getByTestId('sidemenu-group-group1'),
+      ).toBeInTheDocument();
+      expect(
+        within(sidebar).getByTestId('sidemenu-group-group2'),
+      ).toBeInTheDocument();
+    });
+
+    it('calls onSelect when a grouped item is clicked', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="item1"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+      fireEvent.click(within(sidebar).getByTestId('sidemenu-item-item3'));
+
+      expect(onSelect).toHaveBeenCalledWith('item3');
+    });
+
+    it('highlights the active item in grouped menu', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="item3"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+      const activeItem = within(sidebar).getByTestId('sidemenu-item-item3');
+      expect(activeItem).toHaveAttribute('aria-current', 'page');
+
+      const inactiveItem = within(sidebar).getByTestId('sidemenu-item-item1');
+      expect(inactiveItem).not.toHaveAttribute('aria-current');
+    });
+
+    it('handles keyboard navigation across groups', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="item2"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+      const list = within(sidebar).getByRole('menu');
+
+      // Navigate from item2 (end of group1) to item3 (start of group2)
+      fireEvent.keyDown(list, { key: 'ArrowDown' });
+      expect(onSelect).toHaveBeenCalledWith('item3');
+    });
+
+    it('renders showAllOption in grouped menu', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="all"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+          showAllOption={{ id: 'all', label: 'All Items', icon: '📦' }}
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+
+      // Verify showAllOption is rendered
+      expect(within(sidebar).getByText('All Items')).toBeInTheDocument();
+      expect(within(sidebar).getByText('📦')).toBeInTheDocument();
+
+      const allItem = within(sidebar).getByTestId('sidemenu-item-all');
+      expect(allItem).toHaveAttribute('aria-current', 'page');
+
+      // Verify groups are also rendered
+      expect(within(sidebar).getByText('Group 1')).toBeInTheDocument();
+      expect(within(sidebar).getByText('Item 1')).toBeInTheDocument();
+    });
+
+    it('handles keyboard navigation with showAllOption in grouped menu', () => {
+      const onSelect = vi.fn();
+      render(
+        <SideMenu
+          groups={mockGroups}
+          selectedId="all"
+          onSelect={onSelect}
+          ariaLabel="Test Menu"
+          showAllOption={{ id: 'all', label: 'All Items', icon: '📦' }}
+        />,
+      );
+
+      const sidebar = screen.getByTestId('sidemenu-sidebar');
+      const list = within(sidebar).getByRole('menu');
+
+      // Navigate from 'all' to first item in first group
+      fireEvent.keyDown(list, { key: 'ArrowDown' });
+      expect(onSelect).toHaveBeenCalledWith('item1');
+    });
   });
 });

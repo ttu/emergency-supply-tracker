@@ -153,16 +153,12 @@ test.describe('Data Management', () => {
     await page.fill('input[name="quantity"]', '0');
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    // Navigate to Dashboard where the shopping list export button is
+    await page.getByTestId('nav-dashboard').click();
 
-    // Navigate to Data Management section
-    await navigateToSettingsSection(page, 'dataManagement');
-
-    // Verify Export Shopping List button is visible and enabled
-    const exportButton = page.getByTestId('export-shopping-list-button');
+    // Verify Export Shopping List button is visible in Quick Actions
+    const exportButton = page.getByTestId('quick-export-shopping-list');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
-    await expect(exportButton).toBeEnabled();
 
     // Set up dialog handler to catch any error dialogs
     const dialogs: string[] = [];

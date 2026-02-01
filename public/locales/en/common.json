@@ -146,6 +146,13 @@
     "title": "Settings",
     "navigation": {
       "menuLabel": "Settings navigation",
+      "groups": {
+        "general": "General",
+        "household": "Household",
+        "recommendations": "Recommendations",
+        "categories": "Categories",
+        "data": "Data"
+      },
       "sections": {
         "appearance": "Appearance",
         "household": "Household Configuration",
@@ -156,6 +163,7 @@
         "customCategories": "Custom Categories",
         "overriddenRecommendations": "Overridden Recommendations",
         "dataManagement": "Data Management",
+        "debugLog": "Debug Log",
         "about": "About",
         "dangerZone": "Danger Zone",
         "recommendationKits": "Recommendation Kits"
