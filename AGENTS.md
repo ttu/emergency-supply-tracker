@@ -98,9 +98,11 @@ Code:
 
 **Cursor/agents:** Use `required_permissions: ['all']` for git push and `gh pr create` (sandbox bypass).
 
-**Commits:** `type: description` + optional bullet details + `Refs: #issue`. Types: `feat`, `fix`, `refactor`, `test`, `docs`, `style`, `chore`, `ci`, `build`, `perf`. No Co-Authored-By/Generated-with; no scopes (use `feat:` not `feat(scope):`). Implementation steps: use types (`chore` setup, `feat` feature, etc.) not "Step X:".
+**Commits:** `type: description` + optional bullet details + `Refs: #issue`. Types: `feat`, `fix`, `refactor`, `test`, `docs`, `style`, `chore`, `ci`, `build`, `perf`. No Co-Authored-By/Generated-with; no scopes (use `feat:` not `feat(scope):`). Implementation steps: use types (`chore` setup, `feat` feature, etc.) not "Step X:". **Never commit with `--no-verify`**; run pre-commit hooks (format, type-check, lint, test, build) and fix failures instead of skipping.
 
 **PR:** Use `/pr-create` and `/pr-fix` (see Commands).
+
+**After every PR:** Reflect on what you learned. Document only what would help future work (e.g. in design-docs or the relevant spec) and update AGENTS.md with new workflows, conventions, or tips when applicable.
 
 ---
 

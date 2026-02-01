@@ -630,7 +630,23 @@
     "itemsBulkAdded": "{{count}} item(s) added",
     "categoryAdded": "Category \"{{name}}\" added",
     "categoryUpdated": "Category updated",
-    "categoryDeleted": "Category deleted"
+    "categoryDeleted": "Category deleted",
+    "alertDismissed": "Alert dismissed",
+    "alertRestored": "Alert restored",
+    "allAlertsRestored": "All alerts restored",
+    "backup": {
+      "reminderDismissed": "Backup reminder dismissed"
+    },
+    "backupSuccess": "Data exported successfully",
+    "importSuccess": "Data imported successfully",
+    "importError": "Import failed",
+    "data": {
+      "cleared": "All data cleared"
+    },
+    "recommendationHidden": "Recommendation hidden",
+    "recommendationShown": "Recommendation shown",
+    "categoryHidden": "Category hidden",
+    "categoryShown": "Category shown"
   },
   "kitSelector": {
     "builtInKits": "Built-in Kits",

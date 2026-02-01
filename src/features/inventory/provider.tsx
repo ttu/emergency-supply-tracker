@@ -133,60 +133,69 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       setDismissedAlertIds((prev) =>
         prev.includes(alertId) ? prev : [...prev, alertId],
       );
+      showNotification(t('notifications.alertDismissed'), 'success');
     },
-    [setDismissedAlertIds],
+    [setDismissedAlertIds, showNotification, t],
   );
 
   const reactivateAlert = useCallback(
     (alertId: AlertId) => {
       setDismissedAlertIds((prev) => prev.filter((id) => id !== alertId));
+      showNotification(t('notifications.alertRestored'), 'success');
     },
-    [setDismissedAlertIds],
+    [setDismissedAlertIds, showNotification, t],
   );
 
   const reactivateAllAlerts = useCallback(() => {
     setDismissedAlertIds([]);
-  }, [setDismissedAlertIds]);
+    showNotification(t('notifications.allAlertsRestored'), 'success');
+  }, [setDismissedAlertIds, showNotification, t]);
 
   const disableRecommendedItem = useCallback(
     (itemId: ProductTemplateId) => {
       setDisabledRecommendedItems((prev) =>
         prev.includes(itemId) ? prev : [...prev, itemId],
       );
+      showNotification(t('notifications.recommendationHidden'), 'success');
     },
-    [setDisabledRecommendedItems],
+    [setDisabledRecommendedItems, showNotification, t],
   );
 
   const enableRecommendedItem = useCallback(
     (itemId: ProductTemplateId) => {
       setDisabledRecommendedItems((prev) => prev.filter((id) => id !== itemId));
+      showNotification(t('notifications.recommendationShown'), 'success');
     },
-    [setDisabledRecommendedItems],
+    [setDisabledRecommendedItems, showNotification, t],
   );
 
   const enableAllRecommendedItems = useCallback(() => {
     setDisabledRecommendedItems([]);
-  }, [setDisabledRecommendedItems]);
+    showNotification(t('notifications.recommendationShown'), 'success');
+  }, [setDisabledRecommendedItems, showNotification, t]);
 
   const disableCategory = useCallback(
     (categoryId: StandardCategoryId) => {
       setDisabledCategories((prev) =>
         prev.includes(categoryId) ? prev : [...prev, categoryId],
       );
+      showNotification(t('notifications.categoryHidden'), 'success');
     },
-    [setDisabledCategories],
+    [setDisabledCategories, showNotification, t],
   );
 
   const enableCategory = useCallback(
     (categoryId: StandardCategoryId) => {
       setDisabledCategories((prev) => prev.filter((id) => id !== categoryId));
+      showNotification(t('notifications.categoryShown'), 'success');
     },
-    [setDisabledCategories],
+    [setDisabledCategories, showNotification, t],
   );
 
   const enableAllCategories = useCallback(() => {
     setDisabledCategories([]);
-  }, [setDisabledCategories]);
+    showNotification(t('notifications.categoryShown'), 'success');
+  }, [setDisabledCategories, showNotification, t]);
 
   // Combine standard and custom categories, filtering out disabled standard ones
   const categories = useMemo(() => {

@@ -20,6 +20,11 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
   saveAppData: vi.fn(),
 }));
 
+const mockShowNotification = vi.fn();
+vi.mock('@/shared/hooks/useNotification', () => ({
+  useNotification: () => ({ showNotification: mockShowNotification }),
+}));
+
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -301,8 +306,9 @@ describe('HouseholdPresetSelector', () => {
 
       await waitFor(() => {
         expect(mockSaveAppData).toHaveBeenCalledWith(validData);
-        expect(globalThis.alert).toHaveBeenCalledWith(
-          'Data imported successfully',
+        expect(mockShowNotification).toHaveBeenCalledWith(
+          'notifications.importSuccess',
+          'success',
         );
         expect(globalThis.location.reload).toHaveBeenCalled();
       });
@@ -326,7 +332,10 @@ describe('HouseholdPresetSelector', () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
-        expect(globalThis.alert).toHaveBeenCalledWith('Invalid file format');
+        expect(mockShowNotification).toHaveBeenCalledWith(
+          'notifications.importError',
+          'error',
+        );
       });
 
       expect(mockSaveAppData).not.toHaveBeenCalled();
@@ -357,8 +366,9 @@ describe('HouseholdPresetSelector', () => {
         expect(mockImportFromJSON).toHaveBeenCalled();
         expect(globalThis.confirm).not.toHaveBeenCalled();
         expect(mockSaveAppData).toHaveBeenCalledWith(validData);
-        expect(globalThis.alert).toHaveBeenCalledWith(
-          'Data imported successfully',
+        expect(mockShowNotification).toHaveBeenCalledWith(
+          'notifications.importSuccess',
+          'success',
         );
         expect(globalThis.location.reload).toHaveBeenCalled();
       });
@@ -380,7 +390,10 @@ describe('HouseholdPresetSelector', () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
-        expect(globalThis.alert).toHaveBeenCalledWith('Failed to import data');
+        expect(mockShowNotification).toHaveBeenCalledWith(
+          'notifications.importError',
+          'error',
+        );
       });
     });
 

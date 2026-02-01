@@ -10,6 +10,11 @@ vi.mock('@/shared/utils/storage/localStorage');
 vi.mock('@/shared/utils/errorLogger/storage');
 vi.mock('@/shared/utils/analytics/storage');
 
+const mockShowNotification = vi.fn();
+vi.mock('@/shared/hooks/useNotification', () => ({
+  useNotification: () => ({ showNotification: mockShowNotification }),
+}));
+
 // Store original console.error to restore later
 const originalConsoleError = console.error;
 
@@ -69,6 +74,7 @@ describe('ClearDataButton', () => {
   });
 
   it('should clear data when both confirmations are accepted', () => {
+    vi.useFakeTimers();
     globalThis.confirm = vi.fn(() => true);
     const reloadSpy = vi.fn();
     globalThis.location.reload = reloadSpy;
@@ -82,8 +88,13 @@ describe('ClearDataButton', () => {
     expect(localStorage.clearAppData).toHaveBeenCalled();
     expect(errorLoggerStorage.clearErrorLogs).toHaveBeenCalled();
     expect(analyticsStorage.clearAnalyticsData).toHaveBeenCalled();
-    expect(globalThis.alert).toHaveBeenCalledWith('settings.clearData.success');
-    // window.location.reload should be called
+    expect(mockShowNotification).toHaveBeenCalledWith(
+      'notifications.data.cleared',
+      'success',
+    );
+    expect(reloadSpy).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(800);
     expect(reloadSpy).toHaveBeenCalled();
+    vi.useRealTimers();
   });
 });

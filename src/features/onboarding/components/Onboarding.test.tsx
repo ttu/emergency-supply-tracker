@@ -5,6 +5,10 @@ import { Onboarding } from './Onboarding';
 import { SettingsProvider } from '@/features/settings';
 import { RecommendedItemsProvider } from '@/features/templates';
 
+vi.mock('@/shared/hooks/useNotification', () => ({
+  useNotification: () => ({ showNotification: vi.fn() }),
+}));
+
 // Mock react-i18next
 const mockChangeLanguage = vi.fn();
 vi.mock('react-i18next', () => ({
