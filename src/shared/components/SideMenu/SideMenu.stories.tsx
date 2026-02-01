@@ -35,7 +35,7 @@ const settingsSections: SideMenuItem[] = [
   { id: 'household', label: 'Household Configuration' },
   { id: 'nutrition', label: 'Nutrition & Requirements' },
   { id: 'hidden-alerts', label: 'Hidden Alerts' },
-  { id: 'data-management', label: 'Data Management' },
+  { id: 'backupTransfer', label: 'Backup & Transfer' },
   { id: 'about', label: 'About' },
   { id: 'danger-zone', label: 'Danger Zone' },
 ];

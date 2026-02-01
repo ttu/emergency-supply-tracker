@@ -443,23 +443,22 @@ A comprehensive help page with frequently asked questions and guidance.
 - `ExportRecommendationsButton`: Export current recommendations as JSON
 - `DisabledRecommendations`: Toggle individual recommendations on/off
 
-**Data Management:**
+**Backup & Transfer (General):**
 
 - `ExportButton`: Export data as JSON
 - `ImportButton`: Import data from JSON
 - `ShoppingListExport`: Export shopping list (TXT/Markdown/CSV)
-- `DebugExport`: Export error logs and debug information
-- `ClearDataButton`: Clear all data with confirmation
+
+**Advanced:**
+
+- `DebugExport`: Export error logs
+- `ClearDataButton`: Clear all data with confirmation (Danger Zone)
 
 **About:**
 
 - App version display
 - Link to GitHub repository
 - App description
-
-**Danger Zone:**
-
-- `ClearDataButton`: Clear all data with confirmation (placed in separate "Danger Zone" section)
 
 ---
 
@@ -509,7 +508,9 @@ Users can disable recommended items they don't need:
 - **Effect**: Disabled items don't appear in recommendations or shortage calculations
 - **Management**: Settings page allows re-enabling disabled items
 
-### 10. Data Management
+### 10. Backup & Transfer
+
+Import/export lives under **Settings → General → Backup & Transfer**. Debug log and clear data are under **Settings → Advanced**.
 
 #### Export Data (JSON)
 

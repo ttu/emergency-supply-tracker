@@ -45,7 +45,7 @@ describe('Settings Page', () => {
       within(sidebar).getByTestId('sidemenu-item-recommendationKits'),
     ).toBeInTheDocument();
     expect(
-      within(sidebar).getByTestId('sidemenu-item-dataManagement'),
+      within(sidebar).getByTestId('sidemenu-item-backupTransfer'),
     ).toBeInTheDocument();
     expect(
       within(sidebar).getByTestId('sidemenu-item-about'),
@@ -174,17 +174,17 @@ describe('Settings Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should navigate to data management section when clicked', () => {
+  it('should navigate to backup and transfer section when clicked', () => {
     renderWithProviders(<Settings />);
 
-    // Click on data management in the menu (scope to sidebar)
+    // Click on backup and transfer in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
     fireEvent.click(
-      within(sidebar).getByTestId('sidemenu-item-dataManagement'),
+      within(sidebar).getByTestId('sidemenu-item-backupTransfer'),
     );
 
-    // Data management section should now be visible
-    expect(screen.getByTestId('section-data-management')).toBeInTheDocument();
+    // Backup and transfer section should now be visible
+    expect(screen.getByTestId('section-backup-transfer')).toBeInTheDocument();
     expect(screen.getByText('settings.export.button')).toBeInTheDocument();
     expect(screen.getByText('settings.import.button')).toBeInTheDocument();
   });
@@ -250,7 +250,7 @@ describe('Settings Page', () => {
       'disabledCategories',
       'overriddenRecommendations',
       'recommendationKits',
-      'dataManagement',
+      'backupTransfer',
       'about',
       'dangerZone',
     ];

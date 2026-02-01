@@ -32,7 +32,7 @@ type SettingsSection =
   | 'customCategories'
   | 'overriddenRecommendations'
   | 'recommendationKits'
-  | 'dataManagement'
+  | 'backupTransfer'
   | 'debugLog'
   | 'about'
   | 'dangerZone';
@@ -76,6 +76,10 @@ export function Settings() {
         {
           id: 'appearance',
           label: t('settings.navigation.sections.appearance'),
+        },
+        {
+          id: 'backupTransfer',
+          label: t('settings.navigation.sections.backupTransfer'),
         },
         { id: 'about', label: t('settings.navigation.sections.about') },
       ],
@@ -125,13 +129,9 @@ export function Settings() {
       ],
     },
     {
-      id: 'data',
-      label: t('settings.navigation.groups.data'),
+      id: 'advanced',
+      label: t('settings.navigation.groups.advanced'),
       items: [
-        {
-          id: 'dataManagement',
-          label: t('settings.navigation.sections.dataManagement'),
-        },
         {
           id: 'debugLog',
           label: t('settings.navigation.sections.debugLog'),
@@ -245,11 +245,11 @@ export function Settings() {
           </section>
         );
 
-      case 'dataManagement':
+      case 'backupTransfer':
         return (
           <Section
-            testId="section-data-management"
-            titleKey="settings.navigation.sections.dataManagement"
+            testId="section-backup-transfer"
+            titleKey="settings.navigation.sections.backupTransfer"
           >
             <div className={styles.dataButtons}>
               <ExportButton />

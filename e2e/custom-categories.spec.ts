@@ -457,7 +457,7 @@ test.describe('Custom Categories', () => {
 
     // Export data
     await page.getByTestId('nav-settings').click();
-    await navigateToSettingsSection(page, 'dataManagement');
+    await navigateToSettingsSection(page, 'backupTransfer');
     const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
     await exportButton.click();

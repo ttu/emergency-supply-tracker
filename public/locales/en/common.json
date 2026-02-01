@@ -152,7 +152,7 @@
         "household": "Household",
         "recommendations": "Recommendations",
         "categories": "Categories",
-        "data": "Data"
+        "advanced": "Advanced"
       },
       "sections": {
         "appearance": "Appearance",
@@ -163,7 +163,7 @@
         "disabledCategories": "Disabled Categories",
         "customCategories": "Custom Categories",
         "overriddenRecommendations": "Overridden Recommendations",
-        "dataManagement": "Data Management",
+        "backupTransfer": "Backup & Transfer",
         "debugLog": "Debug Log",
         "about": "About",
         "dangerZone": "Danger Zone",
@@ -597,7 +597,7 @@
     },
     "exportImport": {
       "question": "How do I backup my data?",
-      "answer": "Go to Settings → Data Management and click 'Export Data'. This downloads a JSON file with all your data. You can import this file later to restore your data or transfer it to another device."
+      "answer": "Go to Settings → General → Backup & Transfer and click 'Export Data'. This downloads a JSON file with all your data. You can import this file later to restore your data or transfer it to another device."
     },
     "dataStorage": {
       "question": "Where is my data stored?",
@@ -605,7 +605,7 @@
     },
     "shoppingList": {
       "question": "How do I create a shopping list?",
-      "answer": "Go to Settings → Data Management and click 'Export Shopping List'. This generates a text file listing all items that need restocking, grouped by category with current vs. recommended quantities."
+      "answer": "Go to Settings → General → Backup & Transfer and click 'Export Shopping List'. This generates a text file listing all items that need restocking, grouped by category with current vs. recommended quantities."
     },
     "preparednessScore": {
       "question": "How is the preparedness score calculated?",
