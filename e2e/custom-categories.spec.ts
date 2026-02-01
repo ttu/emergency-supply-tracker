@@ -58,13 +58,26 @@ test.describe('Custom Categories', () => {
       timeout: 10000,
     });
 
-    // Verify custom category is visible in the sidebar (inventory uses SideMenu for categories)
-    await expect(page.getByTestId('sidemenu-sidebar')).toBeVisible({
-      timeout: 10000,
-    });
-    await expect(
-      page.getByTestId('sidemenu-sidebar').getByText('Custom Category'),
-    ).toBeVisible({ timeout: 5000 });
+    // Verify custom category is visible (viewport-aware: sidebar on desktop, drawer on mobile)
+    const viewport = page.viewportSize();
+    const isMobile = viewport && viewport.width < 768;
+    if (isMobile) {
+      const hamburger = page.getByTestId('sidemenu-hamburger');
+      if (await hamburger.isVisible().catch(() => false)) {
+        await hamburger.click();
+        await page.waitForTimeout(300);
+      }
+      await expect(
+        page.getByTestId('sidemenu-drawer').getByText('Custom Category'),
+      ).toBeVisible({ timeout: 5000 });
+    } else {
+      await expect(page.getByTestId('sidemenu-sidebar')).toBeVisible({
+        timeout: 10000,
+      });
+      await expect(
+        page.getByTestId('sidemenu-sidebar').getByText('Custom Category'),
+      ).toBeVisible({ timeout: 5000 });
+    }
 
     // Verify custom category exists in data
     const storedData = await page.evaluate((key) => {

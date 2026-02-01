@@ -37,6 +37,11 @@ async function ensureDrawerClosed(page: Page) {
   }
 }
 
+// Region rule is disabled: axe reports landmark violations (EN 9.1.4.3 / best-practice)
+// that are known limitations; we still run wcag2a/2aa/21aa and other best-practice rules.
+// TODO: Fix app landmark structure and remove disableRules(['region']).
+const AXE_DISABLED_RULES = ['region'] as const;
+
 test.describe('Accessibility', () => {
   test.beforeEach(async ({ setupApp }) => {
     await setupApp();
@@ -53,7 +58,7 @@ test.describe('Accessibility', () => {
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
-      .disableRules(['region'])
+      .disableRules([...AXE_DISABLED_RULES])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -70,7 +75,7 @@ test.describe('Accessibility', () => {
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
-      .disableRules(['region'])
+      .disableRules([...AXE_DISABLED_RULES])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -87,7 +92,7 @@ test.describe('Accessibility', () => {
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
-      .disableRules(['region'])
+      .disableRules([...AXE_DISABLED_RULES])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -104,7 +109,7 @@ test.describe('Accessibility', () => {
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
-      .disableRules(['region'])
+      .disableRules([...AXE_DISABLED_RULES])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -124,7 +129,7 @@ test.describe('Accessibility', () => {
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
-      .disableRules(['region'])
+      .disableRules([...AXE_DISABLED_RULES])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -144,7 +149,7 @@ test.describe('Accessibility', () => {
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
-      .disableRules(['region'])
+      .disableRules([...AXE_DISABLED_RULES])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -172,7 +177,7 @@ test.describe('Accessibility', () => {
       // Use more specific selector for the template modal (not the sidemenu drawer)
       .include('[data-testid="template-selector"]')
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
-      .disableRules(['region'])
+      .disableRules([...AXE_DISABLED_RULES])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -215,7 +220,7 @@ test.describe('Accessibility', () => {
     // Run a11y check
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['keyboard'])
-      .disableRules(['region'])
+      .disableRules([...AXE_DISABLED_RULES])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
