@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { HouseholdPresetSelector } from './HouseholdPresetSelector';
 import { SettingsProvider } from '@/features/settings';
+import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { useState } from 'react';
 
 const meta = {
@@ -13,9 +14,11 @@ const meta = {
   decorators: [
     (Story) => (
       <SettingsProvider>
-        <div style={{ maxWidth: '800px', padding: '2rem' }}>
-          <Story />
-        </div>
+        <NotificationProvider>
+          <div style={{ maxWidth: '800px', padding: '2rem' }}>
+            <Story />
+          </div>
+        </NotificationProvider>
       </SettingsProvider>
     ),
   ],
