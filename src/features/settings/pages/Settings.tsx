@@ -19,6 +19,7 @@ import {
 } from '@/features/settings';
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
+import { CONTACT_EMAIL } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
 
@@ -281,15 +282,20 @@ export function Settings() {
                 {t('settings.about.version')}: {APP_VERSION}
               </p>
               <p className={styles.description}>{t('help.contactText')}</p>
-              <a
-                href="https://github.com/ttu/emergency-supply-tracker"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.link}
-              >
-                <GitHubIcon className={styles.githubIcon} />
-                {t('help.githubLink')}
-              </a>
+              <div className={styles.contactLinks}>
+                <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link}>
+                  {CONTACT_EMAIL}
+                </a>
+                <a
+                  href="https://github.com/ttu/emergency-supply-tracker"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.link}
+                >
+                  <GitHubIcon className={styles.githubIcon} />
+                  {t('help.githubLink')}
+                </a>
+              </div>
             </div>
           </Section>
         );

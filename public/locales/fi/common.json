@@ -113,6 +113,9 @@
     "backup": {
       "reminderMessage": "Viimeisimmästä varmuuskopiosta on yli kuukausi. Harkitse tietojen vientiä muutosten menettämisen välttämiseksi.",
       "neverBackedUpMessage": "Et ole koskaan varmuuskopioinut tietojasi. Muista käyttää Asetuksista varmuuskopiointia."
+    },
+    "notifications": {
+      "releaseTesting": "Sovellus on juuri julkaistu; testaus on vielä käynnissä. Ilmoita ongelmista: help@emergencysupplytracker.com"
     }
   },
   "household": {
@@ -569,7 +572,7 @@
     "faqTitle": "Usein kysytyt kysymykset",
     "quickTipsTitle": "Pikavinkki",
     "contactTitle": "Tarvitsetko lisää apua?",
-    "contactText": "Ilmoita bugeista, ehdota ominaisuuksia, jätä palautetta tai osallistu koodilla—käy GitHub-sivustollamme osallistuaksesi ja parantaaksesi sovellusta.",
+    "contactText": "Ilmoita bugeista, ehdota ominaisuuksia, jätä palautetta tai osallistu koodilla—käy GitHub-sivustollamme tai lähetä sähköpostia.",
     "githubLink": "Käy GitHub-sivustolla",
     "gettingStarted": {
       "question": "Miten aloitan?",

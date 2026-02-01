@@ -113,6 +113,9 @@
     "backup": {
       "reminderMessage": "It's been over a month since your last backup. Consider exporting your data to avoid losing changes.",
       "neverBackedUpMessage": "You have never backed up your data. Remember to use the backup functionality from Settings."
+    },
+    "notifications": {
+      "releaseTesting": "This app was just released; we're still testing. Report problems via help@emergencysupplytracker.com"
     }
   },
   "household": {
@@ -569,7 +572,7 @@
     "faqTitle": "Frequently Asked Questions",
     "quickTipsTitle": "Quick Tips",
     "contactTitle": "Need More Help?",
-    "contactText": "Report bugs, suggest features, leave feedback, or contribute—visit our GitHub repository to participate and help improve the app.",
+    "contactText": "Report bugs, suggest features, leave feedback, or contribute—visit our GitHub repository or email us.",
     "githubLink": "Visit GitHub Repository",
     "gettingStarted": {
       "question": "How do I get started?",

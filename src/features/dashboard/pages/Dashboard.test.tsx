@@ -382,6 +382,25 @@ describe('Dashboard', () => {
     fireEvent.click(showAllButton);
   });
 
+  it('should show app notification and allow dismissing it', () => {
+    localStorage.clear();
+    renderWithProviders(<Dashboard />);
+
+    const notificationAlert = screen.getByTestId(
+      'alert-app-notification-release-testing',
+    );
+    expect(notificationAlert).toBeInTheDocument();
+
+    const dismissButton = screen.getByTestId(
+      'dismiss-app-notification-release-testing',
+    );
+    fireEvent.click(dismissButton);
+
+    expect(
+      screen.queryByTestId('alert-app-notification-release-testing'),
+    ).not.toBeInTheDocument();
+  });
+
   it('should handle backup reminder alert dismissal', () => {
     // Set up app data with items but no backup date to trigger backup reminder
     // Backup reminder shows when: no backup date AND items.length > 0

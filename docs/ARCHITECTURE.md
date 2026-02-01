@@ -252,7 +252,7 @@ interface UserSettings {
   - Water calculations, calorie calculations
 
 - **Feature-specific utilities** (used by single feature) → `src/features/{feature}/utils/`
-  - Dashboard: `calculatePreparednessScore()`, `calculateCategoryStatus()`, `backupReminder()`
+  - Dashboard: `calculatePreparednessScore()`, `calculateCategoryStatus()`, `backupReminder()`. App notifications are hardcoded in `dashboard/constants/notifications.ts`; "seen" state is stored in a separate localStorage key (`emergencySupplyTracker_notifications_seen`), not in AppData, so they can be removed from the codebase later without schema changes.
   - Inventory: (status calculations moved to shared, but feature-specific logic stays)
   - Alerts: alert generation logic
 
@@ -302,15 +302,16 @@ calculateCategoryStatus(category, items, ...): CategoryStatusSummary  // Dashboa
 
 **Custom Hooks:**
 
-| Hook                    | Purpose                      | Location                    |
-| ----------------------- | ---------------------------- | --------------------------- |
-| `useInventory()`        | Access inventory context     | `features/inventory/hooks/` |
-| `useHousehold()`        | Access household context     | `features/household/hooks/` |
-| `useSettings()`         | Access settings context      | `features/settings/hooks/`  |
-| `useBackupTracking()`   | Manage backup reminder state | `features/dashboard/hooks/` |
-| `useDashboardAlerts()`  | Manage dashboard alerts      | `features/dashboard/hooks/` |
-| `useCategoryStatuses()` | Calculate category statuses  | `features/dashboard/hooks/` |
-| `useLocalStorageSync()` | Sync state with localStorage | `shared/hooks/`             |
+| Hook                     | Purpose                                    | Location                    |
+| ------------------------ | ------------------------------------------ | --------------------------- |
+| `useInventory()`         | Access inventory context                   | `features/inventory/hooks/` |
+| `useHousehold()`         | Access household context                   | `features/household/hooks/` |
+| `useSettings()`          | Access settings context                    | `features/settings/hooks/`  |
+| `useBackupTracking()`    | Manage backup reminder state               | `features/dashboard/hooks/` |
+| `useDashboardAlerts()`   | Manage dashboard alerts                    | `features/dashboard/hooks/` |
+| `useSeenNotifications()` | Persist dismissed app notifications (seen) | `features/dashboard/hooks/` |
+| `useCategoryStatuses()`  | Calculate category statuses                | `features/dashboard/hooks/` |
+| `useLocalStorageSync()`  | Sync state with localStorage               | `shared/hooks/`             |
 
 **Connections:**
 

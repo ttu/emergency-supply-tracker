@@ -48,12 +48,21 @@ vi.mock('./useBackupTracking', () => ({
   })),
 }));
 
+const mockMarkNotificationSeen = vi.fn();
+vi.mock('./useSeenNotifications', () => ({
+  useSeenNotifications: vi.fn(() => ({
+    seenNotificationIds: new Set(),
+    markNotificationSeen: mockMarkNotificationSeen,
+  })),
+}));
+
 import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { generateDashboardAlerts } from '@/features/alerts';
 import { useBackupTracking } from './useBackupTracking';
+import { useSeenNotifications } from './useSeenNotifications';
 
 describe('useDashboardAlerts', () => {
   const mockDismissAlert = vi.fn();
@@ -121,6 +130,10 @@ describe('useDashboardAlerts', () => {
     // Default: backup reminder not shown
     mockShouldShowBackupReminder.mockReturnValue(false);
     vi.mocked(getAppData).mockReturnValue(undefined);
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set(),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
   };
 
   beforeEach(() => {
@@ -128,15 +141,79 @@ describe('useDashboardAlerts', () => {
     defaultMocks();
   });
 
-  it('should return empty active alerts when no alerts exist', () => {
+  it('should return empty active alerts when no alerts exist and all notifications seen', () => {
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
+
     const { result } = renderHook(() => useDashboardAlerts());
 
     expect(result.current.activeAlerts).toEqual([]);
     expect(result.current.hiddenAlertsCount).toBe(0);
   });
 
+  it('should include app notification when not seen', () => {
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set(),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
+
+    const { result } = renderHook(() => useDashboardAlerts());
+
+    const releaseNotification = result.current.activeAlerts.find(
+      (a) => String(a.id) === 'app-notification-release-testing',
+    );
+    expect(releaseNotification).toBeDefined();
+    expect(releaseNotification?.type).toBe('info');
+    expect(releaseNotification?.message).toBe(
+      'alerts.notifications.releaseTesting',
+    );
+  });
+
+  it('should not include app notification when seen', () => {
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
+
+    const { result } = renderHook(() => useDashboardAlerts());
+
+    const releaseNotification = result.current.activeAlerts.find(
+      (a) => String(a.id) === 'app-notification-release-testing',
+    );
+    expect(releaseNotification).toBeUndefined();
+  });
+
+  it('should call markNotificationSeen when dismissing app notification', () => {
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set(),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
+
+    const { result } = renderHook(() => useDashboardAlerts());
+    const notificationId = createAlertId('app-notification-release-testing');
+
+    act(() => {
+      result.current.handleDismissAlert(notificationId);
+    });
+
+    expect(mockMarkNotificationSeen).toHaveBeenCalledWith(notificationId);
+    expect(mockDismissAlert).not.toHaveBeenCalled();
+  });
+
   it('should include backup reminder alert when conditions are met', () => {
     mockShouldShowBackupReminder.mockReturnValue(true);
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
 
     const { result } = renderHook(() => useDashboardAlerts());
 
@@ -159,6 +236,12 @@ describe('useDashboardAlerts', () => {
       dismissBackupReminder: mockDismissBackupReminder,
     });
     mockShouldShowBackupReminder.mockReturnValue(true);
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
 
     const { result } = renderHook(() => useDashboardAlerts());
 
@@ -169,6 +252,12 @@ describe('useDashboardAlerts', () => {
   });
 
   it('should include generated alerts', () => {
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
     const mockAlerts = [
       {
         id: createAlertId('test-alert-1'),
@@ -189,6 +278,12 @@ describe('useDashboardAlerts', () => {
   });
 
   it('should filter out dismissed alerts', () => {
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
     const dismissedId = createAlertId('dismissed-alert');
     const mockAlerts = [
       { id: dismissedId, type: 'warning' as const, message: 'Dismissed' },
@@ -234,6 +329,12 @@ describe('useDashboardAlerts', () => {
   });
 
   it('should handle dismissing regular alerts', () => {
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
     const alertId = createAlertId('test-alert');
     const mockAlerts = [
       { id: alertId, type: 'warning' as const, message: 'Test' },
@@ -251,6 +352,12 @@ describe('useDashboardAlerts', () => {
 
   it('should handle dismissing backup reminder', () => {
     mockShouldShowBackupReminder.mockReturnValue(true);
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
 
     const { result } = renderHook(() => useDashboardAlerts());
     const backupReminderId = createAlertId('backup-reminder');
@@ -263,6 +370,12 @@ describe('useDashboardAlerts', () => {
   });
 
   it('should handle dismissing all alerts', () => {
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
     const alert1 = createAlertId('alert-1');
     const alert2 = createAlertId('alert-2');
     const mockAlerts = [
@@ -284,6 +397,12 @@ describe('useDashboardAlerts', () => {
 
   it('should handle dismiss all including backup reminder', () => {
     mockShouldShowBackupReminder.mockReturnValue(true);
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
     const alert1 = createAlertId('alert-1');
     vi.mocked(generateDashboardAlerts).mockReturnValue([
       { id: alert1, type: 'warning' as const, message: 'Alert 1' },
