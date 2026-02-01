@@ -284,7 +284,7 @@ export function Settings() {
               <p className={styles.description}>{t('help.contactText')}</p>
               <div className={styles.contactLinks}>
                 <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link}>
-                  {t('help.contactEmailLabel', { email: CONTACT_EMAIL })}
+                  {CONTACT_EMAIL}
                 </a>
                 <a
                   href="https://github.com/ttu/emergency-supply-tracker"
