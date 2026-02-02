@@ -51,11 +51,9 @@ test.describe('Custom Product Templates', () => {
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
 
-    // Note: Custom templates might not be integrated into TemplateSelector yet
-    // TemplateSelector currently only shows RecommendedItemDefinition (built-in templates)
-    // Custom ProductTemplate support may be a future enhancement
-    // This test verifies the data structure supports custom templates
-    await expect(page.getByTestId('template-selector')).toBeVisible();
+    // Custom template should be displayed in the "Your Templates" section
+    await expect(page.getByText('Custom Template Item')).toBeVisible();
+    await expect(page.getByText('Your Templates')).toBeVisible();
   });
 
   test('should allow adding item from custom template', async ({ page }) => {
@@ -97,33 +95,20 @@ test.describe('Custom Product Templates', () => {
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
 
-    // Note: Custom templates might not appear in TemplateSelector
-    // If they don't appear, use Custom Item instead
-    const customTemplateVisible = await page
-      .getByText(/My Custom Product/i)
-      .isVisible()
-      .catch(() => false);
+    // Click on the custom template
+    await page.getByText('My Custom Product').click();
 
-    if (customTemplateVisible) {
-      // Use getByRole to target item card button specifically (not notification)
-      const itemCardButton = page.getByRole('button', {
-        name: /My Custom Product/i,
-      });
-      await expect(itemCardButton).toBeVisible();
-      await itemCardButton.click();
-      // Form should be pre-filled with template data
-      await expect(page.getByTestId('item-form')).toBeVisible();
-    } else {
-      // Fallback: Use Custom Item button
-      await page.getByTestId('custom-item-button').click();
-      await expect(page.getByTestId('item-form')).toBeVisible();
-      await page.fill('input[name="name"]', 'My Custom Product');
-      await page.selectOption('select[name="category"]', 'food');
-    }
+    // Form should be pre-filled with template data
+    await expect(page.getByTestId('item-form')).toBeVisible();
+
+    // The name field should be pre-filled
+    const nameInput = page.locator('input[name="name"]');
+    await expect(nameInput).toHaveValue('My Custom Product');
 
     // Submit form
     await page.fill('input[name="quantity"]', '5');
-    await page.check('input[type="checkbox"]');
+    // Check "Never Expires" checkbox by label text to avoid ambiguity
+    await page.getByLabel(/Never Expires/i).check();
     await page.getByTestId('save-item-button').click();
 
     // Item should be added - use getByRole to target item card button specifically
@@ -181,30 +166,44 @@ test.describe('Custom Product Templates', () => {
     expect(storedData.customTemplates[0].name).toBe('Persistent Template');
   });
 
-  test('should allow creating custom template from item', async ({ page }) => {
-    // Add a custom item first
+  test('should allow creating custom template from item using Save as Template', async ({
+    page,
+  }) => {
+    // Navigate to inventory and add a custom item with "Save as Template" checked
     await page.getByTestId('nav-inventory').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
     await expect(page.getByTestId('item-form')).toBeVisible();
 
-    await page.fill('input[name="name"]', 'Template Source Item');
+    await page.fill('input[name="name"]', 'New Saved Template');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    // Check "Never Expires" checkbox by label text
+    await page.getByLabel(/Never Expires/i).check();
+
+    // Check the "Save as Template" checkbox
+    await page.getByTestId('save-as-template-checkbox').check();
+
     await page.getByTestId('save-item-button').click();
 
     // Item should be added
-    // Use getByRole to target item card button specifically
     await expect(
-      page.getByRole('button', { name: /Template Source Item/i }),
+      page.getByRole('button', { name: /New Saved Template/i }),
     ).toBeVisible();
 
-    // Note: "Save as Template" functionality might be in item detail view
-    // or might not be implemented yet. This test verifies the item can be created.
-    // Template creation from items is a future enhancement.
+    // Template should be saved - verify by opening template selector again
+    await page.getByTestId('add-item-button').click();
+    await expect(page.getByTestId('template-selector')).toBeVisible();
+
+    // The new template should appear in the "Your Templates" section
+    await expect(page.getByText('Your Templates')).toBeVisible();
+    await expect(
+      page.locator('[data-testid^="custom-template-card-"]').filter({
+        hasText: 'New Saved Template',
+      }),
+    ).toBeVisible();
   });
 
   test('should handle custom template in data import/export', async ({
@@ -304,20 +303,20 @@ test.describe('Custom Product Templates', () => {
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
 
-    // Note: Custom templates might not be integrated into TemplateSelector
-    // This test verifies the data structure supports custom templates
-    // If custom templates appear, they should be searchable
-    const searchInput = page.getByTestId('template-search-input');
-    const searchVisible = await searchInput.isVisible().catch(() => false);
+    // Custom template should be visible before search
+    await expect(page.getByText('Searchable Template')).toBeVisible();
 
-    if (searchVisible) {
-      await searchInput.fill('Searchable');
-      // If custom template appears, it should be in results
-      // Template might not appear if not integrated yet
-      expect(searchVisible).toBe(true);
-    } else {
-      // Template selector is visible
-      await expect(page.getByTestId('template-selector')).toBeVisible();
-    }
+    // Search for the template
+    const searchInput = page.getByTestId('template-search-input');
+    await searchInput.fill('Searchable');
+
+    // Custom template should still be visible in search results
+    await expect(page.getByText('Searchable Template')).toBeVisible();
+
+    // Search for something that doesn't match
+    await searchInput.fill('NonExistent');
+
+    // Custom template should not be visible
+    await expect(page.getByText('Searchable Template')).not.toBeVisible();
   });
 });

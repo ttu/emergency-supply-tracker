@@ -615,7 +615,9 @@ describe('Inventory Page with items', () => {
     expect(categorySelect).toHaveValue('food');
 
     // Check "never expires" checkbox
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
     fireEvent.click(neverExpiresCheckbox);
     expect(neverExpiresCheckbox).toBeChecked();
 
@@ -640,7 +642,9 @@ describe('Inventory Page with items', () => {
     fireEvent.change(quantityInput, { target: { value: '3' } });
     const categorySelect = screen.getByLabelText(/itemForm\.category/i);
     fireEvent.change(categorySelect, { target: { value: 'food' } });
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
     fireEvent.click(neverExpiresCheckbox);
 
     const submitButton = screen.getByText('common.add');

@@ -31,6 +31,13 @@
   cursor: pointer;
 }
 
+.helperText {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  padding-left: calc(1.25rem + var(--spacing-sm));
+}
+
 .label {
   font-size: 0.875rem;
   font-weight: 500;

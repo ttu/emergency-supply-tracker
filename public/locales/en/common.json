@@ -518,6 +518,8 @@
     "purchaseDate": "Purchase Date",
     "location": "Location",
     "notes": "Notes",
+    "saveAsTemplate": "Save as template",
+    "saveAsTemplateHint": "Save this item's name, category, and unit as a reusable template for future items",
     "errors": {
       "nameRequired": "Name is required",
       "categoryRequired": "Category is required",
@@ -532,7 +534,9 @@
     "categoryLabel": "Filter by category",
     "noTemplates": "No templates found",
     "recommended": "Recommended",
-    "customDescription": "Create your own custom item"
+    "customDescription": "Create your own custom item",
+    "yourTemplates": "Your Templates",
+    "recommendedItems": "Recommended Items"
   },
   "quickSetup": {
     "title": "Quick Setup",
@@ -657,7 +661,9 @@
     "recommendationHidden": "Recommendation hidden",
     "recommendationShown": "Recommendation shown",
     "categoryHidden": "Category hidden",
-    "categoryShown": "Category shown"
+    "categoryShown": "Category shown",
+    "templateAdded": "Template \"{{name}}\" saved",
+    "templateDeleted": "Template \"{{name}}\" deleted"
   },
   "kitSelector": {
     "builtInKits": "Built-in Kits",

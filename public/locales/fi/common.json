@@ -518,6 +518,8 @@
     "purchaseDate": "Ostopäivä",
     "location": "Sijainti",
     "notes": "Muistiinpanot",
+    "saveAsTemplate": "Tallenna malliksi",
+    "saveAsTemplateHint": "Tallenna tämän tuotteen nimi, kategoria ja yksikkö uudelleenkäytettäväksi malliksi tulevia tuotteita varten",
     "errors": {
       "nameRequired": "Nimi vaaditaan",
       "categoryRequired": "Kategoria vaaditaan",
@@ -532,7 +534,9 @@
     "categoryLabel": "Suodata kategorialla",
     "noTemplates": "Ei malleja",
     "recommended": "Suositeltu",
-    "customDescription": "Luo oma tuote"
+    "customDescription": "Luo oma tuote",
+    "yourTemplates": "Omat mallit",
+    "recommendedItems": "Suositellut tuotteet"
   },
   "quickSetup": {
     "title": "Pika-asennus",
@@ -657,7 +661,9 @@
     "recommendationHidden": "Suositus piilotettu",
     "recommendationShown": "Suositus näytetty",
     "categoryHidden": "Kategoria piilotettu",
-    "categoryShown": "Kategoria näytetty"
+    "categoryShown": "Kategoria näytetty",
+    "templateAdded": "Malli \"{{name}}\" tallennettu",
+    "templateDeleted": "Malli \"{{name}}\" poistettu"
   },
   "kitSelector": {
     "builtInKits": "Sisäänrakennetut paketit",

@@ -50,6 +50,9 @@ describe('useCategoryStatuses', () => {
       addCustomCategory: vi.fn(),
       updateCustomCategory: vi.fn(),
       deleteCustomCategory: vi.fn(() => ({ success: true })),
+      customTemplates: [],
+      addCustomTemplate: vi.fn(),
+      deleteCustomTemplate: vi.fn(),
     });
 
     vi.mocked(useHousehold).mockReturnValue({

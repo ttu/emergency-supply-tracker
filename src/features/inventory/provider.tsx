@@ -8,6 +8,7 @@ import type {
   ProductTemplateId,
   StandardCategoryId,
   CategoryId,
+  ProductTemplate,
 } from '@/shared/types';
 import {
   createAlertId,
@@ -16,6 +17,10 @@ import {
 } from '@/shared/types';
 import { STANDARD_CATEGORIES, canDeleteCategory } from '@/features/categories';
 import { CategoryFactory } from '@/features/categories/factories/CategoryFactory';
+import {
+  ProductTemplateFactory,
+  type CreateProductTemplateInput,
+} from '@/features/templates/factories/ProductTemplateFactory';
 import { useLocalStorageSync } from '@/shared/hooks';
 import { InventoryContext } from './context';
 import {
@@ -63,6 +68,12 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         (id): id is StandardCategoryId =>
           (VALID_CATEGORIES as readonly string[]).includes(id),
       );
+    },
+  );
+  const [customTemplates, setCustomTemplates] = useLocalStorageSync(
+    'customTemplates',
+    (data) => {
+      return (data?.customTemplates || []) as ProductTemplate[];
     },
   );
 
@@ -262,6 +273,41 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     [items, setCustomCategories, showNotification, t],
   );
 
+  // Add custom template
+  const addCustomTemplate = useCallback(
+    (
+      input: Omit<CreateProductTemplateInput, 'isBuiltIn' | 'isCustom'>,
+    ): ProductTemplate => {
+      const newTemplate = ProductTemplateFactory.createCustom({
+        ...input,
+        isBuiltIn: false,
+        isCustom: true,
+      });
+      setCustomTemplates((prev) => [...prev, newTemplate]);
+      showNotification(
+        t('notifications.templateAdded', { name: input.name }),
+        'success',
+      );
+      return newTemplate;
+    },
+    [setCustomTemplates, showNotification, t],
+  );
+
+  // Delete custom template
+  const deleteCustomTemplate = useCallback(
+    (id: ProductTemplateId) => {
+      const templateToDelete = customTemplates.find((t) => t.id === id);
+      setCustomTemplates((prev) => prev.filter((t) => t.id !== id));
+      if (templateToDelete) {
+        showNotification(
+          t('notifications.templateDeleted', { name: templateToDelete.name }),
+          'success',
+        );
+      }
+    },
+    [customTemplates, setCustomTemplates, showNotification, t],
+  );
+
   return (
     <InventoryContext.Provider
       value={{
@@ -288,6 +334,9 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         addCustomCategory,
         updateCustomCategory,
         deleteCustomCategory,
+        customTemplates,
+        addCustomTemplate,
+        deleteCustomTemplate,
       }}
     >
       {children}

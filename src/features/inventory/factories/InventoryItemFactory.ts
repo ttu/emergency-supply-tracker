@@ -6,6 +6,7 @@ import type {
   ProductTemplateId,
   DateOnly,
   Quantity,
+  ProductTemplate,
 } from '@/shared/types';
 import {
   createItemId,
@@ -333,6 +334,38 @@ export class InventoryItemFactory {
     return {
       ...itemData,
       id: createItemId(''), // Empty id signals this is a draft/new item
+      createdAt: '',
+      updatedAt: '',
+    };
+  }
+
+  /**
+   * Creates a draft InventoryItem from a custom ProductTemplate for form initialization.
+   * Custom templates are lightweight (name, category, unit) and don't have
+   * quantity/scaling rules like RecommendedItemDefinitions.
+   *
+   * @param template - Custom product template
+   * @param options - Optional overrides (quantity)
+   * @returns Draft InventoryItem (with empty id/timestamps for form use)
+   */
+  static createDraftFromCustomTemplate(
+    template: ProductTemplate,
+    options: { quantity?: number } = {},
+  ): InventoryItem {
+    const unit: Unit =
+      template.defaultUnit && isValidUnit(template.defaultUnit)
+        ? template.defaultUnit
+        : 'pieces';
+
+    // Return as draft (empty id/timestamps - form will treat as new item)
+    return {
+      id: createItemId(''), // Empty id signals this is a draft/new item
+      name: template.name || '',
+      itemType: template.id, // Use the template ID as itemType
+      categoryId: createCategoryId(template.category),
+      quantity: options.quantity ?? 0,
+      unit,
+      neverExpires: true, // Custom templates don't have default expiration
       createdAt: '',
       updatedAt: '',
     };

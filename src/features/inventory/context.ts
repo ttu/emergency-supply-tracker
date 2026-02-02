@@ -7,7 +7,9 @@ import type {
   ProductTemplateId,
   StandardCategoryId,
   CategoryId,
+  ProductTemplate,
 } from '@/shared/types';
+import type { CreateProductTemplateInput } from '@/features/templates/factories/ProductTemplateFactory';
 
 export interface InventoryContextValue {
   items: InventoryItem[];
@@ -43,6 +45,12 @@ export interface InventoryContextValue {
     success: boolean;
     error?: string;
   };
+  // Custom templates
+  customTemplates: ProductTemplate[];
+  addCustomTemplate: (
+    input: Omit<CreateProductTemplateInput, 'isBuiltIn' | 'isCustom'>,
+  ) => ProductTemplate;
+  deleteCustomTemplate: (id: ProductTemplateId) => void;
 }
 
 export const InventoryContext = createContext<
