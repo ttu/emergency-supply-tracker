@@ -1,7 +1,7 @@
 # Translation Guide
 
 > **Version:** 1.0.0
-> **Last Updated:** 2025-12-28
+> **Last Updated:** 2026-02-02
 > **Source of Truth:** `src/i18n/config.ts`, `public/locales/`
 
 This document describes how internationalization (i18n) works in the Emergency Supply Tracker.
