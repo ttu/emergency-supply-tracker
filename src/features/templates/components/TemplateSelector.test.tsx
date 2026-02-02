@@ -268,4 +268,217 @@ describe('TemplateSelector', () => {
     ) as HTMLSelectElement;
     expect(categorySelect.value).toBe('food');
   });
+
+  it('should display custom templates section when customTemplates are provided', () => {
+    const mockCustomTemplates = [
+      {
+        id: createProductTemplateId('custom-1'),
+        name: 'My Custom Item',
+        category: 'food',
+        defaultUnit: 'pieces' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      },
+    ];
+    const mockOnSelectCustomTemplate = vi.fn();
+
+    render(
+      <TemplateSelector
+        templates={mockTemplates}
+        categories={STANDARD_CATEGORIES}
+        onSelectTemplate={mockOnSelectTemplate}
+        onSelectCustom={() => {}}
+        customTemplates={mockCustomTemplates}
+        onSelectCustomTemplate={mockOnSelectCustomTemplate}
+      />,
+    );
+
+    // Should show "Your Templates" section header
+    expect(
+      screen.getByText('templateSelector.yourTemplates'),
+    ).toBeInTheDocument();
+
+    // Should show the custom template
+    expect(screen.getByText('My Custom Item')).toBeInTheDocument();
+  });
+
+  it('should call onSelectCustomTemplate when custom template is clicked', () => {
+    const mockCustomTemplates = [
+      {
+        id: createProductTemplateId('custom-1'),
+        name: 'My Custom Item',
+        category: 'food',
+        defaultUnit: 'pieces' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      },
+    ];
+    const mockOnSelectCustomTemplate = vi.fn();
+
+    render(
+      <TemplateSelector
+        templates={mockTemplates}
+        categories={STANDARD_CATEGORIES}
+        onSelectTemplate={mockOnSelectTemplate}
+        onSelectCustom={() => {}}
+        customTemplates={mockCustomTemplates}
+        onSelectCustomTemplate={mockOnSelectCustomTemplate}
+      />,
+    );
+
+    // Click on the custom template
+    const customTemplateCard = screen
+      .getByText('My Custom Item')
+      .closest('button');
+    fireEvent.click(customTemplateCard!);
+
+    expect(mockOnSelectCustomTemplate).toHaveBeenCalledWith(
+      mockCustomTemplates[0],
+    );
+  });
+
+  it('should filter custom templates by search query', () => {
+    const mockCustomTemplates = [
+      {
+        id: createProductTemplateId('custom-1'),
+        name: 'My Custom Water',
+        category: 'water-beverages',
+        defaultUnit: 'liters' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      },
+      {
+        id: createProductTemplateId('custom-2'),
+        name: 'My Custom Food',
+        category: 'food',
+        defaultUnit: 'pieces' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      },
+    ];
+
+    render(
+      <TemplateSelector
+        templates={mockTemplates}
+        categories={STANDARD_CATEGORIES}
+        onSelectTemplate={mockOnSelectTemplate}
+        onSelectCustom={() => {}}
+        customTemplates={mockCustomTemplates}
+        onSelectCustomTemplate={() => {}}
+      />,
+    );
+
+    const searchInput = screen.getByLabelText('templateSelector.searchLabel');
+    fireEvent.change(searchInput, { target: { value: 'Water' } });
+
+    // Should show custom water template but not custom food template
+    expect(screen.getByText('My Custom Water')).toBeInTheDocument();
+    expect(screen.queryByText('My Custom Food')).not.toBeInTheDocument();
+  });
+
+  it('should filter custom templates by category', () => {
+    const mockCustomTemplates = [
+      {
+        id: createProductTemplateId('custom-1'),
+        name: 'My Custom Water',
+        category: 'water-beverages',
+        defaultUnit: 'liters' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      },
+      {
+        id: createProductTemplateId('custom-2'),
+        name: 'My Custom Food',
+        category: 'food',
+        defaultUnit: 'pieces' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      },
+    ];
+
+    render(
+      <TemplateSelector
+        templates={mockTemplates}
+        categories={STANDARD_CATEGORIES}
+        onSelectTemplate={mockOnSelectTemplate}
+        onSelectCustom={() => {}}
+        customTemplates={mockCustomTemplates}
+        onSelectCustomTemplate={() => {}}
+      />,
+    );
+
+    const categorySelect = screen.getByLabelText(
+      'templateSelector.categoryLabel',
+    );
+    fireEvent.change(categorySelect, { target: { value: 'food' } });
+
+    // Should show custom food template but not custom water template
+    expect(screen.queryByText('My Custom Water')).not.toBeInTheDocument();
+    expect(screen.getByText('My Custom Food')).toBeInTheDocument();
+  });
+
+  it('should show Recommended Items section header when both custom and recommended templates are shown', () => {
+    const mockCustomTemplates = [
+      {
+        id: createProductTemplateId('custom-1'),
+        name: 'My Custom Item',
+        category: 'food',
+        defaultUnit: 'pieces' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      },
+    ];
+
+    render(
+      <TemplateSelector
+        templates={mockTemplates}
+        categories={STANDARD_CATEGORIES}
+        onSelectTemplate={mockOnSelectTemplate}
+        onSelectCustom={() => {}}
+        customTemplates={mockCustomTemplates}
+        onSelectCustomTemplate={() => {}}
+      />,
+    );
+
+    // Should show both section headers
+    expect(
+      screen.getByText('templateSelector.yourTemplates'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('templateSelector.recommendedItems'),
+    ).toBeInTheDocument();
+  });
+
+  it('should not call onSelectCustomTemplate when callback is not provided', () => {
+    const mockCustomTemplates = [
+      {
+        id: createProductTemplateId('custom-1'),
+        name: 'My Custom Item',
+        category: 'food',
+        defaultUnit: 'pieces' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      },
+    ];
+
+    render(
+      <TemplateSelector
+        templates={mockTemplates}
+        categories={STANDARD_CATEGORIES}
+        onSelectTemplate={mockOnSelectTemplate}
+        onSelectCustom={() => {}}
+        customTemplates={mockCustomTemplates}
+        // onSelectCustomTemplate is not provided
+      />,
+    );
+
+    // Click on the custom template - should not throw
+    const customTemplateCard = screen
+      .getByText('My Custom Item')
+      .closest('button');
+    fireEvent.click(customTemplateCard!);
+
+    // No callback was called (no error thrown)
+    expect(mockOnSelectTemplate).not.toHaveBeenCalled();
+  });
 });

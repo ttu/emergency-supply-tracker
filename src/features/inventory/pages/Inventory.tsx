@@ -27,7 +27,6 @@ import type {
   RecommendedItemDefinition,
   StandardCategoryId,
   ProductTemplate,
-  Unit,
 } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import { useCategoryStatuses } from '@/features/dashboard/hooks/useCategoryStatuses';
@@ -208,7 +207,7 @@ export function Inventory({
       addCustomTemplate({
         name: itemData.name,
         category: itemData.categoryId,
-        defaultUnit: itemData.unit as Unit,
+        defaultUnit: itemData.unit,
       });
     }
 

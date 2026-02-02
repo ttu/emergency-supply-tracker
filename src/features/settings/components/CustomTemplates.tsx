@@ -25,7 +25,7 @@ export function CustomTemplates() {
           count: customTemplates.length,
         })}
       </p>
-      <ul className={styles.templatesList} role="list">
+      <ul className={styles.templatesList}>
         {customTemplates.map((template) => (
           <li key={template.id} className={styles.templateItem}>
             <div className={styles.templateContent}>
