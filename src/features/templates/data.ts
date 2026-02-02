@@ -229,7 +229,7 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     id: createProductTemplateId('spices'),
     i18nKey: 'products.spices',
     category: 'food',
-    baseQuantity: 0.1,
+    baseQuantity: qty(0.1),
     unit: 'kilograms',
     scaleWithPeople: false,
     scaleWithDays: false,
