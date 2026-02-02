@@ -544,7 +544,9 @@ describe('validateRecommendedItemsFile', () => {
     it('rejects non-finite baseQuantity (NaN)', () => {
       const file = createValidFile({
         // Use type assertion to test invalid value (deliberately testing validation)
-        items: [createValidItem({ baseQuantity: NaN as unknown as Quantity })],
+        items: [
+          createValidItem({ baseQuantity: Number.NaN as unknown as Quantity }),
+        ],
       });
       const result = validateRecommendedItemsFile(file);
 

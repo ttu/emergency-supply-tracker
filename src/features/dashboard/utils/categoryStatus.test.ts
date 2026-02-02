@@ -465,7 +465,7 @@ describe('calculateCategoryShortages', () => {
       // Items include pasta which requires 1L per kg for preparation
       // Use a fixed value (2.0) instead of random to avoid floating-point precision issues
       // that can cause Math.ceil() to round incorrectly (e.g., 86.9999999999 -> 86 instead of 87)
-      const pastaQuantity = createQuantity(2.0);
+      const pastaQuantity = createQuantity(2);
       const items: InventoryItem[] = [
         createMockInventoryItem({
           id: createItemId('1'),
