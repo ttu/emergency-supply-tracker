@@ -89,48 +89,52 @@ describe('NutritionSettings', () => {
     );
   });
 
-  it('calls updateSettings when calories input changes', () => {
+  it('calls updateSettings when calories input changes and loses focus', () => {
     const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const caloriesInput = screen.getByLabelText(/daily calories/i);
     fireEvent.change(caloriesInput, { target: { value: '2500' } });
+    fireEvent.blur(caloriesInput);
 
     expect(updateSettings).toHaveBeenCalledWith({
       dailyCaloriesPerPerson: 2500,
     });
   });
 
-  it('calls updateSettings when water input changes', () => {
+  it('calls updateSettings when water input changes and loses focus', () => {
     const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const waterInput = screen.getByLabelText(/daily water/i);
     fireEvent.change(waterInput, { target: { value: '4' } });
+    fireEvent.blur(waterInput);
 
     expect(updateSettings).toHaveBeenCalledWith({
       dailyWaterPerPerson: 4,
     });
   });
 
-  it('calls updateSettings when children percentage changes', () => {
+  it('calls updateSettings when children percentage changes and loses focus', () => {
     const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const childrenInput = screen.getByLabelText(/children.*requirements/i);
     fireEvent.change(childrenInput, { target: { value: '80' } });
+    fireEvent.blur(childrenInput);
 
     expect(updateSettings).toHaveBeenCalledWith({
       childrenRequirementPercentage: 80,
     });
   });
 
-  it('clamps values to minimum', () => {
+  it('clamps values to minimum on blur', () => {
     const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const caloriesInput = screen.getByLabelText(/daily calories/i);
     fireEvent.change(caloriesInput, { target: { value: '500' } });
+    fireEvent.blur(caloriesInput);
 
     // Should clamp to minimum 1000
     expect(updateSettings).toHaveBeenCalledWith({
@@ -138,12 +142,13 @@ describe('NutritionSettings', () => {
     });
   });
 
-  it('clamps values to maximum', () => {
+  it('clamps values to maximum on blur', () => {
     const updateSettings = vi.fn();
     renderWithContext(defaultSettings, updateSettings);
 
     const caloriesInput = screen.getByLabelText(/daily calories/i);
     fireEvent.change(caloriesInput, { target: { value: '10000' } });
+    fireEvent.blur(caloriesInput);
 
     // Should clamp to maximum 5000
     expect(updateSettings).toHaveBeenCalledWith({
@@ -199,6 +204,56 @@ describe('NutritionSettings', () => {
 
     expect(caloriesInput.value).toBe(String(DAILY_CALORIES_PER_PERSON));
     expect(waterInput.value).toBe(String(DAILY_WATER_PER_PERSON));
+    expect(childrenInput.value).toBe(
+      String(CHILDREN_REQUIREMENT_MULTIPLIER * 100),
+    );
+  });
+
+  it('resets calories to current value when invalid input on blur', () => {
+    const updateSettings = vi.fn();
+    renderWithContext(defaultSettings, updateSettings);
+
+    const caloriesInput = screen.getByLabelText(
+      /daily calories/i,
+    ) as HTMLInputElement;
+    fireEvent.change(caloriesInput, { target: { value: 'abc' } });
+    fireEvent.blur(caloriesInput);
+
+    // Should not call updateSettings for invalid input
+    expect(updateSettings).not.toHaveBeenCalled();
+    // Should reset to current value
+    expect(caloriesInput.value).toBe(String(DAILY_CALORIES_PER_PERSON));
+  });
+
+  it('resets water to current value when invalid input on blur', () => {
+    const updateSettings = vi.fn();
+    renderWithContext(defaultSettings, updateSettings);
+
+    const waterInput = screen.getByLabelText(
+      /daily water/i,
+    ) as HTMLInputElement;
+    fireEvent.change(waterInput, { target: { value: '' } });
+    fireEvent.blur(waterInput);
+
+    // Should not call updateSettings for invalid input
+    expect(updateSettings).not.toHaveBeenCalled();
+    // Should reset to current value
+    expect(waterInput.value).toBe(String(DAILY_WATER_PER_PERSON));
+  });
+
+  it('resets children percentage to current value when invalid input on blur', () => {
+    const updateSettings = vi.fn();
+    renderWithContext(defaultSettings, updateSettings);
+
+    const childrenInput = screen.getByLabelText(
+      /children.*requirements/i,
+    ) as HTMLInputElement;
+    fireEvent.change(childrenInput, { target: { value: 'invalid' } });
+    fireEvent.blur(childrenInput);
+
+    // Should not call updateSettings for invalid input
+    expect(updateSettings).not.toHaveBeenCalled();
+    // Should reset to current value
     expect(childrenInput.value).toBe(
       String(CHILDREN_REQUIREMENT_MULTIPLIER * 100),
     );
