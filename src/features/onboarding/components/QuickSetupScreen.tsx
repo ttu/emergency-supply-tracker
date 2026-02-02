@@ -39,9 +39,9 @@ export const QuickSetupScreen = ({
     return true;
   });
 
-  // Items are unchecked by default
+  // All items selected by default
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
-    () => new Set(),
+    () => new Set(itemsToAdd.map((item) => item.id)),
   );
 
   // Calculate recommended quantity for an item
@@ -254,7 +254,9 @@ export const QuickSetupScreen = ({
             disabled={selectedCount === 0}
             data-testid="add-items-button"
           >
-            {t('quickSetup.addItems')}
+            {selectedCount === itemsToAdd.length && itemsToAdd.length > 0
+              ? t('quickSetup.addAllItems')
+              : t('quickSetup.addSelectedItems')}
           </Button>
         </div>
       </div>

@@ -43,7 +43,8 @@ vi.mock('react-i18next', () => ({
         'household.useFreezer': 'I want to use my freezer',
         'actions.save': 'Save',
         'actions.back': 'Back',
-        'quickSetup.addItems': 'Add Selected Items',
+        'quickSetup.addAllItems': 'Add all items',
+        'quickSetup.addSelectedItems': 'Add selected items',
         'quickSetup.skip': 'Skip',
         'quickSetup.showDetails': 'Show Details',
         'quickSetup.hideDetails': 'Hide Details',
@@ -487,14 +488,7 @@ describe('Onboarding', () => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
     });
 
-    // Show details and select all items
-    const showDetailsButton = screen.getByTestId('show-details-button');
-    await user.click(showDetailsButton);
-
-    // Click "Select All" button
-    const selectAllButton = screen.getByTestId('select-all-button');
-    await user.click(selectAllButton);
-
+    // All items are selected by default; click Add all items
     const addItemsButton = screen.getByTestId('add-items-button');
     await user.click(addItemsButton);
 

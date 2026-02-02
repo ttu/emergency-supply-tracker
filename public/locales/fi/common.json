@@ -545,7 +545,8 @@
     "info": "Valitse lisättävät tuotteet. Merkitse tuotteet omistetuiksi, jos sinulla on ne jo - ne lisätään suositellulla määrällä.",
     "noFreezer": "Pakasteet jätetty pois (pakastinta ei valittu)",
     "skip": "Ohita toistaiseksi",
-    "addItems": "Lisää valitut tuotteet"
+    "addAllItems": "Lisää kaikki tuotteet",
+    "addSelectedItems": "Lisää valitut tuotteet"
   },
   "onboarding": {
     "import": {

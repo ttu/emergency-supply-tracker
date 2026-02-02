@@ -27,7 +27,8 @@ vi.mock('react-i18next', () => ({
             'These items are recommended based on your household configuration.',
           'quickSetup.noFreezer': 'Frozen items have been excluded.',
           'quickSetup.skip': 'Skip',
-          'quickSetup.addItems': 'Add Selected Items',
+          'quickSetup.addAllItems': 'Add all items',
+          'quickSetup.addSelectedItems': 'Add selected items',
         },
         categories: {
           'water-beverages': 'Water & Beverages',
@@ -181,7 +182,7 @@ describe('QuickSetupScreen', () => {
     expect(screen.getByText('Show Details')).toBeInTheDocument();
   });
 
-  it('calls onAddItems when Add Selected Items button is clicked', async () => {
+  it('calls onAddItems when Add all items button is clicked (all selected by default)', async () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
@@ -193,7 +194,25 @@ describe('QuickSetupScreen', () => {
       />,
     );
 
-    // First select some items (button is disabled when no items selected)
+    const addButton = screen.getByText('Add all items');
+    await user.click(addButton);
+
+    expect(onAddItems).toHaveBeenCalledTimes(1);
+    expect(onAddItems).toHaveBeenCalledWith(expect.any(Set));
+  });
+
+  it('shows Add selected items when user deselects some items', async () => {
+    const user = userEvent.setup();
+    const onAddItems = vi.fn();
+    const onSkip = vi.fn();
+    renderWithProvider(
+      <QuickSetupScreen
+        household={defaultHousehold}
+        onAddItems={onAddItems}
+        onSkip={onSkip}
+      />,
+    );
+
     const toggleButton = screen.getByText('Show Details');
     await user.click(toggleButton);
 
@@ -203,11 +222,10 @@ describe('QuickSetupScreen', () => {
     );
     await user.click(firstItemCheckbox!);
 
-    const addButton = screen.getByText('Add Selected Items');
+    const addButton = screen.getByText('Add selected items');
     await user.click(addButton);
 
     expect(onAddItems).toHaveBeenCalledTimes(1);
-    // Verify it's called with Set object
     expect(onAddItems).toHaveBeenCalledWith(expect.any(Set));
   });
 
@@ -350,12 +368,12 @@ describe('QuickSetupScreen', () => {
     // Checkboxes should be present for items
     const checkboxes = screen.getAllByRole('checkbox');
     expect(checkboxes.length).toBeGreaterThan(0);
-    // Items should be unchecked by default
+    // Items should be checked by default
     const itemCheckboxes = checkboxes.filter((cb) =>
       cb.getAttribute('id')?.startsWith('item-'),
     );
     itemCheckboxes.forEach((checkbox) => {
-      expect(checkbox).not.toBeChecked();
+      expect(checkbox).toBeChecked();
     });
   });
 
@@ -374,24 +392,21 @@ describe('QuickSetupScreen', () => {
     const toggleButton = screen.getByText('Show Details');
     await user.click(toggleButton);
 
-    // Get first item checkbox
     const checkboxes = screen.getAllByRole('checkbox');
     const firstItemCheckbox = checkboxes.find((cb) =>
       cb.getAttribute('id')?.startsWith('item-'),
     );
     expect(firstItemCheckbox).toBeInTheDocument();
-    expect(firstItemCheckbox).not.toBeChecked(); // Items unchecked by default
+    expect(firstItemCheckbox).toBeChecked(); // Items checked by default
 
-    // Check the item
-    await user.click(firstItemCheckbox!);
-    expect(firstItemCheckbox).toBeChecked();
-
-    // Uncheck the item
     await user.click(firstItemCheckbox!);
     expect(firstItemCheckbox).not.toBeChecked();
+
+    await user.click(firstItemCheckbox!);
+    expect(firstItemCheckbox).toBeChecked();
   });
 
-  it('shows Select All button when details are shown', async () => {
+  it('shows Deselect All when all items selected and details are shown', async () => {
     const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
@@ -406,8 +421,7 @@ describe('QuickSetupScreen', () => {
     const toggleButton = screen.getByText('Show Details');
     await user.click(toggleButton);
 
-    // When no items are selected, it should show "Select All"
-    expect(screen.getByText('Select All')).toBeInTheDocument();
+    expect(screen.getByText('Deselect All')).toBeInTheDocument();
   });
 
   it('allows selecting all items with Select All button', async () => {
@@ -425,18 +439,17 @@ describe('QuickSetupScreen', () => {
     const toggleButton = screen.getByText('Show Details');
     await user.click(toggleButton);
 
-    // Verify items start unchecked
     const checkboxes = screen.getAllByRole('checkbox');
     const itemCheckboxes = checkboxes.filter((cb) =>
       cb.getAttribute('id')?.startsWith('item-'),
     );
+    await user.click(screen.getByText('Deselect All'));
+
     expect(itemCheckboxes[0]).not.toBeChecked();
 
-    // Click Select All
     const selectAllButton = screen.getByText('Select All');
     await user.click(selectAllButton);
 
-    // All items should be selected
     itemCheckboxes.forEach((checkbox) => {
       expect(checkbox).toBeChecked();
     });
@@ -457,15 +470,9 @@ describe('QuickSetupScreen', () => {
     const toggleButton = screen.getByText('Show Details');
     await user.click(toggleButton);
 
-    // First select all items
-    const selectAllButton = screen.getByText('Select All');
-    await user.click(selectAllButton);
-
-    // Now it should show "Deselect All"
     const deselectAllButton = screen.getByText('Deselect All');
     await user.click(deselectAllButton);
 
-    // All item checkboxes should be unchecked
     const checkboxes = screen.getAllByRole('checkbox');
     const itemCheckboxes = checkboxes.filter((cb) =>
       cb.getAttribute('id')?.startsWith('item-'),
@@ -475,7 +482,8 @@ describe('QuickSetupScreen', () => {
     });
   });
 
-  it('disables Add Items button when no items are selected', () => {
+  it('disables Add Items button when no items are selected', async () => {
+    const user = userEvent.setup();
     const onAddItems = vi.fn();
     const onSkip = vi.fn();
     renderWithProvider(
@@ -486,8 +494,10 @@ describe('QuickSetupScreen', () => {
       />,
     );
 
-    // Items are unchecked by default, so button should be disabled
-    const addButton = screen.getByText('Add Selected Items');
+    expect(screen.getByText('Add all items')).toBeEnabled();
+    await user.click(screen.getByText('Show Details'));
+    await user.click(screen.getByText('Deselect All'));
+    const addButton = screen.getByText('Add selected items');
     expect(addButton).toBeDisabled();
   });
 
@@ -503,23 +513,23 @@ describe('QuickSetupScreen', () => {
       />,
     );
 
-    const toggleButton = screen.getByText('Show Details');
-    await user.click(toggleButton);
-
-    // Select an item
+    await user.click(screen.getByText('Show Details'));
     const allCheckboxes = screen.getAllByRole('checkbox');
     const firstItemCheckbox = allCheckboxes.find((cb) =>
       cb.getAttribute('id')?.startsWith('item-'),
     );
+    const firstItemId = firstItemCheckbox!
+      .getAttribute('id')
+      ?.replace('item-', '');
     await user.click(firstItemCheckbox!);
 
-    // Click Add Items
-    const addButton = screen.getByText('Add Selected Items');
+    const addButton = screen.getByText('Add selected items');
     await user.click(addButton);
 
     expect(onAddItems).toHaveBeenCalledTimes(1);
     const [selectedIds] = onAddItems.mock.calls[0];
     expect(selectedIds).toBeInstanceOf(Set);
     expect(selectedIds.size).toBeGreaterThan(0);
+    expect(selectedIds.has(firstItemId!)).toBe(false);
   });
 });
