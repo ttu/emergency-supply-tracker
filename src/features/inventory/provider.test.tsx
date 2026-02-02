@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
-import { render, screen, act, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  act,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InventoryProvider } from './provider';
 import { useInventory } from './hooks/useInventory';
@@ -763,6 +769,200 @@ describe('InventoryProvider', () => {
     // Only valid categories should be loaded (food and water-beverages)
     expect(screen.getByTestId('disabled-categories-count')).toHaveTextContent(
       '2',
+    );
+  });
+});
+
+describe('Custom Template Management', () => {
+  let mockGetAppData: Mock;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetAppData = vi.mocked(localStorage.getAppData);
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [],
+      customTemplates: [],
+    });
+  });
+
+  // Test component that exposes custom template functionality
+  function CustomTemplateTestComponent() {
+    const { customTemplates, addCustomTemplate, deleteCustomTemplate } =
+      useInventory();
+
+    return (
+      <div>
+        <span data-testid="custom-templates-count">
+          {customTemplates.length}
+        </span>
+        <span data-testid="custom-template-names">
+          {customTemplates.map((t) => t.name).join(',')}
+        </span>
+        <button
+          data-testid="add-template"
+          onClick={() =>
+            addCustomTemplate({
+              name: 'Test Template',
+              category: 'food',
+              defaultUnit: 'pieces',
+            })
+          }
+        >
+          Add Template
+        </button>
+        <button
+          data-testid="delete-template"
+          onClick={() => {
+            if (customTemplates[0]) {
+              deleteCustomTemplate(customTemplates[0].id);
+            }
+          }}
+        >
+          Delete Template
+        </button>
+      </div>
+    );
+  }
+
+  it('should start with empty custom templates', () => {
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('custom-templates-count')).toHaveTextContent('0');
+  });
+
+  it('should add a custom template', async () => {
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    const addButton = screen.getByTestId('add-template');
+    fireEvent.click(addButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-templates-count')).toHaveTextContent(
+        '1',
+      );
+    });
+    expect(screen.getByTestId('custom-template-names')).toHaveTextContent(
+      'Test Template',
+    );
+  });
+
+  it('should delete a custom template', async () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [],
+      customTemplates: [
+        {
+          id: 'template-1',
+          name: 'Existing Template',
+          category: 'food',
+          defaultUnit: 'pieces',
+          isBuiltIn: false,
+          isCustom: true,
+        },
+      ],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('custom-templates-count')).toHaveTextContent('1');
+
+    const deleteButton = screen.getByTestId('delete-template');
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-templates-count')).toHaveTextContent(
+        '0',
+      );
+    });
+  });
+
+  it('should persist custom templates via saveAppData', async () => {
+    const mockSaveAppData = vi.mocked(localStorage.saveAppData);
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    const addButton = screen.getByTestId('add-template');
+    fireEvent.click(addButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-templates-count')).toHaveTextContent(
+        '1',
+      );
+    });
+
+    // Verify saveAppData was called (the template is persisted)
+    expect(mockSaveAppData).toHaveBeenCalled();
+  });
+
+  it('should load existing custom templates from localStorage', () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [],
+      customTemplates: [
+        {
+          id: 'template-1',
+          name: 'Template One',
+          category: 'food',
+          defaultUnit: 'pieces',
+          isBuiltIn: false,
+          isCustom: true,
+        },
+        {
+          id: 'template-2',
+          name: 'Template Two',
+          category: 'water-beverages',
+          defaultUnit: 'liters',
+          isBuiltIn: false,
+          isCustom: true,
+        },
+      ],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('custom-templates-count')).toHaveTextContent('2');
+    expect(screen.getByTestId('custom-template-names')).toHaveTextContent(
+      'Template One,Template Two',
     );
   });
 });

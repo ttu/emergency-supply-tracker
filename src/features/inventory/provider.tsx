@@ -277,18 +277,23 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   const addCustomTemplate = useCallback(
     (
       input: Omit<CreateProductTemplateInput, 'isBuiltIn' | 'isCustom'>,
-    ): ProductTemplate => {
-      const newTemplate = ProductTemplateFactory.createCustom({
-        ...input,
-        isBuiltIn: false,
-        isCustom: true,
-      });
-      setCustomTemplates((prev) => [...prev, newTemplate]);
-      showNotification(
-        t('notifications.templateAdded', { name: input.name }),
-        'success',
-      );
-      return newTemplate;
+    ): ProductTemplate | undefined => {
+      try {
+        const newTemplate = ProductTemplateFactory.createCustom({
+          ...input,
+          isBuiltIn: false,
+          isCustom: true,
+        });
+        setCustomTemplates((prev) => [...prev, newTemplate]);
+        showNotification(
+          t('notifications.templateAdded', { name: newTemplate.name }),
+          'success',
+        );
+        return newTemplate;
+      } catch {
+        showNotification(t('notifications.templateAddFailed'), 'error');
+        return undefined;
+      }
     },
     [setCustomTemplates, showNotification, t],
   );

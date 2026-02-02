@@ -49,7 +49,7 @@ export interface InventoryContextValue {
   customTemplates: ProductTemplate[];
   addCustomTemplate: (
     input: Omit<CreateProductTemplateInput, 'isBuiltIn' | 'isCustom'>,
-  ) => ProductTemplate;
+  ) => ProductTemplate | undefined;
   deleteCustomTemplate: (id: ProductTemplateId) => void;
 }
 

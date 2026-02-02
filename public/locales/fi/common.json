@@ -663,7 +663,8 @@
     "categoryHidden": "Kategoria piilotettu",
     "categoryShown": "Kategoria näytetty",
     "templateAdded": "Malli \"{{name}}\" tallennettu",
-    "templateDeleted": "Malli \"{{name}}\" poistettu"
+    "templateDeleted": "Malli \"{{name}}\" poistettu",
+    "templateAddFailed": "Mallin tallentaminen epäonnistui"
   },
   "kitSelector": {
     "builtInKits": "Sisäänrakennetut paketit",
