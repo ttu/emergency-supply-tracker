@@ -268,11 +268,16 @@ export interface ImportedRecommendedItem {
   requiresWaterLiters?: number;
 }
 
+/** Kit meta name or description: single string (legacy) or localized by language code (en required as fallback) */
+export type LocalizedMetaString = string | LocalizedNames;
+
 // Recommended Items File Metadata
 export interface RecommendedItemsFileMeta {
-  name: string; // e.g., "Finnish Family Kit"
+  /** Kit name; use LocalizedNames (e.g. { en: "...", fi: "..." }) for shared/uploaded kits so names work in all languages. English (en) is used when the selected language is missing. */
+  name: LocalizedMetaString;
   version: string; // e.g., "1.0.0"
-  description?: string;
+  /** Optional description; same localization as name. */
+  description?: LocalizedMetaString;
   source?: string; // e.g., "72tuntia.fi", URL
   createdAt: string; // ISO timestamp
   language?: 'en' | 'fi'; // Primary language of inline names

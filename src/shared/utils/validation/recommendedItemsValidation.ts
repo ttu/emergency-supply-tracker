@@ -44,17 +44,32 @@ function isValidUnit(value: unknown): value is Unit {
   return typeof value === 'string' && VALID_UNITS.includes(value as Unit);
 }
 
+/** Returns true if value is a valid localized meta string: string or object with at least 'en' (required: name must be non-empty). */
+function isValidLocalizedMetaString(
+  value: unknown,
+  requiredNonEmpty: boolean,
+): value is Record<string, string> | string {
+  if (value == null) return !requiredNonEmpty;
+  if (typeof value === 'string')
+    return !requiredNonEmpty || value.trim() !== '';
+  if (typeof value !== 'object') return false;
+  const o = value as Record<string, unknown>;
+  const en = o.en;
+  return typeof en === 'string' && (!requiredNonEmpty || en.trim() !== '');
+}
+
 /**
  * Validates the meta object of a recommended items file.
  *
  * Records any validation problems by pushing ValidationError entries onto the provided errors array.
  *
  * Required fields:
- * - meta.name: non-empty string (the name of the recommendations set)
+ * - meta.name: non-empty string or LocalizedNames object with at least en (non-empty)
  * - meta.version: non-empty string (version identifier)
  * - meta.createdAt: string (ISO timestamp)
  *
  * Optional fields:
+ * - meta.description: string or LocalizedNames (en used as fallback when missing language)
  * - meta.language: if present, must be 'en' or 'fi'
  *
  * @param meta - The meta object to validate (unknown type, validated at runtime)
@@ -73,11 +88,23 @@ function validateMeta(meta: unknown, errors: ValidationError[]): void {
 
   const m = meta as Record<string, unknown>;
 
-  if (!m.name || typeof m.name !== 'string' || m.name.trim() === '') {
+  if (!isValidLocalizedMetaString(m.name, true)) {
     errors.push({
       path: 'meta.name',
-      message: 'Meta name is required',
+      message:
+        'Meta name is required: non-empty string or object with at least "en"',
       code: 'MISSING_META_NAME',
+    });
+  }
+
+  if (
+    m.description !== undefined &&
+    !isValidLocalizedMetaString(m.description, false)
+  ) {
+    errors.push({
+      path: 'meta.description',
+      message: 'Meta description must be a string or object with at least "en"',
+      code: 'INVALID_META_DESCRIPTION',
     });
   }
 

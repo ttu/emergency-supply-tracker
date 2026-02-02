@@ -263,7 +263,10 @@ describe('RecommendedItemsProvider', () => {
       exportedFile = exportFn();
     });
 
-    expect(exportedFile!.meta.name).toBe('72tuntia.fi Standard Kit');
+    expect(exportedFile!.meta.name).toEqual({
+      en: '72 Hours Standard Kit',
+      fi: '72 tunnin varmuusvarasto',
+    });
     expect(exportedFile!.items.length).toBe(DEFAULT_KIT_ITEM_COUNT);
   });
 

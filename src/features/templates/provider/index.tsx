@@ -6,6 +6,7 @@ import {
   useEffect,
   useRef,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import type {
   RecommendedItemDefinition,
   RecommendedItemsFile,
@@ -21,6 +22,7 @@ import {
   getCustomKitUuid,
   createCustomKitId,
 } from '@/shared/types';
+import { getLocalizedKitMetaString } from '@/shared/utils/kitMeta';
 import {
   getAppData,
   saveAppData,
@@ -70,6 +72,8 @@ export function RecommendedItemsProvider({
 }: {
   children: ReactNode;
 }) {
+  const { i18n } = useTranslation('common');
+
   // Initialize both kit states together to avoid stale references
   const [uploadedKits, setUploadedKits] = useState<UploadedKit[]>(() => {
     const data = getAppData();
@@ -135,19 +139,20 @@ export function RecommendedItemsProvider({
     return convertToRecommendedItemDefinitions(currentKitFile.items);
   }, [currentKitFile]);
 
-  // Build list of all available kits
+  // Build list of all available kits (name/description from kit file, resolved for current language with English fallback)
   const availableKits = useMemo<KitInfo[]>(() => {
-    const builtInInfos = getBuiltInKitInfos();
+    const lang = i18n?.language ?? 'en';
+    const builtInInfos = getBuiltInKitInfos(lang);
     const customInfos: KitInfo[] = uploadedKits.map((kit) => ({
       id: createCustomKitId(kit.id),
-      name: kit.file.meta.name,
-      description: kit.file.meta.description,
+      name: getLocalizedKitMetaString(kit.file.meta.name, lang),
+      description: getLocalizedKitMetaString(kit.file.meta.description, lang),
       itemCount: kit.file.items.length,
       isBuiltIn: false,
       uploadedAt: kit.uploadedAt,
     }));
     return [...builtInInfos, ...customInfos];
-  }, [uploadedKits]);
+  }, [uploadedKits, i18n?.language]);
 
   // Legacy: custom recommendations info (for backward compatibility)
   const customRecommendationsInfo = useMemo(() => {
@@ -155,11 +160,14 @@ export function RecommendedItemsProvider({
       return undefined;
     }
     return {
-      name: currentKitFile.meta.name,
+      name: getLocalizedKitMetaString(
+        currentKitFile.meta.name,
+        i18n?.language ?? 'en',
+      ),
       version: currentKitFile.meta.version,
       itemCount: currentKitFile.items.length,
     };
-  }, [selectedKitId, currentKitFile]);
+  }, [selectedKitId, currentKitFile, i18n?.language]);
 
   // Guard against stale custom kit selection
   // Note: Stale kit validation is handled during initialization in useState

@@ -1,8 +1,11 @@
 {
   "meta": {
-    "name": "72tuntia.fi Standard Kit",
+    "name": { "en": "72 Hours Standard Kit", "fi": "72 tunnin varmuusvarasto" },
     "version": "1.0.0",
-    "description": "Default 72-hour emergency supply recommendations based on 72tuntia.fi guidelines",
+    "description": {
+      "en": "Default 72-hour emergency supply recommendations based on 72tuntia.fi guidelines",
+      "fi": "72 tunnin hätävarustus 72tuntia.fi -suosituksen mukaan"
+    },
     "source": "https://72tuntia.fi",
     "createdAt": "2026-01-12T19:58:45.093Z",
     "language": "en"

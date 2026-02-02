@@ -87,6 +87,8 @@ public/locales/
 | `products`   | Product names  | `bottled-water`, `canned-soup`    |
 | `units`      | Units          | `liters`, `pieces`, `kilograms`   |
 
+Kit names and descriptions are **not** in locale files: they come from the kit file itself (`meta.name`, `meta.description`), which can be a string or a localized object (e.g. `{ "en": "...", "fi": "..." }`). The app uses the current language and falls back to English when a translation is missing. This allows shared and uploaded kits to have their own names in multiple languages.
+
 ---
 
 ## Translation Key Patterns
