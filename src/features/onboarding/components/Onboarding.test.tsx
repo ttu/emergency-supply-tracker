@@ -43,7 +43,8 @@ vi.mock('react-i18next', () => ({
         'household.useFreezer': 'I want to use my freezer',
         'actions.save': 'Save',
         'actions.back': 'Back',
-        'quickSetup.addItems': 'Add Selected Items',
+        'quickSetup.addAllItems': 'Add all items',
+        'quickSetup.addItems': 'Add selected items',
         'quickSetup.skip': 'Skip',
         'quickSetup.showDetails': 'Show Details',
         'quickSetup.hideDetails': 'Hide Details',
@@ -342,19 +343,7 @@ describe('Onboarding', () => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
     });
 
-    // Select some items first (button is disabled when no items selected)
-    const showDetailsButton = screen.getByTestId('show-details-button');
-    await user.click(showDetailsButton);
-
-    // Select first item
-    const checkboxes = screen.getAllByRole('checkbox');
-    const firstItemCheckbox = checkboxes.find((cb) =>
-      cb.getAttribute('id')?.startsWith('item-'),
-    );
-    if (firstItemCheckbox) {
-      await user.click(firstItemCheckbox);
-    }
-
+    // All items selected by default; click Add all items
     const addItemsButton = screen.getByTestId('add-items-button');
     await user.click(addItemsButton);
 
@@ -418,16 +407,15 @@ describe('Onboarding', () => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
     });
 
-    // Show details and select one item (not all)
+    // Get to "some items selected": open details, deselect all, then select only first item
     const showDetailsButton = screen.getByTestId('show-details-button');
     await user.click(showDetailsButton);
 
-    const checkboxes = screen.getAllByRole('checkbox');
-    const itemCheckboxes = checkboxes.filter((cb) =>
-      cb.getAttribute('id')?.startsWith('item-'),
-    );
+    await user.click(screen.getByTestId('select-all-button')); // Deselect All when all selected
 
-    // Select only the first item (some, but not all)
+    const itemCheckboxes = screen
+      .getAllByRole('checkbox')
+      .filter((cb) => cb.getAttribute('id')?.startsWith('item-'));
     if (itemCheckboxes.length > 0) {
       await user.click(itemCheckboxes[0]);
     }
@@ -487,14 +475,7 @@ describe('Onboarding', () => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
     });
 
-    // Show details and select all items
-    const showDetailsButton = screen.getByTestId('show-details-button');
-    await user.click(showDetailsButton);
-
-    // Click "Select All" button
-    const selectAllButton = screen.getByTestId('select-all-button');
-    await user.click(selectAllButton);
-
+    // All items selected by default; click Add all items
     const addItemsButton = screen.getByTestId('add-items-button');
     await user.click(addItemsButton);
 

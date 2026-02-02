@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type {
   HouseholdConfig,
@@ -39,10 +39,27 @@ export const QuickSetupScreen = ({
     return true;
   });
 
-  // Items are unchecked by default
+  // All items selected by default (or empty if items load async)
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
-    () => new Set(),
+    () => new Set(itemsToAdd.map((item) => item.id)),
   );
+
+  // When items load asynchronously (e.g. in onboarding flow), select all once available.
+  // Ref ensures we only auto-select once and never overwrite user's "deselect all".
+  // Defer setState to avoid synchronous setState in effect (react-hooks/set-state-in-effect).
+  const initialSelectionAppliedRef = useRef(itemsToAdd.length > 0);
+  useEffect(() => {
+    if (
+      itemsToAdd.length > 0 &&
+      selectedItemIds.size === 0 &&
+      !initialSelectionAppliedRef.current
+    ) {
+      initialSelectionAppliedRef.current = true;
+      const ids = new Set(itemsToAdd.map((item) => item.id));
+      const t = setTimeout(() => setSelectedItemIds(ids), 0);
+      return () => clearTimeout(t);
+    }
+  }, [itemsToAdd, selectedItemIds.size]);
 
   // Calculate recommended quantity for an item
   const calculateQuantity = (item: RecommendedItemDefinition): number => {
@@ -255,7 +272,9 @@ export const QuickSetupScreen = ({
             disabled={selectedCount === 0}
             data-testid="add-items-button"
           >
-            {t('quickSetup.addItems')}
+            {selectedCount === itemsToAdd.length && itemsToAdd.length > 0
+              ? t('quickSetup.addAllItems')
+              : t('quickSetup.addItems')}
           </Button>
         </div>
       </div>
