@@ -110,6 +110,19 @@ function TestComponent({
       </button>
       <button
         onClick={() =>
+          context.dismissAlerts([
+            createAlertId('alert-1'),
+            createAlertId('alert-2'),
+          ])
+        }
+      >
+        Dismiss Alerts Batch
+      </button>
+      <button onClick={() => context.dismissAlerts([])}>
+        Dismiss Alerts Empty
+      </button>
+      <button
+        onClick={() =>
           context.disableRecommendedItem(createProductTemplateId('item-1'))
         }
       >
@@ -407,6 +420,52 @@ describe('InventoryProvider', () => {
     await user.click(screen.getByText('Reactivate All'));
 
     expect(screen.getByTestId('dismissed-count')).toHaveTextContent('0');
+  });
+
+  it('should dismiss multiple alerts in one call via dismissAlerts', async () => {
+    const user = userEvent.setup();
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('dismissed-count')).toHaveTextContent('0');
+
+    await user.click(screen.getByText('Dismiss Alerts Batch'));
+
+    expect(screen.getByTestId('dismissed-count')).toHaveTextContent('2');
+  });
+
+  it('should do nothing when dismissAlerts is called with empty array', async () => {
+    const user = userEvent.setup();
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [createAlertId('alert-1')],
+      disabledRecommendedItems: [],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('dismissed-count')).toHaveTextContent('1');
+
+    await user.click(screen.getByText('Dismiss Alerts Empty'));
+
+    expect(screen.getByTestId('dismissed-count')).toHaveTextContent('1');
   });
 
   it('should disable recommended item correctly', async () => {

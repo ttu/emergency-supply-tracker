@@ -62,6 +62,7 @@ import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { generateDashboardAlerts } from '@/features/alerts';
+import { APP_NOTIFICATIONS } from '../constants/notifications';
 import { useBackupTracking } from './useBackupTracking';
 import { useSeenNotifications } from './useSeenNotifications';
 
@@ -371,6 +372,27 @@ describe('useDashboardAlerts', () => {
     });
 
     expect(mockDismissBackupReminder).toHaveBeenCalled();
+  });
+
+  it('should do nothing when handleDismissAllAlerts is called with no active alerts', () => {
+    vi.mocked(generateDashboardAlerts).mockReturnValue([]);
+    mockShouldShowBackupReminder.mockReturnValue(false);
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set(
+        APP_NOTIFICATIONS.map((n) => n.id).concat([
+          createAlertId('app-notification-release-testing'),
+        ]),
+      ),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
+    const { result } = renderHook(() => useDashboardAlerts());
+
+    act(() => {
+      result.current.handleDismissAllAlerts();
+    });
+
+    expect(mockDismissAlerts).not.toHaveBeenCalled();
+    expect(mockShowNotification).not.toHaveBeenCalled();
   });
 
   it('should handle dismissing all alerts', () => {
