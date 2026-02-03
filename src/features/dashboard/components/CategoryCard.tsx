@@ -110,9 +110,11 @@ const CategoryCardComponent = ({
       <div className={styles.summaryBlock}>
         <div className={styles.header}>
           <h3 className={styles.title}>{categoryName}</h3>
-          <Badge variant={getStatusVariant(status)} size="small">
-            {t(`status.${status}`)}
-          </Badge>
+          <div className={styles.badgeWrap}>
+            <Badge variant={getStatusVariant(status)} size="small">
+              {t(`status.${status}`)}
+            </Badge>
+          </div>
         </div>
 
         <div className={styles.stats}>

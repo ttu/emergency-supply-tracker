@@ -36,8 +36,8 @@ button.card {
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
 }
 
@@ -46,6 +46,10 @@ button.card {
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
   margin: 0;
+}
+
+.badgeWrap {
+  align-self: flex-end;
 }
 
 .stats {
