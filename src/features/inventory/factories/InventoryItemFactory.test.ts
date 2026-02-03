@@ -853,6 +853,86 @@ describe('InventoryItemFactory', () => {
     });
   });
 
+  describe('rotation item validation', () => {
+    it('should require estimatedQuantity when isNormalRotation is true and not excluded', () => {
+      expect(() => {
+        InventoryItemFactory.create({
+          name: 'Flour',
+          itemType: 'custom',
+          categoryId: createCategoryId('food'),
+          quantity: 0,
+          unit: 'kilograms',
+          isNormalRotation: true,
+          // Missing estimatedQuantity
+          neverExpires: true,
+        });
+      }).toThrow('estimatedQuantity is required');
+    });
+
+    it('should not require estimatedQuantity when excludeFromCalculations is true', () => {
+      const item = InventoryItemFactory.create({
+        name: 'Flour',
+        itemType: 'custom',
+        categoryId: createCategoryId('food'),
+        quantity: 0,
+        unit: 'kilograms',
+        isNormalRotation: true,
+        excludeFromCalculations: true,
+        neverExpires: true,
+      });
+      expect(item.isNormalRotation).toBe(true);
+      expect(item.excludeFromCalculations).toBe(true);
+    });
+
+    it('should clear expiration fields for rotation items', () => {
+      const item = InventoryItemFactory.create({
+        name: 'Flour',
+        itemType: 'custom',
+        categoryId: createCategoryId('food'),
+        quantity: 0,
+        unit: 'kilograms',
+        isNormalRotation: true,
+        estimatedQuantity: 2,
+        expirationDate: createDateOnly('2026-12-31'),
+        neverExpires: false,
+      });
+      expect(item.expirationDate).toBeUndefined();
+      expect(item.neverExpires).toBeUndefined();
+    });
+
+    it('should clear rotation fields for non-rotation items', () => {
+      const item = InventoryItemFactory.create({
+        name: 'Flour',
+        itemType: 'custom',
+        categoryId: createCategoryId('food'),
+        quantity: 5,
+        unit: 'kilograms',
+        isNormalRotation: false,
+        excludeFromCalculations: true, // Should be cleared
+        estimatedQuantity: 10, // Should be cleared
+        expirationDate: createDateOnly('2026-12-31'),
+      });
+      expect(item.excludeFromCalculations).toBeUndefined();
+      expect(item.estimatedQuantity).toBeUndefined();
+      expect(item.isNormalRotation).toBeUndefined();
+    });
+
+    it('should validate estimatedQuantity is non-negative', () => {
+      expect(() => {
+        InventoryItemFactory.create({
+          name: 'Flour',
+          itemType: 'custom',
+          categoryId: createCategoryId('food'),
+          quantity: 0,
+          unit: 'kilograms',
+          isNormalRotation: true,
+          estimatedQuantity: -1,
+          neverExpires: true,
+        });
+      }).toThrow('estimatedQuantity must be non-negative');
+    });
+  });
+
   describe('edge cases', () => {
     it('handles all valid unit types', () => {
       const units: Array<CreateItemInput['unit']> = [

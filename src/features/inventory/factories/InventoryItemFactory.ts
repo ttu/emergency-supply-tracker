@@ -139,7 +139,26 @@ function validateItemInput(input: CreateItemInput): void {
     );
   }
 
-  // Expiration logic
+  // Rotation item validation
+  if (input.isNormalRotation) {
+    // Validate estimatedQuantity is non-negative first (if provided)
+    validateNonNegative(input.estimatedQuantity, 'estimatedQuantity');
+
+    // Require estimatedQuantity unless excluded from calculations
+    if (
+      !input.excludeFromCalculations &&
+      (input.estimatedQuantity === undefined || input.estimatedQuantity <= 0)
+    ) {
+      throw new InventoryItemValidationError(
+        'estimatedQuantity is required when isNormalRotation is true and not excluded from calculations',
+      );
+    }
+
+    // Rotation items don't need expiration validation - they skip it
+    return;
+  }
+
+  // Expiration logic (only for non-rotation items)
   if (!input.neverExpires && !input.expirationDate) {
     throw new InventoryItemValidationError(
       'expirationDate is required when neverExpires is false',
@@ -191,6 +210,7 @@ export class InventoryItemFactory {
     validateItemInput(input);
 
     const now = new Date().toISOString();
+    const isRotation = input.isNormalRotation === true;
 
     return {
       ...input,
@@ -199,8 +219,18 @@ export class InventoryItemFactory {
       categoryId: createCategoryId(input.categoryId),
       createdAt: now,
       updatedAt: now,
-      // Ensure expirationDate is undefined if neverExpires is true
-      expirationDate: input.neverExpires ? undefined : input.expirationDate,
+      // For rotation items: clear expiration fields
+      expirationDate: isRotation
+        ? undefined
+        : input.neverExpires
+          ? undefined
+          : input.expirationDate,
+      neverExpires: isRotation ? undefined : input.neverExpires,
+      // For non-rotation items: clear rotation-specific fields
+      isNormalRotation: isRotation ? true : undefined,
+      estimatedQuantity: isRotation ? input.estimatedQuantity : undefined,
+      excludeFromCalculations:
+        isRotation && input.excludeFromCalculations ? true : undefined,
       // Ensure optional fields are undefined if not provided
       location: input.location?.trim() || undefined,
       notes: input.notes?.trim() || undefined,
