@@ -360,7 +360,7 @@ export class InventoryItemFactory {
     // Return as draft (empty id/timestamps - form will treat as new item)
     return {
       id: createItemId(''), // Empty id signals this is a draft/new item
-      name: template.name || '',
+      name: template.name ?? template.names?.en ?? template.names?.fi ?? '',
       itemType: template.id, // Use the template ID as itemType
       categoryId: createCategoryId(template.category),
       quantity: createQuantity(options.quantity ?? 0),
