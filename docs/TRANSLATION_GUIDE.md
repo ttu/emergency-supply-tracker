@@ -1,7 +1,7 @@
 # Translation Guide
 
 > **Version:** 1.0.0
-> **Last Updated:** 2025-12-28
+> **Last Updated:** 2026-02-02
 > **Source of Truth:** `src/i18n/config.ts`, `public/locales/`
 
 This document describes how internationalization (i18n) works in the Emergency Supply Tracker.
@@ -86,6 +86,8 @@ public/locales/
 | `categories` | Category names | `water-beverages`, `food`         |
 | `products`   | Product names  | `bottled-water`, `canned-soup`    |
 | `units`      | Units          | `liters`, `pieces`, `kilograms`   |
+
+Kit names and descriptions are **not** in locale files: they come from the kit file itself (`meta.name`, `meta.description`), which can be a string or a localized object (e.g. `{ "en": "...", "fi": "..." }`). The app uses the current language and falls back to English when a translation is missing. This allows shared and uploaded kits to have their own names in multiple languages.
 
 ---
 

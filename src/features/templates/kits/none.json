@@ -1,8 +1,11 @@
 {
   "meta": {
-    "name": "No Recommendations",
+    "name": { "en": "No Recommendations", "fi": "Ei suosituksia" },
     "version": "1.0.0",
-    "description": "Track supplies without item recommendations. Food and water calculations still work based on household needs.",
+    "description": {
+      "en": "Track supplies without item recommendations. Food and water calculations still work based on household needs.",
+      "fi": "Seuraa varastoja ilman tuotesuosituksia. Ruoka- ja vesilaskelmat perustuvat kotitalouden tarpeisiin."
+    },
     "source": "Custom",
     "createdAt": "2026-01-27T00:00:00.000Z",
     "language": "en"

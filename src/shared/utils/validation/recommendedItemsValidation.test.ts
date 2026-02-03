@@ -78,6 +78,24 @@ describe('validateRecommendedItemsFile', () => {
       expect(result.errors).toHaveLength(0);
     });
 
+    it('accepts meta.name and meta.description as localized objects (en required)', () => {
+      const file = createValidFile({
+        meta: {
+          name: { en: '72 Hours Standard Kit', fi: '72 tunnin varmuusvarasto' },
+          version: '1.0.0',
+          description: {
+            en: 'Default 72-hour kit',
+            fi: '72 tunnin vakiopaketti',
+          },
+          createdAt: '2025-01-01T00:00:00.000Z',
+        },
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
     it('accepts a file with i18nKey instead of name', () => {
       const file = createValidFile({
         items: [
@@ -270,6 +288,22 @@ describe('validateRecommendedItemsFile', () => {
     it('rejects empty meta.name', () => {
       const file = createValidFile();
       file.meta.name = '   ';
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ code: 'MISSING_META_NAME' }),
+      );
+    });
+
+    it('rejects meta.name as object without en', () => {
+      const file = createValidFile({
+        meta: {
+          name: { fi: 'Vain suomeksi' },
+          version: '1.0.0',
+          createdAt: '2025-01-01T00:00:00.000Z',
+        },
+      });
       const result = validateRecommendedItemsFile(file);
 
       expect(result.valid).toBe(false);

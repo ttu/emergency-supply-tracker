@@ -391,18 +391,22 @@ interface ImportedRecommendedItem {
 
 ### RecommendedItemsFileMeta
 
-Metadata for a custom recommendations file:
+Metadata for a custom recommendations file. Names and descriptions can be shared in multiple languages so uploaded kits display correctly for any user language (fallback to English when a language is missing).
 
 ```typescript
+type LocalizedMetaString = string | Record<string, string>; // e.g. { en: "...", fi: "..." }
+
 interface RecommendedItemsFileMeta {
-  name: string; // e.g., "Finnish Family Kit"
+  name: LocalizedMetaString; // e.g. "My Kit" or { en: "72 Hours Kit", fi: "72 tunnin paketti" }
   version: string; // e.g., "1.0.0"
-  description?: string; // Description of the recommendation set
+  description?: LocalizedMetaString; // Optional; same localization as name
   source?: string; // e.g., "72tuntia.fi", URL
   createdAt: string; // ISO timestamp
   language?: 'en' | 'fi'; // Primary language of inline names
 }
 ```
+
+When `name` or `description` is an object, `en` must be present (used as fallback). Display: current language → `en` → first available value.
 
 ### RecommendedItemsFile
 

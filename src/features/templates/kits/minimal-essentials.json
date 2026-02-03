@@ -1,8 +1,14 @@
 {
   "meta": {
-    "name": "Minimal Essentials Kit",
+    "name": {
+      "en": "Minimal Essentials Kit",
+      "fi": "Minimaalinen peruspaketti"
+    },
     "version": "1.0.0",
-    "description": "Bare minimum 72-hour emergency supplies focusing on water and food essentials only",
+    "description": {
+      "en": "Bare minimum 72-hour emergency supplies focusing on water and food essentials only",
+      "fi": "Vähimmäismäärä vettä ja ruokaa 72 tunniksi"
+    },
     "source": "Custom",
     "createdAt": "2026-01-12T20:00:00.000Z",
     "language": "en"

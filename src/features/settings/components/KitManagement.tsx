@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedKitMetaString } from '@/shared/utils/kitMeta';
 import { Button } from '@/shared/components/Button';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { Toast } from '@/shared/components/Toast';
@@ -41,7 +42,7 @@ function sanitizeFileName(name: string, fallback = 'recommendations'): string {
 }
 
 export function KitManagement() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const {
     availableKits,
     selectedKitId,
@@ -81,7 +82,9 @@ export function KitManagement() {
         // Auto-select the uploaded kit
         selectKit(result.kitId);
         setToastMessage(
-          t('kits.uploadSuccess', { name: file.meta.name }) as string,
+          t('kits.uploadSuccess', {
+            name: getLocalizedKitMetaString(file.meta.name, i18n.language),
+          }) as string,
         );
         setToastVariant('success');
       } else if (result.errors && result.errors.length > 0) {
@@ -93,7 +96,7 @@ export function KitManagement() {
         setToastVariant('error');
       }
     },
-    [uploadKit, selectKit, t],
+    [uploadKit, selectKit, t, i18n],
   );
 
   const handleDeleteKit = useCallback((kitId: `custom:${string}`) => {
