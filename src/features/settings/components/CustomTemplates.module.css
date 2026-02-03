@@ -67,9 +67,23 @@
   color: var(--color-text-secondary);
 }
 
-.deleteButton {
-  white-space: nowrap;
+.buttonGroup {
+  display: flex;
+  gap: var(--spacing-xs);
   flex-shrink: 0;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
 }
 
 @media (max-width: 640px) {
@@ -79,7 +93,7 @@
     gap: var(--spacing-sm);
   }
 
-  .deleteButton {
+  .buttonGroup {
     align-self: flex-end;
   }
 }

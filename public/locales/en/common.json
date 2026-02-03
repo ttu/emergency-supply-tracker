@@ -254,7 +254,8 @@
     "customTemplates": {
       "empty": "No custom templates",
       "hint": "Create templates by checking 'Save as template' when adding custom items in inventory.",
-      "description": "You have {{count}} custom template(s). These templates appear in the item selector for quick item creation."
+      "description": "You have {{count}} custom template(s). These templates appear in the item selector for quick item creation.",
+      "editTitle": "Edit Template"
     },
     "about": {
       "version": "Version",
@@ -669,6 +670,7 @@
     "categoryHidden": "Category hidden",
     "categoryShown": "Category shown",
     "templateAdded": "Template \"{{name}}\" saved",
+    "templateUpdated": "Template \"{{name}}\" updated",
     "templateDeleted": "Template \"{{name}}\" deleted",
     "templateAddFailed": "Failed to save template"
   },

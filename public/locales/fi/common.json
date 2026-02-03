@@ -254,7 +254,8 @@
     "customTemplates": {
       "empty": "Ei omia malleja",
       "hint": "Luo malleja valitsemalla 'Tallenna malliksi' lisätessäsi omia tuotteita varastoon.",
-      "description": "Sinulla on {{count}} omaa mallia. Nämä mallit näkyvät tuotevalitsimessa nopeaa tuotteiden lisäystä varten."
+      "description": "Sinulla on {{count}} omaa mallia. Nämä mallit näkyvät tuotevalitsimessa nopeaa tuotteiden lisäystä varten.",
+      "editTitle": "Muokkaa mallia"
     },
     "about": {
       "version": "Versio",
@@ -669,6 +670,7 @@
     "categoryHidden": "Kategoria piilotettu",
     "categoryShown": "Kategoria näytetty",
     "templateAdded": "Malli \"{{name}}\" tallennettu",
+    "templateUpdated": "Malli \"{{name}}\" päivitetty",
     "templateDeleted": "Malli \"{{name}}\" poistettu",
     "templateAddFailed": "Mallin tallentaminen epäonnistui"
   },

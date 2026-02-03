@@ -298,6 +298,34 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     [setCustomTemplates, showNotification, t],
   );
 
+  // Update custom template
+  const updateCustomTemplate = useCallback(
+    (
+      id: ProductTemplateId,
+      updates: Partial<
+        Pick<ProductTemplate, 'name' | 'category' | 'defaultUnit'>
+      >,
+    ) => {
+      const template = customTemplates.find((t) => t.id === id);
+      setCustomTemplates((prev) =>
+        prev.map((t) =>
+          t.id === id
+            ? { ...t, ...updates, updatedAt: new Date().toISOString() }
+            : t,
+        ),
+      );
+      if (template) {
+        showNotification(
+          t('notifications.templateUpdated', {
+            name: updates.name || template.name,
+          }),
+          'success',
+        );
+      }
+    },
+    [customTemplates, setCustomTemplates, showNotification, t],
+  );
+
   // Delete custom template
   const deleteCustomTemplate = useCallback(
     (id: ProductTemplateId) => {
@@ -341,6 +369,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         deleteCustomCategory,
         customTemplates,
         addCustomTemplate,
+        updateCustomTemplate,
         deleteCustomTemplate,
       }}
     >

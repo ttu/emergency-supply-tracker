@@ -105,6 +105,7 @@ describe('useDashboardAlerts', () => {
       deleteCustomCategory: vi.fn(() => ({ success: true })),
       customTemplates: [],
       addCustomTemplate: vi.fn(),
+      updateCustomTemplate: vi.fn(),
       deleteCustomTemplate: vi.fn(),
     });
 
@@ -336,6 +337,7 @@ describe('useDashboardAlerts', () => {
       deleteCustomCategory: vi.fn(() => ({ success: true })),
       customTemplates: [],
       addCustomTemplate: vi.fn(),
+      updateCustomTemplate: vi.fn(),
       deleteCustomTemplate: vi.fn(),
     });
 

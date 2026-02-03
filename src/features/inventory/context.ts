@@ -50,6 +50,12 @@ export interface InventoryContextValue {
   addCustomTemplate: (
     input: Omit<CreateProductTemplateInput, 'isBuiltIn' | 'isCustom'>,
   ) => ProductTemplate | undefined;
+  updateCustomTemplate: (
+    id: ProductTemplateId,
+    updates: Partial<
+      Pick<ProductTemplate, 'name' | 'category' | 'defaultUnit'>
+    >,
+  ) => void;
   deleteCustomTemplate: (id: ProductTemplateId) => void;
 }
 
