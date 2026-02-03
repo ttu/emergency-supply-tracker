@@ -363,7 +363,7 @@ export class InventoryItemFactory {
       name: template.name || '',
       itemType: template.id, // Use the template ID as itemType
       categoryId: createCategoryId(template.category),
-      quantity: options.quantity ?? 0,
+      quantity: createQuantity(options.quantity ?? 0),
       unit,
       neverExpires: true, // Custom templates don't have default expiration
       createdAt: '',
