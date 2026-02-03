@@ -116,6 +116,9 @@
     },
     "notifications": {
       "releaseTesting": "Sovellus on juuri julkaistu; testaus on vielä käynnissä. Ilmoita ongelmista: help@emergencysupplytracker.com"
+    },
+    "storage": {
+      "nearLimit": "Selaimen tallennustila on lähes täynnä ({{used}} MB käytössä). Vie varmuuskopio ja harkitse vanhojen tietojen poistamista asetuksista."
     }
   },
   "household": {
@@ -249,6 +252,9 @@
     },
     "about": {
       "version": "Versio",
+      "storageUsed": "Tallennustila",
+      "storageUsedValue": "{{used}} MB / noin {{limit}} MB",
+      "storageDescription": "Varastosi ja asetukset tallennetaan selaimellesi. Vie varmuuskopio tai tyhjennä tiedot alta, jos tallennustila täyttyy.",
       "viewOnGitHub": "Näytä GitHubissa"
     },
     "language": {
