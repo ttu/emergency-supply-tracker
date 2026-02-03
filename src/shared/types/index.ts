@@ -198,6 +198,7 @@ export interface InventoryItem {
 export interface ProductTemplate {
   id: ProductTemplateId;
   name?: string;
+  names?: LocalizedNames; // Localized names for custom templates: { en: "Water", fi: "Vesi" }
   i18nKey?: string;
   kind?: ProductKind;
   category: StandardCategoryId | string;

@@ -11,19 +11,32 @@ import { VALID_UNITS } from '@/shared/types';
 import styles from './CustomTemplates.module.css';
 
 interface EditFormData {
-  name: string;
+  nameEn: string;
+  nameFi: string;
   category: string;
   defaultUnit: Unit;
 }
 
+/** Get the localized name for a template based on current language */
+function getLocalizedName(template: ProductTemplate, language: string): string {
+  // First try localized names
+  if (template.names) {
+    const localizedName = template.names[language];
+    if (localizedName) return localizedName;
+  }
+  // Fallback to single name field
+  return template.name || '';
+}
+
 export function CustomTemplates() {
-  const { t } = useTranslation(['common', 'categories', 'units']);
+  const { t, i18n } = useTranslation(['common', 'categories', 'units']);
   const { customTemplates, updateCustomTemplate, deleteCustomTemplate } =
     useInventory();
   const [editingTemplate, setEditingTemplate] =
     useState<ProductTemplate | null>(null);
   const [formData, setFormData] = useState<EditFormData>({
-    name: '',
+    nameEn: '',
+    nameFi: '',
     category: '',
     defaultUnit: 'pieces',
   });
@@ -31,7 +44,8 @@ export function CustomTemplates() {
   const handleEditClick = (template: ProductTemplate) => {
     setEditingTemplate(template);
     setFormData({
-      name: template.name || '',
+      nameEn: template.names?.en || template.name || '',
+      nameFi: template.names?.fi || template.name || '',
       category: template.category,
       defaultUnit: template.defaultUnit || 'pieces',
     });
@@ -39,13 +53,23 @@ export function CustomTemplates() {
 
   const handleCloseModal = () => {
     setEditingTemplate(null);
-    setFormData({ name: '', category: '', defaultUnit: 'pieces' });
+    setFormData({
+      nameEn: '',
+      nameFi: '',
+      category: '',
+      defaultUnit: 'pieces',
+    });
   };
 
   const handleSave = () => {
-    if (editingTemplate && formData.name.trim()) {
+    if (editingTemplate && (formData.nameEn.trim() || formData.nameFi.trim())) {
+      const nameEn = formData.nameEn.trim();
+      const nameFi = formData.nameFi.trim();
+      // Use EN name as the primary name for backwards compatibility
+      const primaryName = nameEn || nameFi;
       updateCustomTemplate(editingTemplate.id, {
-        name: formData.name.trim(),
+        name: primaryName,
+        names: { en: nameEn || primaryName, fi: nameFi || primaryName },
         category: formData.category,
         defaultUnit: formData.defaultUnit,
       });
@@ -82,40 +106,43 @@ export function CustomTemplates() {
         })}
       </p>
       <ul className={styles.templatesList}>
-        {customTemplates.map((template) => (
-          <li key={template.id} className={styles.templateItem}>
-            <div className={styles.templateContent}>
-              <span className={styles.templateName}>
-                <strong>{template.name}</strong>
-                <span className={styles.templateCategory}>
-                  {' '}
-                  ({t(template.category, { ns: 'categories' })})
+        {customTemplates.map((template) => {
+          const displayName = getLocalizedName(template, i18n.language);
+          return (
+            <li key={template.id} className={styles.templateItem}>
+              <div className={styles.templateContent}>
+                <span className={styles.templateName}>
+                  <strong>{displayName}</strong>
+                  <span className={styles.templateCategory}>
+                    {' '}
+                    ({t(template.category, { ns: 'categories' })})
+                  </span>
                 </span>
-              </span>
-              <span className={styles.templateUnit}>
-                {t(template.defaultUnit || 'pieces', { ns: 'units' })}
-              </span>
-            </div>
-            <div className={styles.buttonGroup}>
-              <Button
-                variant="secondary"
-                size="small"
-                onClick={() => handleEditClick(template)}
-                aria-label={`${t('common.edit')}: ${template.name}`}
-              >
-                {t('common.edit')}
-              </Button>
-              <Button
-                variant="danger"
-                size="small"
-                onClick={() => deleteCustomTemplate(template.id)}
-                aria-label={`${t('common.delete')}: ${template.name}`}
-              >
-                {t('common.delete')}
-              </Button>
-            </div>
-          </li>
-        ))}
+                <span className={styles.templateUnit}>
+                  {t(template.defaultUnit || 'pieces', { ns: 'units' })}
+                </span>
+              </div>
+              <div className={styles.buttonGroup}>
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => handleEditClick(template)}
+                  aria-label={`${t('common.edit')}: ${displayName}`}
+                >
+                  {t('common.edit')}
+                </Button>
+                <Button
+                  variant="danger"
+                  size="small"
+                  onClick={() => deleteCustomTemplate(template.id)}
+                  aria-label={`${t('common.delete')}: ${displayName}`}
+                >
+                  {t('common.delete')}
+                </Button>
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
       {editingTemplate && (
@@ -132,14 +159,21 @@ export function CustomTemplates() {
             }}
           >
             <Input
-              id="edit-template-name"
-              label={t('itemForm.name')}
-              value={formData.name}
+              id="edit-template-name-en"
+              label={t('settings.customTemplates.nameEn')}
+              value={formData.nameEn}
               onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
+                setFormData({ ...formData, nameEn: e.target.value })
               }
-              required
               autoFocus
+            />
+            <Input
+              id="edit-template-name-fi"
+              label={t('settings.customTemplates.nameFi')}
+              value={formData.nameFi}
+              onChange={(e) =>
+                setFormData({ ...formData, nameFi: e.target.value })
+              }
             />
             <Select
               id="edit-template-category"

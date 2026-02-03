@@ -255,7 +255,9 @@
       "empty": "Ei omia malleja",
       "hint": "Luo malleja valitsemalla 'Tallenna malliksi' lisätessäsi omia tuotteita varastoon.",
       "description": "Sinulla on {{count}} omaa mallia. Nämä mallit näkyvät tuotevalitsimessa nopeaa tuotteiden lisäystä varten.",
-      "editTitle": "Muokkaa mallia"
+      "editTitle": "Muokkaa mallia",
+      "nameEn": "Nimi (englanti)",
+      "nameFi": "Nimi (suomi)"
     },
     "about": {
       "version": "Versio",

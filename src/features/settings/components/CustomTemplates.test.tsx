@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CustomTemplates } from './CustomTemplates';
+import type { ProductTemplate } from '@/shared/types';
 import { createProductTemplateId } from '@/shared/types';
 
 // Mock the translation hook
@@ -13,6 +14,8 @@ vi.mock('react-i18next', () => ({
           "Create templates by checking 'Save as template' when adding custom items.",
         'settings.customTemplates.description': `You have ${options?.count || 0} custom template(s).`,
         'settings.customTemplates.editTitle': 'Edit Template',
+        'settings.customTemplates.nameEn': 'Name (English)',
+        'settings.customTemplates.nameFi': 'Name (Finnish)',
         'common.delete': 'Delete',
         'common.edit': 'Edit',
         'common.save': 'Save',
@@ -23,12 +26,13 @@ vi.mock('react-i18next', () => ({
         food: 'Food',
         'water-beverages': 'Water & Beverages',
         'medical-health': 'Medical & Health',
-        'units.pieces': 'pieces',
-        'units.liters': 'liters',
-        'units.cans': 'cans',
+        pieces: 'pieces',
+        liters: 'liters',
+        cans: 'cans',
       };
       return translations[key] || key;
     },
+    i18n: { language: 'en' },
   }),
 }));
 
@@ -44,7 +48,7 @@ vi.mock('@/features/categories', () => ({
 // Mock the inventory hook
 const mockDeleteCustomTemplate = vi.fn();
 const mockUpdateCustomTemplate = vi.fn();
-const mockCustomTemplates = [
+const mockCustomTemplates: ProductTemplate[] = [
   {
     id: createProductTemplateId('template-1'),
     name: 'My Custom Item',
@@ -147,9 +151,11 @@ describe('CustomTemplates', () => {
     fireEvent.click(editButton);
 
     expect(screen.getByText('Edit Template')).toBeInTheDocument();
-    // The form input should have the template name
-    const nameInput = document.getElementById('edit-template-name');
-    expect(nameInput).toHaveValue('My Custom Item');
+    // The form inputs should have the template name for both languages
+    const nameEnInput = document.getElementById('edit-template-name-en');
+    expect(nameEnInput).toHaveValue('My Custom Item');
+    const nameFiInput = document.getElementById('edit-template-name-fi');
+    expect(nameFiInput).toHaveValue('My Custom Item');
   });
 
   it('should close edit modal when clicking cancel', async () => {
@@ -178,9 +184,9 @@ describe('CustomTemplates', () => {
     });
     fireEvent.click(editButton);
 
-    // Change the name
-    const nameInput = document.getElementById('edit-template-name')!;
-    fireEvent.change(nameInput, { target: { value: 'Updated Item Name' } });
+    // Change the English name
+    const nameEnInput = document.getElementById('edit-template-name-en')!;
+    fireEvent.change(nameEnInput, { target: { value: 'Updated Item Name' } });
 
     // Save
     const saveButton = screen.getByRole('button', { name: 'Save' });
@@ -191,6 +197,7 @@ describe('CustomTemplates', () => {
       mockCustomTemplates[0].id,
       expect.objectContaining({
         name: 'Updated Item Name',
+        names: { en: 'Updated Item Name', fi: 'My Custom Item' },
       }),
     );
   });
@@ -204,14 +211,38 @@ describe('CustomTemplates', () => {
     fireEvent.click(editButton);
 
     // Get form elements by id
-    const nameInput = document.getElementById('edit-template-name');
-    expect(nameInput).toHaveValue('Water Bottle');
+    const nameEnInput = document.getElementById('edit-template-name-en');
+    expect(nameEnInput).toHaveValue('Water Bottle');
+
+    const nameFiInput = document.getElementById('edit-template-name-fi');
+    expect(nameFiInput).toHaveValue('Water Bottle');
 
     const categorySelect = document.getElementById('edit-template-category');
     expect(categorySelect).toHaveValue('water-beverages');
 
     const unitSelect = document.getElementById('edit-template-unit');
     expect(unitSelect).toHaveValue('liters');
+  });
+
+  it('should pre-fill form with localized names when template has names object', () => {
+    // Modify a template to have localized names
+    mockCustomTemplates[0].names = { en: 'English Name', fi: 'Finnish Name' };
+
+    render(<CustomTemplates />);
+
+    const editButton = screen.getByRole('button', {
+      name: 'Edit: English Name',
+    });
+    fireEvent.click(editButton);
+
+    const nameEnInput = document.getElementById('edit-template-name-en');
+    expect(nameEnInput).toHaveValue('English Name');
+
+    const nameFiInput = document.getElementById('edit-template-name-fi');
+    expect(nameFiInput).toHaveValue('Finnish Name');
+
+    // Reset for other tests
+    delete mockCustomTemplates[0].names;
   });
 });
 

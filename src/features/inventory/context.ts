@@ -53,7 +53,7 @@ export interface InventoryContextValue {
   updateCustomTemplate: (
     id: ProductTemplateId,
     updates: Partial<
-      Pick<ProductTemplate, 'name' | 'category' | 'defaultUnit'>
+      Pick<ProductTemplate, 'name' | 'names' | 'category' | 'defaultUnit'>
     >,
   ) => void;
   deleteCustomTemplate: (id: ProductTemplateId) => void;

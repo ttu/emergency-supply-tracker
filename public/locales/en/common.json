@@ -255,7 +255,9 @@
       "empty": "No custom templates",
       "hint": "Create templates by checking 'Save as template' when adding custom items in inventory.",
       "description": "You have {{count}} custom template(s). These templates appear in the item selector for quick item creation.",
-      "editTitle": "Edit Template"
+      "editTitle": "Edit Template",
+      "nameEn": "Name (English)",
+      "nameFi": "Name (Finnish)"
     },
     "about": {
       "version": "Version",
