@@ -254,6 +254,7 @@
       "version": "Versio",
       "storageUsed": "Tallennustila",
       "storageUsedValue": "{{used}} MB / noin {{limit}} MB",
+      "storageDescription": "Varastosi ja asetukset tallennetaan selaimellesi. Vie varmuuskopio tai tyhjennä tiedot alta, jos tallennustila täyttyy.",
       "viewOnGitHub": "Näytä GitHubissa"
     },
     "language": {

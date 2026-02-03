@@ -254,6 +254,7 @@
       "version": "Version",
       "storageUsed": "Storage used",
       "storageUsedValue": "{{used}} MB of ~{{limit}} MB",
+      "storageDescription": "Your inventory and settings are saved in your browser. Export a backup or clear data below if storage gets full.",
       "viewOnGitHub": "View on GitHub"
     },
     "language": {

@@ -286,10 +286,14 @@ export function Settings() {
                 {t('settings.about.version')}: {APP_VERSION}
               </p>
               <p className={styles.version} data-testid="storage-used">
+                {t('settings.about.storageUsed')}:{' '}
                 {t('settings.about.storageUsedValue', {
                   used: getLocalStorageUsageMB(),
                   limit: Math.round(LOCAL_STORAGE_LIMIT_BYTES / (1024 * 1024)),
                 })}
+              </p>
+              <p className={styles.storageDescription}>
+                {t('settings.about.storageDescription')}
               </p>
               <p className={styles.description}>{t('help.contactText')}</p>
               <div className={styles.contactLinks}>
