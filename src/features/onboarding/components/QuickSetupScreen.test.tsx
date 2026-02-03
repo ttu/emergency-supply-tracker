@@ -1,9 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
+import { useState, useEffect } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QuickSetupScreen } from './QuickSetupScreen';
 import { createMockHousehold } from '@/shared/utils/test/factories';
-import { RecommendedItemsProvider } from '@/features/templates';
+import * as templatesModule from '@/features/templates';
+import { DEFAULT_KIT_ID, getBuiltInKit } from '@/features/templates/kits';
+import { convertToRecommendedItemDefinitions } from '@/shared/utils/validation/recommendedItemsValidation';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -96,7 +99,11 @@ vi.mock('react-i18next', () => ({
 
 // Helper to wrap component with provider
 const renderWithProvider = (ui: React.ReactElement) => {
-  return render(<RecommendedItemsProvider>{ui}</RecommendedItemsProvider>);
+  return render(
+    <templatesModule.RecommendedItemsProvider>
+      {ui}
+    </templatesModule.RecommendedItemsProvider>,
+  );
 };
 
 describe('QuickSetupScreen', () => {
@@ -549,5 +556,44 @@ describe('QuickSetupScreen', () => {
 
     // All selected again → "Add all items"
     expect(screen.getByText('Add all items')).toBeInTheDocument();
+  });
+
+  it('selects all items when recommended items load asynchronously', async () => {
+    const fullList = convertToRecommendedItemDefinitions(
+      getBuiltInKit(DEFAULT_KIT_ID).items,
+    );
+    let callCount = 0;
+    vi.spyOn(templatesModule, 'useRecommendedItems').mockImplementation(
+      () =>
+        ({
+          recommendedItems: ++callCount === 1 ? [] : fullList,
+        }) as ReturnType<typeof templatesModule.useRecommendedItems>,
+    );
+
+    // Wrapper that re-renders after mount so hook is called again with full list
+    function AsyncLoadWrapper() {
+      const [, setTick] = useState(0);
+      useEffect(() => {
+        const t = setTimeout(() => setTick(1), 0);
+        return () => clearTimeout(t);
+      }, []);
+      return (
+        <QuickSetupScreen
+          household={defaultHousehold}
+          onAddItems={vi.fn()}
+          onSkip={vi.fn()}
+        />
+      );
+    }
+
+    render(<AsyncLoadWrapper />);
+
+    // Initially 0 items; after re-render effect runs, items "load" and we select all
+    await waitFor(
+      () => {
+        expect(screen.getByText('Add all items')).toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
   });
 });
