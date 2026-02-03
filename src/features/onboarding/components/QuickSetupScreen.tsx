@@ -26,7 +26,7 @@ export const QuickSetupScreen = ({
   const { recommendedItems } = useRecommendedItems();
   const [showDetails, setShowDetails] = useState(false);
 
-  // Calculate which items will be added
+  // Items to offer: filtered by household (freezer, pets).
   const itemsToAdd = recommendedItems.filter((item) => {
     // Skip frozen items if not using freezer
     if (item.requiresFreezer && !household.useFreezer) {
