@@ -29,8 +29,13 @@ export interface UseDashboardAlertsResult {
  */
 export function useDashboardAlerts(): UseDashboardAlertsResult {
   const { t } = useTranslation();
-  const { items, dismissedAlertIds, dismissAlert, reactivateAllAlerts } =
-    useInventory();
+  const {
+    items,
+    dismissedAlertIds,
+    dismissAlert,
+    dismissAlerts,
+    reactivateAllAlerts,
+  } = useInventory();
   const { household } = useHousehold();
   const { recommendedItems } = useRecommendedItems();
   const {
@@ -133,8 +138,30 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
   );
 
   const handleDismissAllAlerts = useCallback(() => {
-    activeAlerts.forEach((alert) => handleDismissAlert(alert.id));
-  }, [activeAlerts, handleDismissAlert]);
+    if (activeAlerts.length === 0) return;
+    const inventoryAlertIds: AlertId[] = [];
+    for (const alert of activeAlerts) {
+      if (alert.id === BACKUP_REMINDER_ALERT_ID) {
+        dismissBackup();
+        setBackupReminderDismissed(true);
+      } else if (NOTIFICATION_IDS.has(alert.id)) {
+        markNotificationSeen(alert.id);
+      } else {
+        inventoryAlertIds.push(alert.id);
+      }
+    }
+    if (inventoryAlertIds.length > 0) {
+      dismissAlerts(inventoryAlertIds);
+    }
+    showNotification(t('notifications.allAlertsDismissed'), 'success');
+  }, [
+    activeAlerts,
+    dismissAlerts,
+    dismissBackup,
+    markNotificationSeen,
+    showNotification,
+    t,
+  ]);
 
   const handleShowAllAlerts = useCallback(() => {
     reactivateAllAlerts();

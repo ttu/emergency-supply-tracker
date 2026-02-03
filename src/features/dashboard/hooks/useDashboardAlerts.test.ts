@@ -29,8 +29,9 @@ vi.mock('@/features/alerts', () => ({
   generateDashboardAlerts: vi.fn(),
 }));
 
+const mockShowNotification = vi.fn();
 vi.mock('@/shared/hooks/useNotification', () => ({
-  useNotification: () => ({ showNotification: vi.fn() }),
+  useNotification: () => ({ showNotification: mockShowNotification }),
 }));
 
 // Mock the useBackupTracking hook
@@ -66,6 +67,7 @@ import { useSeenNotifications } from './useSeenNotifications';
 
 describe('useDashboardAlerts', () => {
   const mockDismissAlert = vi.fn();
+  const mockDismissAlerts = vi.fn();
   const mockReactivateAllAlerts = vi.fn();
 
   const defaultMocks = () => {
@@ -78,6 +80,7 @@ describe('useDashboardAlerts', () => {
       deleteItem: vi.fn(),
       dismissedAlertIds: [],
       dismissAlert: mockDismissAlert,
+      dismissAlerts: mockDismissAlerts,
       reactivateAlert: vi.fn(),
       reactivateAllAlerts: mockReactivateAllAlerts,
       disabledRecommendedItems: [],
@@ -303,6 +306,7 @@ describe('useDashboardAlerts', () => {
       deleteItem: vi.fn(),
       dismissedAlertIds: [dismissedId],
       dismissAlert: mockDismissAlert,
+      dismissAlerts: mockDismissAlerts,
       reactivateAlert: vi.fn(),
       reactivateAllAlerts: mockReactivateAllAlerts,
       disabledRecommendedItems: [],
@@ -390,9 +394,13 @@ describe('useDashboardAlerts', () => {
       result.current.handleDismissAllAlerts();
     });
 
-    expect(mockDismissAlert).toHaveBeenCalledWith(alert1);
-    expect(mockDismissAlert).toHaveBeenCalledWith(alert2);
-    expect(mockDismissAlert).toHaveBeenCalledTimes(2);
+    expect(mockDismissAlerts).toHaveBeenCalledWith([alert1, alert2]);
+    expect(mockDismissAlerts).toHaveBeenCalledTimes(1);
+    expect(mockShowNotification).toHaveBeenCalledWith(
+      'notifications.allAlertsDismissed',
+      'success',
+    );
+    expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
   it('should handle dismiss all including backup reminder', () => {
@@ -415,7 +423,11 @@ describe('useDashboardAlerts', () => {
     });
 
     expect(mockDismissBackupReminder).toHaveBeenCalled();
-    expect(mockDismissAlert).toHaveBeenCalledWith(alert1);
+    expect(mockDismissAlerts).toHaveBeenCalledWith([alert1]);
+    expect(mockShowNotification).toHaveBeenCalledWith(
+      'notifications.allAlertsDismissed',
+      'success',
+    );
   });
 
   it('should handle showing all alerts', () => {

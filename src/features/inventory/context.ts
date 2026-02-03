@@ -22,6 +22,8 @@ export interface InventoryContextValue {
   // Alert dismissal
   dismissedAlertIds: AlertId[];
   dismissAlert: (alertId: AlertId) => void;
+  /** Dismiss multiple alerts in one go (no per-alert notification). */
+  dismissAlerts: (alertIds: AlertId[]) => void;
   reactivateAlert: (alertId: AlertId) => void;
   reactivateAllAlerts: () => void;
   // Disabled recommended items
