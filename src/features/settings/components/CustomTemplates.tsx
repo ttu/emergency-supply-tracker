@@ -60,7 +60,7 @@ export function CustomTemplates() {
 
   const unitOptions = VALID_UNITS.map((unit) => ({
     value: unit,
-    label: t(`units.${unit}`),
+    label: t(unit, { ns: 'units' }),
   }));
 
   if (customTemplates.length === 0) {
@@ -93,7 +93,7 @@ export function CustomTemplates() {
                 </span>
               </span>
               <span className={styles.templateUnit}>
-                {t(`units.${template.defaultUnit}`)}
+                {t(template.defaultUnit || 'pieces', { ns: 'units' })}
               </span>
             </div>
             <div className={styles.buttonGroup}>
