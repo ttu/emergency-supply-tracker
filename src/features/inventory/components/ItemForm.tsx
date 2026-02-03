@@ -194,11 +194,23 @@ export const ItemForm = ({
       ? Number.parseFloat(formData.weightGrams)
       : undefined;
 
+    // Wrap createQuantity in try/catch to handle invalid values gracefully
+    let quantity;
+    try {
+      quantity = createQuantity(Number.parseFloat(formData.quantity));
+    } catch {
+      setErrors((prev) => ({
+        ...prev,
+        quantity: t('itemForm.errors.quantityInvalid'),
+      }));
+      return;
+    }
+
     onSubmit({
       name: formData.name.trim(),
       itemType,
       categoryId: createCategoryId(formData.categoryId),
-      quantity: createQuantity(Number.parseFloat(formData.quantity)),
+      quantity,
       unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
       neverExpires: formData.neverExpires,
       expirationDate: (() => {
