@@ -16,6 +16,7 @@ import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 import {
   DAILY_WATER_PER_PERSON,
@@ -157,8 +158,8 @@ describe('water calculations', () => {
     });
 
     it('calculates total water required for items', () => {
-      const pastaQuantity = randomQuantityFloat();
-      const riceQuantity = randomQuantityFloat();
+      const pastaQuantity = createQuantity(randomQuantityFloat());
+      const riceQuantity = createQuantity(randomQuantityFloat());
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
@@ -183,7 +184,7 @@ describe('water calculations', () => {
     });
 
     it('ignores items without water requirements', () => {
-      const pastaQuantity = randomQuantityFloat();
+      const pastaQuantity = createQuantity(randomQuantityFloat());
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
@@ -221,7 +222,7 @@ describe('water calculations', () => {
           id: createItemId('1'),
           name: 'Bottled Water',
           categoryId: createCategoryId('water-beverages'),
-          quantity: water1,
+          quantity: createQuantity(water1),
           unit: 'liters',
           itemType: createProductTemplateId('bottled-water'),
         }),
@@ -229,7 +230,7 @@ describe('water calculations', () => {
           id: createItemId('2'),
           name: 'Tap Water Container',
           categoryId: createCategoryId('water-beverages'),
-          quantity: water2,
+          quantity: createQuantity(water2),
           unit: 'liters',
           itemType: createProductTemplateId('bottled-water'),
         }),
@@ -244,7 +245,7 @@ describe('water calculations', () => {
           id: createItemId('1'),
           name: 'Bottled Water',
           categoryId: createCategoryId('water-beverages'),
-          quantity: waterQuantity,
+          quantity: createQuantity(waterQuantity),
           unit: 'liters',
           itemType: createProductTemplateId('bottled-water'),
         }),
@@ -265,7 +266,7 @@ describe('water calculations', () => {
           id: createItemId('1'),
           name: 'Bottled Water',
           categoryId: createCategoryId('food'), // Wrong category
-          quantity: 10,
+          quantity: createQuantity(10),
           unit: 'liters',
           itemType: createProductTemplateId('bottled-water'),
         }),
@@ -279,7 +280,7 @@ describe('water calculations', () => {
           id: createItemId('1'),
           name: 'Bottled Water',
           categoryId: createCategoryId('water-beverages'),
-          quantity: 10,
+          quantity: createQuantity(10),
           unit: 'bottles', // Not liters
           itemType: createProductTemplateId('bottled-water'),
         }),
@@ -306,14 +307,14 @@ describe('water calculations', () => {
     });
 
     it('returns correct values when enough water available', () => {
-      const pastaQuantity = randomQuantityFloat();
+      const pastaQuantity = createQuantity(randomQuantityFloat());
       const waterQuantity = pastaQuantity * 1 + randomQuantitySmall(); // More than needed
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
           name: 'Bottled Water',
           categoryId: createCategoryId('water-beverages'),
-          quantity: waterQuantity,
+          quantity: createQuantity(waterQuantity),
           unit: 'liters',
           itemType: createProductTemplateId('bottled-water'),
         }),
@@ -337,11 +338,13 @@ describe('water calculations', () => {
 
     it('returns correct shortfall when not enough water', () => {
       // Ensure pastaQuantity is large enough so pastaQuantity * 0.5 >= 1
-      const pastaQuantity = faker.number.float({
-        min: 2,
-        max: 10,
-        fractionDigits: 1,
-      });
+      const pastaQuantity = createQuantity(
+        faker.number.float({
+          min: 2,
+          max: 10,
+          fractionDigits: 1,
+        }),
+      );
       const waterQuantity = faker.number.float({
         min: 0.5,
         max: pastaQuantity * 0.5,
@@ -352,7 +355,7 @@ describe('water calculations', () => {
           id: createItemId('1'),
           name: 'Bottled Water',
           categoryId: createCategoryId('water-beverages'),
-          quantity: waterQuantity,
+          quantity: createQuantity(waterQuantity),
           unit: 'liters',
           itemType: createProductTemplateId('bottled-water'),
         }),
@@ -375,8 +378,8 @@ describe('water calculations', () => {
     });
 
     it('provides detailed items requiring water', () => {
-      const pastaQuantity = randomQuantityFloat();
-      const riceQuantity = randomQuantityFloat();
+      const pastaQuantity = createQuantity(randomQuantityFloat());
+      const riceQuantity = createQuantity(randomQuantityFloat());
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
@@ -471,7 +474,7 @@ describe('water calculations', () => {
 
   describe('calculateTotalWaterNeeds', () => {
     it('combines drinking water and preparation water', () => {
-      const pastaQuantity = randomQuantityFloat();
+      const pastaQuantity = createQuantity(randomQuantityFloat());
       const household = createMockHousehold({ children: 0 });
       const items = [
         createMockInventoryItem({

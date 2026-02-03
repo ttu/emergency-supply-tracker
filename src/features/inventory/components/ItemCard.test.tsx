@@ -8,6 +8,7 @@ import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 
 // Mock i18next
@@ -46,7 +47,7 @@ describe('ItemCard', () => {
     name: 'Bottled Water',
     itemType: createProductTemplateId('bottled-water'),
     categoryId: createCategoryId('water-beverages'),
-    quantity: 20,
+    quantity: createQuantity(20),
     unit: 'liters',
     neverExpires: false,
     expirationDate: futureDate,
@@ -213,7 +214,7 @@ describe('ItemCard', () => {
       // Quantity 1L < 9L needed, so should show missing
       const lowQuantityItem = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -237,7 +238,7 @@ describe('ItemCard', () => {
       // Quantity 20L >= 9L needed, so should not show missing
       const sufficientItem = createMockInventoryItem({
         ...baseItem,
-        quantity: 20,
+        quantity: createQuantity(20),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -262,7 +263,7 @@ describe('ItemCard', () => {
       // Quantity 1m < 10m needed, so should show missing
       const ropeItem = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         itemType: createProductTemplateId('rope'),
         unit: 'meters',
         neverExpires: true,

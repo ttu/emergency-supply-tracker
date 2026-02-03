@@ -14,6 +14,7 @@ import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 
 describe('calculatePreparednessScoreFromCategoryStatuses', () => {
@@ -355,7 +356,7 @@ describe('calculatePreparednessScore', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        quantity: 100, // Needed for capping test (100/50 = 200%, should cap at 100%)
+        quantity: createQuantity(100), // Needed for capping test (100/50 = 200%, should cap at 100%)
         // Needed for capping test
         itemType: createProductTemplateId('water'),
       }),
@@ -384,7 +385,7 @@ describe('calculatePreparednessScore', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        quantity: 10,
+        quantity: createQuantity(10),
         itemType: createProductTemplateId('water'),
       }),
     ];
@@ -413,7 +414,7 @@ describe('calculatePreparednessScore', () => {
         id: createItemId('1'),
         name: 'Water',
         categoryId: createCategoryId('water'),
-        quantity: 10,
+        quantity: createQuantity(10),
         itemType: createProductTemplateId('water'),
       }),
     ];
@@ -444,7 +445,7 @@ describe('calculatePreparednessScore', () => {
         id: createItemId('1'),
         name: 'test-item',
         categoryId: createCategoryId('tools'),
-        quantity: 5,
+        quantity: createQuantity(5),
         itemType: createProductTemplateId('test-item'),
       }),
     ];
@@ -455,7 +456,7 @@ describe('calculatePreparednessScore', () => {
         id: createProductTemplateId('test-item'),
         i18nKey: 'test.item',
         category: 'tools-supplies' as const,
-        baseQuantity: 10,
+        baseQuantity: createQuantity(10),
         unit: 'pieces' as const,
         scaleWithPeople: false, // Doesn't scale with people
         scaleWithDays: false, // Doesn't scale with days
@@ -488,7 +489,7 @@ describe('calculatePreparednessScore', () => {
           name: 'Battery Radio',
           itemType: 'custom', // Custom item
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
 
           // itemType is 'custom' - this is a custom item
@@ -500,7 +501,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -524,7 +525,7 @@ describe('calculatePreparednessScore', () => {
           name: 'battery-radio', // Exact match with recommended item ID
           itemType: 'custom',
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         });
 
@@ -533,7 +534,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -558,7 +559,7 @@ describe('calculatePreparednessScore', () => {
           name: 'Sony Portable Emergency Radio', // Realistic product name
           itemType: createProductTemplateId('battery-radio'), // This enables matching
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         });
 
@@ -567,7 +568,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -591,14 +592,14 @@ describe('calculatePreparednessScore', () => {
             id: createItemId('item-1'),
             name: 'Radio 1',
             categoryId: createCategoryId('communication-info'),
-            quantity: 1,
+            quantity: createQuantity(1),
             itemType: createProductTemplateId('battery-radio'),
           }),
           createMockInventoryItem({
             id: createItemId('item-2'),
             name: 'Radio 2',
             categoryId: createCategoryId('communication-info'),
-            quantity: 1,
+            quantity: createQuantity(1),
             itemType: createProductTemplateId('battery-radio'),
           }),
         ];
@@ -608,7 +609,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -631,7 +632,7 @@ describe('calculatePreparednessScore', () => {
           id: createItemId('item-1'),
           name: 'My Radio',
           categoryId: createCategoryId('communication-info'),
-          quantity: 1, // Has 1, needs 2
+          quantity: createQuantity(1), // Has 1, needs 2
           itemType: createProductTemplateId('battery-radio'),
         });
 
@@ -640,7 +641,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 2, // Needs 2
+            baseQuantity: createQuantity(2), // Needs 2
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -666,7 +667,7 @@ describe('calculatePreparednessScore', () => {
           name: 'battery-radio', // Name matches, but itemType doesn't match
           itemType: createProductTemplateId('some-other-type'), // Not matching
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         });
 
@@ -675,7 +676,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -699,7 +700,7 @@ describe('calculatePreparednessScore', () => {
           name: 'Battery Radio', // Would normalize to 'battery-radio', but we don't match by name
           itemType: createProductTemplateId('some-type'), // Not matching
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         });
 
@@ -708,7 +709,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -734,7 +735,7 @@ describe('calculatePreparednessScore', () => {
           name: 'battery-radio', // Name would match 'battery-radio'
           itemType: createProductTemplateId('hand-crank-radio'), // But itemType matches different item
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         });
 
@@ -743,7 +744,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -752,7 +753,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('hand-crank-radio'),
             i18nKey: 'products.hand-crank-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -778,7 +779,7 @@ describe('calculatePreparednessScore', () => {
           name: 'Panasonic Portable Radio', // Realistic product name
           itemType: createProductTemplateId('battery-radio'), // itemType enables matching
           categoryId: createCategoryId('communication-info'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
         });
 
@@ -787,7 +788,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -810,7 +811,7 @@ describe('calculatePreparednessScore', () => {
             id: createItemId('item-1'),
             name: 'Radio 1',
             categoryId: createCategoryId('communication-info'),
-            quantity: 1,
+            quantity: createQuantity(1),
             itemType: createProductTemplateId('battery-radio'), // Matches
           }),
           createMockInventoryItem({
@@ -818,7 +819,7 @@ describe('calculatePreparednessScore', () => {
             name: 'Battery Radio', // Custom item, won't match
             itemType: 'custom',
             categoryId: createCategoryId('communication-info'),
-            quantity: 1,
+            quantity: createQuantity(1),
             // itemType is 'custom', won't match
           }),
         ];
@@ -828,7 +829,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('battery-radio'),
             i18nKey: 'products.battery-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -837,7 +838,7 @@ describe('calculatePreparednessScore', () => {
             id: createProductTemplateId('hand-crank-radio'),
             i18nKey: 'products.hand-crank-radio',
             category: 'communication-info' as const,
-            baseQuantity: 1,
+            baseQuantity: createQuantity(1),
             unit: 'pieces' as const,
             scaleWithPeople: false,
             scaleWithDays: false,
@@ -973,7 +974,7 @@ describe('calculateCategoryPreparedness', () => {
         id: createProductTemplateId('test-water-1'),
         i18nKey: 'test.water1',
         category: 'water-beverages' as const,
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'liters' as const,
         scaleWithPeople: true, // Will be 0 when people = 0
         scaleWithDays: false,
@@ -982,7 +983,7 @@ describe('calculateCategoryPreparedness', () => {
         id: createProductTemplateId('test-water-2'),
         i18nKey: 'test.water2',
         category: 'water-beverages' as const,
-        baseQuantity: 2,
+        baseQuantity: createQuantity(2),
         unit: 'liters' as const,
         scaleWithPeople: true, // Will be 0 when people = 0
         scaleWithDays: false,
@@ -1022,7 +1023,7 @@ describe('calculateCategoryPreparedness', () => {
         id: createProductTemplateId('test-water-1'),
         i18nKey: 'test.water1',
         category: 'water-beverages' as const,
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         unit: 'liters' as const,
         scaleWithPeople: true, // Will be 0 when people = 0
         scaleWithDays: true, // Will be 0 when days = 0

@@ -6,6 +6,7 @@ import {
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
+import { createPercentage } from '@/shared/types';
 
 vi.mock('@/features/settings', () => ({
   useSettings: vi.fn(),
@@ -49,7 +50,7 @@ describe('useCalculationOptions', () => {
           powerManagement: false,
           waterTracking: true,
         },
-        childrenRequirementPercentage: 50,
+        childrenRequirementPercentage: createPercentage(50),
         dailyCaloriesPerPerson: 2500,
         dailyWaterPerPerson: 4,
       },

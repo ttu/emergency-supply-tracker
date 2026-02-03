@@ -5,7 +5,12 @@ import {
   createMockInventoryItem,
   createMockAppData,
 } from '@/shared/utils/test/factories';
-import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createDateOnly,
+  createQuantity,
+} from '@/shared/types';
 import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
 
 const meta: Meta<typeof Dashboard> = {
@@ -51,7 +56,7 @@ export const WithItems: Story = {
           id: createItemId('1'),
           name: 'Bottled Water',
           categoryId: createCategoryId('water-beverages'),
-          quantity: 20,
+          quantity: createQuantity(20),
           unit: 'liters',
 
           neverExpires: false,
@@ -62,7 +67,7 @@ export const WithItems: Story = {
           id: createItemId('2'),
           name: 'Canned Beans',
           categoryId: createCategoryId('food'),
-          quantity: 15,
+          quantity: createQuantity(15),
           unit: 'cans',
 
           neverExpires: false,
@@ -73,7 +78,7 @@ export const WithItems: Story = {
           id: createItemId('3'),
           name: 'First Aid Kit',
           categoryId: createCategoryId('medical-health'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
 
           neverExpires: true,
@@ -103,7 +108,7 @@ export const WithAlerts: Story = {
           id: createItemId('1'),
           name: 'Expired Water',
           categoryId: createCategoryId('water-beverages'),
-          quantity: 10,
+          quantity: createQuantity(10),
           unit: 'liters',
 
           neverExpires: false,
@@ -115,7 +120,7 @@ export const WithAlerts: Story = {
           id: createItemId('2'),
           name: 'Low Stock Food',
           categoryId: createCategoryId('food'),
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'cans',
 
           neverExpires: false,
@@ -127,7 +132,7 @@ export const WithAlerts: Story = {
           id: createItemId('3'),
           name: 'Expiring Soon Medicine',
           categoryId: createCategoryId('medical-health'),
-          quantity: 5,
+          quantity: createQuantity(5),
           unit: 'pieces',
 
           neverExpires: false,
@@ -167,7 +172,7 @@ export const WellPrepared: Story = {
           id: createItemId('1'),
           name: 'Bottled Water',
           categoryId: createCategoryId('water-beverages'),
-          quantity: 30,
+          quantity: createQuantity(30),
           unit: 'liters',
 
           neverExpires: false,
@@ -178,7 +183,7 @@ export const WellPrepared: Story = {
           id: createItemId('2'),
           name: 'Canned Vegetables',
           categoryId: createCategoryId('food'),
-          quantity: 25,
+          quantity: createQuantity(25),
           unit: 'cans',
 
           neverExpires: false,
@@ -189,7 +194,7 @@ export const WellPrepared: Story = {
           id: createItemId('3'),
           name: 'Flashlight',
           categoryId: createCategoryId('light-power'),
-          quantity: 2,
+          quantity: createQuantity(2),
           unit: 'pieces',
 
           neverExpires: true,
@@ -199,7 +204,7 @@ export const WellPrepared: Story = {
           id: createItemId('4'),
           name: 'First Aid Kit',
           categoryId: createCategoryId('medical-health'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
 
           neverExpires: true,

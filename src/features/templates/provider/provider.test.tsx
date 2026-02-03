@@ -5,7 +5,11 @@ import { useRecommendedItems } from '../hooks';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import type { RecommendedItemsFile, UploadedKit, KitId } from '@/shared/types';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
-import { createProductTemplateId, createCustomKitId } from '@/shared/types';
+import {
+  createProductTemplateId,
+  createCustomKitId,
+  createQuantity,
+} from '@/shared/types';
 import { DEFAULT_KIT_ID, getBuiltInKit } from '../kits';
 
 // Get the default kit's item count for assertions
@@ -85,7 +89,7 @@ describe('RecommendedItemsProvider', () => {
         i18nKey: 'custom.item1',
         category: 'food',
         unit: 'pieces',
-        baseQuantity: 5,
+        baseQuantity: createQuantity(5),
         scaleWithPeople: true,
         scaleWithDays: true,
       },
@@ -94,7 +98,7 @@ describe('RecommendedItemsProvider', () => {
         names: { en: 'Water Bottle', fi: 'Vesipullo' },
         category: 'water-beverages',
         unit: 'liters',
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         scaleWithPeople: true,
         scaleWithDays: true,
       },
@@ -429,7 +433,7 @@ describe('RecommendedItemsProvider', () => {
         id: createProductTemplateId('test-item-id'),
         category: 'food' as const,
         unit: 'pieces' as const,
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         scaleWithPeople: true,
         scaleWithDays: true,
       };
@@ -456,7 +460,7 @@ describe('RecommendedItemsProvider', () => {
         names: { en: 'Preview Item', fi: 'Esikatselu' },
         category: 'food' as const,
         unit: 'pieces' as const,
-        baseQuantity: 1,
+        baseQuantity: createQuantity(1),
         scaleWithPeople: true,
         scaleWithDays: true,
       };
@@ -715,7 +719,7 @@ describe('RecommendedItemsProvider', () => {
         names: { en: 'New Item' },
         category: 'food' as const,
         unit: 'pieces' as const,
-        baseQuantity: 3,
+        baseQuantity: createQuantity(3),
         scaleWithPeople: true,
         scaleWithDays: false,
       };
@@ -757,7 +761,7 @@ describe('RecommendedItemsProvider', () => {
           names: { en: 'New Item' },
           category: 'food',
           unit: 'pieces',
-          baseQuantity: 1,
+          baseQuantity: createQuantity(1),
           scaleWithPeople: true,
           scaleWithDays: true,
         });
@@ -792,7 +796,7 @@ describe('RecommendedItemsProvider', () => {
 
       act(() => {
         updateItemFn(createProductTemplateId('custom-item-1'), {
-          baseQuantity: 10,
+          baseQuantity: createQuantity(10),
         });
       });
 
@@ -830,7 +834,7 @@ describe('RecommendedItemsProvider', () => {
       );
 
       act(() => {
-        updateItemFn('some-item', { baseQuantity: 10 });
+        updateItemFn('some-item', { baseQuantity: createQuantity(10) });
       });
 
       expect(warnSpy).toHaveBeenCalledWith('Cannot edit items in built-in kit');

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/features/settings';
+import { createPercentage } from '@/shared/types';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
@@ -57,7 +58,9 @@ export function NutritionSettings() {
         LIMITS.childrenPercentage.min,
         Math.min(LIMITS.childrenPercentage.max, value),
       );
-      updateSettings({ childrenRequirementPercentage: clamped });
+      updateSettings({
+        childrenRequirementPercentage: createPercentage(clamped),
+      });
     }
   };
 
@@ -65,7 +68,9 @@ export function NutritionSettings() {
     updateSettings({
       dailyCaloriesPerPerson: DAILY_CALORIES_PER_PERSON,
       dailyWaterPerPerson: DAILY_WATER_PER_PERSON,
-      childrenRequirementPercentage: CHILDREN_REQUIREMENT_MULTIPLIER * 100,
+      childrenRequirementPercentage: createPercentage(
+        CHILDREN_REQUIREMENT_MULTIPLIER * 100,
+      ),
     });
   };
 

@@ -46,7 +46,8 @@ export const QuickSetupScreen = ({
 
   // Calculate recommended quantity for an item
   const calculateQuantity = (item: RecommendedItemDefinition): number => {
-    let quantity = item.baseQuantity;
+    // Use regular number for calculations (Quantity is for storage/input boundaries)
+    let quantity: number = item.baseQuantity;
 
     if (item.scaleWithPeople) {
       const totalPeople = household.adults + household.children;

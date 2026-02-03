@@ -8,7 +8,7 @@ import {
   isStandardCategory,
 } from './data';
 import type { AppData, Category, InventoryItem } from '@/shared/types';
-import { createCategoryId, createItemId } from '@/shared/types';
+import { createCategoryId, createItemId, createQuantity } from '@/shared/types';
 
 describe('standardCategories', () => {
   describe('STANDARD_CATEGORIES', () => {
@@ -211,7 +211,7 @@ describe('standardCategories', () => {
           id: createItemId('item1'),
           name: 'Test Item',
           categoryId: createCategoryId('custom'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
           itemType: 'custom',
           createdAt: '',
@@ -230,7 +230,7 @@ describe('standardCategories', () => {
           id: createItemId('item1'),
           name: 'Test Item',
           categoryId: createCategoryId('food'),
-          quantity: 1,
+          quantity: createQuantity(1),
           unit: 'pieces',
           itemType: 'custom',
           createdAt: '',

@@ -11,6 +11,7 @@ import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 
 // Mock react-i18next
@@ -917,7 +918,7 @@ describe('CategoryStatusSummary', () => {
         name: 'Candles',
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
-        quantity: 4,
+        quantity: createQuantity(4),
 
         markedAsEnough: false,
       });
@@ -956,7 +957,7 @@ describe('CategoryStatusSummary', () => {
         name: 'Candles',
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
-        quantity: 4,
+        quantity: createQuantity(4),
 
         markedAsEnough: true,
       });
@@ -987,7 +988,7 @@ describe('CategoryStatusSummary', () => {
         name: 'Candles',
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
-        quantity: 0,
+        quantity: createQuantity(0),
 
         markedAsEnough: false,
       });
@@ -1020,7 +1021,7 @@ describe('CategoryStatusSummary', () => {
         name: 'Candles',
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
-        quantity: 4,
+        quantity: createQuantity(4),
 
         markedAsEnough: false,
       });
@@ -1062,7 +1063,7 @@ describe('CategoryStatusSummary', () => {
         name: 'Candles',
         itemType: createProductTemplateId('candles'),
         categoryId: createCategoryId('light-power'),
-        quantity: 4,
+        quantity: createQuantity(4),
 
         markedAsEnough: false,
       });
@@ -1100,7 +1101,7 @@ describe('CategoryStatusSummary', () => {
         name: 'Candles', // Same name as recommended item, but custom type
         itemType: 'custom', // Custom items should NOT match by name
         categoryId: createCategoryId('light-power'),
-        quantity: 4,
+        quantity: createQuantity(4),
 
         markedAsEnough: false,
       });
@@ -1139,7 +1140,7 @@ describe('CategoryStatusSummary', () => {
         name: 'My Custom Candles', // Different name, but has itemType
         itemType: createProductTemplateId('candles'), // This enables matching
         categoryId: createCategoryId('light-power'),
-        quantity: 4,
+        quantity: createQuantity(4),
 
         markedAsEnough: false,
       });

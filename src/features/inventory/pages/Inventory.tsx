@@ -16,7 +16,11 @@ import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
 import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
-import { createItemId, createProductTemplateId } from '@/shared/types';
+import {
+  createItemId,
+  createProductTemplateId,
+  createQuantity,
+} from '@/shared/types';
 import type {
   InventoryItem,
   ItemStatus,
@@ -259,7 +263,7 @@ export function Inventory({
         household,
         {
           name: templateName,
-          quantity: 0,
+          quantity: createQuantity(0),
         },
       );
 

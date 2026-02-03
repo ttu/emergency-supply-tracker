@@ -5,6 +5,8 @@ import type {
   ProductTemplateId,
   AlertId,
   DateOnly,
+  Quantity,
+  Percentage,
 } from './branded';
 export type {
   ItemId,
@@ -12,6 +14,8 @@ export type {
   ProductTemplateId,
   AlertId,
   DateOnly,
+  Quantity,
+  Percentage,
 } from './branded';
 export {
   createItemId,
@@ -19,9 +23,13 @@ export {
   createProductTemplateId,
   createAlertId,
   createDateOnly,
+  createQuantity,
+  createPercentage,
   isItemId,
   isCategoryId,
   isDateOnly,
+  isQuantity,
+  isPercentage,
 } from './branded';
 
 // Core types
@@ -123,7 +131,7 @@ export interface UserSettings {
   // Customizable nutrition and requirement settings
   dailyCaloriesPerPerson?: number; // Default: 2000 kcal
   dailyWaterPerPerson?: number; // Default: 3 liters
-  childrenRequirementPercentage?: number; // Default: 75 (children need 75% of adult requirements)
+  childrenRequirementPercentage?: Percentage; // Default: 75 (children need 75% of adult requirements)
 }
 
 // Category
@@ -164,7 +172,7 @@ export interface InventoryItem {
   name: string;
   itemType: ProductTemplateId | 'custom'; // Template ID (e.g., "canned-fish") or "custom" for user-created items, used for i18n lookup
   categoryId: CategoryId;
-  quantity: number;
+  quantity: Quantity;
   unit: Unit;
   expirationDate?: DateOnly;
   purchaseDate?: DateOnly;
@@ -210,7 +218,7 @@ export interface RecommendedItemDefinition {
   id: ProductTemplateId; // Recommended items are product templates
   i18nKey: string;
   category: StandardCategoryId | string; // Standard category ID or custom category ID
-  baseQuantity: number;
+  baseQuantity: Quantity;
   unit: Unit;
   scaleWithPeople: boolean;
   scaleWithDays: boolean;
@@ -246,7 +254,7 @@ export interface ImportedRecommendedItem {
   i18nKey?: string; // Use built-in translation key (e.g., "products.bottled-water")
   names?: LocalizedNames; // OR inline localized names: { en: "Water", fi: "Vesi" }
   category: StandardCategoryId | string; // Standard category ID or custom category ID
-  baseQuantity: number;
+  baseQuantity: Quantity;
   unit: Unit;
   scaleWithPeople: boolean;
   scaleWithDays: boolean;

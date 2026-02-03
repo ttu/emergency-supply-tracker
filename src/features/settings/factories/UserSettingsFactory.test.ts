@@ -9,7 +9,11 @@ import {
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
 } from '@/shared/utils/constants';
-import { VALID_THEMES } from '@/shared/types';
+import {
+  VALID_THEMES,
+  createPercentage,
+  type Percentage,
+} from '@/shared/types';
 import { faker } from '@faker-js/faker';
 
 describe('UserSettingsFactory', () => {
@@ -43,10 +47,13 @@ describe('UserSettingsFactory', () => {
         max: 10,
         fractionDigits: 1,
       });
-      const childrenRequirementPercentage = faker.number.int({
+      const childrenRequirementPercentageRaw = faker.number.int({
         min: 0,
         max: 100,
       });
+      const childrenRequirementPercentage = createPercentage(
+        childrenRequirementPercentageRaw,
+      );
 
       const input: CreateUserSettingsInput = {
         language,
@@ -130,7 +137,8 @@ describe('UserSettingsFactory', () => {
     it('throws error when childrenRequirementPercentage is negative', () => {
       expect(() => {
         UserSettingsFactory.create({
-          childrenRequirementPercentage: -1,
+          // Use type assertion to test invalid value (deliberately testing validation)
+          childrenRequirementPercentage: -1 as unknown as Percentage,
         });
       }).toThrow(UserSettingsValidationError);
     });
@@ -138,7 +146,8 @@ describe('UserSettingsFactory', () => {
     it('throws error when childrenRequirementPercentage exceeds 100', () => {
       expect(() => {
         UserSettingsFactory.create({
-          childrenRequirementPercentage: 101,
+          // Use type assertion to test factory validation (bypassing branded type validation)
+          childrenRequirementPercentage: 101 as unknown as Percentage,
         });
       }).toThrow(UserSettingsValidationError);
     });
@@ -175,7 +184,7 @@ describe('UserSettingsFactory', () => {
       const settings = UserSettingsFactory.create({
         dailyCaloriesPerPerson: 0,
         dailyWaterPerPerson: 0,
-        childrenRequirementPercentage: 0,
+        childrenRequirementPercentage: createPercentage(0),
       });
 
       expect(settings.dailyCaloriesPerPerson).toBe(0);
@@ -185,7 +194,7 @@ describe('UserSettingsFactory', () => {
 
     it('allows 100 for childrenRequirementPercentage', () => {
       const settings = UserSettingsFactory.create({
-        childrenRequirementPercentage: 100,
+        childrenRequirementPercentage: createPercentage(100),
       });
 
       expect(settings.childrenRequirementPercentage).toBe(100);

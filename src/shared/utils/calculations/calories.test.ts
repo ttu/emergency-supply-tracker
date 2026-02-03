@@ -15,6 +15,7 @@ import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 
 describe('calculateCaloriesFromWeight', () => {
@@ -82,7 +83,7 @@ describe('calculateItemTotalCalories', () => {
       name: 'Test Item',
       itemType: 'custom',
       categoryId: createCategoryId('food'),
-      quantity: 5,
+      quantity: createQuantity(5),
       unit: 'cans',
       weightGrams: 400,
       caloriesPerUnit: 200,
@@ -99,7 +100,7 @@ describe('calculateItemTotalCalories', () => {
       name: 'Rice',
       itemType: 'custom',
       categoryId: createCategoryId('food'),
-      quantity: 1, // 1 kg
+      quantity: createQuantity(1), // 1 kg
       unit: 'kilograms',
       weightGrams: 100, // 100g per unit
       caloriesPerUnit: 400, // 400 kcal per unit
@@ -117,7 +118,7 @@ describe('calculateItemTotalCalories', () => {
       name: 'Test Item',
       itemType: 'custom',
       categoryId: createCategoryId('food'),
-      quantity: 5,
+      quantity: createQuantity(5),
       unit: 'cans',
       neverExpires: true,
       createdAt: '2024-01-01',
@@ -132,7 +133,7 @@ describe('calculateItemTotalCalories', () => {
       name: 'Water',
       itemType: 'custom',
       categoryId: createCategoryId('food'),
-      quantity: 10,
+      quantity: createQuantity(10),
       unit: 'bottles',
       caloriesPerUnit: 0, // Zero calories (e.g., water)
       neverExpires: true,
@@ -149,7 +150,7 @@ describe('calculateItemTotalCalories', () => {
       name: 'Rice',
       itemType: 'custom',
       categoryId: createCategoryId('food'),
-      quantity: 1.5, // 1.5 kg
+      quantity: createQuantity(1.5), // 1.5 kg
       unit: 'kilograms',
       weightGrams: 100, // 100g per unit
       caloriesPerUnit: 400, // 400 kcal per unit
@@ -168,7 +169,7 @@ describe('getTemplateWeightPerUnit', () => {
       id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'food',
-      baseQuantity: 1,
+      baseQuantity: createQuantity(1),
       unit: 'cans',
       scaleWithPeople: true,
       scaleWithDays: true,
@@ -182,7 +183,7 @@ describe('getTemplateWeightPerUnit', () => {
       id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'tools-supplies',
-      baseQuantity: 1,
+      baseQuantity: createQuantity(1),
       unit: 'pieces',
       scaleWithPeople: false,
       scaleWithDays: false,
@@ -197,7 +198,7 @@ describe('getTemplateCaloriesPerUnit', () => {
       id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'food',
-      baseQuantity: 1,
+      baseQuantity: createQuantity(1),
       unit: 'cans',
       scaleWithPeople: true,
       scaleWithDays: true,
@@ -213,7 +214,7 @@ describe('getTemplateCaloriesPerUnit', () => {
       id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'food',
-      baseQuantity: 1,
+      baseQuantity: createQuantity(1),
       unit: 'cans',
       scaleWithPeople: true,
       scaleWithDays: true,
@@ -227,7 +228,7 @@ describe('getTemplateCaloriesPerUnit', () => {
       id: createProductTemplateId('test'),
       i18nKey: 'test',
       category: 'tools-supplies',
-      baseQuantity: 1,
+      baseQuantity: createQuantity(1),
       unit: 'pieces',
       scaleWithPeople: false,
       scaleWithDays: false,

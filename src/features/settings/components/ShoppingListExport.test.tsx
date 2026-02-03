@@ -15,6 +15,7 @@ import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 
 describe('ShoppingListExport', () => {
@@ -73,7 +74,7 @@ describe('ShoppingListExport', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 5,
+      quantity: createQuantity(5),
       itemType: createProductTemplateId('bottled-water'),
     });
 
@@ -99,13 +100,13 @@ describe('ShoppingListExport', () => {
       createMockInventoryItem({
         id: createItemId('item-1'),
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5,
+        quantity: createQuantity(5),
         itemType: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         categoryId: createCategoryId('water-beverages'),
-        quantity: 3,
+        quantity: createQuantity(3),
         itemType: createProductTemplateId('long-life-juice'),
       }),
     ];
@@ -158,7 +159,7 @@ describe('ShoppingListExport', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 5,
+      quantity: createQuantity(5),
       itemType: createProductTemplateId('bottled-water'),
       unit: 'liters',
     });
@@ -190,7 +191,7 @@ describe('ShoppingListExport', () => {
       id: createItemId('item-1'),
       name: 'Water',
       categoryId: createCategoryId('water-beverages'),
-      quantity: 5,
+      quantity: createQuantity(5),
       itemType: createProductTemplateId('bottled-water'),
       unit: 'liters',
     });
@@ -225,14 +226,14 @@ describe('ShoppingListExport', () => {
         id: createItemId('item-1'),
         name: 'Needs Restock',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5,
+        quantity: createQuantity(5),
         itemType: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         name: 'Fully Stocked',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 20, // 20L >= 9L needed (fully stocked)
+        quantity: createQuantity(20), // 20L >= 9L needed (fully stocked)
         itemType: createProductTemplateId('bottled-water'),
       }),
     ];
@@ -264,21 +265,21 @@ describe('ShoppingListExport', () => {
         id: createItemId('item-1'),
         name: 'Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 5, // 5L < 9L needed
+        quantity: createQuantity(5), // 5L < 9L needed
         itemType: createProductTemplateId('bottled-water'),
       }),
       createMockInventoryItem({
         id: createItemId('item-2'),
         name: 'Beans',
         categoryId: createCategoryId('food'),
-        quantity: 1, // 1 can, likely below recommended for 1 adult, 3 days
+        quantity: createQuantity(1), // 1 can, likely below recommended for 1 adult, 3 days
         itemType: createProductTemplateId('canned-vegetables'),
       }),
       createMockInventoryItem({
         id: createItemId('item-3'),
         name: 'More Water',
         categoryId: createCategoryId('water-beverages'),
-        quantity: 1, // 1L < 2L needed
+        quantity: createQuantity(1), // 1L < 2L needed
         itemType: createProductTemplateId('long-life-juice'),
       }),
     ];

@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ItemList } from './ItemList';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
-import { createItemId, createCategoryId, createDateOnly } from '@/shared/types';
+import {
+  createItemId,
+  createCategoryId,
+  createDateOnly,
+  createQuantity,
+} from '@/shared/types';
 import { AllProviders } from '@/shared/components/AllProviders';
 
 const meta = {
@@ -34,7 +39,7 @@ const sampleItems = [
     id: createItemId('1'),
     name: 'Bottled Water',
     categoryId: createCategoryId('water-beverages'),
-    quantity: 20,
+    quantity: createQuantity(20),
     unit: 'liters',
 
     neverExpires: false,
@@ -45,7 +50,7 @@ const sampleItems = [
     id: createItemId('2'),
     name: 'Canned Beans',
     categoryId: createCategoryId('food'),
-    quantity: 5,
+    quantity: createQuantity(5),
     unit: 'cans',
 
     neverExpires: false,
@@ -56,7 +61,7 @@ const sampleItems = [
     id: createItemId('3'),
     name: 'First Aid Kit',
     categoryId: createCategoryId('medical-health'),
-    quantity: 1,
+    quantity: createQuantity(1),
     unit: 'pieces',
 
     neverExpires: true,

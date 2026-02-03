@@ -14,6 +14,7 @@ import {
   createItemId,
   createCategoryId,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
@@ -197,7 +198,7 @@ describe('calculateMissingQuantity', () => {
     name: 'Test Item',
     itemType: createProductTemplateId('test-item'),
     categoryId: createCategoryId('tools-supplies'),
-    quantity: 1,
+    quantity: createQuantity(1),
     unit: 'pieces',
     neverExpires: true,
     expirationDate: undefined,
@@ -208,7 +209,7 @@ describe('calculateMissingQuantity', () => {
     it('returns missing quantity when status is warning due to low quantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 4, // Less than 50% of 10 (warning threshold is 5)
+        quantity: createQuantity(4), // Less than 50% of 10 (warning threshold is 5)
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -218,7 +219,7 @@ describe('calculateMissingQuantity', () => {
     it('returns missing quantity when status is critical due to zero quantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 0,
+        quantity: createQuantity(0),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -228,7 +229,7 @@ describe('calculateMissingQuantity', () => {
     it('returns correct missing quantity for rope example (1 meter, 10 recommended)', () => {
       const ropeItem = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         unit: 'meters',
         neverExpires: true,
         expirationDate: undefined,
@@ -241,7 +242,7 @@ describe('calculateMissingQuantity', () => {
     it('returns correct missing quantity for rope example (2 meters, 10 recommended)', () => {
       const ropeItem = createMockInventoryItem({
         ...baseItem,
-        quantity: 2,
+        quantity: createQuantity(2),
         unit: 'meters',
         neverExpires: true,
         expirationDate: undefined,
@@ -254,7 +255,7 @@ describe('calculateMissingQuantity', () => {
     it('returns correct missing quantity for toilet paper (1 roll, 3 recommended)', () => {
       const tpItem = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         unit: 'rolls',
         neverExpires: true,
         expirationDate: undefined,
@@ -267,7 +268,7 @@ describe('calculateMissingQuantity', () => {
     it('returns 0 when status is ok (sufficient quantity)', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 10,
+        quantity: createQuantity(10),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -277,7 +278,7 @@ describe('calculateMissingQuantity', () => {
     it('returns 0 when quantity equals recommendedQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 10,
+        quantity: createQuantity(10),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -287,7 +288,7 @@ describe('calculateMissingQuantity', () => {
     it('returns 0 when quantity exceeds recommendedQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 15,
+        quantity: createQuantity(15),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -302,7 +303,7 @@ describe('calculateMissingQuantity', () => {
       );
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 30, // More than recommended (10)
+        quantity: createQuantity(30), // More than recommended (10)
         expirationDate: soonDate,
         neverExpires: false,
       });
@@ -317,7 +318,7 @@ describe('calculateMissingQuantity', () => {
       );
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 30, // More than recommended (10)
+        quantity: createQuantity(30), // More than recommended (10)
         expirationDate: expiredDate,
         neverExpires: false,
       });
@@ -327,7 +328,7 @@ describe('calculateMissingQuantity', () => {
     it('returns 0 when marked as enough', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         markedAsEnough: true,
         neverExpires: true,
         expirationDate: undefined,
@@ -338,7 +339,7 @@ describe('calculateMissingQuantity', () => {
     it('returns 0 when recommendedQuantity is 0', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -348,7 +349,7 @@ describe('calculateMissingQuantity', () => {
     it('returns 0 when recommendedQuantity is negative (edge case)', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -360,7 +361,7 @@ describe('calculateMissingQuantity', () => {
     it('handles decimal quantities correctly', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 2.5,
+        quantity: createQuantity(2.5),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -370,7 +371,7 @@ describe('calculateMissingQuantity', () => {
     it('returns 0 when missing quantity would be negative (quantity > recommended)', () => {
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 15,
+        quantity: createQuantity(15),
         neverExpires: true,
         expirationDate: undefined,
       });
@@ -385,7 +386,7 @@ describe('calculateMissingQuantity', () => {
       );
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         expirationDate: in30DaysDateOnly,
         neverExpires: false,
       });
@@ -401,7 +402,7 @@ describe('calculateMissingQuantity', () => {
       );
       const item = createMockInventoryItem({
         ...baseItem,
-        quantity: 1,
+        quantity: createQuantity(1),
         expirationDate: in31DaysDateOnly,
         neverExpires: false,
       });
@@ -417,7 +418,7 @@ describe('calculateMissingQuantity', () => {
       name: 'Rope',
       itemType: createProductTemplateId('rope'),
       categoryId: createCategoryId('tools-supplies'),
-      quantity: 2,
+      quantity: createQuantity(2),
       unit: 'meters',
       neverExpires: true,
       expirationDate: undefined,
@@ -427,12 +428,12 @@ describe('calculateMissingQuantity', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 2,
+        quantity: createQuantity(2),
       });
       const item2 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('2'),
-        quantity: 1,
+        quantity: createQuantity(1),
       });
       const allItems = [item1, item2];
 
@@ -449,12 +450,12 @@ describe('calculateMissingQuantity', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 1,
+        quantity: createQuantity(1),
       });
       const item2 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('2'),
-        quantity: 2,
+        quantity: createQuantity(2),
       });
       const allItems = [item1, item2];
 
@@ -478,13 +479,13 @@ describe('calculateMissingQuantity', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 2,
+        quantity: createQuantity(2),
         markedAsEnough: false,
       });
       const item2 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('2'),
-        quantity: 1,
+        quantity: createQuantity(1),
         markedAsEnough: true, // This marks the item type as enough
       });
       const allItems = [item1, item2];
@@ -499,12 +500,12 @@ describe('calculateMissingQuantity', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 5,
+        quantity: createQuantity(5),
       });
       const item2 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('2'),
-        quantity: 5,
+        quantity: createQuantity(5),
       });
       const allItems = [item1, item2];
 
@@ -523,14 +524,14 @@ describe('calculateMissingQuantity', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 1,
+        quantity: createQuantity(1),
         expirationDate: soonDate,
         neverExpires: false,
       });
       const item2 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('2'),
-        quantity: 2,
+        quantity: createQuantity(2),
         expirationDate: soonDate,
         neverExpires: false,
       });
@@ -549,19 +550,19 @@ describe('calculateMissingQuantity', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 1,
+        quantity: createQuantity(1),
         itemType: ropeTemplateId,
       });
       const item2 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('2'),
-        quantity: 2,
+        quantity: createQuantity(2),
         itemType: ropeTemplateId,
       });
       const item3 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('3'),
-        quantity: 5,
+        quantity: createQuantity(5),
         itemType: bucketTemplateId, // Different type
       });
       const allItems = [item1, item2, item3];
@@ -583,13 +584,13 @@ describe('calculateMissingQuantity', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 1,
+        quantity: createQuantity(1),
         itemType: createProductTemplateId('rope'),
       });
       const item2 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('2'),
-        quantity: 2,
+        quantity: createQuantity(2),
         itemType: createProductTemplateId('rope'),
       });
       const allItems = [item1, item2];
@@ -604,13 +605,13 @@ describe('calculateMissingQuantity', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 1,
+        quantity: createQuantity(1),
         itemType: createProductTemplateId('rope'),
       });
       const item2 = createMockInventoryItem({
         ...baseItem,
         id: createItemId('2'),
-        quantity: 2,
+        quantity: createQuantity(2),
         itemType: createProductTemplateId('bucket'), // Different type
       });
       const allItems = [item1, item2];
@@ -632,7 +633,7 @@ describe('calculateMissingQuantity', () => {
       const item = createMockInventoryItem({
         ...baseItem,
         id: createItemId('1'),
-        quantity: 1,
+        quantity: createQuantity(1),
       });
       const allItems = [item];
 

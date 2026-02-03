@@ -1,4 +1,5 @@
 import type { UserSettings } from '@/shared/types';
+import { createPercentage } from '@/shared/types';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
@@ -117,7 +118,9 @@ export class UserSettingsFactory {
       },
       dailyCaloriesPerPerson: DAILY_CALORIES_PER_PERSON,
       dailyWaterPerPerson: DAILY_WATER_PER_PERSON,
-      childrenRequirementPercentage: CHILDREN_REQUIREMENT_MULTIPLIER * 100,
+      childrenRequirementPercentage: createPercentage(
+        CHILDREN_REQUIREMENT_MULTIPLIER * 100,
+      ),
     };
 
     // Deep merge advancedFeatures

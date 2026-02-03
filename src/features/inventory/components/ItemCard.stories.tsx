@@ -6,6 +6,7 @@ import {
   createCategoryId,
   createDateOnly,
   createProductTemplateId,
+  createQuantity,
 } from '@/shared/types';
 import { AllProviders } from '@/shared/components/AllProviders';
 
@@ -45,7 +46,7 @@ const baseItem = createMockInventoryItem({
   name: 'Bottled Water',
   itemType: createProductTemplateId('bottled-water'),
   categoryId: createCategoryId('water-beverages'),
-  quantity: 20,
+  quantity: createQuantity(20),
   unit: 'liters',
   neverExpires: false,
   expirationDate: futureDate,
@@ -62,7 +63,7 @@ export const WarningLowStock: Story = {
   args: {
     item: {
       ...baseItem,
-      quantity: 10,
+      quantity: createQuantity(10),
     },
   },
 };
@@ -71,7 +72,7 @@ export const CriticalOutOfStock: Story = {
   args: {
     item: {
       ...baseItem,
-      quantity: 0,
+      quantity: createQuantity(0),
     },
   },
 };
@@ -90,7 +91,7 @@ export const Expired: Story = {
     item: {
       ...baseItem,
       expirationDate: expiredDate,
-      quantity: 5,
+      quantity: createQuantity(5),
     },
   },
 };

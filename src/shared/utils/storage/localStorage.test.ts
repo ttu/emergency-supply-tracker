@@ -25,6 +25,7 @@ import {
   createItemId,
   createProductTemplateId,
   createAlertId,
+  createQuantity,
 } from '@/shared/types';
 import { DEFAULT_KIT_ID } from '@/features/templates/kits';
 
@@ -696,7 +697,7 @@ describe('localStorage utilities', () => {
             name: 'Test Item',
             itemType: 'custom',
             categoryId: createCategoryId('food'),
-            quantity: 5,
+            quantity: createQuantity(5),
             unit: 'pieces',
             neverExpires: true,
             createdAt: '2024-01-01',
@@ -749,7 +750,7 @@ describe('localStorage utilities', () => {
             name: 'Test Item 1',
             itemType: 'custom',
             categoryId: createCategoryId('food'),
-            quantity: 1,
+            quantity: createQuantity(1),
             unit: 'pieces',
             neverExpires: true,
             createdAt: '2024-01-01',
@@ -760,7 +761,7 @@ describe('localStorage utilities', () => {
             name: 'Test Item 2',
             itemType: 'custom',
             categoryId: createCategoryId('food'),
-            quantity: 2,
+            quantity: createQuantity(2),
             unit: 'pieces',
             neverExpires: true,
             createdAt: '2024-01-01',
@@ -783,7 +784,7 @@ describe('localStorage utilities', () => {
             name: 'Test Item',
             itemType: 'custom',
             categoryId: createCategoryId('food'),
-            quantity: 1,
+            quantity: createQuantity(1),
             unit: 'pieces',
             neverExpires: true,
             createdAt: '2024-01-01',
@@ -919,7 +920,7 @@ describe('localStorage utilities', () => {
             name: 'Test Item',
             itemType: 'custom',
             categoryId: createCategoryId('food'),
-            quantity: 5,
+            quantity: createQuantity(5),
             unit: 'pieces',
             expirationDate: null, // Legacy format used null
             neverExpires: false,
