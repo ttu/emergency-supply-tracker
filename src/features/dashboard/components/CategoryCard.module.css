@@ -29,6 +29,11 @@ button.card {
   outline-offset: var(--focus-ring-offset);
 }
 
+/* Fixed-height block so summary (header, stats, progress) aligns across cards */
+.summaryBlock {
+  min-height: 8.5rem;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
