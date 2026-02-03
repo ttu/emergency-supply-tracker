@@ -9,9 +9,14 @@ import { useSeenNotifications } from './useSeenNotifications';
 import { APP_NOTIFICATIONS } from '../constants/notifications';
 import { useNotification } from '@/shared/hooks/useNotification';
 import { getAppData } from '@/shared/utils/storage/localStorage';
+import {
+  getLocalStorageUsageMB,
+  isLocalStorageNearLimit,
+} from '@/shared/utils/storage/storageUsage';
 import { createAlertId, type AlertId } from '@/shared/types';
 
 const BACKUP_REMINDER_ALERT_ID = createAlertId('backup-reminder');
+const STORAGE_NEAR_LIMIT_ALERT_ID = createAlertId('storage-near-limit');
 
 const NOTIFICATION_IDS = new Set(APP_NOTIFICATIONS.map((n) => n.id));
 
@@ -41,6 +46,7 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
   const { seenNotificationIds, markNotificationSeen } = useSeenNotifications();
   const { showNotification } = useNotification();
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
+  const [storageAlertDismissed, setStorageAlertDismissed] = useState(false);
 
   // Generate alerts (including water shortage alerts)
   const allAlerts = useMemo(
@@ -76,6 +82,18 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     shouldShowBackupReminder,
   ]);
 
+  // Storage near limit alert (dismissed only for current session)
+  const storageNearLimitAlert: Alert | undefined = useMemo(() => {
+    if (storageAlertDismissed || !isLocalStorageNearLimit()) return undefined;
+    return {
+      id: STORAGE_NEAR_LIMIT_ALERT_ID,
+      type: 'warning',
+      message: t('alerts.storage.nearLimit', {
+        used: getLocalStorageUsageMB(),
+      }),
+    };
+  }, [storageAlertDismissed, t]);
+
   // App notifications (hardcoded); filter out seen
   const notificationAlerts = useMemo(() => {
     return APP_NOTIFICATIONS.filter((n) => !seenNotificationIds.has(n.id)).map(
@@ -87,14 +105,15 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
     ) as Alert[];
   }, [seenNotificationIds, t]);
 
-  // Combine: backup first, then notifications, then inventory alerts
+  // Combine: storage first, then backup, then notifications, then inventory alerts
   const combinedAlerts = useMemo(
     () => [
+      ...(storageNearLimitAlert ? [storageNearLimitAlert] : []),
       ...(backupReminderAlert ? [backupReminderAlert] : []),
       ...notificationAlerts,
       ...allAlerts,
     ],
-    [allAlerts, backupReminderAlert, notificationAlerts],
+    [allAlerts, backupReminderAlert, notificationAlerts, storageNearLimitAlert],
   );
 
   // Filter out dismissed alerts
@@ -116,7 +135,9 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
 
   const handleDismissAlert = useCallback(
     (alertId: AlertId) => {
-      if (alertId === BACKUP_REMINDER_ALERT_ID) {
+      if (alertId === STORAGE_NEAR_LIMIT_ALERT_ID) {
+        setStorageAlertDismissed(true);
+      } else if (alertId === BACKUP_REMINDER_ALERT_ID) {
         dismissBackup();
         setBackupReminderDismissed(true);
         showNotification(

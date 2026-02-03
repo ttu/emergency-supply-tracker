@@ -20,6 +20,10 @@ import {
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
 import { CONTACT_EMAIL } from '@/shared/utils/constants';
+import {
+  getLocalStorageUsageMB,
+  LOCAL_STORAGE_LIMIT_BYTES,
+} from '@/shared/utils/storage/storageUsage';
 import { APP_VERSION } from '@/shared/utils/version';
 import styles from './Settings.module.css';
 
@@ -280,6 +284,12 @@ export function Settings() {
               <p className={styles.tagline}>{t('app.tagline')}</p>
               <p className={styles.version}>
                 {t('settings.about.version')}: {APP_VERSION}
+              </p>
+              <p className={styles.version} data-testid="storage-used">
+                {t('settings.about.storageUsedValue', {
+                  used: getLocalStorageUsageMB(),
+                  limit: Math.round(LOCAL_STORAGE_LIMIT_BYTES / (1024 * 1024)),
+                })}
               </p>
               <p className={styles.description}>{t('help.contactText')}</p>
               <div className={styles.contactLinks}>

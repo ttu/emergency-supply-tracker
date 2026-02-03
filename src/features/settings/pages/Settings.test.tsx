@@ -200,6 +200,7 @@ describe('Settings Page', () => {
     expect(screen.getByTestId('section-about')).toBeInTheDocument();
     expect(screen.getByText('app.title')).toBeInTheDocument();
     expect(screen.getByText('help.githubLink')).toBeInTheDocument();
+    expect(screen.getByTestId('storage-used')).toBeInTheDocument();
   });
 
   it('should navigate to danger zone section when clicked', () => {

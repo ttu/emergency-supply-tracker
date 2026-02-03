@@ -25,6 +25,13 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
   getAppData: vi.fn(),
 }));
 
+const mockIsLocalStorageNearLimit = vi.fn();
+const mockGetLocalStorageUsageMB = vi.fn();
+vi.mock('@/shared/utils/storage/storageUsage', () => ({
+  getLocalStorageUsageMB: () => mockGetLocalStorageUsageMB(),
+  isLocalStorageNearLimit: () => mockIsLocalStorageNearLimit(),
+}));
+
 vi.mock('@/features/alerts', () => ({
   generateDashboardAlerts: vi.fn(),
 }));
@@ -139,6 +146,8 @@ describe('useDashboardAlerts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     defaultMocks();
+    mockIsLocalStorageNearLimit.mockReturnValue(false);
+    mockGetLocalStorageUsageMB.mockReturnValue(0);
   });
 
   it('should return empty active alerts when no alerts exist and all notifications seen', () => {
@@ -426,5 +435,50 @@ describe('useDashboardAlerts', () => {
     });
 
     expect(mockReactivateAllAlerts).toHaveBeenCalled();
+  });
+
+  it('should include storage near limit alert when over threshold', () => {
+    mockIsLocalStorageNearLimit.mockReturnValue(true);
+    mockGetLocalStorageUsageMB.mockReturnValue(4.2);
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
+
+    const { result } = renderHook(() => useDashboardAlerts());
+
+    const storageAlert = result.current.activeAlerts.find(
+      (a) => String(a.id) === 'storage-near-limit',
+    );
+    expect(storageAlert).toBeDefined();
+    expect(storageAlert?.type).toBe('warning');
+    expect(storageAlert?.message).toBe('alerts.storage.nearLimit');
+  });
+
+  it('should dismiss storage near limit alert when dismissed', () => {
+    mockIsLocalStorageNearLimit.mockReturnValue(true);
+    mockGetLocalStorageUsageMB.mockReturnValue(4.2);
+    vi.mocked(useSeenNotifications).mockReturnValue({
+      seenNotificationIds: new Set([
+        createAlertId('app-notification-release-testing'),
+      ]),
+      markNotificationSeen: mockMarkNotificationSeen,
+    });
+
+    const { result } = renderHook(() => useDashboardAlerts());
+    const storageAlertId = createAlertId('storage-near-limit');
+    expect(
+      result.current.activeAlerts.some((a) => a.id === storageAlertId),
+    ).toBe(true);
+
+    act(() => {
+      result.current.handleDismissAlert(storageAlertId);
+    });
+
+    expect(
+      result.current.activeAlerts.some((a) => a.id === storageAlertId),
+    ).toBe(false);
   });
 });
