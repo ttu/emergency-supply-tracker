@@ -545,7 +545,8 @@
     "info": "Select items to add to your inventory. Mark items as owned if you already have them - they'll be added with the recommended quantity.",
     "noFreezer": "Frozen items excluded (no freezer selected)",
     "skip": "Skip for now",
-    "addItems": "Add Selected Items"
+    "addAllItems": "Add all items",
+    "addItems": "Add selected items"
   },
   "onboarding": {
     "import": {
