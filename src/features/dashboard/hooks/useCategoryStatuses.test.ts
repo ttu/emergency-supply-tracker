@@ -35,6 +35,7 @@ describe('useCategoryStatuses', () => {
       deleteItem: vi.fn(),
       dismissedAlertIds: [],
       dismissAlert: vi.fn(),
+      dismissAlerts: vi.fn(),
       reactivateAlert: vi.fn(),
       reactivateAllAlerts: vi.fn(),
       disabledRecommendedItems: [],

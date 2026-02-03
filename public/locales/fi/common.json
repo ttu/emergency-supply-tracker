@@ -637,6 +637,7 @@
     "categoryDeleted": "Kategoria poistettu",
     "alertDismissed": "Ilmoitus suljettu",
     "alertRestored": "Ilmoitus palautettu",
+    "allAlertsDismissed": "Kaikki ilmoitukset suljettu",
     "allAlertsRestored": "Kaikki ilmoitukset palautettu",
     "backup": {
       "reminderDismissed": "Varmuuskopiointimuistutus suljettu"

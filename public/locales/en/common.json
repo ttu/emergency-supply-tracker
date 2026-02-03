@@ -637,6 +637,7 @@
     "categoryDeleted": "Category deleted",
     "alertDismissed": "Alert dismissed",
     "alertRestored": "Alert restored",
+    "allAlertsDismissed": "All alerts dismissed",
     "allAlertsRestored": "All alerts restored",
     "backup": {
       "reminderDismissed": "Backup reminder dismissed"

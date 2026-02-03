@@ -138,6 +138,18 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     [setDismissedAlertIds, showNotification, t],
   );
 
+  const dismissAlerts = useCallback(
+    (alertIds: AlertId[]) => {
+      if (alertIds.length === 0) return;
+      setDismissedAlertIds((prev) => {
+        const next = new Set(prev);
+        alertIds.forEach((id) => next.add(id));
+        return [...next];
+      });
+    },
+    [setDismissedAlertIds],
+  );
+
   const reactivateAlert = useCallback(
     (alertId: AlertId) => {
       setDismissedAlertIds((prev) => prev.filter((id) => id !== alertId));
@@ -262,6 +274,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         deleteItem,
         dismissedAlertIds,
         dismissAlert,
+        dismissAlerts,
         reactivateAlert,
         reactivateAllAlerts,
         disabledRecommendedItems,
