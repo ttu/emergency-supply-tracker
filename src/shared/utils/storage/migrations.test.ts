@@ -121,6 +121,7 @@ describe('migrations', () => {
       const data = createAppData({
         version: CURRENT_SCHEMA_VERSION,
         household: {
+          enabled: true,
           adults: 3,
           children: 2,
           pets: 0,
@@ -214,6 +215,7 @@ describe('migrations', () => {
       const data = createAppData({
         version: '1.0.0',
         household: {
+          enabled: true,
           adults: 2,
           children: 0,
           pets: 0,
@@ -243,6 +245,7 @@ describe('migrations', () => {
       const data = createAppData({
         version: '1.1.0',
         household: {
+          enabled: true,
           adults: 2,
           children: 0,
           pets: 0,
@@ -345,6 +348,7 @@ describe('migrations', () => {
       const data = createAppData({
         version: '1.0.0',
         household: {
+          enabled: true,
           adults: 3,
           children: 2,
           pets: 0,

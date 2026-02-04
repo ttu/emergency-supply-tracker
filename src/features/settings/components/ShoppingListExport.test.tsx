@@ -82,6 +82,7 @@ describe('ShoppingListExport', () => {
       initialAppData: {
         items: [itemNeedingRestock],
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,
@@ -115,6 +116,7 @@ describe('ShoppingListExport', () => {
       initialAppData: {
         items,
         household: {
+          enabled: true,
           adults: 2,
           children: 0,
           pets: 0,
@@ -138,6 +140,7 @@ describe('ShoppingListExport', () => {
       initialAppData: {
         items: [], // Ensure no items so button is disabled
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,
@@ -168,6 +171,7 @@ describe('ShoppingListExport', () => {
       initialAppData: {
         items: [itemNeedingRestock],
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,
@@ -200,6 +204,7 @@ describe('ShoppingListExport', () => {
       initialAppData: {
         items: [itemNeedingRestock],
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,
@@ -242,6 +247,7 @@ describe('ShoppingListExport', () => {
       initialAppData: {
         items,
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,
@@ -288,6 +294,7 @@ describe('ShoppingListExport', () => {
       initialAppData: {
         items,
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,

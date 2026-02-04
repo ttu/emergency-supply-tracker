@@ -136,8 +136,10 @@
       "single": "Single Person",
       "couple": "Couple",
       "family": "Family",
-      "custom": "Custom"
+      "custom": "Custom",
+      "inventoryOnly": "Inventory Only"
     },
+    "inventoryOnlyDescription": "Track items without quantity recommendations",
     "errors": {
       "adultsMin": "At least {{min}} adult is required",
       "adultsMax": "Maximum {{max}} adults allowed",
@@ -289,6 +291,8 @@
       "minimal": "Minimal"
     },
     "household": {
+      "enabled": "Enable household recommendations",
+      "enabledDescription": "Track quantities based on household size and days",
       "adults": "Adults",
       "children": "Children",
       "pets": "Pets",
@@ -440,6 +444,7 @@
   "dashboard": {
     "title": "Emergency Supply Tracker",
     "subtitle": "Tracking supplies for {{people}} people for {{days}} days",
+    "inventoryTrackingMode": "Inventory tracking mode",
     "alerts": {
       "title": "Alerts",
       "viewCategory": "View {{category}} in inventory"

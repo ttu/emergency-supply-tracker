@@ -39,6 +39,7 @@ describe('SettingsProvider', () => {
         },
       },
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,
@@ -79,6 +80,7 @@ describe('SettingsProvider', () => {
         },
       },
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,
@@ -119,6 +121,7 @@ describe('SettingsProvider', () => {
         },
       },
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,

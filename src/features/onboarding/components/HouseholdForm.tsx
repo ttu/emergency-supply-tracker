@@ -11,6 +11,7 @@ function parseIntOrDefault(value: string, defaultValue: number): number {
 }
 
 export interface HouseholdData {
+  enabled?: boolean; // If false, household-based calculations are disabled
   adults: number;
   children: number;
   pets: number;
@@ -31,6 +32,7 @@ export function HouseholdForm({
 }: HouseholdFormProps) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<HouseholdData>({
+    enabled: initialData?.enabled ?? HOUSEHOLD_DEFAULTS.enabled,
     adults: initialData?.adults ?? HOUSEHOLD_DEFAULTS.adults,
     children: initialData?.children ?? HOUSEHOLD_DEFAULTS.children,
     pets: initialData?.pets ?? HOUSEHOLD_DEFAULTS.pets,

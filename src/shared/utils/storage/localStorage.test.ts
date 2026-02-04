@@ -848,6 +848,7 @@ describe('localStorage utilities', () => {
     it('merges selected sections only', () => {
       const existing = createMockAppData({
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,
@@ -859,6 +860,7 @@ describe('localStorage utilities', () => {
         version: CURRENT_SCHEMA_VERSION,
         exportMetadata: createTestExportMetadata(['household', 'settings']),
         household: {
+          enabled: true,
           adults: 4,
           children: 2,
           pets: 0,
@@ -1071,6 +1073,7 @@ describe('localStorage utilities', () => {
         version: CURRENT_SCHEMA_VERSION,
         exportMetadata: createTestExportMetadata(['household']),
         household: {
+          enabled: true,
           adults: 2,
           children: 0,
           pets: 0,

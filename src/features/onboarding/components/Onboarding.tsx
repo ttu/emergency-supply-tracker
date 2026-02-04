@@ -23,6 +23,17 @@ function getHouseholdInitialData(
       pets: preset.pets,
       supplyDays: HOUSEHOLD_DEFAULTS.supplyDays,
       useFreezer: HOUSEHOLD_DEFAULTS.useFreezer,
+      enabled: true,
+    };
+  }
+  if (preset.id === 'inventoryOnly') {
+    return {
+      adults: 1,
+      children: 0,
+      pets: 0,
+      supplyDays: HOUSEHOLD_DEFAULTS.supplyDays,
+      useFreezer: false,
+      enabled: false,
     };
   }
   const p = HOUSEHOLD_PRESETS[preset.id];
@@ -32,6 +43,7 @@ function getHouseholdInitialData(
     pets: p.pets,
     supplyDays: p.supplyDurationDays,
     useFreezer: p.useFreezer,
+    enabled: p.enabled,
   };
 }
 
@@ -62,11 +74,26 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
 
   const handlePresetSelect = (preset: HouseholdPreset) => {
     setSelectedPreset(preset);
-    setCurrentStep('household');
+    // If "Inventory Only" is selected, skip household form and go directly to kit selection
+    if (preset.id === 'inventoryOnly') {
+      const config: HouseholdConfig = {
+        enabled: false,
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: HOUSEHOLD_DEFAULTS.supplyDays,
+        useFreezer: false,
+      };
+      setHouseholdConfig(config);
+      setCurrentStep('kitSelection');
+    } else {
+      setCurrentStep('household');
+    }
   };
 
   const handleHouseholdSubmit = (data: HouseholdData) => {
     const config: HouseholdConfig = {
+      enabled: data.enabled ?? true,
       adults: data.adults,
       children: data.children,
       pets: data.pets,

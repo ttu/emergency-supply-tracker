@@ -63,6 +63,7 @@ describe('renderWithProviders localStorage persistence', () => {
         },
       },
       household: {
+        enabled: true,
         adults: 4,
         children: 2,
         pets: 0,
@@ -103,6 +104,7 @@ describe('renderWithProviders localStorage persistence', () => {
           },
         },
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,
@@ -196,6 +198,7 @@ describe('renderWithProviders localStorage persistence', () => {
   it('should persist data across multiple renders with same initialAppData', () => {
     const initialData: Partial<AppData> = {
       household: {
+        enabled: true,
         adults: 2,
         children: 1,
         pets: 0,

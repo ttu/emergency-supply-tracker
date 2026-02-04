@@ -25,6 +25,7 @@ export function calculateHouseholdMultiplier(
 
 /**
  * Calculate recommended quantity for an item based on household configuration.
+ * Returns 0 if household is disabled (inventory-only mode).
  * @param item - Recommended item definition
  * @param household - Household configuration
  * @param childrenMultiplier - Optional multiplier for children (default: 0.75)
@@ -34,6 +35,11 @@ export function calculateRecommendedQuantity(
   household: HouseholdConfig,
   childrenMultiplier: number = CHILDREN_REQUIREMENT_MULTIPLIER,
 ): number {
+  // If household is disabled, return 0 (no recommendations in inventory-only mode)
+  if (!household.enabled) {
+    return 0;
+  }
+
   // Use regular number for calculations (Quantity is for storage/input boundaries)
   let qty: number = item.baseQuantity;
 

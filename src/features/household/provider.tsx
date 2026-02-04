@@ -5,6 +5,7 @@ import { HouseholdContext } from './context';
 import { HOUSEHOLD_PRESETS } from './presets';
 
 const DEFAULT_HOUSEHOLD: HouseholdConfig = {
+  enabled: true,
   adults: 2,
   children: 3,
   pets: 0,
@@ -22,7 +23,9 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
     setHousehold((prev) => ({ ...prev, ...updates }));
   };
 
-  const setPreset = (preset: 'single' | 'couple' | 'family') => {
+  const setPreset = (
+    preset: 'single' | 'couple' | 'family' | 'inventoryOnly',
+  ) => {
     setHousehold(HOUSEHOLD_PRESETS[preset]);
   };
 

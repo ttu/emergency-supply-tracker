@@ -58,6 +58,7 @@ describe('useCategoryStatuses', () => {
 
     vi.mocked(useHousehold).mockReturnValue({
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,

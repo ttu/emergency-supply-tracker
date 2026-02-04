@@ -113,6 +113,7 @@ describe('validateAppDataValues', () => {
   const createValidAppData = (): AppData => ({
     version: CURRENT_SCHEMA_VERSION,
     household: {
+      enabled: true,
       adults: 2,
       children: 0,
       pets: 0,

@@ -85,6 +85,7 @@ describe('ExportButton', () => {
   it('should open selection modal when data is available', async () => {
     const mockData = createMockAppData({
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,
@@ -112,6 +113,7 @@ describe('ExportButton', () => {
     const user = userEvent.setup();
     const mockData = createMockAppData({
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,
@@ -153,6 +155,7 @@ describe('ExportButton', () => {
     const user = userEvent.setup();
     const mockData = createMockAppData({
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,
@@ -189,6 +192,7 @@ describe('ExportButton', () => {
   it('should show section counts in modal', async () => {
     const mockData = createMockAppData({
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,
@@ -241,6 +245,7 @@ describe('ExportButton', () => {
   it('should have all sections selected by default', async () => {
     const mockData = createMockAppData({
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,

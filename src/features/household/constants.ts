@@ -1,5 +1,6 @@
 // Default values for household configuration
 export const HOUSEHOLD_DEFAULTS = {
+  enabled: true,
   adults: 1,
   children: 0,
   pets: 0,

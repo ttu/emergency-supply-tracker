@@ -221,6 +221,7 @@ describe('ItemCard', () => {
       renderWithProviders(<ItemCard item={lowQuantityItem} />, {
         initialAppData: {
           household: {
+            enabled: true,
             adults: 1,
             children: 0,
             pets: 0,
@@ -245,6 +246,7 @@ describe('ItemCard', () => {
       renderWithProviders(<ItemCard item={sufficientItem} />, {
         initialAppData: {
           household: {
+            enabled: true,
             adults: 1,
             children: 0,
             pets: 0,
@@ -272,6 +274,7 @@ describe('ItemCard', () => {
       renderWithProviders(<ItemCard item={ropeItem} />, {
         initialAppData: {
           household: {
+            enabled: true,
             adults: 1,
             children: 0,
             pets: 0,

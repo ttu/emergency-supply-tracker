@@ -90,6 +90,7 @@ describe('HouseholdForm', () => {
     fireEvent.submit(form!);
 
     expect(onSubmit).toHaveBeenCalledWith({
+      enabled: true,
       adults: 2,
       children: 1,
       pets: 0,

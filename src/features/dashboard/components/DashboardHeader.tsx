@@ -5,12 +5,14 @@ export interface DashboardHeaderProps {
   preparednessScore: number; // 0-100
   householdSize: number;
   supplyDays: number;
+  householdEnabled?: boolean; // If false, show "Inventory tracking mode"
 }
 
 export const DashboardHeader = ({
   preparednessScore,
   householdSize,
   supplyDays,
+  householdEnabled = true,
 }: DashboardHeaderProps) => {
   const { t } = useTranslation();
 
@@ -32,39 +34,43 @@ export const DashboardHeader = ({
         <div className={styles.titleSection}>
           <h1 className={styles.title}>{t('dashboard.title')}</h1>
           <p className={styles.subtitle}>
-            {t('dashboard.subtitle', {
-              people: householdSize,
-              days: supplyDays,
-            })}
+            {householdEnabled
+              ? t('dashboard.subtitle', {
+                  people: householdSize,
+                  days: supplyDays,
+                })
+              : t('dashboard.inventoryTrackingMode')}
           </p>
         </div>
 
-        <div className={styles.scoreSection}>
-          <div className={styles.scoreCircle}>
-            <svg viewBox="0 0 100 100" className={styles.scoreSvg}>
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                className={styles.scoreBackground}
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                className={`${styles.scoreProgress} ${getScoreColor(preparednessScore)}`}
-                strokeDasharray={`${preparednessScore * 2.83} 283`}
-              />
-            </svg>
-            <div className={styles.scoreValue}>
-              <span className={styles.scoreNumber}>{preparednessScore}</span>
-              <span className={styles.scorePercent}>%</span>
+        {householdEnabled && (
+          <div className={styles.scoreSection}>
+            <div className={styles.scoreCircle}>
+              <svg viewBox="0 0 100 100" className={styles.scoreSvg}>
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  className={styles.scoreBackground}
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  className={`${styles.scoreProgress} ${getScoreColor(preparednessScore)}`}
+                  strokeDasharray={`${preparednessScore * 2.83} 283`}
+                />
+              </svg>
+              <div className={styles.scoreValue}>
+                <span className={styles.scoreNumber}>{preparednessScore}</span>
+                <span className={styles.scorePercent}>%</span>
+              </div>
+            </div>
+            <div className={styles.scoreLabel}>
+              {getScoreLabel(preparednessScore)}
             </div>
           </div>
-          <div className={styles.scoreLabel}>
-            {getScoreLabel(preparednessScore)}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
