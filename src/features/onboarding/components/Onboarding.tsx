@@ -187,7 +187,11 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
       {currentStep === 'kitSelection' && (
         <RecommendationKitStep
           onContinue={handleKitSelectionContinue}
-          onBack={() => setCurrentStep('household')}
+          onBack={() =>
+            setCurrentStep(
+              householdConfig?.enabled === false ? 'preset' : 'household',
+            )
+          }
         />
       )}
 

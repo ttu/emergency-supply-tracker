@@ -701,7 +701,49 @@ describe('Onboarding', () => {
     expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
   });
 
-  it('going back from kit selection to household when inventory only was selected shows household form', async () => {
+  it('going back from kit selection when user came through household form returns to household', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
+    );
+
+    const getStartedButton = screen.getByTestId('get-started-button');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('preset-single')).toBeInTheDocument();
+    });
+
+    const singlePreset = screen.getByTestId('preset-single');
+    await user.click(singlePreset);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
+    });
+
+    const continueButton = screen.getByTestId('household-save-button');
+    await user.click(continueButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const backButton = screen.getByTestId('kit-step-back-button');
+    await user.click(backButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
+    });
+  });
+
+  it('going back from kit selection when inventory only was selected returns to preset selection', async () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(
@@ -732,10 +774,10 @@ describe('Onboarding', () => {
     await user.click(backButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
+      expect(screen.getByTestId('preset-inventoryOnly')).toBeInTheDocument();
     });
 
-    expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
+    expect(screen.getByTestId('preset-single')).toBeInTheDocument();
   });
 
   it('should not add items when household config is null', async () => {
