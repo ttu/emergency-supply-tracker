@@ -96,6 +96,7 @@ export class HouseholdConfigFactory {
     validateHouseholdConfig(input);
 
     return {
+      enabled: input.enabled,
       adults: input.adults,
       children: input.children,
       pets: input.pets,
@@ -125,6 +126,7 @@ export class HouseholdConfigFactory {
     overrides?: Partial<CreateHouseholdConfigInput>,
   ): HouseholdConfig {
     const defaults: HouseholdConfig = {
+      enabled: true,
       adults: 2,
       children: 0,
       pets: 0,

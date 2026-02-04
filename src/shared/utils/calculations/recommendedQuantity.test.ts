@@ -121,4 +121,26 @@ describe('calculateRecommendedQuantity', () => {
     const result = calculateRecommendedQuantity(item, household);
     expect(result).toBe(0);
   });
+
+  it('returns 0 when household is disabled (inventory-only mode)', () => {
+    const item = createMockRecommendedItem({
+      id: createProductTemplateId('water'),
+      i18nKey: 'products.water',
+      category: 'water-beverages',
+      baseQuantity: createQuantity(3),
+      unit: 'liters',
+      scaleWithPeople: true,
+      scaleWithDays: true,
+      scaleWithPets: false,
+    });
+    const household = createMockHousehold({
+      enabled: false,
+      adults: 2,
+      children: 1,
+      pets: 0,
+      supplyDurationDays: 3,
+    });
+    const result = calculateRecommendedQuantity(item, household);
+    expect(result).toBe(0);
+  });
 });

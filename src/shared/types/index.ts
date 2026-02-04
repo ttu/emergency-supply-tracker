@@ -83,6 +83,7 @@ export type BatteryType = 'AAA' | 'AA' | 'C' | 'D' | '9V' | 'CR2032';
 
 // Household Configuration
 export interface HouseholdConfig {
+  enabled: boolean; // If false, skip household-based calculations (inventory-only mode)
   adults: number;
   children: number;
   pets: number;

@@ -7,10 +7,11 @@ import type { HouseholdPreset as HouseholdPresetId } from '@/features/household'
 import styles from './HouseholdPresetSelector.module.css';
 
 export interface HouseholdPreset {
-  id: 'single' | 'couple' | 'family' | 'custom';
+  id: 'single' | 'couple' | 'family' | 'custom' | 'inventoryOnly';
   adults: number;
   children: number;
   pets: number;
+  enabled?: boolean; // If false, household-based calculations are disabled
 }
 
 export interface HouseholdPresetSelectorProps {
@@ -103,6 +104,47 @@ export function HouseholdPresetSelector({
               </h3>
               <p className={styles.presetDetails}>
                 {t('household.customDescription')}
+              </p>
+            </div>
+          </Card>
+
+          <Card
+            variant={
+              selectedPreset === 'inventoryOnly' ? 'elevated' : 'outlined'
+            }
+            padding="medium"
+            className={`${styles.presetCard} ${selectedPreset === 'inventoryOnly' ? styles.selected : ''}`}
+            onClick={() =>
+              onSelectPreset({
+                id: 'inventoryOnly',
+                adults: 1,
+                children: 0,
+                pets: 0,
+                enabled: false,
+              })
+            }
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectPreset({
+                  id: 'inventoryOnly',
+                  adults: 1,
+                  children: 0,
+                  pets: 0,
+                  enabled: false,
+                });
+              }
+            }}
+            data-testid="preset-inventoryOnly"
+          >
+            <div className={styles.presetContent}>
+              <h3 className={styles.presetTitle}>
+                {t('household.presets.inventoryOnly')}
+              </h3>
+              <p className={styles.presetDetails}>
+                {t('household.inventoryOnlyDescription')}
               </p>
             </div>
           </Card>

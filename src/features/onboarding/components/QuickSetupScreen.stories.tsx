@@ -81,6 +81,7 @@ export const LargeFamily: Story = {
 export const NoFreezer: Story = {
   args: {
     household: {
+      enabled: true,
       adults: 2,
       children: 1,
       pets: 0,
@@ -99,6 +100,7 @@ export const NoFreezer: Story = {
 export const ExtendedSupply: Story = {
   args: {
     household: {
+      enabled: true,
       adults: 2,
       children: 0,
       pets: 0,

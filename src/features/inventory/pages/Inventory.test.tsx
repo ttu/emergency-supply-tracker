@@ -853,6 +853,7 @@ describe('Inventory Page - Recommended Items Filtering', () => {
     // Setup localStorage with pets = 0
     const appData = createMockAppData({
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,
@@ -884,6 +885,7 @@ describe('Inventory Page - Recommended Items Filtering', () => {
     // This mimics what renderWithProviders does with initialAppData
     const initialAppData = {
       household: {
+        enabled: true,
         adults: 2,
         children: 0,
         pets: 0,
@@ -911,6 +913,7 @@ describe('Inventory Page - Recommended Items Filtering', () => {
 
     // Simulate what Inventory.tsx does with applicableRecommendedItems useMemo
     const household = {
+      enabled: true,
       adults: 2,
       children: 0,
       pets: 0,
@@ -946,6 +949,7 @@ describe('Inventory Page - Recommended Items Filtering', () => {
     renderWithProviders(<Inventory />, {
       initialAppData: {
         household: {
+          enabled: true,
           adults: 2,
           children: 0,
           pets: 2,

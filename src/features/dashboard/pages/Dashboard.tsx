@@ -73,6 +73,7 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
         preparednessScore={preparednessScore}
         householdSize={household.adults + household.children}
         supplyDays={household.supplyDurationDays}
+        householdEnabled={household.enabled}
       />
 
       {/* Alerts Section */}

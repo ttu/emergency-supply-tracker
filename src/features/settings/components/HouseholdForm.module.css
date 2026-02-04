@@ -4,6 +4,25 @@
   gap: var(--spacing-lg);
 }
 
+.enabledToggle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.enabledDescription {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .presets {
   display: flex;
   flex-direction: column;

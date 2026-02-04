@@ -321,6 +321,7 @@ describe('Dashboard', () => {
       initialAppData: {
         items: [itemNeedingRestock],
         household: {
+          enabled: true,
           adults: 1,
           children: 0,
           pets: 0,

@@ -15,9 +15,27 @@ export function HouseholdForm() {
     updateHousehold({ [field]: value });
   };
 
+  const isDisabled = !household.enabled;
+
   return (
     <div className={styles.container}>
-      <div className={styles.presets}>
+      <div className={styles.enabledToggle}>
+        <div className={styles.checkboxField}>
+          <input
+            type="checkbox"
+            id="enabled"
+            checked={household.enabled}
+            onChange={(e) => handleChange('enabled', e.target.checked)}
+            data-testid="household-enabled-toggle"
+          />
+          <label htmlFor="enabled">{t('settings.household.enabled')}</label>
+        </div>
+        <p className={styles.enabledDescription}>
+          {t('settings.household.enabledDescription')}
+        </p>
+      </div>
+
+      <div className={`${styles.presets} ${isDisabled ? styles.disabled : ''}`}>
         <p className={styles.presetsLabel}>
           {t('settings.household.presets.label')}
         </p>
@@ -26,6 +44,7 @@ export function HouseholdForm() {
             variant="secondary"
             onClick={() => setPreset('single')}
             data-testid="preset-single"
+            disabled={isDisabled}
           >
             {t('settings.household.presets.single')}
           </Button>
@@ -33,6 +52,7 @@ export function HouseholdForm() {
             variant="secondary"
             onClick={() => setPreset('couple')}
             data-testid="preset-couple"
+            disabled={isDisabled}
           >
             {t('settings.household.presets.couple')}
           </Button>
@@ -40,13 +60,14 @@ export function HouseholdForm() {
             variant="secondary"
             onClick={() => setPreset('family')}
             data-testid="preset-family"
+            disabled={isDisabled}
           >
             {t('settings.household.presets.family')}
           </Button>
         </div>
       </div>
 
-      <div className={styles.fields}>
+      <div className={`${styles.fields} ${isDisabled ? styles.disabled : ''}`}>
         <Input
           id="adults"
           type="number"
@@ -56,6 +77,7 @@ export function HouseholdForm() {
             handleChange('adults', Number.parseInt(e.target.value, 10) || 0)
           }
           min={0}
+          disabled={isDisabled}
         />
 
         <Input
@@ -67,6 +89,7 @@ export function HouseholdForm() {
             handleChange('children', Number.parseInt(e.target.value, 10) || 0)
           }
           min={0}
+          disabled={isDisabled}
         />
 
         <Input
@@ -78,6 +101,7 @@ export function HouseholdForm() {
             handleChange('pets', Number.parseInt(e.target.value, 10) || 0)
           }
           min={0}
+          disabled={isDisabled}
         />
 
         <Input
@@ -93,6 +117,7 @@ export function HouseholdForm() {
           }
           min={1}
           max={365}
+          disabled={isDisabled}
         />
 
         <div className={styles.checkboxField}>
@@ -101,6 +126,7 @@ export function HouseholdForm() {
             id="useFreezer"
             checked={household.useFreezer}
             onChange={(e) => handleChange('useFreezer', e.target.checked)}
+            disabled={isDisabled}
           />
           <label htmlFor="useFreezer">
             {t('settings.household.useFreezer')}
@@ -121,6 +147,7 @@ export function HouseholdForm() {
             }
             min={0}
             max={72}
+            disabled={isDisabled}
           />
         )}
       </div>

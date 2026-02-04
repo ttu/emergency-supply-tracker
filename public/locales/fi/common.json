@@ -136,8 +136,10 @@
       "single": "Yksin asuva",
       "couple": "Pariskunta",
       "family": "Perhe",
-      "custom": "Mukautettu"
+      "custom": "Mukautettu",
+      "inventoryOnly": "Vain varasto"
     },
+    "inventoryOnlyDescription": "Seuraa tuotteita ilman määräsuosituksia",
     "errors": {
       "adultsMin": "Vähintään {{min}} aikuinen vaaditaan",
       "adultsMax": "Enintään {{max}} aikuista sallittu",
@@ -289,6 +291,8 @@
       "minimal": "Minimaalinen"
     },
     "household": {
+      "enabled": "Ota kotitaloussuositukset käyttöön",
+      "enabledDescription": "Seuraa määriä kotitalouden koon ja päivien perusteella",
       "adults": "Aikuiset",
       "children": "Lapset",
       "pets": "Lemmikit",
@@ -440,6 +444,7 @@
   "dashboard": {
     "title": "Hätävarastojen seuranta",
     "subtitle": "Seurataan varastoja {{people}} henkilölle {{days}} päiväksi",
+    "inventoryTrackingMode": "Varastonseurantatila",
     "alerts": {
       "title": "Hälytykset",
       "viewCategory": "Näytä {{category}} varastossa"

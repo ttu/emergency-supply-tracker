@@ -23,6 +23,7 @@ describe('HouseholdConfigFactory', () => {
       const useFreezer = faker.datatype.boolean();
 
       const input: CreateHouseholdConfigInput = {
+        enabled: true,
         adults,
         children,
         pets,
@@ -47,6 +48,7 @@ describe('HouseholdConfigFactory', () => {
       const freezerHoldTimeHours = faker.number.int({ min: 24, max: 72 });
 
       const input: CreateHouseholdConfigInput = {
+        enabled: true,
         adults,
         children,
         pets,
@@ -72,6 +74,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults: 0,
           children,
           pets,
@@ -88,6 +91,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults: HOUSEHOLD_LIMITS.adults.max + 1,
           children,
           pets,
@@ -104,6 +108,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults,
           children: -1,
           pets,
@@ -120,6 +125,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults,
           children: HOUSEHOLD_LIMITS.children.max + 1,
           pets,
@@ -136,6 +142,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults,
           children,
           pets: -1,
@@ -152,6 +159,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults,
           children,
           pets: HOUSEHOLD_LIMITS.pets.max + 1,
@@ -168,6 +176,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults,
           children,
           pets,
@@ -184,6 +193,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults,
           children,
           pets,
@@ -201,6 +211,7 @@ describe('HouseholdConfigFactory', () => {
 
       expect(() => {
         HouseholdConfigFactory.create({
+          enabled: true,
           adults,
           children,
           pets,
@@ -213,6 +224,7 @@ describe('HouseholdConfigFactory', () => {
 
     it('allows values at limits', () => {
       const config1 = HouseholdConfigFactory.create({
+        enabled: true,
         adults: HOUSEHOLD_LIMITS.adults.min,
         children: HOUSEHOLD_LIMITS.children.min,
         pets: HOUSEHOLD_LIMITS.pets.min,
@@ -226,6 +238,7 @@ describe('HouseholdConfigFactory', () => {
       expect(config1.supplyDurationDays).toBe(HOUSEHOLD_LIMITS.supplyDays.min);
 
       const config2 = HouseholdConfigFactory.create({
+        enabled: true,
         adults: HOUSEHOLD_LIMITS.adults.max,
         children: HOUSEHOLD_LIMITS.children.max,
         pets: HOUSEHOLD_LIMITS.pets.max,
@@ -260,6 +273,7 @@ describe('HouseholdConfigFactory', () => {
       const randomUseFreezer = faker.datatype.boolean();
 
       const config = HouseholdConfigFactory.create({
+        enabled: true,
         adults: randomAdultsVal,
         children: randomChildrenVal,
         pets: randomPetsVal,

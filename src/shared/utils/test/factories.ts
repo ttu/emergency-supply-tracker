@@ -34,6 +34,7 @@ export function createMockHousehold(
   overrides?: Partial<HouseholdConfig>,
 ): HouseholdConfig {
   return {
+    enabled: true,
     adults: faker.number.int({ min: 1, max: 5 }),
     children: faker.number.int({ min: 0, max: 4 }),
     pets: faker.number.int({ min: 0, max: 3 }),

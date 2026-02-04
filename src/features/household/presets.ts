@@ -1,7 +1,7 @@
 import type { HouseholdConfig } from '@/shared/types';
 
-/** Preset identifier for single, couple, or family. */
-export type HouseholdPreset = 'single' | 'couple' | 'family';
+/** Preset identifier for single, couple, family, or inventoryOnly. */
+export type HouseholdPreset = 'single' | 'couple' | 'family' | 'inventoryOnly';
 
 /**
  * Full household configuration for each preset.
@@ -9,6 +9,7 @@ export type HouseholdPreset = 'single' | 'couple' | 'family';
  */
 export const HOUSEHOLD_PRESETS: Record<HouseholdPreset, HouseholdConfig> = {
   single: {
+    enabled: true,
     adults: 1,
     children: 0,
     pets: 0,
@@ -16,6 +17,7 @@ export const HOUSEHOLD_PRESETS: Record<HouseholdPreset, HouseholdConfig> = {
     useFreezer: false,
   },
   couple: {
+    enabled: true,
     adults: 2,
     children: 0,
     pets: 0,
@@ -23,10 +25,19 @@ export const HOUSEHOLD_PRESETS: Record<HouseholdPreset, HouseholdConfig> = {
     useFreezer: true,
   },
   family: {
+    enabled: true,
     adults: 2,
     children: 2,
     pets: 0,
     supplyDurationDays: 3,
     useFreezer: true,
+  },
+  inventoryOnly: {
+    enabled: false,
+    adults: 1,
+    children: 0,
+    pets: 0,
+    supplyDurationDays: 3,
+    useFreezer: false,
   },
 };
