@@ -1,8 +1,14 @@
 {
   "meta": {
-    "name": "Vehicle Emergency Kit",
+    "name": {
+      "en": "Vehicle Emergency Kit",
+      "fi": "Ajoneuvon hätäpaketti"
+    },
     "version": "1.0.0",
-    "description": "Essential supplies to keep in your car for roadside emergencies, breakdowns, and unexpected delays",
+    "description": {
+      "en": "Essential supplies to keep in your car for roadside emergencies, breakdowns, and unexpected delays",
+      "fi": "Välttämättömät varusteet autoon tienvarsihätään, vikaan tai odottamattomiin viiveisiin"
+    },
     "source": "Custom",
     "createdAt": "2026-01-27T10:00:00.000Z",
     "language": "en"
