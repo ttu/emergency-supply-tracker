@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { CustomTemplates } from './CustomTemplates';
 import type { ProductTemplate } from '@/shared/types';
 import { createProductTemplateId } from '@/shared/types';
@@ -23,6 +29,13 @@ vi.mock('react-i18next', () => ({
         'itemForm.name': 'Name',
         'itemForm.category': 'Category',
         'itemForm.unit': 'Unit',
+        'itemForm.neverExpires': 'Never expires',
+        'itemForm.weightGrams': 'Weight per unit (g)',
+        'itemForm.caloriesPerUnit': 'Calories per unit',
+        'itemForm.requiresWaterLiters': 'Water for preparation (L)',
+        'settings.customTemplates.defaultExpirationMonths':
+          'Default expiration (months)',
+        'settings.customTemplates.caloriesPer100g': 'Calories per 100 g',
         food: 'Food',
         'water-beverages': 'Water & Beverages',
         'medical-health': 'Medical & Health',
@@ -289,6 +302,170 @@ describe('CustomTemplates', () => {
 
     // updateCustomTemplate should NOT be called with empty names
     expect(mockUpdateCustomTemplate).not.toHaveBeenCalled();
+  });
+
+  it('should show never-expires checkbox and pre-fill it when editing', () => {
+    render(<CustomTemplates />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Edit: My Custom Item' }),
+    );
+
+    const neverExpiresCheckbox = screen.getByRole('checkbox', {
+      name: /Never expires/i,
+    });
+    expect(neverExpiresCheckbox).toBeInTheDocument();
+    expect(neverExpiresCheckbox).toBeChecked();
+  });
+
+  it('should show default expiration months field when never-expires is unchecked', () => {
+    render(<CustomTemplates />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Edit: My Custom Item' }),
+    );
+
+    const neverExpiresCheckbox = screen.getByRole('checkbox', {
+      name: /Never expires/i,
+    });
+    expect(
+      document.getElementById('edit-template-expiration-months'),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(neverExpiresCheckbox);
+    expect(neverExpiresCheckbox).not.toBeChecked();
+
+    const expirationInput = document.getElementById(
+      'edit-template-expiration-months',
+    );
+    expect(expirationInput).toBeInTheDocument();
+  });
+
+  it('should pre-fill and show food fields when editing a food template', () => {
+    mockCustomTemplates[0].neverExpires = false;
+    mockCustomTemplates[0].defaultExpirationMonths = 24;
+    mockCustomTemplates[0].weightGrams = 400;
+    mockCustomTemplates[0].caloriesPerUnit = 200;
+    mockCustomTemplates[0].caloriesPer100g = 120;
+    mockCustomTemplates[0].requiresWaterLiters = 0.5;
+
+    render(<CustomTemplates />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Edit: My Custom Item' }),
+    );
+
+    expect(document.getElementById('edit-template-weight')).toHaveValue(400);
+    expect(document.getElementById('edit-template-calories-unit')).toHaveValue(
+      200,
+    );
+    expect(document.getElementById('edit-template-calories-100g')).toHaveValue(
+      120,
+    );
+    expect(document.getElementById('edit-template-water')).toHaveValue(0.5);
+    expect(
+      document.getElementById('edit-template-expiration-months'),
+    ).toHaveValue(24);
+
+    const neverExpiresCheckbox = screen.getByRole('checkbox', {
+      name: /Never expires/i,
+    });
+    expect(neverExpiresCheckbox).not.toBeChecked();
+
+    // Reset for other tests
+    delete mockCustomTemplates[0].neverExpires;
+    delete mockCustomTemplates[0].defaultExpirationMonths;
+    delete mockCustomTemplates[0].weightGrams;
+    delete mockCustomTemplates[0].caloriesPerUnit;
+    delete mockCustomTemplates[0].caloriesPer100g;
+    delete mockCustomTemplates[0].requiresWaterLiters;
+  });
+
+  it('should not show food-specific fields when editing a non-food template', () => {
+    render(<CustomTemplates />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit: Water Bottle' }));
+
+    expect(document.getElementById('edit-template-weight')).toBeNull();
+    expect(document.getElementById('edit-template-calories-unit')).toBeNull();
+    expect(document.getElementById('edit-template-calories-100g')).toBeNull();
+    expect(document.getElementById('edit-template-water')).toBeNull();
+  });
+
+  it('should call updateCustomTemplate with neverExpires and defaultExpirationMonths when set', () => {
+    render(<CustomTemplates />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Edit: My Custom Item' }),
+    );
+
+    const neverExpiresCheckbox = screen.getByRole('checkbox', {
+      name: /Never expires/i,
+    });
+    fireEvent.click(neverExpiresCheckbox);
+
+    const expirationInput = document.getElementById(
+      'edit-template-expiration-months',
+    )!;
+    fireEvent.change(expirationInput, { target: { value: '36' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(mockUpdateCustomTemplate).toHaveBeenCalledWith(
+      mockCustomTemplates[0].id,
+      expect.objectContaining({
+        neverExpires: false,
+        defaultExpirationMonths: 36,
+      }),
+    );
+  });
+
+  it('should call updateCustomTemplate with weight, calories, and water when editing food template', async () => {
+    render(<CustomTemplates />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Edit: My Custom Item' }),
+    );
+
+    const dialog = screen.getByRole('dialog');
+    const weightInput = within(dialog).getByLabelText(/Weight per unit \(g\)/i);
+    const caloriesUnitInput =
+      within(dialog).getByLabelText(/Calories per unit/i);
+    const calories100gInput =
+      within(dialog).getByLabelText(/Calories per 100 g/i);
+    const waterInput = within(dialog).getByLabelText(
+      /Water for preparation \(L\)/i,
+    );
+
+    fireEvent.change(weightInput, { target: { value: '350' } });
+    fireEvent.change(caloriesUnitInput, { target: { value: '180' } });
+    fireEvent.change(calories100gInput, { target: { value: '95' } });
+    fireEvent.change(waterInput, { target: { value: '0.75' } });
+
+    const form = dialog.querySelector('form');
+    expect(form).toBeInTheDocument();
+    fireEvent.submit(form!);
+
+    expect(mockUpdateCustomTemplate).toHaveBeenCalledWith(
+      mockCustomTemplates[0].id,
+      expect.objectContaining({
+        weightGrams: 350,
+        caloriesPerUnit: 180,
+        caloriesPer100g: 95,
+        requiresWaterLiters: 0.75,
+      }),
+    );
+  });
+
+  it('should close modal and reset form when saving', () => {
+    render(<CustomTemplates />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Edit: My Custom Item' }),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(screen.queryByText('Edit Template')).not.toBeInTheDocument();
   });
 });
 
