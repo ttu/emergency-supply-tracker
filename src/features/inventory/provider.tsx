@@ -73,7 +73,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   const [customTemplates, setCustomTemplates] = useLocalStorageSync(
     'customTemplates',
     (data) => {
-      return (data?.customTemplates || []) as ProductTemplate[];
+      return data?.customTemplates || [];
     },
   );
 

@@ -1294,5 +1294,13 @@ describe('Inventory Page - Custom Templates', () => {
     await waitFor(() => {
       expect(screen.queryByText('inventory.addItem')).not.toBeInTheDocument();
     });
+
+    // Template should be persisted in localStorage
+    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    expect(
+      storedData.customTemplates?.some(
+        (template: { name: string }) => template.name === 'New Template Item',
+      ),
+    ).toBe(true);
   });
 });
