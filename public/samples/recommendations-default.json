@@ -198,10 +198,19 @@
       "caloriesPerUnit": 6000
     },
     {
-      "id": "salt-sugar",
-      "i18nKey": "products.salt-sugar",
+      "id": "salt",
+      "i18nKey": "products.salt",
       "category": "food",
-      "baseQuantity": 0.2,
+      "baseQuantity": 0.1,
+      "unit": "kilograms",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "sugar",
+      "i18nKey": "products.sugar",
+      "category": "food",
+      "baseQuantity": 0.1,
       "unit": "kilograms",
       "scaleWithPeople": false,
       "scaleWithDays": false
