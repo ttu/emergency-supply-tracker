@@ -70,6 +70,15 @@ interface FormErrors {
   estimatedQuantity?: string;
 }
 
+function getExpirationDateFromForm(
+  data: FormData,
+  isRotation: boolean,
+): ReturnType<typeof createDateOnly> | undefined {
+  if (isRotation || data.neverExpires) return undefined;
+  if (data.expirationDate?.trim()) return createDateOnly(data.expirationDate);
+  return undefined;
+}
+
 export const ItemForm = ({
   item,
   categories,
@@ -251,18 +260,7 @@ export const ItemForm = ({
         unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
         // For rotation items, clear expiration fields
         neverExpires: isRotation ? undefined : formData.neverExpires,
-        expirationDate: (() => {
-          if (isRotation) {
-            return undefined;
-          }
-          if (formData.neverExpires) {
-            return undefined;
-          }
-          if (formData.expirationDate && formData.expirationDate.trim()) {
-            return createDateOnly(formData.expirationDate);
-          }
-          return undefined;
-        })(),
+        expirationDate: getExpirationDateFromForm(formData, isRotation),
         purchaseDate: formData.purchaseDate?.trim()
           ? createDateOnly(formData.purchaseDate)
           : undefined,

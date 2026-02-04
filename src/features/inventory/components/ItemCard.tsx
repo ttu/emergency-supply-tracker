@@ -62,11 +62,18 @@ const ItemCardComponent = ({ item, allItems, onItemClick }: ItemCardProps) => {
   // If allItems is provided, calculate total missing across all items of same type
   // Otherwise, calculate missing for this individual item
   // Rotation items skip missing quantity calculation
-  const missingQuantity = isRotation
-    ? 0
-    : allItems
-      ? calculateTotalMissingQuantity(item, allItems, recommendedQuantity)
-      : calculateMissingQuantity(item, recommendedQuantity);
+  let missingQuantity: number;
+  if (isRotation) {
+    missingQuantity = 0;
+  } else if (allItems) {
+    missingQuantity = calculateTotalMissingQuantity(
+      item,
+      allItems,
+      recommendedQuantity,
+    );
+  } else {
+    missingQuantity = calculateMissingQuantity(item, recommendedQuantity);
+  }
 
   // For rotation items, display effective quantity (estimated)
   const displayQuantity = isRotation

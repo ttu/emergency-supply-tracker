@@ -212,6 +212,13 @@ export class InventoryItemFactory {
     const now = new Date().toISOString();
     const isRotation = input.isNormalRotation === true;
 
+    let expirationDate: DateOnly | undefined;
+    if (isRotation || input.neverExpires) {
+      expirationDate = undefined;
+    } else {
+      expirationDate = input.expirationDate;
+    }
+
     return {
       ...input,
       id: createItemId(crypto.randomUUID()),
@@ -220,11 +227,7 @@ export class InventoryItemFactory {
       createdAt: now,
       updatedAt: now,
       // For rotation items: clear expiration fields
-      expirationDate: isRotation
-        ? undefined
-        : input.neverExpires
-          ? undefined
-          : input.expirationDate,
+      expirationDate,
       neverExpires: isRotation ? undefined : input.neverExpires,
       // For non-rotation items: clear rotation-specific fields
       isNormalRotation: isRotation ? true : undefined,
