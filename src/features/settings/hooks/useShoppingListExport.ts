@@ -42,6 +42,10 @@ export function useShoppingListExport(): UseShoppingListExportResult {
       if (item.markedAsEnough) {
         return false;
       }
+      // Skip rotation items (managed through normal shopping)
+      if (item.isNormalRotation) {
+        return false;
+      }
       const recommendedQuantity = getRecommendedQuantityForItem(
         item,
         household,
