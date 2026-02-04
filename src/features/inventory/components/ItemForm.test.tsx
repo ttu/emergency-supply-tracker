@@ -1237,6 +1237,7 @@ describe('ItemForm', () => {
             isNormalRotation: true,
             excludeFromCalculations: true,
           }),
+          false, // saveAsTemplate
         );
       });
     });
@@ -1288,6 +1289,7 @@ describe('ItemForm', () => {
             neverExpires: undefined,
             expirationDate: undefined,
           }),
+          false, // saveAsTemplate
         );
       });
     });

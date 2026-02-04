@@ -287,7 +287,7 @@ describe('ItemCard', () => {
       name: 'All-Purpose Flour',
       itemType: createProductTemplateId('flour'),
       categoryId: createCategoryId('food'),
-      quantity: 0, // Actual quantity is 0
+      quantity: createQuantity(0), // Actual quantity is 0
       unit: 'kilograms',
       isNormalRotation: true,
       estimatedQuantity: 2,

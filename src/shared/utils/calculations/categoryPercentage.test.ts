@@ -1698,7 +1698,7 @@ describe('calculateCategoryPercentage', () => {
           name: 'Toilet Paper',
           itemType: createProductTemplateId('toilet-paper'),
           categoryId: createCategoryId('hygiene-sanitation'),
-          quantity: 2, // Actual (should be ignored)
+          quantity: createQuantity(2), // Actual (should be ignored)
           isNormalRotation: true,
           estimatedQuantity: 20, // Should be used (>= 14 needed)
           unit: 'rolls',
@@ -1737,7 +1737,7 @@ describe('calculateCategoryPercentage', () => {
           name: 'Toilet Paper',
           itemType: createProductTemplateId('toilet-paper'),
           categoryId: createCategoryId('hygiene-sanitation'),
-          quantity: 10,
+          quantity: createQuantity(10),
           isNormalRotation: true,
           estimatedQuantity: 6,
           excludeFromCalculations: true,
@@ -1775,7 +1775,7 @@ describe('calculateCategoryPercentage', () => {
           name: 'Rice',
           itemType: createProductTemplateId('rice'),
           categoryId: createCategoryId('food'),
-          quantity: 1, // Actual (should be ignored)
+          quantity: createQuantity(1), // Actual (should be ignored)
           isNormalRotation: true,
           estimatedQuantity: 2, // Should be used
           caloriesPerUnit: 3600,
@@ -1813,7 +1813,7 @@ describe('calculateCategoryPercentage', () => {
           name: 'Rice',
           itemType: createProductTemplateId('rice'),
           categoryId: createCategoryId('food'),
-          quantity: 5,
+          quantity: createQuantity(5),
           isNormalRotation: true,
           estimatedQuantity: 2,
           excludeFromCalculations: true,
@@ -1851,7 +1851,7 @@ describe('calculateCategoryPercentage', () => {
           name: 'Rice (regular)',
           itemType: createProductTemplateId('rice'),
           categoryId: createCategoryId('food'),
-          quantity: 1, // Regular item - use quantity
+          quantity: createQuantity(1), // Regular item - use quantity
           caloriesPerUnit: 3600,
           unit: 'kilograms',
           createdAt: new Date().toISOString(),
@@ -1862,7 +1862,7 @@ describe('calculateCategoryPercentage', () => {
           name: 'Canned Beans (rotation)',
           itemType: createProductTemplateId('canned-beans'),
           categoryId: createCategoryId('food'),
-          quantity: 10, // Actual (should be ignored)
+          quantity: createQuantity(10), // Actual (should be ignored)
           isNormalRotation: true,
           estimatedQuantity: 4, // Should be used
           caloriesPerUnit: 300,

@@ -128,7 +128,7 @@ const rotationItem = createMockInventoryItem({
   name: 'All-Purpose Flour',
   itemType: createProductTemplateId('flour'),
   categoryId: createCategoryId('food'),
-  quantity: 0,
+  quantity: createQuantity(0),
   unit: 'kilograms',
   isNormalRotation: true,
   estimatedQuantity: 2,

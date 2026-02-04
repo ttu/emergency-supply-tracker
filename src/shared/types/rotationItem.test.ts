@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { InventoryItem } from './index';
-import { createItemId, createCategoryId } from './index';
+import { createItemId, createCategoryId, createQuantity } from './index';
 
 describe('InventoryItem rotation fields', () => {
   it('should allow isNormalRotation field', () => {
@@ -9,7 +9,7 @@ describe('InventoryItem rotation fields', () => {
       name: 'Flour',
       itemType: 'custom',
       categoryId: createCategoryId('food'),
-      quantity: 0,
+      quantity: createQuantity(0),
       unit: 'kilograms',
       isNormalRotation: true,
       estimatedQuantity: 2,
@@ -26,7 +26,7 @@ describe('InventoryItem rotation fields', () => {
       name: 'Toilet Paper',
       itemType: 'custom',
       categoryId: createCategoryId('hygiene-sanitation'),
-      quantity: 0,
+      quantity: createQuantity(0),
       unit: 'rolls',
       isNormalRotation: true,
       excludeFromCalculations: true,
