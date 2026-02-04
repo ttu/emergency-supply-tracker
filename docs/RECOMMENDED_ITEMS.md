@@ -4,7 +4,7 @@
 > **Last Updated:** 2026-01-15
 > **Source of Truth:** `src/features/templates/data.ts`
 
-This document lists all 82 recommended emergency supply items based on Finnish emergency preparedness guidelines (72tuntia.fi).
+This document lists all 83 recommended emergency supply items based on Finnish emergency preparedness guidelines (72tuntia.fi).
 
 ---
 
@@ -53,7 +53,8 @@ Items can scale based on household configuration:
 | `spreads`           | Spreads (Peanut Butter) | 1        | jars      | People       | 18 months  | 1600          |
 | `dried-fruits`      | Dried Fruits            | 0.1      | kilograms | People, Days | 12 months  | 3000          |
 | `nuts`              | Nuts                    | 0.1      | kilograms | People, Days | 12 months  | 6000          |
-| `salt-sugar`        | Salt & Sugar            | 0.2      | kilograms | -            | -          | -             |
+| `salt`              | Salt                    | 0.1      | kilograms | -            | -          | -             |
+| `sugar`             | Sugar                   | 0.1      | kilograms | -            | -          | -             |
 | `coffee-tea`        | Coffee & Tea            | 0.2      | kilograms | People       | 18 months  | -             |
 | `spices`            | Spices                  | 0.1      | kilograms | -            | 24 months  | -             |
 

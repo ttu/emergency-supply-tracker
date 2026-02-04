@@ -204,14 +204,24 @@ export const RECOMMENDED_ITEMS: RecommendedItemDefinition[] = [
     caloriesPerUnit: 6000, // ~600 kcal per 100g
   },
   {
-    id: createProductTemplateId('salt-sugar'),
-    i18nKey: 'products.salt-sugar',
+    id: createProductTemplateId('salt'),
+    i18nKey: 'products.salt',
     category: 'food',
-    baseQuantity: qty(0.2),
+    baseQuantity: qty(0.1),
     unit: 'kilograms',
     scaleWithPeople: false,
     scaleWithDays: false,
-    // No calories - salt has 0, sugar is condiment
+    // No calories
+  },
+  {
+    id: createProductTemplateId('sugar'),
+    i18nKey: 'products.sugar',
+    category: 'food',
+    baseQuantity: qty(0.1),
+    unit: 'kilograms',
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    // Condiment, no significant calories per recommendation
   },
   {
     id: createProductTemplateId('coffee-tea'),
