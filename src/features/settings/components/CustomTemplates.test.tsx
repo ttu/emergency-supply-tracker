@@ -244,6 +244,52 @@ describe('CustomTemplates', () => {
     // Reset for other tests
     delete mockCustomTemplates[0].names;
   });
+
+  it('should not call updateCustomTemplate when both name fields are empty', () => {
+    render(<CustomTemplates />);
+
+    const editButton = screen.getByRole('button', {
+      name: 'Edit: My Custom Item',
+    });
+    fireEvent.click(editButton);
+
+    // Clear both name fields
+    const nameEnInput = document.getElementById('edit-template-name-en')!;
+    fireEvent.change(nameEnInput, { target: { value: '' } });
+
+    const nameFiInput = document.getElementById('edit-template-name-fi')!;
+    fireEvent.change(nameFiInput, { target: { value: '' } });
+
+    // Try to save
+    const saveButton = screen.getByRole('button', { name: 'Save' });
+    fireEvent.click(saveButton);
+
+    // updateCustomTemplate should NOT be called with empty names
+    expect(mockUpdateCustomTemplate).not.toHaveBeenCalled();
+  });
+
+  it('should not call updateCustomTemplate when both name fields are whitespace only', () => {
+    render(<CustomTemplates />);
+
+    const editButton = screen.getByRole('button', {
+      name: 'Edit: My Custom Item',
+    });
+    fireEvent.click(editButton);
+
+    // Set both name fields to whitespace only
+    const nameEnInput = document.getElementById('edit-template-name-en')!;
+    fireEvent.change(nameEnInput, { target: { value: '   ' } });
+
+    const nameFiInput = document.getElementById('edit-template-name-fi')!;
+    fireEvent.change(nameFiInput, { target: { value: '   ' } });
+
+    // Try to save
+    const saveButton = screen.getByRole('button', { name: 'Save' });
+    fireEvent.click(saveButton);
+
+    // updateCustomTemplate should NOT be called with empty names
+    expect(mockUpdateCustomTemplate).not.toHaveBeenCalled();
+  });
 });
 
 describe('CustomTemplates with no templates', () => {

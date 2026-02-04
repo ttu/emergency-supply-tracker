@@ -13,6 +13,7 @@ import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import * as analytics from '@/shared/utils/analytics';
+import { ProductTemplateFactory } from '@/features/templates/factories/ProductTemplateFactory';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 import {
   createItemId,
@@ -791,8 +792,12 @@ describe('Custom Template Management', () => {
 
   // Test component that exposes custom template functionality
   function CustomTemplateTestComponent() {
-    const { customTemplates, addCustomTemplate, deleteCustomTemplate } =
-      useInventory();
+    const {
+      customTemplates,
+      addCustomTemplate,
+      updateCustomTemplate,
+      deleteCustomTemplate,
+    } = useInventory();
 
     return (
       <div>
@@ -815,6 +820,28 @@ describe('Custom Template Management', () => {
           Add Template
         </button>
         <button
+          data-testid="update-template"
+          onClick={() => {
+            if (customTemplates[0]) {
+              updateCustomTemplate(customTemplates[0].id, {
+                name: 'Updated Template',
+              });
+            }
+          }}
+        >
+          Update Template
+        </button>
+        <button
+          data-testid="update-nonexistent-template"
+          onClick={() => {
+            updateCustomTemplate(createProductTemplateId('nonexistent'), {
+              name: 'Should Not Work',
+            });
+          }}
+        >
+          Update Nonexistent Template
+        </button>
+        <button
           data-testid="delete-template"
           onClick={() => {
             if (customTemplates[0]) {
@@ -823,6 +850,14 @@ describe('Custom Template Management', () => {
           }}
         >
           Delete Template
+        </button>
+        <button
+          data-testid="delete-nonexistent-template"
+          onClick={() => {
+            deleteCustomTemplate(createProductTemplateId('nonexistent'));
+          }}
+        >
+          Delete Nonexistent Template
         </button>
       </div>
     );
@@ -964,6 +999,134 @@ describe('Custom Template Management', () => {
     expect(screen.getByTestId('custom-template-names')).toHaveTextContent(
       'Template One,Template Two',
     );
+  });
+
+  it('should update a custom template', async () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [],
+      customTemplates: [
+        {
+          id: 'template-1',
+          name: 'Original Template',
+          category: 'food',
+          defaultUnit: 'pieces',
+          isBuiltIn: false,
+          isCustom: true,
+        },
+      ],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('custom-template-names')).toHaveTextContent(
+      'Original Template',
+    );
+
+    const updateButton = screen.getByTestId('update-template');
+    fireEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-template-names')).toHaveTextContent(
+        'Updated Template',
+      );
+    });
+  });
+
+  it('should handle updating a nonexistent template gracefully', async () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [],
+      customTemplates: [],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    // This should not throw - it just won't show a notification
+    const updateButton = screen.getByTestId('update-nonexistent-template');
+    fireEvent.click(updateButton);
+
+    // Verify the component still works and no crash occurred
+    expect(screen.getByTestId('custom-templates-count')).toHaveTextContent('0');
+  });
+
+  it('should handle deleting a nonexistent template gracefully', async () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [],
+      customTemplates: [],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    // This should not throw - it just won't show a notification
+    const deleteButton = screen.getByTestId('delete-nonexistent-template');
+    fireEvent.click(deleteButton);
+
+    // Verify the component still works and no crash occurred
+    expect(screen.getByTestId('custom-templates-count')).toHaveTextContent('0');
+  });
+
+  it('should handle addCustomTemplate error gracefully', async () => {
+    mockGetAppData.mockReturnValue({
+      items: [],
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+      disabledCategories: [],
+      customCategories: [],
+      customTemplates: [],
+    });
+
+    // Mock the factory to throw an error
+    const createCustomSpy = vi
+      .spyOn(ProductTemplateFactory, 'createCustom')
+      .mockImplementation(() => {
+        throw new Error('Factory error');
+      });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <CustomTemplateTestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    const addButton = screen.getByTestId('add-template');
+    fireEvent.click(addButton);
+
+    // The template should not be added due to error
+    expect(screen.getByTestId('custom-templates-count')).toHaveTextContent('0');
+
+    // Clean up the spy
+    createCustomSpy.mockRestore();
   });
 });
 
