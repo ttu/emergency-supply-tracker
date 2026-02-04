@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   validateRecommendedItemsFile,
   parseRecommendedItemsFile,
@@ -1111,5 +1113,69 @@ describe('validateRecommendedItemsFile with custom categories', () => {
     };
     const result = validateRecommendedItemsFile(data);
     expect(result.valid).toBe(true);
+  });
+});
+
+describe('example recommendation kits', () => {
+  const examplesDir = path.resolve(process.cwd(), 'examples');
+  const kitFiles = [
+    'recommendation-kit-72tuntia-standard.json',
+    'recommendation-kit-minimal-essentials.json',
+    'recommendation-kit-nordic-winter.json',
+    'recommendation-kit-vehicle-emergency.json',
+    'recommendation-kit-outdoor-cottage.json',
+  ] as const;
+
+  it.each(kitFiles)('parses and validates %s', (filename) => {
+    const filePath = path.join(examplesDir, filename);
+    const json = fs.readFileSync(filePath, 'utf-8');
+    const file = parseRecommendedItemsFile(json);
+
+    expect(file.meta).toBeDefined();
+    expect(file.meta.name).toBeDefined();
+    expect(file.meta.version).toBeDefined();
+    expect(file.meta.createdAt).toBeDefined();
+    expect(Array.isArray(file.items)).toBe(true);
+    expect(file.items.length).toBeGreaterThan(0);
+  });
+
+  it('72tuntia-standard kit has localized meta and many items', () => {
+    const json = fs.readFileSync(
+      path.join(examplesDir, 'recommendation-kit-72tuntia-standard.json'),
+      'utf-8',
+    );
+    const file = parseRecommendedItemsFile(json);
+
+    expect(typeof file.meta.name).toBe('object');
+    expect(file.meta.name).toHaveProperty('en');
+    expect(file.meta.name).toHaveProperty('fi');
+    expect(file.meta.description).toBeDefined();
+    if (typeof file.meta.description === 'object') {
+      expect(file.meta.description).toHaveProperty('en');
+      expect(file.meta.description).toHaveProperty('fi');
+    }
+    expect(file.items.length).toBeGreaterThan(50);
+  });
+
+  it('outdoor-cottage kit includes custom categories', () => {
+    const json = fs.readFileSync(
+      path.join(examplesDir, 'recommendation-kit-outdoor-cottage.json'),
+      'utf-8',
+    );
+    const file = parseRecommendedItemsFile(json);
+
+    expect(file.categories).toBeDefined();
+    expect(Array.isArray(file.categories)).toBe(true);
+    expect(file.categories!.length).toBe(2);
+
+    const categoryIds = file.categories!.map((c) => c.id);
+    expect(categoryIds).toContain('garden-supplies');
+    expect(categoryIds).toContain('winter-gear');
+
+    const itemsInCustomCategories = file.items.filter(
+      (item) =>
+        item.category === 'garden-supplies' || item.category === 'winter-gear',
+    );
+    expect(itemsInCustomCategories.length).toBeGreaterThan(0);
   });
 });

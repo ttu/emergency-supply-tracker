@@ -1,8 +1,14 @@
 {
   "meta": {
-    "name": "Nordic Winter Preparedness Kit",
+    "name": {
+      "en": "Nordic Winter Preparedness Kit",
+      "fi": "Pohjoinen talvivalmiuspaketti"
+    },
     "version": "1.0.0",
-    "description": "Emergency supplies tailored for harsh Nordic winter conditions including extreme cold, power outages, and snowstorms",
+    "description": {
+      "en": "Emergency supplies tailored for harsh Nordic winter conditions including extreme cold, power outages, and snowstorms",
+      "fi": "Hätävarusteet pohjoisen talven olosuhteisiin: pakkanen, sähkökatkokset ja lumimyrskyt"
+    },
     "source": "Custom",
     "createdAt": "2026-01-27T10:00:00.000Z",
     "language": "en"

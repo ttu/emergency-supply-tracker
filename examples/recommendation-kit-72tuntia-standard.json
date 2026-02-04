@@ -1,8 +1,14 @@
 {
   "meta": {
-    "name": "72tuntia.fi Standard Kit",
+    "name": {
+      "en": "72tuntia.fi Standard Kit",
+      "fi": "72tuntia.fi - Vakiopaketti"
+    },
     "version": "1.0.0",
-    "description": "Default 72-hour emergency supply recommendations based on 72tuntia.fi guidelines",
+    "description": {
+      "en": "Default 72-hour emergency supply recommendations based on 72tuntia.fi guidelines",
+      "fi": "72 tunnin hätävarustusten suositukset 72tuntia.fi -ohjeiston mukaan"
+    },
     "source": "https://72tuntia.fi",
     "createdAt": "2026-01-12T19:58:45.093Z",
     "language": "en"
