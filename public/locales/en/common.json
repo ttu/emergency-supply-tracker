@@ -259,7 +259,8 @@
       "nameEn": "Name (English)",
       "nameFi": "Name (Finnish)",
       "defaultExpirationMonths": "Default expiration (months)",
-      "caloriesPer100g": "Calories per 100 g"
+      "caloriesPer100g": "Calories per 100 g",
+      "nameRequired": "Enter at least one name (English or Finnish)."
     },
     "about": {
       "version": "Version",

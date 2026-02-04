@@ -115,11 +115,16 @@ function TemplateEditForm({
   const update = (patch: Partial<EditFormData>) =>
     setFormData((prev) => ({ ...prev, ...patch }));
 
+  const hasValidNames = Boolean(
+    formData.nameEn.trim() || formData.nameFi.trim(),
+  );
+
   return (
     <form
       className={styles.editForm}
       onSubmit={(e) => {
         e.preventDefault();
+        if (!hasValidNames) return;
         onSave();
       }}
     >
@@ -136,6 +141,15 @@ function TemplateEditForm({
         value={formData.nameFi}
         onChange={(e) => update({ nameFi: e.target.value })}
       />
+      {!hasValidNames && (
+        <p
+          id="edit-template-name-error"
+          className={styles.validationError}
+          role="alert"
+        >
+          {t('settings.customTemplates.nameRequired')}
+        </p>
+      )}
       <Select
         id="edit-template-category"
         label={t('itemForm.category')}
@@ -209,7 +223,14 @@ function TemplateEditForm({
         <Button type="button" variant="secondary" onClick={onCancel}>
           {t('common.cancel')}
         </Button>
-        <Button type="submit" variant="primary">
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={!hasValidNames}
+          aria-describedby={
+            !hasValidNames ? 'edit-template-name-error' : undefined
+          }
+        >
           {t('common.save')}
         </Button>
       </div>

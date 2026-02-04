@@ -259,7 +259,8 @@
       "nameEn": "Nimi (englanti)",
       "nameFi": "Nimi (suomi)",
       "defaultExpirationMonths": "Oletusvanhenemisaika (kuukausina)",
-      "caloriesPer100g": "Kalorit / 100 g"
+      "caloriesPer100g": "Kalorit / 100 g",
+      "nameRequired": "Syötä vähintään yksi nimi (englanti tai suomi)."
     },
     "about": {
       "version": "Versio",
