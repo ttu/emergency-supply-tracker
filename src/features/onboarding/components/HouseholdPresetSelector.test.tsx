@@ -38,7 +38,10 @@ vi.mock('react-i18next', () => ({
         'household.presets.couple': 'Couple',
         'household.presets.family': 'Family',
         'household.presets.custom': 'Custom',
+        'household.presets.inventoryOnly': 'Inventory Only',
         'household.customDescription': 'Set your own configuration',
+        'household.inventoryOnlyDescription':
+          'Track inventory only, no household recommendations',
         'actions.back': 'Back',
         'onboarding.import.link': 'Already have data? Import backup',
         'onboarding.import.button': 'Import backup data',
@@ -105,6 +108,7 @@ describe('HouseholdPresetSelector', () => {
     expect(screen.getByText('Couple')).toBeInTheDocument();
     expect(screen.getByText('Family')).toBeInTheDocument();
     expect(screen.getByText('Custom')).toBeInTheDocument();
+    expect(screen.getByText('Inventory Only')).toBeInTheDocument();
   });
 
   it('displays household configuration details', () => {
@@ -240,6 +244,80 @@ describe('HouseholdPresetSelector', () => {
       children: 0,
       pets: 0,
     });
+  });
+
+  it('calls onSelectPreset with enabled false when inventory only is clicked', async () => {
+    const user = userEvent.setup();
+    const onSelectPreset = vi.fn();
+    render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
+
+    const inventoryOnlyPreset = screen.getByTestId('preset-inventoryOnly');
+    await user.click(inventoryOnlyPreset);
+
+    expect(onSelectPreset).toHaveBeenCalledWith({
+      id: 'inventoryOnly',
+      adults: 1,
+      children: 0,
+      pets: 0,
+      enabled: false,
+    });
+  });
+
+  it('supports keyboard navigation on inventory only preset with Enter key', async () => {
+    const user = userEvent.setup();
+    const onSelectPreset = vi.fn();
+    render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
+
+    const inventoryOnlyPreset = screen.getByTestId(
+      'preset-inventoryOnly',
+    ) as HTMLElement;
+    inventoryOnlyPreset.focus();
+    await user.keyboard('{Enter}');
+
+    expect(onSelectPreset).toHaveBeenCalledWith({
+      id: 'inventoryOnly',
+      adults: 1,
+      children: 0,
+      pets: 0,
+      enabled: false,
+    });
+  });
+
+  it('supports keyboard navigation on inventory only preset with Space key', async () => {
+    const user = userEvent.setup();
+    const onSelectPreset = vi.fn();
+    render(<HouseholdPresetSelector onSelectPreset={onSelectPreset} />);
+
+    const inventoryOnlyPreset = screen.getByTestId(
+      'preset-inventoryOnly',
+    ) as HTMLElement;
+    inventoryOnlyPreset.focus();
+    await user.keyboard(' ');
+
+    expect(onSelectPreset).toHaveBeenCalledWith({
+      id: 'inventoryOnly',
+      adults: 1,
+      children: 0,
+      pets: 0,
+      enabled: false,
+    });
+  });
+
+  it('renders back button and calls onBack when provided', async () => {
+    const user = userEvent.setup();
+    const onBack = vi.fn();
+    const onSelectPreset = vi.fn();
+    render(
+      <HouseholdPresetSelector
+        onSelectPreset={onSelectPreset}
+        onBack={onBack}
+      />,
+    );
+
+    const backButton = screen.getByTestId('preset-back-button');
+    await user.click(backButton);
+
+    expect(onBack).toHaveBeenCalled();
   });
 
   describe('Import functionality', () => {

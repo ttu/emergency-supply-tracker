@@ -9,6 +9,7 @@ vi.mock('react-i18next', () => ({
       const translations: Record<string, string> = {
         'dashboard.title': 'Dashboard',
         'dashboard.subtitle': `{{people}} people, {{days}} days supply`,
+        'dashboard.inventoryTrackingMode': 'Inventory tracking mode',
         'dashboard.preparedness.excellent': 'Excellent',
         'dashboard.preparedness.good': 'Good',
         'dashboard.preparedness.needsWork': 'Needs Work',
@@ -94,5 +95,23 @@ describe('DashboardHeader', () => {
     );
 
     expect(screen.getByText('Needs Work')).toBeInTheDocument();
+  });
+
+  it('shows inventory tracking mode when household is disabled', () => {
+    render(
+      <DashboardHeader
+        preparednessScore={50}
+        householdSize={2}
+        supplyDays={3}
+        householdEnabled={false}
+      />,
+    );
+
+    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Inventory tracking mode')).toBeInTheDocument();
+    expect(
+      screen.queryByText('2 people, 3 days supply'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('50')).not.toBeInTheDocument();
   });
 });

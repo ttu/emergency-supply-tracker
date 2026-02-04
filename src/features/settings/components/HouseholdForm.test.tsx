@@ -1,6 +1,6 @@
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { HouseholdForm } from './HouseholdForm';
-import { renderWithHousehold } from '@/test';
+import { renderWithHousehold, createMockHousehold } from '@/test';
 
 describe('HouseholdForm', () => {
   it('should render household form fields', () => {
@@ -230,5 +230,64 @@ describe('HouseholdForm', () => {
     fireEvent.change(supplyDaysInput, { target: { value: '' } });
 
     expect(supplyDaysInput.value).toBe('1');
+  });
+
+  it('should render enabled toggle and disable presets/fields when household is disabled', async () => {
+    renderWithHousehold(<HouseholdForm />, {
+      initialAppData: {
+        household: createMockHousehold({
+          enabled: false,
+          adults: 2,
+          children: 3,
+          pets: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        }),
+      },
+    });
+
+    const enabledToggle = screen.getByTestId('household-enabled-toggle');
+    expect(enabledToggle).toBeInTheDocument();
+    expect(enabledToggle).not.toBeChecked();
+
+    const singleButton = screen.getByTestId('preset-single');
+    expect(singleButton).toBeDisabled();
+
+    const adultsInput = screen.getByLabelText(
+      'settings.household.adults',
+    ) as HTMLInputElement;
+    expect(adultsInput).toBeDisabled();
+  });
+
+  it('should enable presets and fields when enabled toggle is checked', async () => {
+    renderWithHousehold(<HouseholdForm />, {
+      initialAppData: {
+        household: createMockHousehold({
+          enabled: false,
+          adults: 2,
+          children: 3,
+          pets: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        }),
+      },
+    });
+
+    const enabledToggle = screen.getByTestId(
+      'household-enabled-toggle',
+    ) as HTMLInputElement;
+    fireEvent.click(enabledToggle);
+
+    await waitFor(() => {
+      expect(enabledToggle).toBeChecked();
+    });
+
+    const singleButton = screen.getByTestId('preset-single');
+    expect(singleButton).not.toBeDisabled();
+
+    const adultsInput = screen.getByLabelText(
+      'settings.household.adults',
+    ) as HTMLInputElement;
+    expect(adultsInput).not.toBeDisabled();
   });
 });

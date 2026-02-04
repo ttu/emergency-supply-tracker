@@ -37,6 +37,8 @@ vi.mock('react-i18next', () => ({
         'household.presets.single': 'Single Person',
         'household.presets.couple': 'Couple',
         'household.presets.family': 'Family',
+        'household.presets.custom': 'Custom',
+        'household.presets.inventoryOnly': 'Inventory Only',
         'household.adults': 'Adults',
         'household.children': 'Children',
         'household.supplyDays': 'Supply Days',
@@ -619,6 +621,121 @@ describe('Onboarding', () => {
     // We can't easily trigger this without exposing internal state,
     // but the guard clause exists for safety
     expect(onComplete).not.toHaveBeenCalled();
+  });
+
+  it('selecting inventory only skips household and completes with enabled false', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
+    );
+
+    const getStartedButton = screen.getByTestId('get-started-button');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('preset-inventoryOnly')).toBeInTheDocument();
+    });
+
+    const inventoryOnlyPreset = screen.getByTestId('preset-inventoryOnly');
+    await user.click(inventoryOnlyPreset);
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
+    await user.click(kitContinueButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('skip-quick-setup-button')).toBeInTheDocument();
+    });
+
+    const skipButton = screen.getByTestId('skip-quick-setup-button');
+    await user.click(skipButton);
+
+    expect(onComplete).toHaveBeenCalledWith(
+      expect.objectContaining({
+        enabled: false,
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: expect.any(Number),
+        useFreezer: false,
+      }),
+      [],
+    );
+  });
+
+  it('selecting custom goes to household form', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
+    );
+
+    const getStartedButton = screen.getByTestId('get-started-button');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('preset-custom')).toBeInTheDocument();
+    });
+
+    const customPreset = screen.getByTestId('preset-custom');
+    await user.click(customPreset);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
+  });
+
+  it('going back from kit selection to household when inventory only was selected shows household form', async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <RecommendedItemsProvider>
+        <SettingsProvider>
+          <Onboarding onComplete={onComplete} />
+        </SettingsProvider>
+      </RecommendedItemsProvider>,
+    );
+
+    const getStartedButton = screen.getByTestId('get-started-button');
+    await user.click(getStartedButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('preset-inventoryOnly')).toBeInTheDocument();
+    });
+
+    const inventoryOnlyPreset = screen.getByTestId('preset-inventoryOnly');
+    await user.click(inventoryOnlyPreset);
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('kit-step-continue-button'),
+      ).toBeInTheDocument();
+    });
+
+    const backButton = screen.getByTestId('kit-step-back-button');
+    await user.click(backButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId('household-save-button')).toBeInTheDocument();
   });
 
   it('should not add items when household config is null', async () => {
