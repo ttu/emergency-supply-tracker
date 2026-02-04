@@ -95,12 +95,12 @@ function formDataFromTemplate(template: ProductTemplate): EditFormData {
 }
 
 interface TemplateEditFormProps {
-  formData: EditFormData;
-  setFormData: React.Dispatch<React.SetStateAction<EditFormData>>;
-  categoryOptions: { value: string; label: string }[];
-  unitOptions: { value: string; label: string }[];
-  onSave: () => void;
-  onCancel: () => void;
+  readonly formData: EditFormData;
+  readonly setFormData: React.Dispatch<React.SetStateAction<EditFormData>>;
+  readonly categoryOptions: { value: string; label: string }[];
+  readonly unitOptions: { value: string; label: string }[];
+  readonly onSave: () => void;
+  readonly onCancel: () => void;
 }
 
 function TemplateEditForm({
