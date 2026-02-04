@@ -16,6 +16,7 @@ import {
   calculateMissingQuantity,
   calculateTotalMissingQuantity,
 } from '../utils/status';
+import { getEffectiveQuantity } from '@/shared/utils/calculations/effectiveQuantity';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
@@ -40,6 +41,8 @@ const ItemCardComponent = ({ item, allItems, onItemClick }: ItemCardProps) => {
     return date.toLocaleDateString();
   };
 
+  const isRotation = item.isNormalRotation === true;
+
   const expired = isItemExpired(item.expirationDate, item.neverExpires);
   const daysUntil = getDaysUntilExpiration(
     item.expirationDate,
@@ -58,9 +61,17 @@ const ItemCardComponent = ({ item, allItems, onItemClick }: ItemCardProps) => {
 
   // If allItems is provided, calculate total missing across all items of same type
   // Otherwise, calculate missing for this individual item
-  const missingQuantity = allItems
-    ? calculateTotalMissingQuantity(item, allItems, recommendedQuantity)
-    : calculateMissingQuantity(item, recommendedQuantity);
+  // Rotation items skip missing quantity calculation
+  const missingQuantity = isRotation
+    ? 0
+    : allItems
+      ? calculateTotalMissingQuantity(item, allItems, recommendedQuantity)
+      : calculateMissingQuantity(item, recommendedQuantity);
+
+  // For rotation items, display effective quantity (estimated)
+  const displayQuantity = isRotation
+    ? getEffectiveQuantity(item)
+    : item.quantity;
 
   const handleClick = useCallback(() => {
     onItemClick?.(item);
@@ -73,13 +84,26 @@ const ItemCardComponent = ({ item, allItems, onItemClick }: ItemCardProps) => {
         <span className={styles.itemType}>
           {t(item.itemType, { ns: 'products' })}
         </span>
+        {isRotation && (
+          <span className={styles.rotationBadge}>
+            🔄 {t('itemForm.rotation.badge')}
+          </span>
+        )}
       </div>
 
       <div className={styles.body}>
         <div className={styles.quantity}>
-          <span className={styles.current}>{item.quantity}</span>
+          <span className={styles.current}>
+            {isRotation ? `~${displayQuantity}` : displayQuantity}
+          </span>
           <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
         </div>
+
+        {isRotation && item.excludeFromCalculations && (
+          <div className={styles.notCounted}>
+            {t('itemForm.rotation.excludeFromCalculations')}
+          </div>
+        )}
 
         {missingQuantity > 0 && (
           <div className={styles.missingQuantity}>
@@ -92,7 +116,7 @@ const ItemCardComponent = ({ item, allItems, onItemClick }: ItemCardProps) => {
           </div>
         )}
 
-        {!item.neverExpires && item.expirationDate && (
+        {!isRotation && !item.neverExpires && item.expirationDate && (
           <div className={styles.expiration}>
             {expired ? (
               <span className={styles.expired}>

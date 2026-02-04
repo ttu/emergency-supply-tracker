@@ -280,4 +280,76 @@ describe('ItemCard', () => {
       expect(screen.getByText(/9.*meters.*missing/i)).toBeInTheDocument();
     });
   });
+
+  describe('rotation items', () => {
+    const rotationItem = createMockInventoryItem({
+      id: createItemId('rotation-1'),
+      name: 'All-Purpose Flour',
+      itemType: createProductTemplateId('flour'),
+      categoryId: createCategoryId('food'),
+      quantity: 0, // Actual quantity is 0
+      unit: 'kilograms',
+      isNormalRotation: true,
+      estimatedQuantity: 2,
+    });
+
+    it('should show rotation badge for rotation items', () => {
+      renderWithProviders(<ItemCard item={rotationItem} />);
+      expect(screen.getByText(/itemForm.rotation.badge/i)).toBeInTheDocument();
+    });
+
+    it('should show estimated quantity with ~ prefix for rotation items', () => {
+      renderWithProviders(<ItemCard item={rotationItem} />);
+      // Should show "~2" instead of "0"
+      expect(screen.getByText('~2')).toBeInTheDocument();
+    });
+
+    it('should not show expiration for rotation items', () => {
+      const rotationWithExpiration = createMockInventoryItem({
+        ...rotationItem,
+        expirationDate: createDateOnly(
+          new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0],
+        ),
+        neverExpires: false,
+      });
+      renderWithProviders(<ItemCard item={rotationWithExpiration} />);
+      expect(screen.queryByText(/📅/)).not.toBeInTheDocument();
+    });
+
+    it('should not show missing quantity for rotation items', () => {
+      renderWithProviders(<ItemCard item={rotationItem} />, {
+        initialAppData: {
+          household: {
+            adults: 2,
+            children: 0,
+            pets: 0,
+            supplyDurationDays: 3,
+            useFreezer: false,
+          },
+        },
+      });
+      // Rotation items should not show missing quantity warning
+      expect(screen.queryByText(/missing/i)).not.toBeInTheDocument();
+    });
+
+    it('should show "not counted" indicator when excludeFromCalculations is true', () => {
+      const excludedRotationItem = createMockInventoryItem({
+        ...rotationItem,
+        excludeFromCalculations: true,
+      });
+      renderWithProviders(<ItemCard item={excludedRotationItem} />);
+      expect(
+        screen.getByText(/itemForm.rotation.excludeFromCalculations/i),
+      ).toBeInTheDocument();
+    });
+
+    it('should not show "not counted" indicator when excludeFromCalculations is false', () => {
+      renderWithProviders(<ItemCard item={rotationItem} />);
+      expect(
+        screen.queryByText(/itemForm.rotation.excludeFromCalculations/i),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
