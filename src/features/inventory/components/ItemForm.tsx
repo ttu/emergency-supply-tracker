@@ -31,6 +31,7 @@ export interface ItemFormProps {
   categories: Category[];
   onSubmit: (
     item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
+    saveAsTemplate?: boolean,
   ) => void;
   onCancel: () => void;
   defaultCategoryId?: string;
@@ -55,6 +56,7 @@ interface FormData {
   requiresWaterLiters: string;
   capacityMah: string;
   capacityWh: string;
+  saveAsTemplate: boolean;
 }
 
 interface FormErrors {
@@ -133,8 +135,14 @@ export const ItemForm = ({
       requiresWaterLiters: getDefaultRequiresWaterLiters(),
       capacityMah: item?.capacityMah?.toString() || '',
       capacityWh: item?.capacityWh?.toString() || '',
+      saveAsTemplate: false,
     };
   });
+
+  // Determine if this is a custom item (no template or itemType is 'custom')
+  // and if it's a new item (no id)
+  const isNewCustomItem =
+    !item?.id && (!formData.itemType || formData.itemType === 'custom');
 
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -206,41 +214,44 @@ export const ItemForm = ({
       return;
     }
 
-    onSubmit({
-      name: formData.name.trim(),
-      itemType,
-      categoryId: createCategoryId(formData.categoryId),
-      quantity,
-      unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
-      neverExpires: formData.neverExpires,
-      expirationDate: (() => {
-        if (formData.neverExpires) {
+    onSubmit(
+      {
+        name: formData.name.trim(),
+        itemType,
+        categoryId: createCategoryId(formData.categoryId),
+        quantity,
+        unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
+        neverExpires: formData.neverExpires,
+        expirationDate: (() => {
+          if (formData.neverExpires) {
+            return undefined;
+          }
+          if (formData.expirationDate && formData.expirationDate.trim()) {
+            return createDateOnly(formData.expirationDate);
+          }
           return undefined;
-        }
-        if (formData.expirationDate && formData.expirationDate.trim()) {
-          return createDateOnly(formData.expirationDate);
-        }
-        return undefined;
-      })(),
-      purchaseDate: formData.purchaseDate?.trim()
-        ? createDateOnly(formData.purchaseDate)
-        : undefined,
-      location: formData.location.trim() || undefined,
-      notes: formData.notes.trim() || undefined,
-      weightGrams,
-      caloriesPerUnit: formData.caloriesPerUnit
-        ? Number.parseFloat(formData.caloriesPerUnit)
-        : undefined,
-      requiresWaterLiters: formData.requiresWaterLiters
-        ? Number.parseFloat(formData.requiresWaterLiters)
-        : undefined,
-      capacityMah: formData.capacityMah
-        ? Number.parseFloat(formData.capacityMah)
-        : undefined,
-      capacityWh: formData.capacityWh
-        ? Number.parseFloat(formData.capacityWh)
-        : undefined,
-    });
+        })(),
+        purchaseDate: formData.purchaseDate?.trim()
+          ? createDateOnly(formData.purchaseDate)
+          : undefined,
+        location: formData.location.trim() || undefined,
+        notes: formData.notes.trim() || undefined,
+        weightGrams,
+        caloriesPerUnit: formData.caloriesPerUnit
+          ? Number.parseFloat(formData.caloriesPerUnit)
+          : undefined,
+        requiresWaterLiters: formData.requiresWaterLiters
+          ? Number.parseFloat(formData.requiresWaterLiters)
+          : undefined,
+        capacityMah: formData.capacityMah
+          ? Number.parseFloat(formData.capacityMah)
+          : undefined,
+        capacityWh: formData.capacityWh
+          ? Number.parseFloat(formData.capacityWh)
+          : undefined,
+      },
+      formData.saveAsTemplate,
+    );
   };
 
   const handleChange = (field: keyof FormData, value: string | boolean) => {
@@ -513,6 +524,23 @@ export const ItemForm = ({
           rows={3}
         />
       </div>
+
+      {isNewCustomItem && (
+        <div className={styles.formGroup}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={formData.saveAsTemplate}
+              onChange={(e) => handleChange('saveAsTemplate', e.target.checked)}
+              data-testid="save-as-template-checkbox"
+            />
+            {t('itemForm.saveAsTemplate')}
+          </label>
+          <p className={styles.helperText}>
+            {t('itemForm.saveAsTemplateHint')}
+          </p>
+        </div>
+      )}
 
       <div className={styles.actions}>
         <Button type="submit" variant="primary" data-testid="save-item-button">

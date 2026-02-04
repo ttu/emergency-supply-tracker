@@ -173,7 +173,8 @@
         "debugLog": "Virheloki",
         "about": "Tietoja",
         "dangerZone": "Vaaravyöhyke",
-        "recommendationKits": "Suosituspaketit"
+        "recommendationKits": "Suosituspaketit",
+        "customTemplates": "Omat mallit"
       }
     },
     "nutrition": {
@@ -249,6 +250,14 @@
       "description": "Sinulla on {{count}} ohitettua suositusta. Nämä tuotteet on merkitty riittäviksi, vaikka niiden määrä on alle suositellun määrän.",
       "unmark": "Poista merkintä",
       "unmarkAll": "Poista kaikki merkinnät"
+    },
+    "customTemplates": {
+      "empty": "Ei omia malleja",
+      "hint": "Luo malleja valitsemalla 'Tallenna malliksi' lisätessäsi omia tuotteita varastoon.",
+      "description": "Sinulla on {{count}} omaa mallia. Nämä mallit näkyvät tuotevalitsimessa nopeaa tuotteiden lisäystä varten.",
+      "editTitle": "Muokkaa mallia",
+      "nameEn": "Nimi (englanti)",
+      "nameFi": "Nimi (suomi)"
     },
     "about": {
       "version": "Versio",
@@ -518,6 +527,8 @@
     "purchaseDate": "Ostopäivä",
     "location": "Sijainti",
     "notes": "Muistiinpanot",
+    "saveAsTemplate": "Tallenna malliksi",
+    "saveAsTemplateHint": "Tallenna tämän tuotteen nimi, kategoria ja yksikkö uudelleenkäytettäväksi malliksi tulevia tuotteita varten",
     "errors": {
       "nameRequired": "Nimi vaaditaan",
       "categoryRequired": "Kategoria vaaditaan",
@@ -532,7 +543,9 @@
     "categoryLabel": "Suodata kategorialla",
     "noTemplates": "Ei malleja",
     "recommended": "Suositeltu",
-    "customDescription": "Luo oma tuote"
+    "customDescription": "Luo oma tuote",
+    "yourTemplates": "Omat mallit",
+    "recommendedItems": "Suositellut tuotteet"
   },
   "quickSetup": {
     "title": "Pika-asennus",
@@ -657,7 +670,11 @@
     "recommendationHidden": "Suositus piilotettu",
     "recommendationShown": "Suositus näytetty",
     "categoryHidden": "Kategoria piilotettu",
-    "categoryShown": "Kategoria näytetty"
+    "categoryShown": "Kategoria näytetty",
+    "templateAdded": "Malli \"{{name}}\" tallennettu",
+    "templateUpdated": "Malli \"{{name}}\" päivitetty",
+    "templateDeleted": "Malli \"{{name}}\" poistettu",
+    "templateAddFailed": "Mallin tallentaminen epäonnistui"
   },
   "kitSelector": {
     "builtInKits": "Sisäänrakennetut paketit",

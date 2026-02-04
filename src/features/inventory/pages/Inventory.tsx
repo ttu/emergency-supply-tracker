@@ -26,6 +26,7 @@ import type {
   ItemStatus,
   RecommendedItemDefinition,
   StandardCategoryId,
+  ProductTemplate,
 } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import { useCategoryStatuses } from '@/features/dashboard/hooks/useCategoryStatuses';
@@ -55,6 +56,8 @@ export function Inventory({
     disabledCategories,
     disableCategory,
     customCategories,
+    customTemplates,
+    addCustomTemplate,
   } = useInventory();
   const { household } = useHousehold();
   const { recommendedItems, getItemName } = useRecommendedItems();
@@ -195,8 +198,19 @@ export function Inventory({
 
   const handleAddItem = (
     itemData: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
+    saveAsTemplate?: boolean,
   ) => {
     addItem(itemData);
+
+    // If user checked "Save as Template", also create a custom template
+    if (saveAsTemplate && itemData.name) {
+      addCustomTemplate({
+        name: itemData.name,
+        category: itemData.categoryId,
+        defaultUnit: itemData.unit,
+      });
+    }
+
     setShowAddModal(false);
     setEditingItem(undefined);
   };
@@ -294,6 +308,24 @@ export function Inventory({
     setEditingItem(undefined);
     setSelectedTemplate(undefined);
   };
+
+  const handleSelectCustomTemplate = useCallback(
+    (template: ProductTemplate) => {
+      // Create a draft item pre-filled with the custom template's data
+      const draftItem = InventoryItemFactory.createDraftFromCustomTemplate(
+        template,
+        {
+          quantity: 0,
+        },
+      );
+
+      setSelectedTemplate(undefined); // Custom templates don't have recommended quantities
+      setEditingItem(draftItem);
+      setShowTemplateModal(false);
+      setShowAddModal(true);
+    },
+    [],
+  );
 
   // Handler for adding a recommended item to inventory from status summary
   const handleAddRecommendedToInventory = useCallback(
@@ -513,6 +545,8 @@ export function Inventory({
             onSelectTemplate={handleSelectTemplate}
             onSelectCustom={handleSelectCustomItem}
             initialCategoryId={selectedCategoryId || ''}
+            customTemplates={customTemplates}
+            onSelectCustomTemplate={handleSelectCustomTemplate}
           />
         </Modal>
       )}

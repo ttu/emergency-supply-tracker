@@ -615,7 +615,9 @@ describe('Inventory Page with items', () => {
     expect(categorySelect).toHaveValue('food');
 
     // Check "never expires" checkbox
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
     fireEvent.click(neverExpiresCheckbox);
     expect(neverExpiresCheckbox).toBeChecked();
 
@@ -640,7 +642,9 @@ describe('Inventory Page with items', () => {
     fireEvent.change(quantityInput, { target: { value: '3' } });
     const categorySelect = screen.getByLabelText(/itemForm\.category/i);
     fireEvent.change(categorySelect, { target: { value: 'food' } });
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
     fireEvent.click(neverExpiresCheckbox);
 
     const submitButton = screen.getByText('common.add');
@@ -1184,5 +1188,119 @@ describe('Inventory Page - resolveItemName (custom item names)', () => {
         ),
       ).toBeInTheDocument();
     });
+  });
+});
+
+describe('Inventory Page - Custom Templates', () => {
+  beforeEach(() => {
+    globalThis.confirm = vi.fn(() => true);
+    // Setup localStorage with custom templates
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [],
+      customTemplates: [
+        {
+          id: createProductTemplateId('my-custom-template'),
+          name: 'My Custom Template',
+          category: 'food',
+          defaultUnit: 'pieces',
+          isBuiltIn: false,
+          isCustom: true,
+        },
+      ],
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('should select custom template and open item form (handleSelectCustomTemplate)', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Inventory />);
+
+    // Open template selector
+    const addButton = screen.getByText('inventory.addFromTemplate');
+    await user.click(addButton);
+
+    // Template selector should show custom templates section
+    expect(screen.getByText('inventory.selectTemplate')).toBeInTheDocument();
+
+    // Click on the custom template card
+    const customTemplateCard = screen.getByTestId(
+      'custom-template-card-my-custom-template',
+    );
+    await user.click(customTemplateCard);
+
+    // Should open item form with pre-filled data from custom template
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    // Form should have the name pre-filled from the custom template
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    expect(nameInput).toHaveValue('My Custom Template');
+
+    // Form should have the category pre-selected
+    const categorySelect = screen.getByLabelText(/itemForm\.category/i);
+    expect(categorySelect).toHaveValue('food');
+  });
+
+  it('should add item with saveAsTemplate checkbox and create custom template', async () => {
+    const user = userEvent.setup();
+    // Clear custom templates for this test
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [],
+      customTemplates: [],
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+
+    renderWithProviders(<Inventory />);
+
+    // Open template selector and choose custom item
+    const addButton = screen.getByText('inventory.addFromTemplate');
+    await user.click(addButton);
+    const customItemButton = screen.getByText(/itemForm.customItem/);
+    await user.click(customItemButton);
+
+    // Fill required fields
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Template Item');
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
+    await user.type(quantityInput, '5');
+    const categorySelect = screen.getByLabelText(/itemForm\.category/i);
+    await user.selectOptions(categorySelect, 'food');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
+    await user.click(neverExpiresCheckbox);
+
+    // Check the "Save as Template" checkbox
+    const saveAsTemplateCheckbox = screen.getByTestId(
+      'save-as-template-checkbox',
+    );
+    await user.click(saveAsTemplateCheckbox);
+    expect(saveAsTemplateCheckbox).toBeChecked();
+
+    // Submit the form
+    const submitButton = screen.getByText('common.add');
+    await user.click(submitButton);
+
+    // Modal should close
+    await waitFor(() => {
+      expect(screen.queryByText('inventory.addItem')).not.toBeInTheDocument();
+    });
+
+    // Template should be persisted in localStorage
+    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    expect(
+      storedData.customTemplates?.some(
+        (template: { name: string }) => template.name === 'New Template Item',
+      ),
+    ).toBe(true);
   });
 });

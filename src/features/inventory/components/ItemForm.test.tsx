@@ -261,22 +261,25 @@ describe('ItemForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
 
     await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith({
-        name: 'Test Item',
-        itemType: 'custom',
-        categoryId: 'water-beverages',
-        quantity: createQuantity(10),
-        unit: 'pieces',
-        neverExpires: false,
-        expirationDate: '2025-12-31',
-        purchaseDate: undefined,
-        location: 'Pantry',
-        notes: 'Test notes',
-        weightGrams: undefined,
-        caloriesPerUnit: undefined,
-        capacityMah: undefined,
-        capacityWh: undefined,
-      });
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        {
+          name: 'Test Item',
+          itemType: 'custom',
+          categoryId: 'water-beverages',
+          quantity: createQuantity(10),
+          unit: 'pieces',
+          neverExpires: false,
+          expirationDate: '2025-12-31',
+          purchaseDate: undefined,
+          location: 'Pantry',
+          notes: 'Test notes',
+          weightGrams: undefined,
+          caloriesPerUnit: undefined,
+          capacityMah: undefined,
+          capacityWh: undefined,
+        },
+        false, // saveAsTemplate
+      );
     });
   });
 
@@ -312,22 +315,25 @@ describe('ItemForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
 
     await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith({
-        name: 'Test Item',
-        itemType: 'custom',
-        categoryId: 'water-beverages',
-        quantity: createQuantity(10),
-        unit: 'pieces',
-        neverExpires: false,
-        expirationDate: '2025-12-31',
-        purchaseDate: '2024-11-15',
-        location: undefined,
-        notes: undefined,
-        weightGrams: undefined,
-        caloriesPerUnit: undefined,
-        capacityMah: undefined,
-        capacityWh: undefined,
-      });
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        {
+          name: 'Test Item',
+          itemType: 'custom',
+          categoryId: 'water-beverages',
+          quantity: createQuantity(10),
+          unit: 'pieces',
+          neverExpires: false,
+          expirationDate: '2025-12-31',
+          purchaseDate: '2024-11-15',
+          location: undefined,
+          notes: undefined,
+          weightGrams: undefined,
+          caloriesPerUnit: undefined,
+          capacityMah: undefined,
+          capacityWh: undefined,
+        },
+        false, // saveAsTemplate
+      );
     });
   });
 
@@ -343,8 +349,10 @@ describe('ItemForm', () => {
     // Initially, expiration date should be visible
     expect(document.querySelector('#expirationDate')).toBeInTheDocument();
 
-    // Find and check the never expires checkbox
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    // Find and check the never expires checkbox using label text
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
     fireEvent.click(neverExpiresCheckbox);
 
     // Expiration date should be hidden
@@ -367,7 +375,9 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
 
     fireEvent.change(nameInput, { target: { value: 'Test Item' } });
     fireEvent.change(categorySelect, { target: { value: 'water-beverages' } });
@@ -377,21 +387,24 @@ describe('ItemForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'common.add' }));
 
     await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith({
-        name: 'Test Item',
-        itemType: 'custom',
-        categoryId: 'water-beverages',
-        quantity: createQuantity(10),
-        unit: 'pieces',
-        neverExpires: true,
-        expirationDate: undefined,
-        location: undefined,
-        notes: undefined,
-        weightGrams: undefined,
-        caloriesPerUnit: undefined,
-        capacityMah: undefined,
-        capacityWh: undefined,
-      });
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        {
+          name: 'Test Item',
+          itemType: 'custom',
+          categoryId: 'water-beverages',
+          quantity: createQuantity(10),
+          unit: 'pieces',
+          neverExpires: true,
+          expirationDate: undefined,
+          location: undefined,
+          notes: undefined,
+          weightGrams: undefined,
+          caloriesPerUnit: undefined,
+          capacityMah: undefined,
+          capacityWh: undefined,
+        },
+        false, // saveAsTemplate
+      );
     });
   });
 
@@ -608,7 +621,9 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
 
     fireEvent.change(nameInput, { target: { value: 'Power Bank' } });
     fireEvent.change(categorySelect, { target: { value: 'light-power' } });
@@ -636,6 +651,7 @@ describe('ItemForm', () => {
           capacityMah: 10000,
           capacityWh: 37,
         }),
+        false, // saveAsTemplate
       );
     });
   });
@@ -688,7 +704,9 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
 
     fireEvent.change(nameInput, { target: { value: 'Flashlight' } });
     fireEvent.change(categorySelect, { target: { value: 'light-power' } });
@@ -707,6 +725,7 @@ describe('ItemForm', () => {
           capacityMah: undefined,
           capacityWh: undefined,
         }),
+        false, // saveAsTemplate
       );
     });
   });
@@ -844,7 +863,9 @@ describe('ItemForm', () => {
     const quantityInput = document.querySelector(
       '#quantity',
     ) as HTMLInputElement;
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
 
     fireEvent.change(nameInput, { target: { value: 'Instant Noodles' } });
     fireEvent.change(categorySelect, { target: { value: 'food' } });
@@ -865,6 +886,7 @@ describe('ItemForm', () => {
           categoryId: 'food',
           requiresWaterLiters: 0.5,
         }),
+        false, // saveAsTemplate
       );
     });
   });
@@ -964,7 +986,9 @@ describe('ItemForm', () => {
       '#quantity',
     ) as HTMLInputElement;
     const unitSelect = document.querySelector('#unit') as HTMLSelectElement;
-    const neverExpiresCheckbox = screen.getByRole('checkbox');
+    const neverExpiresCheckbox = screen.getByLabelText(
+      /itemForm\.neverExpires/i,
+    );
 
     fireEvent.change(nameInput, { target: { value: 'Test Food' } });
     fireEvent.change(categorySelect, { target: { value: 'food' } });
@@ -996,6 +1020,7 @@ describe('ItemForm', () => {
           unit: 'kilograms',
           weightGrams: 100, // Weight entered in grams (as on package labels)
         }),
+        false, // saveAsTemplate
       );
     });
   });

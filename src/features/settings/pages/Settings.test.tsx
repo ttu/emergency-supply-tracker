@@ -249,9 +249,12 @@ describe('Settings Page', () => {
       'hiddenAlerts',
       'disabledRecommendations',
       'disabledCategories',
+      'customCategories',
+      'customTemplates',
       'overriddenRecommendations',
       'recommendationKits',
       'backupTransfer',
+      'debugLog',
       'about',
       'dangerZone',
     ];
@@ -266,5 +269,46 @@ describe('Settings Page', () => {
         ),
       ).toBeInTheDocument();
     });
+  });
+
+  it('should navigate to custom templates section when clicked', () => {
+    renderWithProviders(<Settings />);
+
+    // Click on custom templates in the menu (scope to sidebar)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    fireEvent.click(
+      within(sidebar).getByTestId('sidemenu-item-customTemplates'),
+    );
+
+    // Custom templates section should now be visible
+    expect(screen.getByTestId('section-custom-templates')).toBeInTheDocument();
+    expect(
+      screen.getByText('settings.customTemplates.empty'),
+    ).toBeInTheDocument();
+  });
+
+  it('should navigate to custom categories section when clicked', () => {
+    renderWithProviders(<Settings />);
+
+    // Click on custom categories in the menu (scope to sidebar)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    fireEvent.click(
+      within(sidebar).getByTestId('sidemenu-item-customCategories'),
+    );
+
+    // Custom categories section should now be visible
+    expect(screen.getByTestId('section-custom-categories')).toBeInTheDocument();
+  });
+
+  it('should navigate to debug log section when clicked', () => {
+    renderWithProviders(<Settings />);
+
+    // Click on debug log in the menu (scope to sidebar)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    fireEvent.click(within(sidebar).getByTestId('sidemenu-item-debugLog'));
+
+    // Debug log section should now be visible
+    expect(screen.getByTestId('section-debug-log')).toBeInTheDocument();
+    expect(screen.getByText('settings.debugExport.button')).toBeInTheDocument();
   });
 });

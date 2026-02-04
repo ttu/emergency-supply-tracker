@@ -107,10 +107,10 @@ test.describe('Backup Reminder', () => {
     await expect(dismissButton).toBeVisible({ timeout: 5000 });
     await dismissButton.click();
 
-    // Reminder should be hidden
-    await expect(page.getByText(/backup|Backup|varmuuskopio/i)).not.toBeVisible(
-      { timeout: 3000 },
-    );
+    // Reminder should be hidden (use specific testid to avoid matching the notification)
+    await expect(
+      page.locator('[data-testid="alert-backup-reminder"]'),
+    ).not.toBeVisible({ timeout: 3000 });
   });
 
   test('should not show reminder after dismissal until next month', async ({

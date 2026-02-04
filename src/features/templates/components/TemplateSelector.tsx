@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { RecommendedItemDefinition, Category } from '@/shared/types';
+import type {
+  RecommendedItemDefinition,
+  Category,
+  ProductTemplate,
+} from '@/shared/types';
 import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
 import { formatBaseQuantityCompact } from '@/shared/utils/formatting/baseQuantity';
@@ -12,6 +16,8 @@ export interface TemplateSelectorProps {
   onSelectTemplate: (template: RecommendedItemDefinition) => void;
   onSelectCustom: () => void;
   initialCategoryId?: string;
+  customTemplates?: ProductTemplate[];
+  onSelectCustomTemplate?: (template: ProductTemplate) => void;
 }
 
 /**
@@ -27,6 +33,8 @@ export const TemplateSelector = ({
   onSelectTemplate,
   onSelectCustom,
   initialCategoryId = '',
+  customTemplates = [],
+  onSelectCustomTemplate,
 }: TemplateSelectorProps) => {
   const { t, i18n } = useTranslation([
     'common',
@@ -69,6 +77,23 @@ export const TemplateSelector = ({
       const nameB = t(keyB, { ns: 'products' });
       return nameA.localeCompare(nameB);
     });
+
+  // Filter custom templates by search and category
+  const filteredCustomTemplates = customTemplates
+    .filter((template) => {
+      const templateName = (template.name || '').toLowerCase();
+      const matchesSearch = templateName.includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        !selectedCategoryId || template.category === selectedCategoryId;
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+  const handleCustomTemplateClick = (template: ProductTemplate) => {
+    if (onSelectCustomTemplate) {
+      onSelectCustomTemplate(template);
+    }
+  };
 
   const categoryOptions = [
     { value: '', label: t('inventory.allCategories') },
@@ -115,7 +140,50 @@ export const TemplateSelector = ({
       </button>
 
       <div className={styles.templateList}>
-        {filteredTemplates.length === 0 ? (
+        {/* Custom Templates Section */}
+        {filteredCustomTemplates.length > 0 && (
+          <>
+            <div className={styles.sectionHeader}>
+              {t('templateSelector.yourTemplates')}
+            </div>
+            {filteredCustomTemplates.map((template) => {
+              const category = categories.find(
+                (cat) => cat.id === template.category,
+              );
+              return (
+                <button
+                  key={template.id}
+                  type="button"
+                  className={styles.templateCard}
+                  onClick={() => handleCustomTemplateClick(template)}
+                  data-testid={`custom-template-card-${template.id}`}
+                >
+                  <div className={styles.templateIcon}>{category?.icon}</div>
+                  <div className={styles.templateInfo}>
+                    <h3 className={styles.templateName}>{template.name}</h3>
+                    <p className={styles.templateCategory}>
+                      {getCategoryLabel(template.category)}
+                    </p>
+                    {template.defaultUnit && (
+                      <p className={styles.templateQuantity}>
+                        {t(template.defaultUnit, { ns: 'units' })}
+                      </p>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </>
+        )}
+
+        {/* Recommended Templates Section */}
+        {filteredTemplates.length > 0 && filteredCustomTemplates.length > 0 && (
+          <div className={styles.sectionHeader}>
+            {t('templateSelector.recommendedItems')}
+          </div>
+        )}
+        {filteredTemplates.length === 0 &&
+        filteredCustomTemplates.length === 0 ? (
           <div className={styles.emptyState}>
             <p>{t('templateSelector.noTemplates')}</p>
           </div>

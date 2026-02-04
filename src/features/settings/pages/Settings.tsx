@@ -16,6 +16,7 @@ import {
   OverriddenRecommendations,
   KitManagement,
   CategoriesSection,
+  CustomTemplates,
 } from '@/features/settings';
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
@@ -35,6 +36,7 @@ type SettingsSection =
   | 'disabledRecommendations'
   | 'disabledCategories'
   | 'customCategories'
+  | 'customTemplates'
   | 'overriddenRecommendations'
   | 'recommendationKits'
   | 'backupTransfer'
@@ -104,6 +106,10 @@ export function Settings() {
         {
           id: 'recommendationKits',
           label: t('settings.navigation.sections.recommendationKits'),
+        },
+        {
+          id: 'customTemplates',
+          label: t('settings.navigation.sections.customTemplates'),
         },
         {
           id: 'disabledRecommendations',
@@ -234,6 +240,16 @@ export function Settings() {
             titleKey="settings.navigation.sections.overriddenRecommendations"
           >
             <OverriddenRecommendations />
+          </Section>
+        );
+
+      case 'customTemplates':
+        return (
+          <Section
+            testId="section-custom-templates"
+            titleKey="settings.navigation.sections.customTemplates"
+          >
+            <CustomTemplates />
           </Section>
         );
 

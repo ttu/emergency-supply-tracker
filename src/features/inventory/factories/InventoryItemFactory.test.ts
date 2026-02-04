@@ -589,6 +589,86 @@ describe('InventoryItemFactory', () => {
     });
   });
 
+  describe('createDraftFromCustomTemplate', () => {
+    it('creates draft item with empty id and timestamps from custom template', () => {
+      const customTemplate = {
+        id: createProductTemplateId('my-custom-item'),
+        name: 'My Custom Item',
+        category: 'food',
+        defaultUnit: 'pieces' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      };
+
+      const draft =
+        InventoryItemFactory.createDraftFromCustomTemplate(customTemplate);
+
+      // Draft should have empty id/timestamps
+      expect(draft.id).toBe(createItemId(''));
+      expect(draft.createdAt).toBe('');
+      expect(draft.updatedAt).toBe('');
+
+      // Should have template data
+      expect(draft.name).toBe('My Custom Item');
+      expect(draft.itemType).toBe('my-custom-item');
+      expect(draft.categoryId).toBe(createCategoryId('food'));
+      expect(draft.unit).toBe('pieces');
+      expect(draft.quantity).toBe(0);
+      expect(draft.neverExpires).toBe(true);
+    });
+
+    it('respects quantity option', () => {
+      const customTemplate = {
+        id: createProductTemplateId('custom-water'),
+        name: 'Custom Water',
+        category: 'water-beverages',
+        defaultUnit: 'liters' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      };
+
+      const draft = InventoryItemFactory.createDraftFromCustomTemplate(
+        customTemplate,
+        { quantity: 5 },
+      );
+
+      expect(draft.quantity).toBe(5);
+      expect(draft.unit).toBe('liters');
+    });
+
+    it('defaults to pieces when defaultUnit is invalid', () => {
+      const customTemplate = {
+        id: createProductTemplateId('no-unit'),
+        name: 'No Unit Item',
+        category: 'tools-supplies',
+        defaultUnit: undefined as unknown as 'pieces',
+        isBuiltIn: false,
+        isCustom: true,
+      };
+
+      const draft =
+        InventoryItemFactory.createDraftFromCustomTemplate(customTemplate);
+
+      expect(draft.unit).toBe('pieces');
+    });
+
+    it('handles empty template name', () => {
+      const customTemplate = {
+        id: createProductTemplateId('empty-name'),
+        name: '',
+        category: 'food',
+        defaultUnit: 'pieces' as const,
+        isBuiltIn: false,
+        isCustom: true,
+      };
+
+      const draft =
+        InventoryItemFactory.createDraftFromCustomTemplate(customTemplate);
+
+      expect(draft.name).toBe('');
+    });
+  });
+
   describe('createFromFormData', () => {
     it('creates item from form data', () => {
       const quantity = createQuantity(randomQuantitySmall());

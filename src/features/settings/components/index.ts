@@ -3,6 +3,7 @@ export { CategoryForm } from './CategoryForm';
 export type { CategoryFormData, CategoryFormProps } from './CategoryForm';
 export { CategoryList } from './CategoryList';
 export { ClearDataButton } from './ClearDataButton';
+export { CustomTemplates } from './CustomTemplates';
 export { DebugExport } from './DebugExport';
 export { DisabledCategories } from './DisabledCategories';
 export { DisabledRecommendations } from './DisabledRecommendations';

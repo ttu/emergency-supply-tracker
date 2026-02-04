@@ -15,6 +15,7 @@ export {
   CategoryForm,
   CategoryList,
   ClearDataButton,
+  CustomTemplates,
   DebugExport,
   DisabledCategories,
   DisabledRecommendations,
