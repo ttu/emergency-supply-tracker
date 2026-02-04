@@ -112,6 +112,39 @@ describe('CategoryCard', () => {
     expect(screen.getByText('54 / 108 L')).toBeInTheDocument();
   });
 
+  it('renders multiple shortages summary when more than one shortage', () => {
+    render(
+      <CategoryCard
+        categoryId="medical-health"
+        itemCount={2}
+        status="critical"
+        completionPercentage={20}
+        shortages={[
+          {
+            itemId: 'bandages',
+            itemName: 'products.bandages',
+            actual: 5,
+            needed: 20,
+            unit: 'pieces',
+            missing: 15,
+          },
+          {
+            itemId: 'medication',
+            itemName: 'products.medication',
+            actual: 0,
+            needed: 10,
+            unit: 'pieces',
+            missing: 10,
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByText('Need 15 pcs bandages +1 more'),
+    ).toBeInTheDocument();
+  });
+
   it('renders completion percentage', () => {
     render(
       <CategoryCard
@@ -123,6 +156,21 @@ describe('CategoryCard', () => {
     );
 
     expect(screen.getByText('60%')).toBeInTheDocument();
+  });
+
+  it('renders item count instead of completion when hasRecommendations is false', () => {
+    render(
+      <CategoryCard
+        categoryId="medical-health"
+        itemCount={7}
+        status="ok"
+        completionPercentage={100}
+        hasRecommendations={false}
+      />,
+    );
+
+    expect(screen.getByText('7 items')).toBeInTheDocument();
+    expect(screen.queryByText('100%')).not.toBeInTheDocument();
   });
 
   it('renders status badge with correct variant', () => {
@@ -221,6 +269,20 @@ describe('CategoryCard', () => {
 
     // Should show calories in kcal format (divided by 1000)
     expect(screen.getByText('6 / 12 kcal')).toBeInTheDocument();
+  });
+
+  it('renders 0 kcal when food has needed calories but no actual calories', () => {
+    render(
+      <CategoryCard
+        categoryId="food"
+        itemCount={0}
+        status="critical"
+        completionPercentage={0}
+        totalNeededCalories={12000}
+      />,
+    );
+
+    expect(screen.getByText('0 / 12 kcal')).toBeInTheDocument();
   });
 
   it('renders missing calories message for food category', () => {

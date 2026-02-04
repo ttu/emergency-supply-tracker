@@ -107,35 +107,46 @@ const CategoryCardComponent = ({
 
   const content = (
     <>
-      <div className={styles.header}>
-        <h3 className={styles.title}>{categoryName}</h3>
-        <Badge variant={getStatusVariant(status)} size="small">
-          {t(`status.${status}`)}
-        </Badge>
-      </div>
-
-      <div className={styles.stats}>
-        <div className={styles.statItem}>
-          <span className={styles.statLabel}>
-            {t('dashboard.category.stocked')}
-          </span>
-          <span className={styles.statValue}>
-            {progressText || `${itemCount} ${t('dashboard.category.items')}`}
-          </span>
+      <div className={styles.summaryBlock}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>{categoryName}</h3>
+          <Badge variant={getStatusVariant(status)} size="small">
+            {t(`status.${status}`)}
+          </Badge>
         </div>
-        {showPercentage ? (
+
+        <div className={styles.stats}>
           <div className={styles.statItem}>
             <span className={styles.statLabel}>
-              {t('dashboard.category.completion')}
+              {t('dashboard.category.stocked')}
             </span>
-            <span className={styles.statValue}>{completionPercentage}%</span>
+            <span className={styles.statValue}>
+              {progressText || `${itemCount} ${t('dashboard.category.items')}`}
+            </span>
           </div>
-        ) : (
-          <div className={styles.statItem}>
-            <span className={styles.statLabel}>
-              {t('dashboard.category.items')}
-            </span>
-            <span className={styles.statValue}>{itemCount}</span>
+          {showPercentage ? (
+            <div className={styles.statItem}>
+              <span className={styles.statLabel}>
+                {t('dashboard.category.completion')}
+              </span>
+              <span className={styles.statValue}>{completionPercentage}%</span>
+            </div>
+          ) : (
+            <div className={styles.statItem}>
+              <span className={styles.statLabel}>
+                {t('dashboard.category.items')}
+              </span>
+              <span className={styles.statValue}>{itemCount}</span>
+            </div>
+          )}
+        </div>
+
+        {showPercentage && (
+          <div className={styles.progressBar}>
+            <div
+              className={`${styles.progressFill} ${styles[`progress${status.charAt(0).toUpperCase()}${status.slice(1)}`]}`}
+              style={{ width: `${Math.min(completionPercentage, 100)}%` }}
+            />
           </div>
         )}
       </div>
@@ -143,15 +154,6 @@ const CategoryCardComponent = ({
       {shortageText && status !== 'ok' && (
         <div className={styles.shortage}>
           <span className={styles.shortageText}>{shortageText}</span>
-        </div>
-      )}
-
-      {showPercentage && (
-        <div className={styles.progressBar}>
-          <div
-            className={`${styles.progressFill} ${styles[`progress${status.charAt(0).toUpperCase()}${status.slice(1)}`]}`}
-            style={{ width: `${Math.min(completionPercentage, 100)}%` }}
-          />
         </div>
       )}
     </>
