@@ -1,7 +1,7 @@
 # Data Schema
 
-> **Version:** 1.2.0
-> **Last Updated:** 2026-01-15
+> **Version:** 1.3.0
+> **Last Updated:** 2026-02-04
 > **Source of Truth:** `src/shared/types/index.ts`
 
 This document describes the data structures used in the Emergency Supply Tracker application. All types are defined in TypeScript and stored in the browser's LocalStorage.

@@ -220,6 +220,8 @@ export function Inventory({
 
     setShowAddModal(false);
     setEditingItem(undefined);
+    setSelectedTemplate(undefined);
+    setSelectedCustomTemplate(undefined);
   };
 
   const handleUpdateItem = (
@@ -229,6 +231,8 @@ export function Inventory({
       updateItem(editingItem.id, itemData);
       setShowAddModal(false);
       setEditingItem(undefined);
+      setSelectedTemplate(undefined);
+      setSelectedCustomTemplate(undefined);
     }
   };
 
@@ -250,6 +254,7 @@ export function Inventory({
   const handleEditItem = useCallback(
     (item: InventoryItem) => {
       setEditingItem(item);
+      setSelectedCustomTemplate(undefined);
       // If item has a template, set it so weight/calorie calculations work
       if (item.itemType && item.itemType !== 'custom') {
         const template = recommendedItems.find((t) => t.id === item.itemType);
@@ -289,6 +294,7 @@ export function Inventory({
       );
 
       setSelectedTemplate(template);
+      setSelectedCustomTemplate(undefined);
       setEditingItem(draftItem);
       setShowTemplateModal(false);
       setShowAddModal(true);
