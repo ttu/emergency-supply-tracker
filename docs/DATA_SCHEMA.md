@@ -1,7 +1,7 @@
 # Data Schema
 
-> **Version:** 1.2.0
-> **Last Updated:** 2026-01-15
+> **Version:** 1.3.0
+> **Last Updated:** 2026-02-04
 > **Source of Truth:** `src/shared/types/index.ts`
 
 This document describes the data structures used in the Emergency Supply Tracker application. All types are defined in TypeScript and stored in the browser's LocalStorage.
@@ -297,6 +297,12 @@ interface ProductTemplate {
   kind?: ProductKind; // Product classification
   category: StandardCategoryId | string; // Category reference
   defaultUnit?: Unit; // Default measurement unit
+  neverExpires?: boolean; // Items from template default to no expiration
+  defaultExpirationMonths?: number; // Default expiration when neverExpires is false
+  weightGrams?: number; // Weight per unit (e.g. food)
+  caloriesPerUnit?: number; // Calories per unit (e.g. food)
+  caloriesPer100g?: number; // For calorie calculation from weight
+  requiresWaterLiters?: number; // Water per unit for preparation (food)
   isBuiltIn: boolean; // System-provided template
   isCustom: boolean; // User-created template
   createdAt?: string; // ISO timestamp

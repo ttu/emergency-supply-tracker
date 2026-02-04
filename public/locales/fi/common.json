@@ -257,7 +257,10 @@
       "description": "Sinulla on {{count}} omaa mallia. Nämä mallit näkyvät tuotevalitsimessa nopeaa tuotteiden lisäystä varten.",
       "editTitle": "Muokkaa mallia",
       "nameEn": "Nimi (englanti)",
-      "nameFi": "Nimi (suomi)"
+      "nameFi": "Nimi (suomi)",
+      "defaultExpirationMonths": "Oletusvanhenemisaika (kuukausina)",
+      "caloriesPer100g": "Kalorit / 100 g",
+      "nameRequired": "Syötä vähintään yksi nimi (englanti tai suomi)."
     },
     "about": {
       "version": "Versio",

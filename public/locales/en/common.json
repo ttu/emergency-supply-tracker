@@ -257,7 +257,10 @@
       "description": "You have {{count}} custom template(s). These templates appear in the item selector for quick item creation.",
       "editTitle": "Edit Template",
       "nameEn": "Name (English)",
-      "nameFi": "Name (Finnish)"
+      "nameFi": "Name (Finnish)",
+      "defaultExpirationMonths": "Default expiration (months)",
+      "caloriesPer100g": "Calories per 100 g",
+      "nameRequired": "Enter at least one name (English or Finnish)."
     },
     "about": {
       "version": "Version",

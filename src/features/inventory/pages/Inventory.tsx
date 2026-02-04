@@ -130,6 +130,9 @@ export function Inventory({
   const [selectedTemplate, setSelectedTemplate] = useState<
     RecommendedItemDefinition | undefined
   >(undefined);
+  const [selectedCustomTemplate, setSelectedCustomTemplate] = useState<
+    ProductTemplate | undefined
+  >(undefined);
 
   // Get category status for selected category from shared hook
   const categoryStatus = useMemo(() => {
@@ -208,11 +211,17 @@ export function Inventory({
         name: itemData.name,
         category: itemData.categoryId,
         defaultUnit: itemData.unit,
+        neverExpires: itemData.neverExpires,
+        weightGrams: itemData.weightGrams,
+        caloriesPerUnit: itemData.caloriesPerUnit,
+        requiresWaterLiters: itemData.requiresWaterLiters,
       });
     }
 
     setShowAddModal(false);
     setEditingItem(undefined);
+    setSelectedTemplate(undefined);
+    setSelectedCustomTemplate(undefined);
   };
 
   const handleUpdateItem = (
@@ -222,6 +231,8 @@ export function Inventory({
       updateItem(editingItem.id, itemData);
       setShowAddModal(false);
       setEditingItem(undefined);
+      setSelectedTemplate(undefined);
+      setSelectedCustomTemplate(undefined);
     }
   };
 
@@ -243,6 +254,7 @@ export function Inventory({
   const handleEditItem = useCallback(
     (item: InventoryItem) => {
       setEditingItem(item);
+      setSelectedCustomTemplate(undefined);
       // If item has a template, set it so weight/calorie calculations work
       if (item.itemType && item.itemType !== 'custom') {
         const template = recommendedItems.find((t) => t.id === item.itemType);
@@ -282,6 +294,7 @@ export function Inventory({
       );
 
       setSelectedTemplate(template);
+      setSelectedCustomTemplate(undefined);
       setEditingItem(draftItem);
       setShowTemplateModal(false);
       setShowAddModal(true);
@@ -293,12 +306,14 @@ export function Inventory({
     setShowAddModal(false);
     setEditingItem(undefined);
     setSelectedTemplate(undefined);
+    setSelectedCustomTemplate(undefined);
   };
 
   const handleBackToTemplateSelector = () => {
     setShowAddModal(false);
     setEditingItem(undefined);
     setSelectedTemplate(undefined);
+    setSelectedCustomTemplate(undefined);
     setShowTemplateModal(true);
   };
 
@@ -307,19 +322,17 @@ export function Inventory({
     setShowAddModal(true);
     setEditingItem(undefined);
     setSelectedTemplate(undefined);
+    setSelectedCustomTemplate(undefined);
   };
 
   const handleSelectCustomTemplate = useCallback(
     (template: ProductTemplate) => {
-      // Create a draft item pre-filled with the custom template's data
       const draftItem = InventoryItemFactory.createDraftFromCustomTemplate(
         template,
-        {
-          quantity: 0,
-        },
+        { quantity: 0 },
       );
-
-      setSelectedTemplate(undefined); // Custom templates don't have recommended quantities
+      setSelectedTemplate(undefined);
+      setSelectedCustomTemplate(template);
       setEditingItem(draftItem);
       setShowTemplateModal(false);
       setShowAddModal(true);
@@ -507,9 +520,18 @@ export function Inventory({
             onSubmit={editingItem?.id ? handleUpdateItem : handleAddItem}
             onCancel={handleCancelForm}
             defaultCategoryId={selectedCategoryId}
-            templateWeightGramsPerUnit={selectedTemplate?.weightGramsPerUnit}
-            templateCaloriesPer100g={selectedTemplate?.caloriesPer100g}
-            templateRequiresWaterLiters={selectedTemplate?.requiresWaterLiters}
+            templateWeightGramsPerUnit={
+              selectedTemplate?.weightGramsPerUnit ??
+              selectedCustomTemplate?.weightGrams
+            }
+            templateCaloriesPer100g={
+              selectedTemplate?.caloriesPer100g ??
+              selectedCustomTemplate?.caloriesPer100g
+            }
+            templateRequiresWaterLiters={
+              selectedTemplate?.requiresWaterLiters ??
+              selectedCustomTemplate?.requiresWaterLiters
+            }
           />
           {editingItem?.id && (
             <div className={styles.deleteSection}>

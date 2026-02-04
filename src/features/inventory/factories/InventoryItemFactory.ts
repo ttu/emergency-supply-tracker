@@ -341,8 +341,7 @@ export class InventoryItemFactory {
 
   /**
    * Creates a draft InventoryItem from a custom ProductTemplate for form initialization.
-   * Custom templates are lightweight (name, category, unit) and don't have
-   * quantity/scaling rules like RecommendedItemDefinitions.
+   * Copies template defaults (name, category, unit, neverExpires, weight, calories, etc.).
    *
    * @param template - Custom product template
    * @param options - Optional overrides (quantity)
@@ -357,15 +356,17 @@ export class InventoryItemFactory {
         ? template.defaultUnit
         : 'pieces';
 
-    // Return as draft (empty id/timestamps - form will treat as new item)
     return {
       id: createItemId(''), // Empty id signals this is a draft/new item
       name: template.name ?? template.names?.en ?? template.names?.fi ?? '',
-      itemType: template.id, // Use the template ID as itemType
+      itemType: template.id,
       categoryId: createCategoryId(template.category),
       quantity: createQuantity(options.quantity ?? 0),
       unit,
-      neverExpires: true, // Custom templates don't have default expiration
+      neverExpires: template.neverExpires ?? true,
+      weightGrams: template.weightGrams,
+      caloriesPerUnit: template.caloriesPerUnit,
+      requiresWaterLiters: template.requiresWaterLiters,
       createdAt: '',
       updatedAt: '',
     };
