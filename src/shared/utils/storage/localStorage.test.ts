@@ -1,14 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   createDefaultAppData,
+  createDefaultRootStorage,
   getAppData,
   saveAppData,
   clearAppData,
+  getWorkspaceList,
+  getActiveWorkspaceId,
+  setActiveWorkspaceId,
+  createWorkspace,
+  deleteWorkspace,
+  renameWorkspace,
+  DEFAULT_WORKSPACE_ID,
   exportToJSON,
   importFromJSON,
   exportToJSONSelective,
   parseImportJSON,
   mergeImportData,
+  STORAGE_KEY,
 } from './localStorage';
 import type {
   ExportSection,
@@ -53,8 +62,8 @@ describe('localStorage utilities', () => {
       expect(defaultData.version).toBe(CURRENT_SCHEMA_VERSION);
       expect(defaultData.household).toBeDefined();
       expect(defaultData.household.adults).toBe(2);
-      expect(defaultData.household.children).toBe(0);
-      expect(defaultData.household.supplyDurationDays).toBe(7);
+      expect(defaultData.household.children).toBe(3);
+      expect(defaultData.household.supplyDurationDays).toBe(3);
       expect(defaultData.household.useFreezer).toBe(false);
       expect(defaultData.settings).toBeDefined();
       expect(defaultData.customCategories).toEqual([]);
@@ -111,15 +120,22 @@ describe('localStorage utilities', () => {
     expect(loaded?.customCategories[1].id).toBe('test-cat-2');
   });
 
-  it('returns undefined when no data exists', () => {
-    expect(getAppData()).toBeUndefined();
+  it('creates and returns default app data when no data exists', () => {
+    const result = getAppData();
+    expect(result).toBeDefined();
+    expect(result?.version).toBe(CURRENT_SCHEMA_VERSION);
+    expect(result?.household).toBeDefined();
+    expect(result?.items).toEqual([]);
   });
 
-  it('clears data', () => {
+  it('clears data; next getAppData creates default workspace', () => {
     const mockData = createMockAppData();
     saveAppData(mockData);
     clearAppData();
-    expect(getAppData()).toBeUndefined();
+    const result = getAppData();
+    expect(result).toBeDefined();
+    expect(result?.version).toBe(CURRENT_SCHEMA_VERSION);
+    expect(result?.items).toEqual([]);
   });
 
   describe('import/export', () => {
@@ -410,6 +426,10 @@ describe('localStorage utilities', () => {
   });
 
   describe('error handling', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
     it('handles localStorage.getItem error gracefully', () => {
       const consoleSpy = vi
         .spyOn(console, 'error')
@@ -464,7 +484,7 @@ describe('localStorage utilities', () => {
 
       expect(result).toBeUndefined();
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to parse JSON from localStorage:',
+        'Failed to load data from localStorage:',
         expect.any(Error),
       );
 
@@ -490,36 +510,9 @@ describe('localStorage utilities', () => {
       const consoleSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {});
-      const unsupportedData = {
-        version: '0.9.0', // Unsupported version
-        household: {
-          adults: 2,
-          children: 0,
-          pets: 0,
-          supplyDurationDays: 7,
-          useFreezer: false,
-        },
-        settings: {
-          language: 'en',
-          theme: 'light',
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        customCategories: [],
-        items: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
-      };
-      localStorage.setItem(
-        'emergencySupplyTracker',
-        JSON.stringify(unsupportedData),
-      );
+      const root = createDefaultRootStorage();
+      root.version = '0.9.0';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
 
       const result = getAppData();
 
@@ -536,11 +529,10 @@ describe('localStorage utilities', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
 
-      // Create data that needs migration but will fail
-      const oldData = createMockAppData({ version: '1.0.0' });
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(oldData));
+      const root = createDefaultRootStorage();
+      root.version = '1.0.0';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
 
-      // Import migrations module and mock functions
       const migrations = await import('./migrations');
       const needsMigrationSpy = vi
         .spyOn(migrations, 'needsMigration')
@@ -557,13 +549,10 @@ describe('localStorage utilities', () => {
 
       const result = getAppData();
 
-      // Should return the unmigrated data
       expect(result).toBeDefined();
       expect(result?.version).toBe('1.0.0');
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringMatching(
-          /Migration failed from .* to .*: Migration failed/,
-        ),
+        expect.stringMatching(/Migration failed: .* to .*: Migration failed/),
       );
 
       needsMigrationSpy.mockRestore();
@@ -576,10 +565,10 @@ describe('localStorage utilities', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
 
-      const oldData = createMockAppData({ version: '1.0.0' });
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(oldData));
+      const root = createDefaultRootStorage();
+      root.version = '1.0.0';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
 
-      // Import migrations module and mock functions
       const migrations = await import('./migrations');
       const needsMigrationSpy = vi
         .spyOn(migrations, 'needsMigration')
@@ -592,7 +581,6 @@ describe('localStorage utilities', () => {
 
       const result = getAppData();
 
-      // Should return the unmigrated data
       expect(result).toBeDefined();
       expect(result?.version).toBe('1.0.0');
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -1086,6 +1074,67 @@ describe('localStorage utilities', () => {
 
       expect(result.lastModified >= beforeMerge).toBe(true);
       expect(result.lastModified <= afterMerge).toBe(true);
+    });
+  });
+
+  describe('workspace API', () => {
+    beforeEach(() => {
+      clearAppData();
+    });
+
+    it('getWorkspaceList returns default workspace after getAppData', () => {
+      getAppData(); // bootstrap default root
+      const list = getWorkspaceList();
+      expect(list).toHaveLength(1);
+      expect(list[0].id).toBe(DEFAULT_WORKSPACE_ID);
+      expect(list[0].name).toBe('Home');
+    });
+
+    it('getActiveWorkspaceId returns default after bootstrap', () => {
+      getAppData();
+      expect(getActiveWorkspaceId()).toBe(DEFAULT_WORKSPACE_ID);
+    });
+
+    it('createWorkspace adds a new workspace', () => {
+      getAppData();
+      const id = createWorkspace('Car kit');
+      const list = getWorkspaceList();
+      expect(list).toHaveLength(2);
+      expect(list.find((w) => w.id === id)?.name).toBe('Car kit');
+    });
+
+    it('setActiveWorkspaceId switches active workspace', () => {
+      getAppData();
+      const id = createWorkspace('Car kit');
+      setActiveWorkspaceId(id);
+      expect(getActiveWorkspaceId()).toBe(id);
+      const data = getAppData();
+      expect(data).toBeDefined();
+      expect(data?.household).toBeDefined();
+    });
+
+    it('renameWorkspace updates workspace name', () => {
+      getAppData();
+      const id = createWorkspace('Car kit');
+      renameWorkspace(id, 'Vehicle emergency');
+      const list = getWorkspaceList();
+      expect(list.find((w) => w.id === id)?.name).toBe('Vehicle emergency');
+    });
+
+    it('deleteWorkspace removes workspace and switches active when needed', () => {
+      getAppData();
+      const id = createWorkspace('Car kit');
+      setActiveWorkspaceId(id);
+      deleteWorkspace(id);
+      expect(getWorkspaceList()).toHaveLength(1);
+      expect(getActiveWorkspaceId()).toBe(DEFAULT_WORKSPACE_ID);
+    });
+
+    it('deleteWorkspace does nothing when only one workspace', () => {
+      getAppData();
+      const listBefore = getWorkspaceList();
+      deleteWorkspace(DEFAULT_WORKSPACE_ID);
+      expect(getWorkspaceList()).toEqual(listBefore);
     });
   });
 });

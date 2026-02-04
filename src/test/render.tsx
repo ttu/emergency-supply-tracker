@@ -136,7 +136,7 @@ export function renderWithProviders(
   // Track if we set localStorage so we can clean it up
   const didSetLocalStorage = initialAppData !== undefined;
 
-  // Setup localStorage if initial data provided
+  // Setup localStorage if initial data provided (use saveAppData so root/workspace shape is correct)
   if (didSetLocalStorage) {
     const data = createMockAppData(initialAppData);
     saveAppData(data);

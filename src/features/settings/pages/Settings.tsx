@@ -17,6 +17,7 @@ import {
   KitManagement,
   CategoriesSection,
   CustomTemplates,
+  WorkspaceSection,
 } from '@/features/settings';
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
@@ -30,6 +31,7 @@ import styles from './Settings.module.css';
 
 type SettingsSection =
   | 'appearance'
+  | 'workspaces'
   | 'household'
   | 'nutrition'
   | 'hiddenAlerts'
@@ -83,6 +85,10 @@ export function Settings() {
         {
           id: 'appearance',
           label: t('settings.navigation.sections.appearance'),
+        },
+        {
+          id: 'workspaces',
+          label: t('settings.navigation.sections.workspaces'),
         },
         {
           id: 'backupTransfer',
@@ -167,6 +173,16 @@ export function Settings() {
               <LanguageSelector />
               <ThemeSelector />
             </div>
+          </Section>
+        );
+
+      case 'workspaces':
+        return (
+          <Section
+            testId="section-workspaces"
+            titleKey="settings.navigation.sections.workspaces"
+          >
+            <WorkspaceSection />
           </Section>
         );
 

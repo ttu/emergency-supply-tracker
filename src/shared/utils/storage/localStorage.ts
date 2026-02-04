@@ -4,8 +4,9 @@ import type {
   ProductTemplateId,
   Category,
   ProductTemplate,
-  KitId,
-  UploadedKit,
+  RootStorage,
+  WorkspaceData,
+  WorkspaceId,
 } from '@/shared/types';
 import type {
   ExportSection,
@@ -17,12 +18,14 @@ import {
   createCategoryId,
   createProductTemplateId,
   createAlertId,
+  createWorkspaceId,
 } from '@/shared/types';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
 import { UserSettingsFactory } from '@/features/settings/factories/UserSettingsFactory';
 import { STANDARD_CATEGORIES } from '@/features/categories/data';
 import { DEFAULT_KIT_ID } from '@/features/templates/kits';
+import { DEFAULT_HOUSEHOLD } from '@/features/household';
 import {
   CURRENT_SCHEMA_VERSION,
   migrateToCurrentVersion,
@@ -36,6 +39,9 @@ import {
 } from '../validation/appDataValidation';
 
 export const STORAGE_KEY = 'emergencySupplyTracker';
+
+/** Default workspace id when none exist (first load) */
+export const DEFAULT_WORKSPACE_ID = 'default' as WorkspaceId;
 
 /**
  * Stores the last data validation result for error reporting.
@@ -102,17 +108,16 @@ function normalizeItems(
   }));
 }
 
-export function createDefaultAppData(): AppData {
+/** Build default workspace data (for new workspace or first load) */
+function createDefaultWorkspaceData(
+  id: WorkspaceId,
+  name: string,
+): WorkspaceData {
+  const now = new Date().toISOString();
   return {
-    version: CURRENT_SCHEMA_VERSION,
-    household: {
-      adults: 2,
-      children: 0,
-      pets: 0,
-      supplyDurationDays: 7,
-      useFreezer: false,
-    },
-    settings: UserSettingsFactory.createDefault(),
+    id,
+    name,
+    household: { ...DEFAULT_HOUSEHOLD },
     customCategories: [],
     items: [],
     customTemplates: [],
@@ -121,120 +126,171 @@ export function createDefaultAppData(): AppData {
     disabledCategories: [],
     selectedRecommendationKit: DEFAULT_KIT_ID,
     uploadedRecommendationKits: [],
-    lastModified: new Date().toISOString(),
+    lastModified: now,
+  };
+}
+
+/** Build root storage with one default workspace (first load) */
+export function createDefaultRootStorage(): RootStorage {
+  const defaultId = DEFAULT_WORKSPACE_ID;
+  return {
+    version: CURRENT_SCHEMA_VERSION,
+    settings: UserSettingsFactory.createDefault(),
+    activeWorkspaceId: defaultId,
+    workspaces: {
+      [defaultId]: createDefaultWorkspaceData(defaultId, 'Home'),
+    },
+  };
+}
+
+/** Read and parse root storage from localStorage. Returns undefined if empty. Throws on parse error (invalid JSON). */
+function getRootStorage(): RootStorage | undefined {
+  const json = localStorage.getItem(STORAGE_KEY);
+  if (!json) return undefined;
+  const raw = JSON.parse(json) as unknown;
+  if (typeof raw !== 'object' || raw === null || !('workspaces' in raw))
+    return undefined;
+  return raw as RootStorage;
+}
+
+/** Write root storage to localStorage. Throws on setItem failure. */
+function saveRootStorage(root: RootStorage): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
+}
+
+/** Extract workspace slice from AppData (for persisting to root) */
+function extractWorkspaceFromAppData(
+  data: AppData,
+  workspaceId: WorkspaceId,
+  workspaceName: string,
+): WorkspaceData {
+  return {
+    id: workspaceId,
+    name: workspaceName,
+    household: data.household,
+    items: data.items,
+    customCategories: data.customCategories,
+    customTemplates: data.customTemplates,
+    dismissedAlertIds: data.dismissedAlertIds,
+    disabledRecommendedItems: data.disabledRecommendedItems,
+    disabledCategories: data.disabledCategories,
+    selectedRecommendationKit: data.selectedRecommendationKit,
+    uploadedRecommendationKits: data.uploadedRecommendationKits,
+    customRecommendedItems: data.customRecommendedItems,
+    lastModified: data.lastModified,
+    lastBackupDate: data.lastBackupDate,
+    backupReminderDismissedUntil: data.backupReminderDismissedUntil,
+  };
+}
+
+/** Merge root storage into AppData shape (settings + active workspace) */
+function mergeRootToAppData(
+  root: RootStorage,
+  workspace: WorkspaceData,
+): AppData {
+  return {
+    version: root.version,
+    settings: root.settings,
+    household: workspace.household,
+    items: workspace.items,
+    customCategories: workspace.customCategories,
+    customTemplates: workspace.customTemplates,
+    dismissedAlertIds: workspace.dismissedAlertIds,
+    disabledRecommendedItems: workspace.disabledRecommendedItems,
+    disabledCategories: workspace.disabledCategories,
+    selectedRecommendationKit: workspace.selectedRecommendationKit,
+    uploadedRecommendationKits: workspace.uploadedRecommendationKits,
+    customRecommendedItems: workspace.customRecommendedItems,
+    lastModified: workspace.lastModified,
+    lastBackupDate: workspace.lastBackupDate,
+    backupReminderDismissedUntil: workspace.backupReminderDismissedUntil,
+  };
+}
+
+export function createDefaultAppData(): AppData {
+  const root = createDefaultRootStorage();
+  const ws = root.workspaces[root.activeWorkspaceId];
+  return mergeRootToAppData(root, ws);
+}
+
+/** Normalize merged AppData (branded types, kit defaults) */
+function normalizeMergedAppData(data: AppData): AppData {
+  const normalizedItems = normalizeItems(data.items) ?? [];
+  return {
+    ...data,
+    items: normalizedItems,
+    customCategories: (data.customCategories || []).map((cat) => ({
+      ...(cat as Category),
+      id: createCategoryId(cat.id as string),
+    })),
+    customTemplates: (data.customTemplates || []).map((template) => ({
+      ...(template as ProductTemplate),
+      id: createProductTemplateId(template.id as string),
+    })),
+    dismissedAlertIds: (data.dismissedAlertIds || []).map((id) =>
+      createAlertId(id as string),
+    ),
+    disabledRecommendedItems: (data.disabledRecommendedItems || []).map((id) =>
+      createProductTemplateId(id as string),
+    ),
+    selectedRecommendationKit: data.selectedRecommendationKit ?? DEFAULT_KIT_ID,
+    uploadedRecommendationKits: data.uploadedRecommendationKits ?? [],
   };
 }
 
 export function getAppData(): AppData | undefined {
   try {
-    const json = localStorage.getItem(STORAGE_KEY);
-    if (!json) return undefined;
+    let root = getRootStorage();
+    if (!root) {
+      root = createDefaultRootStorage();
+      saveRootStorage(root);
+    }
 
-    // Parse JSON - use unknown instead of any for type safety
-    let rawData: unknown;
-    try {
-      rawData = JSON.parse(json);
-    } catch (parseError) {
-      console.error('Failed to parse JSON from localStorage:', parseError);
+    if (!isVersionSupported(root.version)) {
+      console.error(`Data schema version ${root.version} is not supported.`);
       return undefined;
     }
 
-    // Check if version is supported before proceeding
-    if (
-      typeof rawData === 'object' &&
-      rawData !== null &&
-      'version' in rawData &&
-      typeof rawData.version === 'string'
-    ) {
-      const dataVersion = rawData.version;
-      if (!isVersionSupported(dataVersion)) {
-        console.error(
-          `Data schema version ${dataVersion} is not supported. Data may be corrupted or from an incompatible version.`,
-        );
-        return undefined;
-      }
+    const activeId = root.activeWorkspaceId;
+    const workspace = root.workspaces[activeId as string];
+    if (!workspace) {
+      return undefined;
     }
 
-    // Normalize items: ensure itemType values are valid template IDs and cast IDs
-    const normalizedItems =
-      normalizeItems(
-        (rawData as { items?: unknown }).items as InventoryItem[] | undefined,
-      ) ?? [];
+    let data = normalizeMergedAppData(mergeRootToAppData(root, workspace));
 
-    // Cast IDs to branded types
-    let data: AppData = {
-      ...(rawData as AppData),
-      items: normalizedItems,
-      customCategories: (
-        (
-          rawData as {
-            customCategories?: Array<{ id: string; [key: string]: unknown }>;
-          }
-        ).customCategories || []
-      ).map((cat) => ({
-        ...(cat as unknown as Category),
-        id: createCategoryId(cat.id),
-      })),
-      customTemplates: (
-        (
-          rawData as {
-            customTemplates?: Array<{ id: string; [key: string]: unknown }>;
-          }
-        ).customTemplates || []
-      ).map((template) => ({
-        ...(template as unknown as ProductTemplate),
-        id: createProductTemplateId(template.id),
-      })),
-      dismissedAlertIds: (
-        (rawData as { dismissedAlertIds?: string[] }).dismissedAlertIds || []
-      ).map(createAlertId),
-      disabledRecommendedItems: (
-        (rawData as { disabledRecommendedItems?: string[] })
-          .disabledRecommendedItems || []
-      ).map(createProductTemplateId),
-      // Normalize kit fields - only set defaults if they're missing from rawData
-      selectedRecommendationKit:
-        (rawData as { selectedRecommendationKit?: KitId })
-          .selectedRecommendationKit ?? DEFAULT_KIT_ID,
-      uploadedRecommendationKits:
-        (rawData as { uploadedRecommendationKits?: UploadedKit[] })
-          .uploadedRecommendationKits ?? [],
-    };
-
-    // Apply migrations if needed
     if (needsMigration(data)) {
       try {
         data = migrateToCurrentVersion(data);
-        // Save migrated data back to localStorage
-        saveAppData(data);
-        console.info(
-          `Data migrated from version ${data.version} to ${CURRENT_SCHEMA_VERSION}`,
+        const updatedWorkspace = extractWorkspaceFromAppData(
+          data,
+          activeId,
+          workspace.name,
         );
+        root.workspaces[activeId as string] = updatedWorkspace;
+        root.version = data.version;
+        saveRootStorage(root);
+        console.info(`Data migrated to ${CURRENT_SCHEMA_VERSION}`);
       } catch (error) {
         if (error instanceof MigrationError) {
           console.error(
-            `Migration failed from ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
+            `Migration failed: ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
           );
         } else {
           console.error('Migration failed:', error);
         }
-        // Return unmigrated data - app may still work with older schema
         return data;
       }
     }
 
-    // Validate data values before returning
     const validationResult = validateAppDataValues(data);
     if (!validationResult.isValid) {
       console.error('Data validation failed:', validationResult.errors);
       lastDataValidationResult = validationResult;
-      // Return undefined to signal that data is invalid
       return undefined;
     }
 
-    // Clear any previous validation errors on successful load
     lastDataValidationResult = null;
-
     return data;
   } catch (error) {
     console.error('Failed to load data from localStorage:', error);
@@ -244,8 +300,21 @@ export function getAppData(): AppData | undefined {
 
 export function saveAppData(data: AppData): void {
   try {
-    const json = JSON.stringify(data);
-    localStorage.setItem(STORAGE_KEY, json);
+    let root = getRootStorage();
+    if (!root) {
+      root = createDefaultRootStorage();
+    }
+    root.settings = data.settings;
+    const activeId = root.activeWorkspaceId;
+    const currentWorkspace = root.workspaces[activeId as string];
+    if (currentWorkspace) {
+      root.workspaces[activeId as string] = extractWorkspaceFromAppData(
+        data,
+        activeId,
+        currentWorkspace.name,
+      );
+    }
+    saveRootStorage(root);
   } catch (error) {
     console.error('Failed to save data to localStorage:', error);
   }
@@ -253,6 +322,79 @@ export function saveAppData(data: AppData): void {
 
 export function clearAppData(): void {
   localStorage.removeItem(STORAGE_KEY);
+}
+
+/** Workspace list item for UI */
+export interface WorkspaceListItem {
+  id: WorkspaceId;
+  name: string;
+}
+
+export function getWorkspaceList(): WorkspaceListItem[] {
+  const root = getRootStorage();
+  if (!root) return [];
+  return Object.values(root.workspaces).map((w) => ({
+    id: w.id,
+    name: w.name,
+  }));
+}
+
+export function getActiveWorkspaceId(): WorkspaceId | undefined {
+  const root = getRootStorage();
+  if (!root) return undefined;
+  return root.activeWorkspaceId;
+}
+
+export function setActiveWorkspaceId(id: WorkspaceId): void {
+  const root = getRootStorage();
+  if (!root) return;
+  if (!root.workspaces[id as string]) return;
+  root.activeWorkspaceId = id;
+  saveRootStorage(root);
+}
+
+function generateWorkspaceId(): WorkspaceId {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return createWorkspaceId(crypto.randomUUID());
+  }
+  return createWorkspaceId(
+    `ws-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+  );
+}
+
+export function createWorkspace(name: string): WorkspaceId {
+  let root = getRootStorage();
+  if (!root) {
+    root = createDefaultRootStorage();
+  }
+  const id = generateWorkspaceId();
+  root.workspaces[id as string] = createDefaultWorkspaceData(
+    id,
+    name.trim() || 'Workspace',
+  );
+  saveRootStorage(root);
+  return id;
+}
+
+export function deleteWorkspace(id: WorkspaceId): void {
+  const root = getRootStorage();
+  if (!root) return;
+  const ids = Object.keys(root.workspaces);
+  if (ids.length <= 1) return;
+  delete root.workspaces[id as string];
+  if (root.activeWorkspaceId === id) {
+    root.activeWorkspaceId = createWorkspaceId(ids.find((k) => k !== id)!);
+  }
+  saveRootStorage(root);
+}
+
+export function renameWorkspace(id: WorkspaceId, name: string): void {
+  const root = getRootStorage();
+  if (!root) return;
+  const w = root.workspaces[id as string];
+  if (!w) return;
+  w.name = name.trim() || w.name;
+  saveRootStorage(root);
 }
 
 /**

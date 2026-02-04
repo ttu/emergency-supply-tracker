@@ -226,6 +226,38 @@ describe('ErrorBoundary', () => {
     const user = userEvent.setup();
     const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
 
+    // Store root with unsupported version so getAppData() returns undefined
+    // (empty storage would cause getAppData to create default and return data)
+    const unsupportedRoot = {
+      version: '0.0.1',
+      settings: { language: 'en', theme: 'system', onboardingCompleted: true },
+      activeWorkspaceId: 'default',
+      workspaces: {
+        default: {
+          id: 'default',
+          name: 'Home',
+          household: {
+            adults: 1,
+            children: 0,
+            pets: 0,
+            supplyDurationDays: 3,
+            useFreezer: false,
+          },
+          items: [],
+          customCategories: [],
+          customTemplates: [],
+          dismissedAlertIds: [],
+          disabledRecommendedItems: [],
+          disabledCategories: [],
+          lastModified: new Date().toISOString(),
+        },
+      },
+    };
+    localStorage.setItem(
+      'emergencySupplyTracker',
+      JSON.stringify(unsupportedRoot),
+    );
+
     renderWithI18n(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />

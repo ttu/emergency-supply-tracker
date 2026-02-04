@@ -162,6 +162,7 @@
       },
       "sections": {
         "appearance": "Appearance",
+        "workspaces": "Workspaces",
         "household": "Household Configuration",
         "nutrition": "Nutrition & Requirements",
         "hiddenAlerts": "Hidden Alerts",
@@ -268,6 +269,21 @@
       "storageUsedValue": "{{used}} MB of ~{{limit}} MB",
       "storageDescription": "Your inventory and settings are saved in your browser. Export a backup or clear data below if storage gets full.",
       "viewOnGitHub": "View on GitHub"
+    },
+    "workspaces": {
+      "description": "Manage multiple inventories (e.g. home, car kit). Each workspace has its own household settings, items, and alerts.",
+      "activeWorkspace": "Active workspace",
+      "workspaceList": "Workspace list",
+      "createWorkspace": "Create new workspace",
+      "addWorkspace": "Add workspace",
+      "rename": "Rename",
+      "renameLabel": "Rename workspace",
+      "deleteLabel": "Delete workspace",
+      "newNamePlaceholder": "Workspace name",
+      "defaultName": "Workspace",
+      "active": "Active",
+      "confirmDeleteTitle": "Delete workspace?",
+      "confirmDeleteMessage": "This workspace and its inventory will be removed. You cannot undo this."
     },
     "language": {
       "label": "Language",

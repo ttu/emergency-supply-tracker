@@ -162,6 +162,7 @@
       },
       "sections": {
         "appearance": "Ulkoasu",
+        "workspaces": "Työtilat",
         "household": "Kotitalouden asetukset",
         "nutrition": "Ravitsemus & vaatimukset",
         "hiddenAlerts": "Piilotetut hälytykset",
@@ -268,6 +269,21 @@
       "storageUsedValue": "{{used}} MB / noin {{limit}} MB",
       "storageDescription": "Varastosi ja asetukset tallennetaan selaimellesi. Vie varmuuskopio tai tyhjennä tiedot alta, jos tallennustila täyttyy.",
       "viewOnGitHub": "Näytä GitHubissa"
+    },
+    "workspaces": {
+      "description": "Hallitse useita varastoja (esim. koti, autopaketti). Jokaisella työtilalla on oma kotitalous, tuotteet ja hälytykset.",
+      "activeWorkspace": "Aktiivinen työtila",
+      "workspaceList": "Työtilat",
+      "createWorkspace": "Luo uusi työtila",
+      "addWorkspace": "Lisää työtila",
+      "rename": "Nimeä uudelleen",
+      "renameLabel": "Nimeä työtila uudelleen",
+      "deleteLabel": "Poista työtila",
+      "newNamePlaceholder": "Työtilan nimi",
+      "defaultName": "Työtila",
+      "active": "Aktiivinen",
+      "confirmDeleteTitle": "Poistetaanko työtila?",
+      "confirmDeleteMessage": "Tämä työtila ja sen varasto poistetaan. Toimintoa ei voi perua."
     },
     "language": {
       "label": "Kieli",
