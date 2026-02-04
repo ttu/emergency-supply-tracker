@@ -1690,6 +1690,211 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
+  describe('rotation items in category percentage', () => {
+    it('should use estimatedQuantity for rotation items', () => {
+      const items: InventoryItem[] = [
+        {
+          id: createItemId('1'),
+          name: 'Toilet Paper',
+          itemType: createProductTemplateId('toilet-paper'),
+          categoryId: createCategoryId('hygiene-sanitation'),
+          quantity: 2, // Actual (should be ignored)
+          isNormalRotation: true,
+          estimatedQuantity: 20, // Should be used (>= 14 needed)
+          unit: 'rolls',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ];
+
+      const household = {
+        adults: 2,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      };
+
+      const result = calculateCategoryPercentage(
+        'hygiene-sanitation',
+        items,
+        household,
+        [],
+        mockHygieneSanitationRecommendedItems,
+      );
+
+      // Should use estimatedQuantity (20), not quantity (2)
+      // This is a mixed-unit category, so it uses item type counting
+      // 2 adults * 7 days = 14 rolls needed, 20 >= 14 so fulfilled
+      // If quantity (2) was used, it would NOT be fulfilled
+      expect(result.totalActual).toBeGreaterThan(0);
+    });
+
+    it('should return 0 contribution for excluded rotation items', () => {
+      const items: InventoryItem[] = [
+        {
+          id: createItemId('1'),
+          name: 'Toilet Paper',
+          itemType: createProductTemplateId('toilet-paper'),
+          categoryId: createCategoryId('hygiene-sanitation'),
+          quantity: 10,
+          isNormalRotation: true,
+          estimatedQuantity: 6,
+          excludeFromCalculations: true,
+          unit: 'rolls',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ];
+
+      const household = {
+        adults: 2,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 7,
+        useFreezer: false,
+      };
+
+      const result = calculateCategoryPercentage(
+        'hygiene-sanitation',
+        items,
+        household,
+        [],
+        mockHygieneSanitationRecommendedItems,
+      );
+
+      // Excluded rotation item should contribute 0
+      // totalActual should be 0 since the only item is excluded
+      expect(result.totalActual).toBe(0);
+    });
+
+    it('should use estimatedQuantity for rotation items in food category (calorie-based)', () => {
+      const items: InventoryItem[] = [
+        {
+          id: createItemId('1'),
+          name: 'Rice',
+          itemType: createProductTemplateId('rice'),
+          categoryId: createCategoryId('food'),
+          quantity: 1, // Actual (should be ignored)
+          isNormalRotation: true,
+          estimatedQuantity: 2, // Should be used
+          caloriesPerUnit: 3600,
+          unit: 'kilograms',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ];
+
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        [],
+        mockFoodRecommendedItems,
+      );
+
+      // Should use estimatedQuantity (2), not quantity (1)
+      // 2 kg rice = 7200 kcal
+      expect(result.totalActualCalories).toBe(7200);
+    });
+
+    it('should return 0 calories for excluded rotation food items', () => {
+      const items: InventoryItem[] = [
+        {
+          id: createItemId('1'),
+          name: 'Rice',
+          itemType: createProductTemplateId('rice'),
+          categoryId: createCategoryId('food'),
+          quantity: 5,
+          isNormalRotation: true,
+          estimatedQuantity: 2,
+          excludeFromCalculations: true,
+          caloriesPerUnit: 3600,
+          unit: 'kilograms',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ];
+
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        [],
+        mockFoodRecommendedItems,
+      );
+
+      // Excluded rotation item should contribute 0 calories
+      expect(result.totalActualCalories).toBe(0);
+    });
+
+    it('should mix regular and rotation items correctly', () => {
+      const items: InventoryItem[] = [
+        {
+          id: createItemId('1'),
+          name: 'Rice (regular)',
+          itemType: createProductTemplateId('rice'),
+          categoryId: createCategoryId('food'),
+          quantity: 1, // Regular item - use quantity
+          caloriesPerUnit: 3600,
+          unit: 'kilograms',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: createItemId('2'),
+          name: 'Canned Beans (rotation)',
+          itemType: createProductTemplateId('canned-beans'),
+          categoryId: createCategoryId('food'),
+          quantity: 10, // Actual (should be ignored)
+          isNormalRotation: true,
+          estimatedQuantity: 4, // Should be used
+          caloriesPerUnit: 300,
+          unit: 'cans',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ];
+
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 3,
+        useFreezer: true,
+      });
+
+      const result = calculateCategoryPercentage(
+        'food',
+        items,
+        household,
+        [],
+        mockFoodRecommendedItems,
+      );
+
+      // Regular: 1 kg rice = 3600 kcal
+      // Rotation: 4 cans beans = 1200 kcal (using estimatedQuantity, not quantity)
+      // Total: 4800 kcal
+      expect(result.totalActualCalories).toBe(4800);
+    });
+  });
+
   describe('edge cases', () => {
     it('returns 0% with hasEnough=true for category with items but no recommended items', () => {
       // When there are no recommendations, there are no requirements to meet

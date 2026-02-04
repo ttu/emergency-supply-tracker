@@ -18,7 +18,6 @@ import type {
   RecommendedItemDefinition,
 } from '@/shared/types';
 import { isFoodCategory, isFoodRecommendedItem } from '@/shared/types';
-import { calculateItemTotalCalories } from './calories';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import {
   ADULT_REQUIREMENT_MULTIPLIER,
@@ -32,6 +31,7 @@ import {
   findMatchingItemsByType,
   itemMatchesRecommendedId,
 } from './itemMatching';
+import { getEffectiveQuantity } from './effectiveQuantity';
 
 /**
  * Options for category percentage calculations.
@@ -205,15 +205,19 @@ function calculateFoodCategoryPercentage(
 
     // Sum calories from matching items
     const itemCalories = matchingItems.reduce((sum, item) => {
+      // Use effective quantity for rotation items
+      const effectiveQty = getEffectiveQuantity(item);
+
       if (
         item.caloriesPerUnit != null &&
         Number.isFinite(item.caloriesPerUnit)
       ) {
-        return sum + calculateItemTotalCalories(item);
+        // Calculate calories using effective quantity instead of item.quantity
+        return sum + effectiveQty * item.caloriesPerUnit;
       }
-      // Fallback: use recommended item's calories per unit (assume quantity is already in units)
+      // Fallback: use recommended item's calories per unit
       const calsPerUnit = recItem.caloriesPerUnit ?? 0;
-      return sum + item.quantity * calsPerUnit;
+      return sum + effectiveQty * calsPerUnit;
     }, 0);
 
     totalActualCalories += itemCalories;
@@ -233,9 +237,10 @@ function calculateFoodCategoryPercentage(
       return;
     }
 
-    // If item has caloriesPerUnit, count it using calculateItemTotalCalories
+    // If item has caloriesPerUnit, count it using effective quantity
     if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
-      totalActualCalories += calculateItemTotalCalories(item);
+      const effectiveQty = getEffectiveQuantity(item);
+      totalActualCalories += effectiveQty * item.caloriesPerUnit;
       return;
     }
 
@@ -252,8 +257,9 @@ function calculateFoodCategoryPercentage(
       );
 
       if (disabledRecItem) {
+        const effectiveQty = getEffectiveQuantity(item);
         totalActualCalories +=
-          item.quantity * (disabledRecItem.caloriesPerUnit ?? 0);
+          effectiveQty * (disabledRecItem.caloriesPerUnit ?? 0);
       }
     }
   });
@@ -325,7 +331,7 @@ function calculateQuantityCategoryPercentage(
 
     const hasMarkedAsEnough = matchingItems.some((item) => item.markedAsEnough);
     const actualQty = matchingItems.reduce(
-      (sum, item) => sum + item.quantity,
+      (sum, item) => sum + getEffectiveQuantity(item),
       0,
     );
 
@@ -377,7 +383,8 @@ function calculateFoodCategoryPercentageWithoutRecommendations(
   let totalActualCalories = 0;
   categoryItems.forEach((item) => {
     if (item.caloriesPerUnit != null && Number.isFinite(item.caloriesPerUnit)) {
-      totalActualCalories += calculateItemTotalCalories(item);
+      const effectiveQty = getEffectiveQuantity(item);
+      totalActualCalories += effectiveQty * item.caloriesPerUnit;
     }
   });
 
@@ -415,7 +422,8 @@ function calculateWaterCategoryPercentageWithoutRecommendations(
 
   // Sum all water from category items (assume liters for water items)
   const totalActual = categoryItems.reduce(
-    (sum, item) => sum + (item.unit === 'liters' ? item.quantity : 0),
+    (sum, item) =>
+      sum + (item.unit === 'liters' ? getEffectiveQuantity(item) : 0),
     0,
   );
 
