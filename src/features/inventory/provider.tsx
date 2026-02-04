@@ -303,7 +303,19 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     (
       id: ProductTemplateId,
       updates: Partial<
-        Pick<ProductTemplate, 'name' | 'category' | 'defaultUnit'>
+        Pick<
+          ProductTemplate,
+          | 'name'
+          | 'names'
+          | 'category'
+          | 'defaultUnit'
+          | 'neverExpires'
+          | 'defaultExpirationMonths'
+          | 'weightGrams'
+          | 'caloriesPerUnit'
+          | 'caloriesPer100g'
+          | 'requiresWaterLiters'
+        >
       >,
     ) => {
       const template = customTemplates.find((t) => t.id === id);

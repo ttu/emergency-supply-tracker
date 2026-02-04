@@ -7,7 +7,7 @@ import { Modal } from '@/shared/components/Modal';
 import { Input } from '@/shared/components/Input';
 import { Select } from '@/shared/components/Select';
 import type { ProductTemplate, Unit } from '@/shared/types';
-import { VALID_UNITS } from '@/shared/types';
+import { VALID_UNITS, isFoodCategory } from '@/shared/types';
 import styles from './CustomTemplates.module.css';
 
 interface EditFormData {
@@ -15,6 +15,12 @@ interface EditFormData {
   nameFi: string;
   category: string;
   defaultUnit: Unit;
+  neverExpires: boolean;
+  defaultExpirationMonths: string;
+  weightGrams: string;
+  caloriesPerUnit: string;
+  caloriesPer100g: string;
+  requiresWaterLiters: string;
 }
 
 /** Get the localized name for a template based on current language */
@@ -39,6 +45,12 @@ export function CustomTemplates() {
     nameFi: '',
     category: '',
     defaultUnit: 'pieces',
+    neverExpires: true,
+    defaultExpirationMonths: '',
+    weightGrams: '',
+    caloriesPerUnit: '',
+    caloriesPer100g: '',
+    requiresWaterLiters: '',
   });
 
   const handleEditClick = (template: ProductTemplate) => {
@@ -48,6 +60,13 @@ export function CustomTemplates() {
       nameFi: template.names?.fi || template.name || '',
       category: template.category,
       defaultUnit: template.defaultUnit || 'pieces',
+      neverExpires: template.neverExpires ?? true,
+      defaultExpirationMonths:
+        template.defaultExpirationMonths?.toString() ?? '',
+      weightGrams: template.weightGrams?.toString() ?? '',
+      caloriesPerUnit: template.caloriesPerUnit?.toString() ?? '',
+      caloriesPer100g: template.caloriesPer100g?.toString() ?? '',
+      requiresWaterLiters: template.requiresWaterLiters?.toString() ?? '',
     });
   };
 
@@ -58,6 +77,12 @@ export function CustomTemplates() {
       nameFi: '',
       category: '',
       defaultUnit: 'pieces',
+      neverExpires: true,
+      defaultExpirationMonths: '',
+      weightGrams: '',
+      caloriesPerUnit: '',
+      caloriesPer100g: '',
+      requiresWaterLiters: '',
     });
   };
 
@@ -65,13 +90,52 @@ export function CustomTemplates() {
     if (editingTemplate && (formData.nameEn.trim() || formData.nameFi.trim())) {
       const nameEn = formData.nameEn.trim();
       const nameFi = formData.nameFi.trim();
-      // Use EN name as the primary name for backwards compatibility
       const primaryName = nameEn || nameFi;
+      const parsedExpirationMonths = formData.defaultExpirationMonths.trim()
+        ? Number.parseFloat(formData.defaultExpirationMonths)
+        : undefined;
+      const weightGrams = formData.weightGrams.trim()
+        ? Number.parseFloat(formData.weightGrams)
+        : undefined;
+      const caloriesPerUnit = formData.caloriesPerUnit.trim()
+        ? Number.parseFloat(formData.caloriesPerUnit)
+        : undefined;
+      const caloriesPer100g = formData.caloriesPer100g.trim()
+        ? Number.parseFloat(formData.caloriesPer100g)
+        : undefined;
+      const requiresWaterLiters = formData.requiresWaterLiters.trim()
+        ? Number.parseFloat(formData.requiresWaterLiters)
+        : undefined;
       updateCustomTemplate(editingTemplate.id, {
         name: primaryName,
         names: { en: nameEn || primaryName, fi: nameFi || primaryName },
         category: formData.category,
         defaultUnit: formData.defaultUnit,
+        neverExpires: formData.neverExpires,
+        defaultExpirationMonths:
+          !formData.neverExpires &&
+          parsedExpirationMonths !== undefined &&
+          Number.isFinite(parsedExpirationMonths) &&
+          parsedExpirationMonths > 0
+            ? Math.round(parsedExpirationMonths)
+            : undefined,
+        weightGrams:
+          weightGrams !== undefined && Number.isFinite(weightGrams)
+            ? weightGrams
+            : undefined,
+        caloriesPerUnit:
+          caloriesPerUnit !== undefined && Number.isFinite(caloriesPerUnit)
+            ? caloriesPerUnit
+            : undefined,
+        caloriesPer100g:
+          caloriesPer100g !== undefined && Number.isFinite(caloriesPer100g)
+            ? caloriesPer100g
+            : undefined,
+        requiresWaterLiters:
+          requiresWaterLiters !== undefined &&
+          Number.isFinite(requiresWaterLiters)
+            ? requiresWaterLiters
+            : undefined,
       });
       handleCloseModal();
     }
@@ -196,6 +260,85 @@ export function CustomTemplates() {
               }
               options={unitOptions}
             />
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={formData.neverExpires}
+                onChange={(e) =>
+                  setFormData({ ...formData, neverExpires: e.target.checked })
+                }
+              />
+              {t('itemForm.neverExpires')}
+            </label>
+            {!formData.neverExpires && (
+              <Input
+                id="edit-template-expiration-months"
+                type="number"
+                min={1}
+                label={t('settings.customTemplates.defaultExpirationMonths')}
+                value={formData.defaultExpirationMonths}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    defaultExpirationMonths: e.target.value,
+                  })
+                }
+              />
+            )}
+            {isFoodCategory(formData.category) && (
+              <>
+                <Input
+                  id="edit-template-weight"
+                  type="number"
+                  min={0}
+                  label={t('itemForm.weightGrams')}
+                  value={formData.weightGrams}
+                  onChange={(e) =>
+                    setFormData({ ...formData, weightGrams: e.target.value })
+                  }
+                />
+                <Input
+                  id="edit-template-calories-unit"
+                  type="number"
+                  min={0}
+                  label={t('itemForm.caloriesPerUnit')}
+                  value={formData.caloriesPerUnit}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      caloriesPerUnit: e.target.value,
+                    })
+                  }
+                />
+                <Input
+                  id="edit-template-calories-100g"
+                  type="number"
+                  min={0}
+                  label={t('settings.customTemplates.caloriesPer100g')}
+                  value={formData.caloriesPer100g}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      caloriesPer100g: e.target.value,
+                    })
+                  }
+                />
+                <Input
+                  id="edit-template-water"
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  label={t('itemForm.requiresWaterLiters')}
+                  value={formData.requiresWaterLiters}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      requiresWaterLiters: e.target.value,
+                    })
+                  }
+                />
+              </>
+            )}
             <div className={styles.modalButtons}>
               <Button
                 type="button"

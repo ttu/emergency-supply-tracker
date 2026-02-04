@@ -79,6 +79,20 @@
   gap: var(--spacing-md);
 }
 
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.checkboxLabel input[type='checkbox'] {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .modalButtons {
   display: flex;
   justify-content: flex-end;

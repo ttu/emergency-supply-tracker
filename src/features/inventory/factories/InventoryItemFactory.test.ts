@@ -667,6 +667,29 @@ describe('InventoryItemFactory', () => {
 
       expect(draft.name).toBe('');
     });
+
+    it('copies neverExpires, weightGrams, caloriesPerUnit, requiresWaterLiters from template', () => {
+      const customTemplate = {
+        id: createProductTemplateId('canned-soup'),
+        name: 'Canned Soup',
+        category: 'food',
+        defaultUnit: 'cans' as const,
+        neverExpires: false,
+        weightGrams: 400,
+        caloriesPerUnit: 200,
+        requiresWaterLiters: 0.5,
+        isBuiltIn: false,
+        isCustom: true,
+      };
+
+      const draft =
+        InventoryItemFactory.createDraftFromCustomTemplate(customTemplate);
+
+      expect(draft.neverExpires).toBe(false);
+      expect(draft.weightGrams).toBe(400);
+      expect(draft.caloriesPerUnit).toBe(200);
+      expect(draft.requiresWaterLiters).toBe(0.5);
+    });
   });
 
   describe('createFromFormData', () => {

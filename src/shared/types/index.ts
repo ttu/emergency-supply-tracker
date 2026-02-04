@@ -203,6 +203,18 @@ export interface ProductTemplate {
   kind?: ProductKind;
   category: StandardCategoryId | string;
   defaultUnit?: Unit;
+  /** If true, items created from this template default to no expiration */
+  neverExpires?: boolean;
+  /** Default expiration in months when neverExpires is false (optional) */
+  defaultExpirationMonths?: number;
+  /** Weight per unit in grams (e.g. for food) */
+  weightGrams?: number;
+  /** Calories per unit (e.g. for food) */
+  caloriesPerUnit?: number;
+  /** Calories per 100g for calorie calculation from weight */
+  caloriesPer100g?: number;
+  /** Liters of water required per unit for preparation (food) */
+  requiresWaterLiters?: number;
   isBuiltIn: boolean;
   isCustom: boolean;
   createdAt?: string;

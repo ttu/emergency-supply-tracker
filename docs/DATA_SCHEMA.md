@@ -297,6 +297,12 @@ interface ProductTemplate {
   kind?: ProductKind; // Product classification
   category: StandardCategoryId | string; // Category reference
   defaultUnit?: Unit; // Default measurement unit
+  neverExpires?: boolean; // Items from template default to no expiration
+  defaultExpirationMonths?: number; // Default expiration when neverExpires is false
+  weightGrams?: number; // Weight per unit (e.g. food)
+  caloriesPerUnit?: number; // Calories per unit (e.g. food)
+  caloriesPer100g?: number; // For calorie calculation from weight
+  requiresWaterLiters?: number; // Water per unit for preparation (food)
   isBuiltIn: boolean; // System-provided template
   isCustom: boolean; // User-created template
   createdAt?: string; // ISO timestamp
