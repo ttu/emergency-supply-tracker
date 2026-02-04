@@ -121,3 +121,37 @@ export const ClickableCard: Story = {
     onItemClick: (item) => console.log('Card clicked', item.name),
   },
 };
+
+// Rotation item stories
+const rotationItem = createMockInventoryItem({
+  id: createItemId('rotation-1'),
+  name: 'All-Purpose Flour',
+  itemType: createProductTemplateId('flour'),
+  categoryId: createCategoryId('food'),
+  quantity: 0,
+  unit: 'kilograms',
+  isNormalRotation: true,
+  estimatedQuantity: 2,
+});
+
+export const RotationItem: Story = {
+  args: {
+    item: rotationItem,
+  },
+};
+
+export const RotationItemExcluded: Story = {
+  args: {
+    item: {
+      ...rotationItem,
+      excludeFromCalculations: true,
+    },
+  },
+};
+
+export const RotationItemClickable: Story = {
+  args: {
+    item: rotationItem,
+    onItemClick: (item) => console.log('Card clicked', item.name),
+  },
+};
