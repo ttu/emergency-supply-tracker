@@ -16,7 +16,7 @@ import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ThemeApplier } from '@/components/ThemeApplier';
 import type { AppData } from '@/shared/types';
 import { createMockAppData } from '@/shared/utils/test/factories';
-import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import { STORAGE_KEY, saveAppData } from '@/shared/utils/storage/localStorage';
 
 /**
  * Options for configuring which providers to include
@@ -139,7 +139,7 @@ export function renderWithProviders(
   // Setup localStorage if initial data provided
   if (didSetLocalStorage) {
     const data = createMockAppData(initialAppData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    saveAppData(data);
   }
 
   function AllProviders({ children }: { children: ReactNode }) {

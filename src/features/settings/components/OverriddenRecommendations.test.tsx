@@ -10,7 +10,7 @@ import {
   createMockInventoryItem,
   createMockAppData,
 } from '@/shared/utils/test/factories';
-import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import { saveAppData, getAppData } from '@/shared/utils/storage/localStorage';
 import {
   createItemId,
   createCategoryId,
@@ -71,7 +71,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -92,7 +92,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -113,7 +113,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -121,11 +121,11 @@ describe('OverriddenRecommendations', () => {
     await user.click(unmarkButton);
 
     // Check that the item is no longer marked as enough
-    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    const updatedItem = storedData.items.find(
+    const storedData = getAppData();
+    const updatedItem = storedData?.items.find(
       (item: { id: string }) => item.id === 'item-1',
     );
-    expect(updatedItem.markedAsEnough).toBe(false);
+    expect(updatedItem?.markedAsEnough).toBe(false);
   });
 
   it('shows unmark all button when multiple items are overridden', () => {
@@ -148,7 +148,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem1, markedItem2],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -178,7 +178,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem1, markedItem2],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<OverriddenRecommendations />);
 
@@ -186,8 +186,8 @@ describe('OverriddenRecommendations', () => {
     await user.click(unmarkAllButton);
 
     // Check that all items are no longer marked as enough
-    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    storedData.items.forEach((item: { markedAsEnough?: boolean }) => {
+    const storedData = getAppData();
+    storedData?.items.forEach((item: { markedAsEnough?: boolean }) => {
       expect(item.markedAsEnough).toBe(false);
     });
   });
@@ -205,7 +205,7 @@ describe('OverriddenRecommendations', () => {
     const appData = createMockAppData({
       items: [markedItem],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<OverriddenRecommendations />);
 

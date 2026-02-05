@@ -4,7 +4,7 @@ import React from 'react';
 import App from './App';
 import { createMockAppData } from '@/shared/utils/test/factories';
 import { renderWithProviders } from '@/test/render';
-import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import { saveAppData } from '@/shared/utils/storage/localStorage';
 
 // Mock i18next
 const mockT = (key: string) => key;
@@ -37,7 +37,7 @@ const setupCompletedOnboarding = () => {
       onboardingCompleted: true,
     },
   } as Parameters<typeof createMockAppData>[0]);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+  saveAppData(appData);
 };
 
 // Helper to render App with all required providers
@@ -178,7 +178,7 @@ describe('App', () => {
         onboardingCompleted: false,
       },
     } as Parameters<typeof createMockAppData>[0]);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderApp();
 

@@ -11,7 +11,7 @@ import {
   createDateOnly,
   createQuantity,
 } from '@/shared/types';
-import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import { STORAGE_KEY, saveAppData } from '@/shared/utils/storage/localStorage';
 
 const meta: Meta<typeof Dashboard> = {
   title: 'Pages/Dashboard',
@@ -88,7 +88,7 @@ export const WithItems: Story = {
       const appData = createMockAppData({
         items,
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      saveAppData(appData);
 
       return <Story />;
     },
@@ -152,7 +152,7 @@ export const WithAlerts: Story = {
       const appData = createMockAppData({
         items,
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      saveAppData(appData);
 
       return <Story />;
     },
@@ -214,7 +214,7 @@ export const WellPrepared: Story = {
       const appData = createMockAppData({
         items,
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      saveAppData(appData);
 
       return <Story />;
     },
