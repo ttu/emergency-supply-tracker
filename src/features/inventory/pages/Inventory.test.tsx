@@ -14,7 +14,7 @@ import { Inventory } from './Inventory';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import { calculateCategoryPreparedness } from '@/features/dashboard';
-import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import { saveAppData, getAppData } from '@/shared/utils/storage/localStorage';
 import type { UploadedKit } from '@/shared/types';
 import {
   createItemId,
@@ -381,7 +381,7 @@ describe('Inventory Page with items', () => {
       household: createMockHousehold({ children: 0 }),
       items: [mockItem, expiredItem, neverExpiresItem],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
   });
 
   afterEach(() => {
@@ -670,7 +670,7 @@ describe('Inventory Page with items', () => {
       household: createMockHousehold({ children: 0 }),
       items: [customOnlyItem],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<Inventory />);
 
@@ -860,14 +860,14 @@ describe('Inventory Page - Recommended Items Filtering', () => {
         useFreezer: false,
       },
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     // Verify localStorage is set correctly
-    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    expect(storedData.household.pets).toBe(0);
+    const storedData = getAppData();
+    expect(storedData?.household.pets).toBe(0);
 
     // Now filter recommended items as the Inventory component would
-    const household = storedData.household;
+    const household = storedData!.household;
     const petItems = RECOMMENDED_ITEMS.filter(
       (item) => item.category === 'pets',
     );
@@ -893,7 +893,7 @@ describe('Inventory Page - Recommended Items Filtering', () => {
       items: [],
     };
     const data = createMockAppData(initialAppData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    saveAppData(data);
 
     // Verify the data created by createMockAppData
     expect(data.household.pets).toBe(0);
@@ -901,8 +901,8 @@ describe('Inventory Page - Recommended Items Filtering', () => {
     expect(data.household.children).toBe(0);
 
     // Verify localStorage has the correct value
-    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    expect(storedData.household.pets).toBe(0);
+    const storedData = getAppData();
+    expect(storedData?.household.pets).toBe(0);
   });
 
   it('applicableRecommendedItems should filter out pet items when pets = 0', () => {
@@ -995,7 +995,7 @@ describe('Inventory Page - Mark as Enough', () => {
       household: createMockHousehold({ children: 0 }),
       items: [itemWithLowQuantity],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
   });
 
   afterEach(() => {
@@ -1160,7 +1160,7 @@ describe('Inventory Page - resolveItemName (custom item names)', () => {
       uploadedRecommendationKits: [customKit],
       selectedRecommendationKit: `custom:${CUSTOM_KIT_UUID}`,
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
   });
 
   afterEach(() => {
@@ -1209,7 +1209,7 @@ describe('Inventory Page - Custom Templates', () => {
         },
       ],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
   });
 
   afterEach(() => {
@@ -1256,7 +1256,7 @@ describe('Inventory Page - Custom Templates', () => {
       items: [],
       customTemplates: [],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<Inventory />);
 
@@ -1296,10 +1296,10 @@ describe('Inventory Page - Custom Templates', () => {
     });
 
     // Template should be persisted in localStorage
-    const storedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const storedData = getAppData();
     expect(
-      storedData.customTemplates?.some(
-        (template: { name: string }) => template.name === 'New Template Item',
+      storedData?.customTemplates?.some(
+        (template) => template.name === 'New Template Item',
       ),
     ).toBe(true);
   });

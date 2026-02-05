@@ -5,7 +5,11 @@ import { renderWithProviders } from './render';
 import { useSettings } from '@/features/settings';
 import { useHousehold } from '@/features/household';
 import { useInventory } from '@/features/inventory';
-import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import {
+  STORAGE_KEY,
+  saveAppData,
+  getAppData,
+} from '@/shared/utils/storage/localStorage';
 import type { AppData } from '@/shared/types';
 import {
   createMockAppData,
@@ -73,7 +77,7 @@ describe('renderWithProviders localStorage persistence', () => {
     };
 
     const appData = createMockAppData(initialData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     const { unmount } = renderWithProviders(<TestComponent />, {
       initialAppData: initialData,
@@ -121,8 +125,8 @@ describe('renderWithProviders localStorage persistence', () => {
 
     // Wait for localStorage to be updated
     await waitFor(() => {
-      const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      expect(savedData.settings?.theme).toBe('dark');
+      const savedData = getAppData();
+      expect(savedData?.settings?.theme).toBe('dark');
     });
 
     // Update household
@@ -130,8 +134,8 @@ describe('renderWithProviders localStorage persistence', () => {
 
     // Wait for localStorage to be updated
     await waitFor(() => {
-      const updatedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      expect(updatedData.household?.adults).toBe(3);
+      const updatedData = getAppData();
+      expect(updatedData?.household?.adults).toBe(3);
     });
 
     unmount();
@@ -179,7 +183,7 @@ describe('renderWithProviders localStorage persistence', () => {
         },
       },
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     const { unmount } = renderWithProviders(<TestComponent />);
 

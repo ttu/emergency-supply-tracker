@@ -7,7 +7,7 @@ import {
   createMockAppData,
   createMockHousehold,
 } from '@/test';
-import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import { saveAppData, getAppData } from '@/shared/utils/storage/localStorage';
 import {
   createItemId,
   createCategoryId,
@@ -198,7 +198,7 @@ describe('Dashboard', () => {
     const appData = createMockAppData({
       items: [outOfStockItem],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<Dashboard />);
     // Check that alerts section heading exists
@@ -223,7 +223,7 @@ describe('Dashboard', () => {
     const appData = createMockAppData({
       items: [outOfStockItem],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     const { container } = renderWithProviders(<Dashboard />);
 
@@ -268,7 +268,7 @@ describe('Dashboard', () => {
     const appData = createMockAppData({
       items: [item],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     // Remount to pick up changes
     unmount();
@@ -370,7 +370,7 @@ describe('Dashboard', () => {
         createAlertId('category-out-of-stock-water-beverages'),
       ],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     renderWithProviders(<Dashboard />);
 
@@ -417,7 +417,7 @@ describe('Dashboard', () => {
       ],
       // No lastBackupDate - this triggers the reminder when items exist
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     const { container } = renderWithProviders(<Dashboard />);
 
@@ -442,8 +442,8 @@ describe('Dashboard', () => {
     ).not.toBeInTheDocument();
 
     // Verify backupReminderDismissedUntil is set in localStorage
-    const updatedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    expect(updatedData.backupReminderDismissedUntil).toBeDefined();
+    const updatedData = getAppData();
+    expect(updatedData?.backupReminderDismissedUntil).toBeDefined();
   });
 
   it('should initialize BACKUP_REMINDER_ALERT_ID constant', () => {
@@ -461,7 +461,7 @@ describe('Dashboard', () => {
         }),
       ],
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    saveAppData(appData);
 
     // Render Dashboard to trigger module load and constant initialization
     const { container } = renderWithProviders(<Dashboard />);
