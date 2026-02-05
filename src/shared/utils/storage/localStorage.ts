@@ -324,9 +324,7 @@ export function getAppData(): AppData | undefined {
 export function saveAppData(data: AppData): void {
   try {
     let root = getRootStorage();
-    if (!root) {
-      root = createDefaultRootStorage();
-    }
+    root ??= createDefaultRootStorage();
     root.settings = data.settings;
     const activeId = root.activeWorkspaceId;
     const currentWorkspace = root.workspaces[activeId as string];
@@ -345,6 +343,21 @@ export function saveAppData(data: AppData): void {
 
 export function clearAppData(): void {
   localStorage.removeItem(STORAGE_KEY);
+}
+
+/**
+ * Build RootStorage from AppData (e.g. for E2E/test fixtures).
+ * Uses default workspace id and name "Home".
+ */
+export function buildRootStorageFromAppData(data: AppData): RootStorage {
+  const root = createDefaultRootStorage();
+  root.settings = data.settings;
+  root.workspaces[DEFAULT_WORKSPACE_ID as string] = extractWorkspaceFromAppData(
+    data,
+    DEFAULT_WORKSPACE_ID,
+    'Home',
+  );
+  return root;
 }
 
 /** Workspace list item for UI */
@@ -387,9 +400,7 @@ function generateWorkspaceId(): WorkspaceId {
 
 export function createWorkspace(name: string): WorkspaceId {
   let root = safeGetRootStorage();
-  if (!root) {
-    root = createDefaultRootStorage();
-  }
+  root ??= createDefaultRootStorage();
   const id = generateWorkspaceId();
   root.workspaces[id as string] = createDefaultWorkspaceData(
     id,

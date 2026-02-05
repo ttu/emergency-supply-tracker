@@ -5,7 +5,25 @@ import {
   type Locator,
 } from '@playwright/test';
 import { createMockAppData } from '../src/shared/utils/test/factories';
-import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
+import {
+  STORAGE_KEY,
+  buildRootStorageFromAppData,
+} from '../src/shared/utils/storage/localStorage';
+import type { AppData } from '../src/shared/types';
+
+/** Set localStorage to RootStorage built from AppData (for E2E fixtures). */
+export async function setAppStorage(
+  page: Page,
+  appData: AppData,
+): Promise<void> {
+  const root = buildRootStorageFromAppData(appData);
+  await page.evaluate(
+    ({ root, key }) => {
+      localStorage.setItem(key, JSON.stringify(root));
+    },
+    { root, key: STORAGE_KEY },
+  );
+}
 
 // Helper to wait for element count to change
 export async function waitForCountChange(
@@ -117,12 +135,7 @@ export const test = base.extend<{
       await page.goto('/');
       // Close any modals that might be open
       await closeAnyOpenModals(page);
-      await page.evaluate(
-        ({ data, key }) => {
-          localStorage.setItem(key, JSON.stringify(data));
-        },
-        { data: defaultAppData, key: STORAGE_KEY },
-      );
+      await setAppStorage(page, defaultAppData);
       await page.reload({ waitUntil: 'domcontentloaded' });
       // Close any modals after reload
       await closeAnyOpenModals(page);

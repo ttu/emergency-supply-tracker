@@ -37,6 +37,14 @@ async function ensureDrawerClosed(page: Page) {
   }
 }
 
+async function openWorkspacesSection(page: Page) {
+  await page.getByTestId('nav-settings').click();
+  await expect(page.getByTestId('page-settings')).toBeVisible();
+  await page.getByRole('menuitem', { name: 'Workspaces' }).click();
+  await expect(page.getByTestId('section-workspaces')).toBeVisible();
+  await expect(page.getByTestId('workspace-section')).toBeVisible();
+}
+
 test.describe('Accessibility', () => {
   test.beforeEach(async ({ setupApp }) => {
     await setupApp();
@@ -197,14 +205,6 @@ test.describe('Accessibility', () => {
     test.beforeEach(async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 720 });
     });
-
-    async function openWorkspacesSection(page: Page) {
-      await page.getByTestId('nav-settings').click();
-      await expect(page.getByTestId('page-settings')).toBeVisible();
-      await page.getByRole('menuitem', { name: 'Workspaces' }).click();
-      await expect(page.getByTestId('section-workspaces')).toBeVisible();
-      await expect(page.getByTestId('workspace-section')).toBeVisible();
-    }
 
     test('should receive initial focus on primary delete button', async ({
       page,

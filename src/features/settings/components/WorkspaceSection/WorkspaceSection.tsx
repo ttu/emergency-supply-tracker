@@ -22,6 +22,7 @@ export function WorkspaceSection() {
     null,
   );
   const confirmDialogRef = useRef<HTMLDialogElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   const canDelete = workspaces.length > 1;
 
@@ -57,22 +58,32 @@ export function WorkspaceSection() {
     setEditName('');
   }, []);
 
-  const handleDeleteClick = useCallback((id: WorkspaceId) => {
-    setConfirmDeleteId(id);
+  const handleDeleteClick = useCallback(
+    (id: WorkspaceId, trigger: HTMLElement) => {
+      triggerRef.current = trigger;
+      setConfirmDeleteId(id);
+    },
+    [],
+  );
+
+  const closeDialog = useCallback(() => {
+    triggerRef.current?.focus();
+    triggerRef.current = null;
+    setConfirmDeleteId(null);
   }, []);
 
   const handleConfirmDelete = useCallback(() => {
     if (confirmDeleteId) {
       deleteWorkspace(confirmDeleteId);
-      setConfirmDeleteId(null);
     }
-  }, [confirmDeleteId, deleteWorkspace]);
+    closeDialog();
+  }, [confirmDeleteId, deleteWorkspace, closeDialog]);
 
   const handleCancelDelete = useCallback(() => {
-    setConfirmDeleteId(null);
-  }, []);
+    closeDialog();
+  }, [closeDialog]);
 
-  // When dialog is open: show modal, focus primary action, and handle Escape
+  // When dialog is open: show modal, focus primary action, Escape, and focus trap
   useEffect(() => {
     if (!confirmDeleteId) return;
     const dialog = confirmDialogRef.current;
@@ -88,7 +99,25 @@ export function WorkspaceSection() {
         ?.focus();
     });
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleCancelDelete();
+      if (e.key === 'Escape') {
+        handleCancelDelete();
+        return;
+      }
+      if (e.key === 'Tab' && dialog) {
+        const focusable = dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (focusable.length === 0) return;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => {
@@ -179,7 +208,12 @@ export function WorkspaceSection() {
                       <Button
                         variant="secondary"
                         size="small"
-                        onClick={() => handleDeleteClick(w.id)}
+                        onClick={(e) =>
+                          handleDeleteClick(
+                            w.id,
+                            e.currentTarget as HTMLElement,
+                          )
+                        }
                         aria-label={t('settings.workspaces.deleteLabel')}
                       >
                         {t('common.delete')}
@@ -216,8 +250,10 @@ export function WorkspaceSection() {
       {confirmDeleteId && (
         <dialog
           ref={confirmDialogRef}
-          className={styles.confirmOverlay}
+          role="dialog"
+          aria-modal="true"
           aria-labelledby="delete-workspace-title"
+          className={styles.confirmOverlay}
           data-testid="workspace-confirm-delete-dialog"
           onClose={handleCancelDelete}
         >

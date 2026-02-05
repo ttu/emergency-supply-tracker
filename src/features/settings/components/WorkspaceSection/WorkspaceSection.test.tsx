@@ -160,6 +160,25 @@ describe('WorkspaceSection', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('restores focus to trigger button when dialog is closed by cancel', async () => {
+    createWorkspace('To remove');
+    saveAppData(createMockAppData({}));
+    const user = userEvent.setup();
+    renderWorkspaceSection();
+    const deleteButtons = screen.getAllByRole('button', {
+      name: 'settings.workspaces.deleteLabel',
+    });
+    const triggerButton = deleteButtons[0];
+    await user.click(triggerButton);
+    expect(
+      screen.getByTestId('workspace-confirm-delete-dialog'),
+    ).toBeInTheDocument();
+    await user.click(screen.getByTestId('workspace-confirm-cancel-button'));
+    await waitFor(() => {
+      expect(document.activeElement).toBe(triggerButton);
+    });
+  });
+
   it('deletes workspace when confirm delete is clicked', async () => {
     createWorkspace('To remove');
     saveAppData(createMockAppData({}));

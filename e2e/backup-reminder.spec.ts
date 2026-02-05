@@ -1,6 +1,10 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  setAppStorage,
+  navigateToSettingsSection,
+} from './fixtures';
 import { createMockAppData } from '../src/shared/utils/test/factories';
-import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 test.describe('Backup Reminder', () => {
   test('should show backup reminder after 30 days without backup', async ({
@@ -41,12 +45,7 @@ test.describe('Backup Reminder', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Should show backup reminder on dashboard
@@ -90,12 +89,7 @@ test.describe('Backup Reminder', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Find dismiss button for backup reminder
@@ -156,12 +150,7 @@ test.describe('Backup Reminder', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Reminder should not be visible (dismissed until next month)
@@ -207,12 +196,7 @@ test.describe('Backup Reminder', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Should see backup reminder
@@ -289,12 +273,7 @@ test.describe('Backup Reminder', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Should see backup reminder in alerts section

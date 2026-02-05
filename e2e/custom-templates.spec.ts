@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  setAppStorage,
+  navigateToSettingsSection,
+} from './fixtures';
 import {
   createMockAppData,
   createMockProductTemplate,
@@ -38,12 +43,7 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory and open template selector
@@ -82,12 +82,7 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
@@ -143,21 +138,19 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Reload again
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Custom template should still exist
+    // Custom template should still exist (RootStorage: read active workspace)
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
+      if (!data) return null;
+      const root = JSON.parse(data);
+      const ws = root.workspaces?.[root.activeWorkspaceId];
+      return ws ?? null;
     }, STORAGE_KEY);
 
     expect(storedData).toBeTruthy();
@@ -234,12 +227,7 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Export data
@@ -290,12 +278,7 @@ test.describe('Custom Product Templates', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory and open template selector

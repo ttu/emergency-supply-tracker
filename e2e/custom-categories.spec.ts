@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  setAppStorage,
+  navigateToSettingsSection,
+} from './fixtures';
 import {
   createMockAppData,
   createMockCategory,
@@ -37,12 +42,7 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
@@ -58,7 +58,9 @@ test.describe('Custom Categories', () => {
     // Verify custom category exists in data
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
+      if (!data) return null;
+      const root = JSON.parse(data);
+      return root.workspaces?.[root.activeWorkspaceId] ?? null;
     }, STORAGE_KEY);
     expect(storedData?.customCategories).toBeDefined();
     expect(storedData?.customCategories.length).toBeGreaterThan(0);
@@ -88,12 +90,7 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
@@ -156,12 +153,7 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Reload again
@@ -171,7 +163,9 @@ test.describe('Custom Categories', () => {
     // Verify by checking localStorage or trying to use it
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
+      if (!data) return null;
+      const root = JSON.parse(data);
+      return root.workspaces?.[root.activeWorkspaceId] ?? null;
     }, STORAGE_KEY);
 
     expect(storedData).toBeTruthy();
@@ -216,12 +210,7 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Custom category should appear on dashboard
@@ -296,12 +285,7 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
@@ -351,12 +335,7 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Settings
@@ -388,12 +367,7 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Settings -> Custom Categories
@@ -411,10 +385,12 @@ test.describe('Custom Categories', () => {
     // Submit the form
     await page.getByRole('button', { name: /save/i }).click();
 
-    // Verify the category was created
+    // Verify the category was created (RootStorage: read active workspace)
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
+      if (!data) return null;
+      const root = JSON.parse(data);
+      return root.workspaces?.[root.activeWorkspaceId] ?? null;
     }, STORAGE_KEY);
 
     expect(storedData?.customCategories).toBeDefined();
@@ -447,12 +423,7 @@ test.describe('Custom Categories', () => {
     });
 
     await page.goto('/');
-    await page.evaluate(
-      ({ data, key }) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      },
-      { data: appData, key: STORAGE_KEY },
-    );
+    await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Export data
