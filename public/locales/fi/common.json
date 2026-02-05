@@ -162,6 +162,7 @@
       },
       "sections": {
         "appearance": "Ulkoasu",
+        "inventorySets": "Varastosetit",
         "household": "Kotitalouden asetukset",
         "nutrition": "Ravitsemus & vaatimukset",
         "hiddenAlerts": "Piilotetut hälytykset",
@@ -268,6 +269,21 @@
       "storageUsedValue": "{{used}} MB / noin {{limit}} MB",
       "storageDescription": "Varastosi ja asetukset tallennetaan selaimellesi. Vie varmuuskopio tai tyhjennä tiedot alta, jos tallennustila täyttyy.",
       "viewOnGitHub": "Näytä GitHubissa"
+    },
+    "inventorySets": {
+      "description": "Hallitse useita varastoja (esim. koti, autopaketti). Jokaisella varastosetillä on oma kotitalous, tuotteet ja hälytykset.",
+      "activeInventorySet": "Aktiivinen varastosetti",
+      "inventorySetList": "Varastosetit",
+      "createInventorySet": "Luo uusi varastosetti",
+      "addInventorySet": "Lisää varastosetti",
+      "rename": "Nimeä uudelleen",
+      "renameLabel": "Nimeä varastosetti uudelleen",
+      "deleteLabel": "Poista varastosetti",
+      "newNamePlaceholder": "Varastosetin nimi",
+      "defaultName": "Varastosetti",
+      "active": "Aktiivinen",
+      "confirmDeleteTitle": "Poistetaanko varastosetti?",
+      "confirmDeleteMessage": "Tämä varastosetti ja sen varasto poistetaan. Toimintoa ei voi perua."
     },
     "language": {
       "label": "Kieli",

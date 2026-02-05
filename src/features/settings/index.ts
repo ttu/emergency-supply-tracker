@@ -28,6 +28,7 @@ export {
   OverriddenRecommendations,
   ShoppingListExport,
   ThemeSelector,
+  InventorySetSection,
 } from './components';
 
 // Factories

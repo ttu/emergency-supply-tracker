@@ -5,6 +5,7 @@ import { SettingsProvider, useSettings } from '@/features/settings';
 import { HouseholdProvider, useHousehold } from '@/features/household';
 import { InventoryProvider, useInventory } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
+import { InventorySetProvider } from '@/features/inventory-set';
 import { SettingsEffects } from './components/SettingsEffects';
 import { ErrorBoundary, DataErrorPage } from '@/shared/components';
 import { Navigation, PageType } from '@/shared/components/Navigation';
@@ -202,9 +203,11 @@ function App() {
 
   return (
     <DataValidationGuard>
-      <AppProviders>
-        <AppContent />
-      </AppProviders>
+      <InventorySetProvider>
+        <AppProviders>
+          <AppContent />
+        </AppProviders>
+      </InventorySetProvider>
     </DataValidationGuard>
   );
 }

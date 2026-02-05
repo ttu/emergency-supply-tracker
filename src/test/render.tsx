@@ -11,6 +11,7 @@ import { SettingsProvider } from '@/features/settings';
 import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
+import { InventorySetProvider } from '@/features/inventory-set';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ThemeApplier } from '@/components/ThemeApplier';
@@ -136,7 +137,7 @@ export function renderWithProviders(
   // Track if we set localStorage so we can clean it up
   const didSetLocalStorage = initialAppData !== undefined;
 
-  // Setup localStorage if initial data provided
+  // Setup localStorage if initial data provided (use saveAppData so root/inventory set shape is correct)
   if (didSetLocalStorage) {
     const data = createMockAppData(initialAppData);
     saveAppData(data);
@@ -146,7 +147,7 @@ export function renderWithProviders(
     let wrapped: ReactNode = children;
 
     // Build provider tree from inside out (reverse order of nesting)
-    // Order matches App.tsx: ErrorBoundary > Settings > ThemeApplier > NotificationProvider > Household > RecommendedItems > Inventory
+    // Order matches App.tsx: ErrorBoundary > Settings > ThemeApplier > NotificationProvider > Household > RecommendedItems > Inventory > InventorySet
     if (inventory) wrapped = <InventoryProvider>{wrapped}</InventoryProvider>;
     if (recommendedItems)
       wrapped = <RecommendedItemsProvider>{wrapped}</RecommendedItemsProvider>;
@@ -159,6 +160,8 @@ export function renderWithProviders(
     if (errorBoundary) wrapped = <ErrorBoundary>{wrapped}</ErrorBoundary>;
 
     if (CustomWrapper) wrapped = <CustomWrapper>{wrapped}</CustomWrapper>;
+
+    wrapped = <InventorySetProvider>{wrapped}</InventorySetProvider>;
 
     return <>{wrapped}</>;
   }

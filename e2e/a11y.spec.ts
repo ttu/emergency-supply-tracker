@@ -37,6 +37,18 @@ async function ensureDrawerClosed(page: Page) {
   }
 }
 
+async function openInventorySetsSection(page: Page) {
+  await page.getByTestId('nav-settings').click();
+  await expect(page.getByTestId('page-settings')).toBeVisible();
+  // Click the Inventory Sets menu item in the sidebar (desktop view)
+  await page
+    .getByTestId('sidemenu-sidebar')
+    .getByTestId('sidemenu-item-inventorySets')
+    .click();
+  await expect(page.getByTestId('section-inventory-sets')).toBeVisible();
+  await expect(page.getByTestId('inventory-set-section')).toBeVisible();
+}
+
 test.describe('Accessibility', () => {
   test.beforeEach(async ({ setupApp }) => {
     await setupApp();
@@ -71,7 +83,9 @@ test.describe('Accessibility', () => {
   test('Settings page should have no accessibility violations', async ({
     page,
   }) => {
-    await page.goto('/settings');
+    // Navigate via nav (app is state-based; goto('/settings') does not change visible page)
+    await page.getByTestId('nav-settings').click();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
     await page.waitForLoadState('networkidle');
 
     const accessibilityScanResults = await new AxeBuilder({ page })
@@ -191,5 +205,121 @@ test.describe('Accessibility', () => {
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
+  });
+
+  test.describe('Inventory set confirm delete dialog', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 720 });
+    });
+
+    test('should receive initial focus on primary delete button', async ({
+      page,
+    }) => {
+      await openInventorySetsSection(page);
+
+      // Add a second inventory set so Delete is available on non-active inventory set
+      await page.getByLabel('Inventory set name').fill('To Delete');
+      await page.getByRole('button', { name: 'Add inventory set' }).click();
+
+      // Wait for the new inventory set's delete button to be visible
+      // Use nth(1) to get the second inventory set's delete button (first is Default)
+      const newInventorySetDeleteButton = page
+        .getByRole('button', { name: 'Delete inventory set' })
+        .nth(1);
+      await expect(newInventorySetDeleteButton).toBeVisible();
+
+      // Open confirm dialog by clicking Delete on the new (second) inventory set
+      await newInventorySetDeleteButton.click();
+
+      const dialog = page.getByTestId('inventory-set-confirm-delete-dialog');
+      await expect(dialog).toBeVisible();
+      const primaryDelete = page.getByTestId(
+        'inventory-set-confirm-delete-button',
+      );
+      await expect(primaryDelete).toBeFocused();
+    });
+
+    test('should dismiss dialog on Escape and restore focus', async ({
+      page,
+    }) => {
+      await openInventorySetsSection(page);
+      await expect(page.getByTestId('inventory-set-section')).toBeVisible();
+
+      await page.getByLabel('Inventory set name').fill('To Delete');
+      await page.getByRole('button', { name: 'Add inventory set' }).click();
+
+      // Get the delete button for the new (second) inventory set
+      const deleteButton = page
+        .getByRole('button', { name: 'Delete inventory set' })
+        .nth(1);
+      await expect(deleteButton).toBeVisible();
+      await deleteButton.click();
+
+      await expect(
+        page.getByTestId('inventory-set-confirm-delete-dialog'),
+      ).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(
+        page.getByTestId('inventory-set-confirm-delete-dialog'),
+      ).toBeHidden();
+
+      // Focus should be restored to the button that triggered the dialog
+      await expect(deleteButton).toBeFocused();
+    });
+
+    test('should trap focus within dialog', async ({ page }) => {
+      await openInventorySetsSection(page);
+      await expect(page.getByTestId('inventory-set-section')).toBeVisible();
+
+      await page.getByLabel('Inventory set name').fill('To Delete');
+      await page.getByRole('button', { name: 'Add inventory set' }).click();
+
+      // Click delete on the new (second) inventory set
+      await page
+        .getByRole('button', { name: 'Delete inventory set' })
+        .nth(1)
+        .click();
+
+      const dialog = page.getByTestId('inventory-set-confirm-delete-dialog');
+      await expect(dialog).toBeVisible();
+      const primaryDelete = page.getByTestId(
+        'inventory-set-confirm-delete-button',
+      );
+      await expect(primaryDelete).toBeFocused();
+
+      // Tab to Cancel, then Tab again — focus should wrap to primary Delete
+      await page.keyboard.press('Tab');
+      await expect(
+        dialog.getByRole('button', { name: 'Cancel' }),
+      ).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(primaryDelete).toBeFocused();
+    });
+
+    test('inventory set confirm delete dialog should have no a11y violations', async ({
+      page,
+    }) => {
+      await openInventorySetsSection(page);
+      await expect(page.getByTestId('inventory-set-section')).toBeVisible();
+
+      await page.getByLabel('Inventory set name').fill('To Delete');
+      await page.getByRole('button', { name: 'Add inventory set' }).click();
+
+      // Click delete on the new (second) inventory set
+      await page
+        .getByRole('button', { name: 'Delete inventory set' })
+        .nth(1)
+        .click();
+
+      const dialog = page.getByTestId('inventory-set-confirm-delete-dialog');
+      await expect(dialog).toBeVisible();
+
+      const accessibilityScanResults = await new AxeBuilder({ page })
+        .include('[data-testid="inventory-set-confirm-delete-dialog"]')
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
+        .analyze();
+
+      expect(accessibilityScanResults.violations).toEqual([]);
+    });
   });
 });

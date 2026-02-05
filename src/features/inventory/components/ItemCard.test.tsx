@@ -118,11 +118,9 @@ describe('ItemCard', () => {
 
   it('should be clickable when onItemClick is provided', () => {
     const onItemClick = vi.fn();
-    const { container } = renderWithProviders(
-      <ItemCard item={baseItem} onItemClick={onItemClick} />,
-    );
+    renderWithProviders(<ItemCard item={baseItem} onItemClick={onItemClick} />);
 
-    const card = container.firstChild as HTMLElement;
+    const card = screen.getByTestId('item-card-1');
     fireEvent.click(card);
 
     expect(onItemClick).toHaveBeenCalledTimes(1);
@@ -131,18 +129,16 @@ describe('ItemCard', () => {
 
   it('should render as button when onItemClick is provided', () => {
     const onItemClick = vi.fn();
-    const { container } = renderWithProviders(
-      <ItemCard item={baseItem} onItemClick={onItemClick} />,
-    );
+    renderWithProviders(<ItemCard item={baseItem} onItemClick={onItemClick} />);
 
-    const card = container.firstChild as HTMLElement;
+    const card = screen.getByTestId('item-card-1');
     expect(card.tagName).toBe('BUTTON');
     expect(card).toHaveAttribute('type', 'button');
   });
 
   it('should render as div when onItemClick is not provided', () => {
-    const { container } = renderWithProviders(<ItemCard item={baseItem} />);
-    const card = container.firstChild as HTMLElement;
+    renderWithProviders(<ItemCard item={baseItem} />);
+    const card = screen.getByTestId('item-card-1');
     expect(card.tagName).toBe('DIV');
   });
 

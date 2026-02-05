@@ -200,8 +200,9 @@ async function verifyCustomItemExists(page: Page) {
         const data = localStorage.getItem(key);
         if (!data) return false;
         try {
-          const appData = JSON.parse(data);
-          return appData.items?.some(
+          const root = JSON.parse(data);
+          const ws = root.inventorySets?.[root.activeInventorySetId];
+          return ws?.items?.some(
             (item: { name: string }) => item.name === 'Custom Test Item',
           );
         } catch {
@@ -409,8 +410,8 @@ async function testSettingsFeatures(page: Page) {
       const data = localStorage.getItem(key);
       if (!data) return false;
       try {
-        const appData = JSON.parse(data);
-        return appData.settings?.theme === 'dark';
+        const root = JSON.parse(data);
+        return root.settings?.theme === 'dark';
       } catch {
         return false;
       }
@@ -523,14 +524,16 @@ async function testNavigationAndPersistence(page: Page) {
     const data = localStorage.getItem(key);
     if (!data) return { persisted: false, items: [] };
     try {
-      const appData = JSON.parse(data);
+      const root = JSON.parse(data);
+      const items =
+        root.inventorySets?.[root.activeInventorySetId]?.items || [];
       return {
         persisted: true,
-        items: appData.items || [],
-        hasWater: appData.items?.some((item: { name: string }) =>
+        items,
+        hasWater: items.some((item: { name: string }) =>
           /water/i.test(item.name),
         ),
-        hasCustom: appData.items?.some(
+        hasCustom: items.some(
           (item: { name: string }) => item.name === 'Custom Test Item',
         ),
       };

@@ -39,6 +39,12 @@ export type ProductTemplateId = string & {
 export type AlertId = string & { readonly __brand: 'AlertId' };
 
 /**
+ * Branded type for inventory set IDs.
+ * Used to identify multiple inventory contexts (e.g. home, car kit).
+ */
+export type InventorySetId = string & { readonly __brand: 'InventorySetId' };
+
+/**
  * Branded type for date-only strings (YYYY-MM-DD format).
  *
  * Used for expiration dates, backup dates, and other date-only fields
@@ -79,6 +85,13 @@ export function createProductTemplateId(id: string): ProductTemplateId {
  */
 export function createAlertId(id: string): AlertId {
   return id as AlertId;
+}
+
+/**
+ * Creates an InventorySetId from a string
+ */
+export function createInventorySetId(id: string): InventorySetId {
+  return id as InventorySetId;
 }
 
 /**

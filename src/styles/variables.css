@@ -351,7 +351,8 @@
 
   --color-text: #1c1917;
   --color-text-secondary: #78716c;
-  --color-text-tertiary: #a8a29e;
+  /* WCAG AA 4.5:1 on light backgrounds (was #a8a29e, ratio 2.39) */
+  --color-text-tertiary: #6b6560;
   --color-text-disabled: #d6d3d1;
 
   --color-border: #fde68a;

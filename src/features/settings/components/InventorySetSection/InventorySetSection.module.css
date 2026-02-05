@@ -1,0 +1,147 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-secondary, #555);
+}
+
+.activeRow,
+.createRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.select {
+  max-width: 20rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  background-color: var(--color-input-bg, var(--color-surface, #fff));
+  color: var(--color-text, #333);
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 4px;
+}
+
+.listSection {
+  margin-top: 0.5rem;
+}
+
+.listTitle {
+  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border, #eee);
+}
+
+.inventorySetName {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.activeBadge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.4rem;
+  background: var(--color-primary, #0066cc);
+  color: white;
+  border-radius: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.editRow .input {
+  flex: 1;
+  min-width: 10rem;
+}
+
+.createInputRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.createInputRow .input {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  background-color: var(--color-input-bg, var(--color-surface, #fff));
+  color: var(--color-text, #333);
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 4px;
+}
+
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirmOverlay::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.confirmDialog {
+  background: var(--color-surface, #fff);
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 24rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.confirmDialog h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+.confirmDialog p {
+  margin: 0 0 1rem 0;
+  color: var(--color-text-secondary, #555);
+}
+
+.confirmActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}

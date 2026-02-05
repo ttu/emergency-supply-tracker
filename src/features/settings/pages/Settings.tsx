@@ -17,6 +17,7 @@ import {
   KitManagement,
   CategoriesSection,
   CustomTemplates,
+  InventorySetSection,
 } from '@/features/settings';
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
@@ -30,6 +31,7 @@ import styles from './Settings.module.css';
 
 type SettingsSection =
   | 'appearance'
+  | 'inventorySets'
   | 'household'
   | 'nutrition'
   | 'hiddenAlerts'
@@ -83,6 +85,10 @@ export function Settings() {
         {
           id: 'appearance',
           label: t('settings.navigation.sections.appearance'),
+        },
+        {
+          id: 'inventorySets',
+          label: t('settings.navigation.sections.inventorySets'),
         },
         {
           id: 'backupTransfer',
@@ -167,6 +173,16 @@ export function Settings() {
               <LanguageSelector />
               <ThemeSelector />
             </div>
+          </Section>
+        );
+
+      case 'inventorySets':
+        return (
+          <Section
+            testId="section-inventory-sets"
+            titleKey="settings.navigation.sections.inventorySets"
+          >
+            <InventorySetSection />
           </Section>
         );
 

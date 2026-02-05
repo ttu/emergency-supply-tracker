@@ -27,7 +27,7 @@ vi.mock('react-i18next', () => ({
     },
 }));
 
-// Helper to set up localStorage with onboarding completed
+// Helper to set up localStorage with onboarding completed (use saveAppData for root/inventory set shape)
 const setupCompletedOnboarding = () => {
   const appData = createMockAppData({
     settings: {
@@ -168,7 +168,7 @@ describe('App', () => {
   });
 
   it('shows onboarding when not completed', async () => {
-    // Clear localStorage to show onboarding
+    // Clear localStorage and set data with onboarding not completed
     localStorage.clear();
     const appData = createMockAppData({
       settings: {

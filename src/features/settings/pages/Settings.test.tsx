@@ -244,6 +244,7 @@ describe('Settings Page', () => {
     // Test all sections to ensure switch handles them
     const sections = [
       'appearance',
+      'inventorySets',
       'household',
       'nutrition',
       'hiddenAlerts',

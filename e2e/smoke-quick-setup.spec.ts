@@ -131,8 +131,9 @@ async function verifyRecommendedItemsAdded(page: Page) {
     const data = localStorage.getItem(key);
     if (!data) return false;
     try {
-      const appData = JSON.parse(data);
-      return appData.items && appData.items.length > 0;
+      const root = JSON.parse(data);
+      const ws = root.inventorySets?.[root.activeInventorySetId];
+      return ws?.items && ws.items.length > 0;
     } catch {
       return false;
     }
@@ -343,8 +344,8 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
       const data = localStorage.getItem(key);
       if (!data) return false;
       try {
-        const appData = JSON.parse(data);
-        return appData.settings?.theme === 'dark';
+        const root = JSON.parse(data);
+        return root.settings?.theme === 'dark';
       } catch {
         return false;
       }
@@ -441,11 +442,13 @@ async function testPersistenceQuickSetup(page: Page) {
     const data = localStorage.getItem(key);
     if (!data) return { persisted: false, items: [] };
     try {
-      const appData = JSON.parse(data);
+      const root = JSON.parse(data);
+      const ws = root.inventorySets?.[root.activeInventorySetId];
+      const items = ws?.items || [];
       return {
         persisted: true,
-        items: appData.items || [],
-        hasItems: appData.items && appData.items.length > 0,
+        items,
+        hasItems: items.length > 0,
       };
     } catch {
       return { persisted: false, items: [] };

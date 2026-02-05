@@ -162,6 +162,7 @@
       },
       "sections": {
         "appearance": "Appearance",
+        "inventorySets": "Inventory Sets",
         "household": "Household Configuration",
         "nutrition": "Nutrition & Requirements",
         "hiddenAlerts": "Hidden Alerts",
@@ -268,6 +269,21 @@
       "storageUsedValue": "{{used}} MB of ~{{limit}} MB",
       "storageDescription": "Your inventory and settings are saved in your browser. Export a backup or clear data below if storage gets full.",
       "viewOnGitHub": "View on GitHub"
+    },
+    "inventorySets": {
+      "description": "Manage multiple inventories (e.g. home, car kit). Each inventory set has its own household settings, items, and alerts.",
+      "activeInventorySet": "Active inventory set",
+      "inventorySetList": "Inventory set list",
+      "createInventorySet": "Create new inventory set",
+      "addInventorySet": "Add inventory set",
+      "rename": "Rename",
+      "renameLabel": "Rename inventory set",
+      "deleteLabel": "Delete inventory set",
+      "newNamePlaceholder": "Inventory set name",
+      "defaultName": "Inventory Set",
+      "active": "Active",
+      "confirmDeleteTitle": "Delete inventory set?",
+      "confirmDeleteMessage": "This inventory set and its inventory will be removed. You cannot undo this."
     },
     "language": {
       "label": "Language",

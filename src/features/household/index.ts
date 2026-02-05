@@ -7,7 +7,11 @@ export { HouseholdProvider } from './provider';
 export { useHousehold } from './hooks';
 
 // Constants
-export { HOUSEHOLD_DEFAULTS, HOUSEHOLD_LIMITS } from './constants';
+export {
+  HOUSEHOLD_DEFAULTS,
+  HOUSEHOLD_LIMITS,
+  DEFAULT_HOUSEHOLD,
+} from './constants';
 export { HOUSEHOLD_PRESETS } from './presets';
 export type { HouseholdPreset } from './presets';
 

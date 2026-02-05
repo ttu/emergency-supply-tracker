@@ -2,10 +2,9 @@ import type {
   AppData,
   InventoryItem,
   ProductTemplateId,
-  Category,
-  ProductTemplate,
-  KitId,
-  UploadedKit,
+  RootStorage,
+  InventorySetData,
+  InventorySetId,
 } from '@/shared/types';
 import type {
   ExportSection,
@@ -17,12 +16,14 @@ import {
   createCategoryId,
   createProductTemplateId,
   createAlertId,
+  createInventorySetId,
 } from '@/shared/types';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
 import { UserSettingsFactory } from '@/features/settings/factories/UserSettingsFactory';
 import { STANDARD_CATEGORIES } from '@/features/categories/data';
 import { DEFAULT_KIT_ID } from '@/features/templates/kits';
+import { DEFAULT_HOUSEHOLD } from '@/features/household';
 import {
   CURRENT_SCHEMA_VERSION,
   migrateToCurrentVersion,
@@ -36,6 +37,9 @@ import {
 } from '../validation/appDataValidation';
 
 export const STORAGE_KEY = 'emergencySupplyTracker';
+
+/** Default inventory set id when none exist (first load) */
+export const DEFAULT_INVENTORY_SET_ID = 'default' as InventorySetId;
 
 /**
  * Stores the last data validation result for error reporting.
@@ -102,17 +106,16 @@ function normalizeItems(
   }));
 }
 
-export function createDefaultAppData(): AppData {
+/** Build default inventory set data (for new inventory set or first load) */
+function createDefaultInventorySetData(
+  id: InventorySetId,
+  name: string,
+): InventorySetData {
+  const now = new Date().toISOString();
   return {
-    version: CURRENT_SCHEMA_VERSION,
-    household: {
-      adults: 2,
-      children: 0,
-      pets: 0,
-      supplyDurationDays: 7,
-      useFreezer: false,
-    },
-    settings: UserSettingsFactory.createDefault(),
+    id,
+    name,
+    household: { ...DEFAULT_HOUSEHOLD },
     customCategories: [],
     items: [],
     customTemplates: [],
@@ -121,120 +124,196 @@ export function createDefaultAppData(): AppData {
     disabledCategories: [],
     selectedRecommendationKit: DEFAULT_KIT_ID,
     uploadedRecommendationKits: [],
-    lastModified: new Date().toISOString(),
+    lastModified: now,
+  };
+}
+
+/** Build root storage with one default inventory set (first load) */
+export function createDefaultRootStorage(): RootStorage {
+  const defaultId = DEFAULT_INVENTORY_SET_ID;
+  return {
+    version: CURRENT_SCHEMA_VERSION,
+    settings: UserSettingsFactory.createDefault(),
+    activeInventorySetId: defaultId,
+    inventorySets: {
+      [defaultId]: createDefaultInventorySetData(defaultId, 'Default'),
+    },
+  };
+}
+
+/** Read and parse root storage from localStorage. Returns undefined if empty. Throws on parse error (invalid JSON). */
+function getRootStorage(): RootStorage | undefined {
+  const json = localStorage.getItem(STORAGE_KEY);
+  if (!json) return undefined;
+  const raw = JSON.parse(json) as unknown;
+  if (typeof raw !== 'object' || raw === null || !('inventorySets' in raw))
+    return undefined;
+  return raw as RootStorage;
+}
+
+/** Write root storage to localStorage. Throws on setItem failure (e.g. QuotaExceededError). */
+function saveRootStorage(root: RootStorage): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
+}
+
+/**
+ * Safe getRootStorage: returns undefined on JSON parse error or storage errors.
+ * Logs the full error for debugging.
+ */
+function safeGetRootStorage(): RootStorage | undefined {
+  try {
+    return getRootStorage();
+  } catch (error) {
+    console.error('getRootStorage failed:', error);
+    return undefined;
+  }
+}
+
+/**
+ * Safe saveRootStorage: no-op on failure (e.g. QuotaExceededError).
+ * Logs the full error for debugging.
+ */
+function safeSaveRootStorage(root: RootStorage): void {
+  try {
+    saveRootStorage(root);
+  } catch (error) {
+    console.error('saveRootStorage failed:', error);
+  }
+}
+
+/** Extract inventory set slice from AppData (for persisting to root) */
+function extractInventorySetFromAppData(
+  data: AppData,
+  inventorySetId: InventorySetId,
+  inventorySetName: string,
+): InventorySetData {
+  return {
+    id: inventorySetId,
+    name: inventorySetName,
+    household: data.household,
+    items: data.items,
+    customCategories: data.customCategories,
+    customTemplates: data.customTemplates,
+    dismissedAlertIds: data.dismissedAlertIds,
+    disabledRecommendedItems: data.disabledRecommendedItems,
+    disabledCategories: data.disabledCategories,
+    selectedRecommendationKit: data.selectedRecommendationKit,
+    uploadedRecommendationKits: data.uploadedRecommendationKits,
+    customRecommendedItems: data.customRecommendedItems,
+    lastModified: data.lastModified,
+    lastBackupDate: data.lastBackupDate,
+    backupReminderDismissedUntil: data.backupReminderDismissedUntil,
+  };
+}
+
+/** Merge root storage into AppData shape (settings + active inventory set) */
+function mergeRootToAppData(
+  root: RootStorage,
+  inventorySet: InventorySetData,
+): AppData {
+  return {
+    version: root.version,
+    settings: root.settings,
+    household: inventorySet.household,
+    items: inventorySet.items,
+    customCategories: inventorySet.customCategories,
+    customTemplates: inventorySet.customTemplates,
+    dismissedAlertIds: inventorySet.dismissedAlertIds,
+    disabledRecommendedItems: inventorySet.disabledRecommendedItems,
+    disabledCategories: inventorySet.disabledCategories,
+    selectedRecommendationKit: inventorySet.selectedRecommendationKit,
+    uploadedRecommendationKits: inventorySet.uploadedRecommendationKits,
+    customRecommendedItems: inventorySet.customRecommendedItems,
+    lastModified: inventorySet.lastModified,
+    lastBackupDate: inventorySet.lastBackupDate,
+    backupReminderDismissedUntil: inventorySet.backupReminderDismissedUntil,
+  };
+}
+
+export function createDefaultAppData(): AppData {
+  const root = createDefaultRootStorage();
+  const ws = root.inventorySets[root.activeInventorySetId];
+  return mergeRootToAppData(root, ws);
+}
+
+/** Normalize merged AppData (branded types, kit defaults) */
+function normalizeMergedAppData(data: AppData): AppData {
+  const normalizedItems = normalizeItems(data.items) ?? [];
+  return {
+    ...data,
+    items: normalizedItems,
+    customCategories: (data.customCategories || []).map((cat) => ({
+      ...cat,
+      id: createCategoryId(cat.id as string),
+    })),
+    customTemplates: (data.customTemplates || []).map((template) => ({
+      ...template,
+      id: createProductTemplateId(template.id as string),
+    })),
+    dismissedAlertIds: (data.dismissedAlertIds || []).map((id) =>
+      createAlertId(id as string),
+    ),
+    disabledRecommendedItems: (data.disabledRecommendedItems || []).map((id) =>
+      createProductTemplateId(id as string),
+    ),
+    selectedRecommendationKit: data.selectedRecommendationKit ?? DEFAULT_KIT_ID,
+    uploadedRecommendationKits: data.uploadedRecommendationKits ?? [],
   };
 }
 
 export function getAppData(): AppData | undefined {
   try {
-    const json = localStorage.getItem(STORAGE_KEY);
-    if (!json) return undefined;
+    let root = getRootStorage();
+    if (!root) {
+      root = createDefaultRootStorage();
+      saveRootStorage(root);
+    }
 
-    // Parse JSON - use unknown instead of any for type safety
-    let rawData: unknown;
-    try {
-      rawData = JSON.parse(json);
-    } catch (parseError) {
-      console.error('Failed to parse JSON from localStorage:', parseError);
+    if (!isVersionSupported(root.version)) {
+      console.error(`Data schema version ${root.version} is not supported.`);
       return undefined;
     }
 
-    // Check if version is supported before proceeding
-    if (
-      typeof rawData === 'object' &&
-      rawData !== null &&
-      'version' in rawData &&
-      typeof rawData.version === 'string'
-    ) {
-      const dataVersion = rawData.version;
-      if (!isVersionSupported(dataVersion)) {
-        console.error(
-          `Data schema version ${dataVersion} is not supported. Data may be corrupted or from an incompatible version.`,
-        );
-        return undefined;
-      }
+    const activeId = root.activeInventorySetId;
+    const inventorySet = root.inventorySets[activeId as string];
+    if (!inventorySet) {
+      return undefined;
     }
 
-    // Normalize items: ensure itemType values are valid template IDs and cast IDs
-    const normalizedItems =
-      normalizeItems(
-        (rawData as { items?: unknown }).items as InventoryItem[] | undefined,
-      ) ?? [];
+    let data = normalizeMergedAppData(mergeRootToAppData(root, inventorySet));
 
-    // Cast IDs to branded types
-    let data: AppData = {
-      ...(rawData as AppData),
-      items: normalizedItems,
-      customCategories: (
-        (
-          rawData as {
-            customCategories?: Array<{ id: string; [key: string]: unknown }>;
-          }
-        ).customCategories || []
-      ).map((cat) => ({
-        ...(cat as unknown as Category),
-        id: createCategoryId(cat.id),
-      })),
-      customTemplates: (
-        (
-          rawData as {
-            customTemplates?: Array<{ id: string; [key: string]: unknown }>;
-          }
-        ).customTemplates || []
-      ).map((template) => ({
-        ...(template as unknown as ProductTemplate),
-        id: createProductTemplateId(template.id),
-      })),
-      dismissedAlertIds: (
-        (rawData as { dismissedAlertIds?: string[] }).dismissedAlertIds || []
-      ).map(createAlertId),
-      disabledRecommendedItems: (
-        (rawData as { disabledRecommendedItems?: string[] })
-          .disabledRecommendedItems || []
-      ).map(createProductTemplateId),
-      // Normalize kit fields - only set defaults if they're missing from rawData
-      selectedRecommendationKit:
-        (rawData as { selectedRecommendationKit?: KitId })
-          .selectedRecommendationKit ?? DEFAULT_KIT_ID,
-      uploadedRecommendationKits:
-        (rawData as { uploadedRecommendationKits?: UploadedKit[] })
-          .uploadedRecommendationKits ?? [],
-    };
-
-    // Apply migrations if needed
     if (needsMigration(data)) {
       try {
         data = migrateToCurrentVersion(data);
-        // Save migrated data back to localStorage
-        saveAppData(data);
-        console.info(
-          `Data migrated from version ${data.version} to ${CURRENT_SCHEMA_VERSION}`,
+        const updatedInventorySet = extractInventorySetFromAppData(
+          data,
+          activeId,
+          inventorySet.name,
         );
+        root.inventorySets[activeId as string] = updatedInventorySet;
+        root.version = data.version;
+        saveRootStorage(root);
+        console.info(`Data migrated to ${CURRENT_SCHEMA_VERSION}`);
       } catch (error) {
         if (error instanceof MigrationError) {
           console.error(
-            `Migration failed from ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
+            `Migration failed: ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
           );
         } else {
           console.error('Migration failed:', error);
         }
-        // Return unmigrated data - app may still work with older schema
         return data;
       }
     }
 
-    // Validate data values before returning
     const validationResult = validateAppDataValues(data);
     if (!validationResult.isValid) {
       console.error('Data validation failed:', validationResult.errors);
       lastDataValidationResult = validationResult;
-      // Return undefined to signal that data is invalid
       return undefined;
     }
 
-    // Clear any previous validation errors on successful load
     lastDataValidationResult = null;
-
     return data;
   } catch (error) {
     console.error('Failed to load data from localStorage:', error);
@@ -244,8 +323,19 @@ export function getAppData(): AppData | undefined {
 
 export function saveAppData(data: AppData): void {
   try {
-    const json = JSON.stringify(data);
-    localStorage.setItem(STORAGE_KEY, json);
+    let root = getRootStorage();
+    root ??= createDefaultRootStorage();
+    root.settings = data.settings;
+    const activeId = root.activeInventorySetId;
+    const currentInventorySet = root.inventorySets[activeId as string];
+    if (currentInventorySet) {
+      root.inventorySets[activeId as string] = extractInventorySetFromAppData(
+        data,
+        activeId,
+        currentInventorySet.name,
+      );
+    }
+    saveRootStorage(root);
   } catch (error) {
     console.error('Failed to save data to localStorage:', error);
   }
@@ -253,6 +343,91 @@ export function saveAppData(data: AppData): void {
 
 export function clearAppData(): void {
   localStorage.removeItem(STORAGE_KEY);
+}
+
+/**
+ * Build RootStorage from AppData (e.g. for E2E/test fixtures).
+ * Uses default inventory set id and name "Default".
+ */
+export function buildRootStorageFromAppData(data: AppData): RootStorage {
+  const root = createDefaultRootStorage();
+  root.settings = data.settings;
+  root.inventorySets[DEFAULT_INVENTORY_SET_ID as string] =
+    extractInventorySetFromAppData(data, DEFAULT_INVENTORY_SET_ID, 'Default');
+  return root;
+}
+
+/** Inventory set list item for UI */
+export interface InventorySetListItem {
+  id: InventorySetId;
+  name: string;
+}
+
+export function getInventorySetList(): InventorySetListItem[] {
+  const root = safeGetRootStorage();
+  if (!root) return [];
+  return Object.values(root.inventorySets).map((w) => ({
+    id: w.id,
+    name: w.name,
+  }));
+}
+
+export function getActiveInventorySetId(): InventorySetId | undefined {
+  const root = safeGetRootStorage();
+  if (!root) return undefined;
+  return root.activeInventorySetId;
+}
+
+export function setActiveInventorySetId(id: InventorySetId): void {
+  const root = safeGetRootStorage();
+  if (!root) return;
+  if (!root.inventorySets[id as string]) return;
+  root.activeInventorySetId = id;
+  safeSaveRootStorage(root);
+}
+
+function generateInventorySetId(): InventorySetId {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return createInventorySetId(crypto.randomUUID());
+  }
+  return createInventorySetId(
+    `ws-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+  );
+}
+
+export function createInventorySet(name: string): InventorySetId {
+  let root = safeGetRootStorage();
+  root ??= createDefaultRootStorage();
+  const id = generateInventorySetId();
+  root.inventorySets[id as string] = createDefaultInventorySetData(
+    id,
+    name.trim() || 'Inventory Set',
+  );
+  safeSaveRootStorage(root);
+  return id;
+}
+
+export function deleteInventorySet(id: InventorySetId): void {
+  const root = safeGetRootStorage();
+  if (!root) return;
+  const ids = Object.keys(root.inventorySets);
+  if (ids.length <= 1) return;
+  delete root.inventorySets[id as string];
+  if (root.activeInventorySetId === id) {
+    root.activeInventorySetId = createInventorySetId(
+      ids.find((k) => k !== id)!,
+    );
+  }
+  safeSaveRootStorage(root);
+}
+
+export function renameInventorySet(id: InventorySetId, name: string): void {
+  const root = safeGetRootStorage();
+  if (!root) return;
+  const w = root.inventorySets[id as string];
+  if (!w) return;
+  w.name = name.trim() || w.name;
+  safeSaveRootStorage(root);
 }
 
 /**
@@ -322,14 +497,10 @@ export function importFromJSON(json: string): AppData {
   }
 
   // Ensure customCategories exists (only user's custom categories)
-  if (!data.customCategories) {
-    data.customCategories = [];
-  }
+  data.customCategories ??= [];
 
   // Ensure customTemplates exists
-  if (!data.customTemplates) {
-    data.customTemplates = [];
-  }
+  data.customTemplates ??= [];
 
   // Ensure dismissedAlertIds exists and cast to branded types
   if (data.dismissedAlertIds) {
@@ -350,9 +521,7 @@ export function importFromJSON(json: string): AppData {
   }
 
   // Ensure kit fields are initialized with defaults if absent
-  if (!data.selectedRecommendationKit) {
-    data.selectedRecommendationKit = DEFAULT_KIT_ID;
-  }
+  data.selectedRecommendationKit ??= DEFAULT_KIT_ID;
   data.uploadedRecommendationKits ??= [];
 
   // customRecommendedItems is optional - preserve if present, otherwise leave undefined

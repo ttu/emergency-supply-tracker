@@ -1,14 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   createDefaultAppData,
+  createDefaultRootStorage,
   getAppData,
   saveAppData,
   clearAppData,
+  getInventorySetList,
+  getActiveInventorySetId,
+  setActiveInventorySetId,
+  createInventorySet,
+  deleteInventorySet,
+  renameInventorySet,
+  DEFAULT_INVENTORY_SET_ID,
   exportToJSON,
   importFromJSON,
   exportToJSONSelective,
   parseImportJSON,
   mergeImportData,
+  STORAGE_KEY,
 } from './localStorage';
 import type {
   ExportSection,
@@ -53,8 +62,8 @@ describe('localStorage utilities', () => {
       expect(defaultData.version).toBe(CURRENT_SCHEMA_VERSION);
       expect(defaultData.household).toBeDefined();
       expect(defaultData.household.adults).toBe(2);
-      expect(defaultData.household.children).toBe(0);
-      expect(defaultData.household.supplyDurationDays).toBe(7);
+      expect(defaultData.household.children).toBe(3);
+      expect(defaultData.household.supplyDurationDays).toBe(3);
       expect(defaultData.household.useFreezer).toBe(false);
       expect(defaultData.settings).toBeDefined();
       expect(defaultData.customCategories).toEqual([]);
@@ -111,15 +120,22 @@ describe('localStorage utilities', () => {
     expect(loaded?.customCategories[1].id).toBe('test-cat-2');
   });
 
-  it('returns undefined when no data exists', () => {
-    expect(getAppData()).toBeUndefined();
+  it('creates and returns default app data when no data exists', () => {
+    const result = getAppData();
+    expect(result).toBeDefined();
+    expect(result?.version).toBe(CURRENT_SCHEMA_VERSION);
+    expect(result?.household).toBeDefined();
+    expect(result?.items).toEqual([]);
   });
 
-  it('clears data', () => {
+  it('clears data; next getAppData creates default inventory set', () => {
     const mockData = createMockAppData();
     saveAppData(mockData);
     clearAppData();
-    expect(getAppData()).toBeUndefined();
+    const result = getAppData();
+    expect(result).toBeDefined();
+    expect(result?.version).toBe(CURRENT_SCHEMA_VERSION);
+    expect(result?.items).toEqual([]);
   });
 
   describe('import/export', () => {
@@ -410,6 +426,10 @@ describe('localStorage utilities', () => {
   });
 
   describe('error handling', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
     it('handles localStorage.getItem error gracefully', () => {
       const consoleSpy = vi
         .spyOn(console, 'error')
@@ -464,7 +484,7 @@ describe('localStorage utilities', () => {
 
       expect(result).toBeUndefined();
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to parse JSON from localStorage:',
+        'Failed to load data from localStorage:',
         expect.any(Error),
       );
 
@@ -490,36 +510,9 @@ describe('localStorage utilities', () => {
       const consoleSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {});
-      const unsupportedData = {
-        version: '0.9.0', // Unsupported version
-        household: {
-          adults: 2,
-          children: 0,
-          pets: 0,
-          supplyDurationDays: 7,
-          useFreezer: false,
-        },
-        settings: {
-          language: 'en',
-          theme: 'light',
-          highContrast: false,
-          advancedFeatures: {
-            calorieTracking: false,
-            powerManagement: false,
-            waterTracking: false,
-          },
-        },
-        customCategories: [],
-        items: [],
-        customTemplates: [],
-        dismissedAlertIds: [],
-        disabledRecommendedItems: [],
-        lastModified: new Date().toISOString(),
-      };
-      localStorage.setItem(
-        'emergencySupplyTracker',
-        JSON.stringify(unsupportedData),
-      );
+      const root = createDefaultRootStorage();
+      root.version = '0.9.0';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
 
       const result = getAppData();
 
@@ -536,11 +529,10 @@ describe('localStorage utilities', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
 
-      // Create data that needs migration but will fail
-      const oldData = createMockAppData({ version: '1.0.0' });
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(oldData));
+      const root = createDefaultRootStorage();
+      root.version = '1.0.0';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
 
-      // Import migrations module and mock functions
       const migrations = await import('./migrations');
       const needsMigrationSpy = vi
         .spyOn(migrations, 'needsMigration')
@@ -557,13 +549,10 @@ describe('localStorage utilities', () => {
 
       const result = getAppData();
 
-      // Should return the unmigrated data
       expect(result).toBeDefined();
       expect(result?.version).toBe('1.0.0');
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringMatching(
-          /Migration failed from .* to .*: Migration failed/,
-        ),
+        expect.stringMatching(/Migration failed: .* to .*: Migration failed/),
       );
 
       needsMigrationSpy.mockRestore();
@@ -576,10 +565,10 @@ describe('localStorage utilities', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
 
-      const oldData = createMockAppData({ version: '1.0.0' });
-      localStorage.setItem('emergencySupplyTracker', JSON.stringify(oldData));
+      const root = createDefaultRootStorage();
+      root.version = '1.0.0';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
 
-      // Import migrations module and mock functions
       const migrations = await import('./migrations');
       const needsMigrationSpy = vi
         .spyOn(migrations, 'needsMigration')
@@ -592,7 +581,6 @@ describe('localStorage utilities', () => {
 
       const result = getAppData();
 
-      // Should return the unmigrated data
       expect(result).toBeDefined();
       expect(result?.version).toBe('1.0.0');
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -1086,6 +1074,91 @@ describe('localStorage utilities', () => {
 
       expect(result.lastModified >= beforeMerge).toBe(true);
       expect(result.lastModified <= afterMerge).toBe(true);
+    });
+  });
+
+  describe('inventory set API', () => {
+    beforeEach(() => {
+      clearAppData();
+    });
+
+    it('getInventorySetList returns default inventory set after getAppData', () => {
+      getAppData(); // bootstrap default root
+      const list = getInventorySetList();
+      expect(list).toHaveLength(1);
+      expect(list[0].id).toBe(DEFAULT_INVENTORY_SET_ID);
+      expect(list[0].name).toBe('Default');
+    });
+
+    it('getActiveInventorySetId returns default after bootstrap', () => {
+      getAppData();
+      expect(getActiveInventorySetId()).toBe(DEFAULT_INVENTORY_SET_ID);
+    });
+
+    it('createInventorySet adds a new inventory set', () => {
+      getAppData();
+      const id = createInventorySet('Car kit');
+      const list = getInventorySetList();
+      expect(list).toHaveLength(2);
+      expect(list.find((w) => w.id === id)?.name).toBe('Car kit');
+    });
+
+    it('setActiveInventorySetId switches active inventory set', () => {
+      getAppData();
+      const id = createInventorySet('Car kit');
+      setActiveInventorySetId(id);
+      expect(getActiveInventorySetId()).toBe(id);
+      const data = getAppData();
+      expect(data).toBeDefined();
+      expect(data?.household).toBeDefined();
+    });
+
+    it('renameInventorySet updates inventory set name', () => {
+      getAppData();
+      const id = createInventorySet('Car kit');
+      renameInventorySet(id, 'Vehicle emergency');
+      const list = getInventorySetList();
+      expect(list.find((w) => w.id === id)?.name).toBe('Vehicle emergency');
+    });
+
+    it('deleteInventorySet removes inventory set and switches active when needed', () => {
+      getAppData();
+      const id = createInventorySet('Car kit');
+      setActiveInventorySetId(id);
+      deleteInventorySet(id);
+      expect(getInventorySetList()).toHaveLength(1);
+      expect(getActiveInventorySetId()).toBe(DEFAULT_INVENTORY_SET_ID);
+    });
+
+    it('deleteInventorySet does nothing when only one inventory set', () => {
+      getAppData();
+      const listBefore = getInventorySetList();
+      deleteInventorySet(DEFAULT_INVENTORY_SET_ID);
+      expect(getInventorySetList()).toEqual(listBefore);
+    });
+
+    it('getInventorySetList returns empty array when storage throws', () => {
+      const getItem = localStorage.getItem.bind(localStorage);
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+        if (key === STORAGE_KEY) throw new Error('Storage unavailable');
+        return getItem(key);
+      });
+      expect(getInventorySetList()).toEqual([]);
+      vi.restoreAllMocks();
+    });
+
+    it('setActiveInventorySetId does not throw when setItem throws', () => {
+      getAppData();
+      const id = createInventorySet('Car kit');
+      const setItem = localStorage.setItem.bind(localStorage);
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(
+        (key, value) => {
+          if (key === STORAGE_KEY) throw new Error('QuotaExceededError');
+          return setItem(key, value);
+        },
+      );
+      expect(() => setActiveInventorySetId(id)).not.toThrow();
+      vi.restoreAllMocks();
     });
   });
 });

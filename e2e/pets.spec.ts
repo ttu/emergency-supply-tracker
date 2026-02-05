@@ -1,12 +1,12 @@
 import {
   test,
   expect,
+  setAppStorage,
   expandRecommendedItems,
   navigateToSettingsSection,
   selectInventoryCategory,
 } from './fixtures';
 import { createMockAppData } from '../src/shared/utils/test/factories';
-import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 test.describe('Pet Support', () => {
   test.describe('Settings', () => {
@@ -109,12 +109,7 @@ test.describe('Pet Support', () => {
       });
 
       await page.goto('/');
-      await page.evaluate(
-        ({ data, key }) => {
-          localStorage.setItem(key, JSON.stringify(data));
-        },
-        { data: appData, key: STORAGE_KEY },
-      );
+      await setAppStorage(page, appData);
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Navigate to inventory
@@ -150,12 +145,7 @@ test.describe('Pet Support', () => {
       });
 
       await page.goto('/');
-      await page.evaluate(
-        ({ data, key }) => {
-          localStorage.setItem(key, JSON.stringify(data));
-        },
-        { data: appData, key: STORAGE_KEY },
-      );
+      await setAppStorage(page, appData);
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Navigate to inventory and click pets category
@@ -196,12 +186,7 @@ test.describe('Pet Support', () => {
       });
 
       await page.goto('/');
-      await page.evaluate(
-        ({ data, key }) => {
-          localStorage.setItem(key, JSON.stringify(data));
-        },
-        { data: appData, key: STORAGE_KEY },
-      );
+      await setAppStorage(page, appData);
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Navigate to inventory
@@ -257,12 +242,7 @@ test.describe('Pet Support', () => {
       });
 
       await page.goto('/');
-      await page.evaluate(
-        ({ data, key }) => {
-          localStorage.setItem(key, JSON.stringify(data));
-        },
-        { data: appData, key: STORAGE_KEY },
-      );
+      await setAppStorage(page, appData);
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Navigate to pets category

@@ -1,0 +1,1 @@
+export { useInventorySet } from './useInventorySet';
