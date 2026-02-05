@@ -32,6 +32,12 @@
   transition: all var(--transition-base);
 }
 
+/* Placeholder styling with WCAG AA compliant contrast */
+.input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 1; /* Override browser default opacity */
+}
+
 /* iOS date inputs have intrinsic sizing - force them to respect container width */
 .input[type='date'],
 .input[type='datetime-local'],

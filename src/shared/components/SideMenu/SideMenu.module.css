@@ -50,14 +50,15 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+/* Active state: use primary tint + darker primary text for WCAG AA 4.5:1 contrast */
 .item.active {
-  background: var(--color-primary);
-  color: white;
+  background: var(--color-primary-alpha);
+  color: var(--color-primary-active);
 }
 
 .item.active:hover {
-  background: var(--color-primary-hover);
-  color: white;
+  background: var(--color-primary-alpha-hover);
+  color: var(--color-primary-active);
 }
 
 .icon {
@@ -86,7 +87,8 @@
   font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-text-tertiary);
+  /* Use text-secondary for WCAG AA contrast (4.6:1 on white) */
+  color: var(--color-text-secondary);
   user-select: none;
 }
 

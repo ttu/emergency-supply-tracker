@@ -40,7 +40,11 @@ async function ensureDrawerClosed(page: Page) {
 async function openWorkspacesSection(page: Page) {
   await page.getByTestId('nav-settings').click();
   await expect(page.getByTestId('page-settings')).toBeVisible();
-  await page.getByRole('menuitem', { name: 'Workspaces' }).click();
+  // Click the Workspaces menu item in the sidebar (desktop view)
+  await page
+    .getByTestId('sidemenu-sidebar')
+    .getByTestId('sidemenu-item-workspaces')
+    .click();
   await expect(page.getByTestId('section-workspaces')).toBeVisible();
   await expect(page.getByTestId('workspace-section')).toBeVisible();
 }
@@ -79,7 +83,9 @@ test.describe('Accessibility', () => {
   test('Settings page should have no accessibility violations', async ({
     page,
   }) => {
-    await page.goto('/settings');
+    // Navigate via nav (app is state-based; goto('/settings') does not change visible page)
+    await page.getByTestId('nav-settings').click();
+    await expect(page.getByTestId('page-settings')).toBeVisible();
     await page.waitForLoadState('networkidle');
 
     const accessibilityScanResults = await new AxeBuilder({ page })
@@ -211,18 +217,19 @@ test.describe('Accessibility', () => {
     }) => {
       await openWorkspacesSection(page);
 
-      // Add a second workspace so Delete is available
+      // Add a second workspace so Delete is available on non-active workspace
       await page.getByLabel('Workspace name').fill('To Delete');
       await page.getByRole('button', { name: 'Add workspace' }).click();
-      await expect(
-        page.getByRole('button', { name: 'Delete workspace' }),
-      ).toBeVisible();
 
-      // Open confirm dialog by clicking Delete on the second workspace
-      await page
+      // Wait for the new workspace's delete button to be visible
+      // Use nth(1) to get the second workspace's delete button (first is Home)
+      const newWorkspaceDeleteButton = page
         .getByRole('button', { name: 'Delete workspace' })
-        .first()
-        .click();
+        .nth(1);
+      await expect(newWorkspaceDeleteButton).toBeVisible();
+
+      // Open confirm dialog by clicking Delete on the new (second) workspace
+      await newWorkspaceDeleteButton.click();
 
       const dialog = page.getByTestId('workspace-confirm-delete-dialog');
       await expect(dialog).toBeVisible();
@@ -239,9 +246,11 @@ test.describe('Accessibility', () => {
       await page.getByLabel('Workspace name').fill('To Delete');
       await page.getByRole('button', { name: 'Add workspace' }).click();
 
+      // Get the delete button for the new (second) workspace
       const deleteButton = page
         .getByRole('button', { name: 'Delete workspace' })
-        .first();
+        .nth(1);
+      await expect(deleteButton).toBeVisible();
       await deleteButton.click();
 
       await expect(
@@ -251,6 +260,8 @@ test.describe('Accessibility', () => {
       await expect(
         page.getByTestId('workspace-confirm-delete-dialog'),
       ).toBeHidden();
+
+      // Focus should be restored to the button that triggered the dialog
       await expect(deleteButton).toBeFocused();
     });
 
@@ -261,9 +272,10 @@ test.describe('Accessibility', () => {
       await page.getByLabel('Workspace name').fill('To Delete');
       await page.getByRole('button', { name: 'Add workspace' }).click();
 
+      // Click delete on the new (second) workspace
       await page
         .getByRole('button', { name: 'Delete workspace' })
-        .first()
+        .nth(1)
         .click();
 
       const dialog = page.getByTestId('workspace-confirm-delete-dialog');
@@ -288,9 +300,11 @@ test.describe('Accessibility', () => {
 
       await page.getByLabel('Workspace name').fill('To Delete');
       await page.getByRole('button', { name: 'Add workspace' }).click();
+
+      // Click delete on the new (second) workspace
       await page
         .getByRole('button', { name: 'Delete workspace' })
-        .first()
+        .nth(1)
         .click();
 
       const dialog = page.getByTestId('workspace-confirm-delete-dialog');

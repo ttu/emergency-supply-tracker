@@ -99,10 +99,9 @@ export function SideMenu({
     const itemProps = getItemProps(index);
 
     return (
-      <li key={item.id} role="none">
+      <li key={item.id}>
         <button
           type="button"
-          role="menuitem"
           className={`${styles.item} ${isActive ? styles.active : ''}`}
           onClick={() => handleItemClick(item.id)}
           aria-current={isActive ? 'page' : undefined}
@@ -136,7 +135,7 @@ export function SideMenu({
       });
 
       elements.push(
-        <li key={group.id} role="none" className={styles.group}>
+        <li key={group.id} className={styles.group}>
           <span
             className={styles.groupLabel}
             id={`group-${group.id}`}
@@ -168,15 +167,13 @@ export function SideMenu({
     <nav
       ref={containerRef as React.RefObject<HTMLElement>}
       className={styles.menu}
-      role="navigation"
       aria-label={ariaLabel}
     >
       <ul
         className={styles.list}
-        role="menu"
-        aria-orientation="vertical"
         onKeyDown={handleKeyDown}
         tabIndex={-1}
+        data-testid="sidemenu-list"
       >
         {groups ? renderGroupedMenu() : renderFlatMenu()}
       </ul>

@@ -67,9 +67,14 @@ export function WorkspaceSection() {
   );
 
   const closeDialog = useCallback(() => {
-    triggerRef.current?.focus();
+    const trigger = triggerRef.current;
     triggerRef.current = null;
     setConfirmDeleteId(null);
+    // Use requestAnimationFrame to restore focus after React re-renders
+    // and the dialog is fully unmounted
+    requestAnimationFrame(() => {
+      trigger?.focus();
+    });
   }, []);
 
   const handleConfirmDelete = useCallback(() => {
@@ -100,6 +105,7 @@ export function WorkspaceSection() {
     });
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.preventDefault(); // Prevent native dialog close handling
         handleCancelDelete();
         return;
       }
