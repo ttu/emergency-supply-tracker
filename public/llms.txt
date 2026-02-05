@@ -1,0 +1,34 @@
+# Emergency Supply Tracker
+
+> A web application to help households track emergency preparedness supplies.
+
+## Purpose
+
+Helps users maintain adequate emergency supplies. Based on official emergency preparedness recommendations.
+
+## Features
+
+- Track emergency items across customizable categories
+- Add custom items and categories
+- Household configuration (adults, children, infants, pets)
+- Expiration date tracking and alerts
+- Import/export data for backup
+- Multi-language support (English, Finnish)
+- Offline-capable Progressive Web App (PWA)
+- Privacy-focused: all data stored locally in browser
+
+## Languages
+
+- English
+- Finnish (Suomi)
+
+## Technical
+
+- Single-page application (React)
+- Works offline after first visit
+- No account required
+- No data sent to servers
+
+## URL
+
+https://www.emergencysupplytracker.com
