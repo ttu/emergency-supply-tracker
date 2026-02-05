@@ -1,0 +1,21 @@
+/* TEAM */
+
+Project: Emergency Supply Tracker
+Site: https://www.emergencysupplytracker.com
+Contact: via GitHub Issues
+
+/* SITE */
+
+Standards: HTML5, CSS3, ECMAScript 2020+
+Platform: React 19, TypeScript, Vite
+Components: CSS Modules, Storybook
+Testing: Vitest, Playwright
+Languages: English, Finnish
+Doctype: HTML5
+IDE: Various
+
+/* PURPOSE */
+
+Help households track emergency preparedness supplies for 72-hour readiness.
+Based on official emergency preparedness guidelines.
+Privacy-focused: all data stored locally, no accounts required.

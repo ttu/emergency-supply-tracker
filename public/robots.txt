@@ -1,8 +1,59 @@
 # robots.txt for Emergency Supply Tracker
 # https://www.emergencysupplytracker.com
 
+# Standard web crawlers
 User-agent: *
+Allow: /
+
+# AI Crawlers and Agents - explicitly allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
 Allow: /
 
 # Sitemap location
 Sitemap: https://www.emergencysupplytracker.com/sitemap.xml
+
+# LLM context file
+# See https://llmstxt.org for specification
+LLMs-Txt: https://www.emergencysupplytracker.com/llms.txt
