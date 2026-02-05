@@ -4,30 +4,18 @@
 
 ## Purpose
 
-Helps users maintain adequate emergency supplies for 72-hour preparedness (the critical first 3 days after a disaster). Based on official emergency preparedness recommendations.
+Helps users maintain adequate emergency supplies. Based on official emergency preparedness recommendations.
 
 ## Features
 
-- Track 81 recommended emergency items across 10 categories
+- Track emergency items across customizable categories
+- Add custom items and categories
 - Household configuration (adults, children, infants, pets)
 - Expiration date tracking and alerts
 - Import/export data for backup
 - Multi-language support (English, Finnish)
 - Offline-capable Progressive Web App (PWA)
 - Privacy-focused: all data stored locally in browser
-
-## Categories
-
-1. Water
-2. Food
-3. Warmth
-4. Light
-5. First Aid
-6. Hygiene
-7. Information & Communication
-8. Tools
-9. Important Documents
-10. Special Needs (infants, pets, medical)
 
 ## Languages
 

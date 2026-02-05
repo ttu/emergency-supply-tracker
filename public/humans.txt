@@ -16,6 +16,6 @@ IDE: Various
 
 /* PURPOSE */
 
-Help households track emergency preparedness supplies for 72-hour readiness.
+Help households track emergency preparedness supplies.
 Based on official emergency preparedness guidelines.
 Privacy-focused: all data stored locally, no accounts required.

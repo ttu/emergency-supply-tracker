@@ -1,5 +1,6 @@
 # robots.txt for Emergency Supply Tracker
 # https://www.emergencysupplytracker.com
+# LLM context available at /llms.txt (see llmstxt.org)
 
 # Standard web crawlers
 User-agent: *
@@ -19,12 +20,6 @@ User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Claude-Web
 Allow: /
 
 User-agent: ClaudeBot
@@ -53,7 +48,3 @@ Allow: /
 
 # Sitemap location
 Sitemap: https://www.emergencysupplytracker.com/sitemap.xml
-
-# LLM context file
-# See https://llmstxt.org for specification
-LLMs-Txt: https://www.emergencysupplytracker.com/llms.txt
