@@ -11,6 +11,7 @@ import { SettingsProvider } from '@/features/settings';
 import { HouseholdProvider } from '@/features/household';
 import { InventoryProvider } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
+import { WorkspaceProvider } from '@/features/workspace';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ThemeApplier } from '@/components/ThemeApplier';
@@ -146,7 +147,7 @@ export function renderWithProviders(
     let wrapped: ReactNode = children;
 
     // Build provider tree from inside out (reverse order of nesting)
-    // Order matches App.tsx: ErrorBoundary > Settings > ThemeApplier > NotificationProvider > Household > RecommendedItems > Inventory
+    // Order matches App.tsx: ErrorBoundary > Settings > ThemeApplier > NotificationProvider > Household > RecommendedItems > Inventory > Workspace
     if (inventory) wrapped = <InventoryProvider>{wrapped}</InventoryProvider>;
     if (recommendedItems)
       wrapped = <RecommendedItemsProvider>{wrapped}</RecommendedItemsProvider>;
@@ -159,6 +160,8 @@ export function renderWithProviders(
     if (errorBoundary) wrapped = <ErrorBoundary>{wrapped}</ErrorBoundary>;
 
     if (CustomWrapper) wrapped = <CustomWrapper>{wrapped}</CustomWrapper>;
+
+    wrapped = <WorkspaceProvider>{wrapped}</WorkspaceProvider>;
 
     return <>{wrapped}</>;
   }

@@ -2,8 +2,6 @@ import type {
   AppData,
   InventoryItem,
   ProductTemplateId,
-  Category,
-  ProductTemplate,
   RootStorage,
   WorkspaceData,
   WorkspaceId,
@@ -153,9 +151,34 @@ function getRootStorage(): RootStorage | undefined {
   return raw as RootStorage;
 }
 
-/** Write root storage to localStorage. Throws on setItem failure. */
+/** Write root storage to localStorage. Throws on setItem failure (e.g. QuotaExceededError). */
 function saveRootStorage(root: RootStorage): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
+}
+
+/**
+ * Safe getRootStorage: returns undefined on JSON parse error or storage errors.
+ * Logs the full error for debugging.
+ */
+function safeGetRootStorage(): RootStorage | undefined {
+  try {
+    return getRootStorage();
+  } catch (error) {
+    console.error('getRootStorage failed:', error);
+    return undefined;
+  }
+}
+
+/**
+ * Safe saveRootStorage: no-op on failure (e.g. QuotaExceededError).
+ * Logs the full error for debugging.
+ */
+function safeSaveRootStorage(root: RootStorage): void {
+  try {
+    saveRootStorage(root);
+  } catch (error) {
+    console.error('saveRootStorage failed:', error);
+  }
 }
 
 /** Extract workspace slice from AppData (for persisting to root) */
@@ -220,11 +243,11 @@ function normalizeMergedAppData(data: AppData): AppData {
     ...data,
     items: normalizedItems,
     customCategories: (data.customCategories || []).map((cat) => ({
-      ...(cat as Category),
+      ...cat,
       id: createCategoryId(cat.id as string),
     })),
     customTemplates: (data.customTemplates || []).map((template) => ({
-      ...(template as ProductTemplate),
+      ...template,
       id: createProductTemplateId(template.id as string),
     })),
     dismissedAlertIds: (data.dismissedAlertIds || []).map((id) =>
@@ -331,7 +354,7 @@ export interface WorkspaceListItem {
 }
 
 export function getWorkspaceList(): WorkspaceListItem[] {
-  const root = getRootStorage();
+  const root = safeGetRootStorage();
   if (!root) return [];
   return Object.values(root.workspaces).map((w) => ({
     id: w.id,
@@ -340,17 +363,17 @@ export function getWorkspaceList(): WorkspaceListItem[] {
 }
 
 export function getActiveWorkspaceId(): WorkspaceId | undefined {
-  const root = getRootStorage();
+  const root = safeGetRootStorage();
   if (!root) return undefined;
   return root.activeWorkspaceId;
 }
 
 export function setActiveWorkspaceId(id: WorkspaceId): void {
-  const root = getRootStorage();
+  const root = safeGetRootStorage();
   if (!root) return;
   if (!root.workspaces[id as string]) return;
   root.activeWorkspaceId = id;
-  saveRootStorage(root);
+  safeSaveRootStorage(root);
 }
 
 function generateWorkspaceId(): WorkspaceId {
@@ -363,7 +386,7 @@ function generateWorkspaceId(): WorkspaceId {
 }
 
 export function createWorkspace(name: string): WorkspaceId {
-  let root = getRootStorage();
+  let root = safeGetRootStorage();
   if (!root) {
     root = createDefaultRootStorage();
   }
@@ -372,12 +395,12 @@ export function createWorkspace(name: string): WorkspaceId {
     id,
     name.trim() || 'Workspace',
   );
-  saveRootStorage(root);
+  safeSaveRootStorage(root);
   return id;
 }
 
 export function deleteWorkspace(id: WorkspaceId): void {
-  const root = getRootStorage();
+  const root = safeGetRootStorage();
   if (!root) return;
   const ids = Object.keys(root.workspaces);
   if (ids.length <= 1) return;
@@ -385,16 +408,16 @@ export function deleteWorkspace(id: WorkspaceId): void {
   if (root.activeWorkspaceId === id) {
     root.activeWorkspaceId = createWorkspaceId(ids.find((k) => k !== id)!);
   }
-  saveRootStorage(root);
+  safeSaveRootStorage(root);
 }
 
 export function renameWorkspace(id: WorkspaceId, name: string): void {
-  const root = getRootStorage();
+  const root = safeGetRootStorage();
   if (!root) return;
   const w = root.workspaces[id as string];
   if (!w) return;
   w.name = name.trim() || w.name;
-  saveRootStorage(root);
+  safeSaveRootStorage(root);
 }
 
 /**
@@ -464,14 +487,10 @@ export function importFromJSON(json: string): AppData {
   }
 
   // Ensure customCategories exists (only user's custom categories)
-  if (!data.customCategories) {
-    data.customCategories = [];
-  }
+  data.customCategories ??= [];
 
   // Ensure customTemplates exists
-  if (!data.customTemplates) {
-    data.customTemplates = [];
-  }
+  data.customTemplates ??= [];
 
   // Ensure dismissedAlertIds exists and cast to branded types
   if (data.dismissedAlertIds) {
@@ -492,9 +511,7 @@ export function importFromJSON(json: string): AppData {
   }
 
   // Ensure kit fields are initialized with defaults if absent
-  if (!data.selectedRecommendationKit) {
-    data.selectedRecommendationKit = DEFAULT_KIT_ID;
-  }
+  data.selectedRecommendationKit ??= DEFAULT_KIT_ID;
   data.uploadedRecommendationKits ??= [];
 
   // customRecommendedItems is optional - preserve if present, otherwise leave undefined

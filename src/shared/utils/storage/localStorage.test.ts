@@ -1136,5 +1136,29 @@ describe('localStorage utilities', () => {
       deleteWorkspace(DEFAULT_WORKSPACE_ID);
       expect(getWorkspaceList()).toEqual(listBefore);
     });
+
+    it('getWorkspaceList returns empty array when storage throws', () => {
+      const getItem = localStorage.getItem.bind(localStorage);
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+        if (key === STORAGE_KEY) throw new Error('Storage unavailable');
+        return getItem(key);
+      });
+      expect(getWorkspaceList()).toEqual([]);
+      vi.restoreAllMocks();
+    });
+
+    it('setActiveWorkspaceId does not throw when setItem throws', () => {
+      getAppData();
+      const id = createWorkspace('Car kit');
+      const setItem = localStorage.setItem.bind(localStorage);
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(
+        (key, value) => {
+          if (key === STORAGE_KEY) throw new Error('QuotaExceededError');
+          return setItem(key, value);
+        },
+      );
+      expect(() => setActiveWorkspaceId(id)).not.toThrow();
+      vi.restoreAllMocks();
+    });
   });
 });

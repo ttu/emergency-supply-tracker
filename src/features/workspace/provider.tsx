@@ -1,4 +1,4 @@
-import { ReactNode, useState, useCallback } from 'react';
+import { ReactNode, useState, useCallback, useMemo } from 'react';
 import type { WorkspaceId } from '@/shared/types';
 import {
   getWorkspaceList,
@@ -7,9 +7,9 @@ import {
   createWorkspace as createWorkspaceStorage,
   deleteWorkspace as deleteWorkspaceStorage,
   renameWorkspace as renameWorkspaceStorage,
+  getAppData,
   DEFAULT_WORKSPACE_ID,
 } from '@/shared/utils/storage/localStorage';
-import { getAppData } from '@/shared/utils/storage/localStorage';
 import { WorkspaceContext } from './context';
 
 function readWorkspaceState(): {
@@ -30,16 +30,21 @@ function readWorkspaceState(): {
   };
 }
 
-export function WorkspaceProvider({ children }: { children: ReactNode }) {
+export function WorkspaceProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const [{ activeWorkspaceId, workspaces }, setState] =
     useState(readWorkspaceState);
 
   const setActiveWorkspace = useCallback((id: WorkspaceId) => {
+    const list = getWorkspaceList();
+    const exists = list.some((w) => w.id === id);
+    if (!exists) return;
     setActiveWorkspaceId(id);
     setState((prev) => ({
       ...prev,
       activeWorkspaceId: id,
-      workspaces: getWorkspaceList(),
+      workspaces: list,
     }));
   }, []);
 
@@ -63,14 +68,24 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, workspaces: getWorkspaceList() }));
   }, []);
 
-  const value = {
-    activeWorkspaceId,
-    workspaces,
-    setActiveWorkspace,
-    createWorkspace,
-    renameWorkspace,
-    deleteWorkspace,
-  };
+  const value = useMemo(
+    () => ({
+      activeWorkspaceId,
+      workspaces,
+      setActiveWorkspace,
+      createWorkspace,
+      renameWorkspace,
+      deleteWorkspace,
+    }),
+    [
+      activeWorkspaceId,
+      workspaces,
+      setActiveWorkspace,
+      createWorkspace,
+      renameWorkspace,
+      deleteWorkspace,
+    ],
+  );
 
   return (
     <WorkspaceContext.Provider value={value}>

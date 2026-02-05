@@ -192,4 +192,116 @@ test.describe('Accessibility', () => {
 
     expect(accessibilityScanResults.violations).toEqual([]);
   });
+
+  test.describe('Workspace confirm delete dialog', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 720 });
+    });
+
+    async function openWorkspacesSection(page: Page) {
+      await page.getByTestId('nav-settings').click();
+      await expect(page.getByTestId('page-settings')).toBeVisible();
+      await page.getByRole('menuitem', { name: 'Workspaces' }).click();
+      await expect(page.getByTestId('section-workspaces')).toBeVisible();
+      await expect(page.getByTestId('workspace-section')).toBeVisible();
+    }
+
+    test('should receive initial focus on primary delete button', async ({
+      page,
+    }) => {
+      await openWorkspacesSection(page);
+
+      // Add a second workspace so Delete is available
+      await page.getByLabel('Workspace name').fill('To Delete');
+      await page.getByRole('button', { name: 'Add workspace' }).click();
+      await expect(
+        page.getByRole('button', { name: 'Delete workspace' }),
+      ).toBeVisible();
+
+      // Open confirm dialog by clicking Delete on the second workspace
+      await page
+        .getByRole('button', { name: 'Delete workspace' })
+        .first()
+        .click();
+
+      const dialog = page.getByTestId('workspace-confirm-delete-dialog');
+      await expect(dialog).toBeVisible();
+      const primaryDelete = page.getByTestId('workspace-confirm-delete-button');
+      await expect(primaryDelete).toBeFocused();
+    });
+
+    test('should dismiss dialog on Escape and restore focus', async ({
+      page,
+    }) => {
+      await openWorkspacesSection(page);
+      await expect(page.getByTestId('workspace-section')).toBeVisible();
+
+      await page.getByLabel('Workspace name').fill('To Delete');
+      await page.getByRole('button', { name: 'Add workspace' }).click();
+
+      const deleteButton = page
+        .getByRole('button', { name: 'Delete workspace' })
+        .first();
+      await deleteButton.click();
+
+      await expect(
+        page.getByTestId('workspace-confirm-delete-dialog'),
+      ).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(
+        page.getByTestId('workspace-confirm-delete-dialog'),
+      ).toBeHidden();
+      await expect(deleteButton).toBeFocused();
+    });
+
+    test('should trap focus within dialog', async ({ page }) => {
+      await openWorkspacesSection(page);
+      await expect(page.getByTestId('workspace-section')).toBeVisible();
+
+      await page.getByLabel('Workspace name').fill('To Delete');
+      await page.getByRole('button', { name: 'Add workspace' }).click();
+
+      await page
+        .getByRole('button', { name: 'Delete workspace' })
+        .first()
+        .click();
+
+      const dialog = page.getByTestId('workspace-confirm-delete-dialog');
+      await expect(dialog).toBeVisible();
+      const primaryDelete = page.getByTestId('workspace-confirm-delete-button');
+      await expect(primaryDelete).toBeFocused();
+
+      // Tab to Cancel, then Tab again — focus should wrap to primary Delete
+      await page.keyboard.press('Tab');
+      await expect(
+        dialog.getByRole('button', { name: 'Cancel' }),
+      ).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(primaryDelete).toBeFocused();
+    });
+
+    test('workspace confirm delete dialog should have no a11y violations', async ({
+      page,
+    }) => {
+      await openWorkspacesSection(page);
+      await expect(page.getByTestId('workspace-section')).toBeVisible();
+
+      await page.getByLabel('Workspace name').fill('To Delete');
+      await page.getByRole('button', { name: 'Add workspace' }).click();
+      await page
+        .getByRole('button', { name: 'Delete workspace' })
+        .first()
+        .click();
+
+      const dialog = page.getByTestId('workspace-confirm-delete-dialog');
+      await expect(dialog).toBeVisible();
+
+      const accessibilityScanResults = await new AxeBuilder({ page })
+        .include('[data-testid="workspace-confirm-delete-dialog"]')
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
+        .analyze();
+
+      expect(accessibilityScanResults.violations).toEqual([]);
+    });
+  });
 });

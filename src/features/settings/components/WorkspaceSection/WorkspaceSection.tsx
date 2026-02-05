@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWorkspace } from '@/features/workspace';
 import type { WorkspaceId } from '@/shared/types';
@@ -21,6 +21,7 @@ export function WorkspaceSection() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<WorkspaceId | null>(
     null,
   );
+  const confirmDialogRef = useRef<HTMLDialogElement>(null);
 
   const canDelete = workspaces.length > 1;
 
@@ -70,6 +71,31 @@ export function WorkspaceSection() {
   const handleCancelDelete = useCallback(() => {
     setConfirmDeleteId(null);
   }, []);
+
+  // When dialog is open: show modal, focus primary action, and handle Escape
+  useEffect(() => {
+    if (!confirmDeleteId) return;
+    const dialog = confirmDialogRef.current;
+    if (!dialog) return;
+    if (typeof dialog.showModal === 'function') {
+      dialog.showModal();
+    }
+    const rafId = requestAnimationFrame(() => {
+      dialog
+        .querySelector<HTMLElement>(
+          '[data-testid="workspace-confirm-delete-button"]',
+        )
+        ?.focus();
+    });
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleCancelDelete();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      cancelAnimationFrame(rafId);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [confirmDeleteId, handleCancelDelete]);
 
   return (
     <div className={styles.container} data-testid="workspace-section">
@@ -188,11 +214,12 @@ export function WorkspaceSection() {
       </div>
 
       {confirmDeleteId && (
-        <div
+        <dialog
+          ref={confirmDialogRef}
           className={styles.confirmOverlay}
-          role="dialog"
-          aria-modal="true"
           aria-labelledby="delete-workspace-title"
+          data-testid="workspace-confirm-delete-dialog"
+          onClose={handleCancelDelete}
         >
           <div className={styles.confirmDialog}>
             <h3 id="delete-workspace-title">
@@ -200,15 +227,23 @@ export function WorkspaceSection() {
             </h3>
             <p>{t('settings.workspaces.confirmDeleteMessage')}</p>
             <div className={styles.confirmActions}>
-              <Button variant="primary" onClick={handleConfirmDelete}>
+              <Button
+                variant="primary"
+                onClick={handleConfirmDelete}
+                data-testid="workspace-confirm-delete-button"
+              >
                 {t('common.delete')}
               </Button>
-              <Button variant="secondary" onClick={handleCancelDelete}>
+              <Button
+                variant="secondary"
+                onClick={handleCancelDelete}
+                data-testid="workspace-confirm-cancel-button"
+              >
                 {t('common.cancel')}
               </Button>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </div>
   );
