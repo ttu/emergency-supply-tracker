@@ -5,7 +5,8 @@ import i18n from 'i18next';
 import { initReactI18next, I18nextProvider } from 'react-i18next';
 import { DataErrorPage } from './DataErrorPage';
 import * as localStorage from '@/shared/utils/storage/localStorage';
-import { STORAGE_KEY } from '@/shared/utils/storage/localStorage';
+import { STORAGE_KEY, saveAppData } from '@/shared/utils/storage/localStorage';
+import { createMockAppData } from '@/shared/utils/test/factories';
 
 // Override the global i18next mock with real implementation for this test
 vi.mock('react-i18next', async () => {
@@ -195,8 +196,8 @@ describe('DataErrorPage', () => {
 
   it('downloads data when data exists in localStorage', async () => {
     const user = userEvent.setup();
-    const testData = { version: '1.0', items: [] };
-    globalThis.localStorage.setItem(STORAGE_KEY, JSON.stringify(testData));
+    const testData = createMockAppData({ items: [] });
+    saveAppData(testData);
 
     const { downloadFile } = await import('@/shared/utils/download');
 
