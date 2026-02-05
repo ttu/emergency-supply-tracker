@@ -17,7 +17,7 @@ import {
   KitManagement,
   CategoriesSection,
   CustomTemplates,
-  WorkspaceSection,
+  InventorySetSection,
 } from '@/features/settings';
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
@@ -31,7 +31,7 @@ import styles from './Settings.module.css';
 
 type SettingsSection =
   | 'appearance'
-  | 'workspaces'
+  | 'inventorySets'
   | 'household'
   | 'nutrition'
   | 'hiddenAlerts'
@@ -87,8 +87,8 @@ export function Settings() {
           label: t('settings.navigation.sections.appearance'),
         },
         {
-          id: 'workspaces',
-          label: t('settings.navigation.sections.workspaces'),
+          id: 'inventorySets',
+          label: t('settings.navigation.sections.inventorySets'),
         },
         {
           id: 'backupTransfer',
@@ -176,13 +176,13 @@ export function Settings() {
           </Section>
         );
 
-      case 'workspaces':
+      case 'inventorySets':
         return (
           <Section
-            testId="section-workspaces"
-            titleKey="settings.navigation.sections.workspaces"
+            testId="section-inventory-sets"
+            titleKey="settings.navigation.sections.inventorySets"
           >
-            <WorkspaceSection />
+            <InventorySetSection />
           </Section>
         );
 

@@ -201,7 +201,7 @@ async function verifyCustomItemExists(page: Page) {
         if (!data) return false;
         try {
           const root = JSON.parse(data);
-          const ws = root.workspaces?.[root.activeWorkspaceId];
+          const ws = root.inventorySets?.[root.activeInventorySetId];
           return ws?.items?.some(
             (item: { name: string }) => item.name === 'Custom Test Item',
           );
@@ -525,7 +525,8 @@ async function testNavigationAndPersistence(page: Page) {
     if (!data) return { persisted: false, items: [] };
     try {
       const root = JSON.parse(data);
-      const items = root.workspaces?.[root.activeWorkspaceId]?.items || [];
+      const items =
+        root.inventorySets?.[root.activeInventorySetId]?.items || [];
       return {
         persisted: true,
         items,

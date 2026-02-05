@@ -39,10 +39,10 @@ export type ProductTemplateId = string & {
 export type AlertId = string & { readonly __brand: 'AlertId' };
 
 /**
- * Branded type for workspace IDs.
+ * Branded type for inventory set IDs.
  * Used to identify multiple inventory contexts (e.g. home, car kit).
  */
-export type WorkspaceId = string & { readonly __brand: 'WorkspaceId' };
+export type InventorySetId = string & { readonly __brand: 'InventorySetId' };
 
 /**
  * Branded type for date-only strings (YYYY-MM-DD format).
@@ -88,10 +88,10 @@ export function createAlertId(id: string): AlertId {
 }
 
 /**
- * Creates a WorkspaceId from a string
+ * Creates an InventorySetId from a string
  */
-export function createWorkspaceId(id: string): WorkspaceId {
-  return id as WorkspaceId;
+export function createInventorySetId(id: string): InventorySetId {
+  return id as InventorySetId;
 }
 
 /**

@@ -24,6 +24,10 @@
   max-width: 20rem;
   padding: 0.5rem;
   font-size: 1rem;
+  background-color: var(--color-input-bg, var(--color-surface, #fff));
+  color: var(--color-text, #333);
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 4px;
 }
 
 .listSection {
@@ -53,7 +57,7 @@
   border-bottom: 1px solid var(--color-border, #eee);
 }
 
-.workspaceName {
+.inventorySetName {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -99,6 +103,10 @@
 .input {
   padding: 0.5rem;
   font-size: 1rem;
+  background-color: var(--color-input-bg, var(--color-surface, #fff));
+  color: var(--color-text, #333);
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 4px;
 }
 
 .confirmOverlay {

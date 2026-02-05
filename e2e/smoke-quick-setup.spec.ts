@@ -132,7 +132,7 @@ async function verifyRecommendedItemsAdded(page: Page) {
     if (!data) return false;
     try {
       const root = JSON.parse(data);
-      const ws = root.workspaces?.[root.activeWorkspaceId];
+      const ws = root.inventorySets?.[root.activeInventorySetId];
       return ws?.items && ws.items.length > 0;
     } catch {
       return false;
@@ -443,7 +443,7 @@ async function testPersistenceQuickSetup(page: Page) {
     if (!data) return { persisted: false, items: [] };
     try {
       const root = JSON.parse(data);
-      const ws = root.workspaces?.[root.activeWorkspaceId];
+      const ws = root.inventorySets?.[root.activeInventorySetId];
       const items = ws?.items || [];
       return {
         persisted: true,

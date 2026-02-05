@@ -16,4 +16,4 @@ export { NutritionSettings } from './NutritionSettings';
 export { OverriddenRecommendations } from './OverriddenRecommendations';
 export { ShoppingListExport } from './ShoppingListExport';
 export { ThemeSelector } from './ThemeSelector';
-export { WorkspaceSection } from './WorkspaceSection';
+export { InventorySetSection } from './InventorySetSection';

@@ -9,7 +9,7 @@ export const HOUSEHOLD_DEFAULTS = {
   useFreezer: false,
 } as const;
 
-// Default household for new workspaces
+// Default household for new inventory sets
 export const DEFAULT_HOUSEHOLD: HouseholdConfig = {
   adults: 2,
   children: 3,

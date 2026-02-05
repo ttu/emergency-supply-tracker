@@ -144,12 +144,12 @@ test.describe('Custom Product Templates', () => {
     // Reload again
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Custom template should still exist (RootStorage: read active workspace)
+    // Custom template should still exist (RootStorage: read active inventory set)
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
       if (!data) return null;
       const root = JSON.parse(data);
-      const ws = root.workspaces?.[root.activeWorkspaceId];
+      const ws = root.inventorySets?.[root.activeInventorySetId];
       return ws ?? null;
     }, STORAGE_KEY);
 

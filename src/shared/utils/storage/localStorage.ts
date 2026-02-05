@@ -3,8 +3,8 @@ import type {
   InventoryItem,
   ProductTemplateId,
   RootStorage,
-  WorkspaceData,
-  WorkspaceId,
+  InventorySetData,
+  InventorySetId,
 } from '@/shared/types';
 import type {
   ExportSection,
@@ -16,7 +16,7 @@ import {
   createCategoryId,
   createProductTemplateId,
   createAlertId,
-  createWorkspaceId,
+  createInventorySetId,
 } from '@/shared/types';
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { APP_VERSION } from '@/shared/utils/version';
@@ -38,8 +38,8 @@ import {
 
 export const STORAGE_KEY = 'emergencySupplyTracker';
 
-/** Default workspace id when none exist (first load) */
-export const DEFAULT_WORKSPACE_ID = 'default' as WorkspaceId;
+/** Default inventory set id when none exist (first load) */
+export const DEFAULT_INVENTORY_SET_ID = 'default' as InventorySetId;
 
 /**
  * Stores the last data validation result for error reporting.
@@ -106,11 +106,11 @@ function normalizeItems(
   }));
 }
 
-/** Build default workspace data (for new workspace or first load) */
-function createDefaultWorkspaceData(
-  id: WorkspaceId,
+/** Build default inventory set data (for new inventory set or first load) */
+function createDefaultInventorySetData(
+  id: InventorySetId,
   name: string,
-): WorkspaceData {
+): InventorySetData {
   const now = new Date().toISOString();
   return {
     id,
@@ -128,15 +128,15 @@ function createDefaultWorkspaceData(
   };
 }
 
-/** Build root storage with one default workspace (first load) */
+/** Build root storage with one default inventory set (first load) */
 export function createDefaultRootStorage(): RootStorage {
-  const defaultId = DEFAULT_WORKSPACE_ID;
+  const defaultId = DEFAULT_INVENTORY_SET_ID;
   return {
     version: CURRENT_SCHEMA_VERSION,
     settings: UserSettingsFactory.createDefault(),
-    activeWorkspaceId: defaultId,
-    workspaces: {
-      [defaultId]: createDefaultWorkspaceData(defaultId, 'Home'),
+    activeInventorySetId: defaultId,
+    inventorySets: {
+      [defaultId]: createDefaultInventorySetData(defaultId, 'Default'),
     },
   };
 }
@@ -146,7 +146,7 @@ function getRootStorage(): RootStorage | undefined {
   const json = localStorage.getItem(STORAGE_KEY);
   if (!json) return undefined;
   const raw = JSON.parse(json) as unknown;
-  if (typeof raw !== 'object' || raw === null || !('workspaces' in raw))
+  if (typeof raw !== 'object' || raw === null || !('inventorySets' in raw))
     return undefined;
   return raw as RootStorage;
 }
@@ -181,15 +181,15 @@ function safeSaveRootStorage(root: RootStorage): void {
   }
 }
 
-/** Extract workspace slice from AppData (for persisting to root) */
-function extractWorkspaceFromAppData(
+/** Extract inventory set slice from AppData (for persisting to root) */
+function extractInventorySetFromAppData(
   data: AppData,
-  workspaceId: WorkspaceId,
-  workspaceName: string,
-): WorkspaceData {
+  inventorySetId: InventorySetId,
+  inventorySetName: string,
+): InventorySetData {
   return {
-    id: workspaceId,
-    name: workspaceName,
+    id: inventorySetId,
+    name: inventorySetName,
     household: data.household,
     items: data.items,
     customCategories: data.customCategories,
@@ -206,33 +206,33 @@ function extractWorkspaceFromAppData(
   };
 }
 
-/** Merge root storage into AppData shape (settings + active workspace) */
+/** Merge root storage into AppData shape (settings + active inventory set) */
 function mergeRootToAppData(
   root: RootStorage,
-  workspace: WorkspaceData,
+  inventorySet: InventorySetData,
 ): AppData {
   return {
     version: root.version,
     settings: root.settings,
-    household: workspace.household,
-    items: workspace.items,
-    customCategories: workspace.customCategories,
-    customTemplates: workspace.customTemplates,
-    dismissedAlertIds: workspace.dismissedAlertIds,
-    disabledRecommendedItems: workspace.disabledRecommendedItems,
-    disabledCategories: workspace.disabledCategories,
-    selectedRecommendationKit: workspace.selectedRecommendationKit,
-    uploadedRecommendationKits: workspace.uploadedRecommendationKits,
-    customRecommendedItems: workspace.customRecommendedItems,
-    lastModified: workspace.lastModified,
-    lastBackupDate: workspace.lastBackupDate,
-    backupReminderDismissedUntil: workspace.backupReminderDismissedUntil,
+    household: inventorySet.household,
+    items: inventorySet.items,
+    customCategories: inventorySet.customCategories,
+    customTemplates: inventorySet.customTemplates,
+    dismissedAlertIds: inventorySet.dismissedAlertIds,
+    disabledRecommendedItems: inventorySet.disabledRecommendedItems,
+    disabledCategories: inventorySet.disabledCategories,
+    selectedRecommendationKit: inventorySet.selectedRecommendationKit,
+    uploadedRecommendationKits: inventorySet.uploadedRecommendationKits,
+    customRecommendedItems: inventorySet.customRecommendedItems,
+    lastModified: inventorySet.lastModified,
+    lastBackupDate: inventorySet.lastBackupDate,
+    backupReminderDismissedUntil: inventorySet.backupReminderDismissedUntil,
   };
 }
 
 export function createDefaultAppData(): AppData {
   const root = createDefaultRootStorage();
-  const ws = root.workspaces[root.activeWorkspaceId];
+  const ws = root.inventorySets[root.activeInventorySetId];
   return mergeRootToAppData(root, ws);
 }
 
@@ -274,23 +274,23 @@ export function getAppData(): AppData | undefined {
       return undefined;
     }
 
-    const activeId = root.activeWorkspaceId;
-    const workspace = root.workspaces[activeId as string];
-    if (!workspace) {
+    const activeId = root.activeInventorySetId;
+    const inventorySet = root.inventorySets[activeId as string];
+    if (!inventorySet) {
       return undefined;
     }
 
-    let data = normalizeMergedAppData(mergeRootToAppData(root, workspace));
+    let data = normalizeMergedAppData(mergeRootToAppData(root, inventorySet));
 
     if (needsMigration(data)) {
       try {
         data = migrateToCurrentVersion(data);
-        const updatedWorkspace = extractWorkspaceFromAppData(
+        const updatedInventorySet = extractInventorySetFromAppData(
           data,
           activeId,
-          workspace.name,
+          inventorySet.name,
         );
-        root.workspaces[activeId as string] = updatedWorkspace;
+        root.inventorySets[activeId as string] = updatedInventorySet;
         root.version = data.version;
         saveRootStorage(root);
         console.info(`Data migrated to ${CURRENT_SCHEMA_VERSION}`);
@@ -326,13 +326,13 @@ export function saveAppData(data: AppData): void {
     let root = getRootStorage();
     root ??= createDefaultRootStorage();
     root.settings = data.settings;
-    const activeId = root.activeWorkspaceId;
-    const currentWorkspace = root.workspaces[activeId as string];
-    if (currentWorkspace) {
-      root.workspaces[activeId as string] = extractWorkspaceFromAppData(
+    const activeId = root.activeInventorySetId;
+    const currentInventorySet = root.inventorySets[activeId as string];
+    if (currentInventorySet) {
+      root.inventorySets[activeId as string] = extractInventorySetFromAppData(
         data,
         activeId,
-        currentWorkspace.name,
+        currentInventorySet.name,
       );
     }
     saveRootStorage(root);
@@ -347,85 +347,84 @@ export function clearAppData(): void {
 
 /**
  * Build RootStorage from AppData (e.g. for E2E/test fixtures).
- * Uses default workspace id and name "Home".
+ * Uses default inventory set id and name "Default".
  */
 export function buildRootStorageFromAppData(data: AppData): RootStorage {
   const root = createDefaultRootStorage();
   root.settings = data.settings;
-  root.workspaces[DEFAULT_WORKSPACE_ID as string] = extractWorkspaceFromAppData(
-    data,
-    DEFAULT_WORKSPACE_ID,
-    'Home',
-  );
+  root.inventorySets[DEFAULT_INVENTORY_SET_ID as string] =
+    extractInventorySetFromAppData(data, DEFAULT_INVENTORY_SET_ID, 'Default');
   return root;
 }
 
-/** Workspace list item for UI */
-export interface WorkspaceListItem {
-  id: WorkspaceId;
+/** Inventory set list item for UI */
+export interface InventorySetListItem {
+  id: InventorySetId;
   name: string;
 }
 
-export function getWorkspaceList(): WorkspaceListItem[] {
+export function getInventorySetList(): InventorySetListItem[] {
   const root = safeGetRootStorage();
   if (!root) return [];
-  return Object.values(root.workspaces).map((w) => ({
+  return Object.values(root.inventorySets).map((w) => ({
     id: w.id,
     name: w.name,
   }));
 }
 
-export function getActiveWorkspaceId(): WorkspaceId | undefined {
+export function getActiveInventorySetId(): InventorySetId | undefined {
   const root = safeGetRootStorage();
   if (!root) return undefined;
-  return root.activeWorkspaceId;
+  return root.activeInventorySetId;
 }
 
-export function setActiveWorkspaceId(id: WorkspaceId): void {
+export function setActiveInventorySetId(id: InventorySetId): void {
   const root = safeGetRootStorage();
   if (!root) return;
-  if (!root.workspaces[id as string]) return;
-  root.activeWorkspaceId = id;
+  if (!root.inventorySets[id as string]) return;
+  root.activeInventorySetId = id;
   safeSaveRootStorage(root);
 }
 
-function generateWorkspaceId(): WorkspaceId {
+function generateInventorySetId(): InventorySetId {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return createWorkspaceId(crypto.randomUUID());
+    return createInventorySetId(crypto.randomUUID());
   }
-  return createWorkspaceId(
+  return createInventorySetId(
     `ws-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
   );
 }
 
-export function createWorkspace(name: string): WorkspaceId {
+export function createInventorySet(name: string): InventorySetId {
   let root = safeGetRootStorage();
   root ??= createDefaultRootStorage();
-  const id = generateWorkspaceId();
-  root.workspaces[id as string] = createDefaultWorkspaceData(
+  const id = generateInventorySetId();
+  root.inventorySets[id as string] = createDefaultInventorySetData(
     id,
-    name.trim() || 'Workspace',
+    name.trim() || 'Inventory Set',
   );
   safeSaveRootStorage(root);
   return id;
 }
 
-export function deleteWorkspace(id: WorkspaceId): void {
+export function deleteInventorySet(id: InventorySetId): void {
   const root = safeGetRootStorage();
   if (!root) return;
-  const ids = Object.keys(root.workspaces);
+  const ids = Object.keys(root.inventorySets);
   if (ids.length <= 1) return;
-  delete root.workspaces[id as string];
-  if (root.activeWorkspaceId === id) {
-    root.activeWorkspaceId = createWorkspaceId(ids.find((k) => k !== id)!);
+  delete root.inventorySets[id as string];
+  if (root.activeInventorySetId === id) {
+    root.activeInventorySetId = createInventorySetId(
+      ids.find((k) => k !== id)!,
+    );
   }
   safeSaveRootStorage(root);
 }
 
-export function renameWorkspace(id: WorkspaceId, name: string): void {
+export function renameInventorySet(id: InventorySetId, name: string): void {
   const root = safeGetRootStorage();
   if (!root) return;
-  const w = root.workspaces[id as string];
+  const w = root.inventorySets[id as string];
   if (!w) return;
   w.name = name.trim() || w.name;
   safeSaveRootStorage(root);

@@ -162,7 +162,7 @@
       },
       "sections": {
         "appearance": "Ulkoasu",
-        "workspaces": "Työtilat",
+        "inventorySets": "Varastosetit",
         "household": "Kotitalouden asetukset",
         "nutrition": "Ravitsemus & vaatimukset",
         "hiddenAlerts": "Piilotetut hälytykset",
@@ -270,20 +270,20 @@
       "storageDescription": "Varastosi ja asetukset tallennetaan selaimellesi. Vie varmuuskopio tai tyhjennä tiedot alta, jos tallennustila täyttyy.",
       "viewOnGitHub": "Näytä GitHubissa"
     },
-    "workspaces": {
-      "description": "Hallitse useita varastoja (esim. koti, autopaketti). Jokaisella työtilalla on oma kotitalous, tuotteet ja hälytykset.",
-      "activeWorkspace": "Aktiivinen työtila",
-      "workspaceList": "Työtilat",
-      "createWorkspace": "Luo uusi työtila",
-      "addWorkspace": "Lisää työtila",
+    "inventorySets": {
+      "description": "Hallitse useita varastoja (esim. koti, autopaketti). Jokaisella varastosetillä on oma kotitalous, tuotteet ja hälytykset.",
+      "activeInventorySet": "Aktiivinen varastosetti",
+      "inventorySetList": "Varastosetit",
+      "createInventorySet": "Luo uusi varastosetti",
+      "addInventorySet": "Lisää varastosetti",
       "rename": "Nimeä uudelleen",
-      "renameLabel": "Nimeä työtila uudelleen",
-      "deleteLabel": "Poista työtila",
-      "newNamePlaceholder": "Työtilan nimi",
-      "defaultName": "Työtila",
+      "renameLabel": "Nimeä varastosetti uudelleen",
+      "deleteLabel": "Poista varastosetti",
+      "newNamePlaceholder": "Varastosetin nimi",
+      "defaultName": "Varastosetti",
       "active": "Aktiivinen",
-      "confirmDeleteTitle": "Poistetaanko työtila?",
-      "confirmDeleteMessage": "Tämä työtila ja sen varasto poistetaan. Toimintoa ei voi perua."
+      "confirmDeleteTitle": "Poistetaanko varastosetti?",
+      "confirmDeleteMessage": "Tämä varastosetti ja sen varasto poistetaan. Toimintoa ei voi perua."
     },
     "language": {
       "label": "Kieli",

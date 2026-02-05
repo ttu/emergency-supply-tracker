@@ -7,7 +7,7 @@ import type {
   DateOnly,
   Quantity,
   Percentage,
-  WorkspaceId,
+  InventorySetId,
 } from './branded';
 export type {
   ItemId,
@@ -17,7 +17,7 @@ export type {
   DateOnly,
   Quantity,
   Percentage,
-  WorkspaceId,
+  InventorySetId,
 } from './branded';
 export {
   createItemId,
@@ -27,7 +27,7 @@ export {
   createDateOnly,
   createQuantity,
   createPercentage,
-  createWorkspaceId,
+  createInventorySetId,
   isItemId,
   isCategoryId,
   isDateOnly,
@@ -366,9 +366,9 @@ export interface KitInfo {
   uploadedAt?: string; // Only for custom kits
 }
 
-/** Per-workspace data (one inventory context, e.g. home or car kit) */
-export interface WorkspaceData {
-  id: WorkspaceId;
+/** Per-inventory-set data (one inventory context, e.g. home or car kit) */
+export interface InventorySetData {
+  id: InventorySetId;
   name: string;
   household: HouseholdConfig;
   items: InventoryItem[];
@@ -385,15 +385,15 @@ export interface WorkspaceData {
   backupReminderDismissedUntil?: DateOnly;
 }
 
-/** Root storage shape: global settings + workspaces keyed by id */
+/** Root storage shape: global settings + inventory sets keyed by id */
 export interface RootStorage {
   version: string;
   settings: UserSettings;
-  activeWorkspaceId: WorkspaceId;
-  workspaces: Record<string, WorkspaceData>;
+  activeInventorySetId: InventorySetId;
+  inventorySets: Record<string, InventorySetData>;
 }
 
-// App Data (root) - effective view: merged settings + active workspace (consumers unchanged)
+// App Data (root) - effective view: merged settings + active inventory set (consumers unchanged)
 export interface AppData {
   version: string;
   household: HouseholdConfig;

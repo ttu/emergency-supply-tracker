@@ -231,11 +231,11 @@ describe('ErrorBoundary', () => {
     const unsupportedRoot = {
       version: '0.0.1',
       settings: { language: 'en', theme: 'system', onboardingCompleted: true },
-      activeWorkspaceId: 'default',
-      workspaces: {
+      activeInventorySetId: 'default',
+      inventorySets: {
         default: {
           id: 'default',
-          name: 'Home',
+          name: 'Default',
           household: {
             adults: 1,
             children: 0,

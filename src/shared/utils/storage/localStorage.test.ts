@@ -5,13 +5,13 @@ import {
   getAppData,
   saveAppData,
   clearAppData,
-  getWorkspaceList,
-  getActiveWorkspaceId,
-  setActiveWorkspaceId,
-  createWorkspace,
-  deleteWorkspace,
-  renameWorkspace,
-  DEFAULT_WORKSPACE_ID,
+  getInventorySetList,
+  getActiveInventorySetId,
+  setActiveInventorySetId,
+  createInventorySet,
+  deleteInventorySet,
+  renameInventorySet,
+  DEFAULT_INVENTORY_SET_ID,
   exportToJSON,
   importFromJSON,
   exportToJSONSelective,
@@ -128,7 +128,7 @@ describe('localStorage utilities', () => {
     expect(result?.items).toEqual([]);
   });
 
-  it('clears data; next getAppData creates default workspace', () => {
+  it('clears data; next getAppData creates default inventory set', () => {
     const mockData = createMockAppData();
     saveAppData(mockData);
     clearAppData();
@@ -1077,79 +1077,79 @@ describe('localStorage utilities', () => {
     });
   });
 
-  describe('workspace API', () => {
+  describe('inventory set API', () => {
     beforeEach(() => {
       clearAppData();
     });
 
-    it('getWorkspaceList returns default workspace after getAppData', () => {
+    it('getInventorySetList returns default inventory set after getAppData', () => {
       getAppData(); // bootstrap default root
-      const list = getWorkspaceList();
+      const list = getInventorySetList();
       expect(list).toHaveLength(1);
-      expect(list[0].id).toBe(DEFAULT_WORKSPACE_ID);
-      expect(list[0].name).toBe('Home');
+      expect(list[0].id).toBe(DEFAULT_INVENTORY_SET_ID);
+      expect(list[0].name).toBe('Default');
     });
 
-    it('getActiveWorkspaceId returns default after bootstrap', () => {
+    it('getActiveInventorySetId returns default after bootstrap', () => {
       getAppData();
-      expect(getActiveWorkspaceId()).toBe(DEFAULT_WORKSPACE_ID);
+      expect(getActiveInventorySetId()).toBe(DEFAULT_INVENTORY_SET_ID);
     });
 
-    it('createWorkspace adds a new workspace', () => {
+    it('createInventorySet adds a new inventory set', () => {
       getAppData();
-      const id = createWorkspace('Car kit');
-      const list = getWorkspaceList();
+      const id = createInventorySet('Car kit');
+      const list = getInventorySetList();
       expect(list).toHaveLength(2);
       expect(list.find((w) => w.id === id)?.name).toBe('Car kit');
     });
 
-    it('setActiveWorkspaceId switches active workspace', () => {
+    it('setActiveInventorySetId switches active inventory set', () => {
       getAppData();
-      const id = createWorkspace('Car kit');
-      setActiveWorkspaceId(id);
-      expect(getActiveWorkspaceId()).toBe(id);
+      const id = createInventorySet('Car kit');
+      setActiveInventorySetId(id);
+      expect(getActiveInventorySetId()).toBe(id);
       const data = getAppData();
       expect(data).toBeDefined();
       expect(data?.household).toBeDefined();
     });
 
-    it('renameWorkspace updates workspace name', () => {
+    it('renameInventorySet updates inventory set name', () => {
       getAppData();
-      const id = createWorkspace('Car kit');
-      renameWorkspace(id, 'Vehicle emergency');
-      const list = getWorkspaceList();
+      const id = createInventorySet('Car kit');
+      renameInventorySet(id, 'Vehicle emergency');
+      const list = getInventorySetList();
       expect(list.find((w) => w.id === id)?.name).toBe('Vehicle emergency');
     });
 
-    it('deleteWorkspace removes workspace and switches active when needed', () => {
+    it('deleteInventorySet removes inventory set and switches active when needed', () => {
       getAppData();
-      const id = createWorkspace('Car kit');
-      setActiveWorkspaceId(id);
-      deleteWorkspace(id);
-      expect(getWorkspaceList()).toHaveLength(1);
-      expect(getActiveWorkspaceId()).toBe(DEFAULT_WORKSPACE_ID);
+      const id = createInventorySet('Car kit');
+      setActiveInventorySetId(id);
+      deleteInventorySet(id);
+      expect(getInventorySetList()).toHaveLength(1);
+      expect(getActiveInventorySetId()).toBe(DEFAULT_INVENTORY_SET_ID);
     });
 
-    it('deleteWorkspace does nothing when only one workspace', () => {
+    it('deleteInventorySet does nothing when only one inventory set', () => {
       getAppData();
-      const listBefore = getWorkspaceList();
-      deleteWorkspace(DEFAULT_WORKSPACE_ID);
-      expect(getWorkspaceList()).toEqual(listBefore);
+      const listBefore = getInventorySetList();
+      deleteInventorySet(DEFAULT_INVENTORY_SET_ID);
+      expect(getInventorySetList()).toEqual(listBefore);
     });
 
-    it('getWorkspaceList returns empty array when storage throws', () => {
+    it('getInventorySetList returns empty array when storage throws', () => {
       const getItem = localStorage.getItem.bind(localStorage);
       vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
         if (key === STORAGE_KEY) throw new Error('Storage unavailable');
         return getItem(key);
       });
-      expect(getWorkspaceList()).toEqual([]);
+      expect(getInventorySetList()).toEqual([]);
       vi.restoreAllMocks();
     });
 
-    it('setActiveWorkspaceId does not throw when setItem throws', () => {
+    it('setActiveInventorySetId does not throw when setItem throws', () => {
       getAppData();
-      const id = createWorkspace('Car kit');
+      const id = createInventorySet('Car kit');
       const setItem = localStorage.setItem.bind(localStorage);
       vi.spyOn(Storage.prototype, 'setItem').mockImplementation(
         (key, value) => {
@@ -1157,7 +1157,7 @@ describe('localStorage utilities', () => {
           return setItem(key, value);
         },
       );
-      expect(() => setActiveWorkspaceId(id)).not.toThrow();
+      expect(() => setActiveInventorySetId(id)).not.toThrow();
       vi.restoreAllMocks();
     });
   });

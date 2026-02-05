@@ -60,7 +60,7 @@ test.describe('Custom Categories', () => {
       const data = localStorage.getItem(key);
       if (!data) return null;
       const root = JSON.parse(data);
-      return root.workspaces?.[root.activeWorkspaceId] ?? null;
+      return root.inventorySets?.[root.activeInventorySetId] ?? null;
     }, STORAGE_KEY);
     expect(storedData?.customCategories).toBeDefined();
     expect(storedData?.customCategories.length).toBeGreaterThan(0);
@@ -165,7 +165,7 @@ test.describe('Custom Categories', () => {
       const data = localStorage.getItem(key);
       if (!data) return null;
       const root = JSON.parse(data);
-      return root.workspaces?.[root.activeWorkspaceId] ?? null;
+      return root.inventorySets?.[root.activeInventorySetId] ?? null;
     }, STORAGE_KEY);
 
     expect(storedData).toBeTruthy();
@@ -385,12 +385,12 @@ test.describe('Custom Categories', () => {
     // Submit the form
     await page.getByRole('button', { name: /save/i }).click();
 
-    // Verify the category was created (RootStorage: read active workspace)
+    // Verify the category was created (RootStorage: read active inventory set)
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
       if (!data) return null;
       const root = JSON.parse(data);
-      return root.workspaces?.[root.activeWorkspaceId] ?? null;
+      return root.inventorySets?.[root.activeInventorySetId] ?? null;
     }, STORAGE_KEY);
 
     expect(storedData?.customCategories).toBeDefined();

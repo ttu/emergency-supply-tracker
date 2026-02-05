@@ -1,28 +1,28 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { WorkspaceSection } from './WorkspaceSection';
-import { WorkspaceProvider } from '@/features/workspace';
+import { InventorySetSection } from './InventorySetSection';
+import { InventorySetProvider } from '@/features/inventory-set';
 import { renderWithProviders } from '@/test/render';
 import {
   saveAppData,
-  createWorkspace,
-  getWorkspaceList,
+  createInventorySet,
+  getInventorySetList,
 } from '@/shared/utils/storage/localStorage';
 import { createMockAppData } from '@/shared/utils/test/factories';
 
-function renderWorkspaceSection() {
+function renderInventorySetSection() {
   return renderWithProviders(
-    <WorkspaceProvider>
-      <WorkspaceSection />
-    </WorkspaceProvider>,
+    <InventorySetProvider>
+      <InventorySetSection />
+    </InventorySetProvider>,
     {
       providers: { settings: true, household: true, inventory: true },
     },
   );
 }
 
-describe('WorkspaceSection', () => {
+describe('InventorySetSection', () => {
   beforeEach(() => {
     localStorage.clear();
     const data = createMockAppData({
@@ -41,69 +41,77 @@ describe('WorkspaceSection', () => {
     saveAppData(data);
   });
 
-  it('renders workspace section with active workspace selector', () => {
-    renderWorkspaceSection();
+  it('renders inventory set section with active inventory set selector', () => {
+    renderInventorySetSection();
     expect(
-      screen.getByLabelText('settings.workspaces.activeWorkspace'),
+      screen.getByLabelText('settings.inventorySets.activeInventorySet'),
     ).toBeInTheDocument();
-    expect(screen.getByTestId('workspace-section')).toBeInTheDocument();
+    expect(screen.getByTestId('inventory-set-section')).toBeInTheDocument();
   });
 
-  it('renders create workspace input and button', () => {
-    renderWorkspaceSection();
+  it('renders create inventory set input and button', () => {
+    renderInventorySetSection();
     expect(
-      screen.getByLabelText('settings.workspaces.newNamePlaceholder'),
+      screen.getByLabelText('settings.inventorySets.newNamePlaceholder'),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'settings.workspaces.addWorkspace' }),
+      screen.getByRole('button', {
+        name: 'settings.inventorySets.addInventorySet',
+      }),
     ).toBeInTheDocument();
   });
 
-  it('creates a workspace when name is entered and add is clicked', async () => {
+  it('creates an inventory set when name is entered and add is clicked', async () => {
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     const input = screen.getByLabelText(
-      'settings.workspaces.newNamePlaceholder',
+      'settings.inventorySets.newNamePlaceholder',
     );
     await user.type(input, 'Car kit');
     await user.click(
-      screen.getByRole('button', { name: 'settings.workspaces.addWorkspace' }),
+      screen.getByRole('button', {
+        name: 'settings.inventorySets.addInventorySet',
+      }),
     );
     expect(screen.getByRole('option', { name: 'Car kit' })).toBeInTheDocument();
-    expect(getWorkspaceList()).toHaveLength(2);
+    expect(getInventorySetList()).toHaveLength(2);
   });
 
-  it('creates workspace with default name when input is empty', async () => {
+  it('creates inventory set with default name when input is empty', async () => {
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     await user.click(
-      screen.getByRole('button', { name: 'settings.workspaces.addWorkspace' }),
+      screen.getByRole('button', {
+        name: 'settings.inventorySets.addInventorySet',
+      }),
     );
-    expect(getWorkspaceList()).toHaveLength(2);
+    expect(getInventorySetList()).toHaveLength(2);
   });
 
-  it('switches active workspace when select is changed', async () => {
-    createWorkspace('Second');
+  it('switches active inventory set when select is changed', async () => {
+    createInventorySet('Second');
     saveAppData(createMockAppData({}));
     const user = userEvent.setup();
-    renderWorkspaceSection();
-    const select = screen.getByLabelText('settings.workspaces.activeWorkspace');
-    await user.selectOptions(select, getWorkspaceList()[1].id);
-    expect(select).toHaveValue(getWorkspaceList()[1].id);
+    renderInventorySetSection();
+    const select = screen.getByLabelText(
+      'settings.inventorySets.activeInventorySet',
+    );
+    await user.selectOptions(select, getInventorySetList()[1].id);
+    expect(select).toHaveValue(getInventorySetList()[1].id);
   });
 
   it('shows rename row when rename is clicked and saves on save button', async () => {
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     await user.click(
       screen.getAllByRole('button', {
-        name: 'settings.workspaces.renameLabel',
+        name: 'settings.inventorySets.renameLabel',
       })[0],
     );
     const renameInput = screen.getByLabelText(
-      'settings.workspaces.renameLabel',
+      'settings.inventorySets.renameLabel',
     ) as HTMLInputElement;
-    expect(renameInput).toHaveValue('Home');
+    expect(renameInput).toHaveValue('Default');
     await user.clear(renameInput);
     await user.type(renameInput, 'Main');
     await user.click(screen.getByRole('button', { name: 'common.save' }));
@@ -112,132 +120,138 @@ describe('WorkspaceSection', () => {
 
   it('cancels rename when cancel is clicked', async () => {
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     await user.click(
-      screen.getByRole('button', { name: 'settings.workspaces.renameLabel' }),
+      screen.getByRole('button', {
+        name: 'settings.inventorySets.renameLabel',
+      }),
     );
     await user.click(screen.getByRole('button', { name: 'common.cancel' }));
-    const section = screen.getByTestId('workspace-section');
+    const section = screen.getByTestId('inventory-set-section');
     expect(
-      within(section).getByRole('option', { name: 'Home' }),
+      within(section).getByRole('option', { name: 'Default' }),
     ).toBeInTheDocument();
   });
 
   it('opens confirm delete dialog when delete is clicked and closes on cancel', async () => {
-    createWorkspace('To remove');
+    createInventorySet('To remove');
     saveAppData(createMockAppData({}));
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     const deleteButtons = screen.getAllByRole('button', {
-      name: 'settings.workspaces.deleteLabel',
+      name: 'settings.inventorySets.deleteLabel',
     });
     await user.click(deleteButtons[0]);
     expect(
-      screen.getByTestId('workspace-confirm-delete-dialog'),
+      screen.getByTestId('inventory-set-confirm-delete-dialog'),
     ).toBeInTheDocument();
-    await user.click(screen.getByTestId('workspace-confirm-cancel-button'));
+    await user.click(screen.getByTestId('inventory-set-confirm-cancel-button'));
     expect(
-      screen.queryByTestId('workspace-confirm-delete-dialog'),
+      screen.queryByTestId('inventory-set-confirm-delete-dialog'),
     ).not.toBeInTheDocument();
   });
 
   it('closes confirm delete dialog on Escape', async () => {
-    createWorkspace('To remove');
+    createInventorySet('To remove');
     saveAppData(createMockAppData({}));
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     await user.click(
       screen.getAllByRole('button', {
-        name: 'settings.workspaces.deleteLabel',
+        name: 'settings.inventorySets.deleteLabel',
       })[0],
     );
     expect(
-      screen.getByTestId('workspace-confirm-delete-dialog'),
+      screen.getByTestId('inventory-set-confirm-delete-dialog'),
     ).toBeInTheDocument();
     await user.keyboard('{Escape}');
     expect(
-      screen.queryByTestId('workspace-confirm-delete-dialog'),
+      screen.queryByTestId('inventory-set-confirm-delete-dialog'),
     ).not.toBeInTheDocument();
   });
 
   it('restores focus to trigger button when dialog is closed by cancel', async () => {
-    createWorkspace('To remove');
+    createInventorySet('To remove');
     saveAppData(createMockAppData({}));
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     const deleteButtons = screen.getAllByRole('button', {
-      name: 'settings.workspaces.deleteLabel',
+      name: 'settings.inventorySets.deleteLabel',
     });
     const triggerButton = deleteButtons[0];
     await user.click(triggerButton);
     expect(
-      screen.getByTestId('workspace-confirm-delete-dialog'),
+      screen.getByTestId('inventory-set-confirm-delete-dialog'),
     ).toBeInTheDocument();
-    await user.click(screen.getByTestId('workspace-confirm-cancel-button'));
+    await user.click(screen.getByTestId('inventory-set-confirm-cancel-button'));
     await waitFor(() => {
       expect(document.activeElement).toBe(triggerButton);
     });
   });
 
-  it('deletes workspace when confirm delete is clicked', async () => {
-    createWorkspace('To remove');
+  it('deletes inventory set when confirm delete is clicked', async () => {
+    createInventorySet('To remove');
     saveAppData(createMockAppData({}));
     const user = userEvent.setup();
-    renderWorkspaceSection();
-    expect(getWorkspaceList()).toHaveLength(2);
+    renderInventorySetSection();
+    expect(getInventorySetList()).toHaveLength(2);
     const deleteButtons = screen.getAllByRole('button', {
-      name: 'settings.workspaces.deleteLabel',
+      name: 'settings.inventorySets.deleteLabel',
     });
     await user.click(deleteButtons[1]);
-    const dialog = screen.getByTestId('workspace-confirm-delete-dialog');
+    const dialog = screen.getByTestId('inventory-set-confirm-delete-dialog');
     const confirmBtn = within(dialog).getByTestId(
-      'workspace-confirm-delete-button',
+      'inventory-set-confirm-delete-button',
     );
     await user.click(confirmBtn);
-    expect(getWorkspaceList()).toHaveLength(1);
+    expect(getInventorySetList()).toHaveLength(1);
     expect(
       screen.queryByRole('option', { name: 'To remove' }),
     ).not.toBeInTheDocument();
   });
 
   it('focuses primary delete button when confirm dialog opens', async () => {
-    createWorkspace('To remove');
+    createInventorySet('To remove');
     saveAppData(createMockAppData({}));
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     await user.click(
       screen.getAllByRole('button', {
-        name: 'settings.workspaces.deleteLabel',
+        name: 'settings.inventorySets.deleteLabel',
       })[0],
     );
-    const dialog = screen.getByTestId('workspace-confirm-delete-dialog');
+    const dialog = screen.getByTestId('inventory-set-confirm-delete-dialog');
     const confirmBtn = within(dialog).getByTestId(
-      'workspace-confirm-delete-button',
+      'inventory-set-confirm-delete-button',
     );
     await waitFor(() => {
       expect(document.activeElement).toBe(confirmBtn);
     });
   });
 
-  it('does not show delete button when only one workspace', () => {
-    renderWorkspaceSection();
+  it('does not show delete button when only one inventory set', () => {
+    renderInventorySetSection();
     expect(
-      screen.queryByRole('button', { name: 'settings.workspaces.deleteLabel' }),
+      screen.queryByRole('button', {
+        name: 'settings.inventorySets.deleteLabel',
+      }),
     ).not.toBeInTheDocument();
   });
 
-  it('shows delete button for each workspace when more than one', async () => {
+  it('shows delete button for each inventory set when more than one', async () => {
     const user = userEvent.setup();
-    renderWorkspaceSection();
+    renderInventorySetSection();
     await user.type(
-      screen.getByLabelText('settings.workspaces.newNamePlaceholder'),
+      screen.getByLabelText('settings.inventorySets.newNamePlaceholder'),
       'Second',
     );
     await user.click(
-      screen.getByRole('button', { name: 'settings.workspaces.addWorkspace' }),
+      screen.getByRole('button', {
+        name: 'settings.inventorySets.addInventorySet',
+      }),
     );
     const deleteButtons = screen.getAllByRole('button', {
-      name: 'settings.workspaces.deleteLabel',
+      name: 'settings.inventorySets.deleteLabel',
     });
     expect(deleteButtons).toHaveLength(2);
   });
