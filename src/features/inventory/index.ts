@@ -35,7 +35,6 @@ export type {
   ItemFormProps,
   CategoryNavProps,
   FilterBarProps,
-  LocationFilter,
   CategoryStatusSummaryProps,
   CategoryShortage,
 } from './components';

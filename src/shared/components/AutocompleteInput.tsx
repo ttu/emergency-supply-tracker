@@ -167,7 +167,7 @@ export const AutocompleteInput = forwardRef<
             id={listboxId}
             ref={listboxRef}
             className={styles.dropdown}
-            role="listbox" /* NOSONAR S6819 S6842 - WAI-ARIA combobox listbox pattern */
+            role="listbox" /* NOSONAR S6819 - WAI-ARIA combobox listbox */
             aria-label={
               inputProps['aria-label'] ?? t('autocomplete.suggestionsLabel')
             }
@@ -176,7 +176,7 @@ export const AutocompleteInput = forwardRef<
               <li
                 key={suggestion}
                 id={`${listboxId}-option-${index}`}
-                role="option" /* NOSONAR S6819 S6842 - WAI-ARIA listbox option */
+                role="option" /* NOSONAR S6819 - WAI-ARIA listbox option */
                 aria-selected={index === highlightedIndex}
                 className={`${styles.option} ${index === highlightedIndex ? styles.highlighted : ''}`}
                 onMouseDown={(e) => {

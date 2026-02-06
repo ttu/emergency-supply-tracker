@@ -10,7 +10,6 @@ import {
   ItemForm,
   CategoryStatusSummary,
 } from '@/features/inventory';
-import type { LocationFilter } from '@/features/inventory';
 import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
@@ -133,7 +132,7 @@ export function Inventory({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');
-  const [locationFilter, setLocationFilter] = useState<LocationFilter>('all');
+  const [locationFilter, setLocationFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortBy>('name');
 
   // Get unique locations for filter dropdown

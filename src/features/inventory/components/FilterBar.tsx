@@ -4,16 +4,14 @@ import { Input } from '@/shared/components/Input';
 import type { ItemStatus } from '@/shared/types';
 import styles from './FilterBar.module.css';
 
-/** Filter value: 'all' | 'none' | specific location string */
-export type LocationFilter = string;
-
 export interface FilterBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   statusFilter: ItemStatus | 'all';
   onStatusFilterChange: (status: ItemStatus | 'all') => void;
-  locationFilter: LocationFilter;
-  onLocationFilterChange: (location: LocationFilter) => void;
+  /** Location filter: 'all' | 'none' | specific location string */
+  locationFilter: string;
+  onLocationFilterChange: (location: string) => void;
   locations: string[];
   sortBy: 'name' | 'quantity' | 'expiration';
   onSortByChange: (sortBy: 'name' | 'quantity' | 'expiration') => void;
@@ -75,9 +73,7 @@ export const FilterBar = ({
 
         <Select
           value={locationFilter}
-          onChange={(e) =>
-            onLocationFilterChange(e.target.value as LocationFilter)
-          }
+          onChange={(e) => onLocationFilterChange(e.target.value)}
           options={locationOptions}
           label={t('inventory.filter.location')}
         />
