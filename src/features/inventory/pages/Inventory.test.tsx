@@ -656,6 +656,60 @@ describe('Inventory Page with items', () => {
     });
   });
 
+  it('should show unsaved changes dialog when closing add modal via X with dirty form', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'Changed' } });
+
+    const closeButton = screen.getByTestId('modal-close-button');
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('unsaved-changes-dont-save'),
+      ).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('unsaved-changes-save')).toBeInTheDocument();
+    expect(screen.getByTestId('unsaved-changes-cancel')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('unsaved-changes-dont-save'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('inventory.addItem')).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId('unsaved-changes-dont-save'),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('should close without dialog when closing add modal via X with no changes', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('inventory.addItem')).not.toBeInTheDocument();
+    });
+    expect(
+      screen.queryByTestId('unsaved-changes-save'),
+    ).not.toBeInTheDocument();
+  });
+
   it('should open edit modal with setSelectedTemplate(undefined) for item with itemType custom', async () => {
     const customOnlyItem = createMockInventoryItem({
       id: createItemId('custom-only-item'),
