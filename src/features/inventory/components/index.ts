@@ -11,7 +11,7 @@ export { CategoryNav } from './CategoryNav';
 export type { CategoryNavProps } from './CategoryNav';
 
 export { FilterBar } from './FilterBar';
-export type { FilterBarProps, LocationFilter } from './FilterBar';
+export type { FilterBarProps } from './FilterBar';
 
 export { CategoryStatusSummary } from './CategoryStatusSummary';
 export type {
