@@ -580,7 +580,48 @@ Features:
 
 ---
 
-### 11. Debug & Error Logging
+### 11. Cloud Sync
+
+Optional cloud synchronization allows users to sync their data across multiple devices.
+
+#### Supported Providers
+
+- **Google Drive** (initial support)
+- Future: OneDrive, Dropbox
+
+#### How It Works
+
+1. **Connect**: User authenticates with Google via OAuth2
+2. **Manual Sync**: User clicks "Sync Now" to sync data
+3. **Conflict Resolution**: Last-write-wins based on `lastModified` timestamp
+4. **Data Storage**: App data stored as `emergency-supply-tracker.json` in user's Google Drive
+
+#### Features
+
+- **Manual sync only**: No automatic background sync (user controls when to sync)
+- **Last-write-wins**: Simple conflict resolution - most recent change takes precedence
+- **Minimal permissions**: Only accesses files created by the app (`drive.file` scope)
+- **Local data preserved**: Disconnecting from cloud keeps local data intact
+- **Token storage**: OAuth tokens stored separately from app data (never exported)
+
+#### Setup Requirements
+
+To use Google Drive sync, the app requires a Google Cloud Console project with:
+
+- OAuth 2.0 Client ID configured for the app's domain
+- Google Drive API enabled
+- OAuth consent screen configured
+
+#### Privacy
+
+- Data is stored in the user's own cloud storage account
+- App only has access to files it creates
+- No data passes through third-party servers
+- Users can disconnect and delete cloud data at any time
+
+---
+
+### 12. Debug & Error Logging
 
 **Debug Export:**
 
@@ -596,7 +637,7 @@ Features:
 - No external services used
 - Privacy-focused
 
-### 12. Internationalization (i18n)
+### 13. Internationalization (i18n)
 
 #### Supported Languages
 
