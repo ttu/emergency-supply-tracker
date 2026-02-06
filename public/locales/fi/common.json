@@ -524,8 +524,12 @@
     "markedAsEnoughNotice": "Tämä tuote on merkitty riittäväksi",
     "filter": {
       "status": "Suodata tilalla",
-      "allStatuses": "Kaikki tilat"
+      "allStatuses": "Kaikki tilat",
+      "location": "Suodata sijainnilla",
+      "allLocations": "Kaikki sijainnit",
+      "noLocation": "Ei sijaintia"
     },
+    "locationPlaceholder": "Syötä sijainti...",
     "sort": {
       "label": "Järjestä",
       "name": "Nimi",

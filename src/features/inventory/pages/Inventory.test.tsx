@@ -157,9 +157,9 @@ describe('Inventory Page', () => {
   it('should change sort order', () => {
     renderWithProviders(<Inventory />);
 
-    // Find and change the sort dropdown (the second combobox is sort)
+    // Find and change the sort dropdown (the third combobox is sort)
     const sortSelects = screen.getAllByRole('combobox');
-    const sortSelect = sortSelects[1]; // Sort is the second select
+    const sortSelect = sortSelects[2]; // Sort is the third select (after status and location)
     fireEvent.change(sortSelect, { target: { value: 'quantity' } });
 
     expect(sortSelect).toHaveValue('quantity');
@@ -305,7 +305,7 @@ describe('Inventory Page', () => {
     renderWithProviders(<Inventory />);
 
     const sortSelects = screen.getAllByRole('combobox');
-    const sortSelect = sortSelects[1];
+    const sortSelect = sortSelects[2]; // Sort is the third select (after status and location)
     fireEvent.change(sortSelect, { target: { value: 'expiration' } });
 
     expect(sortSelect).toHaveValue('expiration');
@@ -471,7 +471,7 @@ describe('Inventory Page with items', () => {
     renderWithProviders(<Inventory />);
 
     const sortSelects = screen.getAllByRole('combobox');
-    const sortSelect = sortSelects[1];
+    const sortSelect = sortSelects[2]; // Sort is the third select (after status and location)
     fireEvent.change(sortSelect, { target: { value: 'quantity' } });
 
     // Batteries (20) should appear before Water (10) and Food (5)
@@ -486,7 +486,7 @@ describe('Inventory Page with items', () => {
     renderWithProviders(<Inventory />);
 
     const sortSelects = screen.getAllByRole('combobox');
-    const sortSelect = sortSelects[1];
+    const sortSelect = sortSelects[2]; // Sort is the third select (after status and location)
     fireEvent.change(sortSelect, { target: { value: 'expiration' } });
 
     expect(sortSelect).toHaveValue('expiration');

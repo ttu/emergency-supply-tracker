@@ -6,7 +6,7 @@ export type { InventoryContextValue } from './context';
 export { InventoryProvider } from './provider';
 
 // Hooks
-export { useInventory } from './hooks';
+export { useInventory, useLocationSuggestions } from './hooks';
 
 // Factories
 export {
@@ -35,6 +35,7 @@ export type {
   ItemFormProps,
   CategoryNavProps,
   FilterBarProps,
+  LocationFilter,
   CategoryStatusSummaryProps,
   CategoryShortage,
 } from './components';

@@ -15,6 +15,9 @@ describe('FilterBar', () => {
     onSearchChange: vi.fn(),
     statusFilter: 'all' as const,
     onStatusFilterChange: vi.fn(),
+    locationFilter: 'all' as const,
+    onLocationFilterChange: vi.fn(),
+    locations: ['Kitchen', 'Garage', 'Basement'],
     sortBy: 'name' as const,
     onSortByChange: vi.fn(),
   };
@@ -90,5 +93,53 @@ describe('FilterBar', () => {
 
     expect(statusSelect).toBeInTheDocument();
     expect(sortSelect).toBeInTheDocument();
+  });
+
+  it('should render location filter dropdown', () => {
+    render(<FilterBar {...defaultProps} />);
+
+    expect(screen.getByText('inventory.filter.location')).toBeInTheDocument();
+  });
+
+  it('should call onLocationFilterChange when changing location filter', () => {
+    render(<FilterBar {...defaultProps} />);
+
+    const locationSelect = screen.getByLabelText('inventory.filter.location');
+    fireEvent.change(locationSelect, { target: { value: 'Kitchen' } });
+
+    expect(defaultProps.onLocationFilterChange).toHaveBeenCalledWith('Kitchen');
+  });
+
+  it('should display location options from props', () => {
+    render(<FilterBar {...defaultProps} />);
+
+    const locationSelect = screen.getByLabelText('inventory.filter.location');
+    expect(locationSelect).toContainHTML('Kitchen');
+    expect(locationSelect).toContainHTML('Garage');
+    expect(locationSelect).toContainHTML('Basement');
+  });
+
+  it('should include "all" and "none" options in location filter', () => {
+    render(<FilterBar {...defaultProps} />);
+
+    const locationSelect = screen.getByLabelText('inventory.filter.location');
+    expect(locationSelect).toContainHTML('inventory.filter.allLocations');
+    expect(locationSelect).toContainHTML('inventory.filter.noLocation');
+  });
+
+  it('should call onLocationFilterChange with "none" when selecting no location', () => {
+    render(<FilterBar {...defaultProps} />);
+
+    const locationSelect = screen.getByLabelText('inventory.filter.location');
+    fireEvent.change(locationSelect, { target: { value: 'none' } });
+
+    expect(defaultProps.onLocationFilterChange).toHaveBeenCalledWith('none');
+  });
+
+  it('should display current location filter value', () => {
+    render(<FilterBar {...defaultProps} locationFilter="Kitchen" />);
+
+    const locationSelect = screen.getByDisplayValue('Kitchen');
+    expect(locationSelect).toBeInTheDocument();
   });
 });

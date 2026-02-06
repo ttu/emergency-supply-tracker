@@ -4,11 +4,16 @@ import { Input } from '@/shared/components/Input';
 import type { ItemStatus } from '@/shared/types';
 import styles from './FilterBar.module.css';
 
+export type LocationFilter = string | 'all' | 'none';
+
 export interface FilterBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   statusFilter: ItemStatus | 'all';
   onStatusFilterChange: (status: ItemStatus | 'all') => void;
+  locationFilter: LocationFilter;
+  onLocationFilterChange: (location: LocationFilter) => void;
+  locations: string[];
   sortBy: 'name' | 'quantity' | 'expiration';
   onSortByChange: (sortBy: 'name' | 'quantity' | 'expiration') => void;
 }
@@ -18,6 +23,9 @@ export const FilterBar = ({
   onSearchChange,
   statusFilter,
   onStatusFilterChange,
+  locationFilter,
+  onLocationFilterChange,
+  locations,
   sortBy,
   onSortByChange,
 }: FilterBarProps) => {
@@ -28,6 +36,12 @@ export const FilterBar = ({
     { value: 'ok', label: t('status.ok') },
     { value: 'warning', label: t('status.warning') },
     { value: 'critical', label: t('status.critical') },
+  ];
+
+  const locationOptions = [
+    { value: 'all', label: t('inventory.filter.allLocations') },
+    { value: 'none', label: t('inventory.filter.noLocation') },
+    ...locations.map((loc) => ({ value: loc, label: loc })),
   ];
 
   const sortOptions = [
@@ -56,6 +70,15 @@ export const FilterBar = ({
           }
           options={statusOptions}
           label={t('inventory.filter.status')}
+        />
+
+        <Select
+          value={locationFilter}
+          onChange={(e) =>
+            onLocationFilterChange(e.target.value as LocationFilter)
+          }
+          options={locationOptions}
+          label={t('inventory.filter.location')}
         />
 
         <Select
