@@ -488,6 +488,9 @@
       "totalWater": "Total required"
     }
   },
+  "autocomplete": {
+    "suggestionsLabel": "Suggestions"
+  },
   "inventory": {
     "categoryNavigation": "Category Navigation",
     "allCategories": "All",
