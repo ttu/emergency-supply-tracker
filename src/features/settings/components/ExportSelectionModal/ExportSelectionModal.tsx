@@ -2,90 +2,182 @@ import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
-import type { AppData } from '@/shared/types';
-import {
-  ALL_EXPORT_SECTIONS,
-  getSectionInfo,
-  type ExportSection,
-  type SectionInfo,
+import type { InventorySetId } from '@/shared/types';
+import type {
+  InventorySetSection,
+  MultiInventoryExportSelection,
 } from '@/shared/types/exportImport';
+import type { InventorySetExportInfo } from '@/shared/utils/storage/localStorage';
+import { InventorySetExportSection } from '../InventorySetExportSection';
 import styles from './ExportSelectionModal.module.css';
 
 export interface ExportSelectionModalProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
-  readonly onExport: (sections: ExportSection[]) => void;
-  readonly appData: AppData;
+  readonly onExport: (selection: MultiInventoryExportSelection) => void;
+  readonly inventorySets: InventorySetExportInfo[];
+  readonly hasSettings: boolean;
+}
+
+interface InventorySetSelectionState {
+  sections: Set<InventorySetSection>;
+  expanded: boolean;
 }
 
 export function ExportSelectionModal({
   isOpen,
   onClose,
   onExport,
-  appData,
+  inventorySets,
+  hasSettings,
 }: ExportSelectionModalProps) {
   const { t } = useTranslation();
 
-  // Initialize with all sections selected
-  const [selectedSections, setSelectedSections] = useState<Set<ExportSection>>(
-    () => new Set(ALL_EXPORT_SECTIONS),
-  );
+  // Settings checkbox state
+  const [includeSettings, setIncludeSettings] = useState(hasSettings);
 
-  // Get section info with counts
-  const sectionInfoList = useMemo(() => getSectionInfo(appData), [appData]);
+  // Per-inventory-set selection state
+  const [inventorySetSelections, setInventorySetSelections] = useState<
+    Map<InventorySetId, InventorySetSelectionState>
+  >(() => {
+    const map = new Map<InventorySetId, InventorySetSelectionState>();
+    for (const set of inventorySets) {
+      map.set(set.id, {
+        sections: new Set(set.sectionsWithData),
+        expanded: set.isActive,
+      });
+    }
+    return map;
+  });
 
-  const handleToggleSection = useCallback((section: ExportSection) => {
-    setSelectedSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(section)) {
-        next.delete(section);
-      } else {
-        next.add(section);
+  const handleToggleSettings = useCallback(() => {
+    setIncludeSettings((prev) => !prev);
+  }, []);
+
+  const handleToggleSetExpanded = useCallback((id: InventorySetId) => {
+    setInventorySetSelections((prev) => {
+      const next = new Map(prev);
+      const current = next.get(id);
+      if (current) {
+        next.set(id, { ...current, expanded: !current.expanded });
       }
       return next;
     });
   }, []);
 
+  const handleToggleSetSection = useCallback(
+    (id: InventorySetId, section: InventorySetSection) => {
+      setInventorySetSelections((prev) => {
+        const next = new Map(prev);
+        const current = next.get(id);
+        if (current) {
+          const newSections = new Set(current.sections);
+          if (newSections.has(section)) {
+            newSections.delete(section);
+          } else {
+            newSections.add(section);
+          }
+          next.set(id, { ...current, sections: newSections });
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
+  const handleToggleSetAll = useCallback(
+    (id: InventorySetId, selected: boolean) => {
+      setInventorySetSelections((prev) => {
+        const next = new Map(prev);
+        const current = next.get(id);
+        const setInfo = inventorySets.find((s) => s.id === id);
+        if (current && setInfo) {
+          const newSections = selected
+            ? new Set(setInfo.sectionsWithData)
+            : new Set<InventorySetSection>();
+          next.set(id, { ...current, sections: newSections });
+        }
+        return next;
+      });
+    },
+    [inventorySets],
+  );
+
   const handleSelectAll = useCallback(() => {
-    setSelectedSections(new Set(ALL_EXPORT_SECTIONS));
-  }, []);
+    setIncludeSettings(hasSettings);
+    setInventorySetSelections((prev) => {
+      const next = new Map(prev);
+      for (const set of inventorySets) {
+        const current = next.get(set.id);
+        if (current) {
+          next.set(set.id, {
+            ...current,
+            sections: new Set(set.sectionsWithData),
+          });
+        }
+      }
+      return next;
+    });
+  }, [hasSettings, inventorySets]);
 
   const handleDeselectAll = useCallback(() => {
-    setSelectedSections(new Set());
+    setIncludeSettings(false);
+    setInventorySetSelections((prev) => {
+      const next = new Map(prev);
+      for (const [id, current] of prev) {
+        next.set(id, { ...current, sections: new Set() });
+      }
+      return next;
+    });
   }, []);
 
+  const hasAnySelection = useMemo(() => {
+    if (includeSettings) return true;
+    for (const [, state] of inventorySetSelections) {
+      if (state.sections.size > 0) return true;
+    }
+    return false;
+  }, [includeSettings, inventorySetSelections]);
+
+  const isAllSelected = useMemo(() => {
+    if (hasSettings && !includeSettings) return false;
+    for (const set of inventorySets) {
+      const state = inventorySetSelections.get(set.id);
+      if (!state) return false;
+      if (state.sections.size !== set.sectionsWithData.length) return false;
+    }
+    return true;
+  }, [hasSettings, includeSettings, inventorySets, inventorySetSelections]);
+
   const handleExport = useCallback(() => {
-    onExport(Array.from(selectedSections));
+    const selection: MultiInventoryExportSelection = {
+      includeSettings,
+      inventorySets: [],
+    };
+
+    for (const [id, state] of inventorySetSelections) {
+      if (state.sections.size > 0) {
+        selection.inventorySets.push({
+          id,
+          sections: Array.from(state.sections),
+        });
+      }
+    }
+
+    onExport(selection);
     onClose();
-  }, [selectedSections, onExport, onClose]);
-
-  const getSectionLabel = (section: ExportSection): string => {
-    return t(`settings.exportSelection.sections.${section}`);
-  };
-
-  const formatCount = (info: SectionInfo): string => {
-    if (!info.hasData) {
-      return '(0)';
-    }
-    if (info.section === 'household' || info.section === 'settings') {
-      return '';
-    }
-    return `(${info.count})`;
-  };
-
-  const allSelected = selectedSections.size === ALL_EXPORT_SECTIONS.length;
-  const noneSelected = selectedSections.size === 0;
+  }, [includeSettings, inventorySetSelections, onExport, onClose]);
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title={t('settings.exportSelection.title')}
-      size="small"
+      size="medium"
     >
       <div className={styles.content}>
         <p className={styles.description}>
-          {t('settings.exportSelection.description')}
+          {t('settings.multiExport.description')}
         </p>
 
         <div className={styles.actions}>
@@ -93,7 +185,7 @@ export function ExportSelectionModal({
             type="button"
             className={styles.linkButton}
             onClick={handleSelectAll}
-            disabled={allSelected}
+            disabled={isAllSelected}
           >
             {t('settings.exportSelection.selectAll')}
           </button>
@@ -102,33 +194,50 @@ export function ExportSelectionModal({
             type="button"
             className={styles.linkButton}
             onClick={handleDeselectAll}
-            disabled={noneSelected}
+            disabled={!hasAnySelection}
           >
             {t('settings.exportSelection.deselectAll')}
           </button>
         </div>
 
         <div className={styles.sectionList}>
-          {sectionInfoList.map((info) => (
-            <label
-              key={info.section}
-              className={`${styles.sectionItem} ${info.hasData ? '' : styles.disabled}`}
-            >
-              <input
-                type="checkbox"
-                checked={selectedSections.has(info.section)}
-                onChange={() => handleToggleSection(info.section)}
-                disabled={!info.hasData}
-                className={styles.checkbox}
+          {/* Global Settings */}
+          <label
+            className={`${styles.settingsItem} ${!hasSettings ? styles.disabled : ''}`}
+          >
+            <input
+              type="checkbox"
+              checked={includeSettings}
+              onChange={handleToggleSettings}
+              disabled={!hasSettings}
+              className={styles.checkbox}
+            />
+            <span className={styles.settingsLabel}>
+              {t('settings.exportSelection.sections.settings')}
+            </span>
+          </label>
+
+          {/* Inventory Sets */}
+          {inventorySets.map((set) => {
+            const state = inventorySetSelections.get(set.id);
+            if (!state) return null;
+
+            return (
+              <InventorySetExportSection
+                key={set.id}
+                name={set.name}
+                isActive={set.isActive}
+                isExpanded={state.expanded}
+                onToggleExpanded={() => handleToggleSetExpanded(set.id)}
+                selectedSections={state.sections}
+                onToggleSection={(section) =>
+                  handleToggleSetSection(set.id, section)
+                }
+                onToggleAll={(selected) => handleToggleSetAll(set.id, selected)}
+                data={set.data}
               />
-              <span className={styles.sectionLabel}>
-                {getSectionLabel(info.section)}
-                {formatCount(info) && (
-                  <span className={styles.count}>{formatCount(info)}</span>
-                )}
-              </span>
-            </label>
-          ))}
+            );
+          })}
         </div>
 
         <div className={styles.buttonRow}>
@@ -138,7 +247,7 @@ export function ExportSelectionModal({
           <Button
             variant="primary"
             onClick={handleExport}
-            disabled={noneSelected}
+            disabled={!hasAnySelection}
           >
             {t('settings.exportSelection.exportButton')}
           </Button>

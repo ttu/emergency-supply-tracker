@@ -329,7 +329,8 @@
       "confirmOverwrite": "Tämä korvaa kaikki nykyiset tietosi. Oletko varma?",
       "success": "Tiedot tuotu onnistuneesti",
       "error": "Tietojen tuonti epäonnistui. Tarkista tiedostomuoto.",
-      "invalidFormat": "Virheellinen tiedostomuoto. Valitse kelvollinen varmuuskopiotiedosto."
+      "invalidFormat": "Virheellinen tiedostomuoto. Valitse kelvollinen varmuuskopiotiedosto.",
+      "legacySetName": "Tuodut tiedot"
     },
     "shoppingList": {
       "button": "Vie ostoslista",
@@ -377,6 +378,16 @@
       "warning": "Valitut osiot korvaavat nykyiset tietosi.",
       "importButton": "Tuo",
       "notInFile": "(ei tiedostossa)"
+    },
+    "multiExport": {
+      "description": "Valitse, mitkä varastot ja osiot sisällytetään vientitiedostoon.",
+      "expandSet": "Laajenna {{name}}",
+      "collapseSet": "Supista {{name}}"
+    },
+    "multiImport": {
+      "description": "Valitse, mitkä varastot ja osiot tuodaan. Jokainen valittu varasto luodaan uutena varastona.",
+      "warning": "Tuodut varastot lisätään uusina varastoina. Asetusten tuonti yhdistetään nykyisiin asetuksiisi.",
+      "conflictWarning": "\"{{originalName}}\" on jo olemassa - tuodaan nimellä \"{{newName}}\""
     }
   },
   "kits": {
@@ -684,6 +695,7 @@
       "reminderDismissed": "Varmuuskopiointimuistutus suljettu"
     },
     "backupSuccess": "Tiedot viety onnistuneesti",
+    "exportError": "Vienti epäonnistui",
     "importSuccess": "Tiedot tuotu onnistuneesti",
     "importError": "Tuonti epäonnistui",
     "data": {
