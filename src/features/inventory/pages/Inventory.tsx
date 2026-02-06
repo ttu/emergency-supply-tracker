@@ -152,6 +152,20 @@ export function Inventory({
   const itemFormRef = useRef<HTMLFormElement>(null);
   const pendingDiscardActionRef = useRef<(() => void) | null>(null);
 
+  // Clear editing item and template selection (shared by form close and custom-item open)
+  const resetEditingAndTemplateState = useCallback(() => {
+    setEditingItem(undefined);
+    setSelectedTemplate(undefined);
+    setSelectedCustomTemplate(undefined);
+  }, []);
+
+  // Reset add/edit form and modal state (shared by cancel, submit, back)
+  const resetAddFormState = useCallback(() => {
+    setIsFormDirty(false);
+    setShowAddModal(false);
+    resetEditingAndTemplateState();
+  }, [resetEditingAndTemplateState]);
+
   // Get category status for selected category from shared hook
   const categoryStatus = useMemo(() => {
     if (!selectedCategoryId) return undefined;
@@ -236,11 +250,7 @@ export function Inventory({
       });
     }
 
-    setIsFormDirty(false);
-    setShowAddModal(false);
-    setEditingItem(undefined);
-    setSelectedTemplate(undefined);
-    setSelectedCustomTemplate(undefined);
+    resetAddFormState();
   };
 
   const handleUpdateItem = (
@@ -248,19 +258,14 @@ export function Inventory({
   ) => {
     if (editingItem) {
       updateItem(editingItem.id, itemData);
-      setIsFormDirty(false);
-      setShowAddModal(false);
-      setEditingItem(undefined);
-      setSelectedTemplate(undefined);
-      setSelectedCustomTemplate(undefined);
+      resetAddFormState();
     }
   };
 
   const handleDeleteItem = (itemId: string) => {
     if (globalThis.confirm(t('inventory.confirmDelete'))) {
       deleteItem(createItemId(itemId));
-      setShowAddModal(false);
-      setEditingItem(undefined);
+      resetAddFormState();
     }
   };
 
@@ -323,19 +328,11 @@ export function Inventory({
   );
 
   const handleCancelForm = () => {
-    setIsFormDirty(false);
-    setShowAddModal(false);
-    setEditingItem(undefined);
-    setSelectedTemplate(undefined);
-    setSelectedCustomTemplate(undefined);
+    resetAddFormState();
   };
 
   const handleBackToTemplateSelector = () => {
-    setIsFormDirty(false);
-    setShowAddModal(false);
-    setEditingItem(undefined);
-    setSelectedTemplate(undefined);
-    setSelectedCustomTemplate(undefined);
+    resetAddFormState();
     setShowTemplateModal(true);
   };
 
@@ -410,9 +407,7 @@ export function Inventory({
   const handleSelectCustomItem = () => {
     setShowTemplateModal(false);
     setShowAddModal(true);
-    setEditingItem(undefined);
-    setSelectedTemplate(undefined);
-    setSelectedCustomTemplate(undefined);
+    resetEditingAndTemplateState();
   };
 
   const handleSelectCustomTemplate = useCallback(
@@ -676,8 +671,17 @@ export function Inventory({
         createPortal(
           <div
             className={confirmDialogStyles.overlay}
+            role="button"
+            tabIndex={0}
+            aria-label={t('accessibility.closeModal')}
             onClick={handleUnsavedCancel}
-            role="presentation"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleUnsavedCancel();
+              }
+            }}
+            data-testid="unsaved-changes-overlay"
           >
             <div
               ref={unsavedDialogRef}
