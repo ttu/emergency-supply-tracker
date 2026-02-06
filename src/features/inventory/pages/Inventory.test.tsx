@@ -1304,3 +1304,190 @@ describe('Inventory Page - Custom Templates', () => {
     ).toBe(true);
   });
 });
+
+describe('Inventory Page - Remove Empty Items', () => {
+  const zeroQuantityItem = createMockInventoryItem({
+    id: createItemId('zero-qty-1'),
+    name: 'Empty Item 1',
+    itemType: 'custom',
+    categoryId: createCategoryId('food'),
+    quantity: createQuantity(0),
+    unit: 'pieces',
+    neverExpires: true,
+  });
+
+  const zeroQuantityItem2 = createMockInventoryItem({
+    id: createItemId('zero-qty-2'),
+    name: 'Empty Item 2',
+    itemType: 'custom',
+    categoryId: createCategoryId('water-beverages'),
+    quantity: createQuantity(0),
+    unit: 'liters',
+    neverExpires: true,
+  });
+
+  const nonZeroQuantityItem = createMockInventoryItem({
+    id: createItemId('non-zero-qty'),
+    name: 'Non-Empty Item',
+    itemType: 'custom',
+    categoryId: createCategoryId('food'),
+    quantity: createQuantity(5),
+    unit: 'pieces',
+    neverExpires: true,
+  });
+
+  beforeEach(() => {
+    globalThis.confirm = vi.fn(() => true);
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('should hide remove empty items button when no 0-quantity items exist', () => {
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [nonZeroQuantityItem],
+    });
+    saveAppData(appData);
+
+    renderWithProviders(<Inventory />);
+
+    expect(
+      screen.queryByTestId('remove-empty-items-button'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should show remove empty items button when 0-quantity items exist', () => {
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [zeroQuantityItem, nonZeroQuantityItem],
+    });
+    saveAppData(appData);
+
+    renderWithProviders(<Inventory />);
+
+    expect(screen.getByTestId('remove-empty-items-button')).toBeInTheDocument();
+  });
+
+  it('should show confirmation dialog when clicking remove empty items button', async () => {
+    const user = userEvent.setup();
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [zeroQuantityItem, nonZeroQuantityItem],
+    });
+    saveAppData(appData);
+
+    renderWithProviders(<Inventory />);
+
+    const removeButton = screen.getByTestId('remove-empty-items-button');
+    await user.click(removeButton);
+
+    expect(globalThis.confirm).toHaveBeenCalled();
+  });
+
+  it('should remove 0-quantity items when confirmed', async () => {
+    const user = userEvent.setup();
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [zeroQuantityItem, nonZeroQuantityItem],
+    });
+    saveAppData(appData);
+
+    renderWithProviders(<Inventory />);
+
+    // Verify empty item is visible
+    expect(screen.getByText('Empty Item 1')).toBeInTheDocument();
+
+    const removeButton = screen.getByTestId('remove-empty-items-button');
+    await user.click(removeButton);
+
+    // After removal, the empty item should be gone
+    await waitFor(() => {
+      expect(screen.queryByText('Empty Item 1')).not.toBeInTheDocument();
+    });
+
+    // Non-empty item should still be visible
+    expect(screen.getByText('Non-Empty Item')).toBeInTheDocument();
+
+    // Button should be hidden since no more 0-quantity items
+    expect(
+      screen.queryByTestId('remove-empty-items-button'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should not remove items when confirmation is cancelled', async () => {
+    const user = userEvent.setup();
+    globalThis.confirm = vi.fn(() => false); // User clicks "Cancel"
+
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [zeroQuantityItem, nonZeroQuantityItem],
+    });
+    saveAppData(appData);
+
+    renderWithProviders(<Inventory />);
+
+    const removeButton = screen.getByTestId('remove-empty-items-button');
+    await user.click(removeButton);
+
+    // Item should still be present
+    expect(screen.getByText('Empty Item 1')).toBeInTheDocument();
+  });
+
+  it('should only remove 0-quantity items in selected category', async () => {
+    const user = userEvent.setup();
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [zeroQuantityItem, zeroQuantityItem2, nonZeroQuantityItem],
+    });
+    saveAppData(appData);
+
+    // Select food category
+    renderWithProviders(<Inventory selectedCategoryId="food" />);
+
+    // Only food zero-quantity item should be counted
+    const removeButton = screen.getByTestId('remove-empty-items-button');
+    await user.click(removeButton);
+
+    // Food empty item should be removed
+    await waitFor(() => {
+      expect(screen.queryByText('Empty Item 1')).not.toBeInTheDocument();
+    });
+
+    // Switch to all categories to verify water item still exists
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    const allCategoriesButton = within(sidebar).getByText(
+      'inventory.allCategories',
+    );
+    fireEvent.click(allCategoriesButton);
+
+    // Water empty item should still exist (it was in a different category)
+    expect(screen.getByText('Empty Item 2')).toBeInTheDocument();
+  });
+
+  it('should remove all 0-quantity items when no category is selected', async () => {
+    const user = userEvent.setup();
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [zeroQuantityItem, zeroQuantityItem2, nonZeroQuantityItem],
+    });
+    saveAppData(appData);
+
+    // No category selected (All Categories)
+    renderWithProviders(<Inventory />);
+
+    const removeButton = screen.getByTestId('remove-empty-items-button');
+    await user.click(removeButton);
+
+    // Both empty items should be removed
+    await waitFor(() => {
+      expect(screen.queryByText('Empty Item 1')).not.toBeInTheDocument();
+      expect(screen.queryByText('Empty Item 2')).not.toBeInTheDocument();
+    });
+
+    // Non-empty item should still exist
+    expect(screen.getByText('Non-Empty Item')).toBeInTheDocument();
+  });
+});

@@ -139,6 +139,19 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     [setItems, showNotification, t],
   );
 
+  const deleteItems = useCallback(
+    (ids: ItemId[]) => {
+      if (ids.length === 0) return;
+      const idsSet = new Set(ids);
+      setItems((prev) => prev.filter((item) => !idsSet.has(item.id)));
+      showNotification(
+        t('notifications.itemsBulkDeleted', { count: ids.length }),
+        'info',
+      );
+    },
+    [setItems, showNotification, t],
+  );
+
   const dismissAlert = useCallback(
     (alertId: AlertId) => {
       setDismissedAlertIds((prev) =>
@@ -363,6 +376,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         addItems,
         updateItem,
         deleteItem,
+        deleteItems,
         dismissedAlertIds,
         dismissAlert,
         dismissAlerts,

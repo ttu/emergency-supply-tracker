@@ -148,6 +148,16 @@ function TestComponent({
       <button onClick={() => context.disableCategory('food')}>
         Disable Category
       </button>
+      <button
+        onClick={() =>
+          context.deleteItems([createItemId('item-1'), createItemId('item-2')])
+        }
+      >
+        Delete Items Batch
+      </button>
+      <button onClick={() => context.deleteItems([])}>
+        Delete Items Empty
+      </button>
       <button onClick={() => context.enableCategory('food')}>
         Enable Category
       </button>
@@ -304,6 +314,74 @@ describe('InventoryProvider', () => {
       'To Delete',
       'food',
     );
+  });
+
+  it('should delete multiple items with deleteItems', async () => {
+    const user = userEvent.setup();
+    const existingItems = [
+      createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Item 1',
+      }),
+      createMockInventoryItem({
+        id: createItemId('item-2'),
+        name: 'Item 2',
+      }),
+      createMockInventoryItem({
+        id: createItemId('item-3'),
+        name: 'Item 3',
+      }),
+    ];
+    mockGetAppData.mockReturnValue({
+      items: existingItems,
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('items-count')).toHaveTextContent('3');
+
+    await user.click(screen.getByText('Delete Items Batch'));
+
+    // Only item-3 should remain (item-1 and item-2 were deleted)
+    expect(screen.getByTestId('items-count')).toHaveTextContent('1');
+  });
+
+  it('should do nothing when deleteItems is called with empty array', async () => {
+    const user = userEvent.setup();
+    const existingItems = [
+      createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Item 1',
+      }),
+    ];
+    mockGetAppData.mockReturnValue({
+      items: existingItems,
+      dismissedAlertIds: [],
+      disabledRecommendedItems: [],
+    });
+
+    render(
+      <NotificationProvider>
+        <InventoryProvider>
+          <TestComponent />
+        </InventoryProvider>
+      </NotificationProvider>,
+    );
+
+    expect(screen.getByTestId('items-count')).toHaveTextContent('1');
+
+    await user.click(screen.getByText('Delete Items Empty'));
+
+    // Item should still exist
+    expect(screen.getByTestId('items-count')).toHaveTextContent('1');
   });
 
   it('should add multiple items with addItems', async () => {
