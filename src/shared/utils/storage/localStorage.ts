@@ -975,12 +975,15 @@ export function importMultiInventory(
   // Get existing inventory set names for conflict resolution
   const existingNames = Object.values(root.inventorySets).map((s) => s.name);
 
-  // Import selected inventory sets
+  // Import selected inventory sets (match by index to support duplicate names)
   for (const setSelection of selection.inventorySets) {
-    const exportedSet = importData.inventorySets.find(
-      (s) => s.name === setSelection.originalName,
-    );
-    if (!exportedSet) continue;
+    const exportedSet = importData.inventorySets[setSelection.index];
+    if (
+      !exportedSet ||
+      setSelection.index < 0 ||
+      setSelection.index >= importData.inventorySets.length
+    )
+      continue;
 
     // Generate unique name if there's a conflict
     const uniqueName = generateUniqueInventorySetName(

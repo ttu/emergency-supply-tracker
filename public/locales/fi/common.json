@@ -329,7 +329,8 @@
       "confirmOverwrite": "Tämä korvaa kaikki nykyiset tietosi. Oletko varma?",
       "success": "Tiedot tuotu onnistuneesti",
       "error": "Tietojen tuonti epäonnistui. Tarkista tiedostomuoto.",
-      "invalidFormat": "Virheellinen tiedostomuoto. Valitse kelvollinen varmuuskopiotiedosto."
+      "invalidFormat": "Virheellinen tiedostomuoto. Valitse kelvollinen varmuuskopiotiedosto.",
+      "legacySetName": "Tuodut tiedot"
     },
     "shoppingList": {
       "button": "Vie ostoslista",
@@ -712,6 +713,7 @@
       "reminderDismissed": "Varmuuskopiointimuistutus suljettu"
     },
     "backupSuccess": "Tiedot viety onnistuneesti",
+    "exportError": "Vienti epäonnistui",
     "importSuccess": "Tiedot tuotu onnistuneesti",
     "importError": "Tuonti epäonnistui",
     "data": {
