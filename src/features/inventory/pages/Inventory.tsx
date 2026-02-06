@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useHousehold } from '@/features/household';
 import {
   useInventory,
+  useLocationSuggestions,
   FilterBar,
+  LOCATION_FILTER_ALL,
+  LOCATION_FILTER_NONE,
   ItemList,
   ItemForm,
   CategoryStatusSummary,
@@ -129,7 +132,12 @@ export function Inventory({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');
+  const [locationFilter, setLocationFilter] =
+    useState<string>(LOCATION_FILTER_ALL);
   const [sortBy, setSortBy] = useState<SortBy>('name');
+
+  // Get unique locations for filter dropdown
+  const locations = useLocationSuggestions(items);
 
   // Modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -180,6 +188,15 @@ export function Inventory({
       });
     }
 
+    // Filter by location
+    if (locationFilter === LOCATION_FILTER_NONE) {
+      result = result.filter((item) => !item.location?.trim());
+    } else if (locationFilter !== LOCATION_FILTER_ALL) {
+      result = result.filter(
+        (item) => item.location?.trim() === locationFilter,
+      );
+    }
+
     // Sort items
     return [...result].sort((a, b) => {
       switch (sortBy) {
@@ -203,6 +220,7 @@ export function Inventory({
     selectedCategoryId,
     searchQuery,
     statusFilter,
+    locationFilter,
     sortBy,
     household,
     recommendedItems,
@@ -491,6 +509,9 @@ export function Inventory({
               onSearchChange={setSearchQuery}
               statusFilter={statusFilter}
               onStatusFilterChange={setStatusFilter}
+              locationFilter={locationFilter}
+              onLocationFilterChange={setLocationFilter}
+              locations={locations}
               sortBy={sortBy}
               onSortByChange={setSortBy}
             />
@@ -563,6 +584,7 @@ export function Inventory({
               selectedTemplate?.requiresWaterLiters ??
               selectedCustomTemplate?.requiresWaterLiters
             }
+            locationSuggestions={locations}
           />
           {editingItem?.id && (
             <div className={styles.deleteSection}>

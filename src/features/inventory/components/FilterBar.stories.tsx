@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { FilterBar } from './FilterBar';
+import { FilterBar, LOCATION_FILTER_ALL } from './FilterBar';
+
+const sampleLocations = ['Kitchen pantry', 'Garage shelf', 'Basement storage'];
 
 const meta = {
   title: 'Components/Inventory/FilterBar',
@@ -10,6 +12,7 @@ const meta = {
   argTypes: {
     onSearchChange: { action: 'search changed' },
     onStatusFilterChange: { action: 'status filter changed' },
+    onLocationFilterChange: { action: 'location filter changed' },
     onSortByChange: { action: 'sort changed' },
   },
 } satisfies Meta<typeof FilterBar>;
@@ -21,9 +24,12 @@ export const Default: Story = {
   args: {
     searchQuery: '',
     statusFilter: 'all',
+    locationFilter: LOCATION_FILTER_ALL,
+    locations: sampleLocations,
     sortBy: 'name',
     onSearchChange: () => {},
     onStatusFilterChange: () => {},
+    onLocationFilterChange: () => {},
     onSortByChange: () => {},
   },
 };
@@ -32,9 +38,12 @@ export const WithSearch: Story = {
   args: {
     searchQuery: 'water',
     statusFilter: 'all',
+    locationFilter: LOCATION_FILTER_ALL,
+    locations: sampleLocations,
     sortBy: 'name',
     onSearchChange: () => {},
     onStatusFilterChange: () => {},
+    onLocationFilterChange: () => {},
     onSortByChange: () => {},
   },
 };
@@ -43,9 +52,26 @@ export const FilteredByCritical: Story = {
   args: {
     searchQuery: '',
     statusFilter: 'critical',
+    locationFilter: LOCATION_FILTER_ALL,
+    locations: sampleLocations,
     sortBy: 'name',
     onSearchChange: () => {},
     onStatusFilterChange: () => {},
+    onLocationFilterChange: () => {},
+    onSortByChange: () => {},
+  },
+};
+
+export const FilteredByLocation: Story = {
+  args: {
+    searchQuery: '',
+    statusFilter: 'all',
+    locationFilter: 'Kitchen pantry',
+    locations: sampleLocations,
+    sortBy: 'name',
+    onSearchChange: () => {},
+    onStatusFilterChange: () => {},
+    onLocationFilterChange: () => {},
     onSortByChange: () => {},
   },
 };
@@ -54,9 +80,12 @@ export const SortedByExpiration: Story = {
   args: {
     searchQuery: '',
     statusFilter: 'all',
+    locationFilter: LOCATION_FILTER_ALL,
+    locations: sampleLocations,
     sortBy: 'expiration',
     onSearchChange: () => {},
     onStatusFilterChange: () => {},
+    onLocationFilterChange: () => {},
     onSortByChange: () => {},
   },
 };

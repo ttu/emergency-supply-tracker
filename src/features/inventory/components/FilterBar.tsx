@@ -4,11 +4,20 @@ import { Input } from '@/shared/components/Input';
 import type { ItemStatus } from '@/shared/types';
 import styles from './FilterBar.module.css';
 
+/** Sentinel values for location filter (prefixed to avoid collision with user location names) */
+export const LOCATION_FILTER_ALL = '__all__';
+export const LOCATION_FILTER_NONE = '__none__';
+
+/* NOSONAR S6564 - FilterBarProps is the component's public API contract */
 export interface FilterBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   statusFilter: ItemStatus | 'all';
   onStatusFilterChange: (status: ItemStatus | 'all') => void;
+  /** Location filter: LOCATION_FILTER_ALL | LOCATION_FILTER_NONE | specific location string */
+  locationFilter: string;
+  onLocationFilterChange: (location: string) => void;
+  locations: string[];
   sortBy: 'name' | 'quantity' | 'expiration';
   onSortByChange: (sortBy: 'name' | 'quantity' | 'expiration') => void;
 }
@@ -18,6 +27,9 @@ export const FilterBar = ({
   onSearchChange,
   statusFilter,
   onStatusFilterChange,
+  locationFilter,
+  onLocationFilterChange,
+  locations,
   sortBy,
   onSortByChange,
 }: FilterBarProps) => {
@@ -28,6 +40,12 @@ export const FilterBar = ({
     { value: 'ok', label: t('status.ok') },
     { value: 'warning', label: t('status.warning') },
     { value: 'critical', label: t('status.critical') },
+  ];
+
+  const locationOptions = [
+    { value: LOCATION_FILTER_ALL, label: t('inventory.filter.allLocations') },
+    { value: LOCATION_FILTER_NONE, label: t('inventory.filter.noLocation') },
+    ...locations.map((loc) => ({ value: loc, label: loc })),
   ];
 
   const sortOptions = [
@@ -56,6 +74,13 @@ export const FilterBar = ({
           }
           options={statusOptions}
           label={t('inventory.filter.status')}
+        />
+
+        <Select
+          value={locationFilter}
+          onChange={(e) => onLocationFilterChange(e.target.value)}
+          options={locationOptions}
+          label={t('inventory.filter.location')}
         />
 
         <Select
