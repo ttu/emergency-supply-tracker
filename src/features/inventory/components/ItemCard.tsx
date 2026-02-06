@@ -108,7 +108,7 @@ const ItemCardComponent = ({ item, allItems, onItemClick }: ItemCardProps) => {
 
         {isRotation && item.excludeFromCalculations && (
           <div className={styles.notCounted}>
-            {t('itemForm.rotation.excludeFromCalculations')}
+            {t('itemForm.rotation.notCounted')}
           </div>
         )}
 

@@ -171,12 +171,8 @@ async function addCustomItem(page: Page) {
   await page.selectOption('select[name="category"]', 'food');
   await page.fill('input[name="quantity"]', '3');
   await page.selectOption('select[name="unit"]', 'pieces');
-  // Check the "Never Expires" checkbox using its label text
-  const neverExpiresCheckbox = page
-    .locator('label')
-    .filter({ hasText: /Never Expires|Ei vanhene/i })
-    .locator('input[type="checkbox"]');
-  await neverExpiresCheckbox.check();
+  // Check the "Never Expires" checkbox
+  await page.getByTestId('never-expires-checkbox').check();
   await page.getByTestId('save-item-button').click();
   await page
     .waitForSelector('[role="dialog"]', { state: 'hidden' })
@@ -290,11 +286,7 @@ async function testDashboardAlerts(page: Page) {
   await page.selectOption('select[name="category"]', 'food');
   await page.fill('input[name="quantity"]', '2');
   await page.selectOption('select[name="unit"]', 'pieces');
-  const neverExpiresCheckbox = page
-    .locator('label')
-    .filter({ hasText: /Never Expires|Ei vanhene/i })
-    .locator('input[type="checkbox"]');
-  await neverExpiresCheckbox.uncheck();
+  await page.getByTestId('never-expires-checkbox').uncheck();
   await page.fill('input[type="date"]', expiredDateString);
   await page.getByTestId('save-item-button').click();
   await page

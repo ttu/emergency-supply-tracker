@@ -341,14 +341,14 @@ describe('ItemCard', () => {
       });
       renderWithProviders(<ItemCard item={excludedRotationItem} />);
       expect(
-        screen.getByText(/itemForm.rotation.excludeFromCalculations/i),
+        screen.getByText(/itemForm.rotation.notCounted/i),
       ).toBeInTheDocument();
     });
 
     it('should not show "not counted" indicator when excludeFromCalculations is false', () => {
       renderWithProviders(<ItemCard item={rotationItem} />);
       expect(
-        screen.queryByText(/itemForm.rotation.excludeFromCalculations/i),
+        screen.queryByText(/itemForm.rotation.notCounted/i),
       ).not.toBeInTheDocument();
     });
   });

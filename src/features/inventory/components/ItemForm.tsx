@@ -399,11 +399,13 @@ export const ItemForm = ({
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.checkboxLabel}>
+        <label htmlFor="isNormalRotation" className={styles.checkboxLabel}>
           <input
+            id="isNormalRotation"
             type="checkbox"
             checked={formData.isNormalRotation}
             onChange={(e) => handleChange('isNormalRotation', e.target.checked)}
+            data-testid="rotation-checkbox"
           />
           {t('itemForm.rotation.label')}
         </label>
@@ -540,13 +542,18 @@ export const ItemForm = ({
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.checkboxLabel}>
+            <label
+              htmlFor="excludeFromCalculations"
+              className={styles.checkboxLabel}
+            >
               <input
+                id="excludeFromCalculations"
                 type="checkbox"
                 checked={formData.excludeFromCalculations}
                 onChange={(e) =>
                   handleChange('excludeFromCalculations', e.target.checked)
                 }
+                data-testid="exclude-from-calculations-checkbox"
               />
               {t('itemForm.rotation.excludeFromCalculations')}
             </label>
@@ -555,11 +562,13 @@ export const ItemForm = ({
       ) : (
         <>
           <div className={styles.formGroup}>
-            <label className={styles.checkboxLabel}>
+            <label htmlFor="neverExpires" className={styles.checkboxLabel}>
               <input
+                id="neverExpires"
                 type="checkbox"
                 checked={formData.neverExpires}
                 onChange={(e) => handleChange('neverExpires', e.target.checked)}
+                data-testid="never-expires-checkbox"
               />
               {t('itemForm.neverExpires')}
             </label>
