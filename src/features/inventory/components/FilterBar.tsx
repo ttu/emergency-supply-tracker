@@ -4,12 +4,17 @@ import { Input } from '@/shared/components/Input';
 import type { ItemStatus } from '@/shared/types';
 import styles from './FilterBar.module.css';
 
+/** Sentinel values for location filter (prefixed to avoid collision with user location names) */
+export const LOCATION_FILTER_ALL = '__all__';
+export const LOCATION_FILTER_NONE = '__none__';
+
+/* NOSONAR S6564 - FilterBarProps is the component's public API contract */
 export interface FilterBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   statusFilter: ItemStatus | 'all';
   onStatusFilterChange: (status: ItemStatus | 'all') => void;
-  /** Location filter: 'all' | 'none' | specific location string */
+  /** Location filter: LOCATION_FILTER_ALL | LOCATION_FILTER_NONE | specific location string */
   locationFilter: string;
   onLocationFilterChange: (location: string) => void;
   locations: string[];
@@ -38,8 +43,8 @@ export const FilterBar = ({
   ];
 
   const locationOptions = [
-    { value: 'all', label: t('inventory.filter.allLocations') },
-    { value: 'none', label: t('inventory.filter.noLocation') },
+    { value: LOCATION_FILTER_ALL, label: t('inventory.filter.allLocations') },
+    { value: LOCATION_FILTER_NONE, label: t('inventory.filter.noLocation') },
     ...locations.map((loc) => ({ value: loc, label: loc })),
   ];
 

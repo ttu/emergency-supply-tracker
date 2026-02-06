@@ -26,6 +26,8 @@ export {
   ItemForm,
   CategoryNav,
   FilterBar,
+  LOCATION_FILTER_ALL,
+  LOCATION_FILTER_NONE,
   CategoryStatusSummary,
 } from './components';
 

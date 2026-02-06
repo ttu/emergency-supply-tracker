@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { FilterBar } from './FilterBar';
+import { FilterBar, LOCATION_FILTER_ALL } from './FilterBar';
 
 const sampleLocations = ['Kitchen pantry', 'Garage shelf', 'Basement storage'];
 
@@ -24,7 +24,7 @@ export const Default: Story = {
   args: {
     searchQuery: '',
     statusFilter: 'all',
-    locationFilter: 'all',
+    locationFilter: LOCATION_FILTER_ALL,
     locations: sampleLocations,
     sortBy: 'name',
     onSearchChange: () => {},
@@ -38,7 +38,7 @@ export const WithSearch: Story = {
   args: {
     searchQuery: 'water',
     statusFilter: 'all',
-    locationFilter: 'all',
+    locationFilter: LOCATION_FILTER_ALL,
     locations: sampleLocations,
     sortBy: 'name',
     onSearchChange: () => {},
@@ -52,7 +52,7 @@ export const FilteredByCritical: Story = {
   args: {
     searchQuery: '',
     statusFilter: 'critical',
-    locationFilter: 'all',
+    locationFilter: LOCATION_FILTER_ALL,
     locations: sampleLocations,
     sortBy: 'name',
     onSearchChange: () => {},
@@ -80,7 +80,7 @@ export const SortedByExpiration: Story = {
   args: {
     searchQuery: '',
     statusFilter: 'all',
-    locationFilter: 'all',
+    locationFilter: LOCATION_FILTER_ALL,
     locations: sampleLocations,
     sortBy: 'expiration',
     onSearchChange: () => {},
