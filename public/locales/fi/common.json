@@ -377,6 +377,16 @@
       "warning": "Valitut osiot korvaavat nykyiset tietosi.",
       "importButton": "Tuo",
       "notInFile": "(ei tiedostossa)"
+    },
+    "multiExport": {
+      "description": "Valitse, mitkä varastot ja osiot sisällytetään vientitiedostoon.",
+      "expandSet": "Laajenna {{name}}",
+      "collapseSet": "Supista {{name}}"
+    },
+    "multiImport": {
+      "description": "Valitse, mitkä varastot ja osiot tuodaan. Jokainen valittu varasto luodaan uutena varastona.",
+      "warning": "Tuodut varastot lisätään uusina varastoina. Asetusten tuonti yhdistetään nykyisiin asetuksiisi.",
+      "conflictWarning": "\"{{originalName}}\" on jo olemassa - tuodaan nimellä \"{{newName}}\""
     }
   },
   "kits": {

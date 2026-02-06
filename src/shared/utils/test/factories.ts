@@ -6,6 +6,8 @@ import type {
   Category,
   ProductTemplate,
   RecommendedItemDefinition,
+  RootStorage,
+  InventorySetData,
 } from '@/shared/types';
 import {
   VALID_THEMES,
@@ -17,6 +19,7 @@ import {
   createAlertId,
   createDateOnly,
   createQuantity,
+  createInventorySetId,
 } from '@/shared/types';
 import type { Alert } from '@/features/alerts/types';
 import { faker } from '@faker-js/faker';
@@ -192,6 +195,46 @@ export function createMockRecommendedItem(
     scaleWithPeople: faker.datatype.boolean(),
     scaleWithDays: faker.datatype.boolean(),
     scaleWithPets: faker.datatype.boolean(),
+    ...overrides,
+  };
+}
+
+export function createMockInventorySetData(
+  overrides?: Partial<InventorySetData>,
+): InventorySetData {
+  const id = overrides?.id ?? createInventorySetId(faker.string.uuid());
+  return {
+    id,
+    name: faker.lorem.words(2),
+    household: createMockHousehold(overrides?.household),
+    items: overrides?.items ?? [],
+    customCategories: overrides?.customCategories ?? [],
+    customTemplates: overrides?.customTemplates ?? [],
+    dismissedAlertIds: overrides?.dismissedAlertIds ?? [],
+    disabledRecommendedItems: overrides?.disabledRecommendedItems ?? [],
+    disabledCategories: overrides?.disabledCategories ?? [],
+    lastModified: faker.date.recent().toISOString(),
+    ...overrides,
+  };
+}
+
+export function createMockRootStorage(
+  overrides?: Partial<RootStorage>,
+): RootStorage {
+  const defaultSetId = createInventorySetId('default');
+  const defaultSet = createMockInventorySetData({
+    id: defaultSetId,
+    name: 'Default',
+  });
+
+  return {
+    version: CURRENT_SCHEMA_VERSION,
+    settings: createMockSettings(overrides?.settings),
+    activeInventorySetId: defaultSetId,
+    inventorySets: {
+      [defaultSetId as string]: defaultSet,
+      ...overrides?.inventorySets,
+    },
     ...overrides,
   };
 }
