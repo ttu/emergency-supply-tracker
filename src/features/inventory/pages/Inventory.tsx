@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useHousehold } from '@/features/household';
@@ -368,6 +368,45 @@ export function Inventory({
     pendingDiscardActionRef.current = null;
   }, []);
 
+  const unsavedDialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (showUnsavedConfirm) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      const firstButton = unsavedDialogRef.current?.querySelector('button');
+      firstButton?.focus();
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+    }
+  }, [showUnsavedConfirm]);
+
+  useEffect(() => {
+    if (!showUnsavedConfirm) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        handleUnsavedCancel();
+      } else if (e.key === 'Tab' && unsavedDialogRef.current) {
+        const focusableElements =
+          unsavedDialogRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        if (e.shiftKey && document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showUnsavedConfirm, handleUnsavedCancel]);
+
   const handleSelectCustomItem = () => {
     setShowTemplateModal(false);
     setShowAddModal(true);
@@ -641,6 +680,7 @@ export function Inventory({
             role="presentation"
           >
             <div
+              ref={unsavedDialogRef}
               className={confirmDialogStyles.dialog}
               role="alertdialog"
               aria-modal="true"
