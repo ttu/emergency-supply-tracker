@@ -21,6 +21,7 @@ export interface InventoryContextValue {
   addItems: (items: InventoryItem[]) => void;
   updateItem: (id: ItemId, updates: Partial<InventoryItem>) => void;
   deleteItem: (id: ItemId) => void;
+  deleteItems: (ids: ItemId[]) => void;
   // Alert dismissal
   dismissedAlertIds: AlertId[];
   dismissAlert: (alertId: AlertId) => void;

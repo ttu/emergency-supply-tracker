@@ -62,6 +62,7 @@ const createMockInventoryContext = (
   addItems: vi.fn(),
   updateItem: vi.fn(),
   deleteItem: vi.fn(),
+  deleteItems: vi.fn(),
   dismissedAlertIds: [],
   dismissAlert: vi.fn(),
   dismissAlerts: vi.fn(),

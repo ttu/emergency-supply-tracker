@@ -52,6 +52,7 @@ export function Inventory({
     addItem,
     updateItem,
     deleteItem,
+    deleteItems,
     disableRecommendedItem,
     disabledCategories,
     disableCategory,
@@ -116,6 +117,15 @@ export function Inventory({
     },
     [onCategoryChange],
   );
+
+  // Items with 0 quantity (respecting current category filter)
+  const zeroQuantityItems = useMemo(() => {
+    let result = items.filter((item) => item.quantity === 0);
+    if (selectedCategoryId) {
+      result = result.filter((item) => item.categoryId === selectedCategoryId);
+    }
+    return result;
+  }, [items, selectedCategoryId]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ItemStatus | 'all'>('all');
@@ -368,6 +378,18 @@ export function Inventory({
     }
   }, [selectedCategoryId, disableCategory, handleCategoryChange]);
 
+  // Handler for removing all items with 0 quantity
+  const handleRemoveEmptyItems = useCallback(() => {
+    if (zeroQuantityItems.length === 0) return;
+    if (
+      globalThis.confirm(
+        t('inventory.confirmRemoveEmpty', { count: zeroQuantityItems.length }),
+      )
+    ) {
+      deleteItems(zeroQuantityItems.map((item) => item.id));
+    }
+  }, [zeroQuantityItems, deleteItems, t]);
+
   // Resolver for custom item names in CategoryStatusSummary
   const resolveItemName = useCallback(
     (itemId: string, i18nKey: string): string | undefined => {
@@ -441,6 +463,15 @@ export function Inventory({
         >
           {t('inventory.addFromTemplate')}
         </Button>
+        {zeroQuantityItems.length > 0 && (
+          <Button
+            variant="secondary"
+            onClick={handleRemoveEmptyItems}
+            data-testid="remove-empty-items-button"
+          >
+            {t('inventory.removeEmptyItems')}
+          </Button>
+        )}
       </div>
 
       <div className={styles.layout}>
