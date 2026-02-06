@@ -7,7 +7,10 @@ import type {
   MultiInventoryExportData,
   MultiInventoryImportSelection,
 } from '@/shared/types/exportImport';
-import { getInventorySetSectionsWithData } from '@/shared/types/exportImport';
+import {
+  getInventorySetSectionsWithData,
+  LEGACY_IMPORT_SET_NAME,
+} from '@/shared/types/exportImport';
 import { generateUniqueInventorySetName } from '@/shared/utils/storage/localStorage';
 import { InventorySetExportSection } from '../InventorySetExportSection';
 import styles from './ImportSelectionModal.module.css';
@@ -40,37 +43,37 @@ export function ImportSelectionModal({
   // Settings checkbox state
   const [includeSettings, setIncludeSettings] = useState(hasSettings);
 
-  // Per-inventory-set selection state
+  // Per-inventory-set selection state (keyed by index to support duplicate set names)
   const [inventorySetSelections, setInventorySetSelections] = useState<
-    Map<string, InventorySetImportState>
+    Map<number, InventorySetImportState>
   >(() => {
-    const map = new Map<string, InventorySetImportState>();
-    for (const set of importData.inventorySets) {
+    const map = new Map<number, InventorySetImportState>();
+    importData.inventorySets.forEach((set, index) => {
       const availableSections =
         set.includedSections.length > 0
           ? set.includedSections
           : getInventorySetSectionsWithData(set.data);
-      map.set(set.name, {
+      map.set(index, {
         sections: new Set(availableSections),
         expanded: true,
         availableSections,
       });
-    }
+    });
     return map;
   });
 
-  // Check for name conflicts
+  // Check for name conflicts (keyed by index so duplicate names each get a unique resolved name)
   const conflictingNames = useMemo(() => {
-    const conflicts = new Map<string, string>();
+    const conflicts = new Map<number, string>();
     const tempNames = [...existingInventorySetNames];
 
-    for (const set of importData.inventorySets) {
+    importData.inventorySets.forEach((set, index) => {
       if (existingInventorySetNames.includes(set.name)) {
         const uniqueName = generateUniqueInventorySetName(set.name, tempNames);
-        conflicts.set(set.name, uniqueName);
+        conflicts.set(index, uniqueName);
         tempNames.push(uniqueName);
       }
-    }
+    });
     return conflicts;
   }, [importData.inventorySets, existingInventorySetNames]);
 
@@ -78,22 +81,22 @@ export function ImportSelectionModal({
     setIncludeSettings((prev) => !prev);
   }, []);
 
-  const handleToggleSetExpanded = useCallback((name: string) => {
+  const handleToggleSetExpanded = useCallback((index: number) => {
     setInventorySetSelections((prev) => {
       const next = new Map(prev);
-      const current = next.get(name);
+      const current = next.get(index);
       if (current) {
-        next.set(name, { ...current, expanded: !current.expanded });
+        next.set(index, { ...current, expanded: !current.expanded });
       }
       return next;
     });
   }, []);
 
   const handleToggleSetSection = useCallback(
-    (name: string, section: InventorySetSection) => {
+    (index: number, section: InventorySetSection) => {
       setInventorySetSelections((prev) => {
         const next = new Map(prev);
-        const current = next.get(name);
+        const current = next.get(index);
         if (current) {
           const newSections = new Set(current.sections);
           if (newSections.has(section)) {
@@ -101,7 +104,7 @@ export function ImportSelectionModal({
           } else {
             newSections.add(section);
           }
-          next.set(name, { ...current, sections: newSections });
+          next.set(index, { ...current, sections: newSections });
         }
         return next;
       });
@@ -109,15 +112,15 @@ export function ImportSelectionModal({
     [],
   );
 
-  const handleToggleSetAll = useCallback((name: string, selected: boolean) => {
+  const handleToggleSetAll = useCallback((index: number, selected: boolean) => {
     setInventorySetSelections((prev) => {
       const next = new Map(prev);
-      const current = next.get(name);
+      const current = next.get(index);
       if (current) {
         const newSections = selected
           ? new Set(current.availableSections)
           : new Set<InventorySetSection>();
-        next.set(name, { ...current, sections: newSections });
+        next.set(index, { ...current, sections: newSections });
       }
       return next;
     });
@@ -127,8 +130,8 @@ export function ImportSelectionModal({
     setIncludeSettings(hasSettings);
     setInventorySetSelections((prev) => {
       const next = new Map(prev);
-      for (const [name, current] of prev) {
-        next.set(name, {
+      for (const [index, current] of prev) {
+        next.set(index, {
           ...current,
           sections: new Set(current.availableSections),
         });
@@ -141,8 +144,8 @@ export function ImportSelectionModal({
     setIncludeSettings(false);
     setInventorySetSelections((prev) => {
       const next = new Map(prev);
-      for (const [name, current] of prev) {
-        next.set(name, { ...current, sections: new Set() });
+      for (const [index, current] of prev) {
+        next.set(index, { ...current, sections: new Set() });
       }
       return next;
     });
@@ -170,17 +173,26 @@ export function ImportSelectionModal({
       inventorySets: [],
     };
 
-    for (const [name, state] of inventorySetSelections) {
+    for (const [index, state] of inventorySetSelections) {
       if (state.sections.size > 0) {
-        selection.inventorySets.push({
-          originalName: name,
-          sections: Array.from(state.sections),
-        });
+        const set = importData.inventorySets[index];
+        if (set) {
+          selection.inventorySets.push({
+            index,
+            originalName: set.name,
+            sections: Array.from(state.sections),
+          });
+        }
       }
     }
 
     onImport(selection);
-  }, [includeSettings, inventorySetSelections, onImport]);
+  }, [
+    includeSettings,
+    inventorySetSelections,
+    importData.inventorySets,
+    onImport,
+  ]);
 
   return (
     <Modal
@@ -235,31 +247,33 @@ export function ImportSelectionModal({
           )}
 
           {/* Inventory Sets */}
-          {importData.inventorySets.map((set) => {
-            const state = inventorySetSelections.get(set.name);
+          {importData.inventorySets.map((set, index) => {
+            const state = inventorySetSelections.get(index);
             if (!state) return null;
 
-            const conflict = conflictingNames.get(set.name);
+            const displayName =
+              set.name === LEGACY_IMPORT_SET_NAME
+                ? t('settings.import.legacySetName')
+                : set.name;
+            const conflict = conflictingNames.get(index);
             const conflictWarning = conflict
               ? t('settings.multiImport.conflictWarning', {
-                  originalName: set.name,
+                  originalName: displayName,
                   newName: conflict,
                 })
               : undefined;
 
             return (
               <InventorySetExportSection
-                key={set.name}
-                name={set.name}
+                key={index}
+                name={displayName}
                 isExpanded={state.expanded}
-                onToggleExpanded={() => handleToggleSetExpanded(set.name)}
+                onToggleExpanded={() => handleToggleSetExpanded(index)}
                 selectedSections={state.sections}
                 onToggleSection={(section) =>
-                  handleToggleSetSection(set.name, section)
+                  handleToggleSetSection(index, section)
                 }
-                onToggleAll={(selected) =>
-                  handleToggleSetAll(set.name, selected)
-                }
+                onToggleAll={(selected) => handleToggleSetAll(index, selected)}
                 data={set.data}
                 conflictWarning={conflictWarning}
                 availableSections={state.availableSections}

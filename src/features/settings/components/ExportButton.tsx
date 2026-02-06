@@ -49,13 +49,18 @@ export function ExportButton() {
     (selection: MultiInventoryExportSelection) => {
       if (!rootStorage) return;
 
-      const json = exportMultiInventory(rootStorage, selection);
-      const filename = generateDateFilename('emergency-supplies');
-      downloadFile(json, filename);
+      try {
+        const json = exportMultiInventory(rootStorage, selection);
+        const filename = generateDateFilename('emergency-supplies');
+        downloadFile(json, filename);
 
-      // Record the backup date
-      recordBackupDate();
-      showNotification(t('notifications.backupSuccess'), 'success');
+        // Record the backup date
+        recordBackupDate();
+        showNotification(t('notifications.backupSuccess'), 'success');
+      } catch (error) {
+        console.error('Export error:', error);
+        showNotification(t('notifications.exportError'), 'error');
+      }
     },
     [rootStorage, recordBackupDate, showNotification, t],
   );

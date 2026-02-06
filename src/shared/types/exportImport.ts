@@ -73,10 +73,17 @@ export interface MultiInventoryExportSelection {
 export interface MultiInventoryImportSelection {
   includeSettings: boolean;
   inventorySets: {
+    /** Index into importData.inventorySets for unambiguous matching (handles duplicate names) */
+    index: number;
     originalName: string;
     sections: InventorySetSection[];
   }[];
 }
+
+/**
+ * Sentinel name used for legacy single-set imports. UI should display via i18n key settings.import.legacySetName.
+ */
+export const LEGACY_IMPORT_SET_NAME = '__IMPORT_SET__';
 
 /**
  * Exported inventory set with its selected sections
@@ -275,7 +282,9 @@ export function isMultiInventoryExport(
     data &&
     typeof data === 'object' &&
     Array.isArray(data.inventorySets) &&
-    data.inventorySets.length > 0
+    (data.inventorySets.length > 0 ||
+      (typeof data.exportedAt === 'string' &&
+        typeof data.appVersion === 'string'))
   );
 }
 
@@ -297,11 +306,11 @@ export function convertLegacyToMultiInventory(
     settings: data.settings,
     inventorySets: [
       {
-        name: 'Imported Data',
+        name: LEGACY_IMPORT_SET_NAME,
         includedSections: inventorySetSections,
         data: {
           id: '' as InventorySetId, // Will be assigned on import
-          name: 'Imported Data',
+          name: LEGACY_IMPORT_SET_NAME,
           items: data.items,
           household: data.household,
           customCategories: data.customCategories,
