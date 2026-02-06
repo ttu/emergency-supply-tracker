@@ -2,15 +2,18 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import {
-  getAppData,
-  exportToJSONSelective,
+  getRootStorageForExport,
+  getInventorySetsForExport,
+  exportMultiInventory,
+  hasSettingsData,
 } from '@/shared/utils/storage/localStorage';
 import { downloadFile, generateDateFilename } from '@/shared/utils/download';
 import { useBackupTracking } from '@/features/dashboard';
 import { useNotification } from '@/shared/hooks/useNotification';
 import { ExportSelectionModal } from './ExportSelectionModal';
-import type { ExportSection } from '@/shared/types/exportImport';
-import type { AppData } from '@/shared/types';
+import type { MultiInventoryExportSelection } from '@/shared/types/exportImport';
+import type { RootStorage } from '@/shared/types';
+import type { InventorySetExportInfo } from '@/shared/utils/storage/localStorage';
 import styles from './ExportButton.module.css';
 
 export function ExportButton() {
@@ -18,28 +21,35 @@ export function ExportButton() {
   const { showNotification } = useNotification();
   const { recordBackupDate } = useBackupTracking();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [appData, setAppData] = useState<AppData | null>(null);
+  const [rootStorage, setRootStorage] = useState<RootStorage | null>(null);
+  const [inventorySets, setInventorySets] = useState<InventorySetExportInfo[]>(
+    [],
+  );
+  const [hasSettings, setHasSettings] = useState(false);
 
   const handleOpenModal = useCallback(() => {
-    const data = getAppData();
-    if (!data) {
+    const root = getRootStorageForExport();
+    if (!root) {
       alert(t('settings.export.noData'));
       return;
     }
-    setAppData(data);
+    setRootStorage(root);
+    setInventorySets(getInventorySetsForExport());
+    setHasSettings(hasSettingsData());
     setIsModalOpen(true);
   }, [t]);
 
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
-    setAppData(null);
+    setRootStorage(null);
+    setInventorySets([]);
   }, []);
 
   const handleExport = useCallback(
-    (sections: ExportSection[]) => {
-      if (!appData) return;
+    (selection: MultiInventoryExportSelection) => {
+      if (!rootStorage) return;
 
-      const json = exportToJSONSelective(appData, sections);
+      const json = exportMultiInventory(rootStorage, selection);
       const filename = generateDateFilename('emergency-supplies');
       downloadFile(json, filename);
 
@@ -47,7 +57,7 @@ export function ExportButton() {
       recordBackupDate();
       showNotification(t('notifications.backupSuccess'), 'success');
     },
-    [appData, recordBackupDate, showNotification, t],
+    [rootStorage, recordBackupDate, showNotification, t],
   );
 
   return (
@@ -61,12 +71,13 @@ export function ExportButton() {
       </Button>
       <p className={styles.description}>{t('settings.export.description')}</p>
 
-      {appData && (
+      {rootStorage && (
         <ExportSelectionModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onExport={handleExport}
-          appData={appData}
+          inventorySets={inventorySets}
+          hasSettings={hasSettings}
         />
       )}
     </div>

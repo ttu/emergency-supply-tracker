@@ -10,6 +10,16 @@ import type {
   ExportSection,
   PartialExportData,
   ExportMetadata,
+  MultiInventoryExportData,
+  MultiInventoryExportSelection,
+  MultiInventoryImportSelection,
+  InventorySetSection,
+  ExportedInventorySet,
+} from '@/shared/types/exportImport';
+import {
+  isMultiInventoryExport,
+  convertLegacyToMultiInventory,
+  getInventorySetSectionsWithData,
 } from '@/shared/types/exportImport';
 import {
   createItemId,
@@ -746,4 +756,294 @@ export function mergeImportData(
   }
 
   return merged;
+}
+
+/**
+ * Get RootStorage for multi-inventory export.
+ * Returns undefined if storage is empty or invalid.
+ */
+export function getRootStorageForExport(): RootStorage | undefined {
+  return safeGetRootStorage();
+}
+
+/**
+ * Export selected inventory sets to multi-inventory JSON format.
+ */
+export function exportMultiInventory(
+  root: RootStorage,
+  selection: MultiInventoryExportSelection,
+): string {
+  const exportData: MultiInventoryExportData = {
+    version: root.version,
+    exportedAt: new Date().toISOString(),
+    appVersion: APP_VERSION,
+    inventorySets: [],
+  };
+
+  if (selection.includeSettings) {
+    exportData.settings = root.settings;
+  }
+
+  for (const setSelection of selection.inventorySets) {
+    const inventorySet = root.inventorySets[setSelection.id as string];
+    if (!inventorySet) continue;
+
+    const exportedSet: ExportedInventorySet = {
+      name: inventorySet.name,
+      includedSections: setSelection.sections,
+      data: {
+        id: inventorySet.id,
+        name: inventorySet.name,
+        lastModified: inventorySet.lastModified,
+        disabledCategories: inventorySet.disabledCategories,
+      },
+    };
+
+    // Only include selected sections
+    for (const section of setSelection.sections) {
+      switch (section) {
+        case 'items':
+          exportedSet.data.items = inventorySet.items;
+          break;
+        case 'household':
+          exportedSet.data.household = inventorySet.household;
+          break;
+        case 'customCategories':
+          exportedSet.data.customCategories = inventorySet.customCategories;
+          break;
+        case 'customTemplates':
+          exportedSet.data.customTemplates = inventorySet.customTemplates;
+          break;
+        case 'dismissedAlertIds':
+          exportedSet.data.dismissedAlertIds = inventorySet.dismissedAlertIds;
+          break;
+        case 'disabledRecommendedItems':
+          exportedSet.data.disabledRecommendedItems =
+            inventorySet.disabledRecommendedItems;
+          break;
+        case 'customRecommendedItems':
+          exportedSet.data.customRecommendedItems =
+            inventorySet.customRecommendedItems;
+          break;
+      }
+    }
+
+    exportData.inventorySets.push(exportedSet);
+  }
+
+  return JSON.stringify(exportData, null, 2);
+}
+
+/**
+ * Parse multi-inventory import JSON and return unified format.
+ * Handles both new multi-inventory format and legacy single-set format.
+ */
+export function parseMultiInventoryImport(
+  json: string,
+): MultiInventoryExportData {
+  let data: unknown;
+  try {
+    data = JSON.parse(json);
+  } catch (error) {
+    console.error('Failed to parse import JSON:', error);
+    throw error;
+  }
+
+  if (isMultiInventoryExport(data)) {
+    return data;
+  }
+
+  // Legacy format - convert to multi-inventory
+  const legacy = data as PartialExportData;
+
+  // Check version support
+  const importedVersion = legacy.version || '1.0.0';
+  if (!isVersionSupported(importedVersion)) {
+    throw new MigrationError(
+      `Imported data schema version ${importedVersion} is not supported.`,
+      importedVersion,
+      CURRENT_SCHEMA_VERSION,
+    );
+  }
+
+  return convertLegacyToMultiInventory(legacy);
+}
+
+/**
+ * Generate a unique inventory set name that doesn't conflict with existing names.
+ */
+export function generateUniqueInventorySetName(
+  baseName: string,
+  existingNames: string[],
+): string {
+  if (!existingNames.includes(baseName)) {
+    return baseName;
+  }
+
+  const importedName = `${baseName} (imported)`;
+  if (!existingNames.includes(importedName)) {
+    return importedName;
+  }
+
+  let counter = 2;
+  while (existingNames.includes(`${baseName} (imported ${counter})`)) {
+    counter++;
+  }
+  return `${baseName} (imported ${counter})`;
+}
+
+/**
+ * Build inventory set data from imported partial data with defaults.
+ */
+function buildInventorySetFromImport(
+  imported: Partial<InventorySetData>,
+  id: InventorySetId,
+  name: string,
+  sections: InventorySetSection[],
+): InventorySetData {
+  const now = new Date().toISOString();
+
+  const inventorySet: InventorySetData = {
+    id,
+    name,
+    household:
+      sections.includes('household') && imported.household
+        ? imported.household
+        : { ...DEFAULT_HOUSEHOLD },
+    items:
+      sections.includes('items') && imported.items
+        ? (normalizeItems(imported.items) ?? [])
+        : [],
+    customCategories:
+      sections.includes('customCategories') && imported.customCategories
+        ? imported.customCategories.map((cat) => ({
+            ...cat,
+            id: createCategoryId(cat.id as string),
+          }))
+        : [],
+    customTemplates:
+      sections.includes('customTemplates') && imported.customTemplates
+        ? imported.customTemplates.map((template) => ({
+            ...template,
+            id: createProductTemplateId(template.id as string),
+          }))
+        : [],
+    dismissedAlertIds:
+      sections.includes('dismissedAlertIds') && imported.dismissedAlertIds
+        ? (imported.dismissedAlertIds as string[]).map(createAlertId)
+        : [],
+    disabledRecommendedItems:
+      sections.includes('disabledRecommendedItems') &&
+      imported.disabledRecommendedItems
+        ? (imported.disabledRecommendedItems as string[]).map(
+            createProductTemplateId,
+          )
+        : [],
+    disabledCategories: imported.disabledCategories ?? [],
+    selectedRecommendationKit:
+      imported.selectedRecommendationKit ?? DEFAULT_KIT_ID,
+    uploadedRecommendationKits: imported.uploadedRecommendationKits ?? [],
+    customRecommendedItems: sections.includes('customRecommendedItems')
+      ? imported.customRecommendedItems
+      : undefined,
+    lastModified: now,
+  };
+
+  return inventorySet;
+}
+
+/**
+ * Import selected inventory sets from multi-inventory export data.
+ * Creates new inventory sets for each selected import.
+ * Returns the updated RootStorage.
+ */
+export function importMultiInventory(
+  importData: MultiInventoryExportData,
+  selection: MultiInventoryImportSelection,
+  existingRoot?: RootStorage,
+): RootStorage {
+  const root = existingRoot ?? createDefaultRootStorage();
+
+  // Import settings if selected
+  if (selection.includeSettings && importData.settings) {
+    root.settings = {
+      ...importData.settings,
+      onboardingCompleted: true,
+    };
+  }
+
+  // Get existing inventory set names for conflict resolution
+  const existingNames = Object.values(root.inventorySets).map((s) => s.name);
+
+  // Import selected inventory sets
+  for (const setSelection of selection.inventorySets) {
+    const exportedSet = importData.inventorySets.find(
+      (s) => s.name === setSelection.originalName,
+    );
+    if (!exportedSet) continue;
+
+    // Generate unique name if there's a conflict
+    const uniqueName = generateUniqueInventorySetName(
+      exportedSet.name,
+      existingNames,
+    );
+    existingNames.push(uniqueName); // Track for subsequent imports
+
+    // Generate new ID for the imported set
+    const newId = generateInventorySetId();
+
+    // Build the inventory set from imported data
+    const inventorySet = buildInventorySetFromImport(
+      exportedSet.data,
+      newId,
+      uniqueName,
+      setSelection.sections,
+    );
+
+    root.inventorySets[newId as string] = inventorySet;
+  }
+
+  return root;
+}
+
+/**
+ * Save RootStorage after multi-inventory import.
+ */
+export function saveRootStorageAfterImport(root: RootStorage): void {
+  safeSaveRootStorage(root);
+}
+
+/**
+ * Get inventory set data for export UI display.
+ */
+export interface InventorySetExportInfo {
+  id: InventorySetId;
+  name: string;
+  isActive: boolean;
+  sectionsWithData: InventorySetSection[];
+  data: InventorySetData;
+}
+
+/**
+ * Get all inventory sets with their exportable data for UI.
+ */
+export function getInventorySetsForExport(): InventorySetExportInfo[] {
+  const root = safeGetRootStorage();
+  if (!root) return [];
+
+  return Object.values(root.inventorySets).map((inventorySet) => ({
+    id: inventorySet.id,
+    name: inventorySet.name,
+    isActive: inventorySet.id === root.activeInventorySetId,
+    sectionsWithData: getInventorySetSectionsWithData(inventorySet),
+    data: inventorySet,
+  }));
+}
+
+/**
+ * Check if settings have data worth exporting.
+ */
+export function hasSettingsData(): boolean {
+  const root = safeGetRootStorage();
+  return root?.settings !== undefined;
 }

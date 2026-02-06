@@ -377,6 +377,16 @@
       "warning": "Selected sections will overwrite your current data.",
       "importButton": "Import",
       "notInFile": "(not in file)"
+    },
+    "multiExport": {
+      "description": "Select which inventory sets and sections to include in the export file.",
+      "expandSet": "Expand {{name}}",
+      "collapseSet": "Collapse {{name}}"
+    },
+    "multiImport": {
+      "description": "Select which inventory sets and sections to import. Each selected inventory set will be created as a new inventory.",
+      "warning": "Imported inventory sets will be added as new inventories. Settings import will merge with your current settings.",
+      "conflictWarning": "\"{{originalName}}\" already exists - will import as \"{{newName}}\""
     }
   },
   "kits": {

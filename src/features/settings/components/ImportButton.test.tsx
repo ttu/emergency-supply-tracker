@@ -10,11 +10,16 @@ import {
 import { ImportButton } from './ImportButton';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
+import type { MultiInventoryExportData } from '@/shared/types/exportImport';
+import { createMockRootStorage } from '@/shared/utils/test/factories';
 
 // Mock localStorage utilities
 vi.mock('@/shared/utils/storage/localStorage', () => ({
-  parseImportJSON: vi.fn(),
-  mergeImportData: vi.fn(),
+  parseMultiInventoryImport: vi.fn(),
+  importMultiInventory: vi.fn(),
+  saveRootStorageAfterImport: vi.fn(),
+  getRootStorageForExport: vi.fn(),
+  getInventorySetList: vi.fn(),
   getAppData: vi.fn(),
   saveAppData: vi.fn(),
   createDefaultAppData: vi.fn(),
@@ -32,23 +37,11 @@ function createMockFile(content: string, name = 'data.json'): File {
   return file;
 }
 
-describe('ImportButton', () => {
-  const mockParseImportJSON = localStorage.parseImportJSON as Mock;
-  const mockMergeImportData = localStorage.mergeImportData as Mock;
-  const mockGetAppData = localStorage.getAppData as Mock;
-  const mockSaveAppData = localStorage.saveAppData as Mock;
-  const mockCreateDefaultAppData = localStorage.createDefaultAppData as Mock;
-
-  let consoleErrorSpy: MockInstance;
-
-  const defaultExistingData = {
+function createValidMultiInventoryExport(): MultiInventoryExportData {
+  return {
     version: CURRENT_SCHEMA_VERSION,
-    household: {
-      adults: 1,
-      children: 0,
-      supplyDurationDays: 3,
-      useFreezer: false,
-    },
+    exportedAt: new Date().toISOString(),
+    appVersion: '1.0.0',
     settings: {
       language: 'en',
       theme: 'light',
@@ -59,13 +52,55 @@ describe('ImportButton', () => {
         waterTracking: false,
       },
     },
-    items: [],
-    customCategories: [],
-    customTemplates: [],
-    dismissedAlertIds: [],
-    disabledRecommendedItems: [],
-    lastModified: '2024-01-01T00:00:00.000Z',
+    inventorySets: [
+      {
+        name: 'Home Inventory',
+        includedSections: ['items', 'household'],
+        data: {
+          id: 'home' as never,
+          name: 'Home Inventory',
+          household: {
+            adults: 2,
+            children: 0,
+            pets: 0,
+            supplyDurationDays: 7,
+            useFreezer: false,
+          },
+          items: [
+            {
+              id: '1' as never,
+              name: 'Test Item',
+              itemType: 'custom',
+              categoryId: 'food' as never,
+              quantity: 1 as never,
+              unit: 'pieces',
+              createdAt: '2024-01-01',
+              updatedAt: '2024-01-01',
+            },
+          ],
+          customCategories: [],
+          customTemplates: [],
+          dismissedAlertIds: [],
+          disabledRecommendedItems: [],
+          disabledCategories: [],
+          lastModified: '2024-01-01T00:00:00.000Z',
+        },
+      },
+    ],
   };
+}
+
+describe('ImportButton', () => {
+  const mockParseMultiInventoryImport =
+    localStorage.parseMultiInventoryImport as Mock;
+  const mockImportMultiInventory = localStorage.importMultiInventory as Mock;
+  const mockSaveRootStorageAfterImport =
+    localStorage.saveRootStorageAfterImport as Mock;
+  const mockGetRootStorageForExport =
+    localStorage.getRootStorageForExport as Mock;
+  const mockGetInventorySetList = localStorage.getInventorySetList as Mock;
+
+  let consoleErrorSpy: MockInstance;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -78,8 +113,10 @@ describe('ImportButton', () => {
     } as unknown as Location;
 
     // Default mock returns
-    mockGetAppData.mockReturnValue(defaultExistingData);
-    mockCreateDefaultAppData.mockReturnValue(defaultExistingData);
+    mockGetRootStorageForExport.mockReturnValue(createMockRootStorage());
+    mockGetInventorySetList.mockReturnValue([
+      { id: 'default', name: 'Default' },
+    ]);
   });
 
   afterEach(() => {
@@ -117,29 +154,8 @@ describe('ImportButton', () => {
   });
 
   it('should open selection modal for valid JSON import', async () => {
-    const validData = {
-      version: CURRENT_SCHEMA_VERSION,
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      settings: {
-        language: 'en',
-        theme: 'dark',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-      items: [{ id: '1', name: 'Test' }],
-      lastModified: '2024-01-01T00:00:00.000Z',
-    };
-
-    mockParseImportJSON.mockReturnValue(validData);
+    const validData = createValidMultiInventoryExport();
+    mockParseMultiInventoryImport.mockReturnValue(validData);
 
     render(<ImportButton />);
 
@@ -162,32 +178,11 @@ describe('ImportButton', () => {
 
   it('should import selected sections when user confirms', async () => {
     const user = userEvent.setup();
-    const validData = {
-      version: CURRENT_SCHEMA_VERSION,
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      settings: {
-        language: 'fi',
-        theme: 'dark',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-      items: [{ id: '1', name: 'Test' }],
-      lastModified: '2024-01-01T00:00:00.000Z',
-    };
+    const validData = createValidMultiInventoryExport();
+    const updatedRoot = createMockRootStorage();
 
-    const mergedData = { ...defaultExistingData, ...validData };
-
-    mockParseImportJSON.mockReturnValue(validData);
-    mockMergeImportData.mockReturnValue(mergedData);
+    mockParseMultiInventoryImport.mockReturnValue(validData);
+    mockImportMultiInventory.mockReturnValue(updatedRoot);
 
     const onImportSuccess = vi.fn();
 
@@ -214,8 +209,8 @@ describe('ImportButton', () => {
     await user.click(importButton);
 
     await waitFor(() => {
-      expect(mockMergeImportData).toHaveBeenCalled();
-      expect(mockSaveAppData).toHaveBeenCalledWith(mergedData);
+      expect(mockImportMultiInventory).toHaveBeenCalled();
+      expect(mockSaveRootStorageAfterImport).toHaveBeenCalledWith(updatedRoot);
       expect(mockShowNotification).toHaveBeenCalledWith(
         'notifications.importSuccess',
         'success',
@@ -225,14 +220,13 @@ describe('ImportButton', () => {
   });
 
   it('should show error for invalid JSON format', async () => {
+    // Missing inventorySets
     const invalidData = {
-      foo: 'bar', // missing required fields
       version: CURRENT_SCHEMA_VERSION,
-      lastModified: '2024-01-01T00:00:00.000Z',
-      // No sections with data
+      inventorySets: [], // Empty array - invalid
     };
 
-    mockParseImportJSON.mockReturnValue(invalidData);
+    mockParseMultiInventoryImport.mockReturnValue(invalidData);
 
     render(<ImportButton />);
 
@@ -250,34 +244,14 @@ describe('ImportButton', () => {
       );
     });
 
-    expect(mockSaveAppData).not.toHaveBeenCalled();
+    expect(mockSaveRootStorageAfterImport).not.toHaveBeenCalled();
   });
 
   it('should close modal when user cancels', async () => {
     const user = userEvent.setup();
-    const validData = {
-      version: CURRENT_SCHEMA_VERSION,
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      settings: {
-        language: 'en',
-        theme: 'dark',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-      items: [{ id: '1', name: 'Test' }],
-      lastModified: '2024-01-01T00:00:00.000Z',
-    };
+    const validData = createValidMultiInventoryExport();
 
-    mockParseImportJSON.mockReturnValue(validData);
+    mockParseMultiInventoryImport.mockReturnValue(validData);
 
     render(<ImportButton />);
 
@@ -305,11 +279,11 @@ describe('ImportButton', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(mockSaveAppData).not.toHaveBeenCalled();
+    expect(mockSaveRootStorageAfterImport).not.toHaveBeenCalled();
   });
 
   it('should handle file read error', async () => {
-    mockParseImportJSON.mockImplementation(() => {
+    mockParseMultiInventoryImport.mockImplementation(() => {
       throw new Error('Parse error');
     });
 
@@ -339,33 +313,13 @@ describe('ImportButton', () => {
 
     fireEvent.change(fileInput, { target: { files: [] } });
 
-    expect(mockParseImportJSON).not.toHaveBeenCalled();
+    expect(mockParseMultiInventoryImport).not.toHaveBeenCalled();
   });
 
   it('should reset file input after selecting file', async () => {
-    const validData = {
-      version: CURRENT_SCHEMA_VERSION,
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      settings: {
-        language: 'en',
-        theme: 'dark',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-      items: [{ id: '1', name: 'Test' }],
-      lastModified: '2024-01-01T00:00:00.000Z',
-    };
+    const validData = createValidMultiInventoryExport();
 
-    mockParseImportJSON.mockReturnValue(validData);
+    mockParseMultiInventoryImport.mockReturnValue(validData);
 
     render(<ImportButton />);
 
@@ -377,25 +331,17 @@ describe('ImportButton', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(mockParseImportJSON).toHaveBeenCalled();
+      expect(mockParseMultiInventoryImport).toHaveBeenCalled();
     });
   });
 
   it('should validate data has version field', async () => {
     // Missing version
     const missingVersion = {
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      settings: { language: 'en' },
-      items: [],
-      lastModified: '2024-01-01T00:00:00.000Z',
+      inventorySets: [{ name: 'Test', includedSections: [], data: {} }],
     };
 
-    mockParseImportJSON.mockReturnValue(missingVersion);
+    mockParseMultiInventoryImport.mockReturnValue(missingVersion);
 
     render(<ImportButton />);
 
@@ -415,7 +361,7 @@ describe('ImportButton', () => {
   });
 
   it('should validate data is an object', async () => {
-    mockParseImportJSON.mockReturnValue(null);
+    mockParseMultiInventoryImport.mockReturnValue(null);
 
     render(<ImportButton />);
 
@@ -435,19 +381,9 @@ describe('ImportButton', () => {
   });
 
   it('should show warning message in modal', async () => {
-    const validData = {
-      version: CURRENT_SCHEMA_VERSION,
-      household: {
-        adults: 2,
-        children: 0,
-        supplyDurationDays: 7,
-        useFreezer: false,
-      },
-      items: [{ id: '1', name: 'Test' }],
-      lastModified: '2024-01-01T00:00:00.000Z',
-    };
+    const validData = createValidMultiInventoryExport();
 
-    mockParseImportJSON.mockReturnValue(validData);
+    mockParseMultiInventoryImport.mockReturnValue(validData);
 
     render(<ImportButton />);
 
@@ -460,8 +396,27 @@ describe('ImportButton', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('settings.importSelection.warning'),
+        screen.getByText('settings.multiImport.warning'),
       ).toBeInTheDocument();
+    });
+  });
+
+  it('should show inventory set name in modal', async () => {
+    const validData = createValidMultiInventoryExport();
+
+    mockParseMultiInventoryImport.mockReturnValue(validData);
+
+    render(<ImportButton />);
+
+    const fileInput = screen.getByLabelText(
+      'settings.import.button',
+    ) as HTMLInputElement;
+    const file = createMockFile(JSON.stringify(validData));
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(screen.getByText('Home Inventory')).toBeInTheDocument();
     });
   });
 });
