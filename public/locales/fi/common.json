@@ -488,6 +488,9 @@
       "totalWater": "Yhteensä tarvitaan"
     }
   },
+  "autocomplete": {
+    "suggestionsLabel": "Ehdotukset"
+  },
   "inventory": {
     "categoryNavigation": "Kategorianavigaatio",
     "allCategories": "Kaikki",

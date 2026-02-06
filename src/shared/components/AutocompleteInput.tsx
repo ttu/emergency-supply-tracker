@@ -7,6 +7,7 @@ import {
   forwardRef,
   useId,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input, InputProps } from './Input';
 import styles from './AutocompleteInput.module.css';
 
@@ -28,6 +29,7 @@ export const AutocompleteInput = forwardRef<
     { suggestions, value, onChange, onSelect, id, ...inputProps },
     forwardedRef,
   ) => {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -142,6 +144,7 @@ export const AutocompleteInput = forwardRef<
       <div className={styles.container} ref={containerRef}>
         <Input
           ref={forwardedRef}
+          {...inputProps}
           id={inputId}
           value={value}
           onChange={handleInputChange}
@@ -158,21 +161,22 @@ export const AutocompleteInput = forwardRef<
           }
           aria-autocomplete="list"
           autoComplete="off"
-          {...inputProps}
         />
         {showDropdown && (
           <ul
             id={listboxId}
             ref={listboxRef}
             className={styles.dropdown}
-            role="listbox"
-            aria-label={inputProps.label || 'Suggestions'}
+            role="listbox" /* NOSONAR S6819 S6842 - WAI-ARIA combobox listbox pattern */
+            aria-label={
+              inputProps['aria-label'] ?? t('autocomplete.suggestionsLabel')
+            }
           >
             {filteredSuggestions.map((suggestion, index) => (
               <li
                 key={suggestion}
                 id={`${listboxId}-option-${index}`}
-                role="option"
+                role="option" /* NOSONAR S6819 S6842 - WAI-ARIA listbox option */
                 aria-selected={index === highlightedIndex}
                 className={`${styles.option} ${index === highlightedIndex ? styles.highlighted : ''}`}
                 onMouseDown={(e) => {

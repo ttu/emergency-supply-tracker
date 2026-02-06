@@ -4,7 +4,8 @@ import { Input } from '@/shared/components/Input';
 import type { ItemStatus } from '@/shared/types';
 import styles from './FilterBar.module.css';
 
-export type LocationFilter = string | 'all' | 'none';
+/** Filter value: 'all' | 'none' | specific location string */
+export type LocationFilter = string;
 
 export interface FilterBarProps {
   searchQuery: string;
