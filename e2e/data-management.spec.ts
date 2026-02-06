@@ -22,7 +22,7 @@ test.describe('Backup & Transfer', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Settings
@@ -190,7 +190,7 @@ test.describe('Backup & Transfer', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Verify item exists before clear

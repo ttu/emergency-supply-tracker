@@ -556,6 +556,20 @@
       "quantityInvalid": "Quantity must be 0 or greater",
       "recommendedQuantityInvalid": "Recommended quantity must be 0 or greater",
       "expirationRequired": "Expiration date is required (or check 'Never Expires')"
+    },
+    "rotation": {
+      "label": "Item is in normal household rotation",
+      "description": "For pantry staples you regularly use and restock (flour, toilet paper, etc.)",
+      "estimatedQuantity": "Estimated average quantity",
+      "estimatedQuantityHelp": "How much you typically have on hand",
+      "excludeFromCalculations": "Don't include in preparedness calculations",
+      "currentQuantity": "Current quantity (optional)",
+      "badge": "In rotation",
+      "notCounted": "Not counted",
+      "estimated": "estimated",
+      "errors": {
+        "estimatedQuantityRequired": "Estimated quantity is required for rotation items"
+      }
     }
   },
   "templateSelector": {

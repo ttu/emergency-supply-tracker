@@ -122,7 +122,7 @@ test.describe('Custom Categories', () => {
 
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Item should be added - use getByRole to target item card button specifically

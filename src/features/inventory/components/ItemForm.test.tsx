@@ -1090,4 +1090,236 @@ describe('ItemForm', () => {
     // Water requirement should use the same step as continuous units (like liters)
     expect(waterRequirementInput).toHaveAttribute('step', '0.1');
   });
+
+  describe('rotation item fields', () => {
+    it('should show rotation toggle', () => {
+      render(
+        <ItemForm
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+      expect(
+        screen.getByLabelText(/itemForm.rotation.label/i),
+      ).toBeInTheDocument();
+    });
+
+    it('should show rotation fields when toggle is checked', async () => {
+      render(
+        <ItemForm
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+      const toggle = screen.getByLabelText(/itemForm.rotation.label/i);
+      fireEvent.click(toggle);
+
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText(/itemForm.rotation.estimatedQuantity/i),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByLabelText(/itemForm.rotation.excludeFromCalculations/i),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should hide expiration fields when rotation is enabled', async () => {
+      render(
+        <ItemForm
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+      const toggle = screen.getByLabelText(/itemForm.rotation.label/i);
+      fireEvent.click(toggle);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByLabelText(/itemForm.neverExpires/i),
+        ).not.toBeInTheDocument();
+        expect(
+          document.querySelector('#expirationDate'),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it('should require estimatedQuantity when rotation is enabled and not excluded', async () => {
+      render(
+        <ItemForm
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      // Enable rotation
+      fireEvent.click(screen.getByLabelText(/itemForm.rotation.label/i));
+
+      // Wait for rotation fields to appear
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText(/itemForm.rotation.estimatedQuantity/i),
+        ).toBeInTheDocument();
+      });
+
+      // Check that estimatedQuantity field has required attribute
+      const estimatedQuantityInput = screen.getByLabelText(
+        /itemForm.rotation.estimatedQuantity/i,
+      );
+      expect(estimatedQuantityInput).toHaveAttribute('required');
+
+      // Fill required fields except estimatedQuantity
+      const nameInput = document.querySelector('#name') as HTMLInputElement;
+      const categorySelect = document.querySelector(
+        '#categoryId',
+      ) as HTMLSelectElement;
+      const quantityInput = document.querySelector(
+        '#quantity',
+      ) as HTMLInputElement;
+
+      fireEvent.change(nameInput, { target: { value: 'Flour' } });
+      fireEvent.change(categorySelect, { target: { value: 'food' } });
+      fireEvent.change(quantityInput, { target: { value: '5' } });
+
+      // Submit without filling estimatedQuantity - HTML5 validation should prevent submission
+      fireEvent.click(screen.getByTestId('save-item-button'));
+
+      // Form should not submit because of missing required field
+      expect(mockOnSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should not require estimatedQuantity when excluded from calculations', async () => {
+      render(
+        <ItemForm
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      // Enable rotation
+      fireEvent.click(screen.getByLabelText(/itemForm.rotation.label/i));
+
+      // Check exclude from calculations
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText(/itemForm.rotation.excludeFromCalculations/i),
+        ).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByLabelText(/itemForm.rotation.excludeFromCalculations/i),
+      );
+
+      // Fill required fields
+      const nameInput = document.querySelector('#name') as HTMLInputElement;
+      const categorySelect = document.querySelector(
+        '#categoryId',
+      ) as HTMLSelectElement;
+      const quantityInput = document.querySelector(
+        '#quantity',
+      ) as HTMLInputElement;
+
+      fireEvent.change(nameInput, { target: { value: 'Flour' } });
+      fireEvent.change(categorySelect, { target: { value: 'food' } });
+      fireEvent.change(quantityInput, { target: { value: '5' } });
+
+      // Submit without filling estimatedQuantity
+      fireEvent.click(screen.getByTestId('save-item-button'));
+
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'Flour',
+            isNormalRotation: true,
+            excludeFromCalculations: true,
+          }),
+          false, // saveAsTemplate
+        );
+      });
+    });
+
+    it('should submit rotation item with correct fields', async () => {
+      render(
+        <ItemForm
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      // Enable rotation
+      fireEvent.click(screen.getByLabelText(/itemForm.rotation.label/i));
+
+      // Fill required fields
+      const nameInput = document.querySelector('#name') as HTMLInputElement;
+      const categorySelect = document.querySelector(
+        '#categoryId',
+      ) as HTMLSelectElement;
+      const quantityInput = document.querySelector(
+        '#quantity',
+      ) as HTMLInputElement;
+
+      fireEvent.change(nameInput, { target: { value: 'Flour' } });
+      fireEvent.change(categorySelect, { target: { value: 'food' } });
+      fireEvent.change(quantityInput, { target: { value: '2' } });
+
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText(/itemForm.rotation.estimatedQuantity/i),
+        ).toBeInTheDocument();
+      });
+
+      const estimatedQuantityInput = screen.getByLabelText(
+        /itemForm.rotation.estimatedQuantity/i,
+      );
+      fireEvent.change(estimatedQuantityInput, { target: { value: '5' } });
+
+      fireEvent.click(screen.getByTestId('save-item-button'));
+
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'Flour',
+            isNormalRotation: true,
+            estimatedQuantity: 5,
+            neverExpires: undefined,
+            expirationDate: undefined,
+          }),
+          false, // saveAsTemplate
+        );
+      });
+    });
+
+    it('should load existing rotation item data', () => {
+      const rotationItem = createMockInventoryItem({
+        name: 'Flour',
+        isNormalRotation: true,
+        estimatedQuantity: 3,
+        excludeFromCalculations: false,
+      });
+
+      render(
+        <ItemForm
+          item={rotationItem}
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      const rotationToggle = screen.getByLabelText(
+        /itemForm.rotation.label/i,
+      ) as HTMLInputElement;
+      expect(rotationToggle.checked).toBe(true);
+
+      const estimatedQuantityInput = screen.getByLabelText(
+        /itemForm.rotation.estimatedQuantity/i,
+      ) as HTMLInputElement;
+      expect(estimatedQuantityInput.value).toBe('3');
+    });
+  });
 });

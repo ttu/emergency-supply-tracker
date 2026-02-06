@@ -19,7 +19,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.selectOption('select[name="unit"]', 'pieces');
 
     // Uncheck "Never Expires" and set expiration date
-    await page.uncheck('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').uncheck();
     // Compute future date (30 days from now) to ensure item is not expired
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 30);
@@ -53,7 +53,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '3');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.uncheck('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').uncheck();
     await page.fill('input[type="date"]', dateString);
 
     await page.getByTestId('save-item-button').click();
@@ -90,7 +90,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '2');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.uncheck('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').uncheck();
     await page.fill('input[type="date"]', dateString);
 
     await page.getByTestId('save-item-button').click();
@@ -119,7 +119,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '10');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]'); // Never Expires
+    await page.getByTestId('never-expires-checkbox').check(); // Never Expires
 
     await page.getByTestId('save-item-button').click();
 
@@ -154,7 +154,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Edit the item - use getByRole to target item card button specifically
@@ -166,7 +166,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.waitForSelector('input[name="quantity"]');
 
     // Uncheck neverExpires and set expiration
-    await page.uncheck('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').uncheck();
     // Compute future date (30 days from now) to ensure item is not expired
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 30);
@@ -192,7 +192,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '3');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.uncheck('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').uncheck();
     // Compute future date (30 days from now) to ensure item is not expired
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 30);

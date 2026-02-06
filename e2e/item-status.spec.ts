@@ -21,7 +21,7 @@ test.describe('Item Status Indicators', () => {
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is auto-calculated, but we'll set it manually if needed
     // For now, assume 10 is >= recommended
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Item card should show OK status (checkmark icon or green indicator)
@@ -61,7 +61,7 @@ test.describe('Item Status Indicators', () => {
     await page.fill('input[name="quantity"]', '2');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity will be auto-calculated (likely > 4 for 2 adults, 3 days)
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Item should show warning status
@@ -111,7 +111,7 @@ test.describe('Item Status Indicators', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '0');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Item should show critical status
@@ -142,7 +142,7 @@ test.describe('Item Status Indicators', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.uncheck('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').uncheck();
     // Set expiration date in the past
     await page.fill('input[type="date"]', '2024-01-01');
     await page.getByTestId('save-item-button').click();
@@ -182,7 +182,7 @@ test.describe('Item Status Indicators', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '2'); // Low quantity
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Edit item to increase quantity - use getByRole to target item card button specifically
@@ -215,7 +215,7 @@ test.describe('Item Status Indicators', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '10');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Add Critical item
@@ -227,7 +227,7 @@ test.describe('Item Status Indicators', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '0');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard

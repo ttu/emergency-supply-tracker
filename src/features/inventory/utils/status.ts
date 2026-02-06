@@ -77,7 +77,14 @@ export function getItemStatus(
   expirationDate?: DateOnly,
   neverExpires?: boolean,
   markedAsEnough?: boolean,
+  isNormalRotation?: boolean,
+  _excludeFromCalculations?: boolean, // Unused but kept for API consistency
 ): ItemStatus {
+  // Rotation items always return 'ok' - they don't trigger warnings
+  if (isNormalRotation) {
+    return 'ok';
+  }
+
   // Check expiration first (expiration always takes precedence)
   if (!neverExpires && expirationDate) {
     const daysUntilExpiration = getDaysUntilExpiration(
@@ -120,6 +127,8 @@ export function calculateItemStatus(
     item.expirationDate,
     item.neverExpires,
     item.markedAsEnough,
+    item.isNormalRotation,
+    item.excludeFromCalculations,
   );
 }
 

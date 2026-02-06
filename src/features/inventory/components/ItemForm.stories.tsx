@@ -83,3 +83,37 @@ export const ItemWithoutPurchaseDate: Story = {
     onCancel: () => {},
   },
 };
+
+// Rotation item - shows rotation toggle enabled with estimated quantity
+const rotationItem = createMockInventoryItem({
+  id: createItemId('rotation-1'),
+  name: 'All-Purpose Flour',
+  categoryId: createCategoryId('food'),
+  quantity: createQuantity(0),
+  unit: 'kilograms',
+  isNormalRotation: true,
+  estimatedQuantity: 2,
+});
+
+export const RotationItem: Story = {
+  args: {
+    item: rotationItem,
+    categories: STANDARD_CATEGORIES,
+    onSubmit: () => {},
+    onCancel: () => {},
+  },
+};
+
+// Rotation item excluded from calculations
+export const RotationItemExcluded: Story = {
+  args: {
+    item: {
+      ...rotationItem,
+      excludeFromCalculations: true,
+      estimatedQuantity: undefined,
+    },
+    categories: STANDARD_CATEGORIES,
+    onSubmit: () => {},
+    onCancel: () => {},
+  },
+};

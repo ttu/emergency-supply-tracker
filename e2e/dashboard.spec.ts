@@ -40,7 +40,7 @@ test.describe('Dashboard', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '10');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Navigate back to Dashboard
@@ -61,7 +61,7 @@ test.describe('Dashboard', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '0'); // Zero quantity triggers alert
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard

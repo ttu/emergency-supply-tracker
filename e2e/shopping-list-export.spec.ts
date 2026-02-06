@@ -77,7 +77,7 @@ test.describe('Shopping List Export Formats', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Add second item
@@ -89,7 +89,7 @@ test.describe('Shopping List Export Formats', () => {
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard where the shopping list export button is
@@ -114,7 +114,7 @@ test.describe('Shopping List Export Formats', () => {
     // Set quantity higher than recommended (if possible) or equal
     await page.fill('input[name="quantity"]', '20');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard where the shopping list export button is

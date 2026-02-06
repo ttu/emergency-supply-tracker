@@ -104,6 +104,21 @@ button.card {
   color: var(--color-text-secondary);
 }
 
+.rotationBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.notCounted {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
 .markedBadge {
   display: inline-flex;
   align-items: center;
