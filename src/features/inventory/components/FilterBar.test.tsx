@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { FilterBar } from './FilterBar';
+import {
+  FilterBar,
+  LOCATION_FILTER_ALL,
+  LOCATION_FILTER_NONE,
+} from './FilterBar';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -15,7 +19,7 @@ describe('FilterBar', () => {
     onSearchChange: vi.fn(),
     statusFilter: 'all' as const,
     onStatusFilterChange: vi.fn(),
-    locationFilter: 'all' as const,
+    locationFilter: LOCATION_FILTER_ALL,
     onLocationFilterChange: vi.fn(),
     locations: ['Kitchen', 'Garage', 'Basement'],
     sortBy: 'name' as const,
@@ -127,13 +131,17 @@ describe('FilterBar', () => {
     expect(locationSelect).toContainHTML('inventory.filter.noLocation');
   });
 
-  it('should call onLocationFilterChange with "none" when selecting no location', () => {
+  it('should call onLocationFilterChange with none when selecting no location', () => {
     render(<FilterBar {...defaultProps} />);
 
     const locationSelect = screen.getByLabelText('inventory.filter.location');
-    fireEvent.change(locationSelect, { target: { value: 'none' } });
+    fireEvent.change(locationSelect, {
+      target: { value: LOCATION_FILTER_NONE },
+    });
 
-    expect(defaultProps.onLocationFilterChange).toHaveBeenCalledWith('none');
+    expect(defaultProps.onLocationFilterChange).toHaveBeenCalledWith(
+      LOCATION_FILTER_NONE,
+    );
   });
 
   it('should display current location filter value', () => {
