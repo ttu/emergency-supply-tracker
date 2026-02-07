@@ -70,8 +70,8 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         warningCount: 0,
         okCount: 0,
         shortages: [],
-        totalActual: 0,
-        totalNeeded: 0,
+        totalActual: 10,
+        totalNeeded: 10,
         hasRecommendations: true,
       },
       {
@@ -84,7 +84,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         okCount: 0,
         shortages: [],
         totalActual: 0,
-        totalNeeded: 0,
+        totalNeeded: 10,
         hasRecommendations: true,
       },
     ];
@@ -104,8 +104,8 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         warningCount: 0,
         okCount: 0,
         shortages: [],
-        totalActual: 0,
-        totalNeeded: 0,
+        totalActual: 10,
+        totalNeeded: 10,
         hasRecommendations: true,
       },
       {
@@ -117,8 +117,8 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         warningCount: 0,
         okCount: 0,
         shortages: [],
-        totalActual: 0,
-        totalNeeded: 0,
+        totalActual: 20,
+        totalNeeded: 20,
         hasRecommendations: true,
       },
     ];
@@ -138,8 +138,8 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         warningCount: 0,
         okCount: 0,
         shortages: [],
-        totalActual: 0,
-        totalNeeded: 0,
+        totalActual: 10,
+        totalNeeded: 10,
         hasRecommendations: true,
       },
       {
@@ -151,8 +151,8 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         warningCount: 0,
         okCount: 0,
         shortages: [],
-        totalActual: 0,
-        totalNeeded: 0,
+        totalActual: 20,
+        totalNeeded: 20,
         hasRecommendations: true,
       },
       {
@@ -165,7 +165,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         okCount: 0,
         shortages: [],
         totalActual: 0,
-        totalNeeded: 0,
+        totalNeeded: 5,
         hasRecommendations: true,
       },
       {
@@ -178,7 +178,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         okCount: 0,
         shortages: [],
         totalActual: 0,
-        totalNeeded: 0,
+        totalNeeded: 5,
         hasRecommendations: true,
       },
       {
@@ -191,7 +191,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         okCount: 0,
         shortages: [],
         totalActual: 0,
-        totalNeeded: 0,
+        totalNeeded: 3,
         hasRecommendations: true,
       },
       {
@@ -204,7 +204,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         okCount: 0,
         shortages: [],
         totalActual: 0,
-        totalNeeded: 0,
+        totalNeeded: 8,
         hasRecommendations: true,
       },
       {
@@ -217,7 +217,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         okCount: 0,
         shortages: [],
         totalActual: 0,
-        totalNeeded: 0,
+        totalNeeded: 10,
         hasRecommendations: true,
       },
       {
@@ -230,7 +230,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         okCount: 0,
         shortages: [],
         totalActual: 0,
-        totalNeeded: 0,
+        totalNeeded: 11,
         hasRecommendations: true,
       },
       {
@@ -243,7 +243,7 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
         okCount: 0,
         shortages: [],
         totalActual: 0,
-        totalNeeded: 0,
+        totalNeeded: 3,
         hasRecommendations: true,
       },
     ];
@@ -1042,5 +1042,43 @@ describe('calculateCategoryPreparedness', () => {
     );
     expect(score).toBe(100); // No requirements = 100% prepared
     expect(Number.isFinite(score)).toBe(true);
+  });
+
+  it('should show very low preparedness score when only one item from one category exists', () => {
+    // Bug reproduction: user reported 10% score with just 1 aluminum foil
+    // Expected: score should be much lower (0%) since no category is fully prepared
+    const household = createMockHousehold({
+      adults: 2,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 3,
+      useFreezer: true,
+    });
+
+    // Create just one aluminum foil item (tools-supplies category has 11 recommended items)
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('test-aluminum-foil-1'),
+        categoryId: createCategoryId('tools-supplies'),
+        itemType: createProductTemplateId('aluminum-foil'),
+        name: 'Aluminum Foil',
+        quantity: createQuantity(1),
+        unit: 'rolls',
+      }),
+    ];
+
+    // Calculate preparedness for tools-supplies category
+    // Aluminum foil requires 1 roll, user has 1 roll, but it's only 1 out of 11 items
+    const toolsPreparedness = calculateCategoryPreparedness(
+      'tools-supplies',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
+
+    // Having 1 out of 11 recommended items should give ~9% preparedness
+    // This should NOT be enough to mark the category as "ok"
+    expect(toolsPreparedness).toBeLessThan(30); // Below critical threshold
   });
 });
