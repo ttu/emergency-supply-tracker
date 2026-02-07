@@ -17,7 +17,11 @@ import type {
 
 /**
  * Calculate overall preparedness score (0-100) based on category statuses.
- * Score is calculated as: (number of OK categories / total categories) * 100
+ * Score is calculated as: (number of OK categories / total applicable categories) * 100
+ *
+ * Categories with totalNeeded === 0 are excluded from the calculation, as they
+ * represent conditional categories (e.g., pets when household has 0 pets) that
+ * should not contribute to the overall preparedness score.
  */
 export function calculatePreparednessScoreFromCategoryStatuses(
   categoryStatuses: CategoryStatusSummary[],
@@ -26,11 +30,23 @@ export function calculatePreparednessScoreFromCategoryStatuses(
     return 0;
   }
 
-  const okCategories = categoryStatuses.filter(
+  // Filter out categories with totalNeeded === 0 (e.g., pets when pets=0)
+  // These are conditional categories that shouldn't affect the preparedness score
+  const applicableCategories = categoryStatuses.filter(
+    (status) => status.totalNeeded > 0,
+  );
+
+  // If no categories are applicable (e.g., "none" kit with no household needs),
+  // return 0 to indicate no preparedness requirements
+  if (applicableCategories.length === 0) {
+    return 0;
+  }
+
+  const okCategories = applicableCategories.filter(
     (status) => status.status === 'ok',
   ).length;
 
-  return Math.round((okCategories / categoryStatuses.length) * 100);
+  return Math.round((okCategories / applicableCategories.length) * 100);
 }
 
 /**

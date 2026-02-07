@@ -2577,3 +2577,60 @@ describe('calculateCategoryShortages - pets category with pets = 0', () => {
     expect(result.totalNeeded).toBeGreaterThan(0);
   });
 });
+
+describe('Bug: preparedness score with single item', () => {
+  // Regression test for: "Preparedness score on dashboard shows 10% when I just have
+  // a single aluminium foil. I have the standard kit selected. Percentage should be much lower"
+
+  it('should not mark a category as "ok" when having only 1 item out of 11 recommended', () => {
+    const household = createMockHousehold({
+      adults: 2,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 3,
+      useFreezer: true,
+    });
+
+    // User has only 1 aluminum foil (tools-supplies has 11 recommended items total)
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('test-aluminum-foil-1'),
+        categoryId: createCategoryId('tools-supplies'),
+        itemType: createProductTemplateId('aluminum-foil'),
+        name: 'Aluminum Foil',
+        quantity: createQuantity(1),
+        unit: 'rolls',
+      }),
+    ];
+
+    // Calculate preparedness for tools-supplies category
+    const preparedness = calculateCategoryPreparedness(
+      'tools-supplies',
+      items,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
+
+    // Calculate category status
+    const toolsCategory = createMockCategory({
+      id: createCategoryId('tools-supplies'),
+      name: 'Tools & Supplies',
+      icon: '🔧',
+    });
+
+    const status = calculateCategoryStatus(
+      toolsCategory,
+      items,
+      preparedness,
+      household,
+      RECOMMENDED_ITEMS,
+      [],
+    );
+
+    // With only 1 out of 11 items (~9%), category should NOT be "ok"
+    expect(status.status).not.toBe('ok');
+    expect(status.status).toBe('critical'); // Should be critical since < 30%
+    expect(status.completionPercentage).toBeLessThan(30);
+  });
+});
