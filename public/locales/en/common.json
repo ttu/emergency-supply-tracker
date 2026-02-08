@@ -525,6 +525,13 @@
       "name": "Name",
       "quantity": "Quantity",
       "expiration": "Expiration"
+    },
+    "quickEdit": {
+      "editQuantity": "Click to edit quantity",
+      "quantity": "Quantity",
+      "increase": "Increase quantity",
+      "decrease": "Decrease quantity",
+      "fullEdit": "Full Edit"
     }
   },
   "itemForm": {

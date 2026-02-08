@@ -525,6 +525,13 @@
       "name": "Nimi",
       "quantity": "Määrä",
       "expiration": "Vanhentuminen"
+    },
+    "quickEdit": {
+      "editQuantity": "Klikkaa muokataksesi määrää",
+      "quantity": "Määrä",
+      "increase": "Lisää määrää",
+      "decrease": "Vähennä määrää",
+      "fullEdit": "Täysi muokkaus"
     }
   },
   "itemForm": {

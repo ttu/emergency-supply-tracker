@@ -1,17 +1,19 @@
 import { useTranslation } from 'react-i18next';
 import { ItemCard } from './ItemCard';
-import type { InventoryItem } from '@/shared/types';
+import type { InventoryItem, Quantity } from '@/shared/types';
 import styles from './ItemList.module.css';
 
 export interface ItemListProps {
   items: InventoryItem[];
   onItemClick?: (item: InventoryItem) => void;
+  onQuantityChange?: (itemId: string, newQuantity: Quantity) => void;
   emptyMessage?: string;
 }
 
 export const ItemList = ({
   items,
   onItemClick,
+  onQuantityChange,
   emptyMessage,
 }: ItemListProps) => {
   const { t } = useTranslation();
@@ -35,6 +37,7 @@ export const ItemList = ({
           item={item}
           allItems={items}
           onItemClick={onItemClick}
+          onQuantityChange={onQuantityChange}
         />
       ))}
     </div>

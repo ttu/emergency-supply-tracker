@@ -277,6 +277,13 @@ export function Inventory({
     [recommendedItems],
   );
 
+  const handleQuickQuantityChange = useCallback(
+    (itemId: string, newQuantity: Quantity) => {
+      updateItem(createItemId(itemId), { quantity: newQuantity });
+    },
+    [updateItem],
+  );
+
   const handleCopyItem = () => {
     if (editingItem) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -530,7 +537,11 @@ export function Inventory({
                 </div>
               </div>
             )}
-            <ItemList items={filteredItems} onItemClick={handleEditItem} />
+            <ItemList
+              items={filteredItems}
+              onItemClick={handleEditItem}
+              onQuantityChange={handleQuickQuantityChange}
+            />
           </div>
         </div>
       </div>

@@ -64,6 +64,54 @@ button.card {
   font-size: var(--font-size-lg);
 }
 
+.quantityEditable {
+  position: relative;
+  padding: 0.5rem;
+  background: var(--color-background);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.quantityEditable:hover {
+  background: var(--color-surface-hover, var(--color-surface));
+  border-color: var(--color-border);
+}
+
+.quantityEditable:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+  border-color: var(--color-focus);
+}
+
+button.quantity {
+  font: inherit;
+}
+
+button.quantity:disabled {
+  cursor: default;
+  background: transparent;
+}
+
+button.quantity:disabled:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.editIcon {
+  margin-left: 0.5rem;
+  font-size: var(--font-size-sm);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.quantityEditable:hover .editIcon {
+  opacity: 0.7;
+}
+
 .current {
   font-weight: var(--font-weight-bold);
   color: var(--color-text);

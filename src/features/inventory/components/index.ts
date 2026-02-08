@@ -18,3 +18,6 @@ export type {
   CategoryStatusSummaryProps,
   CategoryShortage,
 } from './CategoryStatusSummary';
+
+export { QuantityEditor } from './QuantityEditor';
+export type { QuantityEditorProps } from './QuantityEditor';
