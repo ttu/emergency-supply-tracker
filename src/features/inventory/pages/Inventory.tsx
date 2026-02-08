@@ -27,6 +27,7 @@ import type {
   RecommendedItemDefinition,
   StandardCategoryId,
   ProductTemplate,
+  Quantity,
 } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import { useCategoryStatuses } from '@/features/dashboard/hooks/useCategoryStatuses';
@@ -275,6 +276,13 @@ export function Inventory({
       setShowAddModal(true);
     },
     [recommendedItems],
+  );
+
+  const handleQuickQuantityChange = useCallback(
+    (itemId: string, newQuantity: Quantity) => {
+      updateItem(createItemId(itemId), { quantity: newQuantity });
+    },
+    [updateItem],
   );
 
   const handleCopyItem = () => {
@@ -530,7 +538,11 @@ export function Inventory({
                 </div>
               </div>
             )}
-            <ItemList items={filteredItems} onItemClick={handleEditItem} />
+            <ItemList
+              items={filteredItems}
+              onItemClick={handleEditItem}
+              onQuantityChange={handleQuickQuantityChange}
+            />
           </div>
         </div>
       </div>
