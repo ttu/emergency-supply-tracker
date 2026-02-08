@@ -790,7 +790,7 @@ describe('Inventory Page with items', () => {
 
     const overlay = screen.getByTestId('unsaved-changes-overlay');
     expect(overlay).toBeInTheDocument();
-    fireEvent.click(overlay);
+    fireEvent.mouseDown(overlay);
 
     await waitFor(() => {
       expect(
@@ -897,7 +897,7 @@ describe('Inventory Page with items', () => {
           'unsaved-changes-cancel',
           'unsaved-changes-dont-save',
           'unsaved-changes-save',
-        ].some((tid) => el.getAttribute('data-testid') === tid),
+        ].includes(el.dataset.testid ?? ''),
       );
     const lastButton = buttons[buttons.length - 1];
     lastButton.focus();
