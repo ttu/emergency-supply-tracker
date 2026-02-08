@@ -34,8 +34,9 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
   createDefaultAppData: vi.fn(() => createMockAppData()),
 }));
 
+const mockShowNotification = vi.fn();
 vi.mock('@/shared/hooks/useNotification', () => ({
-  useNotification: () => ({ showNotification: vi.fn() }),
+  useNotification: () => ({ showNotification: mockShowNotification }),
 }));
 
 function createMockInventorySetExportInfo(
@@ -289,5 +290,47 @@ describe('ExportButton', () => {
     enabledCheckboxes.forEach((checkbox) => {
       expect(checkbox).toBeChecked();
     });
+  });
+
+  it('should show error notification when export fails', async () => {
+    const user = userEvent.setup();
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    (localStorage.exportMultiInventory as Mock).mockImplementation(() => {
+      throw new Error('Export failed');
+    });
+
+    render(<ExportButton />);
+
+    const button = screen.getByText('settings.export.button');
+    fireEvent.click(button);
+
+    // Wait for modal to open
+    await waitFor(() => {
+      expect(
+        screen.getByText('settings.exportSelection.title'),
+      ).toBeInTheDocument();
+    });
+
+    // Click export button in modal
+    const exportButton = screen.getByText(
+      'settings.exportSelection.exportButton',
+    );
+    await user.click(exportButton);
+
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Export error:',
+        expect.any(Error),
+      );
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        'notifications.exportError',
+        'error',
+      );
+    });
+
+    consoleErrorSpy.mockRestore();
   });
 });
