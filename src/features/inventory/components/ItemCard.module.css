@@ -87,20 +87,6 @@ button.card {
   border-color: var(--color-focus);
 }
 
-button.quantity {
-  font: inherit;
-}
-
-button.quantity:disabled {
-  cursor: default;
-  background: transparent;
-}
-
-button.quantity:disabled:hover {
-  background: transparent;
-  border-color: transparent;
-}
-
 .editIcon {
   margin-left: 0.5rem;
   font-size: var(--font-size-sm);

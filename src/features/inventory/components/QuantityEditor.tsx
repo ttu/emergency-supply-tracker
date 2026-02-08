@@ -33,17 +33,18 @@ export function QuantityEditor({
   }, []);
 
   const handleIncrement = useCallback(() => {
-    const current = parseFloat(localValue) || 0;
-    const newValue = allowDecimal ? current + 1 : Math.floor(current) + 1;
+    const current = allowDecimal
+      ? parseFloat(localValue) || 0
+      : parseInt(localValue, 10) || 0;
+    const newValue = current + 1;
     setLocalValue(newValue.toString());
   }, [localValue, allowDecimal]);
 
   const handleDecrement = useCallback(() => {
-    const current = parseFloat(localValue) || 0;
-    const newValue = Math.max(
-      0,
-      allowDecimal ? current - 1 : Math.floor(current) - 1,
-    );
+    const current = allowDecimal
+      ? parseFloat(localValue) || 0
+      : parseInt(localValue, 10) || 0;
+    const newValue = Math.max(0, current - 1);
     setLocalValue(newValue.toString());
   }, [localValue, allowDecimal]);
 

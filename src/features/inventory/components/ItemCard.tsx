@@ -127,11 +127,21 @@ const ItemCardComponent = ({
             allowDecimal={allowDecimal}
           />
         ) : (
-          <button
-            type="button"
+          <div
+            role={onQuantityChange ? 'button' : undefined}
+            tabIndex={onQuantityChange ? 0 : undefined}
             className={`${styles.quantity} ${onQuantityChange ? styles.quantityEditable : ''}`}
             onClick={handleQuantityClick}
-            disabled={!onQuantityChange}
+            onKeyDown={
+              onQuantityChange
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleQuantityClick(e as unknown as React.MouseEvent);
+                    }
+                  }
+                : undefined
+            }
             aria-label={
               onQuantityChange
                 ? t('inventory.quickEdit.editQuantity')
@@ -142,7 +152,7 @@ const ItemCardComponent = ({
             <span className={styles.current}>{item.quantity}</span>
             <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
             {onQuantityChange && <span className={styles.editIcon}>✏️</span>}
-          </button>
+          </div>
         )}
 
         {missingQuantity > 0 && (
