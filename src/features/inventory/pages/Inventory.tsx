@@ -27,6 +27,7 @@ import type {
   RecommendedItemDefinition,
   StandardCategoryId,
   ProductTemplate,
+  Quantity,
 } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import { useCategoryStatuses } from '@/features/dashboard/hooks/useCategoryStatuses';
