@@ -88,9 +88,11 @@ export function getErrorLogData(): ErrorLogData {
     const parsed: unknown = JSON.parse(json);
 
     if (!isValidErrorLogData(parsed)) {
-      console.error(
-        'Invalid error log data structure in localStorage, resetting to defaults',
-      );
+      if (import.meta.env.DEV) {
+        console.error(
+          'Invalid error log data structure in localStorage, resetting to defaults',
+        );
+      }
       return {
         logs: [],
         sessionId: session.id,
@@ -101,9 +103,11 @@ export function getErrorLogData(): ErrorLogData {
     // Filter out any invalid log entries
     const validLogs = parsed.logs.filter(isValidLogEntry);
     if (validLogs.length !== parsed.logs.length) {
-      console.warn(
-        `Filtered out ${parsed.logs.length - validLogs.length} invalid log entries`,
-      );
+      if (import.meta.env.DEV) {
+        console.warn(
+          `Filtered out ${parsed.logs.length - validLogs.length} invalid log entries`,
+        );
+      }
     }
 
     // Preserve original session info if present, otherwise use current session
@@ -113,7 +117,9 @@ export function getErrorLogData(): ErrorLogData {
       sessionStart: parsed.sessionStart || session.start,
     };
   } catch (error) {
-    console.error('Failed to load error log data:', error);
+    if (import.meta.env.DEV) {
+      console.error('Failed to load error log data:', error);
+    }
     const session = getCurrentSession();
     return {
       logs: [],
@@ -136,7 +142,9 @@ export function saveErrorLogData(data: ErrorLogData): void {
     const json = JSON.stringify(sanitized);
     localStorage.setItem(ERROR_LOG_STORAGE_KEY, json);
   } catch (error) {
-    console.error('Failed to save error log data:', error);
+    if (import.meta.env.DEV) {
+      console.error('Failed to save error log data:', error);
+    }
   }
 }
 

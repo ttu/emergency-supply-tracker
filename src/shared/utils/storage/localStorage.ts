@@ -164,7 +164,9 @@ function safeGetRootStorage(): RootStorage | undefined {
   try {
     return getRootStorage();
   } catch (error) {
-    console.error('getRootStorage failed:', error);
+    if (import.meta.env.DEV) {
+      console.error('getRootStorage failed:', error);
+    }
     return undefined;
   }
 }
@@ -177,7 +179,9 @@ function safeSaveRootStorage(root: RootStorage): void {
   try {
     saveRootStorage(root);
   } catch (error) {
-    console.error('saveRootStorage failed:', error);
+    if (import.meta.env.DEV) {
+      console.error('saveRootStorage failed:', error);
+    }
   }
 }
 
@@ -270,7 +274,9 @@ export function getAppData(): AppData | undefined {
     }
 
     if (!isVersionSupported(root.version)) {
-      console.error(`Data schema version ${root.version} is not supported.`);
+      if (import.meta.env.DEV) {
+        console.error(`Data schema version ${root.version} is not supported.`);
+      }
       return undefined;
     }
 
@@ -293,14 +299,18 @@ export function getAppData(): AppData | undefined {
         root.inventorySets[activeId as string] = updatedInventorySet;
         root.version = data.version;
         saveRootStorage(root);
-        console.info(`Data migrated to ${CURRENT_SCHEMA_VERSION}`);
+        if (import.meta.env.DEV) {
+          console.info(`Data migrated to ${CURRENT_SCHEMA_VERSION}`);
+        }
       } catch (error) {
-        if (error instanceof MigrationError) {
-          console.error(
-            `Migration failed: ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
-          );
-        } else {
-          console.error('Migration failed:', error);
+        if (import.meta.env.DEV) {
+          if (error instanceof MigrationError) {
+            console.error(
+              `Migration failed: ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
+            );
+          } else {
+            console.error('Migration failed:', error);
+          }
         }
         return data;
       }
@@ -308,7 +318,9 @@ export function getAppData(): AppData | undefined {
 
     const validationResult = validateAppDataValues(data);
     if (!validationResult.isValid) {
-      console.error('Data validation failed:', validationResult.errors);
+      if (import.meta.env.DEV) {
+        console.error('Data validation failed:', validationResult.errors);
+      }
       lastDataValidationResult = validationResult;
       return undefined;
     }
@@ -316,7 +328,9 @@ export function getAppData(): AppData | undefined {
     lastDataValidationResult = null;
     return data;
   } catch (error) {
-    console.error('Failed to load data from localStorage:', error);
+    if (import.meta.env.DEV) {
+      console.error('Failed to load data from localStorage:', error);
+    }
     return undefined;
   }
 }
@@ -337,7 +351,9 @@ export function saveAppData(data: AppData): void {
     }
     saveRootStorage(root);
   } catch (error) {
-    console.error('Failed to save data to localStorage:', error);
+    if (import.meta.env.DEV) {
+      console.error('Failed to save data to localStorage:', error);
+    }
   }
 }
 
@@ -482,7 +498,9 @@ export function importFromJSON(json: string): AppData {
   try {
     data = JSON.parse(json) as Partial<AppData>;
   } catch (error) {
-    console.error('Failed to parse import JSON:', error);
+    if (import.meta.env.DEV) {
+      console.error('Failed to parse import JSON:', error);
+    }
     throw error;
   }
 
@@ -629,7 +647,9 @@ export function parseImportJSON(json: string): PartialExportData {
   try {
     data = JSON.parse(json) as PartialExportData;
   } catch (error) {
-    console.error('Failed to parse import JSON:', error);
+    if (import.meta.env.DEV) {
+      console.error('Failed to parse import JSON:', error);
+    }
     throw error;
   }
 

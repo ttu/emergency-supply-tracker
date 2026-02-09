@@ -23,11 +23,15 @@ createRoot(document.getElementById('root')!).render(
 // Register service worker for offline support
 serviceWorker.register({
   onSuccess: () => {
-    console.log(
-      'Service worker registered successfully. App is available offline.',
-    );
+    if (import.meta.env.DEV) {
+      console.log(
+        'Service worker registered successfully. App is available offline.',
+      );
+    }
   },
   onUpdate: () => {
-    console.log('New version available. Close all tabs to update.');
+    if (import.meta.env.DEV) {
+      console.log('New version available. Close all tabs to update.');
+    }
   },
 });

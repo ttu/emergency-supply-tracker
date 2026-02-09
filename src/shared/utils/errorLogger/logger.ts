@@ -57,20 +57,25 @@ function log(
   try {
     addLogEntry(entry);
   } catch (storageError) {
-    console.error(
-      `[ErrorLogger] Failed to persist log entry (id: ${entry.id}, context: ${entry.context ?? 'none'}):`,
-      storageError,
-    );
+    // Only log to console in development
+    if (import.meta.env.DEV) {
+      console.error(
+        `[ErrorLogger] Failed to persist log entry (id: ${entry.id}, context: ${entry.context ?? 'none'}):`,
+        storageError,
+      );
+    }
   }
 
   // Also log to console for development
-  const consoleMethod = level === 'debug' ? 'log' : level;
-  const prefix = `[${level.toUpperCase()}]${options?.context ? ` [${options.context}]` : ''}`;
+  if (import.meta.env.DEV) {
+    const consoleMethod = level === 'debug' ? 'log' : level;
+    const prefix = `[${level.toUpperCase()}]${options?.context ? ` [${options.context}]` : ''}`;
 
-  if (options?.error) {
-    console[consoleMethod](`${prefix} ${message}`, options.error);
-  } else {
-    console[consoleMethod](`${prefix} ${message}`);
+    if (options?.error) {
+      console[consoleMethod](`${prefix} ${message}`, options.error);
+    } else {
+      console[consoleMethod](`${prefix} ${message}`);
+    }
   }
 }
 
