@@ -1590,6 +1590,152 @@ describe('Inventory Page - Custom Templates', () => {
   });
 });
 
+describe('Inventory Page - Location Filter', () => {
+  const kitchenItem = createMockInventoryItem({
+    id: createItemId('kitchen-item'),
+    name: 'Kitchen Item',
+    itemType: 'custom',
+    categoryId: createCategoryId('food'),
+    quantity: createQuantity(5),
+    unit: 'pieces',
+    neverExpires: true,
+    location: 'Kitchen',
+  });
+
+  const garageItem = createMockInventoryItem({
+    id: createItemId('garage-item'),
+    name: 'Garage Item',
+    itemType: 'custom',
+    categoryId: createCategoryId('food'),
+    quantity: createQuantity(3),
+    unit: 'pieces',
+    neverExpires: true,
+    location: 'Garage',
+  });
+
+  const noLocationItem = createMockInventoryItem({
+    id: createItemId('no-location-item'),
+    name: 'No Location Item',
+    itemType: 'custom',
+    categoryId: createCategoryId('food'),
+    quantity: createQuantity(2),
+    unit: 'pieces',
+    neverExpires: true,
+    location: undefined,
+  });
+
+  const whitespaceLocationItem = createMockInventoryItem({
+    id: createItemId('whitespace-item'),
+    name: 'Whitespace Location Item',
+    itemType: 'custom',
+    categoryId: createCategoryId('food'),
+    quantity: createQuantity(1),
+    unit: 'pieces',
+    neverExpires: true,
+    location: '   ',
+  });
+
+  const trimmedKitchenItem = createMockInventoryItem({
+    id: createItemId('trimmed-kitchen-item'),
+    name: 'Trimmed Kitchen Item',
+    itemType: 'custom',
+    categoryId: createCategoryId('food'),
+    quantity: createQuantity(4),
+    unit: 'pieces',
+    neverExpires: true,
+    location: '  Kitchen  ',
+  });
+
+  beforeEach(() => {
+    globalThis.confirm = vi.fn(() => true);
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [
+        kitchenItem,
+        garageItem,
+        noLocationItem,
+        whitespaceLocationItem,
+        trimmedKitchenItem,
+      ],
+    });
+    saveAppData(appData);
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('should show all items when location filter is set to all', () => {
+    renderWithProviders(<Inventory />);
+
+    // All items should be visible by default
+    expect(screen.getByText('Kitchen Item')).toBeInTheDocument();
+    expect(screen.getByText('Garage Item')).toBeInTheDocument();
+    expect(screen.getByText('No Location Item')).toBeInTheDocument();
+    expect(screen.getByText('Whitespace Location Item')).toBeInTheDocument();
+    expect(screen.getByText('Trimmed Kitchen Item')).toBeInTheDocument();
+  });
+
+  it('should filter items by specific location', () => {
+    renderWithProviders(<Inventory />);
+
+    // Find the location filter (second combobox after status filter)
+    const comboboxes = screen.getAllByRole('combobox');
+    const locationFilter = comboboxes[1]; // Location is second
+
+    // Select Kitchen location
+    fireEvent.change(locationFilter, { target: { value: 'Kitchen' } });
+
+    // Kitchen items should be visible (including trimmed one)
+    expect(screen.getByText('Kitchen Item')).toBeInTheDocument();
+    expect(screen.getByText('Trimmed Kitchen Item')).toBeInTheDocument();
+
+    // Other items should not be visible
+    expect(screen.queryByText('Garage Item')).not.toBeInTheDocument();
+    expect(screen.queryByText('No Location Item')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Whitespace Location Item'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should filter items with no location using LOCATION_FILTER_NONE', () => {
+    renderWithProviders(<Inventory />);
+
+    const comboboxes = screen.getAllByRole('combobox');
+    const locationFilter = comboboxes[1];
+
+    // Select "No Location" filter
+    fireEvent.change(locationFilter, { target: { value: '__none__' } });
+
+    // Items with no location or whitespace-only location should be visible
+    expect(screen.getByText('No Location Item')).toBeInTheDocument();
+    expect(screen.getByText('Whitespace Location Item')).toBeInTheDocument();
+
+    // Items with actual locations should not be visible
+    expect(screen.queryByText('Kitchen Item')).not.toBeInTheDocument();
+    expect(screen.queryByText('Garage Item')).not.toBeInTheDocument();
+    expect(screen.queryByText('Trimmed Kitchen Item')).not.toBeInTheDocument();
+  });
+
+  it('should show location options in filter dropdown', () => {
+    renderWithProviders(<Inventory />);
+
+    const comboboxes = screen.getAllByRole('combobox');
+    const locationFilter = comboboxes[1];
+
+    // Should have options for all locations (trimmed and deduplicated)
+    const options = locationFilter.querySelectorAll('option');
+    const optionValues = Array.from(options).map((opt) => opt.value);
+
+    // Should have: All, None, Garage, Kitchen (deduplicated from Kitchen and " Kitchen ")
+    expect(optionValues).toContain('__all__');
+    expect(optionValues).toContain('__none__');
+    expect(optionValues).toContain('Garage');
+    expect(optionValues).toContain('Kitchen');
+  });
+});
+
 describe('Inventory Page - Remove Empty Items', () => {
   const zeroQuantityItem = createMockInventoryItem({
     id: createItemId('zero-qty-1'),

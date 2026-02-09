@@ -8,8 +8,8 @@ import type { InventoryItem } from '@/shared/types';
 export function useLocationSuggestions(items: InventoryItem[]): string[] {
   return useMemo(() => {
     const locations = items
-      .map((item) => item.location)
-      .filter((loc): loc is string => !!loc && loc.trim() !== '');
+      .map((item) => item.location?.trim())
+      .filter((loc): loc is string => !!loc && loc !== '');
 
     return [...new Set(locations)].sort((a, b) =>
       a.toLowerCase().localeCompare(b.toLowerCase()),
