@@ -127,6 +127,23 @@ test.describe('Backup & Transfer', () => {
     // Wait for page reload after import
     await page.waitForLoadState('networkidle');
 
+    // The imported data goes into a new inventory set.
+    // Navigate to Settings -> Inventory Sets section to switch to it.
+    await page.getByTestId('nav-settings').click();
+    await navigateToSettingsSection(page, 'inventorySets');
+
+    // Wait for inventory set section to load
+    await expect(page.getByTestId('inventory-set-section')).toBeVisible({
+      timeout: 5000,
+    });
+
+    // Select the imported inventory set from the dropdown
+    // The legacy import set is stored with the literal name '__IMPORT_SET__'
+    // (translation only happens in import modal UI, not when saving)
+    await page.selectOption('#inventory-set-select', {
+      label: '__IMPORT_SET__',
+    });
+
     // Navigate to Inventory to verify import
     await page.getByTestId('nav-inventory').click();
 
