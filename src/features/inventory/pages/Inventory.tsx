@@ -671,10 +671,14 @@ export function Inventory({
         createPortal(
           <div
             className={confirmDialogStyles.overlay}
-            onMouseDown={handleUnsavedCancel}
-            role="presentation"
             data-testid="unsaved-changes-overlay"
           >
+            <button
+              type="button"
+              className={confirmDialogStyles.backdrop}
+              onClick={handleUnsavedCancel}
+              aria-label={t('accessibility.closeModal')}
+            />
             <div
               ref={unsavedDialogRef}
               className={confirmDialogStyles.dialog}
@@ -682,7 +686,6 @@ export function Inventory({
               aria-modal="true"
               aria-labelledby="unsaved-changes-dialog-title"
               aria-describedby="unsaved-changes-dialog-desc"
-              onMouseDown={(e) => e.stopPropagation()}
             >
               <h2
                 id="unsaved-changes-dialog-title"

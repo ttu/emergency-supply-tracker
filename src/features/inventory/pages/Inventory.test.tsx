@@ -790,7 +790,9 @@ describe('Inventory Page with items', () => {
 
     const overlay = screen.getByTestId('unsaved-changes-overlay');
     expect(overlay).toBeInTheDocument();
-    fireEvent.mouseDown(overlay);
+    // Click the backdrop button inside the overlay to close
+    const backdrop = overlay.querySelector('button');
+    fireEvent.click(backdrop!);
 
     await waitFor(() => {
       expect(
