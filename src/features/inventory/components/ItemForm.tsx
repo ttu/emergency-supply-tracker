@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type {
   InventoryItem,
@@ -38,6 +38,10 @@ export interface ItemFormProps {
   templateWeightGramsPerUnit?: number;
   templateCaloriesPer100g?: number;
   templateRequiresWaterLiters?: number;
+  /** Called when form dirty state changes (user has modified fields). */
+  onDirtyChange?: (dirty: boolean) => void;
+  /** Optional ref for the form element (e.g. to trigger requestSubmit from parent). */
+  formRef?: React.RefObject<HTMLFormElement | null>;
 }
 
 interface FormData {
@@ -75,6 +79,8 @@ export const ItemForm = ({
   templateWeightGramsPerUnit,
   templateCaloriesPer100g,
   templateRequiresWaterLiters,
+  onDirtyChange,
+  formRef: formRefProp,
 }: ItemFormProps) => {
   const { t, i18n } = useTranslation([
     'common',
@@ -138,6 +144,21 @@ export const ItemForm = ({
       saveAsTemplate: false,
     };
   });
+
+  const initialFormDataRef = useRef<FormData | null>(null);
+  const hasCapturedInitialRef = useRef(false);
+  useEffect(() => {
+    if (!hasCapturedInitialRef.current) {
+      initialFormDataRef.current = { ...formData };
+      hasCapturedInitialRef.current = true;
+    }
+  }, [formData]);
+  useEffect(() => {
+    if (initialFormDataRef.current === null) return;
+    const dirty =
+      JSON.stringify(formData) !== JSON.stringify(initialFormDataRef.current);
+    onDirtyChange?.(dirty);
+  }, [formData, onDirtyChange]);
 
   // Determine if this is a custom item (no template or itemType is 'custom')
   // and if it's a new item (no id)
@@ -318,6 +339,7 @@ export const ItemForm = ({
 
   return (
     <form
+      ref={formRefProp}
       className={styles.form}
       onSubmit={handleSubmit}
       data-testid="item-form"

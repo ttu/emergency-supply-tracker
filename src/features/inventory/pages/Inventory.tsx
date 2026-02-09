@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useHousehold } from '@/features/household';
 import {
@@ -15,6 +16,7 @@ import { useRecommendedItems, TemplateSelector } from '@/features/templates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
+import confirmDialogStyles from '@/shared/components/ConfirmDialog.module.css';
 import { SideMenu, SideMenuItem } from '@/shared/components/SideMenu';
 import {
   createItemId,
@@ -144,6 +146,26 @@ export function Inventory({
     ProductTemplate | undefined
   >(undefined);
 
+  // Add/Edit form: dirty state and unsaved-changes dialog
+  const [isFormDirty, setIsFormDirty] = useState(false);
+  const [showUnsavedConfirm, setShowUnsavedConfirm] = useState(false);
+  const itemFormRef = useRef<HTMLFormElement>(null);
+  const pendingDiscardActionRef = useRef<(() => void) | null>(null);
+
+  // Clear editing item and template selection (shared by form close and custom-item open)
+  const resetEditingAndTemplateState = useCallback(() => {
+    setEditingItem(undefined);
+    setSelectedTemplate(undefined);
+    setSelectedCustomTemplate(undefined);
+  }, []);
+
+  // Reset add/edit form and modal state (shared by cancel, submit, back)
+  const resetAddFormState = useCallback(() => {
+    setIsFormDirty(false);
+    setShowAddModal(false);
+    resetEditingAndTemplateState();
+  }, [resetEditingAndTemplateState]);
+
   // Get category status for selected category from shared hook
   const categoryStatus = useMemo(() => {
     if (!selectedCategoryId) return undefined;
@@ -228,10 +250,7 @@ export function Inventory({
       });
     }
 
-    setShowAddModal(false);
-    setEditingItem(undefined);
-    setSelectedTemplate(undefined);
-    setSelectedCustomTemplate(undefined);
+    resetAddFormState();
   };
 
   const handleUpdateItem = (
@@ -239,18 +258,14 @@ export function Inventory({
   ) => {
     if (editingItem) {
       updateItem(editingItem.id, itemData);
-      setShowAddModal(false);
-      setEditingItem(undefined);
-      setSelectedTemplate(undefined);
-      setSelectedCustomTemplate(undefined);
+      resetAddFormState();
     }
   };
 
   const handleDeleteItem = (itemId: string) => {
     if (globalThis.confirm(t('inventory.confirmDelete'))) {
       deleteItem(createItemId(itemId));
-      setShowAddModal(false);
-      setEditingItem(undefined);
+      resetAddFormState();
     }
   };
 
@@ -313,26 +328,86 @@ export function Inventory({
   );
 
   const handleCancelForm = () => {
-    setShowAddModal(false);
-    setEditingItem(undefined);
-    setSelectedTemplate(undefined);
-    setSelectedCustomTemplate(undefined);
+    resetAddFormState();
   };
 
   const handleBackToTemplateSelector = () => {
-    setShowAddModal(false);
-    setEditingItem(undefined);
-    setSelectedTemplate(undefined);
-    setSelectedCustomTemplate(undefined);
+    resetAddFormState();
     setShowTemplateModal(true);
   };
+
+  const handleRequestClose = useCallback(
+    (discardAction: () => void) => {
+      if (isFormDirty) {
+        pendingDiscardActionRef.current = discardAction;
+        setShowUnsavedConfirm(true);
+      } else {
+        discardAction();
+      }
+    },
+    [isFormDirty],
+  );
+
+  const handleUnsavedSave = useCallback(() => {
+    setShowUnsavedConfirm(false);
+    pendingDiscardActionRef.current = null;
+    itemFormRef.current?.requestSubmit();
+  }, []);
+
+  const handleUnsavedDiscard = useCallback(() => {
+    pendingDiscardActionRef.current?.();
+    pendingDiscardActionRef.current = null;
+    setShowUnsavedConfirm(false);
+  }, []);
+
+  const handleUnsavedCancel = useCallback(() => {
+    setShowUnsavedConfirm(false);
+    pendingDiscardActionRef.current = null;
+  }, []);
+
+  const unsavedDialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (showUnsavedConfirm) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      const firstButton = unsavedDialogRef.current?.querySelector('button');
+      firstButton?.focus();
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+    }
+  }, [showUnsavedConfirm]);
+
+  useEffect(() => {
+    if (!showUnsavedConfirm) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        handleUnsavedCancel();
+      } else if (e.key === 'Tab' && unsavedDialogRef.current) {
+        const focusableElements =
+          unsavedDialogRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        if (e.shiftKey && document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showUnsavedConfirm, handleUnsavedCancel]);
 
   const handleSelectCustomItem = () => {
     setShowTemplateModal(false);
     setShowAddModal(true);
-    setEditingItem(undefined);
-    setSelectedTemplate(undefined);
-    setSelectedCustomTemplate(undefined);
+    resetEditingAndTemplateState();
   };
 
   const handleSelectCustomTemplate = useCallback(
@@ -539,8 +614,12 @@ export function Inventory({
       {showAddModal && (
         <Modal
           isOpen={showAddModal}
-          onClose={handleCancelForm}
-          onBack={editingItem?.id ? undefined : handleBackToTemplateSelector}
+          onClose={() => handleRequestClose(handleCancelForm)}
+          onBack={
+            editingItem?.id
+              ? undefined
+              : () => handleRequestClose(handleBackToTemplateSelector)
+          }
           title={
             editingItem?.id ? t('inventory.editItem') : t('inventory.addItem')
           }
@@ -549,7 +628,9 @@ export function Inventory({
             item={editingItem}
             categories={allCategories}
             onSubmit={editingItem?.id ? handleUpdateItem : handleAddItem}
-            onCancel={handleCancelForm}
+            onCancel={() => handleRequestClose(handleCancelForm)}
+            onDirtyChange={setIsFormDirty}
+            formRef={itemFormRef}
             defaultCategoryId={selectedCategoryId}
             templateWeightGramsPerUnit={
               selectedTemplate?.weightGramsPerUnit ??
@@ -584,6 +665,70 @@ export function Inventory({
           )}
         </Modal>
       )}
+
+      {/* Unsaved changes confirmation (when closing add/edit via X or back with dirty form) */}
+      {showUnsavedConfirm &&
+        createPortal(
+          <div
+            className={confirmDialogStyles.overlay}
+            data-testid="unsaved-changes-overlay"
+          >
+            <button
+              type="button"
+              className={confirmDialogStyles.backdrop}
+              onClick={handleUnsavedCancel}
+              aria-label={t('accessibility.closeModal')}
+            />
+            <div
+              ref={unsavedDialogRef}
+              className={confirmDialogStyles.dialog}
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="unsaved-changes-dialog-title"
+              aria-describedby="unsaved-changes-dialog-desc"
+            >
+              <h2
+                id="unsaved-changes-dialog-title"
+                className={confirmDialogStyles.title}
+              >
+                {t('inventory.unsavedChanges.title')}
+              </h2>
+              <p
+                id="unsaved-changes-dialog-desc"
+                className={confirmDialogStyles.message}
+              >
+                {t('inventory.unsavedChanges.message')}
+              </p>
+              <div className={confirmDialogStyles.actions}>
+                <Button
+                  variant="secondary"
+                  onClick={handleUnsavedCancel}
+                  type="button"
+                  data-testid="unsaved-changes-cancel"
+                >
+                  {t('common.cancel')}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleUnsavedDiscard}
+                  type="button"
+                  data-testid="unsaved-changes-dont-save"
+                >
+                  {t('inventory.unsavedChanges.dontSave')}
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleUnsavedSave}
+                  type="button"
+                  data-testid="unsaved-changes-save"
+                >
+                  {t('inventory.unsavedChanges.save')}
+                </Button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
 
       {/* Template Selector Modal */}
       {showTemplateModal && (

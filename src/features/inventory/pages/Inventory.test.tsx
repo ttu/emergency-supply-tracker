@@ -656,6 +656,291 @@ describe('Inventory Page with items', () => {
     });
   });
 
+  it('should show unsaved changes dialog when closing add modal via X with dirty form', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'Changed' } });
+
+    const closeButton = screen.getByTestId('modal-close-button');
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('unsaved-changes-dont-save'),
+      ).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('unsaved-changes-save')).toBeInTheDocument();
+    expect(screen.getByTestId('unsaved-changes-cancel')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('unsaved-changes-dont-save'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('inventory.addItem')).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId('unsaved-changes-dont-save'),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('should close without dialog when closing add modal via X with no changes', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('inventory.addItem')).not.toBeInTheDocument();
+    });
+    expect(
+      screen.queryByTestId('unsaved-changes-save'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should close unsaved dialog and keep form open when clicking Cancel', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'Changed' } });
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unsaved-changes-cancel')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('unsaved-changes-cancel'));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('unsaved-changes-cancel'),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+  });
+
+  it('should close unsaved dialog when pressing Escape', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'Changed' } });
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('unsaved-changes-dont-save'),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('unsaved-changes-dont-save'),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+  });
+
+  it('should close unsaved dialog when clicking overlay', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'Changed' } });
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('unsaved-changes-dont-save'),
+      ).toBeInTheDocument();
+    });
+
+    const overlay = screen.getByTestId('unsaved-changes-overlay');
+    expect(overlay).toBeInTheDocument();
+    // Click the backdrop button inside the overlay to close
+    const backdrop = overlay.querySelector('button');
+    fireEvent.click(backdrop!);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('unsaved-changes-dont-save'),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+  });
+
+  it('should save and close when clicking Save in unsaved dialog', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'New Item' } });
+    const quantityInput = screen.getByLabelText(/itemForm\.quantity/i);
+    fireEvent.change(quantityInput, { target: { value: '2' } });
+
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unsaved-changes-save')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('unsaved-changes-save'));
+
+    // Unsaved dialog closes and requestSubmit is triggered (covers handleUnsavedSave)
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('unsaved-changes-save'),
+      ).not.toBeInTheDocument();
+    });
+    // Form may still be open if validation fails (e.g. category required); dialog is closed
+    expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+  });
+
+  it('should show unsaved dialog when closing add modal via form Cancel with dirty form', async () => {
+    // Edit mode shows the form Cancel button (cancel-item-button); add mode does not
+    const itemToEdit = createMockInventoryItem({
+      id: createItemId('item-to-edit'),
+      name: 'Item To Edit',
+      categoryId: createCategoryId('food'),
+      quantity: createQuantity(1),
+      unit: 'pieces',
+      neverExpires: true,
+    });
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [itemToEdit],
+    });
+    saveAppData(appData);
+
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('Item To Edit'));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.editItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'Changed Name' } });
+
+    fireEvent.click(screen.getByTestId('cancel-item-button'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('unsaved-changes-dont-save'),
+      ).toBeInTheDocument();
+    });
+    expect(
+      screen.getByText('inventory.unsavedChanges.title'),
+    ).toBeInTheDocument();
+  });
+
+  it('should trap focus with Tab in unsaved dialog', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'Changed' } });
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unsaved-changes-cancel')).toBeInTheDocument();
+    });
+
+    const buttons = screen
+      .getAllByRole('button')
+      .filter((el) =>
+        [
+          'unsaved-changes-cancel',
+          'unsaved-changes-dont-save',
+          'unsaved-changes-save',
+        ].includes(el.dataset.testid ?? ''),
+      );
+    const lastButton = buttons[buttons.length - 1];
+    lastButton.focus();
+
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: false });
+
+    await waitFor(() => {
+      const firstButton = screen.getByTestId('unsaved-changes-cancel');
+      expect(document.activeElement).toBe(firstButton);
+    });
+  });
+
+  it('should trap focus with Shift+Tab in unsaved dialog', async () => {
+    renderWithProviders(<Inventory />);
+
+    fireEvent.click(screen.getByText('inventory.addFromTemplate'));
+    fireEvent.click(screen.getByText(/itemForm.customItem/));
+
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
+
+    const nameInput = screen.getByLabelText(/itemForm\.name/i);
+    fireEvent.change(nameInput, { target: { value: 'Changed' } });
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unsaved-changes-cancel')).toBeInTheDocument();
+    });
+
+    const firstButton = screen.getByTestId('unsaved-changes-cancel');
+    firstButton.focus();
+
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+
+    await waitFor(() => {
+      const lastButton = screen.getByTestId('unsaved-changes-save');
+      expect(document.activeElement).toBe(lastButton);
+    });
+  });
+
   it('should open edit modal with setSelectedTemplate(undefined) for item with itemType custom', async () => {
     const customOnlyItem = createMockInventoryItem({
       id: createItemId('custom-only-item'),

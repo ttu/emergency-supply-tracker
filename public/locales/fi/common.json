@@ -508,6 +508,12 @@
     "editItem": "Muokkaa tuotetta",
     "selectTemplate": "Valitse tuote",
     "confirmDelete": "Haluatko varmasti poistaa tämän tuotteen?",
+    "unsavedChanges": {
+      "title": "Tallennetaanko muutokset?",
+      "message": "Sinulla on tallentamattomia muutoksia. Haluatko tallentaa ne ennen sulkemista?",
+      "save": "Tallenna",
+      "dontSave": "Älä tallenna"
+    },
     "addToInventory": "Lisää varastoon",
     "disableRecommended": "Älä suosittele tätä tuotetta",
     "disableCategory": "Poista kategoria käytöstä",
