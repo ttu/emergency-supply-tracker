@@ -90,8 +90,17 @@ export function QuantityEditor({
     [handleSave, onCancel, handleIncrement, handleDecrement],
   );
 
+  const handleContainerClick = useCallback((e: React.MouseEvent) => {
+    // Prevent clicks within the editor from bubbling to parent card
+    e.stopPropagation();
+  }, []);
+
   return (
-    <div className={styles.container} data-testid="quantity-editor">
+    <div
+      className={styles.container}
+      data-testid="quantity-editor"
+      onClick={handleContainerClick}
+    >
       <div className={styles.inputGroup}>
         <button
           type="button"
