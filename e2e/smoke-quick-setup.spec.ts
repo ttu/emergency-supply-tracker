@@ -69,20 +69,12 @@ async function completeQuickSetupOnboarding(page: Page) {
   ).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
-  // Explicitly select the default kit to ensure it's selected
+  // Select a kit (clicking advances to next step)
   const defaultKitCard = page.getByTestId('kit-card-72tuntia-standard');
   await expect(defaultKitCard).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await defaultKitCard.click();
-  // Wait a moment for selection to register
-  await page.waitForTimeout(TIMEOUTS.SHORT_DELAY);
-  // Now continue button should be enabled
-  const continueButton = page.getByTestId('kit-step-continue-button');
-  await expect(continueButton).toBeEnabled({
-    timeout: TIMEOUTS.ELEMENT_VISIBLE,
-  });
-  await continueButton.click();
 
   await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,

@@ -115,7 +115,7 @@ describe('RecommendationKitStep', () => {
     expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
   });
 
-  it('should call selectKit when a kit is selected', () => {
+  it('should call selectKit and onContinue when a kit is selected', () => {
     render(
       <RecommendationKitStep onContinue={mockOnContinue} onBack={mockOnBack} />,
     );
@@ -123,15 +123,6 @@ describe('RecommendationKitStep', () => {
     fireEvent.click(screen.getByTestId('kit-card-minimal-essentials'));
 
     expect(mockContext.selectKit).toHaveBeenCalledWith('minimal-essentials');
-  });
-
-  it('should call onContinue when continue button is clicked', () => {
-    render(
-      <RecommendationKitStep onContinue={mockOnContinue} onBack={mockOnBack} />,
-    );
-
-    fireEvent.click(screen.getByTestId('kit-step-continue-button'));
-
     expect(mockOnContinue).toHaveBeenCalled();
   });
 
@@ -145,26 +136,14 @@ describe('RecommendationKitStep', () => {
     expect(mockOnBack).toHaveBeenCalled();
   });
 
-  it('should disable continue button when no kit is selected', () => {
-    vi.spyOn(templatesModule, 'useRecommendedItems').mockReturnValue(
-      createMockContext({
-        selectedKitId: undefined,
-      }) as ReturnType<typeof templatesModule.useRecommendedItems>,
-    );
-
+  it('should not have a continue button (clicking kit advances)', () => {
     render(
       <RecommendationKitStep onContinue={mockOnContinue} onBack={mockOnBack} />,
     );
 
-    expect(screen.getByTestId('kit-step-continue-button')).toBeDisabled();
-  });
-
-  it('should enable continue button when a kit is selected', () => {
-    render(
-      <RecommendationKitStep onContinue={mockOnContinue} onBack={mockOnBack} />,
-    );
-
-    expect(screen.getByTestId('kit-step-continue-button')).not.toBeDisabled();
+    expect(
+      screen.queryByTestId('kit-step-continue-button'),
+    ).not.toBeInTheDocument();
   });
 
   it('should show upload button', () => {

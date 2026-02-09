@@ -218,15 +218,13 @@ describe('Onboarding', () => {
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
-    // Kit Selection step
+    // Kit Selection step - click a kit to advance
     await waitFor(() => {
-      expect(
-        screen.getByTestId('kit-step-continue-button'),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
     });
 
-    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
-    await user.click(kitContinueButton);
+    const kitCard = screen.getByTestId('kit-card-72tuntia-standard');
+    await user.click(kitCard);
 
     await waitFor(() => {
       expect(screen.getByTestId('skip-quick-setup-button')).toBeInTheDocument();
@@ -237,9 +235,7 @@ describe('Onboarding', () => {
     await user.click(backButton);
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId('kit-step-continue-button'),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
     });
   });
 
@@ -272,15 +268,13 @@ describe('Onboarding', () => {
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
-    // Kit Selection step
+    // Kit Selection step - click a kit to advance
     await waitFor(() => {
-      expect(
-        screen.getByTestId('kit-step-continue-button'),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
     });
 
-    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
-    await user.click(kitContinueButton);
+    const kitCard1 = screen.getByTestId('kit-card-72tuntia-standard');
+    await user.click(kitCard1);
 
     await waitFor(() => {
       expect(screen.getByTestId('skip-quick-setup-button')).toBeInTheDocument();
@@ -329,15 +323,13 @@ describe('Onboarding', () => {
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
-    // Kit Selection step
+    // Kit Selection step - click a kit to advance
     await waitFor(() => {
-      expect(
-        screen.getByTestId('kit-step-continue-button'),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
     });
 
-    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
-    await user.click(kitContinueButton);
+    const kitCard = screen.getByTestId('kit-card-72tuntia-standard');
+    await user.click(kitCard);
 
     await waitFor(() => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
@@ -393,15 +385,13 @@ describe('Onboarding', () => {
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
-    // Kit Selection step
+    // Kit Selection step - click a kit to advance
     await waitFor(() => {
-      expect(
-        screen.getByTestId('kit-step-continue-button'),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
     });
 
-    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
-    await user.click(kitContinueButton);
+    const kitCard = screen.getByTestId('kit-card-72tuntia-standard');
+    await user.click(kitCard);
 
     await waitFor(() => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
@@ -461,15 +451,13 @@ describe('Onboarding', () => {
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
-    // Kit Selection step
+    // Kit Selection step - click a kit to advance
     await waitFor(() => {
-      expect(
-        screen.getByTestId('kit-step-continue-button'),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
     });
 
-    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
-    await user.click(kitContinueButton);
+    const kitCard = screen.getByTestId('kit-card-72tuntia-standard');
+    await user.click(kitCard);
 
     await waitFor(() => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
@@ -530,15 +518,13 @@ describe('Onboarding', () => {
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
-    // Kit Selection step
+    // Kit Selection step - click a kit to advance
     await waitFor(() => {
-      expect(
-        screen.getByTestId('kit-step-continue-button'),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
     });
 
-    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
-    await user.click(kitContinueButton);
+    const kitCard = screen.getByTestId('kit-card-72tuntia-standard');
+    await user.click(kitCard);
 
     await waitFor(() => {
       expect(screen.getByTestId('add-items-button')).toBeInTheDocument();
@@ -653,14 +639,13 @@ describe('Onboarding', () => {
     const continueButton = screen.getByTestId('household-save-button');
     await user.click(continueButton);
 
+    // Kit Selection step - click a kit to advance
     await waitFor(() => {
-      expect(
-        screen.getByTestId('kit-step-continue-button'),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId('kit-selector')).toBeInTheDocument();
     });
 
-    const kitContinueButton = screen.getByTestId('kit-step-continue-button');
-    await user.click(kitContinueButton);
+    const kitCard = screen.getByTestId('kit-card-72tuntia-standard');
+    await user.click(kitCard);
 
     // At this point, householdConfig should be set, so the guard won't trigger
     // But the guard exists for safety, so we verify the flow works

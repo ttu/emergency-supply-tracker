@@ -20,6 +20,7 @@ export function RecommendationKitStep({
 
   const handleSelectKit = (kitId: KitId) => {
     selectKit(kitId);
+    onContinue();
   };
 
   const handleUploadKit = (file: RecommendedItemsFile) => {
@@ -56,15 +57,6 @@ export function RecommendationKitStep({
             data-testid="kit-step-back-button"
           >
             {t('actions.back')}
-          </Button>
-          <Button
-            type="button"
-            variant="primary"
-            onClick={onContinue}
-            disabled={!selectedKitId}
-            data-testid="kit-step-continue-button"
-          >
-            {t('actions.continue')}
           </Button>
         </div>
       </div>
