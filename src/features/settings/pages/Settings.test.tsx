@@ -2,7 +2,6 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders, screen, fireEvent, within } from '@/test';
 import { Settings } from './Settings';
-import { CloudSyncProvider } from '@/features/cloudSync';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -10,13 +9,9 @@ vi.mock('react-i18next', async () => {
   return defaultI18nMock;
 });
 
-// Wrapper to add CloudSyncProvider since Settings uses CloudSyncSection
+// renderWithProviders includes CloudSyncProvider by default
 const renderSettings = (component: React.ReactElement) => {
-  return renderWithProviders(component, {
-    wrapper: ({ children }) => (
-      <CloudSyncProvider>{children}</CloudSyncProvider>
-    ),
-  });
+  return renderWithProviders(component);
 };
 
 describe('Settings Page', () => {
