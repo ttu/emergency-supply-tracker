@@ -203,7 +203,7 @@ export function ExportSelectionModal({
         <div className={styles.sectionList}>
           {/* Global Settings */}
           <label
-            className={`${styles.settingsItem} ${!hasSettings ? styles.disabled : ''}`}
+            className={`${styles.settingsItem} ${hasSettings ? '' : styles.disabled}`}
           >
             <input
               type="checkbox"

@@ -265,7 +265,7 @@ export function ImportSelectionModal({
 
             return (
               <InventorySetExportSection
-                key={index}
+                key={`${set.name}-${index}`}
                 name={displayName}
                 isExpanded={state.expanded}
                 onToggleExpanded={() => handleToggleSetExpanded(index)}

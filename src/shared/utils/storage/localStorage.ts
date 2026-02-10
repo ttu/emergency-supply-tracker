@@ -850,6 +850,15 @@ export function parseMultiInventoryImport(
   }
 
   if (isMultiInventoryExport(data)) {
+    const multiData = data as MultiInventoryExportData;
+    const importedVersion = multiData.version || '1.0.0';
+    if (!isVersionSupported(importedVersion)) {
+      throw new MigrationError(
+        `Imported data schema version ${importedVersion} is not supported.`,
+        importedVersion,
+        CURRENT_SCHEMA_VERSION,
+      );
+    }
     return data;
   }
 
@@ -912,7 +921,15 @@ function buildInventorySetFromImport(
         : { ...DEFAULT_HOUSEHOLD },
     items:
       sections.includes('items') && imported.items
-        ? (normalizeItems(imported.items) ?? [])
+        ? (normalizeItems(imported.items) ?? []).map((item) => ({
+            ...item,
+            // Migrate legacy null to undefined
+            expirationDate:
+              item.expirationDate === null ? undefined : item.expirationDate,
+            // If expirationDate was null (legacy), set neverExpires to true
+            neverExpires:
+              item.expirationDate === null ? true : item.neverExpires,
+          }))
         : [],
     customCategories:
       sections.includes('customCategories') && imported.customCategories

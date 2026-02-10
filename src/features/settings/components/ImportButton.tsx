@@ -33,9 +33,11 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
   const validateImportData = (data: MultiInventoryExportData): boolean => {
     if (!data || typeof data !== 'object') return false;
 
-    // Must have version and at least one inventory set
     if (typeof data.version !== 'string') return false;
-    if (!Array.isArray(data.inventorySets) || data.inventorySets.length === 0) {
+    if (!Array.isArray(data.inventorySets)) return false;
+
+    // Must have at least one inventory set or settings
+    if (data.inventorySets.length === 0 && !data.settings) {
       return false;
     }
 

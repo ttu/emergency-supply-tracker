@@ -138,10 +138,9 @@ test.describe('Backup & Transfer', () => {
     });
 
     // Select the imported inventory set from the dropdown
-    // The legacy import set is stored with the literal name '__IMPORT_SET__'
-    // (translation only happens in import modal UI, not when saving)
+    // The legacy import set name is translated to "Imported Data" when displayed
     await page.selectOption('#inventory-set-select', {
-      label: '__IMPORT_SET__',
+      label: 'Imported Data',
     });
 
     // Navigate to Inventory to verify import
