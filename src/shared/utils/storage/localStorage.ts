@@ -850,8 +850,7 @@ export function parseMultiInventoryImport(
   }
 
   if (isMultiInventoryExport(data)) {
-    const multiData = data as MultiInventoryExportData;
-    const importedVersion = multiData.version || '1.0.0';
+    const importedVersion = data.version || '1.0.0';
     if (!isVersionSupported(importedVersion)) {
       throw new MigrationError(
         `Imported data schema version ${importedVersion} is not supported.`,
