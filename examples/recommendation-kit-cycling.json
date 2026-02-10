@@ -1,0 +1,634 @@
+{
+  "meta": {
+    "name": {
+      "en": "Cycling Kit",
+      "fi": "Pyöräilypaketti"
+    },
+    "version": "1.0.0",
+    "description": {
+      "en": "Essential parts, tools, clothing and accessories for cycling - from daily commutes to longer rides",
+      "fi": "Välttämättömät varaosat, työkalut, vaatteet ja varusteet pyöräilyyn - päivittäisestä työmatkapyöräilystä pidempiin lenkkeihin"
+    },
+    "source": "Custom",
+    "createdAt": "2026-02-09T10:00:00.000Z",
+    "language": "en"
+  },
+  "disabledCategories": [
+    "water-beverages",
+    "food",
+    "cooking-heat",
+    "light-power",
+    "communication-info",
+    "medical-health",
+    "hygiene-sanitation",
+    "tools-supplies",
+    "cash-documents",
+    "pets"
+  ],
+  "categories": [
+    {
+      "id": "cycling-tools",
+      "names": {
+        "en": "Tools & Repair",
+        "fi": "Työkalut ja korjaus"
+      },
+      "icon": "🔧",
+      "description": {
+        "en": "Bike repair tools and maintenance equipment",
+        "fi": "Pyörän korjaustyökalut ja huoltovälineet"
+      },
+      "sortOrder": 10,
+      "color": "#4A90D9"
+    },
+    {
+      "id": "cycling-parts",
+      "names": {
+        "en": "Spare Parts",
+        "fi": "Varaosat"
+      },
+      "icon": "⚙️",
+      "description": {
+        "en": "Replacement parts and consumables",
+        "fi": "Varaosat ja kulutustarvikkeet"
+      },
+      "sortOrder": 20,
+      "color": "#6B7280"
+    },
+    {
+      "id": "cycling-clothing",
+      "names": {
+        "en": "Clothing",
+        "fi": "Vaatteet"
+      },
+      "icon": "👕",
+      "description": {
+        "en": "Cycling apparel for comfort and performance",
+        "fi": "Pyöräilyvaatteet mukavuuteen ja suorituskykyyn"
+      },
+      "sortOrder": 30,
+      "color": "#10B981"
+    },
+    {
+      "id": "cycling-accessories",
+      "names": {
+        "en": "Accessories",
+        "fi": "Varusteet"
+      },
+      "icon": "🎒",
+      "description": {
+        "en": "Essential cycling accessories and gear",
+        "fi": "Välttämättömät pyöräilyvarusteet"
+      },
+      "sortOrder": 40,
+      "color": "#F59E0B"
+    },
+    {
+      "id": "cycling-safety",
+      "names": {
+        "en": "Safety & Visibility",
+        "fi": "Turvallisuus ja näkyvyys"
+      },
+      "icon": "🦺",
+      "description": {
+        "en": "Safety equipment and visibility gear",
+        "fi": "Turvavarusteet ja näkyvyysvarusteet"
+      },
+      "sortOrder": 50,
+      "color": "#EF4444"
+    }
+  ],
+  "items": [
+    {
+      "id": "bike-multi-tool",
+      "names": {
+        "en": "Bike Multi-Tool",
+        "fi": "Pyörän monitoimityökalu"
+      },
+      "category": "cycling-tools",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "mini-pump",
+      "names": {
+        "en": "Mini Pump",
+        "fi": "Minipumppu"
+      },
+      "category": "cycling-tools",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "floor-pump",
+      "names": {
+        "en": "Floor Pump with Gauge",
+        "fi": "Jalkapumppu painemittarilla"
+      },
+      "category": "cycling-tools",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "tire-levers",
+      "names": {
+        "en": "Tire Levers",
+        "fi": "Rengasrauta"
+      },
+      "category": "cycling-tools",
+      "baseQuantity": 3,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "patch-kit",
+      "names": {
+        "en": "Puncture Repair Kit",
+        "fi": "Paikkaussarja"
+      },
+      "category": "cycling-tools",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "chain-tool",
+      "names": {
+        "en": "Chain Tool",
+        "fi": "Ketjutyökalu"
+      },
+      "category": "cycling-tools",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "chain-lube",
+      "names": {
+        "en": "Chain Lubricant",
+        "fi": "Ketjuöljy"
+      },
+      "category": "cycling-tools",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "degreaser",
+      "names": {
+        "en": "Degreaser",
+        "fi": "Rasvanpoistoaine"
+      },
+      "category": "cycling-tools",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    },
+    {
+      "id": "inner-tubes",
+      "names": {
+        "en": "Inner Tubes",
+        "fi": "Sisärenkaat"
+      },
+      "category": "cycling-parts",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "spare-tire",
+      "names": {
+        "en": "Spare Tire",
+        "fi": "Vararengas"
+      },
+      "category": "cycling-parts",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "brake-pads",
+      "names": {
+        "en": "Brake Pads",
+        "fi": "Jarrupalat"
+      },
+      "category": "cycling-parts",
+      "baseQuantity": 2,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "spare-chain",
+      "names": {
+        "en": "Spare Chain",
+        "fi": "Varaketju"
+      },
+      "category": "cycling-parts",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "chain-quick-links",
+      "names": {
+        "en": "Chain Quick Links",
+        "fi": "Ketjun pikalukot"
+      },
+      "category": "cycling-parts",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "brake-cable",
+      "names": {
+        "en": "Brake Cable",
+        "fi": "Jarruvaijeri"
+      },
+      "category": "cycling-parts",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "shift-cable",
+      "names": {
+        "en": "Shift Cable",
+        "fi": "Vaihdevaijeri"
+      },
+      "category": "cycling-parts",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "bar-tape",
+      "names": {
+        "en": "Handlebar Tape",
+        "fi": "Tankoteippi"
+      },
+      "category": "cycling-parts",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cycling-jersey",
+      "names": {
+        "en": "Cycling Jersey",
+        "fi": "Pyöräilypaita"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cycling-shorts",
+      "names": {
+        "en": "Cycling Shorts/Bibs",
+        "fi": "Pyöräilyshortsit"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cycling-gloves",
+      "names": {
+        "en": "Cycling Gloves",
+        "fi": "Pyöräilyhanskat"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 1,
+      "unit": "pairs",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cycling-socks",
+      "names": {
+        "en": "Cycling Socks",
+        "fi": "Pyöräilysukat"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 3,
+      "unit": "pairs",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "rain-jacket",
+      "names": {
+        "en": "Rain Jacket",
+        "fi": "Sadetakki"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "arm-warmers",
+      "names": {
+        "en": "Arm Warmers",
+        "fi": "Käsivarrenlämmittimet"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 1,
+      "unit": "pairs",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "leg-warmers",
+      "names": {
+        "en": "Leg Warmers",
+        "fi": "Jalkalämmittimet"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 1,
+      "unit": "pairs",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cycling-cap",
+      "names": {
+        "en": "Cycling Cap",
+        "fi": "Pyöräilylakki"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cycling-shoes",
+      "names": {
+        "en": "Cycling Shoes",
+        "fi": "Pyöräilykengät"
+      },
+      "category": "cycling-clothing",
+      "baseQuantity": 1,
+      "unit": "pairs",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "water-bottles",
+      "names": {
+        "en": "Water Bottles",
+        "fi": "Juomapullot"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "bottle-cages",
+      "names": {
+        "en": "Bottle Cages",
+        "fi": "Pullotelineet"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 2,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "saddle-bag",
+      "names": {
+        "en": "Saddle Bag",
+        "fi": "Satulan laukku"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "bike-lock",
+      "names": {
+        "en": "Bike Lock",
+        "fi": "Pyörälukko"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "bike-computer",
+      "names": {
+        "en": "Bike Computer / GPS",
+        "fi": "Pyörätietokone / GPS"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "phone-mount",
+      "names": {
+        "en": "Phone Mount",
+        "fi": "Puhelinteline"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "rear-rack",
+      "names": {
+        "en": "Rear Rack",
+        "fi": "Takateline"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "panniers",
+      "names": {
+        "en": "Panniers / Bike Bags",
+        "fi": "Pyörälaukut"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "fenders",
+      "names": {
+        "en": "Fenders / Mudguards",
+        "fi": "Lokasuojat"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 1,
+      "unit": "sets",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "kickstand",
+      "names": {
+        "en": "Kickstand",
+        "fi": "Tukijalka"
+      },
+      "category": "cycling-accessories",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "cycling-helmet",
+      "names": {
+        "en": "Cycling Helmet",
+        "fi": "Pyöräilykypärä"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "front-light",
+      "names": {
+        "en": "Front Light",
+        "fi": "Etuvalo"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "rear-light",
+      "names": {
+        "en": "Rear Light",
+        "fi": "Takavalo"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "reflective-vest",
+      "names": {
+        "en": "Reflective Vest",
+        "fi": "Heijastinliivi"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "bike-bell",
+      "names": {
+        "en": "Bike Bell",
+        "fi": "Polkupyörän kello"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "bike-mirror",
+      "names": {
+        "en": "Bike Mirror",
+        "fi": "Pyörän peili"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false
+    },
+    {
+      "id": "first-aid-kit-cycling",
+      "names": {
+        "en": "Compact First Aid Kit",
+        "fi": "Pieni ensiapupakkaus"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 36
+    },
+    {
+      "id": "sunglasses",
+      "names": {
+        "en": "Cycling Sunglasses",
+        "fi": "Pyöräilyaurinkolasit"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "pieces",
+      "scaleWithPeople": true,
+      "scaleWithDays": false
+    },
+    {
+      "id": "sunscreen-cycling",
+      "names": {
+        "en": "Sunscreen SPF 50",
+        "fi": "Aurinkovoide SPF 50"
+      },
+      "category": "cycling-safety",
+      "baseQuantity": 1,
+      "unit": "bottles",
+      "scaleWithPeople": false,
+      "scaleWithDays": false,
+      "defaultExpirationMonths": 24
+    }
+  ]
+}

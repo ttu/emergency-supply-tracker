@@ -466,6 +466,48 @@ export function validateRecommendedItemsFile(data: unknown): ValidationResult {
     }
   }
 
+  // Validate disabledCategories array if present
+  if (d.disabledCategories !== undefined) {
+    if (Array.isArray(d.disabledCategories)) {
+      d.disabledCategories.forEach((categoryId, index) => {
+        if (
+          typeof categoryId !== 'string' ||
+          !VALID_CATEGORIES.includes(
+            categoryId as (typeof VALID_CATEGORIES)[number],
+          )
+        ) {
+          errors.push({
+            path: `disabledCategories[${index}]`,
+            message: `Invalid standard category ID: ${String(categoryId)}. Must be one of: ${VALID_CATEGORIES.join(', ')}`,
+            code: 'INVALID_DISABLED_CATEGORY',
+          });
+        }
+      });
+
+      // Check for duplicates
+      const seenCategories = new Set<string>();
+      d.disabledCategories.forEach((categoryId, index) => {
+        if (typeof categoryId === 'string') {
+          if (seenCategories.has(categoryId)) {
+            warnings.push({
+              path: `disabledCategories[${index}]`,
+              message: `Duplicate disabled category: ${categoryId}`,
+              code: 'DUPLICATE_DISABLED_CATEGORY',
+            });
+          } else {
+            seenCategories.add(categoryId);
+          }
+        }
+      });
+    } else {
+      errors.push({
+        path: 'disabledCategories',
+        message: 'disabledCategories must be an array',
+        code: 'INVALID_DISABLED_CATEGORIES',
+      });
+    }
+  }
+
   // Validate items array
   if (!Array.isArray(d.items)) {
     errors.push({

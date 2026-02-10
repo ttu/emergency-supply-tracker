@@ -1,10 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { AppData } from '@/shared/types';
 import {
   getAppData,
   saveAppData,
   createDefaultAppData,
 } from '@/shared/utils/storage/localStorage';
+
+// Custom event name for localStorage sync notifications
+const STORAGE_SYNC_EVENT = 'app-storage-sync';
+
+/**
+ * Dispatch a custom event to notify all useLocalStorageSync hooks to refresh their state.
+ * Call this after making changes to localStorage from outside of useLocalStorageSync.
+ */
+export function notifyStorageChange(): void {
+  window.dispatchEvent(new CustomEvent(STORAGE_SYNC_EVENT));
+}
 
 /**
  * Type for keys in AppData that can be synced with localStorage.
@@ -84,6 +95,37 @@ export function useLocalStorageSync<K extends SyncableKey>(
       console.error(`Failed to save state for key "${key}":`, error);
     }
   }, [key, state]);
+
+  // Refresh state from localStorage function
+  const refreshFromStorage = useCallback(() => {
+    try {
+      const data = getAppData();
+      const newValue =
+        typeof defaultValueOrInitializer === 'function'
+          ? (
+              defaultValueOrInitializer as (
+                data: AppData | undefined,
+              ) => AppData[K]
+            )(data)
+          : (data?.[key] ?? defaultValueOrInitializer);
+
+      setState(newValue);
+    } catch (error) {
+      console.error(`Failed to refresh state for key "${key}":`, error);
+    }
+  }, [key, defaultValueOrInitializer]);
+
+  // Listen for custom storage sync events from other parts of the app
+  useEffect(() => {
+    const handleStorageSync = () => {
+      refreshFromStorage();
+    };
+
+    window.addEventListener(STORAGE_SYNC_EVENT, handleStorageSync);
+    return () => {
+      window.removeEventListener(STORAGE_SYNC_EVENT, handleStorageSync);
+    };
+  }, [refreshFromStorage]);
 
   return [state, setState];
 }

@@ -1116,6 +1116,200 @@ describe('validateRecommendedItemsFile with custom categories', () => {
   });
 });
 
+describe('validateRecommendedItemsFile with disabledCategories', () => {
+  const validMeta = {
+    name: 'Test Kit',
+    version: '1.0.0',
+    createdAt: '2026-01-28T00:00:00Z',
+  };
+
+  it('accepts valid disabledCategories array with standard categories', () => {
+    const data = {
+      meta: validMeta,
+      disabledCategories: ['food', 'water-beverages', 'pets'],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'tools-supplies',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it('accepts kit without disabledCategories field (optional)', () => {
+    const data = {
+      meta: validMeta,
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'food',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true);
+  });
+
+  it('accepts empty disabledCategories array', () => {
+    const data = {
+      meta: validMeta,
+      disabledCategories: [],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'food',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true);
+  });
+
+  it('accepts all standard categories in disabledCategories', () => {
+    const data = {
+      meta: validMeta,
+      categories: [{ id: 'custom-cat', names: { en: 'Custom' }, icon: '🎯' }],
+      disabledCategories: [
+        'water-beverages',
+        'food',
+        'cooking-heat',
+        'light-power',
+        'communication-info',
+        'medical-health',
+        'hygiene-sanitation',
+        'tools-supplies',
+        'cash-documents',
+        'pets',
+      ],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'custom-cat',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it('rejects invalid category in disabledCategories', () => {
+    const data = {
+      meta: validMeta,
+      disabledCategories: ['food', 'invalid-category'],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'tools-supplies',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: 'INVALID_DISABLED_CATEGORY' }),
+    );
+  });
+
+  it('rejects non-array disabledCategories', () => {
+    const data = {
+      meta: validMeta,
+      disabledCategories: 'food',
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'tools-supplies',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: 'INVALID_DISABLED_CATEGORIES' }),
+    );
+  });
+
+  it('rejects custom category IDs in disabledCategories (only standard allowed)', () => {
+    const data = {
+      meta: validMeta,
+      categories: [{ id: 'custom-cat', names: { en: 'Custom' }, icon: '🎯' }],
+      disabledCategories: ['food', 'custom-cat'],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'custom-cat',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: 'INVALID_DISABLED_CATEGORY' }),
+    );
+  });
+
+  it('warns about duplicate categories in disabledCategories', () => {
+    const data = {
+      meta: validMeta,
+      disabledCategories: ['food', 'food', 'pets'],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'tools-supplies',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(true); // duplicates are warnings, not errors
+    expect(result.warnings).toContainEqual(
+      expect.objectContaining({ code: 'DUPLICATE_DISABLED_CATEGORY' }),
+    );
+  });
+});
+
 describe('example recommendation kits', () => {
   const examplesDir = path.resolve(process.cwd(), 'examples');
   const kitFiles = [
@@ -1124,6 +1318,7 @@ describe('example recommendation kits', () => {
     'recommendation-kit-nordic-winter.json',
     'recommendation-kit-vehicle-emergency.json',
     'recommendation-kit-outdoor-cottage.json',
+    'recommendation-kit-cycling.json',
   ] as const;
 
   it.each(kitFiles)('parses and validates %s', (filename) => {
@@ -1177,5 +1372,45 @@ describe('example recommendation kits', () => {
         item.category === 'garden-supplies' || item.category === 'winter-gear',
     );
     expect(itemsInCustomCategories.length).toBeGreaterThan(0);
+  });
+
+  it('cycling kit has custom categories and disables all standard categories', () => {
+    const json = fs.readFileSync(
+      path.join(examplesDir, 'recommendation-kit-cycling.json'),
+      'utf-8',
+    );
+    const file = parseRecommendedItemsFile(json);
+
+    // Has custom categories
+    expect(file.categories).toBeDefined();
+    expect(Array.isArray(file.categories)).toBe(true);
+    expect(file.categories!.length).toBe(5);
+
+    const categoryIds = file.categories!.map((c) => c.id);
+    expect(categoryIds).toContain('cycling-tools');
+    expect(categoryIds).toContain('cycling-parts');
+    expect(categoryIds).toContain('cycling-clothing');
+    expect(categoryIds).toContain('cycling-accessories');
+    expect(categoryIds).toContain('cycling-safety');
+
+    // Has disabledCategories with all standard categories
+    expect(file.disabledCategories).toBeDefined();
+    expect(Array.isArray(file.disabledCategories)).toBe(true);
+    expect(file.disabledCategories).toContain('water-beverages');
+    expect(file.disabledCategories).toContain('food');
+    expect(file.disabledCategories).toContain('cooking-heat');
+    expect(file.disabledCategories).toContain('light-power');
+    expect(file.disabledCategories).toContain('communication-info');
+    expect(file.disabledCategories).toContain('medical-health');
+    expect(file.disabledCategories).toContain('hygiene-sanitation');
+    expect(file.disabledCategories).toContain('tools-supplies');
+    expect(file.disabledCategories).toContain('cash-documents');
+    expect(file.disabledCategories).toContain('pets');
+
+    // All items use custom categories
+    const allItemsUseCustomCategories = file.items.every((item) =>
+      categoryIds.includes(item.category),
+    );
+    expect(allItemsUseCustomCategories).toBe(true);
   });
 });
