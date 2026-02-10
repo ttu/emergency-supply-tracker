@@ -436,9 +436,11 @@ describe('GoogleDriveService', () => {
   let errorCallback:
     | ((error: { type: string; message?: string }) => void)
     | null = null;
+  let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    originalFetch = globalThis.fetch;
 
     // Setup mock token client
     mockTokenClient = {
@@ -480,6 +482,7 @@ describe('GoogleDriveService', () => {
 
   afterEach(() => {
     delete (globalThis as typeof globalThis & { google?: unknown }).google;
+    globalThis.fetch = originalFetch;
   });
 
   describe('providerId', () => {

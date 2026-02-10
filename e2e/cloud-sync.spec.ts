@@ -1,16 +1,19 @@
 import { test, expect } from './fixtures';
 
+// Helper function to navigate to cloud sync section
+async function navigateToCloudSync(page: import('@playwright/test').Page) {
+  await page.getByTestId('nav-settings').click();
+  // Click on the cloudSync menu item in the sidebar (scope to avoid drawer duplicate)
+  await page
+    .getByTestId('sidemenu-sidebar')
+    .getByTestId('sidemenu-item-cloudSync')
+    .click();
+}
+
 test.describe('Cloud Sync', () => {
   test.beforeEach(async ({ setupApp }) => {
     await setupApp();
   });
-
-  // Helper function to navigate to cloud sync section
-  async function navigateToCloudSync(page: import('@playwright/test').Page) {
-    await page.getByTestId('nav-settings').click();
-    // Click on the cloudSync menu item in the sidebar
-    await page.getByTestId('sidemenu-item-cloudSync').click();
-  }
 
   test('should display cloud sync section in settings', async ({ page }) => {
     await navigateToCloudSync(page);
@@ -79,8 +82,11 @@ test.describe('Cloud Sync', () => {
     // Verify we're on settings page
     await expect(page.getByTestId('page-settings')).toBeVisible();
 
-    // Click on cloud sync menu item
-    await page.getByTestId('sidemenu-item-cloudSync').click();
+    // Click on cloud sync menu item (scope to sidebar)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-cloudSync')
+      .click();
 
     // Verify cloud sync section is visible
     await expect(page.getByTestId('section-cloud-sync')).toBeVisible();
