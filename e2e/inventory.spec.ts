@@ -56,7 +56,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '2');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]'); // Never Expires
+    await page.getByTestId('never-expires-checkbox').check(); // Never Expires
 
     // Save the item
     await page.getByTestId('save-item-button').click();
@@ -80,7 +80,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '5');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Wait for item to appear and click on the card to edit
@@ -115,7 +115,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Wait for item to appear and click on it to open edit mode
@@ -157,7 +157,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Use getByRole to target item card button specifically
@@ -175,7 +175,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'liters');
     // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Use getByRole to target item card button specifically
@@ -219,7 +219,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     await page.getByTestId('add-item-button').click();
@@ -231,7 +231,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
     // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Search for "Searchable"
@@ -381,7 +381,7 @@ test.describe('Inventory Management', () => {
     await page.fill('input[name="name"]', 'Test Edit Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '5');
-    await page.check('input[type="checkbox"]');
+    await page.getByTestId('never-expires-checkbox').check();
     await page.getByTestId('save-item-button').click();
 
     // Wait for item to appear - use getByRole to target item card button specifically

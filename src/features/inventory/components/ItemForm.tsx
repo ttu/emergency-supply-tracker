@@ -63,6 +63,9 @@ interface FormData {
   capacityMah: string;
   capacityWh: string;
   saveAsTemplate: boolean;
+  isNormalRotation: boolean;
+  estimatedQuantity: string;
+  excludeFromCalculations: boolean;
 }
 
 interface FormErrors {
@@ -70,6 +73,16 @@ interface FormErrors {
   categoryId?: string;
   quantity?: string;
   expirationDate?: string;
+  estimatedQuantity?: string;
+}
+
+function getExpirationDateFromForm(
+  data: FormData,
+  isRotation: boolean,
+): ReturnType<typeof createDateOnly> | undefined {
+  if (isRotation || data.neverExpires) return undefined;
+  if (data.expirationDate?.trim()) return createDateOnly(data.expirationDate);
+  return undefined;
 }
 
 export const ItemForm = ({
@@ -145,6 +158,9 @@ export const ItemForm = ({
       capacityMah: item?.capacityMah?.toString() || '',
       capacityWh: item?.capacityWh?.toString() || '',
       saveAsTemplate: false,
+      isNormalRotation: item?.isNormalRotation ?? false,
+      estimatedQuantity: item?.estimatedQuantity?.toString() || '',
+      excludeFromCalculations: item?.excludeFromCalculations ?? false,
     };
   });
 
@@ -200,7 +216,26 @@ export const ItemForm = ({
       newErrors.quantity = t('itemForm.errors.quantityInvalid');
     }
 
-    if (!formData.neverExpires && !formData.expirationDate) {
+    // Rotation item validation
+    if (formData.isNormalRotation && !formData.excludeFromCalculations) {
+      const parsedEstimated = Number.parseFloat(formData.estimatedQuantity);
+      if (
+        !formData.estimatedQuantity ||
+        Number.isNaN(parsedEstimated) ||
+        parsedEstimated <= 0
+      ) {
+        newErrors.estimatedQuantity = t(
+          'itemForm.rotation.errors.estimatedQuantityRequired',
+        );
+      }
+    }
+
+    // Expiration is only required for non-rotation items
+    if (
+      !formData.isNormalRotation &&
+      !formData.neverExpires &&
+      !formData.expirationDate
+    ) {
       newErrors.expirationDate = t('itemForm.errors.expirationRequired');
     }
 
@@ -238,6 +273,8 @@ export const ItemForm = ({
       return;
     }
 
+    const isRotation = formData.isNormalRotation;
+
     onSubmit(
       {
         name: formData.name.trim(),
@@ -245,16 +282,9 @@ export const ItemForm = ({
         categoryId: createCategoryId(formData.categoryId),
         quantity,
         unit: isValidUnit(formData.unit) ? formData.unit : ('pieces' as Unit), // Fallback to 'pieces' if invalid
-        neverExpires: formData.neverExpires,
-        expirationDate: (() => {
-          if (formData.neverExpires) {
-            return undefined;
-          }
-          if (formData.expirationDate && formData.expirationDate.trim()) {
-            return createDateOnly(formData.expirationDate);
-          }
-          return undefined;
-        })(),
+        // For rotation items, clear expiration fields
+        neverExpires: isRotation ? undefined : formData.neverExpires,
+        expirationDate: getExpirationDateFromForm(formData, isRotation),
         purchaseDate: formData.purchaseDate?.trim()
           ? createDateOnly(formData.purchaseDate)
           : undefined,
@@ -273,6 +303,14 @@ export const ItemForm = ({
         capacityWh: formData.capacityWh
           ? Number.parseFloat(formData.capacityWh)
           : undefined,
+        // Rotation item fields
+        isNormalRotation: isRotation || undefined,
+        estimatedQuantity:
+          isRotation && formData.estimatedQuantity
+            ? Number.parseFloat(formData.estimatedQuantity)
+            : undefined,
+        excludeFromCalculations:
+          isRotation && formData.excludeFromCalculations ? true : undefined,
       },
       formData.saveAsTemplate,
     );
@@ -385,6 +423,20 @@ export const ItemForm = ({
         />
       </div>
 
+      <div className={styles.formGroup}>
+        <label htmlFor="isNormalRotation" className={styles.checkboxLabel}>
+          <input
+            id="isNormalRotation"
+            type="checkbox"
+            checked={formData.isNormalRotation}
+            onChange={(e) => handleChange('isNormalRotation', e.target.checked)}
+            data-testid="rotation-checkbox"
+          />
+          {t('itemForm.rotation.label')}
+        </label>
+        <p className={styles.helpText}>{t('itemForm.rotation.description')}</p>
+      </div>
+
       <div className={styles.formRow}>
         <div className={styles.formGroup}>
           <Input
@@ -492,29 +544,75 @@ export const ItemForm = ({
         </div>
       )}
 
-      <div className={styles.formGroup}>
-        <label className={styles.checkboxLabel}>
-          <input
-            type="checkbox"
-            checked={formData.neverExpires}
-            onChange={(e) => handleChange('neverExpires', e.target.checked)}
-          />
-          {t('itemForm.neverExpires')}
-        </label>
-      </div>
+      {formData.isNormalRotation ? (
+        <>
+          <div className={styles.formGroup}>
+            <Input
+              id="estimatedQuantity"
+              name="estimatedQuantity"
+              label={t('itemForm.rotation.estimatedQuantity')}
+              type="number"
+              value={formData.estimatedQuantity}
+              onChange={(e) =>
+                handleChange('estimatedQuantity', e.target.value)
+              }
+              error={errors.estimatedQuantity}
+              min="0"
+              step={isContinuousUnit(formData.unit) ? '0.1' : '1'}
+              required={!formData.excludeFromCalculations}
+            />
+            <p className={styles.helpText}>
+              {t('itemForm.rotation.estimatedQuantityHelp')}
+            </p>
+          </div>
 
-      {!formData.neverExpires && (
-        <div className={styles.formGroup}>
-          <Input
-            id="expirationDate"
-            label={t('itemForm.expirationDate')}
-            type="date"
-            value={formData.expirationDate}
-            onChange={(e) => handleChange('expirationDate', e.target.value)}
-            error={errors.expirationDate}
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label
+              htmlFor="excludeFromCalculations"
+              className={styles.checkboxLabel}
+            >
+              <input
+                id="excludeFromCalculations"
+                type="checkbox"
+                checked={formData.excludeFromCalculations}
+                onChange={(e) =>
+                  handleChange('excludeFromCalculations', e.target.checked)
+                }
+                data-testid="exclude-from-calculations-checkbox"
+              />
+              {t('itemForm.rotation.excludeFromCalculations')}
+            </label>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className={styles.formGroup}>
+            <label htmlFor="neverExpires" className={styles.checkboxLabel}>
+              <input
+                id="neverExpires"
+                type="checkbox"
+                checked={formData.neverExpires}
+                onChange={(e) => handleChange('neverExpires', e.target.checked)}
+                data-testid="never-expires-checkbox"
+              />
+              {t('itemForm.neverExpires')}
+            </label>
+          </div>
+
+          {!formData.neverExpires && (
+            <div className={styles.formGroup}>
+              <Input
+                id="expirationDate"
+                label={t('itemForm.expirationDate')}
+                type="date"
+                value={formData.expirationDate}
+                onChange={(e) => handleChange('expirationDate', e.target.value)}
+                error={errors.expirationDate}
+                required
+              />
+            </div>
+          )}
+        </>
       )}
 
       <div className={styles.formGroup}>

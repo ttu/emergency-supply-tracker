@@ -23,6 +23,45 @@ describe('getItemStatus', () => {
     expect(getItemStatus(0, 10)).toBe('critical');
   });
 
+  describe('rotation item status', () => {
+    it('should return ok for rotation items regardless of quantity', () => {
+      const status = getItemStatus(
+        0, // currentQuantity
+        10, // recommendedQuantity
+        undefined, // expirationDate
+        undefined, // neverExpires
+        undefined, // markedAsEnough
+        true, // isNormalRotation
+      );
+      expect(status).toBe('ok');
+    });
+
+    it('should return ok for excluded rotation items', () => {
+      const status = getItemStatus(
+        0,
+        10,
+        undefined,
+        undefined,
+        undefined,
+        true, // isNormalRotation
+        true, // excludeFromCalculations
+      );
+      expect(status).toBe('ok');
+    });
+
+    it('should still return ok for rotation items with zero quantity', () => {
+      const status = getItemStatus(
+        0, // currentQuantity = 0
+        10, // recommendedQuantity
+        undefined,
+        undefined,
+        undefined,
+        true, // isNormalRotation
+      );
+      expect(status).toBe('ok');
+    });
+  });
+
   it('returns warning when quantity < 50% of recommended', () => {
     expect(getItemStatus(4, 10)).toBe('warning');
   });

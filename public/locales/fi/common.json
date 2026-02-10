@@ -569,6 +569,20 @@
       "quantityInvalid": "Määrän täytyy olla 0 tai suurempi",
       "recommendedQuantityInvalid": "Suositellun määrän täytyy olla 0 tai suurempi",
       "expirationRequired": "Vanhenemispäivä vaaditaan (tai valitse 'Ei vanhene')"
+    },
+    "rotation": {
+      "label": "Tuote on normaalissa kiertokäytössä",
+      "description": "Säännöllisesti käytettävät ja täydennettävät tuotteet (jauhot, wc-paperi jne.)",
+      "estimatedQuantity": "Arvioitu keskimääräinen määrä",
+      "estimatedQuantityHelp": "Kuinka paljon sinulla yleensä on",
+      "excludeFromCalculations": "Älä sisällytä valmiuslaskelmiin",
+      "currentQuantity": "Nykyinen määrä (valinnainen)",
+      "badge": "Kiertokäytössä",
+      "notCounted": "Ei lasketa",
+      "estimated": "arvioitu",
+      "errors": {
+        "estimatedQuantityRequired": "Arvioitu määrä vaaditaan kiertokäytössä oleville tuotteille"
+      }
     }
   },
   "templateSelector": {

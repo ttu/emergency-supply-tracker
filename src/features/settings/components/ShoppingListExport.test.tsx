@@ -306,4 +306,42 @@ describe('ShoppingListExport', () => {
     // Verify export was triggered
     expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
   });
+
+  it('should not include rotation items in shopping list', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('item-1'),
+        name: 'Regular Water',
+        categoryId: createCategoryId('water-beverages'),
+        quantity: createQuantity(5), // Needs restock (< 9L needed)
+        itemType: createProductTemplateId('bottled-water'),
+      }),
+      createMockInventoryItem({
+        id: createItemId('item-2'),
+        name: 'Rotation Flour',
+        categoryId: createCategoryId('food'),
+        quantity: createQuantity(0), // Would need restock, but it's a rotation item
+        itemType: createProductTemplateId('flour'),
+        isNormalRotation: true,
+        estimatedQuantity: 2,
+      }),
+    ];
+
+    renderWithProviders(<ShoppingListExport />, {
+      initialAppData: {
+        items,
+        household: {
+          adults: 1,
+          children: 0,
+          pets: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+      },
+    });
+
+    // Only 1 item should need restocking (the regular water, not the rotation flour)
+    expect(screen.getByText(/1/)).toBeInTheDocument();
+    expect(screen.queryByText(/2/)).not.toBeInTheDocument();
+  });
 });

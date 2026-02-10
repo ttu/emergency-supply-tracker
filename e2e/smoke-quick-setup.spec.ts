@@ -210,7 +210,7 @@ async function testCopyItem(page: Page) {
       });
 
       await page.fill('input[name="quantity"]', '25');
-      const expiresCheckbox = page.locator('input[type="checkbox"]');
+      const expiresCheckbox = page.getByTestId('never-expires-checkbox');
       if (await expiresCheckbox.isChecked()) {
         await expiresCheckbox.uncheck();
       }
@@ -262,11 +262,7 @@ async function testDashboardAlertsQuickSetup(page: Page) {
   await page.selectOption('select[name="category"]', 'food');
   await page.fill('input[name="quantity"]', '2');
   await page.selectOption('select[name="unit"]', 'pieces');
-  const neverExpiresCheckbox = page
-    .locator('label')
-    .filter({ hasText: /Never Expires|Ei vanhene/i })
-    .locator('input[type="checkbox"]');
-  await neverExpiresCheckbox.uncheck();
+  await page.getByTestId('never-expires-checkbox').uncheck();
   await page.fill('input[type="date"]', expiredDateString);
   await page.getByTestId('save-item-button').click();
   await page

@@ -193,6 +193,12 @@ export interface InventoryItem {
   /** @categorySpecific Food category only - Liters of water required per unit for preparation */
   requiresWaterLiters?: number;
   markedAsEnough?: boolean; // If true, item is considered complete regardless of quantity vs recommended quantity
+  /** Item is in normal household rotation (e.g., pantry staples) */
+  isNormalRotation?: boolean;
+  /** Average quantity typically on hand (used for calculations when isNormalRotation is true) */
+  estimatedQuantity?: number;
+  /** Don't count toward preparedness calculations (only valid when isNormalRotation is true) */
+  excludeFromCalculations?: boolean;
   createdAt: string;
   updatedAt: string;
 }
