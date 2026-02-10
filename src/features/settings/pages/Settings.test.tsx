@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders, screen, fireEvent, within } from '@/test';
 import { Settings } from './Settings';
@@ -8,15 +9,20 @@ vi.mock('react-i18next', async () => {
   return defaultI18nMock;
 });
 
+// renderWithProviders includes CloudSyncProvider by default
+const renderSettings = (component: React.ReactElement) => {
+  return renderWithProviders(component);
+};
+
 describe('Settings Page', () => {
   it('should render settings page', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     expect(screen.getByText('navigation.settings')).toBeInTheDocument();
   });
 
   it('should render side menu with all section options', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Scope to sidebar to avoid duplicates from drawer
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -48,6 +54,9 @@ describe('Settings Page', () => {
       within(sidebar).getByTestId('sidemenu-item-backupTransfer'),
     ).toBeInTheDocument();
     expect(
+      within(sidebar).getByTestId('sidemenu-item-cloudSync'),
+    ).toBeInTheDocument();
+    expect(
       within(sidebar).getByTestId('sidemenu-item-about'),
     ).toBeInTheDocument();
     expect(
@@ -56,7 +65,7 @@ describe('Settings Page', () => {
   });
 
   it('should render appearance section by default', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Appearance section should be visible by default
     expect(screen.getByTestId('section-appearance')).toBeInTheDocument();
@@ -64,7 +73,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to household section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on household in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -77,7 +86,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to nutrition section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on nutrition in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -94,7 +103,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to hidden alerts section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on hidden alerts in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -106,7 +115,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to disabled recommendations section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on disabled recommendations in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -124,7 +133,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to disabled categories section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on disabled categories in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -142,7 +151,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to overridden recommendations section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on overridden recommendations in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -160,7 +169,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to recommendation kits section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on recommendation kits in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -175,7 +184,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to backup and transfer section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on backup and transfer in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -189,8 +198,19 @@ describe('Settings Page', () => {
     expect(screen.getByText('settings.import.button')).toBeInTheDocument();
   });
 
+  it('should navigate to cloud sync section when clicked', () => {
+    renderSettings(<Settings />);
+
+    // Click on cloud sync in the menu (scope to sidebar)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    fireEvent.click(within(sidebar).getByTestId('sidemenu-item-cloudSync'));
+
+    // Cloud sync section should now be visible
+    expect(screen.getByTestId('section-cloud-sync')).toBeInTheDocument();
+  });
+
   it('should navigate to about section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on about in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -204,7 +224,7 @@ describe('Settings Page', () => {
   });
 
   it('should navigate to danger zone section when clicked', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Click on danger zone in the menu (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -216,7 +236,7 @@ describe('Settings Page', () => {
   });
 
   it('should have GitHub link with correct attributes', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // Navigate to about section (scope to sidebar)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
@@ -232,7 +252,7 @@ describe('Settings Page', () => {
   });
 
   it('should handle default case in switch statement (exhaustive check)', () => {
-    renderWithProviders(<Settings />);
+    renderSettings(<Settings />);
 
     // This test ensures the default case is covered
     // In practice, TypeScript ensures all cases are handled,
@@ -256,6 +276,7 @@ describe('Settings Page', () => {
       'recommendationKits',
       'backupTransfer',
       'debugLog',
+      'cloudSync',
       'about',
       'dangerZone',
     ];

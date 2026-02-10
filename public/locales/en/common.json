@@ -31,8 +31,8 @@
       "description": "Access your supplies anytime, even without internet"
     },
     "cloudSync": {
-      "title": "Cloud Sync (Coming Soon)",
-      "description": "Optional sync to your own cloud provider"
+      "title": "Cloud Sync",
+      "description": "Optional sync to your own Google Drive"
     },
     "openSource": {
       "title": "Open Source",
@@ -175,7 +175,8 @@
         "about": "About",
         "dangerZone": "Danger Zone",
         "recommendationKits": "Recommendation Kits",
-        "customTemplates": "Custom Templates"
+        "customTemplates": "Custom Templates",
+        "cloudSync": "Cloud Sync"
       }
     },
     "nutrition": {
@@ -757,6 +758,45 @@
       "nameRequired": "At least one name is required",
       "idExists": "An item with this ID already exists",
       "quantityPositive": "Quantity must be greater than 0"
+    }
+  },
+  "cloudSync": {
+    "status": {
+      "disconnected": "Not connected",
+      "connected": "Connected",
+      "syncing": "Syncing...",
+      "error": "Sync error",
+      "neverSynced": "Never synced",
+      "lastSync": "Last synced: {{date}} at {{time}}"
+    },
+    "providers": {
+      "google-drive": "Google Drive"
+    },
+    "section": {
+      "connectTitle": "Connect to Cloud",
+      "syncTitle": "Sync Data",
+      "accountTitle": "Connected Account"
+    },
+    "button": {
+      "sync": "Sync Now",
+      "syncing": "Syncing...",
+      "description": "Manually sync your data with the cloud. Uses last-write-wins for conflicts."
+    },
+    "result": {
+      "uploaded": "Data uploaded to cloud",
+      "downloaded": "Data downloaded from cloud",
+      "noChanges": "Already in sync, no changes needed"
+    },
+    "google": {
+      "connect": "Connect Google Drive",
+      "connecting": "Connecting...",
+      "connected": "Connected to Google Drive",
+      "description": "Sign in with your Google account to sync data to your Google Drive."
+    },
+    "disconnect": {
+      "button": "Disconnect",
+      "disconnecting": "Disconnecting...",
+      "confirm": "Disconnect from cloud sync? Your local data will be kept, but cloud sync will be disabled."
     }
   }
 }
