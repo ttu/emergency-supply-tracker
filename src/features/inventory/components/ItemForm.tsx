@@ -16,6 +16,7 @@ import {
 } from '@/shared/types';
 import { isValidUnit } from '@/shared/utils/validation/unitValidation';
 import { Input } from '@/shared/components/Input';
+import { AutocompleteInput } from '@/shared/components/AutocompleteInput';
 import { Select } from '@/shared/components/Select';
 import { Button } from '@/shared/components/Button';
 import { calculateCaloriesFromWeight } from '@/shared/utils/calculations/calories';
@@ -42,6 +43,7 @@ export interface ItemFormProps {
   onDirtyChange?: (dirty: boolean) => void;
   /** Optional ref for the form element (e.g. to trigger requestSubmit from parent). */
   formRef?: React.RefObject<HTMLFormElement | null>;
+  locationSuggestions?: string[];
 }
 
 interface FormData {
@@ -81,6 +83,7 @@ export const ItemForm = ({
   templateRequiresWaterLiters,
   onDirtyChange,
   formRef: formRefProp,
+  locationSuggestions = [],
 }: ItemFormProps) => {
   const { t, i18n } = useTranslation([
     'common',
@@ -525,12 +528,13 @@ export const ItemForm = ({
       </div>
 
       <div className={styles.formGroup}>
-        <Input
+        <AutocompleteInput
           id="location"
           label={t('itemForm.location')}
-          type="text"
           value={formData.location}
-          onChange={(e) => handleChange('location', e.target.value)}
+          onChange={(value) => handleChange('location', value)}
+          suggestions={locationSuggestions}
+          placeholder={t('inventory.locationPlaceholder')}
         />
       </div>
 

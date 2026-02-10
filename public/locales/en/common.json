@@ -488,6 +488,9 @@
       "totalWater": "Total required"
     }
   },
+  "autocomplete": {
+    "suggestionsLabel": "Suggestions"
+  },
   "inventory": {
     "categoryNavigation": "Category Navigation",
     "allCategories": "All",
@@ -524,8 +527,12 @@
     "markedAsEnoughNotice": "This item is marked as sufficient",
     "filter": {
       "status": "Filter by status",
-      "allStatuses": "All Statuses"
+      "allStatuses": "All Statuses",
+      "location": "Filter by location",
+      "allLocations": "All Locations",
+      "noLocation": "No Location"
     },
+    "locationPlaceholder": "Enter location...",
     "sort": {
       "label": "Sort by",
       "name": "Name",

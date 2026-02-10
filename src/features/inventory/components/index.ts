@@ -10,7 +10,11 @@ export type { ItemFormProps } from './ItemForm';
 export { CategoryNav } from './CategoryNav';
 export type { CategoryNavProps } from './CategoryNav';
 
-export { FilterBar } from './FilterBar';
+export {
+  FilterBar,
+  LOCATION_FILTER_ALL,
+  LOCATION_FILTER_NONE,
+} from './FilterBar';
 export type { FilterBarProps } from './FilterBar';
 
 export { CategoryStatusSummary } from './CategoryStatusSummary';
