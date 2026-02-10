@@ -30,6 +30,86 @@ export interface ItemCardProps {
   onQuantityChange?: (itemId: string, newQuantity: Quantity) => void;
 }
 
+// Helper component for expiration display
+const ExpirationDisplay = ({
+  item,
+  expired,
+  daysUntil,
+  formatDate,
+  t,
+}: {
+  item: InventoryItem;
+  expired: boolean;
+  daysUntil: number | undefined;
+  formatDate: (dateString?: string) => string;
+  t: (key: string, options?: { days?: number }) => string;
+}) => {
+  if (!item.expirationDate || item.neverExpires) {
+    return null;
+  }
+
+  if (expired) {
+    return (
+      <div className={styles.expiration}>
+        <span className={styles.expired}>
+          ⚠️ {t('inventory.expired')}: {formatDate(item.expirationDate)}
+        </span>
+      </div>
+    );
+  }
+
+  if (daysUntil !== undefined && daysUntil <= EXPIRING_SOON_DAYS_THRESHOLD) {
+    return (
+      <div className={styles.expiration}>
+        <span className={styles.expiringSoon}>
+          📅 {t('inventory.expiresIn', { days: daysUntil })}
+        </span>
+      </div>
+    );
+  }
+
+  if (daysUntil !== undefined && daysUntil > EXPIRING_SOON_DAYS_THRESHOLD) {
+    return (
+      <div className={styles.expiration}>
+        <span className={styles.expirationDate}>
+          📅 {formatDate(item.expirationDate)}
+        </span>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+// Helper component for food-related displays
+const FoodDetails = ({
+  item,
+  t,
+}: {
+  item: InventoryItem;
+  t: (key: string) => string;
+}) => {
+  if (!isFoodItem(item)) {
+    return null;
+  }
+
+  return (
+    <>
+      {item.caloriesPerUnit && (
+        <div className={styles.calories}>
+          🔥 {calculateItemTotalCalories(item)} kcal
+        </div>
+      )}
+      {getWaterRequirementPerUnit(item) > 0 && (
+        <div className={styles.waterRequirement}>
+          💧 {(item.quantity * getWaterRequirementPerUnit(item)).toFixed(1)}L{' '}
+          {t('itemForm.waterForPreparation')}
+        </div>
+      )}
+    </>
+  );
+};
+
 const ItemCardComponent = ({
   item,
   allItems,
@@ -42,11 +122,11 @@ const ItemCardComponent = ({
   const { settings } = useSettings();
   const [isQuickEditing, setIsQuickEditing] = useState(false);
 
-  const formatExpirationDate = (dateString?: string): string => {
+  const formatExpirationDate = useCallback((dateString?: string): string => {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString();
-  };
+  }, []);
 
   const expired = isItemExpired(item.expirationDate, item.neverExpires);
   const daysUntil = getDaysUntilExpiration(
@@ -74,16 +154,10 @@ const ItemCardComponent = ({
     onItemClick?.(item);
   }, [onItemClick, item]);
 
-  const handleQuantityClick = useCallback(
-    (e: React.MouseEvent) => {
-      // Only enable quick edit if we have the handler
-      if (onQuantityChange) {
-        e.stopPropagation(); // Prevent card click
-        setIsQuickEditing(true);
-      }
-    },
-    [onQuantityChange],
-  );
+  const handleQuantityClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    setIsQuickEditing(true);
+  }, []);
 
   const handleQuantityChange = useCallback(
     (newQuantity: Quantity) => {
@@ -126,32 +200,22 @@ const ItemCardComponent = ({
             onCancel={handleCancelEdit}
             allowDecimal={allowDecimal}
           />
-        ) : (
-          <div
-            role={onQuantityChange ? 'button' : undefined}
-            tabIndex={onQuantityChange ? 0 : undefined}
-            className={`${styles.quantity} ${onQuantityChange ? styles.quantityEditable : ''}`}
+        ) : onQuantityChange ? (
+          <button
+            type="button"
+            className={`${styles.quantity} ${styles.quantityEditable}`}
             onClick={handleQuantityClick}
-            onKeyDown={
-              onQuantityChange
-                ? (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleQuantityClick(e as unknown as React.MouseEvent);
-                    }
-                  }
-                : undefined
-            }
-            aria-label={
-              onQuantityChange
-                ? t('inventory.quickEdit.editQuantity')
-                : undefined
-            }
+            aria-label={t('inventory.quickEdit.editQuantity')}
             data-testid="quantity-display"
           >
             <span className={styles.current}>{item.quantity}</span>
             <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
-            {onQuantityChange && <span className={styles.editIcon}>✏️</span>}
+            <span className={styles.editIcon}>✏️</span>
+          </button>
+        ) : (
+          <div className={styles.quantity} data-testid="quantity-display">
+            <span className={styles.current}>{item.quantity}</span>
+            <span className={styles.unit}>{t(item.unit, { ns: 'units' })}</span>
           </div>
         )}
 
@@ -166,44 +230,15 @@ const ItemCardComponent = ({
           </div>
         )}
 
-        {!item.neverExpires && item.expirationDate && (
-          <div className={styles.expiration}>
-            {expired ? (
-              <span className={styles.expired}>
-                ⚠️ {t('inventory.expired')}:{' '}
-                {formatExpirationDate(item.expirationDate)}
-              </span>
-            ) : (
-              <>
-                {daysUntil !== undefined &&
-                  daysUntil <= EXPIRING_SOON_DAYS_THRESHOLD && (
-                    <span className={styles.expiringSoon}>
-                      📅 {t('inventory.expiresIn', { days: daysUntil })}
-                    </span>
-                  )}
-                {daysUntil !== undefined &&
-                  daysUntil > EXPIRING_SOON_DAYS_THRESHOLD && (
-                    <span className={styles.expirationDate}>
-                      📅 {formatExpirationDate(item.expirationDate)}
-                    </span>
-                  )}
-              </>
-            )}
-          </div>
-        )}
+        <ExpirationDisplay
+          item={item}
+          expired={expired}
+          daysUntil={daysUntil}
+          formatDate={formatExpirationDate}
+          t={t}
+        />
 
-        {isFoodItem(item) && item.caloriesPerUnit && (
-          <div className={styles.calories}>
-            🔥 {calculateItemTotalCalories(item)} kcal
-          </div>
-        )}
-
-        {isFoodItem(item) && getWaterRequirementPerUnit(item) > 0 && (
-          <div className={styles.waterRequirement}>
-            💧 {(item.quantity * getWaterRequirementPerUnit(item)).toFixed(1)}L{' '}
-            {t('itemForm.waterForPreparation')}
-          </div>
-        )}
+        <FoodDetails item={item} t={t} />
 
         {(item.capacityMah || item.capacityWh) && (
           <div className={styles.capacity}>

@@ -58,29 +58,11 @@ function registerValidSW(swUrl: string, config?: ServiceWorkerConfig): void {
           return;
         }
         installingWorker.onstatechange = () => {
-          if (installingWorker.state === 'installed') {
-            if (navigator.serviceWorker.controller) {
-              // New content is available; please refresh
-              if (import.meta.env.DEV) {
-                console.log(
-                  'New content is available and will be used when all tabs for this page are closed.',
-                );
-              }
-
-              if (config && config.onUpdate) {
-                config.onUpdate(registration);
-              }
-            } else {
-              // Content is cached for offline use
-              if (import.meta.env.DEV) {
-                console.log('Content is cached for offline use.');
-              }
-
-              if (config && config.onSuccess) {
-                config.onSuccess(registration);
-              }
-            }
-          }
+          handleInstallingWorkerStateChange(
+            installingWorker,
+            registration,
+            config,
+          );
         };
       };
     })
@@ -90,6 +72,38 @@ function registerValidSW(swUrl: string, config?: ServiceWorkerConfig): void {
         config.onError(error);
       }
     });
+}
+
+function handleInstallingWorkerStateChange(
+  installingWorker: ServiceWorker,
+  registration: ServiceWorkerRegistration,
+  config?: ServiceWorkerConfig,
+): void {
+  if (installingWorker.state !== 'installed') {
+    return;
+  }
+
+  if (navigator.serviceWorker.controller) {
+    // New content is available; please refresh
+    if (import.meta.env.DEV) {
+      console.log(
+        'New content is available and will be used when all tabs for this page are closed.',
+      );
+    }
+
+    if (config && config.onUpdate) {
+      config.onUpdate(registration);
+    }
+  } else {
+    // Content is cached for offline use
+    if (import.meta.env.DEV) {
+      console.log('Content is cached for offline use.');
+    }
+
+    if (config && config.onSuccess) {
+      config.onSuccess(registration);
+    }
+  }
 }
 
 function checkValidServiceWorker(

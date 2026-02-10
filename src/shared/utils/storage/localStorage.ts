@@ -265,18 +265,84 @@ function normalizeMergedAppData(data: AppData): AppData {
   };
 }
 
+/**
+ * Initializes or retrieves the root storage
+ */
+function initializeRootStorage(): RootStorage | undefined {
+  let root = getRootStorage();
+  if (!root) {
+    root = createDefaultRootStorage();
+    saveRootStorage(root);
+  }
+
+  if (!isVersionSupported(root.version)) {
+    if (import.meta.env.DEV) {
+      console.error(`Data schema version ${root.version} is not supported.`);
+    }
+    return undefined;
+  }
+
+  return root;
+}
+
+/**
+ * Attempts to migrate data to current version
+ */
+function attemptDataMigration(
+  data: AppData,
+  root: RootStorage,
+  activeId: InventorySetId,
+  inventorySetName: string,
+): AppData {
+  try {
+    const migratedData = migrateToCurrentVersion(data);
+    const updatedInventorySet = extractInventorySetFromAppData(
+      migratedData,
+      activeId,
+      inventorySetName,
+    );
+    root.inventorySets[activeId as string] = updatedInventorySet;
+    root.version = migratedData.version;
+    saveRootStorage(root);
+    if (import.meta.env.DEV) {
+      console.info(`Data migrated to ${CURRENT_SCHEMA_VERSION}`);
+    }
+    return migratedData;
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      if (error instanceof MigrationError) {
+        console.error(
+          `Migration failed: ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
+        );
+      } else {
+        console.error('Migration failed:', error);
+      }
+    }
+    return data;
+  }
+}
+
+/**
+ * Validates app data
+ */
+function validateAndReturnData(data: AppData): AppData | undefined {
+  const validationResult = validateAppDataValues(data);
+  if (!validationResult.isValid) {
+    if (import.meta.env.DEV) {
+      console.error('Data validation failed:', validationResult.errors);
+    }
+    lastDataValidationResult = validationResult;
+    return undefined;
+  }
+
+  lastDataValidationResult = null;
+  return data;
+}
+
 export function getAppData(): AppData | undefined {
   try {
-    let root = getRootStorage();
+    const root = initializeRootStorage();
     if (!root) {
-      root = createDefaultRootStorage();
-      saveRootStorage(root);
-    }
-
-    if (!isVersionSupported(root.version)) {
-      if (import.meta.env.DEV) {
-        console.error(`Data schema version ${root.version} is not supported.`);
-      }
       return undefined;
     }
 
@@ -289,44 +355,10 @@ export function getAppData(): AppData | undefined {
     let data = normalizeMergedAppData(mergeRootToAppData(root, inventorySet));
 
     if (needsMigration(data)) {
-      try {
-        data = migrateToCurrentVersion(data);
-        const updatedInventorySet = extractInventorySetFromAppData(
-          data,
-          activeId,
-          inventorySet.name,
-        );
-        root.inventorySets[activeId as string] = updatedInventorySet;
-        root.version = data.version;
-        saveRootStorage(root);
-        if (import.meta.env.DEV) {
-          console.info(`Data migrated to ${CURRENT_SCHEMA_VERSION}`);
-        }
-      } catch (error) {
-        if (import.meta.env.DEV) {
-          if (error instanceof MigrationError) {
-            console.error(
-              `Migration failed: ${error.fromVersion} to ${error.toVersion}: ${error.message}`,
-            );
-          } else {
-            console.error('Migration failed:', error);
-          }
-        }
-        return data;
-      }
+      data = attemptDataMigration(data, root, activeId, inventorySet.name);
     }
 
-    const validationResult = validateAppDataValues(data);
-    if (!validationResult.isValid) {
-      if (import.meta.env.DEV) {
-        console.error('Data validation failed:', validationResult.errors);
-      }
-      lastDataValidationResult = validationResult;
-      return undefined;
-    }
-
-    lastDataValidationResult = null;
-    return data;
+    return validateAndReturnData(data);
   } catch (error) {
     if (import.meta.env.DEV) {
       console.error('Failed to load data from localStorage:', error);

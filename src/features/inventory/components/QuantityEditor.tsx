@@ -5,13 +5,13 @@ import { Button } from '@/shared/components/Button';
 import styles from './QuantityEditor.module.css';
 
 export interface QuantityEditorProps {
-  quantity: Quantity;
-  unit: Unit;
-  onQuantityChange: (newQuantity: Quantity) => void;
-  onFullEdit?: () => void;
-  onCancel?: () => void;
+  readonly quantity: Quantity;
+  readonly unit: Unit;
+  readonly onQuantityChange: (newQuantity: Quantity) => void;
+  readonly onFullEdit?: () => void;
+  readonly onCancel?: () => void;
   /** Whether quantity is a decimal value (for continuous units like kg, L) */
-  allowDecimal?: boolean;
+  readonly allowDecimal?: boolean;
 }
 
 export function QuantityEditor({
@@ -34,16 +34,16 @@ export function QuantityEditor({
 
   const handleIncrement = useCallback(() => {
     const current = allowDecimal
-      ? parseFloat(localValue) || 0
-      : parseInt(localValue, 10) || 0;
+      ? Number.parseFloat(localValue) || 0
+      : Number.parseInt(localValue, 10) || 0;
     const newValue = current + 1;
     setLocalValue(newValue.toString());
   }, [localValue, allowDecimal]);
 
   const handleDecrement = useCallback(() => {
     const current = allowDecimal
-      ? parseFloat(localValue) || 0
-      : parseInt(localValue, 10) || 0;
+      ? Number.parseFloat(localValue) || 0
+      : Number.parseInt(localValue, 10) || 0;
     const newValue = Math.max(0, current - 1);
     setLocalValue(newValue.toString());
   }, [localValue, allowDecimal]);
@@ -57,8 +57,10 @@ export function QuantityEditor({
         return;
       }
       // Validate numeric input
-      const numValue = allowDecimal ? parseFloat(value) : parseInt(value, 10);
-      if (!isNaN(numValue) && numValue >= 0) {
+      const numValue = allowDecimal
+        ? Number.parseFloat(value)
+        : Number.parseInt(value, 10);
+      if (!Number.isNaN(numValue) && numValue >= 0) {
         setLocalValue(value);
       }
     },
@@ -66,7 +68,7 @@ export function QuantityEditor({
   );
 
   const handleSave = useCallback(() => {
-    const numValue = parseFloat(localValue) || 0;
+    const numValue = Number.parseFloat(localValue) || 0;
     const finalValue = Math.max(0, numValue);
     onQuantityChange(finalValue as Quantity);
   }, [localValue, onQuantityChange]);
@@ -95,11 +97,19 @@ export function QuantityEditor({
     e.stopPropagation();
   }, []);
 
+  const handleContainerKeyDown = useCallback((e: React.KeyboardEvent) => {
+    // Prevent keyboard events from bubbling
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.stopPropagation();
+    }
+  }, []);
+
   return (
     <div
       className={styles.container}
       data-testid="quantity-editor"
       onClick={handleContainerClick}
+      onKeyDown={handleContainerKeyDown}
     >
       <div className={styles.inputGroup}>
         <button
