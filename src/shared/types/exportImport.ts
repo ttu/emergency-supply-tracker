@@ -22,6 +22,7 @@ export type InventorySetSection =
   | 'customTemplates'
   | 'dismissedAlertIds'
   | 'disabledRecommendedItems'
+  | 'disabledCategories'
   | 'customRecommendedItems';
 
 /**
@@ -39,6 +40,7 @@ export const ALL_INVENTORY_SET_SECTIONS: InventorySetSection[] = [
   'customTemplates',
   'dismissedAlertIds',
   'disabledRecommendedItems',
+  'disabledCategories',
   'customRecommendedItems',
 ];
 
@@ -246,6 +248,10 @@ export function getInventorySetSectionInfo(
         break;
       case 'disabledRecommendedItems':
         count = data.disabledRecommendedItems?.length ?? 0;
+        hasData = count > 0;
+        break;
+      case 'disabledCategories':
+        count = data.disabledCategories?.length ?? 0;
         hasData = count > 0;
         break;
       case 'customRecommendedItems':

@@ -364,11 +364,12 @@
       "sections": {
         "items": "Varastotuotteet",
         "household": "Kotitalouden asetukset",
-        "settings": "Asetukset",
+        "settings": "Sovellusasetukset (teema, kieli)",
         "customCategories": "Mukautetut kategoriat",
         "customTemplates": "Mukautetut mallit",
         "dismissedAlertIds": "Piilotetut hälytykset",
         "disabledRecommendedItems": "Poistetut suositukset",
+        "disabledCategories": "Poistetut kategoriat",
         "customRecommendedItems": "Mukautetut suositukset"
       }
     },

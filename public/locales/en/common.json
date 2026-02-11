@@ -364,11 +364,12 @@
       "sections": {
         "items": "Inventory Items",
         "household": "Household Configuration",
-        "settings": "Settings",
+        "settings": "App Preferences (theme, language)",
         "customCategories": "Custom Categories",
         "customTemplates": "Custom Templates",
         "dismissedAlertIds": "Hidden Alerts",
         "disabledRecommendedItems": "Disabled Recommendations",
+        "disabledCategories": "Disabled Categories",
         "customRecommendedItems": "Custom Recommendations"
       }
     },

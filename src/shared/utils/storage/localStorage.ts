@@ -821,6 +821,9 @@ export function exportMultiInventory(
           exportedSet.data.disabledRecommendedItems =
             inventorySet.disabledRecommendedItems;
           break;
+        case 'disabledCategories':
+          exportedSet.data.disabledCategories = inventorySet.disabledCategories;
+          break;
         case 'customRecommendedItems':
           exportedSet.data.customRecommendedItems =
             inventorySet.customRecommendedItems;
@@ -955,7 +958,10 @@ function buildInventorySetFromImport(
             createProductTemplateId,
           )
         : [],
-    disabledCategories: imported.disabledCategories ?? [],
+    disabledCategories:
+      sections.includes('disabledCategories') && imported.disabledCategories
+        ? imported.disabledCategories
+        : [],
     selectedRecommendationKit:
       imported.selectedRecommendationKit ?? DEFAULT_KIT_ID,
     uploadedRecommendationKits: imported.uploadedRecommendationKits ?? [],
