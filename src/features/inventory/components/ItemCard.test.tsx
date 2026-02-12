@@ -25,6 +25,15 @@ vi.mock('react-i18next', async () => {
         if (key === 'inventory.quantityMissing' && params) {
           return `${params.count} ${params.unit} missing`;
         }
+        if (key === 'inventory.quantityStepper.increase') {
+          return 'Increase quantity';
+        }
+        if (key === 'inventory.quantityStepper.decrease') {
+          return 'Decrease quantity';
+        }
+        if (key === 'inventory.quantityStepper.edit') {
+          return 'Edit quantity';
+        }
         // Return unit names as-is for testing
         if (key === 'liters' || key === 'rolls' || key === 'meters') {
           return key;
@@ -127,13 +136,13 @@ describe('ItemCard', () => {
     expect(onItemClick).toHaveBeenCalledWith(baseItem);
   });
 
-  it('should render as button when onItemClick is provided', () => {
+  it('should have button role when onItemClick is provided', () => {
     const onItemClick = vi.fn();
     renderWithProviders(<ItemCard item={baseItem} onItemClick={onItemClick} />);
 
     const card = screen.getByTestId('item-card-1');
-    expect(card.tagName).toBe('BUTTON');
-    expect(card).toHaveAttribute('type', 'button');
+    expect(card).toHaveAttribute('role', 'button');
+    expect(card).toHaveAttribute('tabindex', '0');
   });
 
   it('should render as div when onItemClick is not provided', () => {
@@ -278,6 +287,87 @@ describe('ItemCard', () => {
       });
       // Should show "9 meters missing" (10 - 1 = 9)
       expect(screen.getByText(/9.*meters.*missing/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('quantity stepper', () => {
+    it('shows edit quantity button by default', () => {
+      renderWithProviders(<ItemCard item={baseItem} />);
+      expect(
+        screen.getByRole('button', { name: /edit quantity/i }),
+      ).toBeInTheDocument();
+      // Stepper buttons should not be visible initially
+      expect(
+        screen.queryByRole('button', { name: /increase/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows stepper buttons when quantity is clicked', () => {
+      renderWithProviders(<ItemCard item={baseItem} />);
+
+      // Click the quantity button to activate stepper
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      // Stepper buttons should now be visible
+      expect(
+        screen.getByRole('button', { name: /increase/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /decrease/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('calls onQuantityChange when stepper is used', () => {
+      const onQuantityChange = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onQuantityChange={onQuantityChange} />,
+      );
+
+      // Activate stepper first
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      fireEvent.click(screen.getByRole('button', { name: /increase/i }));
+      expect(onQuantityChange).toHaveBeenCalledWith(baseItem, 21);
+    });
+
+    it('does not trigger onItemClick when quantity button is clicked', () => {
+      const onItemClick = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onItemClick={onItemClick} />,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+      expect(onItemClick).not.toHaveBeenCalled();
+    });
+
+    it('does not trigger onItemClick when stepper buttons are clicked', () => {
+      const onItemClick = vi.fn();
+      const onQuantityChange = vi.fn();
+      renderWithProviders(
+        <ItemCard
+          item={baseItem}
+          onItemClick={onItemClick}
+          onQuantityChange={onQuantityChange}
+        />,
+      );
+
+      // Activate stepper first
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      fireEvent.click(screen.getByRole('button', { name: /increase/i }));
+      expect(onQuantityChange).toHaveBeenCalled();
+      expect(onItemClick).not.toHaveBeenCalled();
+    });
+
+    it('disables decrease button when quantity is 0', () => {
+      const zeroItem = { ...baseItem, quantity: createQuantity(0) };
+      renderWithProviders(<ItemCard item={zeroItem} />);
+
+      // Activate stepper first
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      const decreaseBtn = screen.getByRole('button', { name: /decrease/i });
+      expect(decreaseBtn).toBeDisabled();
     });
   });
 });

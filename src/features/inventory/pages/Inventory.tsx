@@ -160,6 +160,12 @@ export function Inventory({
   const itemFormRef = useRef<HTMLFormElement>(null);
   const pendingDiscardActionRef = useRef<(() => void) | null>(null);
 
+  // Debounce ref for quick quantity edits
+  const quantityDebounceRef = useRef<{
+    timeoutId: ReturnType<typeof setTimeout> | null;
+    pendingUpdates: Map<string, number>;
+  }>({ timeoutId: null, pendingUpdates: new Map() });
+
   // Clear editing item and template selection (shared by form close and custom-item open)
   const resetEditingAndTemplateState = useCallback(() => {
     setEditingItem(undefined);
@@ -294,6 +300,27 @@ export function Inventory({
     [updateItem],
   );
 
+  // Debounced handler for quick quantity changes from stepper
+  const handleQuantityChange = useCallback(
+    (item: InventoryItem, newQuantity: number) => {
+      const ref = quantityDebounceRef.current;
+      ref.pendingUpdates.set(item.id, newQuantity);
+
+      if (ref.timeoutId) {
+        clearTimeout(ref.timeoutId);
+      }
+
+      ref.timeoutId = setTimeout(() => {
+        ref.pendingUpdates.forEach((qty, id) => {
+          updateItem(createItemId(id), { quantity: createQuantity(qty) });
+        });
+        ref.pendingUpdates.clear();
+        ref.timeoutId = null;
+      }, 500);
+    },
+    [updateItem],
+  );
+
   const handleEditItem = useCallback(
     (item: InventoryItem) => {
       setEditingItem(item);
@@ -421,6 +448,20 @@ export function Inventory({
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [showUnsavedConfirm, handleUnsavedCancel]);
+
+  // Cleanup debounced quantity updates on unmount
+  useEffect(() => {
+    const ref = quantityDebounceRef.current;
+    return () => {
+      if (ref.timeoutId) {
+        clearTimeout(ref.timeoutId);
+        // Flush pending updates on unmount
+        ref.pendingUpdates.forEach((qty, id) => {
+          updateItem(createItemId(id), { quantity: createQuantity(qty) });
+        });
+      }
+    };
+  }, [updateItem]);
 
   const handleSelectCustomItem = () => {
     setShowTemplateModal(false);
@@ -626,7 +667,11 @@ export function Inventory({
                 </div>
               </div>
             )}
-            <ItemList items={filteredItems} onItemClick={handleEditItem} />
+            <ItemList
+              items={filteredItems}
+              onItemClick={handleEditItem}
+              onQuantityChange={handleQuantityChange}
+            />
           </div>
         </div>
       </div>

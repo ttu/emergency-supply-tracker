@@ -538,6 +538,11 @@
       "name": "Nimi",
       "quantity": "Määrä",
       "expiration": "Vanhentuminen"
+    },
+    "quantityStepper": {
+      "increase": "Lisää määrää",
+      "decrease": "Vähennä määrää",
+      "edit": "Muokkaa määrää"
     }
   },
   "itemForm": {

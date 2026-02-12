@@ -538,6 +538,11 @@
       "name": "Name",
       "quantity": "Quantity",
       "expiration": "Expiration"
+    },
+    "quantityStepper": {
+      "increase": "Increase quantity",
+      "decrease": "Decrease quantity",
+      "edit": "Edit quantity"
     }
   },
   "itemForm": {
