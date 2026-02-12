@@ -22,3 +22,6 @@ export type {
   CategoryStatusSummaryProps,
   CategoryShortage,
 } from './CategoryStatusSummary';
+
+export { QuantityStepper } from './QuantityStepper';
+export type { QuantityStepperProps } from './QuantityStepper';

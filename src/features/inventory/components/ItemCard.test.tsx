@@ -25,6 +25,15 @@ vi.mock('react-i18next', async () => {
         if (key === 'inventory.quantityMissing' && params) {
           return `${params.count} ${params.unit} missing`;
         }
+        if (key === 'inventory.quantityStepper.increase') {
+          return 'Increase quantity';
+        }
+        if (key === 'inventory.quantityStepper.decrease') {
+          return 'Decrease quantity';
+        }
+        if (key === 'inventory.quantityStepper.edit') {
+          return 'Edit quantity';
+        }
         // Return unit names as-is for testing
         if (key === 'liters' || key === 'rolls' || key === 'meters') {
           return key;
@@ -127,13 +136,13 @@ describe('ItemCard', () => {
     expect(onItemClick).toHaveBeenCalledWith(baseItem);
   });
 
-  it('should render as button when onItemClick is provided', () => {
+  it('should have button role when onItemClick is provided', () => {
     const onItemClick = vi.fn();
     renderWithProviders(<ItemCard item={baseItem} onItemClick={onItemClick} />);
 
     const card = screen.getByTestId('item-card-1');
-    expect(card.tagName).toBe('BUTTON');
-    expect(card).toHaveAttribute('type', 'button');
+    expect(card).toHaveAttribute('role', 'button');
+    expect(card).toHaveAttribute('tabindex', '0');
   });
 
   it('should render as div when onItemClick is not provided', () => {
@@ -278,6 +287,199 @@ describe('ItemCard', () => {
       });
       // Should show "9 meters missing" (10 - 1 = 9)
       expect(screen.getByText(/9.*meters.*missing/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('quantity stepper', () => {
+    it('shows edit quantity button by default', () => {
+      renderWithProviders(<ItemCard item={baseItem} />);
+      expect(
+        screen.getByRole('button', { name: /edit quantity/i }),
+      ).toBeInTheDocument();
+      // Stepper buttons should not be visible initially
+      expect(
+        screen.queryByRole('button', { name: /increase/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows stepper buttons when quantity is clicked', () => {
+      renderWithProviders(<ItemCard item={baseItem} />);
+
+      // Click the quantity button to activate stepper
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      // Stepper buttons should now be visible
+      expect(
+        screen.getByRole('button', { name: /increase/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /decrease/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('calls onQuantityChange when stepper is used', () => {
+      const onQuantityChange = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onQuantityChange={onQuantityChange} />,
+      );
+
+      // Activate stepper first
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      fireEvent.click(screen.getByRole('button', { name: /increase/i }));
+      expect(onQuantityChange).toHaveBeenCalledWith(baseItem, 21);
+    });
+
+    it('does not trigger onItemClick when quantity button is clicked', () => {
+      const onItemClick = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onItemClick={onItemClick} />,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+      expect(onItemClick).not.toHaveBeenCalled();
+    });
+
+    it('does not trigger onItemClick when stepper buttons are clicked', () => {
+      const onItemClick = vi.fn();
+      const onQuantityChange = vi.fn();
+      renderWithProviders(
+        <ItemCard
+          item={baseItem}
+          onItemClick={onItemClick}
+          onQuantityChange={onQuantityChange}
+        />,
+      );
+
+      // Activate stepper first
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      fireEvent.click(screen.getByRole('button', { name: /increase/i }));
+      expect(onQuantityChange).toHaveBeenCalled();
+      expect(onItemClick).not.toHaveBeenCalled();
+    });
+
+    it('disables decrease button when quantity is 0', () => {
+      const zeroItem = { ...baseItem, quantity: createQuantity(0) };
+      renderWithProviders(<ItemCard item={zeroItem} />);
+
+      // Activate stepper first
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      const decreaseBtn = screen.getByRole('button', { name: /decrease/i });
+      expect(decreaseBtn).toBeDisabled();
+    });
+
+    it('closes stepper when clicking outside', () => {
+      renderWithProviders(<ItemCard item={baseItem} />);
+
+      // Activate stepper
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      // Stepper should be visible
+      expect(
+        screen.getByRole('button', { name: /increase/i }),
+      ).toBeInTheDocument();
+
+      // Click outside the stepper
+      fireEvent.mouseDown(document.body);
+
+      // Stepper should be closed
+      expect(
+        screen.queryByRole('button', { name: /increase/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /edit quantity/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('updates local quantity immediately for optimistic UI', () => {
+      const onQuantityChange = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onQuantityChange={onQuantityChange} />,
+      );
+
+      // Activate stepper
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      // Click increase multiple times
+      const increaseBtn = screen.getByRole('button', { name: /increase/i });
+      fireEvent.click(increaseBtn);
+      fireEvent.click(increaseBtn);
+      fireEvent.click(increaseBtn);
+
+      // The displayed quantity should update immediately (optimistic)
+      // Find the status element with aria-live which displays the quantity
+      const quantityDisplay = screen.getByRole('status');
+      expect(quantityDisplay).toHaveTextContent('23');
+
+      // onQuantityChange should be called for each click
+      expect(onQuantityChange).toHaveBeenCalledTimes(3);
+    });
+
+    it('syncs local quantity when item prop changes externally', () => {
+      const { rerender } = renderWithProviders(<ItemCard item={baseItem} />);
+
+      // Initial quantity shown
+      expect(screen.getByText('20')).toBeInTheDocument();
+
+      // Update item with new quantity (simulating external change)
+      const updatedItem = { ...baseItem, quantity: createQuantity(25) };
+      rerender(<ItemCard item={updatedItem} />);
+
+      // Should show the new quantity
+      expect(screen.getByText('25')).toBeInTheDocument();
+    });
+  });
+
+  describe('keyboard navigation', () => {
+    it('triggers onItemClick when Enter is pressed on the card', () => {
+      const onItemClick = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onItemClick={onItemClick} />,
+      );
+
+      const card = screen.getByTestId('item-card-1');
+      fireEvent.keyDown(card, {
+        key: 'Enter',
+        target: card,
+        currentTarget: card,
+      });
+
+      expect(onItemClick).toHaveBeenCalledWith(baseItem);
+    });
+
+    it('triggers onItemClick when Space is pressed on the card', () => {
+      const onItemClick = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onItemClick={onItemClick} />,
+      );
+
+      const card = screen.getByTestId('item-card-1');
+      fireEvent.keyDown(card, { key: ' ', target: card, currentTarget: card });
+
+      expect(onItemClick).toHaveBeenCalledWith(baseItem);
+    });
+
+    it('does not trigger onItemClick when pressing Enter on inner controls', () => {
+      const onItemClick = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onItemClick={onItemClick} />,
+      );
+
+      // Activate stepper first
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      // Press Enter on the increase button - this should trigger the button, not the card
+      const increaseBtn = screen.getByRole('button', { name: /increase/i });
+
+      // Focus the button and press Enter
+      increaseBtn.focus();
+      fireEvent.keyDown(increaseBtn, { key: 'Enter' });
+
+      // onItemClick should NOT be called when pressing Enter on inner controls
+      // The handleKeyDown ignores events where target !== currentTarget
+      expect(onItemClick).not.toHaveBeenCalled();
     });
   });
 });

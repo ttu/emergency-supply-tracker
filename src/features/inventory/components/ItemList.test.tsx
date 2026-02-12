@@ -15,12 +15,23 @@ vi.mock('./ItemCard', () => ({
   ItemCard: ({
     item,
     onItemClick,
+    onQuantityChange,
   }: {
     item: InventoryItem;
     onItemClick?: (item: InventoryItem) => void;
+    onQuantityChange?: (item: InventoryItem, newQuantity: number) => void;
   }) => (
     <div data-testid={`item-${item.id}`} onClick={() => onItemClick?.(item)}>
       {item.name}
+      <button
+        data-testid={`quantity-increase-${item.id}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onQuantityChange?.(item, item.quantity + 1);
+        }}
+      >
+        +
+      </button>
     </div>
   ),
 }));
@@ -105,5 +116,17 @@ describe('ItemList', () => {
     // Check for the emoji icon in the empty state
     expect(screen.getByText('📦')).toBeInTheDocument();
     expect(screen.getByText('inventory.noItems')).toBeInTheDocument();
+  });
+
+  it('should pass onQuantityChange to ItemCards', () => {
+    const onQuantityChange = vi.fn();
+    render(
+      <ItemList items={sampleItems} onQuantityChange={onQuantityChange} />,
+    );
+
+    const increaseBtn = screen.getByTestId('quantity-increase-1');
+    fireEvent.click(increaseBtn);
+
+    expect(onQuantityChange).toHaveBeenCalledWith(sampleItems[0], 11);
   });
 });

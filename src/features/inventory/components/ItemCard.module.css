@@ -57,22 +57,43 @@ button.card {
   gap: 0.5rem;
 }
 
-.quantity {
+.quantityRow {
   display: flex;
-  align-items: baseline;
-  gap: 0.25rem;
-  font-size: var(--font-size-lg);
+  align-items: center;
 }
 
-.current {
-  font-weight: var(--font-weight-bold);
+.quantityButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: var(--color-surface-hover, rgb(0 0 0 / 5%));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.375rem 0.625rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font: inherit;
+}
+
+.quantityButton:hover {
+  background: var(--color-surface-active, rgb(0 0 0 / 8%));
+  border-color: var(--color-primary);
+}
+
+.quantityButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.quantityValue {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
 
-.unit {
+.quantityUnit {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  margin-left: 0.25rem;
 }
 
 .expiration,
@@ -135,9 +156,5 @@ button.card {
 
   .name {
     font-size: var(--font-size-base);
-  }
-
-  .quantity {
-    font-size: var(--font-size-md);
   }
 }

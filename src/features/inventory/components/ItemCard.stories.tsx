@@ -25,6 +25,7 @@ const meta = {
   ],
   argTypes: {
     onItemClick: { action: 'item clicked' },
+    onQuantityChange: { action: 'quantity changed' },
   },
 } satisfies Meta<typeof ItemCard>;
 
@@ -119,5 +120,13 @@ export const ClickableCard: Story = {
   args: {
     item: baseItem,
     onItemClick: (item) => console.log('Card clicked', item.name),
+  },
+};
+
+export const WithQuantityStepper: Story = {
+  args: {
+    item: baseItem,
+    onQuantityChange: (item, qty) =>
+      console.log(`Changed ${item.name} quantity to ${qty}`),
   },
 };

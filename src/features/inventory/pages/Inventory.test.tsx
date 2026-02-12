@@ -1736,6 +1736,120 @@ describe('Inventory Page - Location Filter', () => {
   });
 });
 
+describe('Inventory Page - Quick Edit Quantity', () => {
+  const testItem = createMockInventoryItem({
+    id: createItemId('quick-edit-test'),
+    name: 'Quick Edit Test Item',
+    itemType: createProductTemplateId('bottled-water'),
+    categoryId: createCategoryId('water-beverages'),
+    quantity: createQuantity(10),
+    unit: 'liters',
+    neverExpires: true,
+  });
+
+  beforeEach(() => {
+    globalThis.confirm = vi.fn(() => true);
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [testItem],
+    });
+    saveAppData(appData);
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('should show quantity stepper when clicking quantity button on item card', () => {
+    renderWithProviders(<Inventory />);
+
+    // Find the edit quantity button on the item card (translation key returned by mock)
+    const editQuantityBtn = screen.getByRole('button', {
+      name: 'inventory.quantityStepper.edit',
+    });
+    fireEvent.click(editQuantityBtn);
+
+    // Stepper buttons should appear (translation keys)
+    expect(
+      screen.getByRole('button', {
+        name: 'inventory.quantityStepper.increase',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {
+        name: 'inventory.quantityStepper.decrease',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('should update UI immediately for optimistic updates', () => {
+    renderWithProviders(<Inventory />);
+
+    // Activate stepper
+    const editQuantityBtn = screen.getByRole('button', {
+      name: 'inventory.quantityStepper.edit',
+    });
+    fireEvent.click(editQuantityBtn);
+
+    // Initial quantity should be 10
+    expect(screen.getByRole('status')).toHaveTextContent('10');
+
+    // Click increase
+    const increaseBtn = screen.getByRole('button', {
+      name: 'inventory.quantityStepper.increase',
+    });
+    fireEvent.click(increaseBtn);
+
+    // UI should update immediately (optimistic update)
+    expect(screen.getByRole('status')).toHaveTextContent('11');
+  });
+
+  it('should pass onQuantityChange to ItemList and ItemCard', () => {
+    // This test verifies the prop drilling from Inventory -> ItemList -> ItemCard
+    renderWithProviders(<Inventory />);
+
+    // The edit quantity button should exist (meaning ItemCard received onQuantityChange)
+    const editQuantityBtn = screen.getByRole('button', {
+      name: 'inventory.quantityStepper.edit',
+    });
+    expect(editQuantityBtn).toBeInTheDocument();
+
+    // Activate stepper and verify it works
+    fireEvent.click(editQuantityBtn);
+
+    // Decrease button should work (meaning onChange is connected)
+    const decreaseBtn = screen.getByRole('button', {
+      name: 'inventory.quantityStepper.decrease',
+    });
+    fireEvent.click(decreaseBtn);
+
+    // Status should now show 9 (optimistic update)
+    expect(screen.getByRole('status')).toHaveTextContent('9');
+  });
+
+  it('should support multiple quantity changes', () => {
+    renderWithProviders(<Inventory />);
+
+    // Activate stepper
+    const editQuantityBtn = screen.getByRole('button', {
+      name: 'inventory.quantityStepper.edit',
+    });
+    fireEvent.click(editQuantityBtn);
+
+    // Click increase multiple times
+    const increaseBtn = screen.getByRole('button', {
+      name: 'inventory.quantityStepper.increase',
+    });
+    fireEvent.click(increaseBtn);
+    fireEvent.click(increaseBtn);
+    fireEvent.click(increaseBtn);
+
+    // Status should show 13 (optimistic update: 10 + 3)
+    expect(screen.getByRole('status')).toHaveTextContent('13');
+  });
+});
+
 describe('Inventory Page - Remove Empty Items', () => {
   const zeroQuantityItem = createMockInventoryItem({
     id: createItemId('zero-qty-1'),

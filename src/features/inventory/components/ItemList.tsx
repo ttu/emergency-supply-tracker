@@ -6,12 +6,14 @@ import styles from './ItemList.module.css';
 export interface ItemListProps {
   items: InventoryItem[];
   onItemClick?: (item: InventoryItem) => void;
+  onQuantityChange?: (item: InventoryItem, newQuantity: number) => void;
   emptyMessage?: string;
 }
 
 export const ItemList = ({
   items,
   onItemClick,
+  onQuantityChange,
   emptyMessage,
 }: ItemListProps) => {
   const { t } = useTranslation();
@@ -35,6 +37,7 @@ export const ItemList = ({
           item={item}
           allItems={items}
           onItemClick={onItemClick}
+          onQuantityChange={onQuantityChange}
         />
       ))}
     </div>
