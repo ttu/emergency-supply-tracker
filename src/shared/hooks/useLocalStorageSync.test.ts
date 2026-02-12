@@ -592,7 +592,10 @@ describe('useLocalStorageSync', () => {
     });
 
     it('should cleanup event listener on unmount', () => {
-      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+      const removeEventListenerSpy = vi.spyOn(
+        globalThis,
+        'removeEventListener',
+      );
       const defaultHousehold = createMockHousehold({ adults: 2 });
       const mockAppData = createMockAppData({ household: defaultHousehold });
 

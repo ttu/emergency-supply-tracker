@@ -14,7 +14,7 @@ const STORAGE_SYNC_EVENT = 'app-storage-sync';
  * Call this after making changes to localStorage from outside of useLocalStorageSync.
  */
 export function notifyStorageChange(): void {
-  window.dispatchEvent(new CustomEvent(STORAGE_SYNC_EVENT));
+  globalThis.dispatchEvent(new CustomEvent(STORAGE_SYNC_EVENT));
 }
 
 /**
@@ -121,9 +121,9 @@ export function useLocalStorageSync<K extends SyncableKey>(
       refreshFromStorage();
     };
 
-    window.addEventListener(STORAGE_SYNC_EVENT, handleStorageSync);
+    globalThis.addEventListener(STORAGE_SYNC_EVENT, handleStorageSync);
     return () => {
-      window.removeEventListener(STORAGE_SYNC_EVENT, handleStorageSync);
+      globalThis.removeEventListener(STORAGE_SYNC_EVENT, handleStorageSync);
     };
   }, [refreshFromStorage]);
 
