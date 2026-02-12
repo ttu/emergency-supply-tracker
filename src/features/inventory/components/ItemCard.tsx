@@ -217,6 +217,8 @@ const ItemCardComponent = ({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      // Ignore bubbled keyboard events from inner controls (e.g., QuantityStepper buttons)
+      if (e.target !== e.currentTarget) return;
       if (onItemClick && (e.key === 'Enter' || e.key === ' ')) {
         e.preventDefault();
         onItemClick(item);

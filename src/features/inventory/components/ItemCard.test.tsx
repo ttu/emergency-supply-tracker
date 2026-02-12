@@ -369,5 +369,117 @@ describe('ItemCard', () => {
       const decreaseBtn = screen.getByRole('button', { name: /decrease/i });
       expect(decreaseBtn).toBeDisabled();
     });
+
+    it('closes stepper when clicking outside', () => {
+      renderWithProviders(<ItemCard item={baseItem} />);
+
+      // Activate stepper
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      // Stepper should be visible
+      expect(
+        screen.getByRole('button', { name: /increase/i }),
+      ).toBeInTheDocument();
+
+      // Click outside the stepper
+      fireEvent.mouseDown(document.body);
+
+      // Stepper should be closed
+      expect(
+        screen.queryByRole('button', { name: /increase/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /edit quantity/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('updates local quantity immediately for optimistic UI', () => {
+      const onQuantityChange = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onQuantityChange={onQuantityChange} />,
+      );
+
+      // Activate stepper
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      // Click increase multiple times
+      const increaseBtn = screen.getByRole('button', { name: /increase/i });
+      fireEvent.click(increaseBtn);
+      fireEvent.click(increaseBtn);
+      fireEvent.click(increaseBtn);
+
+      // The displayed quantity should update immediately (optimistic)
+      // Find the status element with aria-live which displays the quantity
+      const quantityDisplay = screen.getByRole('status');
+      expect(quantityDisplay).toHaveTextContent('23');
+
+      // onQuantityChange should be called for each click
+      expect(onQuantityChange).toHaveBeenCalledTimes(3);
+    });
+
+    it('syncs local quantity when item prop changes externally', () => {
+      const { rerender } = renderWithProviders(<ItemCard item={baseItem} />);
+
+      // Initial quantity shown
+      expect(screen.getByText('20')).toBeInTheDocument();
+
+      // Update item with new quantity (simulating external change)
+      const updatedItem = { ...baseItem, quantity: createQuantity(25) };
+      rerender(<ItemCard item={updatedItem} />);
+
+      // Should show the new quantity
+      expect(screen.getByText('25')).toBeInTheDocument();
+    });
+  });
+
+  describe('keyboard navigation', () => {
+    it('triggers onItemClick when Enter is pressed on the card', () => {
+      const onItemClick = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onItemClick={onItemClick} />,
+      );
+
+      const card = screen.getByTestId('item-card-1');
+      fireEvent.keyDown(card, {
+        key: 'Enter',
+        target: card,
+        currentTarget: card,
+      });
+
+      expect(onItemClick).toHaveBeenCalledWith(baseItem);
+    });
+
+    it('triggers onItemClick when Space is pressed on the card', () => {
+      const onItemClick = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onItemClick={onItemClick} />,
+      );
+
+      const card = screen.getByTestId('item-card-1');
+      fireEvent.keyDown(card, { key: ' ', target: card, currentTarget: card });
+
+      expect(onItemClick).toHaveBeenCalledWith(baseItem);
+    });
+
+    it('does not trigger onItemClick when pressing Enter on inner controls', () => {
+      const onItemClick = vi.fn();
+      renderWithProviders(
+        <ItemCard item={baseItem} onItemClick={onItemClick} />,
+      );
+
+      // Activate stepper first
+      fireEvent.click(screen.getByRole('button', { name: /edit quantity/i }));
+
+      // Press Enter on the increase button - this should trigger the button, not the card
+      const increaseBtn = screen.getByRole('button', { name: /increase/i });
+
+      // Focus the button and press Enter
+      increaseBtn.focus();
+      fireEvent.keyDown(increaseBtn, { key: 'Enter' });
+
+      // onItemClick should NOT be called when pressing Enter on inner controls
+      // The handleKeyDown ignores events where target !== currentTarget
+      expect(onItemClick).not.toHaveBeenCalled();
+    });
   });
 });

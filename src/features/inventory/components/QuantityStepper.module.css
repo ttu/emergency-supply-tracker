@@ -31,7 +31,7 @@
 .button:hover:not(:disabled) {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: var(--color-on-primary, #ffffff);
+  color: var(--color-on-primary, #fff);
 }
 
 .button:focus-visible {
@@ -66,16 +66,18 @@
   0% {
     background-color: transparent;
   }
+
   50% {
-    background-color: var(--color-success-light, rgba(34, 197, 94, 0.2));
+    background-color: var(--color-success-light, rgb(34 197 94 / 20%));
   }
+
   100% {
     background-color: transparent;
   }
 }
 
 /* Mobile adjustments */
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .button {
     width: 2rem;
     height: 2rem;

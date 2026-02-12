@@ -105,6 +105,9 @@ export const InCard: Story = {
           cursor: 'pointer',
         }}
         onClick={() => console.log('Card clicked')}
+        onKeyDown={(e) => e.key === 'Enter' && console.log('Card clicked')}
+        role="button"
+        tabIndex={0}
       >
         <h3 style={{ margin: '0 0 0.5rem' }}>Bottled Water</h3>
         <QuantityStepper
