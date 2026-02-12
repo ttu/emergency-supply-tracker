@@ -11,16 +11,19 @@ import type {
   RecommendedItemDefinition,
   RecommendedItemsFile,
   ImportedRecommendedItem,
+  ImportedCategory,
   LocalizedNames,
   KitId,
   KitInfo,
   UploadedKit,
+  Category,
 } from '@/shared/types';
 import {
   isBuiltInKitId,
   isCustomKitId,
   getCustomKitUuid,
   createCustomKitId,
+  createCategoryId,
 } from '@/shared/types';
 import { getLocalizedKitMetaString } from '@/shared/utils/kitMeta';
 import {
@@ -28,6 +31,7 @@ import {
   saveAppData,
   createDefaultAppData,
 } from '@/shared/utils/storage/localStorage';
+import { notifyStorageChange } from '@/shared/hooks/useLocalStorageSync';
 import { RecommendedItemsContext } from '../context';
 import type { UploadKitResult } from '../context';
 import {
@@ -65,6 +69,28 @@ function updateKitItems(
 /** Generate a UUID v4 */
 function generateUuid(): string {
   return crypto.randomUUID();
+}
+
+/** Convert imported categories from a kit file to Category objects */
+function convertImportedCategories(
+  categories: ImportedCategory[] | undefined,
+  sourceKitId: KitId,
+): Category[] {
+  if (!categories || categories.length === 0) {
+    return [];
+  }
+
+  return categories.map((imported) => ({
+    id: createCategoryId(imported.id),
+    name: imported.names.en || Object.values(imported.names)[0] || imported.id,
+    names: imported.names,
+    icon: imported.icon,
+    isCustom: true,
+    descriptions: imported.description,
+    sortOrder: imported.sortOrder,
+    color: imported.color,
+    sourceKitId,
+  }));
 }
 
 export function RecommendedItemsProvider({
@@ -187,14 +213,33 @@ export function RecommendedItemsProvider({
     const data = getAppData() || createDefaultAppData();
     data.selectedRecommendationKit = selectedKitId;
     data.uploadedRecommendationKits = uploadedKits;
-    // Clear disabled items only when the active kit actually changes (not on unrelated kit uploads)
+    // When the active kit actually changes (not on unrelated kit uploads):
+    // - Clear disabled recommended items (IDs may not exist in new kit)
+    // - Apply kit's disabledCategories (if any)
+    // - Apply kit's custom categories (if any)
     if (previousKitIdRef.current !== selectedKitId) {
       data.disabledRecommendedItems = [];
+      // Apply kit's disabledCategories setting (default to empty array if not specified)
+      data.disabledCategories = currentKitFile?.disabledCategories ?? [];
+      // Apply kit's custom categories (replaces existing custom categories from kits)
+      // Keep user-created categories (those without sourceKitId), replace kit-imported ones
+      const userCreatedCategories = (data.customCategories || []).filter(
+        (c) => !c.sourceKitId,
+      );
+      const kitCategories = convertImportedCategories(
+        currentKitFile?.categories,
+        selectedKitId,
+      );
+      data.customCategories = [...userCreatedCategories, ...kitCategories];
     }
     previousKitIdRef.current = selectedKitId;
     data.lastModified = new Date().toISOString();
     saveAppData(data);
-  }, [selectedKitId, uploadedKits]);
+
+    // Notify other hooks using useLocalStorageSync to refresh their state
+    // This ensures InventoryProvider picks up the new categories and disabled categories
+    notifyStorageChange();
+  }, [selectedKitId, uploadedKits, currentKitFile]);
 
   // === Kit Selection ===
 

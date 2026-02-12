@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useLocalStorageSync } from './useLocalStorageSync';
+import {
+  useLocalStorageSync,
+  notifyStorageChange,
+} from './useLocalStorageSync';
 import * as localStorage from '@/shared/utils/storage/localStorage';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 import type { AppData, HouseholdConfig } from '@/shared/types';
@@ -421,6 +424,196 @@ describe('useLocalStorageSync', () => {
       // saveAppData is mocked to throw, error already handled by localStorage.saveAppData
 
       consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('notifyStorageChange', () => {
+    it('should refresh state when notifyStorageChange is called', () => {
+      const initialHousehold = createMockHousehold({
+        adults: 2,
+        supplyDurationDays: 3,
+      });
+
+      const updatedHousehold = createMockHousehold({
+        adults: 5,
+        supplyDurationDays: 14,
+      });
+
+      const mockAppData = createMockAppData({
+        household: initialHousehold,
+      });
+
+      vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
+      vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
+
+      const { result } = renderHook(() =>
+        useLocalStorageSync('household', initialHousehold),
+      );
+
+      expect(result.current[0]).toEqual(initialHousehold);
+
+      // Simulate external localStorage change
+      const updatedAppData = createMockAppData({
+        household: updatedHousehold,
+      });
+      vi.mocked(localStorage.getAppData).mockReturnValue(updatedAppData);
+
+      // Dispatch the storage sync event
+      act(() => {
+        notifyStorageChange();
+      });
+
+      // State should now reflect the updated localStorage value
+      expect(result.current[0]).toEqual(updatedHousehold);
+    });
+
+    it('should refresh multiple hooks when notifyStorageChange is called', () => {
+      const mockAppData = createMockAppData({
+        household: createMockHousehold({ adults: 2 }),
+        settings: createMockSettings({ theme: 'light' }),
+      });
+
+      vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
+      vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
+
+      const { result: householdResult } = renderHook(() =>
+        useLocalStorageSync('household', mockAppData.household),
+      );
+
+      const { result: settingsResult } = renderHook(() =>
+        useLocalStorageSync('settings', mockAppData.settings),
+      );
+
+      expect(householdResult.current[0].adults).toBe(2);
+      expect(settingsResult.current[0].theme).toBe('light');
+
+      // Simulate external localStorage change affecting both
+      const updatedAppData = createMockAppData({
+        household: createMockHousehold({ adults: 4 }),
+        settings: createMockSettings({ theme: 'dark' }),
+      });
+      vi.mocked(localStorage.getAppData).mockReturnValue(updatedAppData);
+
+      // Dispatch the storage sync event
+      act(() => {
+        notifyStorageChange();
+      });
+
+      // Both hooks should have refreshed
+      expect(householdResult.current[0].adults).toBe(4);
+      expect(settingsResult.current[0].theme).toBe('dark');
+    });
+
+    it('should call initializer function on refresh when provided', () => {
+      const mockSettings = createMockSettings({
+        language: 'en' as const,
+        theme: 'light' as const,
+      });
+
+      vi.mocked(localStorage.getAppData).mockReturnValue(
+        createMockAppData({ settings: mockSettings }),
+      );
+
+      const initializer = vi.fn((data: AppData | undefined) => {
+        if (data?.settings) {
+          return {
+            ...data.settings,
+            theme: 'dark' as const, // Always override to dark
+          };
+        }
+        return mockSettings;
+      });
+
+      const { result } = renderHook(() =>
+        useLocalStorageSync('settings', initializer),
+      );
+
+      // Initial call during initialization
+      expect(initializer).toHaveBeenCalledTimes(1);
+      expect(result.current[0].theme).toBe('dark');
+
+      // Update localStorage
+      const updatedSettings = createMockSettings({
+        language: 'fi' as const,
+        theme: 'light' as const,
+      });
+      vi.mocked(localStorage.getAppData).mockReturnValue(
+        createMockAppData({ settings: updatedSettings }),
+      );
+
+      // Trigger refresh
+      act(() => {
+        notifyStorageChange();
+      });
+
+      // Initializer should be called again
+      expect(initializer).toHaveBeenCalledTimes(2);
+      // Theme should still be overridden to dark by initializer
+      expect(result.current[0].theme).toBe('dark');
+      // But language should reflect the updated value
+      expect(result.current[0].language).toBe('fi');
+    });
+
+    it('should handle errors gracefully during refresh', () => {
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      const defaultHousehold = createMockHousehold({ adults: 2 });
+      const mockAppData = createMockAppData({ household: defaultHousehold });
+
+      vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
+      vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
+
+      const { result } = renderHook(() =>
+        useLocalStorageSync('household', defaultHousehold),
+      );
+
+      expect(result.current[0]).toEqual(defaultHousehold);
+
+      // Make getAppData throw on refresh
+      vi.mocked(localStorage.getAppData).mockImplementation(() => {
+        throw new Error('localStorage unavailable');
+      });
+
+      // Dispatch the storage sync event - should not throw
+      act(() => {
+        notifyStorageChange();
+      });
+
+      // State should remain unchanged due to error
+      expect(result.current[0]).toEqual(defaultHousehold);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to refresh state'),
+        expect.any(Error),
+      );
+
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('should cleanup event listener on unmount', () => {
+      const removeEventListenerSpy = vi.spyOn(
+        globalThis,
+        'removeEventListener',
+      );
+      const defaultHousehold = createMockHousehold({ adults: 2 });
+      const mockAppData = createMockAppData({ household: defaultHousehold });
+
+      vi.mocked(localStorage.getAppData).mockReturnValue(mockAppData);
+      vi.mocked(localStorage.createDefaultAppData).mockReturnValue(mockAppData);
+
+      const { unmount } = renderHook(() =>
+        useLocalStorageSync('household', defaultHousehold),
+      );
+
+      unmount();
+
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'app-storage-sync',
+        expect.any(Function),
+      );
+
+      removeEventListenerSpy.mockRestore();
     });
   });
 });

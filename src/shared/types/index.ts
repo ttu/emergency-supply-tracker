@@ -312,6 +312,7 @@ export interface RecommendedItemsFileMeta {
 export interface RecommendedItemsFile {
   meta: RecommendedItemsFileMeta;
   categories?: ImportedCategory[]; // Custom category definitions
+  disabledCategories?: StandardCategoryId[]; // Standard categories to hide when kit is selected
   items: ImportedRecommendedItem[];
 }
 

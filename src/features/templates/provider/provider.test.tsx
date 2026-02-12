@@ -38,6 +38,7 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
     customTemplates: [],
     dismissedAlertIds: [],
     disabledRecommendedItems: [],
+    disabledCategories: [],
     selectedRecommendationKit: DEFAULT_KIT_ID,
     uploadedRecommendationKits: [],
     lastModified: new Date().toISOString(),
@@ -1061,6 +1062,262 @@ describe('RecommendedItemsProvider', () => {
       // Should fork the default built-in kit and return the new custom kit ID
       expect(result).toBeDefined();
       expect(result).toMatch(/^custom:/);
+    });
+  });
+
+  describe('kit disabledCategories and custom categories', () => {
+    const kitWithCustomCategories: RecommendedItemsFile = {
+      meta: {
+        name: 'Custom Categories Kit',
+        version: CURRENT_SCHEMA_VERSION,
+        createdAt: '2024-01-01T00:00:00.000Z',
+      },
+      categories: [
+        {
+          id: 'cycling-tools',
+          names: { en: 'Cycling Tools', fi: 'Pyöräilytyökalut' },
+          icon: '🔧',
+          description: { en: 'Bike tools', fi: 'Pyörätyökalut' },
+          sortOrder: 10,
+          color: '#4A90D9',
+        },
+        {
+          id: 'cycling-parts',
+          names: { en: 'Cycling Parts', fi: 'Pyöräilyosat' },
+          icon: '⚙️',
+          sortOrder: 20,
+        },
+      ],
+      disabledCategories: [
+        'water-beverages',
+        'food',
+        'cooking-heat',
+        'light-power',
+        'communication-info',
+        'medical-health',
+        'hygiene-sanitation',
+        'tools-supplies',
+        'cash-documents',
+        'pets',
+      ],
+      items: [
+        {
+          id: createProductTemplateId('bike-pump'),
+          names: { en: 'Bike Pump', fi: 'Pyöräpumppu' },
+          category: 'cycling-tools',
+          unit: 'pieces',
+          baseQuantity: createQuantity(1),
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+
+    const uploadedKitWithCategories: UploadedKit = {
+      id: 'kit-with-categories-uuid',
+      uploadedAt: '2024-01-01T00:00:00.000Z',
+      file: kitWithCustomCategories,
+    };
+
+    it('should apply disabledCategories when selecting a kit with them', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKitWithCategories],
+        selectedRecommendationKit: DEFAULT_KIT_ID,
+        disabledCategories: [],
+        customCategories: [],
+      });
+
+      let selectKitFn!: ReturnType<typeof useRecommendedItems>['selectKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              selectKitFn = ctx.selectKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear initial calls
+      mockSaveAppData.mockClear();
+
+      act(() => {
+        selectKitFn(createCustomKitId('kit-with-categories-uuid'));
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+
+      // Should have all 10 standard categories disabled
+      expect(lastCall.disabledCategories).toBeDefined();
+      expect(lastCall.disabledCategories).toContain('water-beverages');
+      expect(lastCall.disabledCategories).toContain('food');
+      expect(lastCall.disabledCategories).toContain('pets');
+      expect(lastCall.disabledCategories.length).toBe(10);
+    });
+
+    it('should apply custom categories when selecting a kit with them', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKitWithCategories],
+        selectedRecommendationKit: DEFAULT_KIT_ID,
+        disabledCategories: [],
+        customCategories: [],
+      });
+
+      let selectKitFn!: ReturnType<typeof useRecommendedItems>['selectKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              selectKitFn = ctx.selectKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear initial calls
+      mockSaveAppData.mockClear();
+
+      act(() => {
+        selectKitFn(createCustomKitId('kit-with-categories-uuid'));
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+
+      // Should have the custom categories from the kit
+      expect(lastCall.customCategories).toBeDefined();
+      expect(lastCall.customCategories.length).toBe(2);
+
+      const cyclingTools = lastCall.customCategories.find(
+        (c: { id: string }) => c.id === 'cycling-tools',
+      );
+      expect(cyclingTools).toBeDefined();
+      expect(cyclingTools.name).toBe('Cycling Tools');
+      expect(cyclingTools.names).toEqual({
+        en: 'Cycling Tools',
+        fi: 'Pyöräilytyökalut',
+      });
+      expect(cyclingTools.icon).toBe('🔧');
+      expect(cyclingTools.isCustom).toBe(true);
+      expect(cyclingTools.sourceKitId).toBe(
+        createCustomKitId('kit-with-categories-uuid'),
+      );
+    });
+
+    it('should preserve user-created categories when switching kits', async () => {
+      const userCreatedCategory = {
+        id: 'user-category',
+        name: 'User Category',
+        icon: '📦',
+        isCustom: true,
+        // No sourceKitId - user created
+      };
+
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKitWithCategories],
+        selectedRecommendationKit: DEFAULT_KIT_ID,
+        disabledCategories: [],
+        customCategories: [userCreatedCategory],
+      });
+
+      let selectKitFn!: ReturnType<typeof useRecommendedItems>['selectKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              selectKitFn = ctx.selectKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear initial calls
+      mockSaveAppData.mockClear();
+
+      act(() => {
+        selectKitFn(createCustomKitId('kit-with-categories-uuid'));
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+
+      // Should have user category + 2 kit categories = 3 total
+      expect(lastCall.customCategories.length).toBe(3);
+
+      // User category should be preserved
+      const userCat = lastCall.customCategories.find(
+        (c: { id: string }) => c.id === 'user-category',
+      );
+      expect(userCat).toBeDefined();
+      expect(userCat.name).toBe('User Category');
+    });
+
+    it('should clear disabledCategories when switching to a kit without them', async () => {
+      mockGetAppData.mockReturnValue({
+        uploadedRecommendationKits: [uploadedKit, uploadedKitWithCategories],
+        selectedRecommendationKit: createCustomKitId(
+          'kit-with-categories-uuid',
+        ),
+        disabledCategories: [
+          'water-beverages',
+          'food',
+          'cooking-heat',
+          'light-power',
+          'communication-info',
+          'medical-health',
+          'hygiene-sanitation',
+          'tools-supplies',
+          'cash-documents',
+          'pets',
+        ],
+        customCategories: [],
+      });
+
+      let selectKitFn!: ReturnType<typeof useRecommendedItems>['selectKit'];
+
+      render(
+        <RecommendedItemsProvider>
+          <TestComponent
+            onContextReady={(ctx) => {
+              selectKitFn = ctx.selectKit;
+            }}
+          />
+        </RecommendedItemsProvider>,
+      );
+
+      // Clear initial calls
+      mockSaveAppData.mockClear();
+
+      // Switch to a kit without disabledCategories
+      act(() => {
+        selectKitFn(createCustomKitId('test-kit-uuid'));
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAppData).toHaveBeenCalled();
+      });
+
+      const lastCall =
+        mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
+
+      // disabledCategories should be cleared (empty array)
+      expect(lastCall.disabledCategories).toEqual([]);
     });
   });
 
