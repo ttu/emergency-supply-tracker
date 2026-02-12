@@ -174,4 +174,92 @@ describe('errorLogger storage', () => {
       expect(new Date(session.start).getTime()).not.toBeNaN();
     });
   });
+
+  describe('DEV mode console logging', () => {
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    it('logs error when invalid data structure is found', () => {
+      // Store invalid data
+      localStorage.setItem(
+        ERROR_LOG_STORAGE_KEY,
+        JSON.stringify({ invalid: 'data' }),
+      );
+
+      const data = getErrorLogData();
+
+      expect(data.logs).toEqual([]);
+      if (import.meta.env.DEV) {
+        expect(console.error).toHaveBeenCalledWith(
+          'Invalid error log data structure in localStorage, resetting to defaults',
+        );
+      }
+    });
+
+    it('logs warning when filtering out invalid log entries', () => {
+      const invalidData = {
+        logs: [
+          {
+            id: 'valid',
+            level: 'info',
+            message: 'Valid',
+            timestamp: new Date().toISOString(),
+          },
+          { invalid: 'entry' }, // Invalid entry
+        ],
+        sessionId: 'test-session',
+        sessionStart: new Date().toISOString(),
+      };
+
+      localStorage.setItem(ERROR_LOG_STORAGE_KEY, JSON.stringify(invalidData));
+
+      const data = getErrorLogData();
+
+      expect(data.logs).toHaveLength(1);
+      if (import.meta.env.DEV) {
+        expect(console.warn).toHaveBeenCalledWith(
+          'Filtered out 1 invalid log entries',
+        );
+      }
+    });
+
+    it('logs error when JSON parsing fails', () => {
+      // Store invalid JSON
+      localStorage.setItem(ERROR_LOG_STORAGE_KEY, 'invalid json {');
+
+      const data = getErrorLogData();
+
+      expect(data.logs).toEqual([]);
+      if (import.meta.env.DEV) {
+        expect(console.error).toHaveBeenCalledWith(
+          'Failed to load error log data:',
+          expect.any(Error),
+        );
+      }
+    });
+
+    it('logs error when saving fails', () => {
+      // Mock localStorage.setItem to throw
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('QuotaExceededError');
+      });
+
+      const testData = {
+        logs: [],
+        sessionId: 'test',
+        sessionStart: new Date().toISOString(),
+      };
+
+      saveErrorLogData(testData);
+
+      if (import.meta.env.DEV) {
+        expect(console.error).toHaveBeenCalledWith(
+          'Failed to save error log data:',
+          expect.any(Error),
+        );
+      }
+    });
+  });
 });

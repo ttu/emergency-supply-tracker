@@ -246,4 +246,88 @@ describe('QuantityEditor', () => {
 
     expect(input).toHaveValue('4');
   });
+
+  it('should stop propagation on container click', () => {
+    const onQuantityChange = vi.fn();
+    const onOuterClick = vi.fn();
+
+    renderWithProviders(
+      <div onClick={onOuterClick}>
+        <QuantityEditor
+          quantity={createQuantity(5)}
+          unit="pieces"
+          onQuantityChange={onQuantityChange}
+        />
+      </div>,
+    );
+
+    const editor = screen.getByTestId('quantity-editor');
+    fireEvent.click(editor);
+
+    // onOuterClick should not be called due to stopPropagation
+    expect(onOuterClick).not.toHaveBeenCalled();
+  });
+
+  it('should stop propagation on container Enter key press', () => {
+    const onQuantityChange = vi.fn();
+    const onOuterKeyDown = vi.fn();
+
+    renderWithProviders(
+      <div onKeyDown={onOuterKeyDown}>
+        <QuantityEditor
+          quantity={createQuantity(5)}
+          unit="pieces"
+          onQuantityChange={onQuantityChange}
+        />
+      </div>,
+    );
+
+    const editor = screen.getByTestId('quantity-editor');
+    fireEvent.keyDown(editor, { key: 'Enter' });
+
+    // onOuterKeyDown should not be called due to stopPropagation
+    expect(onOuterKeyDown).not.toHaveBeenCalled();
+  });
+
+  it('should stop propagation on container Space key press', () => {
+    const onQuantityChange = vi.fn();
+    const onOuterKeyDown = vi.fn();
+
+    renderWithProviders(
+      <div onKeyDown={onOuterKeyDown}>
+        <QuantityEditor
+          quantity={createQuantity(5)}
+          unit="pieces"
+          onQuantityChange={onQuantityChange}
+        />
+      </div>,
+    );
+
+    const editor = screen.getByTestId('quantity-editor');
+    fireEvent.keyDown(editor, { key: ' ' });
+
+    // onOuterKeyDown should not be called due to stopPropagation
+    expect(onOuterKeyDown).not.toHaveBeenCalled();
+  });
+
+  it('should not stop propagation for other keys', () => {
+    const onQuantityChange = vi.fn();
+    const onOuterKeyDown = vi.fn();
+
+    renderWithProviders(
+      <div onKeyDown={onOuterKeyDown}>
+        <QuantityEditor
+          quantity={createQuantity(5)}
+          unit="pieces"
+          onQuantityChange={onQuantityChange}
+        />
+      </div>,
+    );
+
+    const editor = screen.getByTestId('quantity-editor');
+    fireEvent.keyDown(editor, { key: 'a' });
+
+    // onOuterKeyDown should be called for other keys
+    expect(onOuterKeyDown).toHaveBeenCalled();
+  });
 });

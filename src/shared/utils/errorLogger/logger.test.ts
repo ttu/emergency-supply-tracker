@@ -182,4 +182,81 @@ describe('errorLogger logger', () => {
       expect(timestamp.getTime()).not.toBeNaN();
     });
   });
+
+  describe('DEV mode console output', () => {
+    it('logs debug messages to console.log in DEV mode', () => {
+      debug('Test debug message');
+
+      if (import.meta.env.DEV) {
+        expect(console.log).toHaveBeenCalledWith('[DEBUG] Test debug message');
+      }
+    });
+
+    it('logs info messages to console.info in DEV mode', () => {
+      info('Test info message');
+
+      if (import.meta.env.DEV) {
+        expect(console.info).toHaveBeenCalledWith('[INFO] Test info message');
+      }
+    });
+
+    it('logs warn messages to console.warn in DEV mode', () => {
+      warn('Test warning');
+
+      if (import.meta.env.DEV) {
+        expect(console.warn).toHaveBeenCalledWith('[WARN] Test warning');
+      }
+    });
+
+    it('logs error messages to console.error in DEV mode', () => {
+      error('Test error');
+
+      if (import.meta.env.DEV) {
+        expect(console.error).toHaveBeenCalledWith('[ERROR] Test error');
+      }
+    });
+
+    it('includes context in console output', () => {
+      info('Test with context', { context: 'TestModule' });
+
+      if (import.meta.env.DEV) {
+        expect(console.info).toHaveBeenCalledWith(
+          '[INFO] [TestModule] Test with context',
+        );
+      }
+    });
+
+    it('includes error object in console output', () => {
+      const testError = new Error('Test error');
+      error('Error occurred', { error: testError });
+
+      if (import.meta.env.DEV) {
+        expect(console.error).toHaveBeenCalledWith(
+          '[ERROR] Error occurred',
+          testError,
+        );
+      }
+    });
+
+    it('logs to console when storage fails', () => {
+      // Mock addLogEntry's internal saveErrorLogData to throw
+      const originalSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = vi.fn().mockImplementation(() => {
+        throw new Error('Storage full');
+      });
+
+      info('This should fail to persist');
+
+      if (import.meta.env.DEV) {
+        // The error logged is from storage.ts, not logger.ts
+        expect(console.error).toHaveBeenCalledWith(
+          'Failed to save error log data:',
+          expect.any(Error),
+        );
+      }
+
+      // Restore
+      Storage.prototype.setItem = originalSetItem;
+    });
+  });
 });
