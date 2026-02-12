@@ -50,6 +50,23 @@ export function ExportSelectionModal({
     return map;
   });
 
+  // Track previous isOpen to detect when modal opens (React pattern for resetting state)
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen && !prevIsOpen) {
+    setPrevIsOpen(true);
+    setIncludeSettings(hasSettings);
+    const map = new Map<InventorySetId, InventorySetSelectionState>();
+    for (const set of inventorySets) {
+      map.set(set.id, {
+        sections: new Set(set.sectionsWithData),
+        expanded: set.isActive,
+      });
+    }
+    setInventorySetSelections(map);
+  } else if (!isOpen && prevIsOpen) {
+    setPrevIsOpen(false);
+  }
+
   const handleToggleSettings = useCallback(() => {
     setIncludeSettings((prev) => !prev);
   }, []);
@@ -203,7 +220,7 @@ export function ExportSelectionModal({
         <div className={styles.sectionList}>
           {/* Global Settings */}
           <label
-            className={`${styles.settingsItem} ${hasSettings ? '' : styles.disabled}`}
+            className={`${styles['settings-item']} ${hasSettings ? '' : styles.disabled}`}
           >
             <input
               type="checkbox"
@@ -212,7 +229,7 @@ export function ExportSelectionModal({
               disabled={!hasSettings}
               className={styles.checkbox}
             />
-            <span className={styles.settingsLabel}>
+            <span className={styles['settings-label']}>
               {t('settings.exportSelection.sections.settings')}
             </span>
           </label>

@@ -54,7 +54,7 @@
   font-size: var(--font-size-xs);
   font-weight: normal;
   color: var(--color-primary);
-  background-color: var(--color-primary-light, rgba(59, 130, 246, 0.1));
+  background-color: var(--color-primary-light, rgb(59 130 246 / 10%));
   padding: 2px 6px;
   border-radius: var(--radius-sm);
 }

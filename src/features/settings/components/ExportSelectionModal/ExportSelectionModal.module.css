@@ -49,7 +49,7 @@
   padding: var(--spacing-sm) 0;
 }
 
-.settingsItem {
+.settings-item {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
@@ -61,16 +61,16 @@
   transition: background-color 0.15s ease;
 }
 
-.settingsItem:hover:not(.disabled) {
+.settings-item:hover:not(.disabled) {
   background-color: var(--color-background);
 }
 
-.settingsItem.disabled {
+.settings-item.disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-.settingsLabel {
+.settings-label {
   font-weight: 500;
   color: var(--color-text);
 }

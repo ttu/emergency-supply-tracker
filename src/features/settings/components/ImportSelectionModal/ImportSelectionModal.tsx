@@ -62,6 +62,28 @@ export function ImportSelectionModal({
     return map;
   });
 
+  // Track previous isOpen to detect when modal opens (React pattern for resetting state)
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen && !prevIsOpen) {
+    setPrevIsOpen(true);
+    setIncludeSettings(hasSettings);
+    const map = new Map<number, InventorySetImportState>();
+    importData.inventorySets.forEach((set, index) => {
+      const availableSections =
+        set.includedSections.length > 0
+          ? set.includedSections
+          : getInventorySetSectionsWithData(set.data);
+      map.set(index, {
+        sections: new Set(availableSections),
+        expanded: true,
+        availableSections,
+      });
+    });
+    setInventorySetSelections(map);
+  } else if (!isOpen && prevIsOpen) {
+    setPrevIsOpen(false);
+  }
+
   // Check for name conflicts (keyed by index so duplicate names each get a unique resolved name)
   const conflictingNames = useMemo(() => {
     const conflicts = new Map<number, string>();
@@ -187,11 +209,13 @@ export function ImportSelectionModal({
     }
 
     onImport(selection);
+    onClose();
   }, [
     includeSettings,
     inventorySetSelections,
     importData.inventorySets,
     onImport,
+    onClose,
   ]);
 
   return (
@@ -233,14 +257,14 @@ export function ImportSelectionModal({
         <div className={styles.sectionList}>
           {/* Global Settings */}
           {hasSettings && (
-            <label className={styles.settingsItem}>
+            <label className={styles['settings-item']}>
               <input
                 type="checkbox"
                 checked={includeSettings}
                 onChange={handleToggleSettings}
                 className={styles.checkbox}
               />
-              <span className={styles.settingsLabel}>
+              <span className={styles['settings-label']}>
                 {t('settings.exportSelection.sections.settings')}
               </span>
             </label>

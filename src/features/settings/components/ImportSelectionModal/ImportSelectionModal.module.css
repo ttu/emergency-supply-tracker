@@ -58,7 +58,7 @@
   padding: var(--spacing-sm) 0;
 }
 
-.settingsItem {
+.settings-item {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
@@ -70,11 +70,11 @@
   transition: background-color 0.15s ease;
 }
 
-.settingsItem:hover {
+.settings-item:hover:not(.disabled) {
   background-color: var(--color-background);
 }
 
-.settingsLabel {
+.settings-label {
   font-weight: 500;
   color: var(--color-text);
 }

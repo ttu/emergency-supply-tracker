@@ -41,6 +41,7 @@ type InventorySetSection =
   | 'customTemplates'
   | 'dismissedAlertIds'
   | 'disabledRecommendedItems'
+  | 'disabledCategories'
   | 'customRecommendedItems';
 ```
 

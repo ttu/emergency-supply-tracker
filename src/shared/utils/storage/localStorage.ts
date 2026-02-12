@@ -795,7 +795,6 @@ export function exportMultiInventory(
         id: inventorySet.id,
         name: inventorySet.name,
         lastModified: inventorySet.lastModified,
-        disabledCategories: inventorySet.disabledCategories,
       },
     };
 
