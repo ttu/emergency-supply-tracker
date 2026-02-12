@@ -58,7 +58,7 @@ The export format supports multiple inventory sets with selective section export
 
 ```json
 {
-  "version": "1.1.0",
+  "version": "1.0.0",
   "exportedAt": "2026-02-12T12:00:00.000Z",
   "appVersion": "1.0.0",
   "settings": {
@@ -286,11 +286,11 @@ interface MultiInventoryExportData {
 
 **Version Handling:**
 
-- Current version: **1.1.0** (as of 2025-01-23)
+- Current version: **1.0.0** (matches `CURRENT_SCHEMA_VERSION` in `src/shared/utils/storage/migrations.ts`)
 - Version stored in exported data
 - Import checks version compatibility
 - Warns if version mismatch
-- Supported versions: 1.0.0, 1.1.0
+- Supported versions: 1.0.0
 - Future: Migration functions for version upgrades
 
 **Date Format:**

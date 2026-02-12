@@ -85,15 +85,20 @@ export function ImportSelectionModal({
   }
 
   // Check for name conflicts (keyed by index so duplicate names each get a unique resolved name)
+  // This mirrors the behavior in importMultiInventory to detect both:
+  // 1. Conflicts with existing inventory set names
+  // 2. Intra-import duplicates (multiple sets with the same name in the import file)
   const conflictingNames = useMemo(() => {
     const conflicts = new Map<number, string>();
     const tempNames = [...existingInventorySetNames];
 
     importData.inventorySets.forEach((set, index) => {
-      if (existingInventorySetNames.includes(set.name)) {
+      if (tempNames.includes(set.name)) {
         const uniqueName = generateUniqueInventorySetName(set.name, tempNames);
         conflicts.set(index, uniqueName);
         tempNames.push(uniqueName);
+      } else {
+        tempNames.push(set.name);
       }
     });
     return conflicts;
