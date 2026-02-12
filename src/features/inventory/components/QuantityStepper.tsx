@@ -61,14 +61,9 @@ const QuantityStepperComponent = ({
         >
           −
         </button>
-        <span
-          className={styles.value}
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
+        <output className={styles.value} aria-live="polite" aria-atomic="true">
           {quantity}
-        </span>
+        </output>
         <button
           type="button"
           className={styles.button}

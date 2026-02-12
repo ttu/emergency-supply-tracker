@@ -110,14 +110,9 @@ describe('QuantityStepper', () => {
     const parentClick = vi.fn();
 
     render(
-      <div
-        onClick={parentClick}
-        onKeyDown={(e) => e.key === 'Enter' && parentClick()}
-        role="button"
-        tabIndex={0}
-      >
+      <button type="button" onClick={parentClick}>
         <QuantityStepper quantity={5} unit="pieces" onChange={onChange} />
-      </div>,
+      </button>,
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Increase quantity' }));

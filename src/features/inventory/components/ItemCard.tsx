@@ -227,8 +227,9 @@ const ItemCardComponent = ({
     [onItemClick, item],
   );
 
-  // Always render as div to avoid nested button issue with QuantityStepper
-  // Use role="button" and keyboard handling for accessibility when clickable
+  // Using div with role="button" is intentional: the card contains nested interactive
+  // elements (QuantityStepper buttons), and using <button> would create invalid HTML
+  // (nested buttons). This is the recommended accessible pattern for composite widgets.
   return (
     <div
       className={`${styles.card} ${onItemClick ? styles.clickable : ''}`}

@@ -48,7 +48,7 @@
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-lg);
   color: var(--color-text);
-  min-width: 1.5rem;
+  width: 2.5rem;
   text-align: center;
 }
 
