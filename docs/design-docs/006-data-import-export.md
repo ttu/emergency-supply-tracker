@@ -1,14 +1,14 @@
 # Design Doc: Data Import/Export System
 
-**Status:** Published  
-**Last Updated:** 2025-01-23  
+**Status:** Published
+**Last Updated:** 2026-02-12
 **Authors:** Development Team
 
 ---
 
 ## Summary
 
-The Data Import/Export system allows users to backup and restore their emergency supply data via JSON files. It also supports exporting shopping lists in multiple formats (TXT, Markdown, CSV) and importing/exporting custom recommendation sets.
+The Data Import/Export system allows users to backup and restore their emergency supply data via JSON files. It supports multi-inventory exports where users can select which inventory sets and sections to include. It also supports exporting shopping lists in multiple formats (TXT, Markdown, CSV) and importing/exporting custom recommendation sets.
 
 ---
 
@@ -52,73 +52,107 @@ Since the application stores all data in browser LocalStorage, users need a way 
 
 ### Data Export Format
 
-**Full Data Export:**
+**Multi-Inventory Export (Current):**
+
+The export format supports multiple inventory sets with selective section export:
 
 ```json
 {
-  "version": "1.1.0",
-  "household": {
-    "adults": 2,
-    "children": 2,
-    "supplyDurationDays": 7,
-    "useFreezer": false
-  },
+  "version": "1.0.0",
+  "exportedAt": "2026-02-12T12:00:00.000Z",
+  "appVersion": "1.0.0",
   "settings": {
     "language": "en",
     "theme": "auto",
-    "enableCalorieTracking": false,
-    "enablePowerManagement": false,
-    "enableWaterTracking": false
-    // ... more settings
+    "enableCalorieTracking": false
   },
-  "items": [
+  "inventorySets": [
     {
-      "id": "uuid",
-      "name": "Bottled Water",
-      "categoryId": "water-beverages",
-      "quantity": 20,
-      "unit": "liters",
-      "recommendedQuantity": 21
-      // ... more fields
+      "name": "Home Inventory",
+      "includedSections": ["items", "household", "customCategories"],
+      "data": {
+        "id": "uuid",
+        "name": "Home Inventory",
+        "lastModified": "2026-02-12T12:00:00.000Z",
+        "items": [...],
+        "household": {...},
+        "customCategories": [...]
+      }
+    },
+    {
+      "name": "Car Emergency Kit",
+      "includedSections": ["items", "household"],
+      "data": {
+        "id": "uuid",
+        "name": "Car Emergency Kit",
+        "lastModified": "2026-02-12T12:00:00.000Z",
+        "items": [...],
+        "household": {...}
+      }
     }
-  ],
-  "customCategories": [],
-  "customTemplates": [],
-  "customRecommendedItems": null,
-  "disabledRecommendedItems": [],
-  "dismissedAlertIds": [],
-  "lastModified": "2025-01-01T12:00:00Z",
-  "lastBackupDate": "2025-01-01T12:00:00Z"
+  ]
 }
 ```
+
+**Available Inventory Set Sections:**
+
+| Section                    | Description                    |
+| -------------------------- | ------------------------------ |
+| `items`                    | Inventory items array          |
+| `household`                | Household configuration        |
+| `customCategories`         | User-defined categories        |
+| `customTemplates`          | User-defined product templates |
+| `dismissedAlertIds`        | Dismissed alert IDs            |
+| `disabledRecommendedItems` | Disabled recommended item IDs  |
+| `disabledCategories`       | Disabled category IDs          |
+| `customRecommendedItems`   | Custom recommendations file    |
+
+**Global Settings** (shared across all inventory sets) can optionally be included in the export.
+
+**Legacy Single-Set Export (Backwards Compatible):**
+
+Older exports without `inventorySets` array are automatically converted to multi-inventory format on import, with the data assigned to a set named "Imported Data".
+
+### Export Process
+
+1. **User clicks Export** → Opens ExportSelectionModal
+2. **User selects data** → Choose global settings, inventory sets, and per-set sections
+3. **User confirms** → Click "Export Selected"
+4. **System creates JSON** → Only includes selected sections
+5. **Browser downloads file** → File with timestamp in name
 
 ### Import Process
 
 1. **User uploads JSON file** → File input
 2. **System reads file** → FileReader API
-3. **System validates structure** → Check required fields
-4. **System validates data types** → Type checking
-5. **System shows preview** → Item counts, household config
-6. **User confirms** → Replace existing data
-7. **System saves to LocalStorage** → Persist
-8. **System reloads app** → Refresh state
+3. **System detects format** → Multi-inventory or legacy
+4. **System converts if legacy** → Wraps in multi-inventory format
+5. **System validates structure** → Check required fields
+6. **System shows ImportSelectionModal** → Preview available sets/sections
+7. **User selects what to import** → Choose sets and sections
+8. **System checks name conflicts** → Auto-generates unique names if needed
+9. **System merges data** → Creates new inventory sets
+10. **System reloads app** → Refresh state
 
 ### Validation Rules
 
-**Required Fields:**
+**Multi-Inventory Format Required Fields:**
 
 - `version` - Data format version
-- `household` - Household configuration
-- `settings` - User settings
-- `items` - Inventory items array
+- `exportedAt` - Export timestamp
+- `appVersion` - App version that created export
+- `inventorySets` - Array of exported inventory sets
 
-**Optional Fields:**
+**Per Inventory Set Required Fields:**
 
-- `customCategories` - Custom categories
-- `customTemplates` - Custom templates
-- `customRecommendedItems` - Custom recommendations
-- `disabledRecommendedItems` - Disabled item IDs
-- `dismissedAlertIds` - Dismissed alert IDs
+- `name` - Set name
+- `includedSections` - Array of included section names
+- `data` - Partial inventory set data
+
+**Legacy Format Required Fields:**
+
+- `version` - Data format version
+- `items` - Inventory items array (at root level, indicates legacy format)
 
 **Validation Checks:**
 
@@ -127,7 +161,7 @@ Since the application stores all data in browser LocalStorage, users need a way 
 - Data types correct
 - Item structure valid
 - Category IDs valid
-- No duplicate item IDs
+- No duplicate item IDs within a set
 
 ### Shopping List Export
 
@@ -183,21 +217,61 @@ Generated: 2025-01-01 12:00:00
 
 ## Implementation Details
 
+### Export Types
+
+**Location:** `src/shared/types/exportImport.ts`
+
+```typescript
+type InventorySetSection =
+  | 'items'
+  | 'household'
+  | 'customCategories'
+  | 'customTemplates'
+  | 'dismissedAlertIds'
+  | 'disabledRecommendedItems'
+  | 'disabledCategories'
+  | 'customRecommendedItems';
+
+interface MultiInventoryExportSelection {
+  includeSettings: boolean;
+  inventorySets: {
+    id: InventorySetId;
+    sections: InventorySetSection[];
+  }[];
+}
+
+interface MultiInventoryExportData {
+  version: string;
+  exportedAt: string;
+  appVersion: string;
+  settings?: UserSettings;
+  inventorySets: ExportedInventorySet[];
+}
+```
+
 ### Export Functions
 
 **Location:** `src/shared/utils/storage/localStorage.ts`
 
-- `exportAppData()` - Serializes AppData to JSON string
+- `exportMultiInventoryData(root, selection)` - Creates multi-inventory export JSON
+- `getInventorySetExportInfo(root)` - Gets export info for all inventory sets
 - `downloadJSON()` - Creates blob and triggers browser download
-- Uses FileReader API and blob URLs for file downloads
 
 ### Import Functions
 
 **Location:** `src/shared/utils/storage/localStorage.ts`
 
-- `importAppData(file)` - Reads file, parses JSON, validates structure
-- `validateAppData()` - Type guards and validation checks
-- Returns validated AppData or throws error with details
+- `parseMultiInventoryImport(json)` - Parses JSON, auto-detects format, returns unified format
+- `importMultiInventoryData(root, importData, selection)` - Merges selected data into storage
+- `generateUniqueInventorySetName(name, existingNames)` - Generates unique name for conflicts
+
+### UI Components
+
+**Location:** `src/features/settings/components/`
+
+- `ExportSelectionModal` - Modal for selecting what to export
+- `ImportSelectionModal` - Modal for selecting what to import
+- `InventorySetExportSection` - Expandable section for per-set selection
 
 ### Shopping List Export
 
@@ -212,11 +286,11 @@ Generated: 2025-01-01 12:00:00
 
 **Version Handling:**
 
-- Current version: **1.1.0** (as of 2025-01-23)
+- Current version: **1.0.0** (matches `CURRENT_SCHEMA_VERSION` in `src/shared/utils/storage/migrations.ts`)
 - Version stored in exported data
 - Import checks version compatibility
 - Warns if version mismatch
-- Supported versions: 1.0.0, 1.1.0
+- Supported versions: 1.0.0
 - Future: Migration functions for version upgrades
 
 **Date Format:**
@@ -321,9 +395,8 @@ Generated: 2025-01-01 12:00:00
 
 ## Open Questions
 
-1. **Should we support partial imports?**
-   - Current: Full replace only
-   - Future: Could support merging specific sections
+1. ~~**Should we support partial imports?**~~
+   - ✅ **Implemented:** Users can select which inventory sets and sections to import
 
 2. **Should we support export formats other than JSON?**
    - Current: JSON only

@@ -3,18 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/Button';
 import { useNotification } from '@/shared/hooks/useNotification';
 import {
-  parseImportJSON,
-  mergeImportData,
-  getAppData,
-  saveAppData,
-  createDefaultAppData,
+  parseMultiInventoryImport,
+  importMultiInventory,
+  saveRootStorageAfterImport,
+  getRootStorageForExport,
+  getInventorySetList,
 } from '@/shared/utils/storage/localStorage';
 import { ImportSelectionModal } from './ImportSelectionModal';
 import type {
-  ExportSection,
-  PartialExportData,
+  MultiInventoryExportData,
+  MultiInventoryImportSelection,
 } from '@/shared/types/exportImport';
-import { getSectionsWithData } from '@/shared/types/exportImport';
 import styles from './ImportButton.module.css';
 
 interface ImportButtonProps {
@@ -26,18 +25,23 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
   const { showNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [importData, setImportData] = useState<PartialExportData | null>(null);
+  const [importData, setImportData] = useState<MultiInventoryExportData | null>(
+    null,
+  );
+  const [existingNames, setExistingNames] = useState<string[]>([]);
 
-  const validateImportData = (data: PartialExportData): boolean => {
+  const validateImportData = (data: MultiInventoryExportData): boolean => {
     if (!data || typeof data !== 'object') return false;
 
-    // Must have version and lastModified at minimum
     if (typeof data.version !== 'string') return false;
-    if (typeof data.lastModified !== 'string') return false;
+    if (!Array.isArray(data.inventorySets)) return false;
 
-    // Must have at least one section with data
-    const sectionsWithData = getSectionsWithData(data);
-    return sectionsWithData.length > 0;
+    // Must have at least one inventory set or settings
+    if (data.inventorySets.length === 0 && !data.settings) {
+      return false;
+    }
+
+    return true;
   };
 
   const handleFileChange = useCallback(
@@ -53,12 +57,16 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
       reader.onload = (event) => {
         try {
           const json = event.target?.result as string;
-          const data = parseImportJSON(json);
+          const data = parseMultiInventoryImport(json);
 
           if (!validateImportData(data)) {
             showNotification(t('notifications.importError'), 'error');
             return;
           }
+
+          // Get existing inventory set names for conflict detection
+          const inventorySetList = getInventorySetList();
+          setExistingNames(inventorySetList.map((s) => s.name));
 
           // Store parsed data and open modal for section selection
           setImportData(data);
@@ -82,21 +90,26 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     setImportData(null);
+    setExistingNames([]);
   }, []);
 
   const handleImport = useCallback(
-    (sections: ExportSection[]) => {
+    (selection: MultiInventoryImportSelection) => {
       if (!importData) return;
 
       try {
-        // Get existing data or create default
-        const existing = getAppData() ?? createDefaultAppData();
+        // Get existing root storage
+        const existingRoot = getRootStorageForExport();
 
-        // Merge selected sections
-        const merged = mergeImportData(existing, importData, sections);
+        // Import selected inventory sets
+        const updatedRoot = importMultiInventory(
+          importData,
+          selection,
+          existingRoot,
+        );
 
-        // Save merged data
-        saveAppData(merged);
+        // Save updated root storage
+        saveRootStorageAfterImport(updatedRoot);
 
         showNotification(t('notifications.importSuccess'), 'success');
 
@@ -146,6 +159,7 @@ export function ImportButton({ onImportSuccess }: ImportButtonProps) {
           onClose={handleCloseModal}
           onImport={handleImport}
           importData={importData}
+          existingInventorySetNames={existingNames}
         />
       )}
     </div>

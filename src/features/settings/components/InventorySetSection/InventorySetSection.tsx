@@ -1,8 +1,9 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventorySet } from '@/features/inventory-set';
 import type { InventorySetId } from '@/shared/types';
 import { Button } from '@/shared/components/Button';
+import { LEGACY_IMPORT_SET_NAME } from '@/shared/types/exportImport';
 import styles from './InventorySetSection.module.css';
 
 export function InventorySetSection() {
@@ -25,6 +26,25 @@ export function InventorySetSection() {
   const triggerRef = useRef<HTMLElement | null>(null);
 
   const canDelete = inventorySets.length > 1;
+
+  // Helper to translate legacy import set name
+  const getDisplayName = useCallback(
+    (name: string) =>
+      name === LEGACY_IMPORT_SET_NAME
+        ? t('settings.import.legacySetName')
+        : name,
+    [t],
+  );
+
+  // Inventory sets with translated display names
+  const inventorySetsWithDisplayNames = useMemo(
+    () =>
+      inventorySets.map((set) => ({
+        ...set,
+        displayName: getDisplayName(set.name),
+      })),
+    [inventorySets, getDisplayName],
+  );
 
   const handleCreate = useCallback(() => {
     const name = newName.trim() || t('settings.inventorySets.defaultName');
@@ -151,9 +171,9 @@ export function InventorySetSection() {
           className={styles.select}
           aria-label={t('settings.inventorySets.activeInventorySet')}
         >
-          {inventorySets.map((w) => (
+          {inventorySetsWithDisplayNames.map((w) => (
             <option key={w.id} value={w.id}>
-              {w.name}
+              {w.displayName}
             </option>
           ))}
         </select>
@@ -167,7 +187,7 @@ export function InventorySetSection() {
           className={styles.list}
           aria-label={t('settings.inventorySets.inventorySetList')}
         >
-          {inventorySets.map((w) => (
+          {inventorySetsWithDisplayNames.map((w) => (
             <li key={w.id} className={styles.listItem}>
               {editingId === w.id ? (
                 <div className={styles.editRow}>
@@ -196,7 +216,7 @@ export function InventorySetSection() {
               ) : (
                 <>
                   <span className={styles.inventorySetName}>
-                    {w.name}
+                    {w.displayName}
                     {w.id === activeInventorySetId && (
                       <span className={styles.activeBadge}>
                         {t('settings.inventorySets.active')}

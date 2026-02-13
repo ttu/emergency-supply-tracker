@@ -329,7 +329,8 @@
       "confirmOverwrite": "This will replace all your current data. Are you sure?",
       "success": "Data imported successfully",
       "error": "Failed to import data. Please check the file format.",
-      "invalidFormat": "Invalid file format. Please select a valid backup file."
+      "invalidFormat": "Invalid file format. Please select a valid backup file.",
+      "legacySetName": "Imported Data"
     },
     "shoppingList": {
       "button": "Export Shopping List",
@@ -363,11 +364,12 @@
       "sections": {
         "items": "Inventory Items",
         "household": "Household Configuration",
-        "settings": "Settings",
+        "settings": "App Preferences (theme, language)",
         "customCategories": "Custom Categories",
         "customTemplates": "Custom Templates",
         "dismissedAlertIds": "Hidden Alerts",
         "disabledRecommendedItems": "Disabled Recommendations",
+        "disabledCategories": "Disabled Categories",
         "customRecommendedItems": "Custom Recommendations"
       }
     },
@@ -377,6 +379,16 @@
       "warning": "Selected sections will overwrite your current data.",
       "importButton": "Import",
       "notInFile": "(not in file)"
+    },
+    "multiExport": {
+      "description": "Select which inventory sets and sections to include in the export file.",
+      "expandSet": "Expand {{name}}",
+      "collapseSet": "Collapse {{name}}"
+    },
+    "multiImport": {
+      "description": "Select which inventory sets and sections to import. Each selected inventory set will be created as a new inventory.",
+      "warning": "Imported inventory sets will be added as new inventories. Settings import will merge with your current settings.",
+      "conflictWarning": "\"{{originalName}}\" already exists - will import as \"{{newName}}\""
     }
   },
   "kits": {
@@ -702,6 +714,7 @@
       "reminderDismissed": "Backup reminder dismissed"
     },
     "backupSuccess": "Data exported successfully",
+    "exportError": "Export failed",
     "importSuccess": "Data imported successfully",
     "importError": "Import failed",
     "data": {
