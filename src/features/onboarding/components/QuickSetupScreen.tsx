@@ -14,6 +14,7 @@ export interface QuickSetupScreenProps {
   onAddItems: (selectedItemIds: Set<string>) => void;
   onSkip: () => void;
   onBack?: () => void;
+  onCreateExampleSet?: () => void;
 }
 
 export const QuickSetupScreen = ({
@@ -21,6 +22,7 @@ export const QuickSetupScreen = ({
   onAddItems,
   onSkip,
   onBack,
+  onCreateExampleSet,
 }: QuickSetupScreenProps) => {
   const { t } = useTranslation(['common', 'categories', 'products', 'units']);
   const { recommendedItems } = useRecommendedItems();
@@ -265,6 +267,16 @@ export const QuickSetupScreen = ({
           >
             {t('quickSetup.skip')}
           </Button>
+          {onCreateExampleSet && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onCreateExampleSet}
+              data-testid="create-example-set-button"
+            >
+              {t('quickSetup.createExampleSet')}
+            </Button>
+          )}
           <Button
             type="button"
             variant="primary"

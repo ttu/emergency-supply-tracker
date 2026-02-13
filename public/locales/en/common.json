@@ -616,7 +616,8 @@
     "noFreezer": "Frozen items excluded (no freezer selected)",
     "skip": "Skip for now",
     "addAllItems": "Add all items",
-    "addItems": "Add selected items"
+    "addItems": "Add selected items",
+    "createExampleSet": "Try with demo data"
   },
   "onboarding": {
     "import": {

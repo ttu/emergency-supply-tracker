@@ -616,7 +616,8 @@
     "noFreezer": "Pakasteet jätetty pois (pakastinta ei valittu)",
     "skip": "Ohita toistaiseksi",
     "addAllItems": "Lisää kaikki tuotteet",
-    "addItems": "Lisää valitut tuotteet"
+    "addItems": "Lisää valitut tuotteet",
+    "createExampleSet": "Kokeile esimerkkitiedoilla"
   },
   "onboarding": {
     "import": {

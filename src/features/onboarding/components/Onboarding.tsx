@@ -12,6 +12,7 @@ import type { HouseholdPreset } from './HouseholdPresetSelector';
 import { useRecommendedItems } from '@/features/templates';
 import { HOUSEHOLD_DEFAULTS, HOUSEHOLD_PRESETS } from '@/features/household';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
+import { generateExampleInventory } from '../utils';
 
 function getHouseholdInitialData(
   preset: HouseholdPreset,
@@ -133,6 +134,19 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
     onComplete(householdConfig, []);
   };
 
+  const handleCreateExampleSet = () => {
+    if (!householdConfig) return;
+
+    const translateFn = (key: string) => t(key);
+    const items = generateExampleInventory(
+      recommendedItems,
+      householdConfig,
+      translateFn,
+    );
+
+    onComplete(householdConfig, items);
+  };
+
   return (
     <>
       {currentStep === 'welcome' && (
@@ -170,6 +184,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
           onAddItems={handleAddItems}
           onSkip={handleSkip}
           onBack={() => setCurrentStep('kitSelection')}
+          onCreateExampleSet={handleCreateExampleSet}
         />
       )}
     </>
