@@ -627,6 +627,11 @@
     "kitSelection": {
       "title": "Valitse suosituspaketti",
       "subtitle": "Valitse valmis paketti tai lataa oma mukautettu suosituspaketti"
+    },
+    "tryDemoData": {
+      "link": "Kokeile esimerkkitiedoilla",
+      "hint": "Luo 4 hengen perheen esimerkkivaraston. Voit poistaa esimerkkitiedot kohdasta Asetukset → Vaaravyöhyke.",
+      "notification": "Esimerkkitiedot luotu! Voit poistaa ne kohdasta Asetukset → Vaaravyöhyke."
     }
   },
   "accessibility": {

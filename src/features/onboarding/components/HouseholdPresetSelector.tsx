@@ -17,6 +17,7 @@ export interface HouseholdPresetSelectorProps {
   selectedPreset?: string;
   onSelectPreset: (preset: HouseholdPreset) => void;
   onBack?: () => void;
+  onTryDemoData?: () => void;
 }
 
 const PRESET_IDS: HouseholdPresetId[] = ['single', 'couple', 'family'];
@@ -32,6 +33,7 @@ export function HouseholdPresetSelector({
   selectedPreset,
   onSelectPreset,
   onBack,
+  onTryDemoData,
 }: HouseholdPresetSelectorProps) {
   const { t } = useTranslation();
   const { fileInputRef, handleFileChange, triggerFileInput } = useImportData({
@@ -107,6 +109,22 @@ export function HouseholdPresetSelector({
             </div>
           </Card>
         </div>
+
+        {onTryDemoData && (
+          <div className={styles.demoSection}>
+            <button
+              type="button"
+              onClick={onTryDemoData}
+              className={styles.demoLink}
+              data-testid="try-demo-data-link"
+            >
+              {t('onboarding.tryDemoData.link')}
+            </button>
+            <p className={styles.demoHint}>
+              {t('onboarding.tryDemoData.hint')}
+            </p>
+          </div>
+        )}
 
         {onBack && (
           <div className={styles.actions}>

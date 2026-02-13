@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WelcomeScreen } from './WelcomeScreen';
 import { HouseholdPresetSelector } from './HouseholdPresetSelector';
@@ -12,6 +12,7 @@ import type { HouseholdPreset } from './HouseholdPresetSelector';
 import { useRecommendedItems } from '@/features/templates';
 import { HOUSEHOLD_DEFAULTS, HOUSEHOLD_PRESETS } from '@/features/household';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
+import { useNotification } from '@/shared/hooks';
 import { generateExampleInventory } from '../utils';
 
 function getHouseholdInitialData(
@@ -49,6 +50,8 @@ type OnboardingStep =
 
 export const Onboarding = ({ onComplete }: OnboardingProps) => {
   const { t } = useTranslation('products');
+  const { t: tCommon } = useTranslation();
+  const { showNotification } = useNotification();
   const { recommendedItems } = useRecommendedItems();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [selectedPreset, setSelectedPreset] = useState<HouseholdPreset | null>(
@@ -147,6 +150,29 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
     onComplete(householdConfig, items);
   };
 
+  const handleTryDemoData = useCallback(() => {
+    // Create a 4-person family household config
+    const demoHousehold: HouseholdConfig = {
+      adults: 2,
+      children: 2,
+      pets: 0,
+      supplyDurationDays: HOUSEHOLD_DEFAULTS.supplyDays,
+      useFreezer: true,
+    };
+
+    const translateFn = (key: string) => t(key);
+    const items = generateExampleInventory(
+      recommendedItems,
+      demoHousehold,
+      translateFn,
+    );
+
+    // Show notification about how to remove demo data
+    showNotification(tCommon('onboarding.tryDemoData.notification'), 'info', 0);
+
+    onComplete(demoHousehold, items);
+  }, [recommendedItems, t, tCommon, showNotification, onComplete]);
+
   return (
     <>
       {currentStep === 'welcome' && (
@@ -158,6 +184,7 @@ export const Onboarding = ({ onComplete }: OnboardingProps) => {
           selectedPreset={selectedPreset?.id}
           onSelectPreset={handlePresetSelect}
           onBack={() => setCurrentStep('welcome')}
+          onTryDemoData={handleTryDemoData}
         />
       )}
 

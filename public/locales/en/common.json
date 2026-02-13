@@ -627,6 +627,11 @@
     "kitSelection": {
       "title": "Choose a Recommendation Kit",
       "subtitle": "Select a pre-configured kit or upload your own custom recommendations"
+    },
+    "tryDemoData": {
+      "link": "Try with demo data",
+      "hint": "Creates a 4-person family with example inventory. You can delete demo data from Settings → Danger Zone.",
+      "notification": "Demo data created! You can delete it from Settings → Danger Zone."
     }
   },
   "accessibility": {
