@@ -158,11 +158,13 @@
         "household": "Kotitalous",
         "recommendations": "Suositukset",
         "categories": "Kategoriat",
-        "advanced": "Lisäasetukset"
+        "advanced": "Lisäasetukset",
+        "scenarioSettings": "Skenaarion asetukset",
+        "appSettings": "Sovelluksen asetukset"
       },
       "sections": {
         "appearance": "Ulkoasu",
-        "inventorySets": "Varastosetit",
+        "inventorySets": "Hallitse varastosettejä",
         "household": "Kotitalouden asetukset",
         "nutrition": "Ravitsemus & vaatimukset",
         "hiddenAlerts": "Piilotetut hälytykset",
@@ -270,8 +272,16 @@
       "storageDescription": "Varastosi ja asetukset tallennetaan selaimellesi. Vie varmuuskopio tai tyhjennä tiedot alta, jos tallennustila täyttyy.",
       "viewOnGitHub": "Näytä GitHubissa"
     },
+    "inventorySetSelector": {
+      "label": "Muokataan:",
+      "manage": "Hallitse",
+      "selectLabel": "Valitse varastosetti",
+      "manageLabel": "Hallitse varastosettejä",
+      "regionLabel": "Varastosetin valinta"
+    },
     "inventorySets": {
       "description": "Hallitse useita varastoja (esim. koti, autopaketti). Jokaisella varastosetillä on oma kotitalous, tuotteet ja hälytykset.",
+      "helpText": "Jokaisella varastosetillä on oma kotitalous, tuotteet ja asetukset.",
       "activeInventorySet": "Aktiivinen varastosetti",
       "inventorySetList": "Varastosetit",
       "createInventorySet": "Luo uusi varastosetti",

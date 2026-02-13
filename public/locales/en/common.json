@@ -158,11 +158,13 @@
         "household": "Household",
         "recommendations": "Recommendations",
         "categories": "Categories",
-        "advanced": "Advanced"
+        "advanced": "Advanced",
+        "scenarioSettings": "Scenario Settings",
+        "appSettings": "App Settings"
       },
       "sections": {
         "appearance": "Appearance",
-        "inventorySets": "Inventory Sets",
+        "inventorySets": "Manage Inventory Sets",
         "household": "Household Configuration",
         "nutrition": "Nutrition & Requirements",
         "hiddenAlerts": "Hidden Alerts",
@@ -270,8 +272,16 @@
       "storageDescription": "Your inventory and settings are saved in your browser. Export a backup or clear data below if storage gets full.",
       "viewOnGitHub": "View on GitHub"
     },
+    "inventorySetSelector": {
+      "label": "Configuring:",
+      "manage": "Manage",
+      "selectLabel": "Select inventory set",
+      "manageLabel": "Manage inventory sets",
+      "regionLabel": "Inventory set selection"
+    },
     "inventorySets": {
       "description": "Manage multiple inventories (e.g. home, car kit). Each inventory set has its own household settings, items, and alerts.",
+      "helpText": "Each inventory set has its own household config, items, and settings.",
       "activeInventorySet": "Active inventory set",
       "inventorySetList": "Inventory set list",
       "createInventorySet": "Create new inventory set",

@@ -55,12 +55,12 @@ describe('Settings Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render appearance section by default', () => {
+  it('should render household section by default', () => {
     renderWithProviders(<Settings />);
 
-    // Appearance section should be visible by default
-    expect(screen.getByTestId('section-appearance')).toBeInTheDocument();
-    expect(screen.getByText('settings.language.label')).toBeInTheDocument();
+    // Household section should be visible by default (first item in Scenario Settings)
+    expect(screen.getByTestId('section-household')).toBeInTheDocument();
+    expect(screen.getByText('settings.household.adults')).toBeInTheDocument();
   });
 
   it('should navigate to household section when clicked', () => {

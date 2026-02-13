@@ -18,6 +18,7 @@ import {
   CategoriesSection,
   CustomTemplates,
   InventorySetSection,
+  InventorySetSelector,
 } from '@/features/settings';
 import { GitHubIcon } from '@/shared/components';
 import { SideMenu, SideMenuGroup } from '@/shared/components/SideMenu';
@@ -71,44 +72,22 @@ function Section({
 export function Settings() {
   const { t } = useTranslation();
   const [selectedSection, setSelectedSection] =
-    useState<SettingsSection>('appearance');
+    useState<SettingsSection>('household');
 
   // Use callback ref to get the hamburger container element (triggers re-render when set)
   const [hamburgerContainer, setHamburgerContainer] =
     useState<HTMLDivElement | null>(null);
 
+  const handleManageInventorySets = () => {
+    setSelectedSection('inventorySets');
+  };
+
   const menuGroups: SideMenuGroup[] = [
     {
-      id: 'general',
-      label: t('settings.navigation.groups.general'),
-      items: [
-        {
-          id: 'appearance',
-          label: t('settings.navigation.sections.appearance'),
-        },
-        {
-          id: 'inventorySets',
-          label: t('settings.navigation.sections.inventorySets'),
-        },
-        {
-          id: 'backupTransfer',
-          label: t('settings.navigation.sections.backupTransfer'),
-        },
-        { id: 'about', label: t('settings.navigation.sections.about') },
-      ],
-    },
-    {
-      id: 'household',
-      label: t('settings.navigation.groups.household'),
+      id: 'scenarioSettings',
+      label: t('settings.navigation.groups.scenarioSettings'),
       items: [
         { id: 'household', label: t('settings.navigation.sections.household') },
-        { id: 'nutrition', label: t('settings.navigation.sections.nutrition') },
-      ],
-    },
-    {
-      id: 'recommendations',
-      label: t('settings.navigation.groups.recommendations'),
-      items: [
         {
           id: 'recommendationKits',
           label: t('settings.navigation.sections.recommendationKits'),
@@ -129,12 +108,6 @@ export function Settings() {
           id: 'hiddenAlerts',
           label: t('settings.navigation.sections.hiddenAlerts'),
         },
-      ],
-    },
-    {
-      id: 'categories',
-      label: t('settings.navigation.groups.categories'),
-      items: [
         {
           id: 'disabledCategories',
           label: t('settings.navigation.sections.disabledCategories'),
@@ -143,6 +116,26 @@ export function Settings() {
           id: 'customCategories',
           label: t('settings.navigation.sections.customCategories'),
         },
+      ],
+    },
+    {
+      id: 'appSettings',
+      label: t('settings.navigation.groups.appSettings'),
+      items: [
+        {
+          id: 'appearance',
+          label: t('settings.navigation.sections.appearance'),
+        },
+        { id: 'nutrition', label: t('settings.navigation.sections.nutrition') },
+        {
+          id: 'inventorySets',
+          label: t('settings.navigation.sections.inventorySets'),
+        },
+        {
+          id: 'backupTransfer',
+          label: t('settings.navigation.sections.backupTransfer'),
+        },
+        { id: 'about', label: t('settings.navigation.sections.about') },
       ],
     },
     {
@@ -382,7 +375,10 @@ export function Settings() {
           hamburgerContainer={hamburgerContainer}
         />
 
-        <div className={styles.content}>{renderSection()}</div>
+        <div className={styles.content}>
+          <InventorySetSelector onManageClick={handleManageInventorySets} />
+          {renderSection()}
+        </div>
       </div>
     </div>
   );
