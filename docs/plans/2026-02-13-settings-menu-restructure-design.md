@@ -152,7 +152,7 @@ New keys needed:
 - `settings.inventorySetSelector.manage` ("Manage")
 - `settings.navigation.groups.scenarioSettings`
 - `settings.navigation.groups.appSettings`
-- `settings.manageInventorySets.helpText`
+- `settings.inventorySets.helpText`
 
 ### No Data Model Changes
 

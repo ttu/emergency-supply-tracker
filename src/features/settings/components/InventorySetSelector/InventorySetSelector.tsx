@@ -54,7 +54,6 @@ export function InventorySetSelector({
           }
           className={styles.select}
           disabled={!hasMultipleSets}
-          aria-label={t('settings.inventorySetSelector.selectLabel')}
         >
           {inventorySetsWithDisplayNames.map((set) => (
             <option key={set.id} value={set.id}>
