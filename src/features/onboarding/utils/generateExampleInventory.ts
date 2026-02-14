@@ -5,6 +5,7 @@ import type {
 } from '@/shared/types';
 import { createQuantity, createDateOnly } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
+import { PET_REQUIREMENT_MULTIPLIER } from '@/shared/utils/constants';
 
 /**
  * State distribution for example inventory items.
@@ -54,6 +55,11 @@ export function getStateForIndex(
   total: number,
   random?: () => number,
 ): ExampleItemState {
+  // Guard against division by zero or invalid total
+  if (total <= 0) {
+    return { type: 'full', quantityMultiplier: 1.0 };
+  }
+
   const percentage = (index / total) * 100;
 
   if (percentage < 40) {
@@ -103,7 +109,7 @@ function calculateRecommendedQuantity(
   }
 
   if (item.scaleWithPets && household.pets > 0) {
-    quantity *= household.pets;
+    quantity *= household.pets * PET_REQUIREMENT_MULTIPLIER;
   }
 
   if (item.scaleWithDays) {
