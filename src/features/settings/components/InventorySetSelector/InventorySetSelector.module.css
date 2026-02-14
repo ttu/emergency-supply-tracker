@@ -41,7 +41,8 @@
 .manageLink {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  color: var(--color-primary, #0066cc);
+  /* Use primary-active for better contrast on light backgrounds (WCAG AA 4.5:1) */
+  color: var(--color-primary-active, #0052a3);
   background: transparent;
   border: none;
   cursor: pointer;
