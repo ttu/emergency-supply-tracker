@@ -1,0 +1,81 @@
+.container {
+  background: var(--color-surface-secondary, #f5f5f5);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.selectorRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--color-text-secondary, #666);
+  white-space: nowrap;
+}
+
+.select {
+  flex: 1;
+  min-width: 10rem;
+  max-width: 20rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: var(--color-input-bg, var(--color-surface, #fff));
+  color: var(--color-text, #333);
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.select:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.manageLink {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  /* Use primary-active for better contrast on light backgrounds (WCAG AA 4.5:1) */
+  color: var(--color-primary-active, #0052a3);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.manageLink:hover {
+  text-decoration: underline;
+}
+
+.manageLink:focus-visible {
+  outline: 2px solid var(--color-primary, #0066cc);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Mobile styles */
+@media (width <= 480px) {
+  .container {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .selectorRow {
+    gap: 0.5rem;
+  }
+
+  .select {
+    max-width: none;
+    min-width: 0;
+  }
+
+  .manageLink {
+    padding: 0.5rem;
+  }
+}

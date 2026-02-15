@@ -29,6 +29,7 @@ export {
   ShoppingListExport,
   ThemeSelector,
   InventorySetSection,
+  InventorySetSelector,
 } from './components';
 
 // Factories

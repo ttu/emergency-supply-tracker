@@ -17,3 +17,4 @@ export { OverriddenRecommendations } from './OverriddenRecommendations';
 export { ShoppingListExport } from './ShoppingListExport';
 export { ThemeSelector } from './ThemeSelector';
 export { InventorySetSection } from './InventorySetSection';
+export { InventorySetSelector } from './InventorySetSelector';

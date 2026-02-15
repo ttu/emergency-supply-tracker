@@ -41,12 +41,14 @@ describe('InventorySetSection', () => {
     saveAppData(data);
   });
 
-  it('renders inventory set section with active inventory set selector', () => {
+  it('renders inventory set section with list of inventory sets', () => {
     renderInventorySetSection();
-    expect(
-      screen.getByLabelText('settings.inventorySets.activeInventorySet'),
-    ).toBeInTheDocument();
     expect(screen.getByTestId('inventory-set-section')).toBeInTheDocument();
+    expect(
+      screen.getByRole('list', {
+        name: 'settings.inventorySets.inventorySetList',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('renders create inventory set input and button', () => {
@@ -73,7 +75,7 @@ describe('InventorySetSection', () => {
         name: 'settings.inventorySets.addInventorySet',
       }),
     );
-    expect(screen.getByRole('option', { name: 'Car kit' })).toBeInTheDocument();
+    expect(screen.getByText('Car kit')).toBeInTheDocument();
     expect(getInventorySetList()).toHaveLength(2);
   });
 
@@ -86,18 +88,6 @@ describe('InventorySetSection', () => {
       }),
     );
     expect(getInventorySetList()).toHaveLength(2);
-  });
-
-  it('switches active inventory set when select is changed', async () => {
-    createInventorySet('Second');
-    saveAppData(createMockAppData({}));
-    const user = userEvent.setup();
-    renderInventorySetSection();
-    const select = screen.getByLabelText(
-      'settings.inventorySets.activeInventorySet',
-    );
-    await user.selectOptions(select, getInventorySetList()[1].id);
-    expect(select).toHaveValue(getInventorySetList()[1].id);
   });
 
   it('shows rename row when rename is clicked and saves on save button', async () => {
@@ -115,7 +105,7 @@ describe('InventorySetSection', () => {
     await user.clear(renameInput);
     await user.type(renameInput, 'Main');
     await user.click(screen.getByRole('button', { name: 'common.save' }));
-    expect(screen.getByRole('option', { name: 'Main' })).toBeInTheDocument();
+    expect(screen.getByText('Main')).toBeInTheDocument();
   });
 
   it('cancels rename when cancel is clicked', async () => {
@@ -128,9 +118,7 @@ describe('InventorySetSection', () => {
     );
     await user.click(screen.getByRole('button', { name: 'common.cancel' }));
     const section = screen.getByTestId('inventory-set-section');
-    expect(
-      within(section).getByRole('option', { name: 'Default' }),
-    ).toBeInTheDocument();
+    expect(within(section).getByText('Default')).toBeInTheDocument();
   });
 
   it('opens confirm delete dialog when delete is clicked and closes on cancel', async () => {
@@ -205,9 +193,7 @@ describe('InventorySetSection', () => {
     );
     await user.click(confirmBtn);
     expect(getInventorySetList()).toHaveLength(1);
-    expect(
-      screen.queryByRole('option', { name: 'To remove' }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText('To remove')).not.toBeInTheDocument();
   });
 
   it('focuses primary delete button when confirm dialog opens', async () => {

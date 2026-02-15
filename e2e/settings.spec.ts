@@ -18,19 +18,22 @@ test.describe('Settings', () => {
 
     // Verify settings page is visible
     await expect(page.getByTestId('page-settings')).toBeVisible();
-    // Appearance is the default section
-    await expect(page.getByTestId('section-appearance')).toBeVisible();
-
-    // Navigate to household section via side menu
-    await navigateToSettingsSection(page, 'household');
+    // Household is the default section
     await expect(page.getByTestId('section-household')).toBeVisible();
+
+    // Navigate to appearance section via side menu
+    await navigateToSettingsSection(page, 'appearance');
+    await expect(page.getByTestId('section-appearance')).toBeVisible();
   });
 
   test('should change language', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
-    // Find language selector
-    const languageSelect = page.locator('select').first();
+    // Navigate to appearance section which has the language selector
+    await navigateToSettingsSection(page, 'appearance');
+
+    // Find language selector by its specific ID
+    const languageSelect = page.locator('#language-select');
 
     // Change to Finnish
     await languageSelect.selectOption('fi');
@@ -93,11 +96,12 @@ test.describe('Settings', () => {
   test('should toggle advanced features', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
 
-    // Appearance section is the default and has high contrast checkbox
+    // Navigate to appearance section which has the high contrast checkbox
+    await navigateToSettingsSection(page, 'appearance');
     await expect(page.getByTestId('section-appearance')).toBeVisible();
 
-    // Find and toggle the high contrast checkbox
-    const featureCheckbox = page.locator('input[type="checkbox"]').first();
+    // Find and toggle the high contrast checkbox by its specific ID
+    const featureCheckbox = page.locator('#high-contrast-toggle');
     const initialState = await featureCheckbox.isChecked();
 
     // Toggle the checkbox

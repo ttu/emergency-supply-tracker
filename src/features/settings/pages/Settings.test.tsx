@@ -55,12 +55,12 @@ describe('Settings Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render appearance section by default', () => {
+  it('should render household section by default', () => {
     renderWithProviders(<Settings />);
 
-    // Appearance section should be visible by default
-    expect(screen.getByTestId('section-appearance')).toBeInTheDocument();
-    expect(screen.getByText('settings.language.label')).toBeInTheDocument();
+    // Household section should be visible by default (first item in Scenario Settings)
+    expect(screen.getByTestId('section-household')).toBeInTheDocument();
+    expect(screen.getByText('settings.household.adults')).toBeInTheDocument();
   });
 
   it('should navigate to household section when clicked', () => {
@@ -311,5 +311,18 @@ describe('Settings Page', () => {
     // Debug log section should now be visible
     expect(screen.getByTestId('section-debug-log')).toBeInTheDocument();
     expect(screen.getByText('settings.debugExport.button')).toBeInTheDocument();
+  });
+
+  it('should navigate to inventory sets section when manage button is clicked', () => {
+    renderWithProviders(<Settings />);
+
+    // Click on the Manage button in the inventory set selector
+    const manageButton = screen.getByRole('button', {
+      name: 'settings.inventorySetSelector.manageLabel',
+    });
+    fireEvent.click(manageButton);
+
+    // Inventory sets section should now be visible
+    expect(screen.getByTestId('section-inventory-sets')).toBeInTheDocument();
   });
 });
