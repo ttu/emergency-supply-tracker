@@ -312,4 +312,17 @@ describe('Settings Page', () => {
     expect(screen.getByTestId('section-debug-log')).toBeInTheDocument();
     expect(screen.getByText('settings.debugExport.button')).toBeInTheDocument();
   });
+
+  it('should navigate to inventory sets section when manage button is clicked', () => {
+    renderWithProviders(<Settings />);
+
+    // Click on the Manage button in the inventory set selector
+    const manageButton = screen.getByRole('button', {
+      name: 'settings.inventorySetSelector.manageLabel',
+    });
+    fireEvent.click(manageButton);
+
+    // Inventory sets section should now be visible
+    expect(screen.getByTestId('section-inventory-sets')).toBeInTheDocument();
+  });
 });

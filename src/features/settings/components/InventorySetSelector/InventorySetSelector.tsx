@@ -36,10 +36,9 @@ export function InventorySetSelector({
   const hasMultipleSets = inventorySets.length > 1;
 
   return (
-    <div
+    <section
       className={styles.container}
       data-testid="inventory-set-selector"
-      role="region"
       aria-label={t('settings.inventorySetSelector.regionLabel')}
     >
       <div className={styles.selectorRow}>
@@ -70,6 +69,6 @@ export function InventorySetSelector({
           {t('settings.inventorySetSelector.manage')}
         </button>
       </div>
-    </div>
+    </section>
   );
 }
