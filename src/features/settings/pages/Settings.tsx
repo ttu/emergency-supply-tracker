@@ -82,10 +82,25 @@ export function Settings() {
     setSelectedSection('inventorySets');
   };
 
+  // Sections that are per-inventory-set (show the inventory selector)
+  const inventorySpecificSections: SettingsSection[] = [
+    'household',
+    'recommendationKits',
+    'customTemplates',
+    'disabledRecommendations',
+    'overriddenRecommendations',
+    'hiddenAlerts',
+    'disabledCategories',
+    'customCategories',
+  ];
+
+  const showInventorySelector =
+    inventorySpecificSections.includes(selectedSection);
+
   const menuGroups: SideMenuGroup[] = [
     {
-      id: 'scenarioSettings',
-      label: t('settings.navigation.groups.scenarioSettings'),
+      id: 'inventorySettings',
+      label: t('settings.navigation.groups.inventorySettings'),
       items: [
         { id: 'household', label: t('settings.navigation.sections.household') },
         {
@@ -376,7 +391,9 @@ export function Settings() {
         />
 
         <div className={styles.content}>
-          <InventorySetSelector onManageClick={handleManageInventorySets} />
+          {showInventorySelector && (
+            <InventorySetSelector onManageClick={handleManageInventorySets} />
+          )}
           {renderSection()}
         </div>
       </div>

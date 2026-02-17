@@ -150,7 +150,7 @@ New keys needed:
 
 - `settings.inventorySetSelector.label` ("Configuring:")
 - `settings.inventorySetSelector.manage` ("Manage")
-- `settings.navigation.groups.scenarioSettings`
+- `settings.navigation.groups.inventorySettings`
 - `settings.navigation.groups.appSettings`
 - `settings.inventorySets.helpText`
 

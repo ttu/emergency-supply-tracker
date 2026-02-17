@@ -325,4 +325,24 @@ describe('Settings Page', () => {
     // Inventory sets section should now be visible
     expect(screen.getByTestId('section-inventory-sets')).toBeInTheDocument();
   });
+
+  it('should show inventory set selector for inventory-specific sections', () => {
+    renderWithProviders(<Settings />);
+
+    // Default section is household (inventory-specific)
+    expect(screen.getByTestId('inventory-set-selector')).toBeInTheDocument();
+  });
+
+  it('should hide inventory set selector for app-level sections', () => {
+    renderWithProviders(<Settings />);
+
+    // Navigate to appearance (app-level setting)
+    const sidebar = screen.getByTestId('sidemenu-sidebar');
+    fireEvent.click(within(sidebar).getByTestId('sidemenu-item-appearance'));
+
+    // Inventory set selector should not be visible
+    expect(
+      screen.queryByTestId('inventory-set-selector'),
+    ).not.toBeInTheDocument();
+  });
 });
