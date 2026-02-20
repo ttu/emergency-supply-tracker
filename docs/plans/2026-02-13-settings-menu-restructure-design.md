@@ -24,7 +24,7 @@ Advanced
 
 ## Solution
 
-Add a prominent inventory set selector at the top of the settings page, making it clear that "Inventory Settings" (locale key: `settings.groups.inventorySettings`) below apply to the selected set. Reorganize menu groups to distinguish per-set settings from global app settings.
+Add a prominent inventory set selector at the top of the settings page, making it clear that "Inventory Settings" (locale key: `settings.navigation.groups.inventorySettings`) below apply to the selected set. Reorganize menu groups to distinguish per-set settings from global app settings.
 
 ## Design
 
@@ -38,7 +38,7 @@ Add a prominent inventory set selector at the top of the settings page, making i
 │                              Manage →   │
 └─────────────────────────────────────────┘
 
-Inventory Settings         ← For current inventory set (settings.groups.inventorySettings)
+Inventory Settings         ← For current inventory set (settings.navigation.groups.inventorySettings)
 ├── Household
 ├── Recommendation Kits
 ├── Custom Templates
