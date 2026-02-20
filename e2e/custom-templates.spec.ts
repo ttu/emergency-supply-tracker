@@ -141,8 +141,12 @@ test.describe('Custom Product Templates', () => {
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Reload again
+    // Reload again and wait for app to finish loading before reading storage
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByTestId('nav-settings')).toBeVisible({
+      timeout: 10000,
+    });
 
     // Custom template should still exist (RootStorage: read active inventory set)
     const storedData = await page.evaluate((key) => {

@@ -11,7 +11,6 @@ export function InventorySetSection() {
   const {
     activeInventorySetId,
     inventorySets,
-    setActiveInventorySet,
     createInventorySet,
     deleteInventorySet,
     renameInventorySet,
@@ -154,31 +153,6 @@ export function InventorySetSection() {
 
   return (
     <div className={styles.container} data-testid="inventory-set-section">
-      <p className={styles.description}>
-        {t('settings.inventorySets.description')}
-      </p>
-
-      <div className={styles.activeRow}>
-        <label htmlFor="inventory-set-select" className={styles.label}>
-          {t('settings.inventorySets.activeInventorySet')}
-        </label>
-        <select
-          id="inventory-set-select"
-          value={activeInventorySetId}
-          onChange={(e) =>
-            setActiveInventorySet(e.target.value as InventorySetId)
-          }
-          className={styles.select}
-          aria-label={t('settings.inventorySets.activeInventorySet')}
-        >
-          {inventorySetsWithDisplayNames.map((w) => (
-            <option key={w.id} value={w.id}>
-              {w.displayName}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className={styles.listSection}>
         <h3 className={styles.listTitle}>
           {t('settings.inventorySets.inventorySetList')}
@@ -274,6 +248,8 @@ export function InventorySetSection() {
           </Button>
         </div>
       </div>
+
+      <p className={styles.helpText}>{t('settings.inventorySets.helpText')}</p>
 
       {confirmDeleteId && (
         <dialog

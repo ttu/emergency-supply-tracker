@@ -139,7 +139,7 @@ test.describe('Backup & Transfer', () => {
 
     // Select the imported inventory set from the dropdown
     // The legacy import set name is translated to "Imported Data" when displayed
-    await page.selectOption('#inventory-set-select', {
+    await page.selectOption('#inventory-set-selector', {
       label: 'Imported Data',
     });
 

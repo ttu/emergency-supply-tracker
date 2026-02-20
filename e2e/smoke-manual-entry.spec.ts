@@ -321,12 +321,32 @@ async function testSettingsFeatures(page: Page) {
   await page.getByTestId('nav-settings').click();
   await page.waitForLoadState('networkidle');
 
-  // Change language
-  const languageSelect = page.locator('select').first();
+  // Navigate to Appearance section first (default is now Household)
+  // Use sidebar specifically to avoid strict mode violation (drawer also has menu items)
+  const viewport = page.viewportSize();
+  const isMobile = viewport && viewport.width < 768;
+  // On mobile, open hamburger menu to access drawer
+  if (isMobile) {
+    const hamburger = page.getByTestId('sidemenu-hamburger');
+    await expect(hamburger).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    await hamburger.click();
+    // Wait for drawer to be visible after hamburger click
+    const drawer = page.getByTestId('sidemenu-drawer');
+    await expect(drawer).toBeVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE });
+  }
+  const menuContainer = isMobile
+    ? page.getByTestId('sidemenu-drawer')
+    : page.getByTestId('sidemenu-sidebar');
+  await menuContainer.getByTestId('sidemenu-item-appearance').click();
+  await page.waitForTimeout(TIMEOUTS.SHORT_DELAY);
+
+  // Change language (use specific selector, not .first() which may match other selects)
+  const languageSelect = page.locator('#language-select');
   if (await languageSelect.isVisible().catch(() => false)) {
     await languageSelect.selectOption('fi');
     await page.waitForTimeout(TIMEOUTS.MEDIUM_DELAY);
-    const navText = await page.locator('nav').textContent();
+    // Use .first() to avoid strict mode violation with multiple nav elements
+    const navText = await page.locator('nav').first().textContent();
     expect(navText).toBeTruthy();
   }
 

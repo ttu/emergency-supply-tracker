@@ -7,6 +7,11 @@ test.describe('Theme Switching', () => {
 
   test('should change theme in settings', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+    // Navigate to Appearance section (default is now Household)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-appearance')
+      .click();
 
     // Find theme selector
     const themeSelect = page.locator('#theme-select');
@@ -24,6 +29,11 @@ test.describe('Theme Switching', () => {
 
   test('should persist theme after page reload', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+    // Navigate to Appearance section (default is now Household)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-appearance')
+      .click();
 
     // Change theme to midnight
     const themeSelect = page.locator('#theme-select');
@@ -51,6 +61,11 @@ test.describe('Theme Switching', () => {
     // Verify theme selector shows correct value
     await page.getByTestId('nav-settings').click();
     await page.waitForLoadState('networkidle');
+    // Navigate to Appearance section (default is now Household)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-appearance')
+      .click();
     const themeSelectAfterReload = page.locator('#theme-select');
     // Wait for selector to be visible and have the value
     await expect(themeSelectAfterReload).toBeVisible();
@@ -61,6 +76,11 @@ test.describe('Theme Switching', () => {
 
   test('should apply theme immediately without reload', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+    // Navigate to Appearance section (default is now Household)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-appearance')
+      .click();
 
     const themeSelect = page.locator('#theme-select');
 
@@ -88,6 +108,11 @@ test.describe('Theme Switching', () => {
 
   test('should toggle high contrast mode', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+    // Navigate to Appearance section (default is now Household)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-appearance')
+      .click();
 
     // Find high contrast checkbox
     const highContrastCheckbox = page.locator('#high-contrast-toggle');
@@ -110,6 +135,11 @@ test.describe('Theme Switching', () => {
 
   test('should persist high contrast mode after reload', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+    // Navigate to Appearance section (default is now Household)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-appearance')
+      .click();
 
     const highContrastCheckbox = page.locator('#high-contrast-toggle');
     const initialState = await highContrastCheckbox.isChecked();
@@ -124,6 +154,11 @@ test.describe('Theme Switching', () => {
 
     // Verify high contrast persisted
     await page.getByTestId('nav-settings').click();
+    // Navigate to Appearance section (default is now Household)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-appearance')
+      .click();
     const highContrastCheckboxAfterReload = page.locator(
       '#high-contrast-toggle',
     );
@@ -133,6 +168,11 @@ test.describe('Theme Switching', () => {
 
   test('should apply theme to all pages', async ({ page }) => {
     await page.getByTestId('nav-settings').click();
+    // Navigate to Appearance section (default is now Household)
+    await page
+      .getByTestId('sidemenu-sidebar')
+      .getByTestId('sidemenu-item-appearance')
+      .click();
 
     // Change theme to forest
     const themeSelect = page.locator('#theme-select');
