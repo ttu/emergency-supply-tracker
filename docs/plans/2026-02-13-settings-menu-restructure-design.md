@@ -24,7 +24,7 @@ Advanced
 
 ## Solution
 
-Add a prominent inventory set selector at the top of the settings page, making it clear that "Scenario Settings" below apply to the selected set. Reorganize menu groups to distinguish per-set settings from global app settings.
+Add a prominent inventory set selector at the top of the settings page, making it clear that "Inventory Settings" (locale key: `settings.groups.inventorySettings`) below apply to the selected set. Reorganize menu groups to distinguish per-set settings from global app settings.
 
 ## Design
 
@@ -38,7 +38,7 @@ Add a prominent inventory set selector at the top of the settings page, making i
 │                              Manage →   │
 └─────────────────────────────────────────┘
 
-Scenario Settings          ← For current inventory set
+Inventory Settings         ← For current inventory set (settings.groups.inventorySettings)
 ├── Household
 ├── Recommendation Kits
 ├── Custom Templates
@@ -78,7 +78,7 @@ Advanced
 
 - Dropdown shows all inventory sets with the active one checked
 - Selecting a different set immediately switches context
-- All "Scenario Settings" update to reflect the new set
+- All "Inventory Settings" update to reflect the new set
 - "Manage" link navigates to "Manage Inventory Sets" section
 
 **Mobile:**
@@ -140,9 +140,9 @@ Located under "App Settings", handles creating, renaming, and deleting sets:
 | ------------------------ | --------------------------------------- |
 | General → Inventory Sets | App Settings → Manage Inventory Sets    |
 | Household → Nutrition    | App Settings → Nutrition & Requirements |
-| Household → Household    | Scenario Settings → Household           |
-| Recommendations (group)  | Scenario Settings (merged)              |
-| Categories (group)       | Scenario Settings (merged)              |
+| Household → Household    | Inventory Settings → Household          |
+| Recommendations (group)  | Inventory Settings (merged)             |
+| Categories (group)       | Inventory Settings (merged)             |
 
 ### Translation Keys
 
