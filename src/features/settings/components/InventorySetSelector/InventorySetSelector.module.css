@@ -38,11 +38,11 @@
   cursor: default;
 }
 
-/* Use primary-active for WCAG 2 AA contrast (4.5:1) on surface-active background */
+/* Theme-aware: light = primary-active (WCAG AA on light bg), dark = primary-light (readable on dark) */
 .manageLink {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  color: var(--color-primary-active);
+  color: var(--color-primary-on-surface-active);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -55,7 +55,7 @@
 }
 
 .manageLink:focus-visible {
-  outline: 2px solid var(--color-primary-active);
+  outline: 2px solid var(--color-primary-on-surface-active);
   outline-offset: 2px;
   border-radius: 2px;
 }

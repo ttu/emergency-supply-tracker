@@ -73,6 +73,10 @@
   --color-surface: #ffffff;
   --color-surface-hover: #fafafa;
   --color-surface-active: #f5f5f5;
+  --color-surface-secondary: #f5f5f5;
+
+  /* Primary link on surface-active (e.g. Manage link in selector) - WCAG AA on light bg */
+  --color-primary-on-surface-active: var(--color-primary-active);
 
   /* Text colors - High contrast, readable */
   --color-text: #0d0d0d;
@@ -133,6 +137,10 @@
   --color-surface: #111111;
   --color-surface-hover: #1a1a1a;
   --color-surface-active: #262626;
+  --color-surface-secondary: #1a1a1a;
+
+  /* Primary link on surface-active - lighter so it stands out on dark bg */
+  --color-primary-on-surface-active: var(--color-primary-light);
 
   /* Text colors - High contrast for readability */
   --color-text: #fafafa;
