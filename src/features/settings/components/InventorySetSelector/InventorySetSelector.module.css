@@ -38,10 +38,11 @@
   cursor: default;
 }
 
+/* Use primary-active for WCAG 2 AA contrast (4.5:1) on surface-active background */
 .manageLink {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  color: var(--color-primary);
+  color: var(--color-primary-active);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -54,7 +55,7 @@
 }
 
 .manageLink:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-primary-active);
   outline-offset: 2px;
   border-radius: 2px;
 }

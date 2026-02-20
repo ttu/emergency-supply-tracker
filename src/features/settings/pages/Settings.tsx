@@ -85,6 +85,7 @@ export function Settings() {
   // Sections that are per-inventory-set (show the inventory selector)
   const inventorySpecificSections: SettingsSection[] = [
     'household',
+    'inventorySets',
     'recommendationKits',
     'customTemplates',
     'disabledRecommendations',
