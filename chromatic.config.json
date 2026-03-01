@@ -1,0 +1,6 @@
+{
+  "buildScriptName": "build-storybook",
+  "autoAcceptChanges": "main",
+  "externals": ["public/locales/**"],
+  "skip": "dependabot/**"
+}
