@@ -9,4 +9,20 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://www.emergencysupplytracker.com/?lang=en</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.emergencysupplytracker.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="fi" href="https://www.emergencysupplytracker.com/?lang=fi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.emergencysupplytracker.com/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.emergencysupplytracker.com/?lang=fi</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.emergencysupplytracker.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="fi" href="https://www.emergencysupplytracker.com/?lang=fi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.emergencysupplytracker.com/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

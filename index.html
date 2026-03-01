@@ -227,6 +227,15 @@
           );
         }
 
+        // Update canonical URL to match current language
+        const canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) {
+          const canonicalUrl = lang && supportedLangs.includes(lang)
+            ? 'https://www.emergencysupplytracker.com/?lang=' + lang
+            : 'https://www.emergencysupplytracker.com/';
+          canonical.setAttribute('href', canonicalUrl);
+        }
+
         // Update JSON-LD structured data description
         const jsonLdScript = document.querySelector(
           'script[type="application/ld+json"]',
