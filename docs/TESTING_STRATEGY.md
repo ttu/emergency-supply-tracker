@@ -120,6 +120,19 @@ test: {
 **File:** `playwright.config.ts`
 
 ```typescript
+function getTestFilterConfig() {
+  if (process.env.RUN_A11Y_TESTS) {
+    return { testMatch: ['**/a11y.spec.ts'] };
+  }
+  if (process.env.RUN_VISUAL_TESTS) {
+    return { testMatch: ['**/visual-regression.spec.ts'] };
+  }
+  return {
+    testMatch: ['**/*.spec.ts'],
+    testIgnore: ['**/a11y.spec.ts', '**/visual-regression.spec.ts'],
+  };
+}
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -127,11 +140,13 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
-  // Exclude a11y tests from default e2e run - they run in separate CI job
-  // Use testMatch to conditionally include/exclude a11y tests based on RUN_A11Y_TESTS env var
-  testMatch: process.env.RUN_A11Y_TESTS
-    ? ['**/a11y.spec.ts']
-    : ['**/*.spec.ts', '!**/a11y.spec.ts'],
+  ...getTestFilterConfig(),
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixels: 50,
+      animations: 'disabled',
+    },
+  },
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
@@ -150,8 +165,9 @@ E2E tests are organized by feature:
 - `e2e/navigation.spec.ts` - Navigation and routing tests
 - `e2e/data-management.spec.ts` - Backup & Transfer (import/export) functionality
 - `e2e/a11y.spec.ts` - Accessibility tests (excluded from default e2e run)
+- `e2e/visual-regression.spec.ts` - Visual regression screenshot tests (excluded from default e2e run)
 
-**Note:** `a11y.spec.ts` is excluded from the default E2E test run (`npm run test:e2e`) to avoid duplication. Accessibility tests run in a separate CI job. To run a11y tests explicitly, use: `npx playwright test e2e/a11y.spec.ts`
+**Note:** `a11y.spec.ts` and `visual-regression.spec.ts` are excluded from the default E2E test run (`npm run test:e2e`) via `testIgnore`. They run in separate CI jobs. Use `npm run test:a11y` or `npm run test:e2e:visual` to run them explicitly.
 
 ### Browser Coverage
 
@@ -180,7 +196,13 @@ npm run test:e2e:headed   # Run with browser visible
 npm run test:e2e:chromium # Chromium only
 
 # Accessibility tests (run separately)
-npx playwright test e2e/a11y.spec.ts --project=chromium
+npm run test:a11y
+
+# Visual regression tests
+npm run test:e2e:visual              # Run locally
+npm run test:e2e:visual:update       # Update baselines locally
+npm run test:e2e:visual:docker       # Run in Docker (matches CI)
+npm run test:e2e:visual:docker:update # Update Docker baselines
 
 # Storybook tests
 npm run test:storybook    # Vitest Storybook tests
@@ -261,6 +283,49 @@ test('completes onboarding flow', async ({ page }) => {
   await expect(page.getByText('Dashboard')).toBeVisible();
 });
 ```
+
+---
+
+## Visual Regression Testing
+
+Visual regression tests use Playwright's `toHaveScreenshot()` to detect unintended UI changes by comparing screenshots against committed baselines.
+
+### How It Works
+
+1. **Baseline screenshots** are committed to `e2e/visual-regression.spec.ts-snapshots/`
+2. Tests capture full-page screenshots and compare them against baselines
+3. Differences beyond `maxDiffPixels: 50` threshold fail the test
+4. Failed diffs are uploaded as CI artifacts for inspection
+
+### Test Coverage
+
+| Scenario | Screenshots |
+|----------|-------------|
+| Dashboard (empty, with items) | 2 |
+| Inventory (list, category filter) | 2 |
+| Settings (household, appearance) | 2 |
+| Onboarding (welcome screen) | 1 |
+| Themes (light, dark, ocean) | 3 |
+| Mobile viewport (dashboard, inventory) | 2 |
+| UI states (add item modal) | 1 |
+
+### Docker-Based Baselines
+
+Screenshots differ between macOS and Linux due to font rendering. Both platform baselines are committed. CI runs in a Playwright Docker container (`mcr.microsoft.com/playwright:v1.57.0-noble`) for consistent Linux baselines.
+
+**Updating baselines after intentional UI changes:**
+
+```bash
+# Update macOS baselines
+npm run test:e2e:visual:update
+
+# Update Linux/CI baselines (requires Docker)
+npm run test:e2e:visual:docker:update
+```
+
+### CI Job
+
+The `visual` CI job runs in a Docker container, separate from the main e2e tests. It is non-blocking — not required for the `build` job to proceed. Failed diffs are uploaded as artifacts with 30-day retention.
 
 ---
 

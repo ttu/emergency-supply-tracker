@@ -1,6 +1,24 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
+ * Determine testMatch/testIgnore based on which test suite is being run.
+ * Each special test suite (a11y, visual) uses its own env var.
+ * Default run excludes both via testIgnore.
+ */
+function getTestFilterConfig() {
+  if (process.env.RUN_A11Y_TESTS) {
+    return { testMatch: ['**/a11y.spec.ts'] };
+  }
+  if (process.env.RUN_VISUAL_TESTS) {
+    return { testMatch: ['**/visual-regression.spec.ts'] };
+  }
+  return {
+    testMatch: ['**/*.spec.ts'],
+    testIgnore: ['**/a11y.spec.ts', '**/visual-regression.spec.ts'],
+  };
+}
+
+/**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
@@ -11,16 +29,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   timeout: 60000, // 60 seconds for comprehensive smoke test
-  // Exclude a11y and visual regression tests from default e2e run - they run in separate CI jobs
-  // Each special test suite uses its own env var to switch testMatch/testIgnore
-  ...(process.env.RUN_A11Y_TESTS
-    ? { testMatch: ['**/a11y.spec.ts'] }
-    : process.env.RUN_VISUAL_TESTS
-      ? { testMatch: ['**/visual-regression.spec.ts'] }
-      : {
-          testMatch: ['**/*.spec.ts'],
-          testIgnore: ['**/a11y.spec.ts', '**/visual-regression.spec.ts'],
-        }),
+  ...getTestFilterConfig(),
   expect: {
     toHaveScreenshot: {
       maxDiffPixels: 50,

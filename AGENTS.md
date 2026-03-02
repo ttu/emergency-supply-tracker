@@ -134,6 +134,10 @@ npm run test:e2e:smoke:quick-setup # Playwright smoke quick-setup
 npm run test:e2e:smoke:manual-entry # Playwright smoke manual-entry
 npm run test:e2e:smoke:deployed    # Playwright smoke deployed
 npm run test:a11y                   # Playwright a11y
+npm run test:e2e:visual              # Playwright visual regression
+npm run test:e2e:visual:update       # Update visual baselines
+npm run test:e2e:visual:docker       # Visual regression in Docker
+npm run test:e2e:visual:docker:update # Update Docker baselines
 npm run test:storybook              # Vitest storybook
 npm run test:all                    # Vitest all projects
 npm run validate                    # format + type + lint + test + build
