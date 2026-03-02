@@ -11,12 +11,16 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   timeout: 60000, // 60 seconds for comprehensive smoke test
-  // Exclude a11y tests from default e2e run - they run in separate CI job
-  // Use testMatch to only include non-a11y files for default runs
-  // Explicit file paths (like in test:a11y script) will still work
-  testMatch: process.env.RUN_A11Y_TESTS
-    ? ['**/a11y.spec.ts']
-    : ['**/*.spec.ts', '!**/a11y.spec.ts', '!**/visual-regression.spec.ts'],
+  // Exclude a11y and visual regression tests from default e2e run - they run in separate CI jobs
+  // Each special test suite uses its own env var to switch testMatch/testIgnore
+  ...(process.env.RUN_A11Y_TESTS
+    ? { testMatch: ['**/a11y.spec.ts'] }
+    : process.env.RUN_VISUAL_TESTS
+      ? { testMatch: ['**/visual-regression.spec.ts'] }
+      : {
+          testMatch: ['**/*.spec.ts'],
+          testIgnore: ['**/a11y.spec.ts', '**/visual-regression.spec.ts'],
+        }),
   expect: {
     toHaveScreenshot: {
       maxDiffPixels: 50,

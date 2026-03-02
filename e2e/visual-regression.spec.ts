@@ -376,11 +376,10 @@ test.describe('Visual Regression - UI States', () => {
 
     // Click add item button
     const addButton = page.getByTestId('add-item-button');
-    if (await addButton.isVisible().catch(() => false)) {
-      await addButton.click();
-      await page.waitForTimeout(300);
+    await expect(addButton).toBeVisible();
+    await addButton.click();
+    await page.waitForTimeout(300);
 
-      await expect(page).toHaveScreenshot('modal-add-item.png');
-    }
+    await expect(page).toHaveScreenshot('modal-add-item.png');
   });
 });
