@@ -190,7 +190,7 @@ npm run test:watch        # Watch mode
 npm run test:coverage     # With coverage report
 
 # Playwright E2E
-npm run test:e2e          # Run all E2E tests (excludes a11y.spec.ts)
+npm run test:e2e          # Run default E2E tests (excludes a11y and visual-regression)
 npm run test:e2e:ui       # Interactive UI mode
 npm run test:e2e:headed   # Run with browser visible
 npm run test:e2e:chromium # Chromium only
