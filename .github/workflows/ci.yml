@@ -94,7 +94,9 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
       - name: Run E2E accessibility tests
-        run: npx playwright test e2e/a11y.spec.ts --project=chromium
+        run: npx playwright test --project=chromium
+        env:
+          RUN_A11Y_TESTS: '1'
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v6
         if: always()
