@@ -16,7 +16,13 @@ export default defineConfig({
   // Explicit file paths (like in test:a11y script) will still work
   testMatch: process.env.RUN_A11Y_TESTS
     ? ['**/a11y.spec.ts']
-    : ['**/*.spec.ts', '!**/a11y.spec.ts'],
+    : ['**/*.spec.ts', '!**/a11y.spec.ts', '!**/visual-regression.spec.ts'],
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixels: 50,
+      animations: 'disabled',
+    },
+  },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173',
     trace: 'on-first-retry',
