@@ -138,23 +138,26 @@ export default tseslint.config(
 ### Jobs
 
 ```
-┌─────────┐  ┌─────────┐  ┌───────────┐  ┌─────────┐
-│  lint   │  │  test   │  │ storybook │  │   e2e   │
-└────┬────┘  └────┬────┘  └─────┬─────┘  └────┬────┘
-     └────────────┴─────────────┴─────────────┘
-                        │
-                   ┌────▼────┐
-                   │  build  │
-                   └─────────┘
+┌──────┐ ┌────────────┐ ┌──────┐ ┌───────────┐ ┌─────┐ ┌──────┐
+│ lint │ │ type-check │ │ test │ │ storybook │ │ e2e │ │ a11y │
+└──┬───┘ └─────┬──────┘ └──┬───┘ └─────┬─────┘ └──┬──┘ └──┬───┘
+   └───────────┴────────────┴───────────┴──────────┴───────┘
+                              │
+                         ┌────▼────┐    ┌────────┐
+                         │  build  │    │ visual │  (non-blocking)
+                         └─────────┘    └────────┘
 ```
 
-| Job         | What It Does                           |
-| ----------- | -------------------------------------- |
-| `lint`      | ESLint + Prettier check                |
-| `test`      | Vitest unit/integration tests          |
-| `storybook` | Storybook component tests              |
-| `e2e`       | Playwright E2E tests (Chromium)        |
-| `build`     | Production build (runs after all pass) |
+| Job         | What It Does                                        |
+| ----------- | --------------------------------------------------- |
+| `lint`      | ESLint + Prettier check                             |
+| `type-check`| TypeScript type checking (all configs)              |
+| `test`      | Vitest unit/integration tests                       |
+| `storybook` | Storybook component tests                           |
+| `e2e`       | Playwright E2E tests (Chromium)                     |
+| `a11y`      | Playwright accessibility tests                      |
+| `visual`    | Visual regression tests (Docker, non-blocking)      |
+| `build`     | Production build (runs after all blocking jobs pass) |
 
 ### Triggers
 
@@ -322,6 +325,8 @@ npm run validate:all   # validate + E2E tests
 | Tests      | All Vitest tests pass     |
 | Storybook  | Component tests pass      |
 | E2E        | Playwright tests pass     |
+| A11y       | Accessibility tests pass  |
+| Visual     | Screenshot diffs pass (non-blocking) |
 | Build      | Production build succeeds |
 
 ### External Quality Gates (On Push/PR)

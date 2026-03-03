@@ -56,7 +56,7 @@ emergency-supply-tracker/
 ├── .husky/               # Git hooks
 ├── .storybook/           # Storybook config
 ├── docs/                 # Documentation
-├── e2e/                  # Playwright E2E tests
+├── e2e/                  # Playwright E2E, a11y, and visual regression tests
 ├── public/
 │   ├── locales/          # Translation files
 │   │   ├── en/           # English translations
