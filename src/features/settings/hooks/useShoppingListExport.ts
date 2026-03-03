@@ -8,6 +8,7 @@ import type { InventoryItem } from '@/shared/types';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import { CHILDREN_REQUIREMENT_MULTIPLIER } from '@/shared/utils/constants';
+import { formatLocalDate } from '@/shared/utils/date';
 
 export interface UseShoppingListExportResult {
   /** Items that need restocking (quantity below recommended) */
@@ -117,7 +118,7 @@ export function useShoppingListExport(): UseShoppingListExportResult {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `shopping-list-${new Date().toISOString().split('T')[0]}.txt`;
+    link.download = `shopping-list-${formatLocalDate(new Date())}.txt`;
     document.body.appendChild(link);
     link.click();
     link.remove();

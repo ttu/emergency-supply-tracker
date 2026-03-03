@@ -23,6 +23,7 @@ import {
   createDateOnly,
   createQuantity,
 } from '@/shared/types';
+import { toLocalDateString } from '@/shared/utils/test/date-helpers';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -345,9 +346,7 @@ describe('Inventory Page with items', () => {
     quantity: createQuantity(10), // Used in sorting test
 
     expirationDate: createDateOnly(
-      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split('T')[0],
+      toLocalDateString(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
     ),
   });
 
@@ -358,9 +357,7 @@ describe('Inventory Page with items', () => {
     categoryId: createCategoryId('food'),
     quantity: createQuantity(5), // Used in sorting test
     expirationDate: createDateOnly(
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split('T')[0],
+      toLocalDateString(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
     ),
   });
 

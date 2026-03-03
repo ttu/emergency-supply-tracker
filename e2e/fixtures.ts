@@ -197,4 +197,17 @@ export async function selectInventoryCategory(page: Page, categoryId: string) {
   await page.waitForTimeout(100);
 }
 
+/**
+ * Format a Date as YYYY-MM-DD using local timezone.
+ *
+ * Copy of src/shared/utils/date.ts formatLocalDate — duplicated here because
+ * e2e tests cannot import from src/. Keep in sync with the production version.
+ */
+export function toLocalDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export { expect, type Page } from '@playwright/test';

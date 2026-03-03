@@ -3,6 +3,7 @@ import {
   expect,
   setAppStorage,
   navigateToSettingsSection,
+  toLocalDateString,
 } from './fixtures';
 import {
   createMockAppData,
@@ -20,7 +21,7 @@ test.describe('Hidden Alerts Management', () => {
       quantity: 5,
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: pastDate.toISOString().split('T')[0],
+      expirationDate: toLocalDateString(pastDate),
     });
 
     const appData = createMockAppData({
@@ -77,7 +78,7 @@ test.describe('Hidden Alerts Management', () => {
       quantity: 5,
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: pastDate.toISOString().split('T')[0],
+      expirationDate: toLocalDateString(pastDate),
     });
 
     const appData = createMockAppData({
@@ -158,7 +159,7 @@ test.describe('Hidden Alerts Management', () => {
       quantity: 5,
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: pastDate.toISOString().split('T')[0],
+      expirationDate: toLocalDateString(pastDate),
     });
 
     const appData = createMockAppData({
@@ -228,7 +229,7 @@ test.describe('Hidden Alerts Management', () => {
       quantity: 5,
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: pastDate.toISOString().split('T')[0],
+      expirationDate: toLocalDateString(pastDate),
     });
 
     const expiredItem2 = createMockInventoryItem({
@@ -237,7 +238,7 @@ test.describe('Hidden Alerts Management', () => {
       quantity: 3,
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: pastDate.toISOString().split('T')[0],
+      expirationDate: toLocalDateString(pastDate),
     });
 
     const appData = createMockAppData({
@@ -317,7 +318,7 @@ test.describe('Hidden Alerts Management', () => {
       quantity: 5,
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: pastDate.toISOString().split('T')[0],
+      expirationDate: toLocalDateString(pastDate),
     });
 
     const appData = createMockAppData({

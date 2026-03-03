@@ -1,6 +1,7 @@
 /**
  * Common file download utilities.
  */
+import { formatLocalDate } from '@/shared/utils/date';
 
 /**
  * Downloads content as a file by creating a temporary link and clicking it.
@@ -38,7 +39,7 @@ export function generateDateFilename(
   prefix: string,
   extension = 'json',
 ): string {
-  const date = new Date().toISOString().split('T')[0];
+  const date = formatLocalDate(new Date());
   return `${prefix}-${date}.${extension}`;
 }
 

@@ -9,6 +9,7 @@ import {
   createQuantity,
 } from '@/shared/types';
 import { AllProviders } from '@/shared/components/AllProviders';
+import { formatLocalDate } from '@/shared/utils/date';
 
 const meta = {
   title: 'Components/Inventory/ItemCard',
@@ -33,13 +34,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const futureDate = createDateOnly(
-  new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+  formatLocalDate(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)),
 );
 const soonDate = createDateOnly(
-  new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+  formatLocalDate(new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
 );
 const expiredDate = createDateOnly(
-  new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+  formatLocalDate(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)),
 );
 
 const baseItem = createMockInventoryItem({

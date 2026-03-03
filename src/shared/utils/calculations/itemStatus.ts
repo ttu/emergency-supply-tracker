@@ -1,5 +1,6 @@
 import type { ItemStatus, InventoryItem, DateOnly } from '@/shared/types';
 import { createDateOnly } from '@/shared/types';
+import { formatLocalDate } from '@/shared/utils/date';
 import {
   MS_PER_DAY,
   EXPIRING_SOON_DAYS_THRESHOLD,
@@ -15,11 +16,7 @@ import {
  * This ensures consistent date comparisons without timezone issues.
  */
 function getTodayDateOnly(): DateOnly {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return createDateOnly(`${year}-${month}-${day}`);
+  return createDateOnly(formatLocalDate(new Date()));
 }
 
 /**

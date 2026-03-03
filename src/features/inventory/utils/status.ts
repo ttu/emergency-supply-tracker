@@ -9,17 +9,14 @@ import {
   OK_SCORE_THRESHOLD,
   WARNING_SCORE_THRESHOLD,
 } from '@/shared/utils/constants';
+import { formatLocalDate } from '@/shared/utils/date';
 
 /**
  * Get today's date as a DateOnly in local timezone.
  * This ensures consistent date comparisons without timezone issues.
  */
 function getTodayDateOnly(): DateOnly {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return createDateOnly(`${year}-${month}-${day}`);
+  return createDateOnly(formatLocalDate(new Date()));
 }
 
 /**

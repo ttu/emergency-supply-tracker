@@ -6,6 +6,7 @@ import type {
 import { createQuantity, createDateOnly } from '@/shared/types';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import { PET_REQUIREMENT_MULTIPLIER } from '@/shared/utils/constants';
+import { formatLocalDate } from '@/shared/utils/date';
 
 /**
  * State distribution for example inventory items.
@@ -125,10 +126,7 @@ function calculateRecommendedQuantity(
 function createOffsetDate(offsetDays: number): string {
   const date = new Date();
   date.setDate(date.getDate() + offsetDays);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return formatLocalDate(date);
 }
 
 /**

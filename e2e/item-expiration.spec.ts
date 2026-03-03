@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, toLocalDateString } from './fixtures';
 
 test.describe('Item Expiration Tracking', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -23,7 +23,7 @@ test.describe('Item Expiration Tracking', () => {
     // Compute future date (30 days from now) to ensure item is not expired
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 30);
-    const futureDateString = futureDate.toISOString().split('T')[0];
+    const futureDateString = toLocalDateString(futureDate);
     await page.fill('input[type="date"]', futureDateString);
 
     await page.getByTestId('save-item-button').click();
@@ -46,7 +46,7 @@ test.describe('Item Expiration Tracking', () => {
     // Calculate date 20 days from now (within 30-day threshold)
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 20);
-    const dateString = futureDate.toISOString().split('T')[0];
+    const dateString = toLocalDateString(futureDate);
 
     // Add item expiring in 20 days
     await page.fill('input[name="name"]', 'Expiring Soon Item');
@@ -83,7 +83,7 @@ test.describe('Item Expiration Tracking', () => {
     // Calculate date 5 days ago (expired)
     const pastDate = new Date();
     pastDate.setDate(pastDate.getDate() - 5);
-    const dateString = pastDate.toISOString().split('T')[0];
+    const dateString = toLocalDateString(pastDate);
 
     // Add item expired 5 days ago
     await page.fill('input[name="name"]', 'Expired Item');
@@ -170,7 +170,7 @@ test.describe('Item Expiration Tracking', () => {
     // Compute future date (30 days from now) to ensure item is not expired
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 30);
-    const futureDateString = futureDate.toISOString().split('T')[0];
+    const futureDateString = toLocalDateString(futureDate);
     await page.fill('input[type="date"]', futureDateString);
     await page.getByTestId('save-item-button').click();
 
@@ -196,7 +196,7 @@ test.describe('Item Expiration Tracking', () => {
     // Compute future date (30 days from now) to ensure item is not expired
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 30);
-    const futureDateString = futureDate.toISOString().split('T')[0];
+    const futureDateString = toLocalDateString(futureDate);
     await page.fill('input[type="date"]', futureDateString);
     await page.getByTestId('save-item-button').click();
 
