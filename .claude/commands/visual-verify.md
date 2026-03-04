@@ -9,7 +9,7 @@ You MUST follow this procedure exactly. Zero tolerance — every issue found mus
 
 ## Prerequisites
 
-- Playwright MCP server is configured in `.claude/settings.json`
+- Playwright MCP server is configured in `.mcp.json`
 - The app can be started with `npm run dev`
 
 ## Procedure
