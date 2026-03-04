@@ -48,6 +48,9 @@ AGENTS.local.md
 *storybook.log
 storybook-static
 
+# Visual verification sessions
+verification-sessions
+
 # AI-generated context files (root only)
 /AI_CONTEXT.md
 /TEST_FAILURES.md
