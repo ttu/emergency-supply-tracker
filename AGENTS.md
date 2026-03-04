@@ -94,6 +94,21 @@ Code:
 
 ---
 
+## Visual Verification (MANDATORY)
+
+After ANY implementation change that affects UI (components, styles, layout, data display), you MUST run the visual verification loop before considering the work complete:
+
+1. **Invoke `/visual-verify`** — this runs the full verification loop with Playwright MCP
+2. The loop takes screenshots, analyzes them, and fixes any visual/UX/layout issues
+3. **Zero tolerance** — every issue found must be fixed, no deferrals
+4. Work is NOT complete until visual verification passes
+
+The Playwright MCP server is configured in `.mcp.json` and provides browser automation tools (`browser_navigate`, `browser_take_screenshot`, `browser_console_messages`, etc.).
+
+Session artifacts are saved to `verification-sessions/` (gitignored).
+
+---
+
 ## Version Control & PR Workflow
 
 **Cursor/agents:** Use `required_permissions: ['all']` for git push and `gh pr create` (sandbox bypass).
@@ -151,7 +166,7 @@ npm run build-storybook             # Storybook build
 
 **Before commit:** `npm run validate:all` (format + type + lint + test + build + storybook + e2e).
 
-**Slash commands (Claude/Cursor):** `/verify` (lint, type-check, tests, build); `/docs-sync` (validate docs vs codebase); `/docs-sync quick` (types, items, categories only); `/pr-create`; `/pr-fix` (CodeRabbit, reviewers, CI); `/issue-implement <number>`; `/issue-refine <number|text>`; `/handoff` (HANDOFF.md).
+**Slash commands (Claude/Cursor):** `/verify` (lint, type-check, tests, build); `/visual-verify` (screenshot-based UI/UX verification); `/docs-sync` (validate docs vs codebase); `/docs-sync quick` (types, items, categories only); `/pr-create`; `/pr-fix` (CodeRabbit, reviewers, CI); `/issue-implement <number>`; `/issue-refine <number|text>`; `/handoff` (HANDOFF.md).
 
 ---
 
