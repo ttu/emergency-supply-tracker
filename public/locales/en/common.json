@@ -480,7 +480,8 @@
     "subtitle": "Tracking supplies for {{people}} people for {{days}} days",
     "alerts": {
       "title": "Alerts",
-      "viewCategory": "View {{category}} in inventory"
+      "viewCategory": "View {{category}} in inventory",
+      "viewItem": "View {{item}} in inventory"
     },
     "quickActions": "Quick Actions",
     "categoriesOverview": "Categories Overview",

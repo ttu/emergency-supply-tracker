@@ -44,12 +44,18 @@ export interface InventoryProps {
   openAddModal?: boolean;
   selectedCategoryId?: string;
   onCategoryChange?: (categoryId: string | undefined) => void;
+  /** Item ID to open in edit modal (e.g., from alert click). */
+  initialItemId?: string;
+  /** Called after the initial item has been handled (to clear the navigation state). */
+  onInitialItemHandled?: () => void;
 }
 
 export function Inventory({
   openAddModal = false,
   selectedCategoryId: controlledCategoryId,
   onCategoryChange,
+  initialItemId,
+  onInitialItemHandled,
 }: InventoryProps = {}) {
   const { t, i18n } = useTranslation(['common', 'products']);
   const {
@@ -448,6 +454,37 @@ export function Inventory({
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [showUnsavedConfirm, handleUnsavedCancel]);
+
+  // Open edit modal for a specific item when navigated from an alert.
+  // Uses state to track handled item to avoid re-processing.
+  // Own setState calls happen during render (React allows this for the current component).
+  // Parent notification is deferred to an effect to avoid cross-component setState during render.
+  const [handledInitialItemId, setHandledInitialItemId] = useState<
+    string | undefined
+  >(undefined);
+  if (initialItemId && initialItemId !== handledInitialItemId) {
+    const item = items.find((i) => i.id === initialItemId);
+    if (item) {
+      setHandledInitialItemId(initialItemId);
+      setEditingItem(item);
+      setSelectedCustomTemplate(undefined);
+      if (item.itemType && item.itemType !== 'custom') {
+        const template = recommendedItems.find((t) => t.id === item.itemType);
+        setSelectedTemplate(template);
+      } else {
+        setSelectedTemplate(undefined);
+      }
+      setShowAddModal(true);
+    }
+  }
+
+  // Notify parent that the initial item has been handled (deferred to avoid
+  // cross-component setState during render).
+  useEffect(() => {
+    if (handledInitialItemId) {
+      onInitialItemHandled?.();
+    }
+  }, [handledInitialItemId, onInitialItemHandled]);
 
   // Cleanup debounced quantity updates on unmount
   useEffect(() => {

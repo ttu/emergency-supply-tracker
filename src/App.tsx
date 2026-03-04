@@ -87,6 +87,10 @@ function AppContent() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<
     string | undefined
   >(undefined);
+  // Item to open in inventory (from alert click)
+  const [initialItemId, setInitialItemId] = useState<string | undefined>(
+    undefined,
+  );
 
   const { settings, updateSettings } = useSettings();
   const { updateHousehold } = useHousehold();
@@ -94,17 +98,23 @@ function AppContent() {
 
   const handleNavigate = (
     page: PageType,
-    options?: { openAddModal?: boolean; initialCategoryId?: string },
+    options?: {
+      openAddModal?: boolean;
+      initialCategoryId?: string;
+      initialItemId?: string;
+    },
   ) => {
     setCurrentPage(page);
     if (page === 'inventory') {
       setOpenInventoryModal(options?.openAddModal || false);
+      setInitialItemId(options?.initialItemId);
       // Update category when explicitly navigating from Dashboard with a category
       if (options?.initialCategoryId !== undefined) {
         setSelectedCategoryId(options.initialCategoryId);
       }
     } else {
       setOpenInventoryModal(false);
+      setInitialItemId(undefined);
     }
   };
 
@@ -137,6 +147,8 @@ function AppContent() {
               openAddModal={openInventoryModal}
               selectedCategoryId={selectedCategoryId}
               onCategoryChange={setSelectedCategoryId}
+              initialItemId={initialItemId}
+              onInitialItemHandled={() => setInitialItemId(undefined)}
             />
           </Suspense>
         );

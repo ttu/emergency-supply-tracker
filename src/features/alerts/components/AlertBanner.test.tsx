@@ -13,6 +13,7 @@ vi.mock('react-i18next', () => ({
         'actions.dismiss': 'Dismiss',
         'actions.dismissAll': 'Dismiss all',
         'dashboard.alerts.viewCategory': `View ${options?.category ?? ''} in inventory`,
+        'dashboard.alerts.viewItem': `View ${options?.item ?? ''} in inventory`,
       };
       return translations[key] || key;
     },
@@ -205,25 +206,52 @@ describe('AlertBanner', () => {
     });
     await user.click(clickableButton);
 
-    expect(onAlertClick).toHaveBeenCalledWith('water-beverages');
+    expect(onAlertClick).toHaveBeenCalledWith('water-beverages', undefined);
   });
 
-  it('does not render clickable button for alerts without categoryId', () => {
+  it('calls onAlertClick with itemId when clicking on an item-level alert', async () => {
+    const user = userEvent.setup();
+    const onAlertClick = vi.fn();
+
     render(
       <AlertBanner
         alerts={[
           {
-            id: createAlertId('expired-item-1'),
-            type: 'critical',
-            message: 'Item has expired',
-            itemName: 'Canned Food',
+            id: createAlertId('expiring-soon-item-1'),
+            type: 'warning',
+            message: 'Expiring in 24 days',
+            itemName: 'Canned Meat',
+            categoryId: 'food',
+            itemId: 'item-1',
+          },
+        ]}
+        onAlertClick={onAlertClick}
+      />,
+    );
+
+    const clickableButton = screen.getByRole('button', {
+      name: 'View Canned Meat in inventory',
+    });
+    await user.click(clickableButton);
+
+    expect(onAlertClick).toHaveBeenCalledWith('food', 'item-1');
+  });
+
+  it('does not render clickable button for alerts without categoryId or itemId', () => {
+    render(
+      <AlertBanner
+        alerts={[
+          {
+            id: createAlertId('some-info-alert'),
+            type: 'info',
+            message: 'Some information',
           },
         ]}
         onAlertClick={vi.fn()}
       />,
     );
 
-    // Should not have the clickable button for viewing category
+    // Should not have the clickable button
     expect(
       screen.queryByRole('button', { name: /View .* in inventory/ }),
     ).not.toBeInTheDocument();

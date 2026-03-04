@@ -78,6 +78,8 @@ function generateExpirationAlerts(
         type: 'critical',
         message: t('alerts.expiration.expired'),
         itemName: getTranslatedItemName(item, t),
+        categoryId: item.categoryId as StandardCategoryId,
+        itemId: item.id,
       });
     } else if (daysUntilExpiration <= EXPIRING_SOON_ALERT_DAYS) {
       alerts.push({
@@ -87,6 +89,8 @@ function generateExpirationAlerts(
           days: daysUntilExpiration,
         }),
         itemName: getTranslatedItemName(item, t),
+        categoryId: item.categoryId as StandardCategoryId,
+        itemId: item.id,
       });
     }
   });

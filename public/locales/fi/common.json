@@ -480,7 +480,8 @@
     "subtitle": "Seurataan varastoja {{people}} henkilölle {{days}} päiväksi",
     "alerts": {
       "title": "Hälytykset",
-      "viewCategory": "Näytä {{category}} varastossa"
+      "viewCategory": "Näytä {{category}} varastossa",
+      "viewItem": "Näytä {{item}} varastossa"
     },
     "quickActions": "Pikatoiminnot",
     "categoriesOverview": "Kategoriat",
