@@ -20,6 +20,7 @@ import {
   createProductTemplateId,
   createQuantity,
 } from '@/shared/types';
+import { toLocalDateString } from '@/shared/utils/test/date-helpers';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -424,7 +425,7 @@ describe('HiddenAlerts', () => {
       itemType: createProductTemplateId('bottled-water'),
       neverExpires: false,
       expirationDate: createDateOnly(
-        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        toLocalDateString(new Date(Date.now() - 24 * 60 * 60 * 1000)),
       ), // Yesterday
     });
 

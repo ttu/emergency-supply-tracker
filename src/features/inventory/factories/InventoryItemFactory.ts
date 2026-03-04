@@ -18,6 +18,7 @@ import {
 import { CUSTOM_ITEM_TYPE } from '@/shared/utils/constants';
 import { isTemplateId } from '@/shared/utils/storage/localStorage';
 import { isValidUnit } from '@/shared/utils/validation/unitValidation';
+import { formatLocalDate } from '@/shared/utils/date';
 
 /**
  * Base input for creating an inventory item.
@@ -167,12 +168,7 @@ function calculateExpirationDate(
 
   const expDate = new Date();
   expDate.setMonth(expDate.getMonth() + defaultExpirationMonths);
-  // Use local date formatting to match backupReminder.ts and status.ts
-  const year = expDate.getFullYear();
-  const month = String(expDate.getMonth() + 1).padStart(2, '0');
-  const day = String(expDate.getDate()).padStart(2, '0');
-  const dateString = `${year}-${month}-${day}`;
-  return createDateOnly(dateString);
+  return createDateOnly(formatLocalDate(expDate));
 }
 
 /**

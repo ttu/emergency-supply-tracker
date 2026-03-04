@@ -10,6 +10,7 @@ import {
   createProductTemplateId,
   createQuantity,
 } from '@/shared/types';
+import { toLocalDateString } from '@/shared/utils/test/date-helpers';
 
 // Mock i18next
 vi.mock('react-i18next', async () => {
@@ -46,9 +47,7 @@ vi.mock('react-i18next', async () => {
 
 describe('ItemCard', () => {
   const futureDate = createDateOnly(
-    new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split('T')[0],
+    toLocalDateString(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)),
   );
 
   const baseItem = createMockInventoryItem({
@@ -88,9 +87,7 @@ describe('ItemCard', () => {
 
   it('should show expiration warning for items expiring soon', () => {
     const soonDate = createDateOnly(
-      new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split('T')[0],
+      toLocalDateString(new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
     );
     const expiringItem = { ...baseItem, expirationDate: soonDate };
     renderWithProviders(<ItemCard item={expiringItem} />);
@@ -99,9 +96,7 @@ describe('ItemCard', () => {
 
   it('should show expired warning for expired items', () => {
     const expiredDate = createDateOnly(
-      new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split('T')[0],
+      toLocalDateString(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)),
     );
     const expiredItem = { ...baseItem, expirationDate: expiredDate };
     renderWithProviders(<ItemCard item={expiredItem} />);

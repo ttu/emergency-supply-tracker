@@ -17,6 +17,7 @@ import {
   createQuantity,
 } from '@/shared/types';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import { toLocalDateString } from '@/shared/utils/test/date-helpers';
 
 describe('getItemStatus', () => {
   it('returns critical when quantity is 0', () => {
@@ -34,27 +35,21 @@ describe('getItemStatus', () => {
   it('returns critical when expired', () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDateOnly = createDateOnly(
-      yesterday.toISOString().split('T')[0],
-    );
+    const yesterdayDateOnly = createDateOnly(toLocalDateString(yesterday));
     expect(getItemStatus(10, 10, yesterdayDateOnly)).toBe('critical');
   });
 
   it('returns warning when expiring within 30 days', () => {
     const in20Days = new Date();
     in20Days.setDate(in20Days.getDate() + 20);
-    const in20DaysDateOnly = createDateOnly(
-      in20Days.toISOString().split('T')[0],
-    );
+    const in20DaysDateOnly = createDateOnly(toLocalDateString(in20Days));
     expect(getItemStatus(10, 10, in20DaysDateOnly)).toBe('warning');
   });
 
   it('ignores expiration when neverExpires is true', () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDateOnly = createDateOnly(
-      yesterday.toISOString().split('T')[0],
-    );
+    const yesterdayDateOnly = createDateOnly(toLocalDateString(yesterday));
     expect(getItemStatus(10, 10, yesterdayDateOnly, true)).toBe('ok');
   });
 });
@@ -73,20 +68,20 @@ describe('getDaysUntilExpiration', () => {
   it('returns positive days for future date', () => {
     const future = new Date();
     future.setDate(future.getDate() + 10);
-    const futureDateOnly = createDateOnly(future.toISOString().split('T')[0]);
+    const futureDateOnly = createDateOnly(toLocalDateString(future));
     expect(getDaysUntilExpiration(futureDateOnly, false)).toBe(10);
   });
 
   it('returns negative days for past date', () => {
     const past = new Date();
     past.setDate(past.getDate() - 5);
-    const pastDateOnly = createDateOnly(past.toISOString().split('T')[0]);
+    const pastDateOnly = createDateOnly(toLocalDateString(past));
     expect(getDaysUntilExpiration(pastDateOnly, false)).toBe(-5);
   });
 
   it('returns 0 for today', () => {
     const today = new Date();
-    const todayDateOnly = createDateOnly(today.toISOString().split('T')[0]);
+    const todayDateOnly = createDateOnly(toLocalDateString(today));
     expect(getDaysUntilExpiration(todayDateOnly, false)).toBe(0);
   });
 
@@ -94,9 +89,7 @@ describe('getDaysUntilExpiration', () => {
     // Test with explicit date-only string to ensure timezone doesn't affect comparison
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowDateOnly = createDateOnly(
-      tomorrow.toISOString().split('T')[0],
-    );
+    const tomorrowDateOnly = createDateOnly(toLocalDateString(tomorrow));
     expect(getDaysUntilExpiration(tomorrowDateOnly, false)).toBe(1);
   });
 });
@@ -105,7 +98,7 @@ describe('isItemExpired', () => {
   it('returns false when neverExpires is true', () => {
     const past = new Date();
     past.setDate(past.getDate() - 5);
-    const pastDateOnly = createDateOnly(past.toISOString().split('T')[0]);
+    const pastDateOnly = createDateOnly(toLocalDateString(past));
     expect(isItemExpired(pastDateOnly, true)).toBe(false);
   });
 
@@ -116,20 +109,20 @@ describe('isItemExpired', () => {
   it('returns true for past date', () => {
     const past = new Date();
     past.setDate(past.getDate() - 1);
-    const pastDateOnly = createDateOnly(past.toISOString().split('T')[0]);
+    const pastDateOnly = createDateOnly(toLocalDateString(past));
     expect(isItemExpired(pastDateOnly, false)).toBe(true);
   });
 
   it('returns false for future date', () => {
     const future = new Date();
     future.setDate(future.getDate() + 10);
-    const futureDateOnly = createDateOnly(future.toISOString().split('T')[0]);
+    const futureDateOnly = createDateOnly(toLocalDateString(future));
     expect(isItemExpired(futureDateOnly, false)).toBe(false);
   });
 
   it('returns false for today (not expired yet)', () => {
     const today = new Date();
-    const todayDateOnly = createDateOnly(today.toISOString().split('T')[0]);
+    const todayDateOnly = createDateOnly(toLocalDateString(today));
     expect(isItemExpired(todayDateOnly, false)).toBe(false);
   });
 
@@ -137,9 +130,7 @@ describe('isItemExpired', () => {
     // Test with explicit date-only string to ensure timezone doesn't affect comparison
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDateOnly = createDateOnly(
-      yesterday.toISOString().split('T')[0],
-    );
+    const yesterdayDateOnly = createDateOnly(toLocalDateString(yesterday));
     expect(isItemExpired(yesterdayDateOnly, false)).toBe(true);
   });
 });
@@ -297,9 +288,7 @@ describe('calculateMissingQuantity', () => {
 
     it('returns 0 when status is warning due to expiration (not quantity)', () => {
       const soonDate = createDateOnly(
-        new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split('T')[0],
+        toLocalDateString(new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
       );
       const item = createMockInventoryItem({
         ...baseItem,
@@ -312,9 +301,7 @@ describe('calculateMissingQuantity', () => {
 
     it('returns 0 when status is critical due to expiration (not quantity)', () => {
       const expiredDate = createDateOnly(
-        new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split('T')[0],
+        toLocalDateString(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)),
       );
       const item = createMockInventoryItem({
         ...baseItem,
@@ -381,9 +368,7 @@ describe('calculateMissingQuantity', () => {
     it('handles items expiring in exactly 30 days (boundary)', () => {
       const in30Days = new Date();
       in30Days.setDate(in30Days.getDate() + 30);
-      const in30DaysDateOnly = createDateOnly(
-        in30Days.toISOString().split('T')[0],
-      );
+      const in30DaysDateOnly = createDateOnly(toLocalDateString(in30Days));
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: createQuantity(1),
@@ -397,9 +382,7 @@ describe('calculateMissingQuantity', () => {
     it('handles items expiring in 31 days (not expiring soon)', () => {
       const in31Days = new Date();
       in31Days.setDate(in31Days.getDate() + 31);
-      const in31DaysDateOnly = createDateOnly(
-        in31Days.toISOString().split('T')[0],
-      );
+      const in31DaysDateOnly = createDateOnly(toLocalDateString(in31Days));
       const item = createMockInventoryItem({
         ...baseItem,
         quantity: createQuantity(1),
@@ -517,9 +500,7 @@ describe('calculateMissingQuantity', () => {
 
     it('returns 0 when no quantity issue (expiration takes precedence)', () => {
       const soonDate = createDateOnly(
-        new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split('T')[0],
+        toLocalDateString(new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
       );
       const item1 = createMockInventoryItem({
         ...baseItem,

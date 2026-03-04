@@ -24,6 +24,7 @@ import {
 import type { Alert } from '@/features/alerts/types';
 import { faker } from '@faker-js/faker';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
+import { formatLocalDate } from '@/shared/utils/date';
 
 /**
  * Test data factories for creating mock data in tests
@@ -100,11 +101,11 @@ export function createMockInventoryItem(
     ),
     unit: faker.helpers.arrayElement(VALID_UNITS),
     expirationDate: faker.helpers.maybe(
-      () => createDateOnly(faker.date.future().toISOString().split('T')[0]),
+      () => createDateOnly(formatLocalDate(faker.date.future())),
       { probability: 0.5 },
     ),
     purchaseDate: faker.helpers.maybe(
-      () => createDateOnly(faker.date.past().toISOString().split('T')[0]),
+      () => createDateOnly(formatLocalDate(faker.date.past())),
       { probability: 0.3 },
     ),
     notes:
