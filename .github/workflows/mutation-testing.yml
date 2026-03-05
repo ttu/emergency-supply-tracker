@@ -1,0 +1,167 @@
+name: Mutation Testing
+
+on:
+  schedule:
+    # Run weekly on Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch: # Allow manual triggers
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  mutation-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run mutation tests
+        run: npm run test:mutation:ci
+
+      - name: Upload mutation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-report
+          path: |
+            reports/mutation/html/
+            reports/mutation/mutation-report.json
+          retention-days: 30
+
+      - name: Create issue from mutation results
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Read the JSON report
+            const reportPath = 'reports/mutation/mutation-report.json';
+            if (!fs.existsSync(reportPath)) {
+              console.log('No mutation report found');
+              return;
+            }
+
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            const schemaVersion = report.schemaVersion;
+
+            // Extract file results
+            const files = report.files || {};
+            const survivedByFile = {};
+            let totalMutants = 0;
+            let totalKilled = 0;
+            let totalSurvived = 0;
+            let totalNoCoverage = 0;
+
+            for (const [filePath, fileData] of Object.entries(files)) {
+              const mutants = fileData.mutants || [];
+              totalMutants += mutants.length;
+
+              const survived = mutants.filter(m => m.status === 'Survived');
+              const killed = mutants.filter(m => m.status === 'Killed');
+              const noCoverage = mutants.filter(m => m.status === 'NoCoverage');
+
+              totalKilled += killed.length;
+              totalSurvived += survived.length;
+              totalNoCoverage += noCoverage.length;
+
+              if (survived.length > 0) {
+                survivedByFile[filePath] = survived;
+              }
+            }
+
+            const score = totalMutants > 0
+              ? ((totalKilled / (totalKilled + totalSurvived + totalNoCoverage)) * 100).toFixed(1)
+              : 'N/A';
+
+            // Only create an issue if there are surviving mutants
+            if (totalSurvived === 0) {
+              console.log('No surviving mutants found. Score: ' + score + '%');
+              return;
+            }
+
+            // Build issue body
+            const date = new Date().toISOString().split('T')[0];
+            let body = `## Mutation Testing Report - ${date}\n\n`;
+            body += `**Mutation Score: ${score}%** (${totalKilled} killed / ${totalMutants} total)\n\n`;
+            body += `| Metric | Count |\n|--------|-------|\n`;
+            body += `| Killed | ${totalKilled} |\n`;
+            body += `| Survived | ${totalSurvived} |\n`;
+            body += `| No Coverage | ${totalNoCoverage} |\n`;
+            body += `| Total | ${totalMutants} |\n\n`;
+
+            body += `---\n\n## Surviving Mutants by File\n\n`;
+
+            // Sort files by number of survivors (worst first)
+            const sortedFiles = Object.entries(survivedByFile)
+              .sort((a, b) => b[1].length - a[1].length);
+
+            for (const [filePath, mutants] of sortedFiles) {
+              body += `### \`${filePath}\` (${mutants.length} survived)\n\n`;
+
+              // Group by mutation type
+              const byType = {};
+              for (const m of mutants) {
+                const type = m.mutatorName || 'Unknown';
+                if (!byType[type]) byType[type] = [];
+                byType[type].push(m);
+              }
+
+              for (const [type, typeMutants] of Object.entries(byType)) {
+                body += `**${type}** (${typeMutants.length}):\n`;
+                for (const m of typeMutants.slice(0, 5)) {
+                  const loc = m.location ? `L${m.location.start.line}` : '';
+                  const desc = m.replacement ? `\`${m.replacement.substring(0, 80)}\`` : m.description || '';
+                  body += `- ${loc}: ${desc}\n`;
+                }
+                if (typeMutants.length > 5) {
+                  body += `- ... and ${typeMutants.length - 5} more\n`;
+                }
+                body += '\n';
+              }
+            }
+
+            body += `---\n\n`;
+            body += `**Run:** [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})\n`;
+            body += `**Full report:** Download the \`mutation-report\` artifact from the run above.\n\n`;
+            body += `> Generated by weekly mutation testing workflow\n`;
+
+            // Check if there's already an open mutation testing issue
+            const { data: existingIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'mutation-testing',
+              state: 'open',
+            });
+
+            if (existingIssues.length > 0) {
+              // Add comment to existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssues[0].number,
+                body: body,
+              });
+              console.log(`Updated existing issue #${existingIssues[0].number}`);
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Mutation Testing: ${totalSurvived} surviving mutants (score: ${score}%)`,
+                body: body,
+                labels: ['mutation-testing', 'test-quality'],
+              });
+              console.log('Created new mutation testing issue');
+            }
