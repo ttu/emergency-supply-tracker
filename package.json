@@ -19,7 +19,7 @@
     "test:watch": "vitest --project=unit",
     "test:coverage": "vitest run --coverage --project=unit",
     "test:mutation": "stryker run",
-    "test:mutation:ci": "stryker run --reporters clear-text progress json",
+    "test:mutation:ci": "stryker run",
     "test:e2e": "playwright test --project=chromium --workers=4",
     "test:e2e:all": "playwright test --workers=4",
     "test:e2e:ui": "playwright test --ui",

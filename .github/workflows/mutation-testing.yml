@@ -63,6 +63,7 @@ jobs:
             let totalKilled = 0;
             let totalSurvived = 0;
             let totalNoCoverage = 0;
+            let totalTimeout = 0;
 
             for (const [filePath, fileData] of Object.entries(files)) {
               const mutants = fileData.mutants || [];
@@ -71,18 +72,22 @@ jobs:
               const survived = mutants.filter(m => m.status === 'Survived');
               const killed = mutants.filter(m => m.status === 'Killed');
               const noCoverage = mutants.filter(m => m.status === 'NoCoverage');
+              const timeout = mutants.filter(m => m.status === 'Timeout');
 
               totalKilled += killed.length;
               totalSurvived += survived.length;
               totalNoCoverage += noCoverage.length;
+              totalTimeout += timeout.length;
 
               if (survived.length > 0) {
                 survivedByFile[filePath] = survived;
               }
             }
 
-            const score = totalMutants > 0
-              ? ((totalKilled / (totalKilled + totalSurvived + totalNoCoverage)) * 100).toFixed(1)
+            const detected = totalKilled + totalTimeout;
+            const valid = detected + totalSurvived + totalNoCoverage;
+            const score = valid > 0
+              ? ((detected / valid) * 100).toFixed(1)
               : 'N/A';
 
             // Only create an issue if there are surviving mutants
