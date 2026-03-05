@@ -2033,3 +2033,83 @@ describe('Inventory Page - Remove Empty Items', () => {
     expect(screen.getByText('Non-Empty Item')).toBeInTheDocument();
   });
 });
+
+describe('Inventory Page - Initial Item from Alert', () => {
+  const foodItem = createMockInventoryItem({
+    id: createItemId('food-item-1'),
+    name: 'Canned Meat',
+    itemType: createProductTemplateId('canned-meat'),
+    categoryId: createCategoryId('food'),
+    quantity: createQuantity(7),
+    expirationDate: createDateOnly(
+      toLocalDateString(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
+    ),
+  });
+
+  const waterItem = createMockInventoryItem({
+    id: createItemId('water-item-1'),
+    name: 'Bottled Water',
+    itemType: createProductTemplateId('bottled-water'),
+    categoryId: createCategoryId('water-beverages'),
+    quantity: createQuantity(10),
+    expirationDate: createDateOnly(
+      toLocalDateString(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
+    ),
+  });
+
+  beforeEach(() => {
+    globalThis.confirm = vi.fn(() => true);
+    const appData = createMockAppData({
+      household: createMockHousehold({ children: 0 }),
+      items: [foodItem, waterItem],
+    });
+    saveAppData(appData);
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('should open edit modal for the specified initialItemId', () => {
+    renderWithProviders(
+      <Inventory initialItemId="food-item-1" onInitialItemHandled={vi.fn()} />,
+    );
+
+    // Edit modal should open with the item name
+    expect(screen.getByText('inventory.editItem')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Canned Meat')).toBeInTheDocument();
+  });
+
+  it('should call onInitialItemHandled after opening the item', async () => {
+    const onInitialItemHandled = vi.fn();
+    renderWithProviders(
+      <Inventory
+        initialItemId="food-item-1"
+        onInitialItemHandled={onInitialItemHandled}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(onInitialItemHandled).toHaveBeenCalled();
+    });
+  });
+
+  it('should handle initialItemId that does not exist in inventory', async () => {
+    const onInitialItemHandled = vi.fn();
+    renderWithProviders(
+      <Inventory
+        initialItemId="nonexistent-item"
+        onInitialItemHandled={onInitialItemHandled}
+      />,
+    );
+
+    // Should not open the edit modal
+    expect(screen.queryByText('inventory.editItem')).not.toBeInTheDocument();
+
+    // Should still call onInitialItemHandled to clear the state
+    await waitFor(() => {
+      expect(onInitialItemHandled).toHaveBeenCalled();
+    });
+  });
+});

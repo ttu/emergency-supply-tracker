@@ -83,7 +83,7 @@ export const AlertBanner = ({
                   aria-label={
                     alert.itemId
                       ? t('dashboard.alerts.viewItem', {
-                          item: alert.itemName || '',
+                          item: alert.itemName || alert.itemId || alert.message,
                         })
                       : t('dashboard.alerts.viewCategory', {
                           category: alert.itemName || alert.categoryId || '',

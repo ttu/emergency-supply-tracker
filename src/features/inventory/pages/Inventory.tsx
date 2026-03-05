@@ -475,6 +475,9 @@ export function Inventory({
         setSelectedTemplate(undefined);
       }
       setShowAddModal(true);
+    } else {
+      // Item not found; clear lookup intent without triggering modal.
+      setHandledInitialItemId(initialItemId);
     }
   }
 
