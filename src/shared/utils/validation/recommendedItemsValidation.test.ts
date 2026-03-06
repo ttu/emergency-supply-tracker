@@ -243,7 +243,11 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_STRUCTURE' }),
+        expect.objectContaining({
+          code: 'INVALID_STRUCTURE',
+          message: 'Invalid JSON structure',
+          path: '',
+        }),
       );
     });
 
@@ -252,7 +256,10 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_STRUCTURE' }),
+        expect.objectContaining({
+          code: 'INVALID_STRUCTURE',
+          message: 'Invalid JSON structure',
+        }),
       );
     });
 
@@ -261,7 +268,10 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_STRUCTURE' }),
+        expect.objectContaining({
+          code: 'INVALID_STRUCTURE',
+          message: 'Invalid JSON structure',
+        }),
       );
     });
   });
@@ -272,7 +282,27 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'MISSING_META' }),
+        expect.objectContaining({
+          code: 'MISSING_META',
+          path: 'meta',
+          message: 'Missing meta object',
+        }),
+      );
+    });
+
+    it('rejects non-object meta', () => {
+      const result = validateRecommendedItemsFile({
+        meta: 'string',
+        items: [createValidItem()],
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'MISSING_META',
+          path: 'meta',
+          message: 'Missing meta object',
+        }),
       );
     });
 
@@ -283,7 +313,11 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'MISSING_META_NAME' }),
+        expect.objectContaining({
+          code: 'MISSING_META_NAME',
+          path: 'meta.name',
+          message: expect.stringContaining('Meta name is required'),
+        }),
       );
     });
 
@@ -294,7 +328,11 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'MISSING_META_NAME' }),
+        expect.objectContaining({
+          code: 'MISSING_META_NAME',
+          path: 'meta.name',
+          message: expect.stringContaining('Meta name is required'),
+        }),
       );
     });
 
@@ -310,7 +348,50 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'MISSING_META_NAME',
+          message: expect.stringContaining('Meta name is required'),
+        }),
+      );
+    });
+
+    it('rejects meta.name as object with empty en', () => {
+      const file = createValidFile({
+        meta: {
+          name: { en: '   ' },
+          version: '1.0.0',
+          createdAt: '2025-01-01T00:00:00.000Z',
+        },
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
         expect.objectContaining({ code: 'MISSING_META_NAME' }),
+      );
+    });
+
+    it('rejects meta.description as non-string/non-object', () => {
+      const file = createValidFile();
+      (file.meta as unknown as Record<string, unknown>).description = 123;
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_META_DESCRIPTION',
+          path: 'meta.description',
+          message: expect.stringContaining('Meta description must be'),
+        }),
+      );
+    });
+
+    it('accepts meta.description as undefined', () => {
+      const file = createValidFile();
+      const result = validateRecommendedItemsFile(file);
+      expect(result.valid).toBe(true);
+      expect(result.errors).not.toContainEqual(
+        expect.objectContaining({ code: 'INVALID_META_DESCRIPTION' }),
       );
     });
 
@@ -321,7 +402,40 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'MISSING_META_VERSION' }),
+        expect.objectContaining({
+          code: 'MISSING_META_VERSION',
+          path: 'meta.version',
+          message: 'Meta version is required',
+        }),
+      );
+    });
+
+    it('rejects empty meta.version', () => {
+      const file = createValidFile();
+      (file.meta as unknown as Record<string, unknown>).version = '   ';
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'MISSING_META_VERSION',
+          path: 'meta.version',
+          message: 'Meta version is required',
+        }),
+      );
+    });
+
+    it('rejects non-string meta.version', () => {
+      const file = createValidFile();
+      (file.meta as unknown as Record<string, unknown>).version = 123;
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'MISSING_META_VERSION',
+          message: 'Meta version is required',
+        }),
       );
     });
 
@@ -332,7 +446,25 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'MISSING_META_CREATED_AT' }),
+        expect.objectContaining({
+          code: 'MISSING_META_CREATED_AT',
+          path: 'meta.createdAt',
+          message: 'Meta createdAt is required',
+        }),
+      );
+    });
+
+    it('rejects non-string meta.createdAt', () => {
+      const file = createValidFile();
+      (file.meta as unknown as Record<string, unknown>).createdAt = 12345;
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'MISSING_META_CREATED_AT',
+          message: 'Meta createdAt is required',
+        }),
       );
     });
 
@@ -343,8 +475,21 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_META_LANGUAGE' }),
+        expect.objectContaining({
+          code: 'INVALID_META_LANGUAGE',
+          path: 'meta.language',
+          message: expect.stringContaining('Meta language must be'),
+        }),
       );
+    });
+
+    it('accepts meta.language as en or fi', () => {
+      for (const lang of ['en', 'fi']) {
+        const file = createValidFile();
+        (file.meta as unknown as Record<string, unknown>).language = lang;
+        const result = validateRecommendedItemsFile(file);
+        expect(result.valid).toBe(true);
+      }
     });
   });
 
@@ -356,7 +501,11 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_ITEMS' }),
+        expect.objectContaining({
+          code: 'INVALID_ITEMS',
+          path: 'items',
+          message: 'Items must be an array',
+        }),
       );
     });
 
@@ -366,13 +515,48 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'EMPTY_ITEMS' }),
+        expect.objectContaining({
+          code: 'EMPTY_ITEMS',
+          path: 'items',
+          message: 'Items array cannot be empty',
+        }),
       );
     });
 
     it('rejects item without id', () => {
       const item = createValidItem();
       delete (item as unknown as Record<string, unknown>).id;
+      const file = createValidFile({ items: [item] });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'MISSING_ID',
+          path: 'items[0].id',
+          message: 'Item ID is required',
+        }),
+      );
+    });
+
+    it('rejects item with empty string id', () => {
+      const item = createValidItem();
+      (item as unknown as Record<string, unknown>).id = '   ';
+      const file = createValidFile({ items: [item] });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'MISSING_ID',
+          message: 'Item ID is required',
+        }),
+      );
+    });
+
+    it('rejects item with non-string id', () => {
+      const item = createValidItem();
+      (item as unknown as Record<string, unknown>).id = 123;
       const file = createValidFile({ items: [item] });
       const result = validateRecommendedItemsFile(file);
 
@@ -390,7 +574,10 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'MISSING_NAME' }),
+        expect.objectContaining({
+          code: 'MISSING_NAME',
+          message: expect.stringContaining('i18nKey or names.en'),
+        }),
       );
     });
 
@@ -400,6 +587,31 @@ describe('validateRecommendedItemsFile', () => {
           {
             id: createProductTemplateId('no-english'),
             names: { fi: 'Suomeksi' }, // missing 'en'
+            category: 'food',
+            baseQuantity: createQuantity(1),
+            unit: 'pieces',
+            scaleWithPeople: true,
+            scaleWithDays: false,
+          },
+        ],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'MISSING_NAME',
+          message: expect.stringContaining('i18nKey or names.en'),
+        }),
+      );
+    });
+
+    it('rejects item with names.en as empty string', () => {
+      const file = createValidFile({
+        items: [
+          {
+            id: createProductTemplateId('empty-en'),
+            names: { en: '   ' },
             category: 'food',
             baseQuantity: createQuantity(1),
             unit: 'pieces',
@@ -434,14 +646,54 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_NAMES' }),
+        expect.objectContaining({
+          code: 'INVALID_NAMES',
+          path: 'items[0].names',
+          message: 'names must be an object',
+        }),
       );
+    });
+
+    it('rejects item with names as array', () => {
+      const file = createValidFile({
+        items: [
+          {
+            id: createProductTemplateId('array-names'),
+            names: ['en', 'fi'] as unknown as Record<string, string>,
+            category: 'food',
+            baseQuantity: createQuantity(1),
+            unit: 'pieces',
+            scaleWithPeople: true,
+            scaleWithDays: false,
+          },
+        ],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      // Array is not a valid names object
+      expect(result.valid).toBe(false);
     });
 
     it('rejects invalid category', () => {
       const file = createValidFile({
         items: [createValidItem({ category: 'invalid-category' as never })],
       });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_CATEGORY',
+          path: 'items[0].category',
+          message: expect.stringContaining('Invalid category'),
+        }),
+      );
+    });
+
+    it('rejects non-string category', () => {
+      const item = createValidItem();
+      (item as unknown as Record<string, unknown>).category = 123;
+      const file = createValidFile({ items: [item] });
       const result = validateRecommendedItemsFile(file);
 
       expect(result.valid).toBe(false);
@@ -458,20 +710,27 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_UNIT' }),
+        expect.objectContaining({
+          code: 'INVALID_UNIT',
+          path: 'items[0].unit',
+          message: expect.stringContaining('Invalid unit'),
+        }),
       );
     });
 
     it('rejects negative baseQuantity', () => {
       const file = createValidFile({
-        // Use type assertion to test invalid value (deliberately testing validation)
         items: [createValidItem({ baseQuantity: -1 as unknown as Quantity })],
       });
       const result = validateRecommendedItemsFile(file);
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_QUANTITY' }),
+        expect.objectContaining({
+          code: 'INVALID_QUANTITY',
+          path: 'items[0].baseQuantity',
+          message: expect.stringContaining('positive finite number'),
+        }),
       );
     });
 
@@ -483,7 +742,11 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_BOOLEAN' }),
+        expect.objectContaining({
+          code: 'INVALID_BOOLEAN',
+          path: 'items[0].scaleWithPeople',
+          message: 'scaleWithPeople must be a boolean',
+        }),
       );
     });
 
@@ -495,7 +758,11 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_BOOLEAN' }),
+        expect.objectContaining({
+          code: 'INVALID_BOOLEAN',
+          path: 'items[0].scaleWithDays',
+          message: 'scaleWithDays must be a boolean',
+        }),
       );
     });
 
@@ -510,7 +777,11 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'DUPLICATE_ID' }),
+        expect.objectContaining({
+          code: 'DUPLICATE_ID',
+          path: 'items[1].id',
+          message: expect.stringContaining('Duplicate item ID'),
+        }),
       );
     });
 
@@ -524,7 +795,28 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_ITEM' }),
+        expect.objectContaining({
+          code: 'INVALID_ITEM',
+          path: 'items[0]',
+          message: 'Item must be an object',
+        }),
+      );
+    });
+
+    it('rejects null item in array', () => {
+      const file = createValidFile();
+      (file as unknown as Record<string, unknown>).items = [
+        null,
+        createValidItem(),
+      ];
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_ITEM',
+          message: 'Item must be an object',
+        }),
       );
     });
 
@@ -534,6 +826,33 @@ describe('validateRecommendedItemsFile', () => {
           {
             id: createProductTemplateId('empty-i18n'),
             i18nKey: '   ', // empty after trim
+            category: 'food',
+            baseQuantity: createQuantity(1),
+            unit: 'pieces',
+            scaleWithPeople: true,
+            scaleWithDays: false,
+          },
+        ],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_I18N_KEY',
+          path: 'items[0].i18nKey',
+          message: expect.stringContaining('non-empty string'),
+        }),
+      );
+    });
+
+    it('rejects non-string i18nKey', () => {
+      const file = createValidFile({
+        items: [
+          {
+            id: createProductTemplateId('non-string-i18n'),
+            i18nKey: 123 as unknown as string,
+            names: { en: 'Fallback Name' },
             category: 'food',
             baseQuantity: createQuantity(1),
             unit: 'pieces',
@@ -594,7 +913,7 @@ describe('validateRecommendedItemsFile', () => {
   });
 
   describe('warnings', () => {
-    it('warns about invalid requiresWaterLiters', () => {
+    it('warns about invalid requiresWaterLiters (negative)', () => {
       const file = createValidFile({
         items: [createValidItem({ requiresWaterLiters: -1 })],
       });
@@ -602,11 +921,55 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(true);
       expect(result.warnings).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_OPTIONAL' }),
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].requiresWaterLiters',
+          message: expect.stringContaining('requiresWaterLiters'),
+        }),
       );
     });
 
-    it('warns about invalid defaultExpirationMonths', () => {
+    it('warns about requiresWaterLiters zero (boundary)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ requiresWaterLiters: 0 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].requiresWaterLiters',
+        }),
+      );
+    });
+
+    it('accepts valid requiresWaterLiters', () => {
+      const file = createValidFile({
+        items: [createValidItem({ requiresWaterLiters: 0.5 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
+    });
+
+    it('warns about requiresWaterLiters NaN', () => {
+      const file = createValidFile({
+        items: [createValidItem({ requiresWaterLiters: Number.NaN })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].requiresWaterLiters',
+        }),
+      );
+    });
+
+    it('warns about invalid defaultExpirationMonths (zero)', () => {
       const file = createValidFile({
         items: [createValidItem({ defaultExpirationMonths: 0 })],
       });
@@ -614,8 +977,68 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(true);
       expect(result.warnings).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_OPTIONAL' }),
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].defaultExpirationMonths',
+          message: expect.stringContaining('defaultExpirationMonths'),
+        }),
       );
+    });
+
+    it('warns about defaultExpirationMonths negative', () => {
+      const file = createValidFile({
+        items: [createValidItem({ defaultExpirationMonths: -6 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].defaultExpirationMonths',
+        }),
+      );
+    });
+
+    it('warns about defaultExpirationMonths NaN', () => {
+      const file = createValidFile({
+        items: [createValidItem({ defaultExpirationMonths: Number.NaN })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].defaultExpirationMonths',
+        }),
+      );
+    });
+
+    it('warns about defaultExpirationMonths non-number', () => {
+      const item = createValidItem();
+      (item as unknown as Record<string, unknown>).defaultExpirationMonths =
+        'twelve';
+      const file = createValidFile({ items: [item] });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].defaultExpirationMonths',
+        }),
+      );
+    });
+
+    it('accepts valid defaultExpirationMonths', () => {
+      const file = createValidFile({
+        items: [createValidItem({ defaultExpirationMonths: 12 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
     });
 
     it('warns about invalid requiresFreezer (non-boolean)', () => {
@@ -629,13 +1052,60 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].requiresFreezer',
+          message: expect.stringContaining('requiresFreezer'),
         }),
       );
+    });
+
+    it('accepts requiresFreezer as boolean true', () => {
+      const file = createValidFile({
+        items: [createValidItem({ requiresFreezer: true })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
+    });
+
+    it('accepts requiresFreezer as boolean false', () => {
+      const file = createValidFile({
+        items: [createValidItem({ requiresFreezer: false })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
     });
 
     it('warns about invalid caloriesPerUnit (negative)', () => {
       const file = createValidFile({
         items: [createValidItem({ caloriesPerUnit: -100 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].caloriesPerUnit',
+          message: expect.stringContaining('caloriesPerUnit'),
+        }),
+      );
+    });
+
+    it('accepts caloriesPerUnit zero (boundary: non-negative)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ caloriesPerUnit: 0 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
+    });
+
+    it('warns about caloriesPerUnit NaN', () => {
+      const file = createValidFile({
+        items: [createValidItem({ caloriesPerUnit: Number.NaN })],
       });
       const result = validateRecommendedItemsFile(file);
 
@@ -659,8 +1129,19 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].caloriesPer100g',
+          message: expect.stringContaining('caloriesPer100g'),
         }),
       );
+    });
+
+    it('accepts caloriesPer100g zero (boundary: non-negative)', () => {
+      const file = createValidFile({
+        items: [createValidItem({ caloriesPer100g: 0 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
     });
 
     it('warns about invalid weightGramsPerUnit (negative)', () => {
@@ -674,6 +1155,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].weightGramsPerUnit',
+          message: expect.stringContaining('weightGramsPerUnit'),
         }),
       );
     });
@@ -681,6 +1163,22 @@ describe('validateRecommendedItemsFile', () => {
     it('warns about invalid weightGramsPerUnit (zero)', () => {
       const file = createValidFile({
         items: [createValidItem({ weightGramsPerUnit: 0 })],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_OPTIONAL',
+          path: 'items[0].weightGramsPerUnit',
+          message: expect.stringContaining('weightGramsPerUnit'),
+        }),
+      );
+    });
+
+    it('warns about weightGramsPerUnit NaN', () => {
+      const file = createValidFile({
+        items: [createValidItem({ weightGramsPerUnit: Number.NaN })],
       });
       const result = validateRecommendedItemsFile(file);
 
@@ -711,7 +1209,36 @@ describe('validateRecommendedItemsFile', () => {
 
       expect(result.valid).toBe(true);
       expect(result.warnings).toContainEqual(
-        expect.objectContaining({ code: 'INVALID_NAME_VALUE' }),
+        expect.objectContaining({
+          code: 'INVALID_NAME_VALUE',
+          path: 'items[0].names.fi',
+          message: expect.stringContaining('names.fi'),
+        }),
+      );
+    });
+
+    it('warns about non-string name values in names object', () => {
+      const file = createValidFile({
+        items: [
+          {
+            id: createProductTemplateId('non-string-name'),
+            names: { en: 'Valid', fi: 123 as unknown as string },
+            category: 'food',
+            baseQuantity: createQuantity(1),
+            unit: 'pieces',
+            scaleWithPeople: true,
+            scaleWithDays: false,
+          },
+        ],
+      });
+      const result = validateRecommendedItemsFile(file);
+
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_NAME_VALUE',
+          path: 'items[0].names.fi',
+        }),
       );
     });
 
@@ -726,6 +1253,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].capacityMah',
+          message: expect.stringContaining('capacityMah'),
         }),
       );
     });
@@ -741,6 +1269,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].capacityMah',
+          message: expect.stringContaining('capacityMah'),
         }),
       );
     });
@@ -756,6 +1285,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].capacityWh',
+          message: expect.stringContaining('capacityWh'),
         }),
       );
     });
@@ -771,6 +1301,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].capacityWh',
+          message: expect.stringContaining('capacityWh'),
         }),
       );
     });
@@ -797,13 +1328,30 @@ describe('parseRecommendedItemsFile', () => {
   });
 
   it('throws on invalid JSON syntax', () => {
-    expect(() => parseRecommendedItemsFile('{ invalid json }')).toThrow();
+    expect(() => parseRecommendedItemsFile('{ invalid json }')).toThrow(
+      /Failed to parse recommended items JSON/,
+    );
   });
 
   it('throws on invalid file structure', () => {
     expect(() => parseRecommendedItemsFile('{}')).toThrow(
       /Invalid recommended items file/,
     );
+  });
+
+  it('includes error details in thrown message', () => {
+    expect(() => parseRecommendedItemsFile('{}')).toThrow(/MISSING_META|meta/);
+  });
+
+  it('includes path and message in error output', () => {
+    try {
+      parseRecommendedItemsFile('{}');
+      expect.fail('Should have thrown');
+    } catch (err) {
+      const msg = (err as Error).message;
+      expect(msg).toContain('Invalid recommended items file:');
+      expect(msg).toContain(':');
+    }
   });
 });
 
@@ -1072,7 +1620,11 @@ describe('validateRecommendedItemsFile with custom categories', () => {
     const result = validateRecommendedItemsFile(data);
     expect(result.valid).toBe(false);
     expect(result.errors).toContainEqual(
-      expect.objectContaining({ code: 'INVALID_CATEGORIES' }),
+      expect.objectContaining({
+        code: 'INVALID_CATEGORIES',
+        path: 'categories',
+        message: 'Categories must be an array',
+      }),
     );
   });
 
@@ -1235,7 +1787,37 @@ describe('validateRecommendedItemsFile with disabledCategories', () => {
     const result = validateRecommendedItemsFile(data);
     expect(result.valid).toBe(false);
     expect(result.errors).toContainEqual(
-      expect.objectContaining({ code: 'INVALID_DISABLED_CATEGORY' }),
+      expect.objectContaining({
+        code: 'INVALID_DISABLED_CATEGORY',
+        path: 'disabledCategories[1]',
+        message: expect.stringContaining('Invalid standard category ID'),
+      }),
+    );
+  });
+
+  it('rejects non-string in disabledCategories', () => {
+    const data = {
+      meta: validMeta,
+      disabledCategories: [123],
+      items: [
+        {
+          id: 'item1',
+          names: { en: 'Item' },
+          category: 'tools-supplies',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+        },
+      ],
+    };
+    const result = validateRecommendedItemsFile(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'INVALID_DISABLED_CATEGORY',
+        path: 'disabledCategories[0]',
+      }),
     );
   });
 
@@ -1258,7 +1840,11 @@ describe('validateRecommendedItemsFile with disabledCategories', () => {
     const result = validateRecommendedItemsFile(data);
     expect(result.valid).toBe(false);
     expect(result.errors).toContainEqual(
-      expect.objectContaining({ code: 'INVALID_DISABLED_CATEGORIES' }),
+      expect.objectContaining({
+        code: 'INVALID_DISABLED_CATEGORIES',
+        path: 'disabledCategories',
+        message: 'disabledCategories must be an array',
+      }),
     );
   });
 
@@ -1305,7 +1891,11 @@ describe('validateRecommendedItemsFile with disabledCategories', () => {
     const result = validateRecommendedItemsFile(data);
     expect(result.valid).toBe(true); // duplicates are warnings, not errors
     expect(result.warnings).toContainEqual(
-      expect.objectContaining({ code: 'DUPLICATE_DISABLED_CATEGORY' }),
+      expect.objectContaining({
+        code: 'DUPLICATE_DISABLED_CATEGORY',
+        path: 'disabledCategories[1]',
+        message: expect.stringContaining('Duplicate disabled category'),
+      }),
     );
   });
 });
