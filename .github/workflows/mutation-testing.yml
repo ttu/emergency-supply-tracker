@@ -99,9 +99,10 @@ jobs:
             // Build issue body
             const date = new Date().toISOString().split('T')[0];
             let body = `## Mutation Testing Report - ${date}\n\n`;
-            body += `**Mutation Score: ${score}%** (${totalKilled} killed / ${totalMutants} total)\n\n`;
+            body += `**Mutation Score: ${score}%** (${detected} detected / ${valid} valid mutants)\n\n`;
             body += `| Metric | Count |\n|--------|-------|\n`;
             body += `| Killed | ${totalKilled} |\n`;
+            body += `| Timeout | ${totalTimeout} |\n`;
             body += `| Survived | ${totalSurvived} |\n`;
             body += `| No Coverage | ${totalNoCoverage} |\n`;
             body += `| Total | ${totalMutants} |\n\n`;
