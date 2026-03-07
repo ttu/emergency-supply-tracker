@@ -28,8 +28,81 @@ describe('getItemStatus', () => {
     expect(getItemStatus(4, 10)).toBe('warning');
   });
 
+  it('returns ok when quantity is exactly at 50% threshold', () => {
+    // LOW_QUANTITY_WARNING_RATIO = 0.5, so 5 < 10*0.5 is false
+    expect(getItemStatus(5, 10)).toBe('ok');
+  });
+
+  it('returns warning when quantity is just below 50% threshold', () => {
+    expect(getItemStatus(4.99, 10)).toBe('warning');
+  });
+
   it('returns ok when quantity >= recommended', () => {
     expect(getItemStatus(10, 10)).toBe('ok');
+  });
+
+  it('returns ok when no expirationDate and neverExpires is false', () => {
+    // Tests that !neverExpires && expirationDate is false when no expirationDate
+    expect(getItemStatus(10, 10, undefined, false)).toBe('ok');
+  });
+
+  it('returns warning when expiring in exactly 30 days', () => {
+    const in30Days = new Date();
+    in30Days.setDate(in30Days.getDate() + 30);
+    expect(
+      getItemStatus(10, 10, createDateOnly(toLocalDateString(in30Days)), false),
+    ).toBe('warning');
+  });
+
+  it('returns ok when expiring in 31 days', () => {
+    const in31Days = new Date();
+    in31Days.setDate(in31Days.getDate() + 31);
+    expect(
+      getItemStatus(10, 10, createDateOnly(toLocalDateString(in31Days)), false),
+    ).toBe('ok');
+  });
+
+  it('returns warning (not critical) when expiring today (daysUntilExpiration = 0)', () => {
+    const today = new Date();
+    expect(
+      getItemStatus(10, 10, createDateOnly(toLocalDateString(today)), false),
+    ).toBe('warning');
+  });
+
+  it('returns ok when markedAsEnough with sufficient quantity', () => {
+    expect(getItemStatus(10, 10, undefined, false, true)).toBe('ok');
+  });
+
+  it('returns ok when markedAsEnough overrides low quantity', () => {
+    expect(getItemStatus(1, 10, undefined, false, true)).toBe('ok');
+  });
+
+  it('returns critical when expired even if markedAsEnough', () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    expect(
+      getItemStatus(
+        10,
+        10,
+        createDateOnly(toLocalDateString(yesterday)),
+        false,
+        true,
+      ),
+    ).toBe('critical');
+  });
+
+  it('returns warning when expiring soon even if markedAsEnough', () => {
+    const in10Days = new Date();
+    in10Days.setDate(in10Days.getDate() + 10);
+    expect(
+      getItemStatus(
+        10,
+        10,
+        createDateOnly(toLocalDateString(in10Days)),
+        false,
+        true,
+      ),
+    ).toBe('warning');
   });
 
   it('returns critical when expired', () => {
@@ -283,6 +356,34 @@ describe('calculateMissingQuantity', () => {
         neverExpires: true,
         expirationDate: undefined,
       });
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
+    });
+
+    it('returns 0 when item has shortage AND is expired (expiration takes precedence)', () => {
+      const expiredDate = createDateOnly(
+        toLocalDateString(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)),
+      );
+      const item = createMockInventoryItem({
+        ...baseItem,
+        quantity: createQuantity(1), // Less than recommended (10)
+        expirationDate: expiredDate,
+        neverExpires: false,
+      });
+      // Even though quantity < recommended, expired items return 0
+      expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
+    });
+
+    it('returns 0 when item has shortage AND is expiring soon', () => {
+      const soonDate = createDateOnly(
+        toLocalDateString(new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
+      );
+      const item = createMockInventoryItem({
+        ...baseItem,
+        quantity: createQuantity(1), // Less than recommended (10)
+        expirationDate: soonDate,
+        neverExpires: false,
+      });
+      // Expiring soon takes precedence over quantity shortage
       expect(calculateMissingQuantity(item, baseRecommendedQuantity)).toBe(0);
     });
 
@@ -597,17 +698,104 @@ describe('calculateMissingQuantity', () => {
       });
       const allItems = [item1, item2];
 
-      // item1 has no matches, should fall back to individual calculation
-      // Individual: 10 - 1 = 9, but status check might return 0
-      // Actually, let's check - if item1 has quantity issue, it should show individual missing
+      // item1 matches itself (both are 'rope'), so total is 1, missing 9
+      expect(
+        calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
+      ).toBe(9);
+    });
+
+    it('excludes custom items from matching', () => {
+      const customItem = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('1'),
+        quantity: createQuantity(1),
+        itemType: createProductTemplateId('custom'),
+      });
+      const customItem2 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('2'),
+        quantity: createQuantity(2),
+        itemType: createProductTemplateId('custom'),
+      });
+      const allItems = [customItem, customItem2];
+
+      // Custom items don't match each other, falls back to individual calculation
       const missing = calculateTotalMissingQuantity(
-        item1,
+        customItem,
         allItems,
         baseRecommendedQuantity,
       );
-      // Since no matches, it falls back to calculateMissingQuantity
-      // which should return 9 if there's a quantity issue
-      expect(missing).toBeGreaterThanOrEqual(0);
+      expect(missing).toBe(9); // Individual: 10 - 1 = 9
+    });
+
+    it('returns 0 when recommendedQuantity is 0', () => {
+      const item = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('1'),
+        quantity: createQuantity(5),
+      });
+      expect(calculateTotalMissingQuantity(item, [item], 0)).toBe(0);
+    });
+
+    it('returns 0 when recommendedQuantity is negative', () => {
+      const item = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('1'),
+        quantity: createQuantity(5),
+      });
+      expect(calculateTotalMissingQuantity(item, [item], -1)).toBe(0);
+    });
+
+    it('returns 0 when total quantity equals recommended (boundary)', () => {
+      const item1 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('1'),
+        quantity: createQuantity(6),
+      });
+      const item2 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('2'),
+        quantity: createQuantity(4),
+      });
+      // Total = 10, recommended = 10
+      expect(calculateTotalMissingQuantity(item1, [item1, item2], 10)).toBe(0);
+    });
+
+    it('returns shortage when total is just below recommended (boundary)', () => {
+      const item1 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('1'),
+        quantity: createQuantity(5),
+      });
+      const item2 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('2'),
+        quantity: createQuantity(4),
+      });
+      // Total = 9, recommended = 10, missing = 1
+      expect(calculateTotalMissingQuantity(item1, [item1, item2], 10)).toBe(1);
+    });
+
+    it('returns 0 when some (not all) items have expiration issues', () => {
+      const soonDate = createDateOnly(
+        toLocalDateString(new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
+      );
+      const item1 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('1'),
+        quantity: createQuantity(1),
+        neverExpires: true,
+        expirationDate: undefined,
+      });
+      const item2 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('2'),
+        quantity: createQuantity(2),
+        expirationDate: soonDate,
+        neverExpires: false,
+      });
+      // item2 has expiration issue -> hasExpirationIssue = true -> return 0
+      expect(calculateTotalMissingQuantity(item1, [item1, item2], 10)).toBe(0);
     });
 
     it('handles single item correctly', () => {

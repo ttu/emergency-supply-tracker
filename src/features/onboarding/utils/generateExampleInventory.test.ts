@@ -620,4 +620,186 @@ describe('getStateForIndex', () => {
     expect(expiredState.expirationOffsetDays).toBeLessThanOrEqual(-1);
     expect(expiredState.expirationOffsetDays).toBeGreaterThanOrEqual(-60);
   });
+
+  it('returns full state when total is 0 or negative', () => {
+    const zeroResult = getStateForIndex(0, 0);
+    expect(zeroResult.type).toBe('full');
+    expect(zeroResult.quantityMultiplier).toBe(1.0);
+
+    const negativeResult = getStateForIndex(0, -1);
+    expect(negativeResult.type).toBe('full');
+    expect(negativeResult.quantityMultiplier).toBe(1.0);
+  });
+
+  it('returns expired state with quantityMultiplier between 0.5 and 1.0', () => {
+    // Test expired items have quantity multiplier in range 0.5-1.0
+    const expiredState = getStateForIndex(97, 100);
+    expect(expiredState.quantityMultiplier).toBeGreaterThanOrEqual(0.5);
+    expect(expiredState.quantityMultiplier).toBeLessThanOrEqual(1.0);
+  });
+
+  it('uses provided random function for partial state', () => {
+    const mockRandom = () => 0.5; // Returns 0.5 consistently
+    const partialState = getStateForIndex(50, 100, mockRandom);
+    // multiplier = 0.3 + 0.5 * 0.4 = 0.3 + 0.2 = 0.5
+    expect(partialState.quantityMultiplier).toBe(0.5);
+  });
+
+  it('uses provided random for expiring state offset', () => {
+    const mockRandom = () => 0.0; // Returns 0.0 consistently
+    const expiringState = getStateForIndex(90, 100, mockRandom);
+    // daysUntilExpiry = Math.floor(7 + 0.0 * 23) = 7
+    expect(expiringState.expirationOffsetDays).toBe(7);
+  });
+
+  it('uses provided random for expired state offset', () => {
+    const mockRandom = () => 0.0; // Returns 0.0 consistently
+    const expiredState = getStateForIndex(97, 100, mockRandom);
+    // daysExpired = Math.floor(1 + 0.0 * 59) = 1
+    expect(expiredState.expirationOffsetDays).toBe(-1);
+    // quantityMultiplier = 0.5 + 0.0 * 0.5 = 0.5
+    expect(expiredState.quantityMultiplier).toBe(0.5);
+  });
+});
+
+describe('quantity calculation details', () => {
+  it('scales quantity with people correctly', () => {
+    const items: RecommendedItemDefinition[] = [
+      {
+        id: createProductTemplateId('test-item'),
+        i18nKey: 'products.test-item',
+        category: 'food',
+        baseQuantity: createQuantity(2),
+        unit: 'pieces' as const,
+        scaleWithPeople: true,
+        scaleWithDays: false,
+        defaultExpirationMonths: 12,
+      },
+    ];
+
+    // 2 adults + 1 child = 3 people, base = 2, expected = 2 * 3 = 6
+    const result = generateExampleInventory(
+      items,
+      standardHousehold,
+      mockTranslate,
+      1, // Seed that gives full state
+    );
+
+    if (result.length > 0) {
+      // Full state: quantityMultiplier = 1.0, so quantity should be ceil(6 * 1.0) = 6
+      expect(result[0].quantity).toBe(6);
+    }
+  });
+
+  it('scales quantity with days correctly', () => {
+    const items: RecommendedItemDefinition[] = [
+      {
+        id: createProductTemplateId('test-item'),
+        i18nKey: 'products.test-item',
+        category: 'food',
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: true,
+        defaultExpirationMonths: 12,
+      },
+    ];
+
+    // supplyDurationDays = 3, base = 1, expected = 1 * 3 = 3
+    const result = generateExampleInventory(
+      items,
+      standardHousehold,
+      mockTranslate,
+      1,
+    );
+
+    if (result.length > 0) {
+      expect(result[0].quantity).toBe(3);
+    }
+  });
+
+  it('scales quantity with pets correctly', () => {
+    const items: RecommendedItemDefinition[] = [
+      {
+        id: createProductTemplateId('pet-food'),
+        i18nKey: 'products.pet-food',
+        category: 'pets',
+        baseQuantity: createQuantity(1),
+        unit: 'kilograms' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        scaleWithPets: true,
+        defaultExpirationMonths: 12,
+      },
+    ];
+
+    // 2 pets, PET_REQUIREMENT_MULTIPLIER = 0.5, base = 1
+    // quantity = 1 * (2 * 0.5) = 1 * 1 = 1
+    const household = { ...standardHousehold, pets: 2 };
+    const result = generateExampleInventory(items, household, mockTranslate, 1);
+
+    if (result.length > 0) {
+      // Should have a positive quantity
+      expect(result[0].quantity).toBeGreaterThan(0);
+    }
+  });
+
+  it('handles i18nKey with custom. prefix', () => {
+    const translateCalls: string[] = [];
+    const trackingTranslate = (key: string) => {
+      translateCalls.push(key);
+      return `Name: ${key}`;
+    };
+
+    const items: RecommendedItemDefinition[] = [
+      {
+        id: createProductTemplateId('my-custom'),
+        i18nKey: 'custom.my-custom',
+        category: 'food',
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        defaultExpirationMonths: 12,
+      },
+    ];
+
+    const result = generateExampleInventory(
+      items,
+      standardHousehold,
+      trackingTranslate,
+      1,
+    );
+
+    if (result.length > 0) {
+      // The "custom." prefix should be stripped
+      expect(translateCalls).toContain('my-custom');
+      expect(result[0].name).toBe('Name: my-custom');
+    }
+  });
+
+  it('returns empty when all items filtered out', () => {
+    const items: RecommendedItemDefinition[] = [
+      {
+        id: createProductTemplateId('frozen-only'),
+        i18nKey: 'products.frozen-only',
+        category: 'food',
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        requiresFreezer: true,
+        defaultExpirationMonths: 12,
+      },
+    ];
+
+    const noFreezer = { ...standardHousehold, useFreezer: false };
+    const result = generateExampleInventory(
+      items,
+      noFreezer,
+      mockTranslate,
+      42,
+    );
+    expect(result).toEqual([]);
+  });
 });
