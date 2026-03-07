@@ -272,10 +272,22 @@ describe('WaterCategoryStrategy', () => {
   });
 
   describe('hasEnoughInventory', () => {
-    it('should return true when totalActual >= totalNeeded', () => {
+    it('should return true when totalActual > totalNeeded', () => {
       const result: ShortageCalculationResult = {
         shortages: [],
         totalActual: 20,
+        totalNeeded: 18,
+        drinkingWaterNeeded: 15,
+        preparationWaterNeeded: 3,
+      };
+
+      expect(strategy.hasEnoughInventory(result)).toBe(true);
+    });
+
+    it('should return true when totalActual equals totalNeeded exactly', () => {
+      const result: ShortageCalculationResult = {
+        shortages: [],
+        totalActual: 18,
         totalNeeded: 18,
         drinkingWaterNeeded: 15,
         preparationWaterNeeded: 3,
@@ -296,6 +308,18 @@ describe('WaterCategoryStrategy', () => {
       expect(strategy.hasEnoughInventory(result)).toBe(false);
     });
 
+    it('should return false when totalActual is just below totalNeeded', () => {
+      const result: ShortageCalculationResult = {
+        shortages: [],
+        totalActual: 17,
+        totalNeeded: 18,
+        drinkingWaterNeeded: 15,
+        preparationWaterNeeded: 3,
+      };
+
+      expect(strategy.hasEnoughInventory(result)).toBe(false);
+    });
+
     it('should return false when totalNeeded is 0', () => {
       const result: ShortageCalculationResult = {
         shortages: [],
@@ -304,6 +328,74 @@ describe('WaterCategoryStrategy', () => {
       };
 
       expect(strategy.hasEnoughInventory(result)).toBe(false);
+    });
+  });
+
+  describe('calculateRecommendedQuantity with pets', () => {
+    it('should scale with pets when scaleWithPets is true', () => {
+      const context: CategoryCalculationContext = {
+        categoryId: 'water-beverages',
+        items: [],
+        categoryItems: [],
+        recommendedForCategory: [],
+        household: createMockHousehold({
+          adults: 1,
+          children: 0,
+          pets: 2,
+          supplyDurationDays: 1,
+        }),
+        disabledRecommendedItems: [],
+        options: {},
+        peopleMultiplier: 1,
+      };
+
+      const recItem: RecommendedItemDefinition = {
+        id: createProductTemplateId('pet-water'),
+        i18nKey: 'products.pet-water',
+        category: 'water-beverages',
+        baseQuantity: createQuantity(1),
+        unit: 'liters',
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        scaleWithPets: true,
+      };
+
+      const result = strategy.calculateRecommendedQuantity(recItem, context);
+      // 1 * 2 * 1.0 (PET_MULTIPLIER) = 2
+      expect(result).toBe(2);
+    });
+
+    it('should not scale with pets when scaleWithPets is false/undefined', () => {
+      const context: CategoryCalculationContext = {
+        categoryId: 'water-beverages',
+        items: [],
+        categoryItems: [],
+        recommendedForCategory: [],
+        household: createMockHousehold({
+          adults: 1,
+          children: 0,
+          pets: 5,
+          supplyDurationDays: 1,
+        }),
+        disabledRecommendedItems: [],
+        options: { dailyWaterPerPerson: 3 },
+        peopleMultiplier: 1,
+      };
+
+      const recItem: RecommendedItemDefinition = {
+        id: createProductTemplateId('bottled-water'),
+        i18nKey: 'products.bottled-water',
+        category: 'water-beverages',
+        baseQuantity: createQuantity(1),
+        unit: 'liters',
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        // scaleWithPets not set (undefined)
+      };
+
+      const result = strategy.calculateRecommendedQuantity(recItem, context);
+      // 3 (dailyWater for bottled-water) — no people/days/pets scaling
+      expect(result).toBe(3);
     });
   });
 });

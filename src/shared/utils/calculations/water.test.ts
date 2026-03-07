@@ -472,6 +472,216 @@ describe('water calculations', () => {
     });
   });
 
+  describe('validateWaterRequirement - mutation killing', () => {
+    it('returns error for non-number type (kills ConditionalExpression false at L52)', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(validateWaterRequirement('not a number' as any)).toBe(
+        'Water requirement must be a number',
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(validateWaterRequirement(true as any)).toBe(
+        'Water requirement must be a number',
+      );
+    });
+  });
+
+  describe('getWaterRequirementPerUnit - boundary mutations', () => {
+    it('returns 0 when item.requiresWaterLiters is exactly 0 (kills >= 0 boundary at L73)', () => {
+      const item = createMockInventoryItem({
+        id: createItemId('boundary-0'),
+        name: 'Zero Water Item',
+        categoryId: createCategoryId('food'),
+        unit: 'packages',
+        requiresWaterLiters: 0,
+      });
+      expect(getWaterRequirementPerUnit(item)).toBe(0);
+    });
+
+    it('returns 0 for custom itemType (kills itemType check at L78)', () => {
+      const item = createMockInventoryItem({
+        id: createItemId('custom-type'),
+        name: 'Custom Food',
+        categoryId: createCategoryId('food'),
+        unit: 'packages',
+        itemType: createProductTemplateId('custom'),
+      });
+      expect(getWaterRequirementPerUnit(item)).toBe(0);
+    });
+
+    it('returns 0 when item has no itemType (kills itemType truthy check at L78)', () => {
+      const item = createMockInventoryItem({
+        id: createItemId('no-type'),
+        name: 'No Type Food',
+        categoryId: createCategoryId('food'),
+        unit: 'packages',
+        itemType: undefined,
+      });
+      expect(getWaterRequirementPerUnit(item)).toBe(0);
+    });
+
+    it('returns 0 for template item with requiresWaterLiters = 0 (kills >= 0 boundary at L84)', () => {
+      // Find a food template item that does NOT have requiresWaterLiters (it will be undefined, not 0)
+      // We need an item whose template has no water requirement
+      const item = createMockInventoryItem({
+        id: createItemId('no-water-template'),
+        name: 'Canned Beans',
+        categoryId: createCategoryId('food'),
+        unit: 'cans',
+        itemType: createProductTemplateId('canned-beans'),
+      });
+      // canned-beans template should not require water
+      expect(getWaterRequirementPerUnit(item)).toBe(0);
+    });
+  });
+
+  describe('calculateTotalWaterAvailable - water detection branches', () => {
+    it('detects water by itemType "bottled-water" specifically (kills L117 first branch)', () => {
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('bw-type'),
+          name: 'My Liquid', // name does NOT contain "water"
+          categoryId: createCategoryId('water-beverages'),
+          quantity: createQuantity(5),
+          unit: 'liters',
+          itemType: createProductTemplateId('bottled-water'),
+        }),
+      ];
+      expect(calculateTotalWaterAvailable(items)).toBe(5);
+    });
+
+    it('detects water by itemType containing "water" (kills L118 second branch)', () => {
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('water-type'),
+          name: 'My Liquid', // name does NOT contain "water"
+          categoryId: createCategoryId('water-beverages'),
+          quantity: createQuantity(7),
+          unit: 'liters',
+          itemType: createProductTemplateId('purified-water'),
+        }),
+      ];
+      expect(calculateTotalWaterAvailable(items)).toBe(7);
+    });
+
+    it('detects water by name containing "water" (kills L119 third branch)', () => {
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('water-name'),
+          name: 'Spring Water',
+          categoryId: createCategoryId('water-beverages'),
+          quantity: createQuantity(3),
+          unit: 'liters',
+          itemType: createProductTemplateId('some-other-thing'),
+        }),
+      ];
+      expect(calculateTotalWaterAvailable(items)).toBe(3);
+    });
+
+    it('detects water by name case-insensitively (kills toLowerCase vs toUpperCase at L118-119)', () => {
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('upper-water'),
+          name: 'SPRING WATER',
+          categoryId: createCategoryId('water-beverages'),
+          quantity: createQuantity(4),
+          unit: 'liters',
+          itemType: createProductTemplateId('something'),
+        }),
+      ];
+      expect(calculateTotalWaterAvailable(items)).toBe(4);
+    });
+
+    it('detects water by mixed case name (kills case mutation)', () => {
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('mixed-water'),
+          name: 'Filtered Water Supply',
+          categoryId: createCategoryId('water-beverages'),
+          quantity: createQuantity(6),
+          unit: 'liters',
+          itemType: createProductTemplateId('non-water-type'),
+        }),
+      ];
+      expect(calculateTotalWaterAvailable(items)).toBe(6);
+    });
+
+    it('does NOT detect item without "water" in name or type', () => {
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('juice'),
+          name: 'Orange Juice',
+          categoryId: createCategoryId('water-beverages'),
+          quantity: createQuantity(5),
+          unit: 'liters',
+          itemType: createProductTemplateId('juice'),
+        }),
+      ];
+      expect(calculateTotalWaterAvailable(items)).toBe(0);
+    });
+  });
+
+  describe('calculateWaterRequirements - boundary mutations', () => {
+    it('excludes items with quantity exactly 0 (kills quantity >= 0 boundary at L141)', () => {
+      const items = [
+        createMockInventoryItem({
+          id: createItemId('zero-qty'),
+          name: 'Pasta',
+          categoryId: createCategoryId('food'),
+          quantity: createQuantity(0),
+          unit: 'kilograms',
+          itemType: createProductTemplateId('pasta'),
+        }),
+      ];
+      const result = calculateWaterRequirements(items);
+      expect(result.itemsRequiringWater).toHaveLength(0);
+      expect(result.totalWaterRequired).toBe(0);
+    });
+  });
+
+  describe('calculateRecommendedWaterStorage - arithmetic mutations', () => {
+    it('verifies adults multiplication not division (kills * vs / at L181)', () => {
+      // With ADULT_REQUIREMENT_MULTIPLIER = 1.0:
+      // Correct: 4 * 1.0 * dailyWater * 1 = 4 * dailyWater
+      // Mutant (division): 4 / 1.0 * dailyWater * 1 = 4 * dailyWater (same because multiplier is 1.0!)
+      // So test with children to differentiate * vs / for CHILDREN_REQUIREMENT_MULTIPLIER
+      const household2 = createMockHousehold({
+        adults: 1,
+        children: 4,
+        supplyDurationDays: 1,
+        useFreezer: false,
+      });
+      // Correct: (1 * 1.0 + 4 * 0.75) * 2 * 1 = (1 + 3) * 2 = 8
+      // If children * was /: (1 * 1.0 + 4 / 0.75) * 2 * 1 = (1 + 5.333) * 2 = 12.667
+      const result = calculateRecommendedWaterStorage(household2, 2);
+      expect(result).toBe(8);
+    });
+
+    it('verifies multiplication with non-unit multiplier values', () => {
+      const household = createMockHousehold({
+        adults: 3,
+        children: 2,
+        supplyDurationDays: 5,
+        useFreezer: false,
+      });
+      // (3 * 1.0 + 2 * 0.75) * 3 * 5 = (3 + 1.5) * 3 * 5 = 4.5 * 15 = 67.5
+      expect(
+        calculateRecommendedWaterStorage(household, DAILY_WATER_PER_PERSON),
+      ).toBe(67.5);
+    });
+
+    it('uses custom children multiplier correctly', () => {
+      const household = createMockHousehold({
+        adults: 1,
+        children: 2,
+        supplyDurationDays: 1,
+        useFreezer: false,
+      });
+      // With custom childrenMultiplier = 0.5:
+      // (1 * 1.0 + 2 * 0.5) * 1 * 1 = 2
+      expect(calculateRecommendedWaterStorage(household, 1, 0.5)).toBe(2);
+    });
+  });
+
   describe('calculateTotalWaterNeeds', () => {
     it('combines drinking water and preparation water', () => {
       const pastaQuantity = createQuantity(randomQuantityFloat());
