@@ -32,18 +32,17 @@ describe('errorLogger export', () => {
   });
 
   describe('generateDebugExport', () => {
-    it('generates export data structure', () => {
+    it('generates export data structure with correct types', () => {
       const exportData = generateDebugExport();
 
-      expect(exportData.exportedAt).toBeDefined();
+      expect(new Date(exportData.exportedAt).getTime()).not.toBeNaN();
       expect(exportData.appVersion).toBe('1.0.0');
-      expect(exportData.userAgent).toBeDefined();
-      expect(exportData.session).toBeDefined();
-      expect(exportData.session.id).toBeDefined();
-      expect(exportData.session.start).toBeDefined();
-      expect(exportData.logs).toBeDefined();
-      expect(exportData.analytics).toBeDefined();
-      expect(exportData.analytics.events).toBeDefined();
+      expect(typeof exportData.userAgent).toBe('string');
+      expect(exportData.userAgent.length).toBeGreaterThan(0);
+      expect(typeof exportData.session.id).toBe('string');
+      expect(typeof exportData.session.start).toBe('string');
+      expect(Array.isArray(exportData.logs)).toBe(true);
+      expect(Array.isArray(exportData.analytics.events)).toBe(true);
       expect(exportData.analytics.stats).toBeDefined();
     });
 
@@ -67,7 +66,7 @@ describe('errorLogger export', () => {
   });
 
   describe('downloadDebugExport', () => {
-    it('creates and triggers download', () => {
+    it('creates and triggers download with correct blob type and filename', () => {
       const mockClick = vi.fn();
       const mockCreateObjectURL = vi.fn().mockReturnValue('blob:test');
       const mockRevokeObjectURL = vi.fn();
@@ -75,21 +74,35 @@ describe('errorLogger export', () => {
       globalThis.URL.createObjectURL = mockCreateObjectURL;
       globalThis.URL.revokeObjectURL = mockRevokeObjectURL;
 
-      // Create a real anchor element but mock its click
+      let capturedLink: HTMLAnchorElement | null = null;
       const originalCreateElement = document.createElement.bind(document);
       vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
         const element = originalCreateElement(tagName);
         if (tagName === 'a') {
           element.click = mockClick;
+          capturedLink = element as HTMLAnchorElement;
         }
         return element;
       });
 
       downloadDebugExport();
 
-      expect(mockCreateObjectURL).toHaveBeenCalled();
+      // Verify blob was created with JSON content type
+      expect(mockCreateObjectURL).toHaveBeenCalledWith(expect.any(Blob));
+      const blob = mockCreateObjectURL.mock.calls[0][0] as Blob;
+      expect(blob.type).toBe('application/json');
+
+      // Verify link attributes
+      expect(capturedLink).not.toBeNull();
+      expect(capturedLink!.href).toContain('blob:test');
+      expect(capturedLink!.download).toMatch(
+        /^emergency-supply-tracker-debug-.*\.json$/,
+      );
+      // Filename has colons replaced with dashes (dots remain in extension)
+      expect(capturedLink!.download).not.toMatch(/:/);
+
       expect(mockClick).toHaveBeenCalled();
-      expect(mockRevokeObjectURL).toHaveBeenCalled();
+      expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:test');
 
       vi.restoreAllMocks();
     });
