@@ -81,8 +81,9 @@ describe('generateDashboardAlerts', () => {
     expect(expiredAlert?.type).toBe('critical');
     expect(expiredAlert?.message).toBe('Item has expired');
     expect(expiredAlert?.itemName).toBe('Expired Water');
-    // Expiration alerts should not have categoryId (they're item-specific, not category-specific)
-    expect(expiredAlert?.categoryId).toBeUndefined();
+    // Expiration alerts should include categoryId and itemId for navigation
+    expect(expiredAlert?.categoryId).toBe('water');
+    expect(expiredAlert?.itemId).toBe('1');
   });
 
   it('should generate expiring soon alerts', () => {
@@ -110,6 +111,9 @@ describe('generateDashboardAlerts', () => {
     expect(expiringAlert?.type).toBe('warning');
     expect(expiringAlert?.message).toContain('Expiring in');
     expect(expiringAlert?.message).toContain('days');
+    // Expiring-soon alerts should include categoryId and itemId for navigation
+    expect(expiringAlert?.categoryId).toBe('water');
+    expect(expiringAlert?.itemId).toBe('1');
   });
 
   it('should handle items where getDaysUntilExpiration returns undefined', () => {

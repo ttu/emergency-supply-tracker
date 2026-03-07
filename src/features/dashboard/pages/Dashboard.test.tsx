@@ -58,16 +58,30 @@ vi.mock('@/features/dashboard', async () => {
 });
 
 const mockGenerateDashboardAlerts = vi.fn<
-  () => Array<{ id: string; type: string; message: string; itemName?: string }>
+  () => Array<{
+    id: string;
+    type: string;
+    message: string;
+    itemName?: string;
+    categoryId?: string;
+    itemId?: string;
+  }>
 >(() => []);
 
 vi.mock('@/features/alerts', () => ({
   AlertBanner: ({
     alerts,
     onDismiss,
+    onAlertClick,
   }: {
-    alerts: Array<{ id: string; message: string }>;
+    alerts: Array<{
+      id: string;
+      message: string;
+      categoryId?: string;
+      itemId?: string;
+    }>;
     onDismiss?: (alertId: string) => void;
+    onAlertClick?: (categoryId: string, itemId?: string) => void;
   }) => (
     <div data-testid="alert-banner">
       {alerts.map((alert) => (
@@ -79,6 +93,14 @@ vi.mock('@/features/alerts', () => ({
               data-testid={`dismiss-${alert.id}`}
             >
               Dismiss
+            </button>
+          )}
+          {onAlertClick && (alert.categoryId || alert.itemId) && (
+            <button
+              onClick={() => onAlertClick(alert.categoryId || '', alert.itemId)}
+              data-testid={`alert-click-${alert.id}`}
+            >
+              View
             </button>
           )}
         </div>
@@ -148,6 +170,55 @@ describe('Dashboard', () => {
     // Should navigate to inventory page with category filter
     expect(onNavigate).toHaveBeenCalledWith('inventory', {
       initialCategoryId: 'water-beverages',
+    });
+  });
+
+  it('should navigate to inventory with itemId when clicking item-level alert', () => {
+    mockGenerateDashboardAlerts.mockReturnValue([
+      {
+        id: 'expired-item-1',
+        type: 'warning',
+        message: 'Item has expired',
+        itemName: 'Canned Meat',
+        categoryId: 'food',
+        itemId: 'item-1',
+      },
+    ]);
+
+    const onNavigate = vi.fn();
+    renderWithProviders(<Dashboard onNavigate={onNavigate} />);
+
+    const alertClickButton = screen.getByTestId('alert-click-expired-item-1');
+    fireEvent.click(alertClickButton);
+
+    expect(onNavigate).toHaveBeenCalledWith('inventory', {
+      initialCategoryId: 'food',
+      initialItemId: 'item-1',
+    });
+  });
+
+  it('should navigate to inventory with category when clicking category-level alert', () => {
+    mockGenerateDashboardAlerts.mockReturnValue([
+      {
+        id: 'low-stock-cooking',
+        type: 'warning',
+        message: 'Running low',
+        itemName: 'Cooking & Heat',
+        categoryId: 'cooking-heat',
+      },
+    ]);
+
+    const onNavigate = vi.fn();
+    renderWithProviders(<Dashboard onNavigate={onNavigate} />);
+
+    const alertClickButton = screen.getByTestId(
+      'alert-click-low-stock-cooking',
+    );
+    fireEvent.click(alertClickButton);
+
+    expect(onNavigate).toHaveBeenCalledWith('inventory', {
+      initialCategoryId: 'cooking-heat',
+      initialItemId: undefined,
     });
   });
 

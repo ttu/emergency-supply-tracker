@@ -24,6 +24,8 @@ export interface Alert {
   itemName?: string;
   /** Category ID for category-related alerts (e.g., low stock alerts). When present, the alert can navigate to the category. */
   categoryId?: StandardCategoryId;
+  /** Item ID for item-level alerts (e.g., expiration alerts). When present, the alert can navigate to the specific item. */
+  itemId?: string;
 }
 
 /**

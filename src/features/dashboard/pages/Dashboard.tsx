@@ -14,7 +14,11 @@ import styles from './Dashboard.module.css';
 export interface DashboardProps {
   onNavigate?: (
     page: PageType,
-    options?: { openAddModal?: boolean; initialCategoryId?: string },
+    options?: {
+      openAddModal?: boolean;
+      initialCategoryId?: string;
+      initialItemId?: string;
+    },
   ) => void;
 }
 
@@ -62,9 +66,12 @@ export function Dashboard({ onNavigate }: DashboardProps = {}) {
     handleDismissAlert(createAlertId(alertId));
   };
 
-  // Alert click handler that navigates to the category
-  const handleAlertClick = (categoryId: string) => {
-    onNavigate?.('inventory', { initialCategoryId: categoryId });
+  // Alert click handler that navigates to the category (and optionally to a specific item)
+  const handleAlertClick = (categoryId: string, itemId?: string) => {
+    onNavigate?.('inventory', {
+      initialCategoryId: categoryId || undefined,
+      initialItemId: itemId,
+    });
   };
 
   return (

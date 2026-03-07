@@ -7,8 +7,8 @@ export interface AlertBannerProps {
   alerts: Alert[];
   onDismiss?: (alertId: string) => void;
   onDismissAll?: () => void;
-  /** Called when a category alert is clicked. Only fires for alerts with a categoryId. */
-  onAlertClick?: (categoryId: string) => void;
+  /** Called when a navigable alert is clicked. Fires for alerts with a categoryId and/or itemId. */
+  onAlertClick?: (categoryId: string, itemId?: string) => void;
 }
 
 const AlertIcon = ({ type }: { type: AlertType }): ReactNode => {
@@ -61,10 +61,12 @@ export const AlertBanner = ({
       </div>
       <div className={styles.alerts}>
         {alerts.map((alert) => {
-          const isClickable = Boolean(alert.categoryId && onAlertClick);
+          const isClickable = Boolean(
+            (alert.categoryId || alert.itemId) && onAlertClick,
+          );
           const handleClick = () => {
-            if (alert.categoryId && onAlertClick) {
-              onAlertClick(alert.categoryId);
+            if (onAlertClick && (alert.categoryId || alert.itemId)) {
+              onAlertClick(alert.categoryId || '', alert.itemId);
             }
           };
 
@@ -78,9 +80,15 @@ export const AlertBanner = ({
                   type="button"
                   className={styles.content}
                   onClick={handleClick}
-                  aria-label={t('dashboard.alerts.viewCategory', {
-                    category: alert.itemName || alert.categoryId || '',
-                  })}
+                  aria-label={
+                    alert.itemId
+                      ? t('dashboard.alerts.viewItem', {
+                          item: alert.itemName || alert.itemId || alert.message,
+                        })
+                      : t('dashboard.alerts.viewCategory', {
+                          category: alert.itemName || alert.categoryId || '',
+                        })
+                  }
                 >
                   <AlertIcon type={alert.type} />
                   <div className={styles.message}>
