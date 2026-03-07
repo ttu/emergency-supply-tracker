@@ -602,7 +602,7 @@ describe('getStateForIndex', () => {
 
   it('sets correct quantity multipliers', () => {
     const fullState = getStateForIndex(0, 100);
-    expect(fullState.quantityMultiplier).toBe(1.0);
+    expect(fullState.quantityMultiplier).toBe(1);
 
     const partialState = getStateForIndex(50, 100);
     expect(partialState.quantityMultiplier).toBeGreaterThanOrEqual(0.3);
@@ -624,18 +624,18 @@ describe('getStateForIndex', () => {
   it('returns full state when total is 0 or negative', () => {
     const zeroResult = getStateForIndex(0, 0);
     expect(zeroResult.type).toBe('full');
-    expect(zeroResult.quantityMultiplier).toBe(1.0);
+    expect(zeroResult.quantityMultiplier).toBe(1);
 
     const negativeResult = getStateForIndex(0, -1);
     expect(negativeResult.type).toBe('full');
-    expect(negativeResult.quantityMultiplier).toBe(1.0);
+    expect(negativeResult.quantityMultiplier).toBe(1);
   });
 
-  it('returns expired state with quantityMultiplier between 0.5 and 1.0', () => {
-    // Test expired items have quantity multiplier in range 0.5-1.0
+  it('returns expired state with quantityMultiplier between 0.5 and 1', () => {
+    // Test expired items have quantity multiplier in range 0.5-1
     const expiredState = getStateForIndex(97, 100);
     expect(expiredState.quantityMultiplier).toBeGreaterThanOrEqual(0.5);
-    expect(expiredState.quantityMultiplier).toBeLessThanOrEqual(1.0);
+    expect(expiredState.quantityMultiplier).toBeLessThanOrEqual(1);
   });
 
   it('uses provided random function for partial state', () => {
@@ -646,19 +646,19 @@ describe('getStateForIndex', () => {
   });
 
   it('uses provided random for expiring state offset', () => {
-    const mockRandom = () => 0.0; // Returns 0.0 consistently
+    const mockRandom = (): number => 0; // Returns 0.0 consistently
     const expiringState = getStateForIndex(90, 100, mockRandom);
-    // daysUntilExpiry = Math.floor(7 + 0.0 * 23) = 7
+    // daysUntilExpiry = Math.floor(7 + 0 * 23) = 7
     expect(expiringState.expirationOffsetDays).toBe(7);
   });
 
   it('uses provided random for expired state offset', () => {
-    const mockRandom = () => 0.0; // Returns 0.0 consistently
+    const mockRandom = (): number => 0.5;
     const expiredState = getStateForIndex(97, 100, mockRandom);
-    // daysExpired = Math.floor(1 + 0.0 * 59) = 1
-    expect(expiredState.expirationOffsetDays).toBe(-1);
-    // quantityMultiplier = 0.5 + 0.0 * 0.5 = 0.5
-    expect(expiredState.quantityMultiplier).toBe(0.5);
+    // daysExpired = Math.floor(1 + 0.5 * 59) = 30
+    expect(expiredState.expirationOffsetDays).toBe(-30);
+    // quantityMultiplier = 0.5 + 0.5 * 0.5 = 0.75
+    expect(expiredState.quantityMultiplier).toBe(0.75);
   });
 });
 
@@ -686,7 +686,7 @@ describe('quantity calculation details', () => {
     );
 
     if (result.length > 0) {
-      // Full state: quantityMultiplier = 1.0, so quantity should be ceil(6 * 1.0) = 6
+      // Full state: quantityMultiplier = 1.0, so quantity should be ceil(6 * 1) = 6
       expect(result[0].quantity).toBe(6);
     }
   });

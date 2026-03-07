@@ -68,7 +68,7 @@ describe('water calculations', () => {
       expect(validateWaterRequirement(-Infinity)).toBe(
         'Water requirement must be greater than zero',
       );
-      expect(validateWaterRequirement(NaN)).toBe(
+      expect(validateWaterRequirement(Number.NaN)).toBe(
         'Water requirement must be a finite number',
       );
     });

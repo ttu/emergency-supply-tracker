@@ -2911,7 +2911,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('2'),
           categoryId: createCategoryId('food'),
           quantity: createQuantity(5),
-          caloriesPerUnit: NaN, // Not finite
+          caloriesPerUnit: Number.NaN, // Not finite
         }),
         createMockInventoryItem({
           id: createItemId('3'),

@@ -45,7 +45,7 @@ describe('calculateHouseholdMultiplier', () => {
     });
     // 1 * 1.0 + 2 * 0.5 = 2.0
     const result = calculateHouseholdMultiplier(config, 0.5);
-    expect(result).toBe(2.0);
+    expect(result).toBe(2);
   });
 
   it('returns adults * days when no children', () => {

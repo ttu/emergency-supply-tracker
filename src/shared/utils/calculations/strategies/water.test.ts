@@ -390,7 +390,7 @@ describe('WaterCategoryStrategy', () => {
         unit: 'liters',
         scaleWithPeople: false,
         scaleWithDays: false,
-        // scaleWithPets not set (undefined)
+        scaleWithPets: false,
       };
 
       const result = strategy.calculateRecommendedQuantity(recItem, context);

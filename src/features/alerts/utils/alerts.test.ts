@@ -930,9 +930,9 @@ describe('water shortage alerts', () => {
 
     if (waterAlert) {
       // The liters value should be rounded to 1 decimal
-      const litersMatch = waterAlert.message.match(/([\d.]+)L/);
+      const litersMatch = /([\d.]+)L/.exec(waterAlert.message);
       if (litersMatch) {
-        const liters = parseFloat(litersMatch[1]);
+        const liters = Number.parseFloat(litersMatch[1]);
         // Check that it's rounded to at most 1 decimal place
         expect(liters).toBe(Math.ceil(liters * 10) / 10);
       }
@@ -1186,9 +1186,9 @@ describe('alert and category display consistency', () => {
     expect(foodAlert).toBeDefined();
 
     // Extract percentage from alert message (e.g., "Running low (30% stocked)")
-    const alertPercentageMatch = foodAlert?.message.match(/(\d+)%/);
+    const alertPercentageMatch = /(\d+)%/.exec(foodAlert?.message ?? '');
     const alertPercentage = alertPercentageMatch
-      ? parseInt(alertPercentageMatch[1])
+      ? Number.parseInt(alertPercentageMatch[1], 10)
       : undefined;
 
     // The alert percentage should match the category card percentage

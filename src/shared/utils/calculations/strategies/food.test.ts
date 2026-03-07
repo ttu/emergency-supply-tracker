@@ -388,7 +388,7 @@ describe('FoodCategoryStrategy', () => {
         unit: 'cans',
         scaleWithPeople: false,
         scaleWithDays: false,
-        caloriesPerUnit: NaN,
+        caloriesPerUnit: Number.NaN,
       };
 
       const result = strategy.calculateActualQuantity(
@@ -467,7 +467,7 @@ describe('FoodCategoryStrategy', () => {
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
           quantity: createQuantity(2),
-          caloriesPerUnit: NaN,
+          caloriesPerUnit: Number.NaN,
         }),
       ];
 

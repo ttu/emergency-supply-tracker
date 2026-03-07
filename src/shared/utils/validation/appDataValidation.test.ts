@@ -254,7 +254,7 @@ describe('validateAppDataValues', () => {
 
     it('detects non-finite dailyCaloriesPerPerson (NaN)', () => {
       const data = createValidAppData();
-      data.settings.dailyCaloriesPerPerson = NaN;
+      data.settings.dailyCaloriesPerPerson = Number.NaN;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('settings.dailyCaloriesPerPerson');
@@ -310,7 +310,7 @@ describe('validateAppDataValues', () => {
 
     it('detects non-finite dailyWaterPerPerson (NaN)', () => {
       const data = createValidAppData();
-      data.settings.dailyWaterPerPerson = NaN;
+      data.settings.dailyWaterPerPerson = Number.NaN;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('settings.dailyWaterPerPerson');
@@ -400,7 +400,7 @@ describe('validateAppDataValues', () => {
     it('detects non-finite childrenRequirementPercentage (NaN)', () => {
       const data = createValidAppData();
       data.settings.childrenRequirementPercentage =
-        NaN as unknown as Percentage;
+        Number.NaN as unknown as Percentage;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe(
@@ -735,7 +735,7 @@ describe('validateAppDataValues', () => {
       expect(result.errors[0].interpolation?.value).toBe('42');
     });
 
-    it('includes undefined theme value in interpolation as "undefined"', () => {
+    it('stringifies non-string theme value in interpolation', () => {
       const data = createValidAppData();
       // Setting theme to a value that will be stringified; undefined is tricky
       // since the guard checks `!== undefined`. Use an array to test JSON.stringify path.

@@ -354,7 +354,7 @@ describe('itemMatching', () => {
         createMockInventoryItem({
           itemType: cannedFoodId,
           quantity: createQuantity(2),
-          caloriesPerUnit: NaN,
+          caloriesPerUnit: Number.NaN,
         }),
       ];
       const recommendedItem = createMockRecommendedItem({ id: cannedFoodId });
@@ -465,7 +465,7 @@ describe('itemMatching', () => {
         createMockInventoryItem({
           itemType: cannedFoodId,
           quantity: createQuantity(2),
-          caloriesPerUnit: NaN,
+          caloriesPerUnit: Number.NaN,
         }),
       ];
 
