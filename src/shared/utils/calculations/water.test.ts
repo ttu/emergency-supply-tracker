@@ -473,7 +473,7 @@ describe('water calculations', () => {
   });
 
   describe('validateWaterRequirement - mutation killing', () => {
-    it('returns error for non-number type (kills ConditionalExpression false at L52)', () => {
+    it('returns error for non-number type', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(validateWaterRequirement('not a number' as any)).toBe(
         'Water requirement must be a number',
@@ -486,7 +486,7 @@ describe('water calculations', () => {
   });
 
   describe('getWaterRequirementPerUnit - boundary mutations', () => {
-    it('returns 0 when item.requiresWaterLiters is exactly 0 (kills >= 0 boundary at L73)', () => {
+    it('returns 0 when item.requiresWaterLiters is exactly 0', () => {
       const item = createMockInventoryItem({
         id: createItemId('boundary-0'),
         name: 'Zero Water Item',
@@ -497,7 +497,7 @@ describe('water calculations', () => {
       expect(getWaterRequirementPerUnit(item)).toBe(0);
     });
 
-    it('returns 0 for custom itemType (kills itemType check at L78)', () => {
+    it('returns 0 for custom itemType', () => {
       const item = createMockInventoryItem({
         id: createItemId('custom-type'),
         name: 'Custom Food',
@@ -508,7 +508,7 @@ describe('water calculations', () => {
       expect(getWaterRequirementPerUnit(item)).toBe(0);
     });
 
-    it('returns 0 when item has no itemType (kills itemType truthy check at L78)', () => {
+    it('returns 0 when item has no itemType', () => {
       const item = createMockInventoryItem({
         id: createItemId('no-type'),
         name: 'No Type Food',
@@ -519,7 +519,7 @@ describe('water calculations', () => {
       expect(getWaterRequirementPerUnit(item)).toBe(0);
     });
 
-    it('returns 0 for template item with requiresWaterLiters = 0 (kills >= 0 boundary at L84)', () => {
+    it('returns 0 for template item with requiresWaterLiters = 0', () => {
       // Find a food template item that does NOT have requiresWaterLiters (it will be undefined, not 0)
       // We need an item whose template has no water requirement
       const item = createMockInventoryItem({
@@ -577,7 +577,7 @@ describe('water calculations', () => {
       expect(calculateTotalWaterAvailable(items)).toBe(3);
     });
 
-    it('detects water by name case-insensitively (kills toLowerCase vs toUpperCase at L118-119)', () => {
+    it('detects water by name case-insensitively', () => {
       const items = [
         createMockInventoryItem({
           id: createItemId('upper-water'),
@@ -621,7 +621,7 @@ describe('water calculations', () => {
   });
 
   describe('calculateWaterRequirements - boundary mutations', () => {
-    it('excludes items with quantity exactly 0 (kills quantity >= 0 boundary at L141)', () => {
+    it('excludes items with quantity exactly 0', () => {
       const items = [
         createMockInventoryItem({
           id: createItemId('zero-qty'),
@@ -639,7 +639,7 @@ describe('water calculations', () => {
   });
 
   describe('calculateRecommendedWaterStorage - arithmetic mutations', () => {
-    it('verifies adults multiplication not division (kills * vs / at L181)', () => {
+    it('verifies adults multiplication not division', () => {
       // With ADULT_REQUIREMENT_MULTIPLIER = 1.0:
       // Correct: 4 * 1.0 * dailyWater * 1 = 4 * dailyWater
       // Mutant (division): 4 / 1.0 * dailyWater * 1 = 4 * dailyWater (same because multiplier is 1.0!)

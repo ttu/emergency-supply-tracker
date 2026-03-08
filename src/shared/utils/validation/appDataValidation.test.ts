@@ -178,12 +178,10 @@ describe('validateAppDataValues', () => {
       );
       expect(result.errors[0].value).toBe('invalid');
       expect(result.errors[0].interpolation).toBeDefined();
-      expect(result.errors[0].interpolation).toEqual(
-        expect.objectContaining({
-          value: 'invalid',
-          allowed: expect.stringContaining('en'),
-        }),
-      );
+      expect(result.errors[0].interpolation).toEqual({
+        value: 'invalid',
+        allowed: 'en, fi',
+      });
     });
 
     it('does not flag language when it is undefined (optional field)', () => {
@@ -206,12 +204,11 @@ describe('validateAppDataValues', () => {
       expect(result.errors[0].message).toBe('validation.settings.themeInvalid');
       expect(result.errors[0].value).toBe('invalid-theme');
       expect(result.errors[0].interpolation).toBeDefined();
-      expect(result.errors[0].interpolation).toEqual(
-        expect.objectContaining({
-          value: 'invalid-theme',
-          allowed: expect.any(String),
-        }),
-      );
+      expect(result.errors[0].interpolation).toEqual({
+        value: 'invalid-theme',
+        allowed:
+          'light, dark, auto, midnight, ocean, sunset, forest, lavender, minimal',
+      });
     });
 
     it('does not flag theme when it is undefined (optional field)', () => {
@@ -311,6 +308,17 @@ describe('validateAppDataValues', () => {
     it('detects non-finite dailyWaterPerPerson (NaN)', () => {
       const data = createValidAppData();
       data.settings.dailyWaterPerPerson = Number.NaN;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('settings.dailyWaterPerPerson');
+      expect(result.errors[0].message).toBe(
+        'validation.settings.dailyWaterPerPerson',
+      );
+    });
+
+    it('detects non-finite dailyWaterPerPerson (Infinity)', () => {
+      const data = createValidAppData();
+      data.settings.dailyWaterPerPerson = Number.POSITIVE_INFINITY;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('settings.dailyWaterPerPerson');
@@ -428,48 +436,28 @@ describe('validateAppDataValues', () => {
       expect(result.isValid).toBe(true);
     });
 
-    it('skips settings validation when settings is falsy (null-like cast)', () => {
+    it.each([
+      { label: 'null', value: null },
+      { label: 'false', value: false },
+      { label: '0', value: 0 },
+      { label: 'truthy number (42)', value: 42 },
+    ])('skips settings validation when settings is $label', ({ value }) => {
       const data = createValidAppData();
-      // Simulate settings being falsy — validateAppDataValues guards with `data.settings &&`
-      // Force via type assertion to test the guard branch
-      (data as unknown as Record<string, unknown>).settings = null;
-      const result = validateAppDataValues(data);
-      // Should not crash and should not produce settings errors
-      expect(
-        result.errors.filter((e) => e.field.startsWith('settings')),
-      ).toHaveLength(0);
-    });
-
-    it('skips settings validation when settings is false (logical guard test)', () => {
-      const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).settings = false;
+      (data as unknown as Record<string, unknown>).settings = value;
       const result = validateAppDataValues(data);
       expect(
         result.errors.filter((e) => e.field.startsWith('settings')),
       ).toHaveLength(0);
     });
 
-    it('skips settings validation when settings is 0 (falsy number)', () => {
+    it('skips settings validation when settings is a function with invalid properties', () => {
       const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).settings = 0;
-      const result = validateAppDataValues(data);
-      expect(
-        result.errors.filter((e) => e.field.startsWith('settings')),
-      ).toHaveLength(0);
-    });
-
-    it('skips settings validation when settings is a truthy non-object (string)', () => {
-      const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).settings = 'not-an-object';
-      const result = validateAppDataValues(data);
-      expect(
-        result.errors.filter((e) => e.field.startsWith('settings')),
-      ).toHaveLength(0);
-    });
-
-    it('skips settings validation when settings is a truthy non-object (number)', () => {
-      const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).settings = 42;
+      // A function is truthy but typeof !== 'object', so the typeof guard should skip it.
+      // Adding .language ensures that if the typeof guard were removed (mutant),
+      // validateSettings would detect 'invalid' and produce an error — killing the mutant.
+      const fn = () => {};
+      (fn as unknown as Record<string, unknown>).language = 'invalid';
+      (data as unknown as Record<string, unknown>).settings = fn;
       const result = validateAppDataValues(data);
       expect(
         result.errors.filter((e) => e.field.startsWith('settings')),
@@ -623,45 +611,28 @@ describe('validateAppDataValues', () => {
       expect(result.isValid).toBe(true);
     });
 
-    it('skips household validation when household is falsy (null-like cast)', () => {
+    it.each([
+      { label: 'null', value: null },
+      { label: 'false', value: false },
+      { label: '0', value: 0 },
+      { label: 'truthy number (42)', value: 42 },
+    ])('skips household validation when household is $label', ({ value }) => {
       const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).household = null;
+      (data as unknown as Record<string, unknown>).household = value;
       const result = validateAppDataValues(data);
       expect(
         result.errors.filter((e) => e.field.startsWith('household')),
       ).toHaveLength(0);
     });
 
-    it('skips household validation when household is false (logical guard test)', () => {
+    it('skips household validation when household is a function with invalid properties', () => {
       const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).household = false;
-      const result = validateAppDataValues(data);
-      expect(
-        result.errors.filter((e) => e.field.startsWith('household')),
-      ).toHaveLength(0);
-    });
-
-    it('skips household validation when household is 0 (falsy number)', () => {
-      const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).household = 0;
-      const result = validateAppDataValues(data);
-      expect(
-        result.errors.filter((e) => e.field.startsWith('household')),
-      ).toHaveLength(0);
-    });
-
-    it('skips household validation when household is a truthy non-object (string)', () => {
-      const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).household = 'not-an-object';
-      const result = validateAppDataValues(data);
-      expect(
-        result.errors.filter((e) => e.field.startsWith('household')),
-      ).toHaveLength(0);
-    });
-
-    it('skips household validation when household is a truthy non-object (number)', () => {
-      const data = createValidAppData();
-      (data as unknown as Record<string, unknown>).household = 42;
+      // A function is truthy but typeof !== 'object', so the typeof guard should skip it.
+      // Adding .adults ensures that if the typeof guard were removed (mutant),
+      // validateHousehold would detect -1 and produce an error — killing the mutant.
+      const fn = () => {};
+      (fn as unknown as Record<string, unknown>).adults = -1;
+      (data as unknown as Record<string, unknown>).household = fn;
       const result = validateAppDataValues(data);
       expect(
         result.errors.filter((e) => e.field.startsWith('household')),
@@ -735,10 +706,9 @@ describe('validateAppDataValues', () => {
       expect(result.errors[0].interpolation?.value).toBe('42');
     });
 
-    it('stringifies non-string theme value in interpolation', () => {
+    it('includes array theme value in interpolation as stringified array', () => {
       const data = createValidAppData();
-      // Setting theme to a value that will be stringified; undefined is tricky
-      // since the guard checks `!== undefined`. Use an array to test JSON.stringify path.
+      // Array tests the JSON.stringify path in safeStringify
       // @ts-expect-error - testing invalid value
       data.settings.theme = [1, 2];
       const result = validateAppDataValues(data);

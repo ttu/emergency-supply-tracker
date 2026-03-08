@@ -1749,7 +1749,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: category filtering (L96)', () => {
+  describe('mutation test: category filtering', () => {
     it('only includes items matching the given categoryId', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -1791,7 +1791,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: peopleMultiplier arithmetic (L111)', () => {
+  describe('mutation test: peopleMultiplier arithmetic', () => {
     it('verifies adults * ADULT_MULTIPLIER + children * CHILDREN_MULTIPLIER exactly', () => {
       // 2 adults * 1.0 + 1 child * 0.75 = 2.75
       // 2.75 * 2000 * 3 = 16500
@@ -1858,7 +1858,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: water-beverages string literal (L161)', () => {
+  describe('mutation test: water-beverages string literal', () => {
     it('water-beverages category triggers water calculation path', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -1914,7 +1914,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: isFoodRecommendedItem guard (L199)', () => {
+  describe('mutation test: isFoodRecommendedItem guard', () => {
     it('skips non-food recommended items even if they have a caloriesPerUnit-like field', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -1946,7 +1946,9 @@ describe('calculateCategoryPercentage', () => {
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
-          // No caloriesPerUnit - isFoodRecommendedItem returns false for items without it
+          // No caloriesPerUnit - isFoodRecommendedItem returns true (category is 'food'),
+          // but the compound guard `!isFoodRecommendedItem(recItem) || !recItem.caloriesPerUnit`
+          // skips this item because caloriesPerUnit is missing
         },
       ];
 
@@ -1974,7 +1976,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: caloriesPerUnit validation (L209)', () => {
+  describe('mutation test: caloriesPerUnit validation', () => {
     it('uses item caloriesPerUnit when available', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2069,7 +2071,7 @@ describe('calculateCategoryPercentage', () => {
       expect(result.totalActualCalories).toBe(7200);
     });
 
-    it('calorie fallback uses quantity * calsPerUnit (L216)', () => {
+    it('calorie fallback uses quantity * calsPerUnit', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
@@ -2102,7 +2104,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: uncounted items caloriesPerUnit check (L237)', () => {
+  describe('mutation test: uncounted items caloriesPerUnit check', () => {
     it('counts uncounted items with valid caloriesPerUnit', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2165,7 +2167,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: disabled recommendation matching (L244-250)', () => {
+  describe('mutation test: disabled recommendation matching', () => {
     it('only uses caloriesPerUnit from disabled recommendations that match item.itemType', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2309,7 +2311,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: totalNeededCalories > 0 boundary (L262)', () => {
+  describe('mutation test: totalNeededCalories > 0 boundary', () => {
     it('returns 100% when totalNeededCalories is exactly 0', () => {
       const household = createMockHousehold({
         adults: 0,
@@ -2353,7 +2355,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: hasEnough boundary (L270)', () => {
+  describe('mutation test: hasEnough boundary', () => {
     it('hasEnough is true when totalActualCalories === totalNeededCalories', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2427,7 +2429,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: hasRecommendations boolean (L273, L359)', () => {
+  describe('mutation test: hasRecommendations boolean', () => {
     it('returns hasRecommendations: true for food category with recommendations', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2486,7 +2488,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: communication-info string literal (L302/L345)', () => {
+  describe('mutation test: communication-info string literal', () => {
     it('communication-info uses item type counting regardless of unit uniformity', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2584,7 +2586,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: scaleWithPets multiplication (L308-309)', () => {
+  describe('mutation test: scaleWithPets multiplication', () => {
     it('scales recommended quantity with pets * PET_REQUIREMENT_MULTIPLIER', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2666,7 +2668,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: water-beverages && bottled-water compound condition (L317)', () => {
+  describe('mutation test: water-beverages && bottled-water compound condition', () => {
     it('adds preparation water only for bottled-water in water-beverages category', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2759,7 +2761,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: reduce ArrowFunction (L326)', () => {
+  describe('mutation test: reduce ArrowFunction', () => {
     it('sums quantities from multiple matching items correctly', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2814,7 +2816,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: hasEnough boundary for quantity category (L358)', () => {
+  describe('mutation test: hasEnough boundary for quantity category', () => {
     it('hasEnough is true when totalActual === totalNeeded', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2891,7 +2893,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: food without-recommendations caloriesPerUnit check (L379)', () => {
+  describe('mutation test: food without-recommendations caloriesPerUnit check', () => {
     it('counts only items with valid caloriesPerUnit', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -2998,7 +3000,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: type guard branches (L99, L102)', () => {
+  describe('mutation test: type guard branches', () => {
     it('handles string category IDs correctly for recommended item filtering', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -3044,7 +3046,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: disabled items includes check (L105)', () => {
+  describe('mutation test: disabled items includes check', () => {
     it('disabled item IDs must exactly match recommendation IDs', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -3089,7 +3091,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: bottled-water dailyWater override (L302)', () => {
+  describe('mutation test: bottled-water dailyWater override', () => {
     it('bottled-water uses dailyWater setting instead of baseQuantity', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -3169,7 +3171,7 @@ describe('calculateCategoryPercentage', () => {
     });
   });
 
-  describe('mutation test: markedAsEnough for item type counting (L335)', () => {
+  describe('mutation test: markedAsEnough for item type counting', () => {
     it('treats item as fulfilled when markedAsEnough even with insufficient quantity', () => {
       const household = createMockHousehold({
         adults: 1,

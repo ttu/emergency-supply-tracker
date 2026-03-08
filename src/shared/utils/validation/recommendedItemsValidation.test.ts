@@ -259,6 +259,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_STRUCTURE',
           message: 'Invalid JSON structure',
+          path: '',
         }),
       );
     });
@@ -271,6 +272,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_STRUCTURE',
           message: 'Invalid JSON structure',
+          path: '',
         }),
       );
     });
@@ -670,8 +672,14 @@ describe('validateRecommendedItemsFile', () => {
       });
       const result = validateRecommendedItemsFile(file);
 
-      // Array is not a valid names object
       expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'INVALID_NAMES',
+          path: 'items[0].names',
+          message: 'names must be an object',
+        }),
+      );
     });
 
     it('rejects invalid category', () => {
@@ -1350,7 +1358,7 @@ describe('parseRecommendedItemsFile', () => {
     } catch (err) {
       const msg = (err as Error).message;
       expect(msg).toContain('Invalid recommended items file:');
-      expect(msg).toContain(':');
+      expect(msg).toContain('meta: Missing meta object');
     }
   });
 });

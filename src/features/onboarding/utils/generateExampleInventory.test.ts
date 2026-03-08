@@ -653,12 +653,17 @@ describe('getStateForIndex', () => {
   });
 
   it('uses provided random for expired state offset', () => {
-    const mockRandom = (): number => 0.5;
+    let callCount = 0;
+    const mockRandom = (): number => {
+      callCount++;
+      // First call: daysExpired draw, second call: quantityMultiplier draw
+      return callCount === 1 ? 0.25 : 0.8;
+    };
     const expiredState = getStateForIndex(97, 100, mockRandom);
-    // daysExpired = Math.floor(1 + 0.5 * 59) = 30
-    expect(expiredState.expirationOffsetDays).toBe(-30);
-    // quantityMultiplier = 0.5 + 0.5 * 0.5 = 0.75
-    expect(expiredState.quantityMultiplier).toBe(0.75);
+    // daysExpired = Math.floor(1 + 0.25 * 59) = Math.floor(15.75) = 15
+    expect(expiredState.expirationOffsetDays).toBe(-15);
+    // quantityMultiplier = 0.5 + 0.8 * 0.5 = 0.9
+    expect(expiredState.quantityMultiplier).toBe(0.9);
   });
 });
 
@@ -685,10 +690,9 @@ describe('quantity calculation details', () => {
       1, // Seed that gives full state
     );
 
-    if (result.length > 0) {
-      // Full state: quantityMultiplier = 1.0, so quantity should be ceil(6 * 1) = 6
-      expect(result[0].quantity).toBe(6);
-    }
+    // Full state: quantityMultiplier = 1.0, so quantity should be ceil(6 * 1) = 6
+    expect(result.length).toBe(1);
+    expect(result[0].quantity).toBe(6);
   });
 
   it('scales quantity with days correctly', () => {
@@ -713,9 +717,8 @@ describe('quantity calculation details', () => {
       1,
     );
 
-    if (result.length > 0) {
-      expect(result[0].quantity).toBe(3);
-    }
+    expect(result.length).toBe(1);
+    expect(result[0].quantity).toBe(3);
   });
 
   it('scales quantity with pets correctly', () => {
@@ -738,10 +741,8 @@ describe('quantity calculation details', () => {
     const household = { ...standardHousehold, pets: 2 };
     const result = generateExampleInventory(items, household, mockTranslate, 1);
 
-    if (result.length > 0) {
-      // Should have a positive quantity
-      expect(result[0].quantity).toBeGreaterThan(0);
-    }
+    expect(result.length).toBe(1);
+    expect(result[0].quantity).toBeGreaterThan(0);
   });
 
   it('handles i18nKey with custom. prefix', () => {

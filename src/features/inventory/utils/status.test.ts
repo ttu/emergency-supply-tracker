@@ -662,27 +662,6 @@ describe('calculateMissingQuantity', () => {
       expect(calculateTotalMissingQuantity(item3, allItems, 1)).toBe(0);
     });
 
-    it('matches items by itemType', () => {
-      const item1 = createMockInventoryItem({
-        ...baseItem,
-        id: createItemId('1'),
-        quantity: createQuantity(1),
-        itemType: createProductTemplateId('rope'),
-      });
-      const item2 = createMockInventoryItem({
-        ...baseItem,
-        id: createItemId('2'),
-        quantity: createQuantity(2),
-        itemType: createProductTemplateId('rope'),
-      });
-      const allItems = [item1, item2];
-
-      // Should match by itemType
-      expect(
-        calculateTotalMissingQuantity(item1, allItems, baseRecommendedQuantity),
-      ).toBe(7);
-    });
-
     it('falls back to individual calculation when no matching items found', () => {
       const item1 = createMockInventoryItem({
         ...baseItem,

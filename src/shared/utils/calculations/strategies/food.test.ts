@@ -322,7 +322,7 @@ describe('FoodCategoryStrategy', () => {
   });
 
   describe('strategyId - string literal mutation', () => {
-    it('strategyId must be exactly "food" not empty string (kills StringLiteral "" at L31)', () => {
+    it('strategyId must be exactly "food" not empty string', () => {
       expect(strategy.strategyId).toBe('food');
       expect(strategy.strategyId).not.toBe('');
       expect(strategy.strategyId.length).toBeGreaterThan(0);
@@ -341,7 +341,7 @@ describe('FoodCategoryStrategy', () => {
       peopleMultiplier: 2,
     };
 
-    it('returns 0 calories when recItem.caloriesPerUnit is null (kills null check at L58)', () => {
+    it('returns 0 calories when recItem.caloriesPerUnit is null', () => {
       const matchingItems = [
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
@@ -371,7 +371,7 @@ describe('FoodCategoryStrategy', () => {
       expect(result.calories).toBe(0);
     });
 
-    it('returns 0 calories when recItem.caloriesPerUnit is NaN (kills isFinite at L59)', () => {
+    it('returns 0 calories when recItem.caloriesPerUnit is NaN', () => {
       const matchingItems = [
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
@@ -401,7 +401,7 @@ describe('FoodCategoryStrategy', () => {
       expect(result.calories).toBe(0);
     });
 
-    it('returns 0 calories when recItem.caloriesPerUnit is Infinity (kills isFinite at L59)', () => {
+    it('returns 0 calories when recItem.caloriesPerUnit is Infinity', () => {
       const matchingItems = [
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
@@ -431,7 +431,7 @@ describe('FoodCategoryStrategy', () => {
       expect(result.calories).toBe(0);
     });
 
-    it('uses fallback when item.caloriesPerUnit is null (kills null check at L63)', () => {
+    it('uses fallback when item.caloriesPerUnit is null', () => {
       const matchingItems = [
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
@@ -462,7 +462,7 @@ describe('FoodCategoryStrategy', () => {
       expect(result.calories).toBe(1200);
     });
 
-    it('uses fallback when item.caloriesPerUnit is NaN (kills isFinite at L64)', () => {
+    it('uses fallback when item.caloriesPerUnit is NaN', () => {
       const matchingItems = [
         createMockInventoryItem({
           categoryId: createCategoryId('food'),
@@ -511,7 +511,7 @@ describe('FoodCategoryStrategy', () => {
       peopleMultiplier: 2.75,
     };
 
-    it('does not add shortage when missing is exactly 0 (kills missing >= 0 at L117)', () => {
+    it('does not add shortage when missing is exactly 0', () => {
       const itemResults: ItemCalculationResult[] = [
         {
           recItem: {
@@ -537,7 +537,7 @@ describe('FoodCategoryStrategy', () => {
       expect(result.shortages).toHaveLength(0);
     });
 
-    it('does not add shortage when item is marked as enough (kills compound condition at L117)', () => {
+    it('does not add shortage when item is marked as enough', () => {
       const itemResults: ItemCalculationResult[] = [
         {
           recItem: {
@@ -590,7 +590,7 @@ describe('FoodCategoryStrategy', () => {
       expect(result.shortages[0].missing).toBe(7);
     });
 
-    it('finds primary unit by highest total quantity (kills count >= maxCount at L134)', () => {
+    it('finds primary unit by highest total quantity', () => {
       const itemResults: ItemCalculationResult[] = [
         {
           recItem: {
@@ -651,7 +651,7 @@ describe('FoodCategoryStrategy', () => {
       expect(result.primaryUnit).toBe('cans');
     });
 
-    it('sorts shortages by missing amount descending (kills sort at L141)', () => {
+    it('sorts shortages by missing amount descending', () => {
       const itemResults: ItemCalculationResult[] = [
         {
           recItem: {
