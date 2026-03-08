@@ -3,8 +3,13 @@ import {
   expect,
   setAppStorage,
   navigateToSettingsSection,
+  toLocalDateString,
 } from './fixtures';
-import { createMockAppData } from '../src/shared/utils/test/factories';
+import {
+  createMockAppData,
+  createMockInventoryItem,
+} from '../src/shared/utils/test/factories';
+import { createDateOnly } from '../src/shared/types';
 
 test.describe('Backup Reminder', () => {
   test('should show backup reminder after 30 days without backup', async ({
@@ -16,18 +21,12 @@ test.describe('Backup Reminder', () => {
 
     const appData = createMockAppData({
       items: [
-        // Add at least one item so reminder shows
-        {
-          id: 'test-item-1',
+        createMockInventoryItem({
           name: 'Test Item',
-          categoryId: 'food',
-          quantity: 5,
-          unit: 'pieces',
-          recommendedQuantity: 10,
           neverExpires: true,
           createdAt: oldDate.toISOString(),
           updatedAt: oldDate.toISOString(),
-        },
+        }),
       ],
       lastModified: oldDate.toISOString(),
       lastBackupDate: undefined, // Never backed up
@@ -61,17 +60,12 @@ test.describe('Backup Reminder', () => {
 
     const appData = createMockAppData({
       items: [
-        {
-          id: 'test-item-1',
+        createMockInventoryItem({
           name: 'Test Item',
-          categoryId: 'food',
-          quantity: 5,
-          unit: 'pieces',
-          recommendedQuantity: 10,
           neverExpires: true,
           createdAt: oldDate.toISOString(),
           updatedAt: oldDate.toISOString(),
-        },
+        }),
       ],
       lastModified: oldDate.toISOString(),
       lastBackupDate: undefined,
@@ -121,21 +115,18 @@ test.describe('Backup Reminder', () => {
 
     const appData = createMockAppData({
       items: [
-        {
-          id: 'test-item-1',
+        createMockInventoryItem({
           name: 'Test Item',
-          categoryId: 'food',
-          quantity: 5,
-          unit: 'pieces',
-          recommendedQuantity: 10,
           neverExpires: true,
           createdAt: oldDate.toISOString(),
           updatedAt: oldDate.toISOString(),
-        },
+        }),
       ],
       lastModified: oldDate.toISOString(),
       lastBackupDate: undefined,
-      backupReminderDismissedUntil: nextMonth.toISOString(),
+      backupReminderDismissedUntil: createDateOnly(
+        toLocalDateString(nextMonth),
+      ),
       settings: {
         onboardingCompleted: true,
         language: 'en',
@@ -168,17 +159,12 @@ test.describe('Backup Reminder', () => {
 
     const appData = createMockAppData({
       items: [
-        {
-          id: 'test-item-1',
+        createMockInventoryItem({
           name: 'Test Item',
-          categoryId: 'food',
-          quantity: 5,
-          unit: 'pieces',
-          recommendedQuantity: 10,
           neverExpires: true,
           createdAt: oldDate.toISOString(),
           updatedAt: oldDate.toISOString(),
-        },
+        }),
       ],
       lastModified: oldDate.toISOString(),
       lastBackupDate: undefined,
@@ -245,17 +231,12 @@ test.describe('Backup Reminder', () => {
 
     const appData = createMockAppData({
       items: [
-        {
-          id: 'test-item-1',
+        createMockInventoryItem({
           name: 'Test Item',
-          categoryId: 'food',
-          quantity: 5,
-          unit: 'pieces',
-          recommendedQuantity: 10,
           neverExpires: true,
           createdAt: oldDate.toISOString(),
           updatedAt: oldDate.toISOString(),
-        },
+        }),
       ],
       lastModified: oldDate.toISOString(),
       lastBackupDate: undefined,

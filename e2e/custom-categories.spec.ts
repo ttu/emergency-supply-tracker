@@ -7,8 +7,10 @@ import {
 import {
   createMockAppData,
   createMockCategory,
+  createMockInventoryItem,
 } from '../src/shared/utils/test/factories';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
+import { createCategoryId } from '../src/shared/types';
 
 test.describe('Custom Categories', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -184,17 +186,11 @@ test.describe('Custom Categories', () => {
     const appData = createMockAppData({
       customCategories: [customCategory],
       items: [
-        {
-          id: 'custom-item-1',
+        createMockInventoryItem({
           name: 'Custom Item',
           categoryId: customCategory.id,
-          quantity: 5,
-          unit: 'pieces',
-          recommendedQuantity: 10,
           neverExpires: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ],
       settings: {
         onboardingCompleted: true,
@@ -248,28 +244,16 @@ test.describe('Custom Categories', () => {
     const appData = createMockAppData({
       customCategories: [customCategory],
       items: [
-        {
-          id: 'special-item-1',
+        createMockInventoryItem({
           name: 'Special Item 1',
           categoryId: customCategory.id,
-          quantity: 3,
-          unit: 'pieces',
-          recommendedQuantity: 5,
           neverExpires: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: 'food-item-1',
+        }),
+        createMockInventoryItem({
           name: 'Food Item',
-          categoryId: 'food',
-          quantity: 5,
-          unit: 'pieces',
-          recommendedQuantity: 10,
+          categoryId: createCategoryId('food'),
           neverExpires: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        }),
       ],
       settings: {
         onboardingCompleted: true,

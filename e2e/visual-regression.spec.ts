@@ -41,7 +41,7 @@ const testItems: InventoryItem[] = [
     itemType: createProductTemplateId('rice'),
     categoryId: createCategoryId('food'),
     quantity: createQuantity(2),
-    unit: 'kg',
+    unit: 'kilograms',
     notes: '',
     createdAt: '2025-01-01T00:00:00.000Z',
     updatedAt: '2025-01-01T00:00:00.000Z',
