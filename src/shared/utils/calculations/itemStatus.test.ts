@@ -43,6 +43,75 @@ describe('getItemStatus', () => {
     const yesterdayDateOnly = createDateOnly(toLocalDateString(yesterday));
     expect(getItemStatus(10, 10, yesterdayDateOnly, true)).toBe('ok');
   });
+
+  // Boundary: exactly at expiration threshold (30 days) — should be warning
+  it('returns warning when expiring in exactly 30 days', () => {
+    const in30Days = new Date();
+    in30Days.setDate(in30Days.getDate() + 30);
+    const in30DaysDateOnly = createDateOnly(toLocalDateString(in30Days));
+    expect(getItemStatus(10, 10, in30DaysDateOnly)).toBe('warning');
+  });
+
+  // Boundary: 31 days out — should be ok (past threshold)
+  it('returns ok when expiring in 31 days', () => {
+    const in31Days = new Date();
+    in31Days.setDate(in31Days.getDate() + 31);
+    const in31DaysDateOnly = createDateOnly(toLocalDateString(in31Days));
+    expect(getItemStatus(10, 10, in31DaysDateOnly)).toBe('ok');
+  });
+
+  // Boundary: exactly 0 days until expiration (today) — should be warning (not expired yet)
+  it('returns warning when expiring today (0 days)', () => {
+    const today = new Date();
+    const todayDateOnly = createDateOnly(toLocalDateString(today));
+    expect(getItemStatus(10, 10, todayDateOnly)).toBe('warning');
+  });
+
+  // Boundary: quantity exactly at 50% threshold
+  it('returns ok when quantity is exactly at 50% of recommended', () => {
+    // LOW_QUANTITY_WARNING_RATIO = 0.5, so 5 < 10 * 0.5 is false
+    expect(getItemStatus(5, 10)).toBe('ok');
+  });
+
+  // Boundary: quantity just below 50% threshold
+  it('returns warning when quantity is just below 50% of recommended', () => {
+    expect(getItemStatus(4, 10)).toBe('warning');
+  });
+
+  // neverExpires=false but no expirationDate — checks quantity only
+  it('checks quantity when neverExpires is false but no expirationDate', () => {
+    expect(getItemStatus(0, 10, undefined, false)).toBe('critical');
+    expect(getItemStatus(10, 10, undefined, false)).toBe('ok');
+  });
+
+  // markedAsEnough — should return ok even with low quantity (but not expired)
+  it('returns ok when markedAsEnough even with low quantity', () => {
+    expect(getItemStatus(1, 100, undefined, false, true)).toBe('ok');
+  });
+
+  it('returns ok when markedAsEnough even with zero quantity', () => {
+    expect(getItemStatus(0, 100, undefined, false, true)).toBe('ok');
+  });
+
+  // markedAsEnough does NOT override expired status
+  it('returns critical when expired even if markedAsEnough', () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayDateOnly = createDateOnly(toLocalDateString(yesterday));
+    expect(getItemStatus(10, 10, yesterdayDateOnly, false, true)).toBe(
+      'critical',
+    );
+  });
+
+  // markedAsEnough does NOT override expiring soon
+  it('returns warning when expiring soon even if markedAsEnough', () => {
+    const in20Days = new Date();
+    in20Days.setDate(in20Days.getDate() + 20);
+    const in20DaysDateOnly = createDateOnly(toLocalDateString(in20Days));
+    expect(getItemStatus(10, 10, in20DaysDateOnly, false, true)).toBe(
+      'warning',
+    );
+  });
 });
 
 describe('getDaysUntilExpiration', () => {

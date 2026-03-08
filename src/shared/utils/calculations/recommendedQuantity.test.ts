@@ -24,6 +24,40 @@ describe('calculateHouseholdMultiplier', () => {
     const result = calculateHouseholdMultiplier(config);
     expect(result).toBeCloseTo(expected, 1);
   });
+
+  it('calculates correctly for 2 adults, 1 child, 3 days with known values', () => {
+    const config = createMockHousehold({
+      adults: 2,
+      children: 1,
+      supplyDurationDays: 3,
+    });
+    // 2 * 1.0 + 1 * 0.75 = 2.75 people
+    // 2.75 * 3 days = 8.25
+    const result = calculateHouseholdMultiplier(config);
+    expect(result).toBe(8.25);
+  });
+
+  it('uses custom childrenMultiplier when provided', () => {
+    const config = createMockHousehold({
+      adults: 1,
+      children: 2,
+      supplyDurationDays: 1,
+    });
+    // 1 * 1.0 + 2 * 0.5 = 2.0
+    const result = calculateHouseholdMultiplier(config, 0.5);
+    expect(result).toBe(2);
+  });
+
+  it('returns adults * days when no children', () => {
+    const config = createMockHousehold({
+      adults: 3,
+      children: 0,
+      supplyDurationDays: 5,
+    });
+    // 3 * 1.0 + 0 * 0.75 = 3
+    // 3 * 5 = 15
+    expect(calculateHouseholdMultiplier(config)).toBe(15);
+  });
 });
 
 describe('calculateRecommendedQuantity', () => {
@@ -44,6 +78,48 @@ describe('calculateRecommendedQuantity', () => {
       baseQuantity * household.adults * household.supplyDurationDays;
     const result = calculateRecommendedQuantity(item, household);
     expect(result).toBe(expected);
+  });
+
+  it('computes known values for 2 adults, 1 child, 3 days', () => {
+    const item = createMockRecommendedItem({
+      id: createProductTemplateId('water'),
+      i18nKey: 'products.water',
+      category: 'water-beverages',
+      baseQuantity: createQuantity(3),
+      unit: 'liters',
+      scaleWithPeople: true,
+      scaleWithDays: true,
+      scaleWithPets: false,
+    });
+    const household = createMockHousehold({
+      adults: 2,
+      children: 1,
+      pets: 0,
+      supplyDurationDays: 3,
+    });
+    // 3 * (2*1.0 + 1*0.75) * 3 = 3 * 2.75 * 3 = 24.75 → ceil = 25
+    expect(calculateRecommendedQuantity(item, household)).toBe(25);
+  });
+
+  it('computes known values with custom childrenMultiplier', () => {
+    const item = createMockRecommendedItem({
+      id: createProductTemplateId('water'),
+      i18nKey: 'products.water',
+      category: 'water-beverages',
+      baseQuantity: createQuantity(2),
+      unit: 'liters',
+      scaleWithPeople: true,
+      scaleWithDays: false,
+      scaleWithPets: false,
+    });
+    const household = createMockHousehold({
+      adults: 1,
+      children: 2,
+      pets: 0,
+      supplyDurationDays: 3,
+    });
+    // 2 * (1*1.0 + 2*0.5) = 2 * 2.0 = 4
+    expect(calculateRecommendedQuantity(item, household, 0.5)).toBe(4);
   });
 
   it('does not scale when flags are false', () => {

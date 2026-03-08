@@ -408,6 +408,194 @@ describe('generateDashboardAlerts', () => {
     }
   });
 
+  it('should use item.name for custom items (not translate)', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'My Custom Item',
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('custom'),
+        neverExpires: false,
+        expirationDate: createDateOnly('2024-12-01'), // Expired
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const expiredAlert = alerts.find(
+      (a) => a.id === createAlertId('expired-1'),
+    );
+
+    expect(expiredAlert).toBeDefined();
+    expect(expiredAlert?.itemName).toBe('My Custom Item');
+  });
+
+  it('should use item.name when translation returns the key itself', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Fallback Name',
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('unknown-product-xyz'),
+        neverExpires: false,
+        expirationDate: createDateOnly('2024-12-01'), // Expired
+      }),
+    ];
+
+    // Mock translation that returns the key itself for unknown products
+    const tReturnsKey = (
+      key: string,
+      options?: Record<string, string | number>,
+    ) => {
+      if (options?.ns === 'products') return key; // Returns key = no translation found
+      return mockT(key, options);
+    };
+
+    const alerts = generateDashboardAlerts(
+      items,
+      tReturnsKey,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const expiredAlert = alerts.find(
+      (a) => a.id === createAlertId('expired-1'),
+    );
+
+    expect(expiredAlert).toBeDefined();
+    expect(expiredAlert?.itemName).toBe('Fallback Name');
+  });
+
+  it('should generate warning alert when expiring today (daysUntilExpiration = 0)', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Expiring Today',
+        categoryId: createCategoryId('food'),
+        neverExpires: false,
+        expirationDate: createDateOnly('2025-01-01'), // Same as test date
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const expiringAlert = alerts.find(
+      (a) => a.id === createAlertId('expiring-soon-1'),
+    );
+
+    // daysUntilExpiration = 0, which is <= EXPIRING_SOON_ALERT_DAYS (30), so warning
+    expect(expiringAlert).toBeDefined();
+    expect(expiringAlert?.type).toBe('warning');
+  });
+
+  it('should generate warning at exactly EXPIRING_SOON_ALERT_DAYS boundary', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Boundary Item',
+        categoryId: createCategoryId('food'),
+        neverExpires: false,
+        expirationDate: createDateOnly('2025-01-31'), // 30 days from 2025-01-01
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const expiringAlert = alerts.find(
+      (a) => a.id === createAlertId('expiring-soon-1'),
+    );
+
+    // 30 days <= EXPIRING_SOON_ALERT_DAYS (30) → warning
+    expect(expiringAlert).toBeDefined();
+    expect(expiringAlert?.type).toBe('warning');
+  });
+
+  it('should NOT generate expiring alert when just past threshold (31 days)', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Far Item',
+        categoryId: createCategoryId('food'),
+        neverExpires: false,
+        expirationDate: createDateOnly('2025-02-01'), // 31 days from 2025-01-01
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const expiringAlert = alerts.find(
+      (a) => a.id === createAlertId('expiring-soon-1'),
+    );
+    const expiredAlert = alerts.find(
+      (a) => a.id === createAlertId('expired-1'),
+    );
+
+    // 31 > EXPIRING_SOON_ALERT_DAYS (30) → no alert
+    expect(expiringAlert).toBeUndefined();
+    expect(expiredAlert).toBeUndefined();
+  });
+
+  it('should skip items with neverExpires=true even with expirationDate set', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Never Expires Item',
+        categoryId: createCategoryId('food'),
+        neverExpires: true,
+        expirationDate: createDateOnly('2024-01-01'), // Past date but neverExpires
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const expiredAlert = alerts.find(
+      (a) => a.id === createAlertId('expired-1'),
+    );
+    expect(expiredAlert).toBeUndefined();
+  });
+
+  it('should skip items with neverExpires=false but no expirationDate', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'No Date Item',
+        categoryId: createCategoryId('food'),
+        neverExpires: false,
+        expirationDate: undefined,
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const expirationAlerts = alerts.filter(
+      (a) => a.id.includes('expired') || a.id.includes('expiring'),
+    );
+    expect(expirationAlerts).toHaveLength(0);
+  });
+
   it('should handle items with no recommended quantity', () => {
     const items = [
       createMockInventoryItem({
@@ -704,6 +892,52 @@ describe('water shortage alerts', () => {
 
     expect(waterAlert).toBeUndefined();
   });
+
+  it('should round water shortfall to 1 decimal place', () => {
+    // Create a scenario with a specific shortfall to test rounding
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Bottled Water',
+        categoryId: createCategoryId('water-beverages'),
+        quantity: createQuantity(2),
+        unit: 'liters',
+        itemType: createProductTemplateId('bottled-water'),
+        neverExpires: false,
+        expirationDate: createDateOnly('2025-12-31'),
+      }),
+      createMockInventoryItem({
+        id: createItemId('2'),
+        name: 'Pasta',
+        categoryId: createCategoryId('food'),
+        quantity: createQuantity(10),
+        unit: 'kilograms',
+        itemType: createProductTemplateId('pasta'),
+        neverExpires: false,
+        expirationDate: createDateOnly('2025-12-31'),
+      }),
+    ];
+
+    const alerts = generateDashboardAlerts(
+      items,
+      mockT,
+      mockHousehold,
+      RECOMMENDED_ITEMS,
+    );
+    const waterAlert = alerts.find(
+      (a) => a.id === createAlertId('water-shortage-preparation'),
+    );
+
+    if (waterAlert) {
+      // The liters value should be rounded to 1 decimal
+      const litersMatch = /([\d.]+)L/.exec(waterAlert.message);
+      if (litersMatch) {
+        const liters = Number.parseFloat(litersMatch[1]);
+        // Check that it's rounded to at most 1 decimal place
+        expect(liters).toBe(Math.ceil(liters * 10) / 10);
+      }
+    }
+  });
 });
 
 describe('food category calorie-based alerts', () => {
@@ -952,9 +1186,9 @@ describe('alert and category display consistency', () => {
     expect(foodAlert).toBeDefined();
 
     // Extract percentage from alert message (e.g., "Running low (30% stocked)")
-    const alertPercentageMatch = foodAlert?.message.match(/(\d+)%/);
+    const alertPercentageMatch = /(\d+)%/.exec(foodAlert?.message ?? '');
     const alertPercentage = alertPercentageMatch
-      ? parseInt(alertPercentageMatch[1])
+      ? Number.parseInt(alertPercentageMatch[1], 10)
       : undefined;
 
     // The alert percentage should match the category card percentage

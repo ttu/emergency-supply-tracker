@@ -127,6 +127,84 @@ describe('calculatePreparednessScoreFromCategoryStatuses', () => {
     expect(score).toBe(100);
   });
 
+  it('should exclude categories with totalNeeded === 0 from calculation', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'ok',
+        itemCount: 1,
+        completionPercentage: 100,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 1,
+        shortages: [],
+        totalActual: 10,
+        totalNeeded: 10,
+        hasRecommendations: true,
+      },
+      {
+        categoryId: 'pets',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0, // No pets, excluded from calculation
+        hasRecommendations: false,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    // Only water counts (totalNeeded > 0), and it's ok → 100%
+    expect(score).toBe(100);
+  });
+
+  it('should return 0 when all categories have totalNeeded === 0', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'pets',
+        status: 'ok',
+        itemCount: 0,
+        completionPercentage: 0,
+        criticalCount: 0,
+        warningCount: 0,
+        okCount: 0,
+        shortages: [],
+        totalActual: 0,
+        totalNeeded: 0,
+        hasRecommendations: false,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    expect(score).toBe(0);
+  });
+
+  it('should distinguish warning from ok (only ok counts)', () => {
+    const categoryStatuses: CategoryStatusSummary[] = [
+      {
+        categoryId: 'water',
+        status: 'warning',
+        itemCount: 1,
+        completionPercentage: 60,
+        criticalCount: 0,
+        warningCount: 1,
+        okCount: 0,
+        shortages: [],
+        totalActual: 6,
+        totalNeeded: 10,
+        hasRecommendations: true,
+      },
+    ];
+    const score =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    // Warning is NOT ok, so score = 0/1 = 0
+    expect(score).toBe(0);
+  });
+
   it('should round correctly for 2 out of 9 categories', () => {
     const categoryStatuses: CategoryStatusSummary[] = [
       {
@@ -320,6 +398,209 @@ describe('calculatePreparednessScore', () => {
     expect(smallScore).toBeLessThanOrEqual(100);
     expect(largeScore).toBeGreaterThanOrEqual(0);
     expect(largeScore).toBeLessThanOrEqual(100);
+  });
+
+  it('should scale quantity with people correctly (adults + children)', () => {
+    const household = createMockHousehold({
+      adults: 2,
+      children: 1,
+      useFreezer: false,
+      supplyDurationDays: 1,
+    });
+
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        itemType: createProductTemplateId('test-item'),
+        categoryId: createCategoryId('tools'),
+        quantity: createQuantity(3), // Exactly 2+1=3 people
+      }),
+    ];
+
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('test-item'),
+        i18nKey: 'test.item',
+        category: 'tools-supplies' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: true,
+        scaleWithDays: false,
+      },
+    ];
+
+    const score = calculatePreparednessScore(
+      items,
+      household,
+      customRecommendedItems,
+    );
+    // 3 people * 1 base = 3 needed, have 3 → 100%
+    expect(score).toBe(100);
+  });
+
+  it('should scale quantity with days correctly', () => {
+    const household = createMockHousehold({
+      adults: 1,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 7,
+    });
+
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        itemType: createProductTemplateId('test-item'),
+        categoryId: createCategoryId('tools'),
+        quantity: createQuantity(7), // Exactly 7 days
+      }),
+    ];
+
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('test-item'),
+        i18nKey: 'test.item',
+        category: 'tools-supplies' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: true,
+      },
+    ];
+
+    const score = calculatePreparednessScore(
+      items,
+      household,
+      customRecommendedItems,
+    );
+    // 7 days * 1 base = 7 needed, have 7 → 100%
+    expect(score).toBe(100);
+  });
+
+  it('should scale with both people and days', () => {
+    const household = createMockHousehold({
+      adults: 2,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 3,
+    });
+
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        itemType: createProductTemplateId('test-item'),
+        categoryId: createCategoryId('tools'),
+        quantity: createQuantity(6), // 2 people * 3 days = 6
+      }),
+    ];
+
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('test-item'),
+        i18nKey: 'test.item',
+        category: 'tools-supplies' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: true,
+        scaleWithDays: true,
+      },
+    ];
+
+    const score = calculatePreparednessScore(
+      items,
+      household,
+      customRecommendedItems,
+    );
+    // 2 people * 3 days * 1 base = 6 needed, have 6 → 100%
+    expect(score).toBe(100);
+  });
+
+  it('should include freezer items when useFreezer is true', () => {
+    const household = createMockHousehold({
+      adults: 1,
+      children: 0,
+      useFreezer: true,
+      supplyDurationDays: 1,
+    });
+
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        itemType: createProductTemplateId('frozen-item'),
+        categoryId: createCategoryId('food'),
+        quantity: createQuantity(1),
+      }),
+    ];
+
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('frozen-item'),
+        i18nKey: 'test.frozen',
+        category: 'food' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        requiresFreezer: true,
+      },
+    ];
+
+    const score = calculatePreparednessScore(
+      items,
+      household,
+      customRecommendedItems,
+    );
+    // Freezer item included because useFreezer=true
+    expect(score).toBe(100);
+  });
+
+  it('should exclude freezer items when useFreezer is false', () => {
+    const household = createMockHousehold({
+      adults: 1,
+      children: 0,
+      useFreezer: false,
+      supplyDurationDays: 1,
+    });
+
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        itemType: createProductTemplateId('frozen-item'),
+        categoryId: createCategoryId('food'),
+        quantity: createQuantity(1),
+      }),
+    ];
+
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('frozen-item'),
+        i18nKey: 'test.frozen',
+        category: 'food' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        requiresFreezer: true,
+      },
+    ];
+
+    const score = calculatePreparednessScore(
+      items,
+      household,
+      customRecommendedItems,
+    );
+    // Freezer item excluded, no recommended items left → 0
+    expect(score).toBe(0);
+  });
+
+  it('should return 0 for empty recommended items list', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        quantity: createQuantity(10),
+      }),
+    ];
+    const score = calculatePreparednessScore(items, baseHousehold, []);
+    expect(score).toBe(0);
   });
 
   it('should filter out frozen items when no freezer', () => {
@@ -953,6 +1234,83 @@ describe('calculateCategoryPreparedness', () => {
     expect(foodScore).toBeLessThanOrEqual(100);
   });
 
+  it('should only include items matching the category (not other categories)', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Radio',
+        categoryId: createCategoryId('communication-info'),
+        itemType: createProductTemplateId('battery-radio'),
+        quantity: createQuantity(1),
+      }),
+      createMockInventoryItem({
+        id: createItemId('2'),
+        name: 'Water',
+        categoryId: createCategoryId('water-beverages'),
+        itemType: createProductTemplateId('water'),
+        quantity: createQuantity(99),
+      }),
+    ];
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('battery-radio'),
+        i18nKey: 'products.battery-radio',
+        category: 'communication-info' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+      },
+    ];
+    // Only communication-info items should be counted
+    const score = calculateCategoryPreparedness(
+      'communication-info',
+      items,
+      baseHousehold,
+      customRecommendedItems,
+      [],
+    );
+    expect(score).toBe(100);
+  });
+
+  it('should use options.childrenMultiplier when provided', () => {
+    const household = createMockHousehold({
+      adults: 1,
+      children: 1,
+      useFreezer: false,
+      supplyDurationDays: 1,
+    });
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        categoryId: createCategoryId('communication-info'),
+        itemType: createProductTemplateId('battery-radio'),
+        quantity: createQuantity(2),
+      }),
+    ];
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('battery-radio'),
+        i18nKey: 'products.battery-radio',
+        category: 'communication-info' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: true,
+        scaleWithDays: false,
+      },
+    ];
+    // With default children multiplier (0.75), need 1*1 + 1*0.75 = 1.75, ceil = 2
+    const score = calculateCategoryPreparedness(
+      'communication-info',
+      items,
+      household,
+      customRecommendedItems,
+      [],
+      { childrenMultiplier: 0.75 },
+    );
+    expect(score).toBe(100);
+  });
+
   it('should handle zero recommended quantity in category without division by zero', () => {
     // Create a household with 0 people to trigger zero recommended quantity
     const zeroPeopleHousehold = createMockHousehold({
@@ -1042,6 +1400,88 @@ describe('calculateCategoryPreparedness', () => {
     );
     expect(score).toBe(100); // No requirements = 100% prepared
     expect(Number.isFinite(score)).toBe(true);
+  });
+
+  it('should exclude disabled recommended items from calculation', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Radio',
+        categoryId: createCategoryId('communication-info'),
+        itemType: createProductTemplateId('battery-radio'),
+        quantity: createQuantity(1),
+      }),
+    ];
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('battery-radio'),
+        i18nKey: 'products.battery-radio',
+        category: 'communication-info' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+      },
+      {
+        id: createProductTemplateId('hand-crank-radio'),
+        i18nKey: 'products.hand-crank-radio',
+        category: 'communication-info' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+      },
+    ];
+    // Disable one item - score should be 100% (1/1 matched)
+    const scoreWithDisabled = calculateCategoryPreparedness(
+      'communication-info',
+      items,
+      baseHousehold,
+      customRecommendedItems,
+      ['hand-crank-radio'],
+    );
+    expect(scoreWithDisabled).toBe(100);
+
+    // Without disabling - score should be 50% (1/2 matched)
+    const scoreWithoutDisabled = calculateCategoryPreparedness(
+      'communication-info',
+      items,
+      baseHousehold,
+      customRecommendedItems,
+      [],
+    );
+    expect(scoreWithoutDisabled).toBeLessThan(100);
+  });
+
+  it('should cap result at 100 even when overstocked', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('1'),
+        name: 'Radio',
+        categoryId: createCategoryId('communication-info'),
+        itemType: createProductTemplateId('battery-radio'),
+        quantity: createQuantity(99),
+      }),
+    ];
+    const customRecommendedItems = [
+      {
+        id: createProductTemplateId('battery-radio'),
+        i18nKey: 'products.battery-radio',
+        category: 'communication-info' as const,
+        baseQuantity: createQuantity(1),
+        unit: 'pieces' as const,
+        scaleWithPeople: false,
+        scaleWithDays: false,
+      },
+    ];
+    const score = calculateCategoryPreparedness(
+      'communication-info',
+      items,
+      baseHousehold,
+      customRecommendedItems,
+      [],
+    );
+    expect(score).toBe(100);
   });
 
   it('should show very low preparedness score when only one item from one category exists', () => {

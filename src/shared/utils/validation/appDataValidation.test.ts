@@ -63,6 +63,16 @@ describe('isValidAppData', () => {
     expect(isValidAppData({ ...validAppData, household: [] })).toBe(false);
   });
 
+  it('returns false when household is a string', () => {
+    expect(isValidAppData({ ...validAppData, household: 'household' })).toBe(
+      false,
+    );
+  });
+
+  it('returns false when household is a number', () => {
+    expect(isValidAppData({ ...validAppData, household: 42 })).toBe(false);
+  });
+
   it('returns false when settings is missing', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { settings: _settings, ...data } = validAppData;
@@ -75,6 +85,16 @@ describe('isValidAppData', () => {
 
   it('returns false when settings is an array', () => {
     expect(isValidAppData({ ...validAppData, settings: [] })).toBe(false);
+  });
+
+  it('returns false when settings is a string', () => {
+    expect(isValidAppData({ ...validAppData, settings: 'settings' })).toBe(
+      false,
+    );
+  });
+
+  it('returns false when settings is a number', () => {
+    expect(isValidAppData({ ...validAppData, settings: 0 })).toBe(false);
   });
 
   it('returns false when items is missing', () => {
@@ -145,7 +165,7 @@ describe('validateAppDataValues', () => {
   });
 
   describe('settings validation', () => {
-    it('detects invalid language', () => {
+    it('detects invalid language and includes correct error message and interpolation', () => {
       const data = createValidAppData();
       // @ts-expect-error - testing invalid value
       data.settings.language = 'invalid';
@@ -153,9 +173,27 @@ describe('validateAppDataValues', () => {
       expect(result.isValid).toBe(false);
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0].field).toBe('settings.language');
+      expect(result.errors[0].message).toBe(
+        'validation.settings.languageInvalid',
+      );
+      expect(result.errors[0].value).toBe('invalid');
+      expect(result.errors[0].interpolation).toBeDefined();
+      expect(result.errors[0].interpolation).toEqual({
+        value: 'invalid',
+        allowed: 'en, fi',
+      });
     });
 
-    it('detects invalid theme', () => {
+    it('does not flag language when it is undefined (optional field)', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - removing field to test optional behavior
+      delete data.settings.language;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('detects invalid theme and includes correct error message and interpolation', () => {
       const data = createValidAppData();
       // @ts-expect-error - testing invalid value
       data.settings.theme = 'invalid-theme';
@@ -163,48 +201,230 @@ describe('validateAppDataValues', () => {
       expect(result.isValid).toBe(false);
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0].field).toBe('settings.theme');
+      expect(result.errors[0].message).toBe('validation.settings.themeInvalid');
+      expect(result.errors[0].value).toBe('invalid-theme');
+      expect(result.errors[0].interpolation).toBeDefined();
+      expect(result.errors[0].interpolation).toEqual({
+        value: 'invalid-theme',
+        allowed:
+          'light, dark, auto, midnight, ocean, sunset, forest, lavender, minimal',
+      });
     });
 
-    it('detects negative dailyCaloriesPerPerson', () => {
+    it('does not flag theme when it is undefined (optional field)', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - removing field to test optional behavior
+      delete data.settings.theme;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('detects negative dailyCaloriesPerPerson with correct message', () => {
       const data = createValidAppData();
       data.settings.dailyCaloriesPerPerson = -100;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0].field).toBe('settings.dailyCaloriesPerPerson');
+      expect(result.errors[0].message).toBe(
+        'validation.settings.dailyCaloriesPerPerson',
+      );
+      expect(result.errors[0].value).toBe(-100);
     });
 
-    it('detects negative dailyWaterPerPerson', () => {
+    it('accepts dailyCaloriesPerPerson of exactly 0 (boundary: valid)', () => {
+      const data = createValidAppData();
+      data.settings.dailyCaloriesPerPerson = 0;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('accepts positive dailyCaloriesPerPerson', () => {
+      const data = createValidAppData();
+      data.settings.dailyCaloriesPerPerson = 1;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('detects non-finite dailyCaloriesPerPerson (NaN)', () => {
+      const data = createValidAppData();
+      data.settings.dailyCaloriesPerPerson = Number.NaN;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('settings.dailyCaloriesPerPerson');
+      expect(result.errors[0].message).toBe(
+        'validation.settings.dailyCaloriesPerPerson',
+      );
+    });
+
+    it('detects non-finite dailyCaloriesPerPerson (Infinity)', () => {
+      const data = createValidAppData();
+      data.settings.dailyCaloriesPerPerson = Infinity;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('settings.dailyCaloriesPerPerson');
+    });
+
+    it('does not flag dailyCaloriesPerPerson when undefined (optional field)', () => {
+      const data = createValidAppData();
+      delete data.settings.dailyCaloriesPerPerson;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('detects negative dailyWaterPerPerson with correct message', () => {
       const data = createValidAppData();
       data.settings.dailyWaterPerPerson = -5;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0].field).toBe('settings.dailyWaterPerPerson');
+      expect(result.errors[0].message).toBe(
+        'validation.settings.dailyWaterPerPerson',
+      );
+      expect(result.errors[0].value).toBe(-5);
     });
 
-    it('detects childrenRequirementPercentage out of range (negative)', () => {
+    it('accepts dailyWaterPerPerson of exactly 0 (boundary: valid)', () => {
       const data = createValidAppData();
-      // Use type assertion to test invalid value (deliberately testing validation)
+      data.settings.dailyWaterPerPerson = 0;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('accepts positive dailyWaterPerPerson', () => {
+      const data = createValidAppData();
+      data.settings.dailyWaterPerPerson = 1;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('detects non-finite dailyWaterPerPerson (NaN)', () => {
+      const data = createValidAppData();
+      data.settings.dailyWaterPerPerson = Number.NaN;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('settings.dailyWaterPerPerson');
+      expect(result.errors[0].message).toBe(
+        'validation.settings.dailyWaterPerPerson',
+      );
+    });
+
+    it('detects non-finite dailyWaterPerPerson (Infinity)', () => {
+      const data = createValidAppData();
+      data.settings.dailyWaterPerPerson = Number.POSITIVE_INFINITY;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('settings.dailyWaterPerPerson');
+      expect(result.errors[0].message).toBe(
+        'validation.settings.dailyWaterPerPerson',
+      );
+    });
+
+    it('does not flag dailyWaterPerPerson when undefined (optional field)', () => {
+      const data = createValidAppData();
+      delete data.settings.dailyWaterPerPerson;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('detects childrenRequirementPercentage below minimum (negative) with correct message', () => {
+      const data = createValidAppData();
       data.settings.childrenRequirementPercentage =
         -10 as unknown as Percentage;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
+      expect(result.errors).toHaveLength(1);
       expect(result.errors[0].field).toBe(
         'settings.childrenRequirementPercentage',
       );
+      expect(result.errors[0].message).toBe(
+        'validation.settings.childrenRequirementPercentage',
+      );
+      expect(result.errors[0].value).toBe(-10);
     });
 
-    it('detects childrenRequirementPercentage out of range (>100)', () => {
+    it('accepts childrenRequirementPercentage at minimum boundary of exactly 0', () => {
       const data = createValidAppData();
-      // Use type assertion to test invalid value (deliberately testing validation)
-      data.settings.childrenRequirementPercentage =
-        150 as unknown as Percentage;
+      data.settings.childrenRequirementPercentage = 0 as unknown as Percentage;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('rejects childrenRequirementPercentage at -1 (one below minimum)', () => {
+      const data = createValidAppData();
+      data.settings.childrenRequirementPercentage = -1 as unknown as Percentage;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe(
         'settings.childrenRequirementPercentage',
       );
+    });
+
+    it('detects childrenRequirementPercentage above maximum (>100) with correct message', () => {
+      const data = createValidAppData();
+      data.settings.childrenRequirementPercentage =
+        150 as unknown as Percentage;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].field).toBe(
+        'settings.childrenRequirementPercentage',
+      );
+      expect(result.errors[0].message).toBe(
+        'validation.settings.childrenRequirementPercentage',
+      );
+      expect(result.errors[0].value).toBe(150);
+    });
+
+    it('accepts childrenRequirementPercentage at maximum boundary of exactly 100', () => {
+      const data = createValidAppData();
+      data.settings.childrenRequirementPercentage =
+        100 as unknown as Percentage;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('rejects childrenRequirementPercentage at 101 (one above maximum)', () => {
+      const data = createValidAppData();
+      data.settings.childrenRequirementPercentage =
+        101 as unknown as Percentage;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe(
+        'settings.childrenRequirementPercentage',
+      );
+    });
+
+    it('detects non-finite childrenRequirementPercentage (NaN)', () => {
+      const data = createValidAppData();
+      data.settings.childrenRequirementPercentage =
+        Number.NaN as unknown as Percentage;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe(
+        'settings.childrenRequirementPercentage',
+      );
+      expect(result.errors[0].message).toBe(
+        'validation.settings.childrenRequirementPercentage',
+      );
+    });
+
+    it('does not flag childrenRequirementPercentage when undefined (optional field)', () => {
+      const data = createValidAppData();
+      delete data.settings.childrenRequirementPercentage;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
     });
 
     it('accepts valid optional settings values', () => {
@@ -215,64 +435,169 @@ describe('validateAppDataValues', () => {
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(true);
     });
+
+    it.each([
+      { label: 'null', value: null },
+      { label: 'false', value: false },
+      { label: '0', value: 0 },
+      { label: 'truthy number (42)', value: 42 },
+    ])('skips settings validation when settings is $label', ({ value }) => {
+      const data = createValidAppData();
+      (data as unknown as Record<string, unknown>).settings = value;
+      const result = validateAppDataValues(data);
+      expect(
+        result.errors.filter((e) => e.field.startsWith('settings')),
+      ).toHaveLength(0);
+    });
+
+    it('skips settings validation when settings is a function with invalid properties', () => {
+      const data = createValidAppData();
+      // A function is truthy but typeof !== 'object', so the typeof guard should skip it.
+      // Adding .language ensures that if the typeof guard were removed (mutant),
+      // validateSettings would detect 'invalid' and produce an error — killing the mutant.
+      const fn = () => {};
+      (fn as unknown as Record<string, unknown>).language = 'invalid';
+      (data as unknown as Record<string, unknown>).settings = fn;
+      const result = validateAppDataValues(data);
+      expect(
+        result.errors.filter((e) => e.field.startsWith('settings')),
+      ).toHaveLength(0);
+    });
   });
 
   describe('household validation', () => {
-    it('detects negative adults', () => {
+    it('detects negative adults with correct message and interpolation', () => {
       const data = createValidAppData();
       data.household.adults = -1;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.adults');
+      expect(result.errors[0].message).toBe(
+        'validation.household.nonNegativeNumber',
+      );
+      expect(result.errors[0].value).toBe(-1);
+      expect(result.errors[0].interpolation).toBeDefined();
+      expect(result.errors[0].interpolation).toEqual(
+        expect.objectContaining({ field: 'adults' }),
+      );
     });
 
-    it('detects negative children', () => {
+    it('accepts adults of exactly 0 (boundary: valid)', () => {
+      const data = createValidAppData();
+      data.household.adults = 0;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('detects negative children with correct message', () => {
       const data = createValidAppData();
       data.household.children = -5;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.children');
+      expect(result.errors[0].message).toBe(
+        'validation.household.nonNegativeNumber',
+      );
+      expect(result.errors[0].interpolation).toEqual(
+        expect.objectContaining({ field: 'children' }),
+      );
     });
 
-    it('detects negative pets', () => {
+    it('detects negative pets with correct message', () => {
       const data = createValidAppData();
       data.household.pets = -2;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.pets');
+      expect(result.errors[0].message).toBe(
+        'validation.household.nonNegativeNumber',
+      );
+      expect(result.errors[0].interpolation).toEqual(
+        expect.objectContaining({ field: 'pets' }),
+      );
     });
 
-    it('detects negative supplyDurationDays', () => {
+    it('detects negative supplyDurationDays with correct message', () => {
       const data = createValidAppData();
       data.household.supplyDurationDays = -7;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.supplyDurationDays');
+      expect(result.errors[0].message).toBe(
+        'validation.household.nonNegativeNumber',
+      );
+      expect(result.errors[0].interpolation).toEqual(
+        expect.objectContaining({ field: 'supplyDurationDays' }),
+      );
     });
 
-    it('detects non-finite number (Infinity)', () => {
+    it('detects non-finite number (Infinity) with correct message', () => {
       const data = createValidAppData();
       data.household.adults = Infinity;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.adults');
+      expect(result.errors[0].message).toBe(
+        'validation.household.nonNegativeNumber',
+      );
     });
 
-    it('detects non-finite number (NaN)', () => {
+    it('detects non-finite number (NaN) with correct message', () => {
       const data = createValidAppData();
       data.household.adults = Number.NaN;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.adults');
+      expect(result.errors[0].message).toBe(
+        'validation.household.nonNegativeNumber',
+      );
     });
 
-    it('detects non-boolean useFreezer', () => {
+    it('detects non-number type for adults (string) with correct message', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.household.adults = '2';
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.adults');
+      expect(result.errors[0].message).toBe(
+        'validation.household.nonNegativeNumber',
+      );
+    });
+
+    it('detects non-boolean useFreezer with correct message', () => {
       const data = createValidAppData();
       // @ts-expect-error - testing invalid value
       data.household.useFreezer = 'yes';
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors[0].field).toBe('household.useFreezer');
+      expect(result.errors[0].message).toBe(
+        'validation.household.useFreezerBoolean',
+      );
+      expect(result.errors[0].value).toBe('yes');
+    });
+
+    it('detects non-boolean useFreezer (number)', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.household.useFreezer = 1;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].field).toBe('household.useFreezer');
+      expect(result.errors[0].message).toBe(
+        'validation.household.useFreezerBoolean',
+      );
+    });
+
+    it('does not flag useFreezer when undefined (optional field)', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - removing field to test optional behavior
+      delete data.household.useFreezer;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
     });
 
     it('accepts valid household values', () => {
@@ -284,6 +609,34 @@ describe('validateAppDataValues', () => {
       data.household.useFreezer = true;
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(true);
+    });
+
+    it.each([
+      { label: 'null', value: null },
+      { label: 'false', value: false },
+      { label: '0', value: 0 },
+      { label: 'truthy number (42)', value: 42 },
+    ])('skips household validation when household is $label', ({ value }) => {
+      const data = createValidAppData();
+      (data as unknown as Record<string, unknown>).household = value;
+      const result = validateAppDataValues(data);
+      expect(
+        result.errors.filter((e) => e.field.startsWith('household')),
+      ).toHaveLength(0);
+    });
+
+    it('skips household validation when household is a function with invalid properties', () => {
+      const data = createValidAppData();
+      // A function is truthy but typeof !== 'object', so the typeof guard should skip it.
+      // Adding .adults ensures that if the typeof guard were removed (mutant),
+      // validateHousehold would detect -1 and produce an error — killing the mutant.
+      const fn = () => {};
+      (fn as unknown as Record<string, unknown>).adults = -1;
+      (data as unknown as Record<string, unknown>).household = fn;
+      const result = validateAppDataValues(data);
+      expect(
+        result.errors.filter((e) => e.field.startsWith('household')),
+      ).toHaveLength(0);
     });
   });
 
@@ -298,6 +651,79 @@ describe('validateAppDataValues', () => {
       const result = validateAppDataValues(data);
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('returns result with isValid false and non-empty errors array when there are errors', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.language = 'invalid';
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).not.toHaveLength(0);
+    });
+
+    it('returns result with isValid true and empty errors array for clean data', () => {
+      const result = validateAppDataValues(createValidAppData());
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+  });
+
+  describe('safeStringify coverage via interpolation values', () => {
+    it('includes object language value in interpolation as JSON string', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.language = { lang: 'en' };
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].interpolation?.value).toBe('{"lang":"en"}');
+    });
+
+    it('includes null language value in interpolation as "null"', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.language = null;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].interpolation?.value).toBe('null');
+    });
+
+    it('includes boolean language value in interpolation as string', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.language = true;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].interpolation?.value).toBe('true');
+    });
+
+    it('includes numeric language value in interpolation as string', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.language = 42;
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].interpolation?.value).toBe('42');
+    });
+
+    it('includes array theme value in interpolation as stringified array', () => {
+      const data = createValidAppData();
+      // Array tests the JSON.stringify path in safeStringify
+      // @ts-expect-error - testing invalid value
+      data.settings.theme = [1, 2];
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].interpolation?.value).toBe('[1,2]');
+    });
+
+    it('includes string theme value in interpolation as-is', () => {
+      const data = createValidAppData();
+      // @ts-expect-error - testing invalid value
+      data.settings.theme = 'bad-theme';
+      const result = validateAppDataValues(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors[0].interpolation?.value).toBe('bad-theme');
+      expect(result.errors[0].interpolation?.allowed).toContain('ocean');
     });
   });
 });

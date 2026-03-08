@@ -321,6 +321,419 @@ describe('FoodCategoryStrategy', () => {
     });
   });
 
+  describe('strategyId - string literal mutation', () => {
+    it('strategyId must be exactly "food" not empty string', () => {
+      expect(strategy.strategyId).toBe('food');
+      expect(strategy.strategyId).not.toBe('');
+      expect(strategy.strategyId.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('calculateActualQuantity - compound condition mutations', () => {
+    const context: CategoryCalculationContext = {
+      categoryId: 'food',
+      items: [],
+      categoryItems: [],
+      recommendedForCategory: [],
+      household: createMockHousehold(),
+      disabledRecommendedItems: [],
+      options: {},
+      peopleMultiplier: 2,
+    };
+
+    it('returns 0 calories when recItem.caloriesPerUnit is null', () => {
+      const matchingItems = [
+        createMockInventoryItem({
+          categoryId: createCategoryId('food'),
+          quantity: createQuantity(5),
+          caloriesPerUnit: 200,
+        }),
+      ];
+
+      const recItem: RecommendedItemDefinition = {
+        id: createProductTemplateId('food-item'),
+        i18nKey: 'products.food-item',
+        category: 'food',
+        baseQuantity: createQuantity(10),
+        unit: 'cans',
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        caloriesPerUnit: null as unknown as undefined,
+      };
+
+      const result = strategy.calculateActualQuantity(
+        matchingItems,
+        recItem,
+        context,
+      );
+
+      expect(result.quantity).toBe(5);
+      expect(result.calories).toBe(0);
+    });
+
+    it('returns 0 calories when recItem.caloriesPerUnit is NaN', () => {
+      const matchingItems = [
+        createMockInventoryItem({
+          categoryId: createCategoryId('food'),
+          quantity: createQuantity(5),
+          caloriesPerUnit: 200,
+        }),
+      ];
+
+      const recItem: RecommendedItemDefinition = {
+        id: createProductTemplateId('nan-food'),
+        i18nKey: 'products.nan-food',
+        category: 'food',
+        baseQuantity: createQuantity(10),
+        unit: 'cans',
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        caloriesPerUnit: Number.NaN,
+      };
+
+      const result = strategy.calculateActualQuantity(
+        matchingItems,
+        recItem,
+        context,
+      );
+
+      expect(result.quantity).toBe(5);
+      expect(result.calories).toBe(0);
+    });
+
+    it('returns 0 calories when recItem.caloriesPerUnit is Infinity', () => {
+      const matchingItems = [
+        createMockInventoryItem({
+          categoryId: createCategoryId('food'),
+          quantity: createQuantity(3),
+          caloriesPerUnit: 100,
+        }),
+      ];
+
+      const recItem: RecommendedItemDefinition = {
+        id: createProductTemplateId('inf-food'),
+        i18nKey: 'products.inf-food',
+        category: 'food',
+        baseQuantity: createQuantity(10),
+        unit: 'cans',
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        caloriesPerUnit: Infinity,
+      };
+
+      const result = strategy.calculateActualQuantity(
+        matchingItems,
+        recItem,
+        context,
+      );
+
+      expect(result.quantity).toBe(3);
+      expect(result.calories).toBe(0);
+    });
+
+    it('uses fallback when item.caloriesPerUnit is null', () => {
+      const matchingItems = [
+        createMockInventoryItem({
+          categoryId: createCategoryId('food'),
+          quantity: createQuantity(4),
+          caloriesPerUnit: null as unknown as undefined,
+        }),
+      ];
+
+      const recItem: RecommendedItemDefinition = {
+        id: createProductTemplateId('fallback-food'),
+        i18nKey: 'products.fallback-food',
+        category: 'food',
+        baseQuantity: createQuantity(10),
+        unit: 'cans',
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        caloriesPerUnit: 300,
+      };
+
+      const result = strategy.calculateActualQuantity(
+        matchingItems,
+        recItem,
+        context,
+      );
+
+      expect(result.quantity).toBe(4);
+      // Fallback: 4 * 300 = 1200
+      expect(result.calories).toBe(1200);
+    });
+
+    it('uses fallback when item.caloriesPerUnit is NaN', () => {
+      const matchingItems = [
+        createMockInventoryItem({
+          categoryId: createCategoryId('food'),
+          quantity: createQuantity(2),
+          caloriesPerUnit: Number.NaN,
+        }),
+      ];
+
+      const recItem: RecommendedItemDefinition = {
+        id: createProductTemplateId('nan-item-food'),
+        i18nKey: 'products.nan-item-food',
+        category: 'food',
+        baseQuantity: createQuantity(10),
+        unit: 'cans',
+        scaleWithPeople: false,
+        scaleWithDays: false,
+        caloriesPerUnit: 500,
+      };
+
+      const result = strategy.calculateActualQuantity(
+        matchingItems,
+        recItem,
+        context,
+      );
+
+      expect(result.quantity).toBe(2);
+      // Fallback: 2 * 500 = 1000
+      expect(result.calories).toBe(1000);
+    });
+  });
+
+  describe('aggregateTotals - boundary and sorting mutations', () => {
+    const context: CategoryCalculationContext = {
+      categoryId: 'food',
+      items: [],
+      categoryItems: [],
+      recommendedForCategory: [],
+      household: createMockHousehold({
+        adults: 2,
+        children: 1,
+        pets: 0,
+        supplyDurationDays: 3,
+      }),
+      disabledRecommendedItems: [],
+      options: { dailyCaloriesPerPerson: 2000 },
+      peopleMultiplier: 2.75,
+    };
+
+    it('does not add shortage when missing is exactly 0', () => {
+      const itemResults: ItemCalculationResult[] = [
+        {
+          recItem: {
+            id: createProductTemplateId('exact-match'),
+            i18nKey: 'products.exact-match',
+            category: 'food',
+            baseQuantity: createQuantity(5),
+            unit: 'cans',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 5,
+          actualQty: 5, // exactly meets recommended
+          matchingItems: [],
+          hasMarkedAsEnough: false,
+          unit: 'cans',
+          actualCalories: 1000,
+        },
+      ];
+
+      const result = strategy.aggregateTotals(itemResults, context);
+
+      expect(result.shortages).toHaveLength(0);
+    });
+
+    it('does not add shortage when item is marked as enough', () => {
+      const itemResults: ItemCalculationResult[] = [
+        {
+          recItem: {
+            id: createProductTemplateId('enough-item'),
+            i18nKey: 'products.enough-item',
+            category: 'food',
+            baseQuantity: createQuantity(10),
+            unit: 'cans',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 10,
+          actualQty: 3, // missing 7 but marked as enough
+          matchingItems: [],
+          hasMarkedAsEnough: true,
+          unit: 'cans',
+          actualCalories: 600,
+        },
+      ];
+
+      const result = strategy.aggregateTotals(itemResults, context);
+
+      expect(result.shortages).toHaveLength(0);
+    });
+
+    it('adds shortage when missing > 0 AND not marked as enough (both conditions required)', () => {
+      const itemResults: ItemCalculationResult[] = [
+        {
+          recItem: {
+            id: createProductTemplateId('short-item'),
+            i18nKey: 'products.short-item',
+            category: 'food',
+            baseQuantity: createQuantity(10),
+            unit: 'cans',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 10,
+          actualQty: 3,
+          matchingItems: [],
+          hasMarkedAsEnough: false,
+          unit: 'cans',
+          actualCalories: 600,
+        },
+      ];
+
+      const result = strategy.aggregateTotals(itemResults, context);
+
+      expect(result.shortages).toHaveLength(1);
+      expect(result.shortages[0].missing).toBe(7);
+    });
+
+    it('finds primary unit by highest total quantity', () => {
+      // actualQty differs from recommendedQty to ensure primaryUnit uses recommendedQty
+      const itemResults: ItemCalculationResult[] = [
+        {
+          recItem: {
+            id: createProductTemplateId('kg-item'),
+            i18nKey: 'products.kg-item',
+            category: 'food',
+            baseQuantity: createQuantity(2),
+            unit: 'kilograms',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 2,
+          actualQty: 10, // higher actualQty — would make kg win if actualQty were used
+          matchingItems: [],
+          hasMarkedAsEnough: false,
+          unit: 'kilograms',
+          actualCalories: 0,
+        },
+        {
+          recItem: {
+            id: createProductTemplateId('can-item-1'),
+            i18nKey: 'products.can-item-1',
+            category: 'food',
+            baseQuantity: createQuantity(5),
+            unit: 'cans',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 5,
+          actualQty: 0, // zero actualQty — only recommendedQty should matter
+          matchingItems: [],
+          hasMarkedAsEnough: false,
+          unit: 'cans',
+          actualCalories: 0,
+        },
+        {
+          recItem: {
+            id: createProductTemplateId('can-item-2'),
+            i18nKey: 'products.can-item-2',
+            category: 'food',
+            baseQuantity: createQuantity(3),
+            unit: 'cans',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 3,
+          actualQty: 0,
+          matchingItems: [],
+          hasMarkedAsEnough: false,
+          unit: 'cans',
+          actualCalories: 0,
+        },
+      ];
+
+      const result = strategy.aggregateTotals(itemResults, context);
+
+      // By recommendedQty: cans = 5+3 = 8, kg = 2 -> cans wins
+      // By actualQty: cans = 0, kg = 10 -> kg would win (regression)
+      expect(result.primaryUnit).toBe('cans');
+    });
+
+    it('sorts shortages by missing amount descending', () => {
+      const itemResults: ItemCalculationResult[] = [
+        {
+          recItem: {
+            id: createProductTemplateId('small-shortage'),
+            i18nKey: 'products.small-shortage',
+            category: 'food',
+            baseQuantity: createQuantity(5),
+            unit: 'cans',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 5,
+          actualQty: 3, // missing 2
+          matchingItems: [],
+          hasMarkedAsEnough: false,
+          unit: 'cans',
+          actualCalories: 0,
+        },
+        {
+          recItem: {
+            id: createProductTemplateId('large-shortage'),
+            i18nKey: 'products.large-shortage',
+            category: 'food',
+            baseQuantity: createQuantity(10),
+            unit: 'cans',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 10,
+          actualQty: 1, // missing 9
+          matchingItems: [],
+          hasMarkedAsEnough: false,
+          unit: 'cans',
+          actualCalories: 0,
+        },
+        {
+          recItem: {
+            id: createProductTemplateId('medium-shortage'),
+            i18nKey: 'products.medium-shortage',
+            category: 'food',
+            baseQuantity: createQuantity(8),
+            unit: 'cans',
+            scaleWithPeople: false,
+            scaleWithDays: false,
+          },
+          recommendedQty: 8,
+          actualQty: 3, // missing 5
+          matchingItems: [],
+          hasMarkedAsEnough: false,
+          unit: 'cans',
+          actualCalories: 0,
+        },
+      ];
+
+      const result = strategy.aggregateTotals(itemResults, context);
+
+      expect(result.shortages).toHaveLength(3);
+      // Should be sorted: 9, 5, 2 (descending)
+      expect(result.shortages[0].missing).toBe(9);
+      expect(result.shortages[0].itemId).toBe('large-shortage');
+      expect(result.shortages[1].missing).toBe(5);
+      expect(result.shortages[1].itemId).toBe('medium-shortage');
+      expect(result.shortages[2].missing).toBe(2);
+      expect(result.shortages[2].itemId).toBe('small-shortage');
+    });
+
+    it('uses default DAILY_CALORIES_PER_PERSON when not specified in options', () => {
+      const defaultContext: CategoryCalculationContext = {
+        ...context,
+        options: {}, // no dailyCaloriesPerPerson
+      };
+
+      const itemResults: ItemCalculationResult[] = [];
+      const result = strategy.aggregateTotals(itemResults, defaultContext);
+
+      // DAILY_CALORIES_PER_PERSON = 2000, peopleMultiplier=2.75, 3 days = 16500
+      expect(result.totalNeededCalories).toBe(16500);
+    });
+  });
+
   describe('hasEnoughInventory', () => {
     it('should return true when actual calories >= needed calories', () => {
       const result: ShortageCalculationResult = {

@@ -346,6 +346,60 @@ describe('itemMatching', () => {
     });
   });
 
+  describe('sumMatchingItemsCalories - edge cases', () => {
+    it('uses default calories when caloriesPerUnit is NaN', () => {
+      const cannedFoodId = createProductTemplateId('canned-food');
+
+      const items = [
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: createQuantity(2),
+          caloriesPerUnit: Number.NaN,
+        }),
+      ];
+      const recommendedItem = createMockRecommendedItem({ id: cannedFoodId });
+
+      const result = sumMatchingItemsCalories(items, recommendedItem, 400);
+
+      // NaN is not finite, so should use default
+      expect(result).toBe(2 * 400);
+    });
+
+    it('uses default calories when caloriesPerUnit is Infinity', () => {
+      const cannedFoodId = createProductTemplateId('canned-food');
+
+      const items = [
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: createQuantity(2),
+          caloriesPerUnit: Infinity,
+        }),
+      ];
+      const recommendedItem = createMockRecommendedItem({ id: cannedFoodId });
+
+      const result = sumMatchingItemsCalories(items, recommendedItem, 400);
+
+      expect(result).toBe(2 * 400);
+    });
+
+    it('uses caloriesPerUnit when it is a valid finite number', () => {
+      const cannedFoodId = createProductTemplateId('canned-food');
+
+      const items = [
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: createQuantity(3),
+          caloriesPerUnit: 200,
+        }),
+      ];
+      const recommendedItem = createMockRecommendedItem({ id: cannedFoodId });
+
+      // Should use 200 (the item's value), not the default 999
+      const result = sumMatchingItemsCalories(items, recommendedItem, 999);
+      expect(result).toBe(3 * 200);
+    });
+  });
+
   describe('sumMatchingItemsCaloriesByType', () => {
     it('sums calories using strict type matching', () => {
       const cannedFoodId = createProductTemplateId('canned-food');
@@ -402,6 +456,55 @@ describe('itemMatching', () => {
 
       // Should use 0 calories, not the default 400
       expect(result).toBe(0);
+    });
+
+    it('uses default calories when caloriesPerUnit is NaN', () => {
+      const cannedFoodId = createProductTemplateId('canned-food');
+
+      const items = [
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: createQuantity(2),
+          caloriesPerUnit: Number.NaN,
+        }),
+      ];
+
+      const result = sumMatchingItemsCaloriesByType(items, 'canned-food', 300);
+      expect(result).toBe(2 * 300);
+    });
+
+    it('uses default calories when caloriesPerUnit is Infinity', () => {
+      const cannedFoodId = createProductTemplateId('canned-food');
+
+      const items = [
+        createMockInventoryItem({
+          itemType: cannedFoodId,
+          quantity: createQuantity(2),
+          caloriesPerUnit: Infinity,
+        }),
+      ];
+
+      const result = sumMatchingItemsCaloriesByType(items, 'canned-food', 300);
+      expect(result).toBe(2 * 300);
+    });
+  });
+
+  describe('findMatchingItems - name normalization', () => {
+    it('matches names with multiple spaces', () => {
+      const bottledWaterId = createProductTemplateId('bottled-water');
+      const otherTypeId = createProductTemplateId('other-type');
+
+      const items = [
+        createMockInventoryItem({
+          itemType: otherTypeId,
+          name: 'Bottled  Water', // Double space
+        }),
+      ];
+      const recommendedItem = createMockRecommendedItem({ id: bottledWaterId });
+
+      const result = findMatchingItems(items, recommendedItem);
+      // Double space should be normalized to single hyphen
+      expect(result).toHaveLength(1);
     });
   });
 });
