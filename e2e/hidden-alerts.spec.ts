@@ -9,6 +9,11 @@ import {
   createMockAppData,
   createMockInventoryItem,
 } from '../src/shared/utils/test/factories';
+import {
+  createCategoryId,
+  createQuantity,
+  createDateOnly,
+} from '../src/shared/types';
 
 test.describe('Hidden Alerts Management', () => {
   test('should hide alert from dashboard', async ({ page }) => {
@@ -17,11 +22,11 @@ test.describe('Hidden Alerts Management', () => {
     pastDate.setDate(pastDate.getDate() - 5);
     const expiredItem = createMockInventoryItem({
       name: 'Expired Item',
-      categoryId: 'food',
-      quantity: 5,
+      categoryId: createCategoryId('food'),
+      quantity: createQuantity(5),
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: toLocalDateString(pastDate),
+      expirationDate: createDateOnly(toLocalDateString(pastDate)),
     });
 
     const appData = createMockAppData({
@@ -74,11 +79,11 @@ test.describe('Hidden Alerts Management', () => {
     pastDate.setDate(pastDate.getDate() - 5);
     const expiredItem = createMockInventoryItem({
       name: 'Expired Item',
-      categoryId: 'food',
-      quantity: 5,
+      categoryId: createCategoryId('food'),
+      quantity: createQuantity(5),
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: toLocalDateString(pastDate),
+      expirationDate: createDateOnly(toLocalDateString(pastDate)),
     });
 
     const appData = createMockAppData({
@@ -155,11 +160,11 @@ test.describe('Hidden Alerts Management', () => {
     pastDate.setDate(pastDate.getDate() - 5);
     const expiredItem = createMockInventoryItem({
       name: 'Expired Item',
-      categoryId: 'food',
-      quantity: 5,
+      categoryId: createCategoryId('food'),
+      quantity: createQuantity(5),
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: toLocalDateString(pastDate),
+      expirationDate: createDateOnly(toLocalDateString(pastDate)),
     });
 
     const appData = createMockAppData({
@@ -225,20 +230,20 @@ test.describe('Hidden Alerts Management', () => {
     pastDate.setDate(pastDate.getDate() - 5);
     const expiredItem1 = createMockInventoryItem({
       name: 'Expired Item 1',
-      categoryId: 'food',
-      quantity: 5,
+      categoryId: createCategoryId('food'),
+      quantity: createQuantity(5),
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: toLocalDateString(pastDate),
+      expirationDate: createDateOnly(toLocalDateString(pastDate)),
     });
 
     const expiredItem2 = createMockInventoryItem({
       name: 'Expired Item 2',
-      categoryId: 'food',
-      quantity: 3,
+      categoryId: createCategoryId('food'),
+      quantity: createQuantity(3),
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: toLocalDateString(pastDate),
+      expirationDate: createDateOnly(toLocalDateString(pastDate)),
     });
 
     const appData = createMockAppData({
@@ -314,11 +319,11 @@ test.describe('Hidden Alerts Management', () => {
     pastDate.setDate(pastDate.getDate() - 5);
     const expiredItem = createMockInventoryItem({
       name: 'Expired Item',
-      categoryId: 'food',
-      quantity: 5,
+      categoryId: createCategoryId('food'),
+      quantity: createQuantity(5),
       unit: 'pieces',
       neverExpires: false,
-      expirationDate: toLocalDateString(pastDate),
+      expirationDate: createDateOnly(toLocalDateString(pastDate)),
     });
 
     const appData = createMockAppData({

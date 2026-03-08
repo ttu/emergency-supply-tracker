@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": [
+    "e2e/**/*.ts",
+    "src/shared/types/**/*.ts",
+    "src/shared/utils/test/**/*.ts",
+    "src/shared/utils/storage/localStorage.ts"
+  ],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+}

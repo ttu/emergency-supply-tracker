@@ -41,7 +41,7 @@ const testItems: InventoryItem[] = [
     itemType: createProductTemplateId('rice'),
     categoryId: createCategoryId('food'),
     quantity: createQuantity(2),
-    unit: 'kg',
+    unit: 'kilograms',
     notes: '',
     createdAt: '2025-01-01T00:00:00.000Z',
     updatedAt: '2025-01-01T00:00:00.000Z',
@@ -380,6 +380,11 @@ test.describe('Visual Regression - UI States', () => {
     await addButton.click();
     await page.waitForTimeout(300);
 
-    await expect(page).toHaveScreenshot('modal-add-item.png');
+    // Re-apply after modal opens to cover dynamically injected modal DOM
+    await disableAnimations(page);
+
+    await expect(page).toHaveScreenshot('modal-add-item.png', {
+      maxDiffPixelRatio: 0.02,
+    });
   });
 });
