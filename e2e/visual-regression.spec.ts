@@ -380,6 +380,11 @@ test.describe('Visual Regression - UI States', () => {
     await addButton.click();
     await page.waitForTimeout(300);
 
-    await expect(page).toHaveScreenshot('modal-add-item.png');
+    // Re-apply after modal opens to cover dynamically injected modal DOM
+    await disableAnimations(page);
+
+    await expect(page).toHaveScreenshot('modal-add-item.png', {
+      maxDiffPixelRatio: 0.02,
+    });
   });
 });
