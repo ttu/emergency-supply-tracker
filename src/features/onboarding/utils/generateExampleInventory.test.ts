@@ -772,11 +772,10 @@ describe('quantity calculation details', () => {
       1,
     );
 
-    if (result.length > 0) {
-      // The "custom." prefix should be stripped
-      expect(translateCalls).toContain('my-custom');
-      expect(result[0].name).toBe('Name: my-custom');
-    }
+    expect(result.length).toBe(1);
+    // The "custom." prefix should be stripped
+    expect(translateCalls).toContain('my-custom');
+    expect(result[0].name).toBe('Name: my-custom');
   });
 
   it('returns empty when all items filtered out', () => {

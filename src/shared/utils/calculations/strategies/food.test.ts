@@ -591,6 +591,7 @@ describe('FoodCategoryStrategy', () => {
     });
 
     it('finds primary unit by highest total quantity', () => {
+      // actualQty differs from recommendedQty to ensure primaryUnit uses recommendedQty
       const itemResults: ItemCalculationResult[] = [
         {
           recItem: {
@@ -603,7 +604,7 @@ describe('FoodCategoryStrategy', () => {
             scaleWithDays: false,
           },
           recommendedQty: 2,
-          actualQty: 2,
+          actualQty: 10, // higher actualQty — would make kg win if actualQty were used
           matchingItems: [],
           hasMarkedAsEnough: false,
           unit: 'kilograms',
@@ -620,7 +621,7 @@ describe('FoodCategoryStrategy', () => {
             scaleWithDays: false,
           },
           recommendedQty: 5,
-          actualQty: 5,
+          actualQty: 0, // zero actualQty — only recommendedQty should matter
           matchingItems: [],
           hasMarkedAsEnough: false,
           unit: 'cans',
@@ -637,7 +638,7 @@ describe('FoodCategoryStrategy', () => {
             scaleWithDays: false,
           },
           recommendedQty: 3,
-          actualQty: 3,
+          actualQty: 0,
           matchingItems: [],
           hasMarkedAsEnough: false,
           unit: 'cans',
@@ -647,7 +648,8 @@ describe('FoodCategoryStrategy', () => {
 
       const result = strategy.aggregateTotals(itemResults, context);
 
-      // cans: 5 + 3 = 8, kilograms: 2 -> cans should win
+      // By recommendedQty: cans = 5+3 = 8, kg = 2 -> cans wins
+      // By actualQty: cans = 0, kg = 10 -> kg would win (regression)
       expect(result.primaryUnit).toBe('cans');
     });
 

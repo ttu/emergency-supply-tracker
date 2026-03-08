@@ -1960,6 +1960,13 @@ describe('calculateCategoryPercentage', () => {
           quantity: createQuantity(1),
           caloriesPerUnit: 3600,
         }),
+        // Matching inventory item for food-container exercises the isFoodRecommendedItem guard
+        createMockInventoryItem({
+          id: createItemId('2'),
+          categoryId: createCategoryId('food'),
+          itemType: createProductTemplateId('food-container'),
+          quantity: createQuantity(1),
+        }),
       ];
 
       const result = calculateCategoryPercentage(
@@ -1970,7 +1977,8 @@ describe('calculateCategoryPercentage', () => {
         mixedRecommendedItems,
       );
 
-      // Only rice calories should be counted, not the container
+      // Only rice calories counted — food-container skipped by the guard
+      // (isFoodRecommendedItem is true but caloriesPerUnit is missing)
       expect(result.totalActualCalories).toBe(3600);
       expect(result.hasRecommendations).toBe(true);
     });
@@ -2498,6 +2506,8 @@ describe('calculateCategoryPercentage', () => {
       });
 
       // All same units but still uses item-type counting because it's communication-info
+      // One item has baseQuantity 3 so quantity-counting (total=4) differs from
+      // item-type counting (total=2), making the branch distinguishable.
       const sameUnitCommItems: RecommendedItemDefinition[] = [
         {
           id: createProductTemplateId('battery-radio'),
@@ -2512,7 +2522,7 @@ describe('calculateCategoryPercentage', () => {
           id: createProductTemplateId('hand-crank-radio'),
           i18nKey: 'hand-crank-radio',
           category: 'communication-info',
-          baseQuantity: createQuantity(1),
+          baseQuantity: createQuantity(3),
           unit: 'pieces', // Same unit
           scaleWithPeople: false,
           scaleWithDays: false,
@@ -2538,8 +2548,7 @@ describe('calculateCategoryPercentage', () => {
       );
 
       // Item type counting: 1 of 2 types fulfilled = 50%
-      // If string literal were empty, this would use quantity counting: 1/2 = 50% (coincidence)
-      // But totalNeeded would be 2 (item types) not 2 (quantity sum) - same here
+      // If quantity counting were used instead: totalNeeded would be 4 (1+3), not 2
       expect(result.totalNeeded).toBe(2);
       expect(result.totalActual).toBe(1);
       expect(result.percentage).toBe(50);

@@ -486,15 +486,21 @@ describe('water calculations', () => {
   });
 
   describe('getWaterRequirementPerUnit - boundary mutations', () => {
-    it('returns 0 when item.requiresWaterLiters is exactly 0', () => {
+    it('explicit requiresWaterLiters: 0 does not trigger custom water path', () => {
+      // pasta template normally returns 1.0 for water requirement,
+      // but requiresWaterLiters: 0 is not > 0 so it falls through
+      // to template lookup (which does return 1.0 for pasta).
+      // This verifies explicit 0 does NOT override to zero — it falls through.
       const item = createMockInventoryItem({
         id: createItemId('boundary-0'),
         name: 'Zero Water Item',
         categoryId: createCategoryId('food'),
-        unit: 'packages',
+        unit: 'kilograms',
+        itemType: createProductTemplateId('pasta'),
         requiresWaterLiters: 0,
       });
-      expect(getWaterRequirementPerUnit(item)).toBe(0);
+      // Falls through to template lookup: pasta requires 1.0 liters
+      expect(getWaterRequirementPerUnit(item)).toBe(1);
     });
 
     it('returns 0 for custom itemType', () => {
@@ -535,7 +541,7 @@ describe('water calculations', () => {
   });
 
   describe('calculateTotalWaterAvailable - water detection branches', () => {
-    it('detects water by itemType "bottled-water" specifically (kills L117 first branch)', () => {
+    it('detects water by exact "bottled-water" itemType match', () => {
       const items = [
         createMockInventoryItem({
           id: createItemId('bw-type'),
@@ -549,7 +555,7 @@ describe('water calculations', () => {
       expect(calculateTotalWaterAvailable(items)).toBe(5);
     });
 
-    it('detects water by itemType containing "water" (kills L118 second branch)', () => {
+    it('detects water by itemType containing "water" substring', () => {
       const items = [
         createMockInventoryItem({
           id: createItemId('water-type'),
@@ -563,7 +569,7 @@ describe('water calculations', () => {
       expect(calculateTotalWaterAvailable(items)).toBe(7);
     });
 
-    it('detects water by name containing "water" (kills L119 third branch)', () => {
+    it('detects water by name containing "water" fallback', () => {
       const items = [
         createMockInventoryItem({
           id: createItemId('water-name'),
@@ -599,7 +605,7 @@ describe('water calculations', () => {
           categoryId: createCategoryId('water-beverages'),
           quantity: createQuantity(6),
           unit: 'liters',
-          itemType: createProductTemplateId('non-water-type'),
+          itemType: createProductTemplateId('beverage-filter'),
         }),
       ];
       expect(calculateTotalWaterAvailable(items)).toBe(6);
