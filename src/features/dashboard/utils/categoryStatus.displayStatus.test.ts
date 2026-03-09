@@ -731,7 +731,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: createQuantity(300),
         unit: 'euros',
-        // itemType is 'custom' - won't match 'cash' recommended item
+        itemType: createProductTemplateId('custom'),
       }),
       createMockInventoryItem({
         id: createItemId('docs-1'),
@@ -739,7 +739,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         categoryId: createCategoryId('cash-documents'),
         quantity: createQuantity(1),
         unit: 'sets',
-        // itemType is 'custom' - won't match 'document-copies' recommended item
+        itemType: createProductTemplateId('custom'),
       }),
     ];
 
@@ -751,18 +751,11 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
       [],
     );
 
-    // If items don't match, totalActual would be 0
-    // But we still have 3 recommended items, so totalNeeded is 3
+    // Items have itemType 'custom' so they don't match any recommended items
+    // totalActual should be 0 and completionPercentage should be 0%
     expect(result.totalNeeded).toBe(3);
-
-    // If items don't match, totalActual would be 0, and percentage would be 0%
-    // This is expected behavior - items need to match recommended items
-    if (result.totalActual === 0) {
-      expect(result.completionPercentage).toBe(0);
-    } else {
-      // If items do match (by name normalization), percentage should be calculated
-      expect(result.completionPercentage).toBeGreaterThanOrEqual(0);
-    }
+    expect(result.totalActual).toBe(0);
+    expect(result.completionPercentage).toBe(0);
   });
 
   it('should show consistent progress for various fulfillment levels', () => {
@@ -786,7 +779,7 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
         cash: 225, // 75% of 300
         documents: 1, // 100% of 1
         contactList: 0.5, // 50% of 1 (partial)
-        expectedWeighted: 0.75 + 1.0 + 0.5, // 2.25
+        expectedWeighted: 0.75 + 1 + 0.5, // 2.25
       },
       {
         name: '100% fulfillment',

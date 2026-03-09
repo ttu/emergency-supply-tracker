@@ -28,6 +28,8 @@ vi.mock('react-i18next', async () => {
 
 describe('Inventory Page', () => {
   beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
     // Mock window.confirm
     globalThis.confirm = vi.fn(() => true);
   });
@@ -116,60 +118,168 @@ describe('Inventory Page', () => {
   });
 
   it('should filter items by search query', () => {
-    renderWithProviders(<Inventory />);
+    renderWithProviders(<Inventory />, {
+      initialAppData: {
+        items: [
+          createMockInventoryItem({
+            id: createItemId('water-1'),
+            name: 'Bottled Water',
+            categoryId: createCategoryId('water-beverages'),
+            quantity: createQuantity(5),
+          }),
+          createMockInventoryItem({
+            id: createItemId('food-1'),
+            name: 'Canned Soup',
+            categoryId: createCategoryId('food'),
+            quantity: createQuantity(3),
+          }),
+        ],
+      },
+    });
+
+    // Both items visible before search
+    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
+    expect(screen.getByText('Canned Soup')).toBeInTheDocument();
 
     const searchInput = screen.getByPlaceholderText(
       'inventory.searchPlaceholder',
     );
     fireEvent.change(searchInput, { target: { value: 'water' } });
 
-    // Items would be filtered (tested implicitly through component logic)
-    expect(searchInput).toHaveValue('water');
+    // Only matching item should remain visible
+    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
+    expect(screen.queryByText('Canned Soup')).not.toBeInTheDocument();
   });
 
   it('should filter items by category', () => {
-    renderWithProviders(<Inventory />);
+    renderWithProviders(<Inventory />, {
+      initialAppData: {
+        items: [
+          createMockInventoryItem({
+            id: createItemId('water-1'),
+            name: 'Bottled Water',
+            categoryId: createCategoryId('water-beverages'),
+            quantity: createQuantity(5),
+          }),
+          createMockInventoryItem({
+            id: createItemId('food-1'),
+            name: 'Canned Soup',
+            categoryId: createCategoryId('food'),
+            quantity: createQuantity(3),
+          }),
+        ],
+      },
+    });
 
-    // Scope to sidebar to avoid duplicates from drawer
+    // Both items visible initially
+    expect(screen.getByText('Bottled Water')).toBeInTheDocument();
+    expect(screen.getByText('Canned Soup')).toBeInTheDocument();
+
+    // Click the food category in the sidebar (scope to avoid drawer duplicates)
     const sidebar = screen.getByTestId('sidemenu-sidebar');
-    const allCategoriesButton = within(sidebar).getByText(
-      'inventory.allCategories',
-    );
-    expect(allCategoriesButton).toBeInTheDocument();
+    const foodCategory = within(sidebar).getByTestId('sidemenu-item-food');
+    fireEvent.click(foodCategory);
 
-    // Category filtering is tested through component logic
+    // Only food items should remain visible
+    expect(screen.getByText('Canned Soup')).toBeInTheDocument();
+    expect(screen.queryByText('Bottled Water')).not.toBeInTheDocument();
   });
 
   it('should sort items', () => {
-    renderWithProviders(<Inventory />);
+    renderWithProviders(<Inventory />, {
+      initialAppData: {
+        items: [
+          createMockInventoryItem({
+            id: createItemId('item-a'),
+            name: 'Zebra Bars',
+            categoryId: createCategoryId('food'),
+            quantity: createQuantity(2),
+          }),
+          createMockInventoryItem({
+            id: createItemId('item-b'),
+            name: 'Apple Sauce',
+            categoryId: createCategoryId('food'),
+            quantity: createQuantity(10),
+          }),
+        ],
+      },
+    });
 
-    // Find the sort select by its label
-    const sortLabel = screen.getByText('inventory.sort.label');
-    expect(sortLabel).toBeInTheDocument();
+    // Both items should be visible
+    expect(screen.getByText('Zebra Bars')).toBeInTheDocument();
+    expect(screen.getByText('Apple Sauce')).toBeInTheDocument();
 
-    // Sorting is tested through component logic
-  });
-
-  it('should change sort order', () => {
-    renderWithProviders(<Inventory />);
-
-    // Find and change the sort dropdown (the third combobox is sort)
+    // Change sort to quantity
     const sortSelects = screen.getAllByRole('combobox');
-    const sortSelect = sortSelects[2]; // Sort is the third select (after status and location)
+    const sortSelect = sortSelects[2]; // Sort is the third select
     fireEvent.change(sortSelect, { target: { value: 'quantity' } });
-
     expect(sortSelect).toHaveValue('quantity');
   });
 
+  it('should change sort order', () => {
+    renderWithProviders(<Inventory />, {
+      initialAppData: {
+        items: [
+          createMockInventoryItem({
+            id: createItemId('item-a'),
+            name: 'Alpha Item',
+            categoryId: createCategoryId('food'),
+            quantity: createQuantity(5),
+          }),
+          createMockInventoryItem({
+            id: createItemId('item-b'),
+            name: 'Beta Item',
+            categoryId: createCategoryId('food'),
+            quantity: createQuantity(10),
+          }),
+        ],
+      },
+    });
+
+    // Change sort to quantity
+    const sortSelects = screen.getAllByRole('combobox');
+    const sortSelect = sortSelects[2];
+    fireEvent.change(sortSelect, { target: { value: 'quantity' } });
+
+    expect(sortSelect).toHaveValue('quantity');
+
+    // Both items should still be visible after sort change
+    expect(screen.getByText('Alpha Item')).toBeInTheDocument();
+    expect(screen.getByText('Beta Item')).toBeInTheDocument();
+  });
+
   it('should change status filter', () => {
-    renderWithProviders(<Inventory />);
+    renderWithProviders(<Inventory />, {
+      initialAppData: {
+        items: [
+          createMockInventoryItem({
+            id: createItemId('item-ok'),
+            name: 'Well Stocked Item',
+            categoryId: createCategoryId('food'),
+            quantity: createQuantity(100),
+            itemType: createProductTemplateId('rice'),
+          }),
+          createMockInventoryItem({
+            id: createItemId('item-critical'),
+            name: 'Missing Item',
+            categoryId: createCategoryId('food'),
+            quantity: createQuantity(0),
+            itemType: createProductTemplateId('canned-soup'),
+          }),
+        ],
+      },
+    });
 
-    // Find and change the status filter dropdown (the first combobox)
+    // Both items visible with 'all' filter
+    expect(screen.getByText('Well Stocked Item')).toBeInTheDocument();
+    expect(screen.getByText('Missing Item')).toBeInTheDocument();
+
+    // Change status filter
     const statusSelects = screen.getAllByRole('combobox');
-    const statusSelect = statusSelects[0]; // Status is the first select
-    fireEvent.change(statusSelect, { target: { value: 'warning' } });
+    const statusSelect = statusSelects[0];
+    fireEvent.change(statusSelect, { target: { value: 'critical' } });
 
-    expect(statusSelect).toHaveValue('warning');
+    expect(statusSelect).toHaveValue('critical');
   });
 
   it('should open template selector with initial category', () => {
@@ -276,7 +386,7 @@ describe('Inventory Page', () => {
     // Template selector should be open
     expect(screen.getByText('inventory.selectTemplate')).toBeInTheDocument();
 
-    // Find template buttons in the selector (they have data-testid="template-button-*")
+    // Find a template button in the selector (they have data-testid="template-button-*")
     const templateButtons = screen.getAllByRole('button');
     const templateButton = templateButtons.find(
       (btn) =>
@@ -286,15 +396,13 @@ describe('Inventory Page', () => {
         )?.dataset.testid?.startsWith('template-'),
     );
 
-    // If we find a template button, click it
-    if (templateButton) {
-      fireEvent.click(templateButton);
+    expect(templateButton).toBeDefined();
+    fireEvent.click(templateButton!);
 
-      // Should now show item form with template data
-      await waitFor(() => {
-        expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
-      });
-    }
+    // Should now show item form with template data
+    await waitFor(() => {
+      expect(screen.getByText('inventory.addItem')).toBeInTheDocument();
+    });
   });
 
   it('should change sort to expiration', () => {
@@ -784,6 +892,7 @@ describe('Inventory Page with items', () => {
     expect(overlay).toBeInTheDocument();
     // Click the backdrop button inside the overlay to close
     const backdrop = overlay.querySelector('button');
+    expect(backdrop).toBeInTheDocument();
     fireEvent.click(backdrop!);
 
     await waitFor(() => {

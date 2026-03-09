@@ -59,7 +59,7 @@ describe('calculateCategoryPercentage', () => {
       expect(result.hasEnough).toBe(false);
     });
 
-    it('calculates 100% when enough calories are stocked', () => {
+    it('calculates >100% when calories are overstocked', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
@@ -441,8 +441,8 @@ describe('calculateCategoryPercentage', () => {
         useFreezer: true,
       });
 
-      // Need: 3 item types (stove: 1, fuel: 1*2=2, matches: 2)
-      // Have: all 3 types fulfilled
+      // Need: 3 item types (stove: 1, fuel: 1*6days=6, matches: 2)
+      // Have: stove=1 (fulfilled), fuel=2 of 6 (not fulfilled), matches=2 (fulfilled)
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
@@ -455,7 +455,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('2'),
           categoryId: createCategoryId('cooking-heat'),
           itemType: createProductTemplateId('stove-fuel'),
-          quantity: createQuantity(2), // Need 2 (1 * 2 days)
+          quantity: createQuantity(2), // Need 6 (1 * 6 days), only have 2
           unit: 'canisters',
         }),
         createMockInventoryItem({
@@ -475,12 +475,11 @@ describe('calculateCategoryPercentage', () => {
         mockCookingHeatRecommendedItems,
       );
 
-      // Item type counting: all types fulfilled (or most types if some don't match)
-      // Note: Some items may not match due to ID format, so we check for high percentage
-      expect(result.percentage).toBeGreaterThanOrEqual(67);
-      if (result.totalNeeded <= result.totalActual) {
-        expect(result.hasEnough).toBe(true);
-      }
+      // Mixed units → item type counting: 2 of 3 types fulfilled
+      expect(result.totalNeeded).toBe(3);
+      expect(result.totalActual).toBe(2);
+      expect(result.percentage).toBe(67);
+      expect(result.hasEnough).toBe(false);
     });
   });
 
@@ -667,8 +666,8 @@ describe('calculateCategoryPercentage', () => {
       });
 
       // Medical-health has mixed units (pieces, days, pieces), so uses item type counting
-      // Need: 3 item types (first-aid-kit: 1, prescription-meds: 1*1*1=1, bandages: 20)
-      // Have: 1 first-aid-kit (enough) + 1 prescription-meds (enough) + 10 bandages (not enough, need 20) = 2 types fulfilled
+      // Need: 3 item types (first-aid-kit: 1, prescription-meds: 1*1.0*3days=3, bandages: 20)
+      // Have: 1 first-aid-kit (fulfilled) + 1 prescription-meds (not fulfilled, need 3) + 10 bandages (not fulfilled, need 20) = 1 type fulfilled
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
@@ -701,10 +700,11 @@ describe('calculateCategoryPercentage', () => {
         mockMedicalHealthRecommendedItems,
       );
 
-      // Item type counting: some types fulfilled
-      expect(result.percentage).toBeLessThan(100);
+      // Mixed units → item type counting: 1 of 3 types fulfilled
+      expect(result.totalNeeded).toBe(3);
+      expect(result.totalActual).toBe(1);
+      expect(result.percentage).toBe(33);
       expect(result.hasEnough).toBe(false);
-      expect(result.totalActual).toBeLessThan(result.totalNeeded);
     });
 
     it('scales prescription meds with household and days', () => {
@@ -716,8 +716,8 @@ describe('calculateCategoryPercentage', () => {
         useFreezer: true,
       });
 
-      // Need: 3 item types (first-aid-kit: 1, prescription-meds: (2*1.0 + 1*0.75)*2 = 5.5 -> 6, bandages: 20)
-      // Have: all 3 types fulfilled
+      // Need: 3 item types (first-aid-kit: 1, prescription-meds: ceil(1*2.75*6)=17, bandages: 20)
+      // Have: first-aid-kit=1 (fulfilled), prescription-meds=6 of 17 (not fulfilled), bandages=20 (fulfilled)
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
@@ -730,7 +730,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('2'),
           categoryId: createCategoryId('medical-health'),
           itemType: createProductTemplateId('prescription-meds'),
-          quantity: createQuantity(6), // (2*1.0 + 1*0.75) * 2 = 5.5 -> Math.ceil = 6
+          quantity: createQuantity(6), // Need ceil(1 * 2.75 * 6) = 17, only have 6
           unit: 'days',
         }),
         createMockInventoryItem({
@@ -750,12 +750,11 @@ describe('calculateCategoryPercentage', () => {
         mockMedicalHealthRecommendedItems,
       );
 
-      // Item type counting: all types fulfilled (or most types if some don't match)
-      // Note: Some items may not match due to ID format, so we check for high percentage
-      expect(result.percentage).toBeGreaterThanOrEqual(67);
-      if (result.totalNeeded <= result.totalActual) {
-        expect(result.hasEnough).toBe(true);
-      }
+      // Mixed units → item type counting: 2 of 3 types fulfilled
+      expect(result.totalNeeded).toBe(3);
+      expect(result.totalActual).toBe(2);
+      expect(result.percentage).toBe(67);
+      expect(result.hasEnough).toBe(false);
     });
   });
 
@@ -770,8 +769,8 @@ describe('calculateCategoryPercentage', () => {
       });
 
       // Hygiene-sanitation has mixed units (rolls, pieces), so uses item type counting
-      // Need: 3 item types (toilet-paper: 1*1*1=1, soap: 2, toothbrush: 1*1=1)
-      // Have: 1 toilet-paper (enough) + 1 soap (not enough, need 2) + 1 toothbrush (enough) = 2 types fulfilled
+      // Need: 3 item types (toilet-paper: ceil(1*1.0*3days)=3, soap: 2, toothbrush: ceil(1*1.0)=1)
+      // Have: 1 toilet-paper (not fulfilled, need 3) + 1 soap (not fulfilled, need 2) + 1 toothbrush (fulfilled) = 1 type fulfilled
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
@@ -804,10 +803,11 @@ describe('calculateCategoryPercentage', () => {
         mockHygieneSanitationRecommendedItems,
       );
 
-      // Item type counting: some types fulfilled
-      expect(result.percentage).toBeLessThan(100);
+      // Mixed units → item type counting: 1 of 3 types fulfilled
+      expect(result.totalNeeded).toBe(3);
+      expect(result.totalActual).toBe(1);
+      expect(result.percentage).toBe(33);
       expect(result.hasEnough).toBe(false);
-      expect(result.totalActual).toBeLessThan(result.totalNeeded);
     });
 
     it('scales items with household size and duration', () => {
@@ -819,14 +819,14 @@ describe('calculateCategoryPercentage', () => {
         useFreezer: true,
       });
 
-      // Need: 3 item types (toilet-paper: (2*1.0 + 1*0.75)*2 = 5.5 -> 6, soap: 2, toothbrush: (2*1.0 + 1*0.75) = 2.75 -> 3)
-      // Have: all 3 types fulfilled
+      // Need: 3 item types (toilet-paper: ceil(1*2.75*6)=17, soap: 2, toothbrush: ceil(1*2.75)=3)
+      // Have: toilet-paper=6 of 17 (not fulfilled), soap=2 (fulfilled), toothbrush=3 (fulfilled)
       const items = [
         createMockInventoryItem({
           id: createItemId('1'),
           categoryId: createCategoryId('hygiene-sanitation'),
           itemType: createProductTemplateId('toilet-paper'),
-          quantity: createQuantity(6), // (2*1.0 + 1*0.75) * 2 = 5.5 -> Math.ceil = 6
+          quantity: createQuantity(6), // Need ceil(1 * 2.75 * 6) = 17, only have 6
           unit: 'rolls',
         }),
         createMockInventoryItem({
@@ -840,7 +840,7 @@ describe('calculateCategoryPercentage', () => {
           id: createItemId('3'),
           categoryId: createCategoryId('hygiene-sanitation'),
           itemType: createProductTemplateId('toothbrush'),
-          quantity: createQuantity(3), // (2*1.0 + 1*0.75) = 2.75 -> Math.ceil = 3
+          quantity: createQuantity(3), // ceil(1 * 2.75) = 3
           unit: 'pieces',
         }),
       ];
@@ -853,12 +853,11 @@ describe('calculateCategoryPercentage', () => {
         mockHygieneSanitationRecommendedItems,
       );
 
-      // Item type counting: all types fulfilled (or most types if some don't match)
-      // Note: Some items may not match due to ID format, so we check for high percentage
-      expect(result.percentage).toBeGreaterThanOrEqual(67);
-      if (result.totalNeeded <= result.totalActual) {
-        expect(result.hasEnough).toBe(true);
-      }
+      // Mixed units → item type counting: 2 of 3 types fulfilled
+      expect(result.totalNeeded).toBe(3);
+      expect(result.totalActual).toBe(2);
+      expect(result.percentage).toBe(67);
+      expect(result.hasEnough).toBe(false);
     });
   });
 
@@ -1088,7 +1087,7 @@ describe('calculateCategoryPercentage', () => {
       expect(result.hasRecommendations).toBe(false);
     });
 
-    it('returns 100% for food category without recommendations when enough calories', () => {
+    it('returns >100% for food category without recommendations when calories are overstocked', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
@@ -1154,7 +1153,7 @@ describe('calculateCategoryPercentage', () => {
       expect(result.hasRecommendations).toBe(false);
     });
 
-    it('returns 100% for water category without recommendations when enough water', () => {
+    it('returns >100% for water category without recommendations when water is overstocked', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
