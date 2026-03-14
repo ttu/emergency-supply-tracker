@@ -73,7 +73,7 @@ describe('isValidUnit – mutation killing tests for L22 guard', () => {
   });
 
   it('should return exactly false for NaN', () => {
-    const result = isValidUnit(NaN as unknown as string);
+    const result = isValidUnit(Number.NaN as unknown as string);
     expect(result).toBe(false);
     expect(typeof result).toBe('boolean');
   });
@@ -120,7 +120,7 @@ describe('isValidUnit – mutation killing tests for L22 guard', () => {
   // --- Combined: verify guard vs includes distinction ---
 
   it('should return false for all non-string falsy values', () => {
-    const falsyNonStrings = [null, undefined, 0, false, NaN];
+    const falsyNonStrings = [null, undefined, 0, false, Number.NaN];
     for (const value of falsyNonStrings) {
       const result = isValidUnit(value as unknown as string);
       expect(result).toBe(false);

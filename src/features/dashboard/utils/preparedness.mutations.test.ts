@@ -685,7 +685,7 @@ describe('preparedness mutation killers', () => {
         household,
         customRecommendedItems,
         [],
-        { childrenMultiplier: 1.0 },
+        { childrenMultiplier: 1 },
       );
 
       // With 0.5 multiplier: need ceil(1.5) = 2, have 2 → 100%
@@ -719,7 +719,7 @@ describe('preparedness mutation killers', () => {
         household,
         customRecommendedItems,
         [],
-        { childrenMultiplier: 1.0 },
+        { childrenMultiplier: 1 },
       );
 
       // With 0.5: need ceil(1.5) = 2, have 1 → 50%
@@ -732,7 +732,7 @@ describe('preparedness mutation killers', () => {
         household,
         customRecommendedItems,
         [],
-        { childrenMultiplier: 0.0 },
+        { childrenMultiplier: 0 },
       );
 
       // With 0.0 multiplier: need 1*1 + 1*0 = 1, have 1 → 100%

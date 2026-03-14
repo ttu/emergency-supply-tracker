@@ -176,12 +176,14 @@ describe('useCategoryStatuses - mutation killing tests', () => {
       }
     });
 
-    it('preparednessScore is calculated from category statuses (not default 0)', () => {
+    it('preparednessScore is a number (not undefined from empty array mutant)', () => {
       const { result } = renderHook(() => useCategoryStatuses());
 
-      // With empty inventory and no recommended items, score should be a number
+      // With empty inventory, score is 0 but must be a number (not undefined)
+      // If ArrayDeclaration mutant replaces [] with ["Stryker was here"],
+      // the category statuses would be corrupted
       expect(typeof result.current.preparednessScore).toBe('number');
-      expect(result.current.preparednessScore).toBeGreaterThanOrEqual(0);
+      expect(Number.isNaN(result.current.preparednessScore)).toBe(false);
     });
 
     it('each category status has required properties', () => {

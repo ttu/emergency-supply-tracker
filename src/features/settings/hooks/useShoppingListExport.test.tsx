@@ -8,7 +8,10 @@ import { InventoryProvider } from '@/features/inventory';
 import { RecommendedItemsProvider } from '@/features/templates';
 import { InventorySetProvider } from '@/features/inventory-set';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
-import { createMockAppData } from '@/shared/utils/test/factories';
+import {
+  createMockAppData,
+  createMockInventoryItem,
+} from '@/shared/utils/test/factories';
 import { STORAGE_KEY, saveAppData } from '@/shared/utils/storage/localStorage';
 import type { AppData } from '@/shared/types';
 import {
@@ -17,7 +20,6 @@ import {
   createProductTemplateId,
   createQuantity,
 } from '@/shared/types';
-import { createMockInventoryItem } from '@/shared/utils/test/factories';
 
 /**
  * Helper to render the hook with all required providers and initial data.
@@ -28,7 +30,7 @@ function renderShoppingListHook(initialAppData?: Partial<AppData>) {
     saveAppData(data);
   }
 
-  function Wrapper({ children }: { children: ReactNode }) {
+  function Wrapper({ children }: Readonly<{ children: ReactNode }>) {
     return (
       <InventorySetProvider>
         <SettingsProvider>
@@ -255,7 +257,7 @@ describe('useShoppingListExport', () => {
         /^settings\.shoppingList\.title\nsettings\.shoppingList\.generated: /,
       );
       // Two newlines after the date (header separator) - date format is locale-dependent
-      expect(list).toMatch(/\d{1,4}[.,-/]\d{1,4}[.,-/]\d{1,4}\n\n/);
+      expect(list).toMatch(/\d{1,4}[.,/-]\d{1,4}[.,/-]\d{1,4}\n\n/);
     });
 
     it('includes category name with icon and separator line', () => {
@@ -825,7 +827,7 @@ describe('useShoppingListExport', () => {
       expect(lines[0]).toBe('settings.shoppingList.title');
       // Line 1: generated date
       expect(lines[1]).toMatch(
-        /^settings\.shoppingList\.generated: \d{1,4}[.,-/]\d{1,4}[.,-/]\d{1,4}$/,
+        /^settings\.shoppingList\.generated: \d{1,4}[.,/-]\d{1,4}[.,/-]\d{1,4}$/,
       );
       // Line 2: empty (header separator)
       expect(lines[2]).toBe('');

@@ -31,6 +31,16 @@ describe('itemRecommendedQuantity - mutation killing tests', () => {
       scaleWithPeople: true,
       scaleWithDays: true,
     },
+    // Sentinel: if guard incorrectly allows 'custom' itemType, this would match
+    {
+      id: createProductTemplateId('custom'),
+      i18nKey: 'custom',
+      category: 'water-beverages',
+      baseQuantity: createQuantity(5),
+      unit: 'liters',
+      scaleWithPeople: false,
+      scaleWithDays: false,
+    },
   ];
 
   describe('L28: item.itemType && item.itemType !== "custom"', () => {

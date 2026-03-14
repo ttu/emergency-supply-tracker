@@ -105,43 +105,29 @@ describe('Mutation killing: calculateMissingQuantity conditions (L202, L204, L20
   // L202: `item.quantity < recommendedQuantity`
   // EqualityOperator mutant: `item.quantity <= recommendedQuantity`
   // When quantity === recommended, original returns false (no shortage), mutant returns true
-  it('L202: quantity exactly equal to recommended -> no shortage (< not <=)', () => {
+  // NOTE: L202 EqualityOperator (< to <=) is an equivalent mutant for calculateMissingQuantity.
+  // At boundary (qty === rec), Math.max(0, rec - qty) = 0 regardless of hasShortage value.
+  it('L202: quantity exactly equal to recommended -> no shortage', () => {
     const item = createMockInventoryItem({
       ...baseItem,
       quantity: createQuantity(10),
       neverExpires: true,
       expirationDate: undefined,
     });
-    // If mutated to <=, this would return 0 (10 - 10 = 0 via Math.max) but hasShortage would be true
-    // Actually Math.max(0, 10-10) = 0 either way, so we need quantity = recommended exactly
-    // The key: with <=, hasShortage=true, isQuantityIssue=true, return Math.max(0, 10-10)=0
-    // With <, hasShortage=false, isQuantityIssue=false, return 0
-    // Both return 0... We need a case where the distinction matters.
-    // Actually if quantity equals recommended, both return 0. The mutant survives because
-    // when quantity < recommended, both < and <= give true, and when equal, both give 0.
-    // But when quantity > recommended with <=, hasShortage is still false for >.
-    // Wait - the mutant is `<=` instead of `<`. At exact boundary (equal), <= is true, < is false.
-    // But the return is Math.max(0, recommended - quantity) = Math.max(0, 0) = 0 either way.
-    // So the mutant survives because the result is the same. We can't kill this with calculateMissingQuantity alone.
-    // Actually, we CAN if we look at when hasShortage matters downstream...
-    // No - hasShortage only gates returning 0 vs the calculation. At boundary, both return 0.
-    // This mutant might be unkillable for calculateMissingQuantity.
-    // But let's check calculateTotalMissingQuantity L292: `totalActual < recommendedQuantity`
-    // Same issue there.
     expect(calculateMissingQuantity(item, 10)).toBe(0);
   });
 
   // L204: `hasShortage && !expired && !isExpiringSoon && !item.markedAsEnough && recommendedQuantity > 0`
   // ConditionalExpression mutant: true (always treat as quantity issue)
   // LogicalOperator mutant: `hasShortage || !expired` (changing first && to ||)
-  it('L204: no shortage but expired -> should return 0 (not treat as quantity issue)', () => {
-    // hasShortage=false, expired=true
-    // Original: false && ... = false -> return 0
-    // Mutant (true): always true -> return Math.max(0, recommended - quantity)
+  it('L204: has shortage AND expired -> return 0 (kills ConditionalExpression=true)', () => {
+    // hasShortage=true (qty < rec), expired=true
+    // Original: true && !true(expired) = false -> isQuantityIssue=false -> return 0
+    // Mutant (true): isQuantityIssue=true -> return Math.max(0, 10-3) = 7
     const expiredDate = createDateOnly(daysFromNow(-5));
     const item = createMockInventoryItem({
       ...baseItem,
-      quantity: createQuantity(15), // More than recommended
+      quantity: createQuantity(3), // Less than recommended (10)
       expirationDate: expiredDate,
       neverExpires: false,
     });
@@ -190,52 +176,30 @@ describe('Mutation killing: calculateMissingQuantity conditions (L202, L204, L20
     expect(calculateMissingQuantity(item, 10)).toBe(0);
   });
 
-  it('L204: no shortage, not expired, not expiring soon -> return 0', () => {
-    // hasShortage=false, all others favorable
-    // Original: false && ... = false -> 0
-    // Mutant (true): true -> return Math.max(0, 10-15) = 0 (same!)
-    // Mutant (||): false || !false = true, then continues...
+  // NOTE: L204 LogicalOperator (|| mutant) is equivalent for the no-shortage case.
+  // When hasShortage=false, qty >= rec, so Math.max(0, rec-qty) = 0 regardless.
+  // The || mutant is killed by the hasShortage=true + expired=true test above.
+  it('L204: no shortage, not expired -> return 0 (regression)', () => {
     const farFuture = createDateOnly(daysFromNow(60));
     const item = createMockInventoryItem({
       ...baseItem,
-      quantity: createQuantity(15), // more than recommended
+      quantity: createQuantity(15),
       expirationDate: farFuture,
       neverExpires: false,
       markedAsEnough: false,
     });
-    // With || mutant: false || true = true, then && true && false && true = false -> 0
-    // Hmm. Let's try: hasShortage=false, expired=false
-    // || mutant: false || !false = false || true = true
-    // then && !isExpiringSoon(false) = true && true = true
-    // then && !markedAsEnough(false) = true && true = true
-    // then && recommendedQuantity > 0 (10>0=true) = true
-    // isQuantityIssue = true -> return Math.max(0, 10 - 15) = 0
-    // Still 0! The Math.max saves it. We need quantity < recommended but hasShortage false... impossible with <.
-    // Actually for || to matter: hasShortage=false, !expired=true -> || gives true
-    // We need the RESULT to differ. Math.max(0, rec - qty). If qty >= rec, result is 0 either way.
-    // If qty < rec AND hasShortage is false... that's impossible since hasShortage = qty < rec.
-    // So the || mutant on L204 can only be killed if hasShortage=true and expired=true (already tested above).
     expect(calculateMissingQuantity(item, 10)).toBe(0);
   });
 
-  // L208: `recommendedQuantity > 0`
-  // EqualityOperator mutant: `recommendedQuantity >= 0`
-  // When recommendedQuantity === 0, original: false, mutant: true
-  it('L208: recommendedQuantity exactly 0 with shortage -> return 0 (> not >=)', () => {
+  // NOTE: L208 EqualityOperator (> to >=) is an equivalent mutant.
+  // hasShortage = qty < 0 is impossible with non-negative quantities.
+  it('L208: recommendedQuantity exactly 0 -> return 0 (regression)', () => {
     const item = createMockInventoryItem({
       ...baseItem,
-      quantity: createQuantity(0), // quantity < 0 is false, so hasShortage is false when rec=0
+      quantity: createQuantity(0),
       neverExpires: true,
       expirationDate: undefined,
     });
-    // quantity=0, rec=0: hasShortage = 0 < 0 = false -> isQuantityIssue = false -> 0
-    // Mutant doesn't matter because hasShortage is already false.
-    // We need hasShortage=true AND rec=0. But hasShortage = qty < rec = qty < 0.
-    // qty can't be negative in normal use. Let's try with a negative quantity conceptually:
-    // Actually the branded type might prevent this. Let's check if createQuantity allows negative...
-    // The real test: rec=0 means >= mutant makes 0 >= 0 = true while > gives 0 > 0 = false.
-    // But we also need hasShortage = qty < 0, which requires negative qty.
-    // Hmm, this might be hard. Let's just verify rec=0 returns 0.
     expect(calculateMissingQuantity(item, 0)).toBe(0);
   });
 
@@ -374,20 +338,17 @@ describe('Mutation killing: calculateTotalMissingQuantity item type checks (L248
 
 describe('Mutation killing: calculateTotalMissingQuantity recommendedQuantity <= 0 (L260)', () => {
   // L260: `if (recommendedQuantity <= 0) { return 0; }`
-  // EqualityOperator mutant: `recommendedQuantity < 0` (missing === 0 case)
-  // BlockStatement mutant: `{}` (empty block, no return -> continues execution)
+  // NOTE: Both EqualityOperator (<= to <) and BlockStatement mutants are equivalent here.
+  // When rec <= 0, downstream logic also yields 0 (totalActual < rec is always false).
+  // These tests serve as regression checks to document the expected behavior.
 
-  it('L260: recommendedQuantity exactly 0 should return 0 (<= not <)', () => {
+  it('L260: recommendedQuantity exactly 0 should return 0', () => {
     const item = createMockInventoryItem({
       ...baseItem,
       id: createItemId('rq-1'),
       itemType: createProductTemplateId('water'),
       quantity: createQuantity(0),
     });
-    // If mutated to <: 0 < 0 = false -> continues -> totalActual=0, 0 < 0 = false -> no shortage -> 0
-    // Hmm, still 0. But what if quantity > 0?
-    // Actually with rec=0: totalActual < recommendedQuantity -> totalActual < 0 -> false -> return 0
-    // The end result is the same. Let's try with a non-trivial setup.
     expect(calculateTotalMissingQuantity(item, [item], 0)).toBe(0);
   });
 
@@ -398,32 +359,7 @@ describe('Mutation killing: calculateTotalMissingQuantity recommendedQuantity <=
       itemType: createProductTemplateId('water'),
       quantity: createQuantity(5),
     });
-    // Original: -1 <= 0 = true -> return 0
-    // Mutant (<): -1 < 0 = true -> return 0 (same for negative)
-    // BlockStatement mutant: doesn't return -> continues
-    //   totalActual=5, hasShortage = 5 < -1 = false -> return 0. Same!
-    // This mutant might be hard to kill for negative values too.
     expect(calculateTotalMissingQuantity(item, [item], -1)).toBe(0);
-  });
-
-  it('L260 BlockStatement: recommendedQuantity 0 with items should still return 0', () => {
-    const item = createMockInventoryItem({
-      ...baseItem,
-      id: createItemId('rq-3'),
-      itemType: createProductTemplateId('water'),
-      quantity: createQuantity(0),
-    });
-    // If block is empty (no return), execution continues:
-    // totalActual = 0, hasShortage = 0 < 0 = false -> return 0
-    // Same result. This may be an equivalent mutant for rec=0.
-    // For rec=-5 with empty block: totalActual=0, hasShortage = 0 < -5 = false -> return 0. Same.
-    // The block statement mutant at L260 might be equivalent since downstream logic
-    // also returns 0 when rec<=0. Let's try to find a case...
-    // If rec=-5 and block is empty: markedAsEnough check runs, hasExpirationIssue runs,
-    // then hasShortage = 0 < -5 = false -> return 0. Still 0.
-    // If rec=0: hasShortage = 0 < 0 = false -> return 0. Still 0.
-    // This appears to be an equivalent mutant. Let's just document and move on.
-    expect(calculateTotalMissingQuantity(item, [item], 0)).toBe(0);
   });
 });
 
@@ -484,7 +420,9 @@ describe('Mutation killing: totalActual < recommendedQuantity (L292)', () => {
   // EqualityOperator mutant: `totalActual <= recommendedQuantity`
   // At exact boundary (total === recommended): original < gives false, mutant <= gives true
 
-  it('L292: total exactly equals recommended -> no shortage (< not <=)', () => {
+  // NOTE: L292 EqualityOperator (< to <=) is an equivalent mutant at boundary.
+  // When total === rec, Math.max(0, rec - total) = 0 regardless.
+  it('L292: total exactly equals recommended -> no shortage', () => {
     const item1 = createMockInventoryItem({
       ...baseItem,
       id: createItemId('ts-1'),
@@ -497,11 +435,6 @@ describe('Mutation killing: totalActual < recommendedQuantity (L292)', () => {
       itemType: createProductTemplateId('water'),
       quantity: createQuantity(4),
     });
-    // Total = 10, rec = 10
-    // Original: 10 < 10 = false -> no shortage -> return 0
-    // Mutant (<=): 10 <= 10 = true -> shortage -> return Math.max(0, 10-10) = 0
-    // Hmm, both return 0 because Math.max(0, 0) = 0.
-    // This mutant might be equivalent for calculateTotalMissingQuantity too.
     expect(calculateTotalMissingQuantity(item1, [item1, item2], 10)).toBe(0);
   });
 
@@ -524,16 +457,8 @@ describe('Mutation killing: totalActual < recommendedQuantity (L292)', () => {
 });
 
 describe('Mutation killing: BlockStatement L295 (!hasShortage return 0)', () => {
-  // L295: `if (!hasShortage) { return 0; }`
-  // BlockStatement mutant: `{}` (empty block, no return -> falls through to Math.max)
-  // If block is empty: when hasShortage=false, continues to return Math.max(0, rec - total)
-  // When total >= rec: Math.max(0, rec-total) = 0 anyway (equivalent for these cases)
-  // But when total === rec: Math.max(0, 0) = 0 (same)
-  // When total > rec: Math.max(0, negative) = 0 (same)
-  // This appears to be an equivalent mutant since Math.max(0, ...) handles it.
-  // But wait - what if hasShortage is false AND rec > total? That's impossible since
-  // hasShortage = total < rec. If hasShortage is false, total >= rec, so rec - total <= 0.
-  // Math.max(0, <=0) = 0. So this IS an equivalent mutant.
+  // NOTE: L295 BlockStatement mutant is equivalent. When !hasShortage, total >= rec,
+  // so Math.max(0, rec - total) = 0 regardless of whether the early return executes.
   it('no shortage returns 0 (total exceeds recommended)', () => {
     const item = createMockInventoryItem({
       ...baseItem,
@@ -561,11 +486,11 @@ describe('Mutation killing: getItemStatus neverExpires with expirationDate edge 
 
   it('neverExpires=undefined (falsy) with past date returns critical', () => {
     const pastDate = createDateOnly(daysFromNow(-1));
-    expect(getItemStatus(10, 10, pastDate, undefined)).toBe('critical');
+    expect(getItemStatus(10, 10, pastDate)).toBe('critical');
   });
 
   it('neverExpires=undefined (falsy) without date returns ok for sufficient quantity', () => {
-    expect(getItemStatus(10, 10, undefined, undefined)).toBe('ok');
+    expect(getItemStatus(10, 10)).toBe('ok');
   });
 });
 

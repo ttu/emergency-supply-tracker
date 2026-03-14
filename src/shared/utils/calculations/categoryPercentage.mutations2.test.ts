@@ -439,7 +439,7 @@ describe('calculateCategoryPercentage - mutation killers', () => {
           itemType: createProductTemplateId('canned-beans'),
           quantity: createQuantity(3),
           unit: 'cans',
-          caloriesPerUnit: NaN, // NaN - not finite
+          caloriesPerUnit: Number.NaN, // NaN - not finite
         }),
       ];
 
@@ -665,7 +665,7 @@ describe('calculateCategoryPercentage - mutation killers', () => {
           itemType: createProductTemplateId('bad-food'),
           quantity: createQuantity(5),
           unit: 'pieces',
-          caloriesPerUnit: NaN, // NaN - should NOT be counted
+          caloriesPerUnit: Number.NaN, // NaN - should NOT be counted
         }),
       ];
 
@@ -880,7 +880,7 @@ describe('calculateCategoryPercentage - mutation killers', () => {
           itemType: createProductTemplateId('rice'),
           quantity: createQuantity(2),
           unit: 'kilograms',
-          caloriesPerUnit: NaN, // NaN - should use rec's fallback
+          caloriesPerUnit: Number.NaN, // NaN - should use rec's fallback
         }),
       ];
 

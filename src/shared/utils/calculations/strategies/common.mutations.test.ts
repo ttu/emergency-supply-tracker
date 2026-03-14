@@ -24,7 +24,10 @@ import type { RecommendedItemDefinition } from '@/shared/types';
  */
 describe('common.ts – mutation killing', () => {
   describe('calculateBaseRecommendedQuantity – pet scaling L38', () => {
-    it('multiplies by pets * PET_REQUIREMENT_MULTIPLIER, not divides (kills ArithmeticOperator L38)', () => {
+    // NOTE: ArithmeticOperator L38 (pets * PET_REQUIREMENT_MULTIPLIER -> pets / PET_REQUIREMENT_MULTIPLIER)
+    // is an equivalent mutant because PET_REQUIREMENT_MULTIPLIER = 1, making * and / identical.
+    // These tests verify correct pet scaling behavior as regression checks.
+    it('scales by pets when scaleWithPets=true (regression)', () => {
       const context: CategoryCalculationContext = {
         categoryId: 'tools-supplies',
         items: [],
@@ -53,16 +56,11 @@ describe('common.ts – mutation killing', () => {
       };
 
       const result = calculateBaseRecommendedQuantity(recItem, context);
-      // PET_REQUIREMENT_MULTIPLIER = 1
-      // Correct: 2 * (3 * 1) = 6
-      // Mutant (division): 2 * (3 / 1) = 6 -- same with multiplier=1!
-      // We need a non-1 multiplier... but it's a constant = 1.
-      // With PET_REQUIREMENT_MULTIPLIER = 1, * and / give same result.
-      // This mutant is equivalent. Still, verify correct behavior:
+      // 2 * (3 * 1) = 6
       expect(result).toBe(6);
     });
 
-    it('returns correct result with pets=0 and scaleWithPets=true', () => {
+    it('returns 0 with pets=0 and scaleWithPets=true', () => {
       const context: CategoryCalculationContext = {
         categoryId: 'tools-supplies',
         items: [],
@@ -91,9 +89,6 @@ describe('common.ts – mutation killing', () => {
       };
 
       const result = calculateBaseRecommendedQuantity(recItem, context);
-      // 5 * (0 * 1) = 0
-      // With division: 5 * (0 / 1) = 0 -- same
-      // This is equivalent with multiplier=1
       expect(result).toBe(0);
     });
   });

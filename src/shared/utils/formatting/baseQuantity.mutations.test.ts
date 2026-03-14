@@ -33,7 +33,7 @@ describe('formatBaseQuantity - mutation killing tests', () => {
 
     it('treats negative-zero-like edge: 1.0 is not fractional', () => {
       // 1.0: rounded=1, 1.0 !== 1 is false -> not fractional
-      const result = formatBaseQuantity(1.0, 'cans', 'note', true);
+      const result = formatBaseQuantity(1, 'cans', 'note', true);
       expect(result).toBe('1 cans');
     });
 

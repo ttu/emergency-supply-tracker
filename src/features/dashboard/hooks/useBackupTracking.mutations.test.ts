@@ -372,18 +372,33 @@ describe('useBackupTracking mutation tests', () => {
       expect(savedData.backupReminderDismissedUntil).toBe('2024-04-01');
     });
 
-    // L138: useMemo dependency array - verify all returned values are consistent
-    it('L138 - returned object should include all expected properties', () => {
-      const { result } = renderHook(() => useBackupTracking());
+    // L138: useMemo dependency array - verify returned object updates when deps change
+    it('L138 - returned object identity changes when backing data changes', () => {
+      const now = new Date(2024, 5, 15, 12, 0, 0, 0);
+      vi.setSystemTime(now);
 
-      expect(result.current).toHaveProperty('lastBackupDate');
-      expect(result.current).toHaveProperty('backupReminderDismissedUntil');
-      expect(result.current).toHaveProperty('shouldShowBackupReminder');
-      expect(result.current).toHaveProperty('recordBackupDate');
-      expect(result.current).toHaveProperty('dismissBackupReminder');
-      expect(typeof result.current.shouldShowBackupReminder).toBe('function');
-      expect(typeof result.current.recordBackupDate).toBe('function');
-      expect(typeof result.current.dismissBackupReminder).toBe('function');
+      mockGetAppData.mockReturnValue(undefined);
+
+      const { result, rerender } = renderHook(() => useBackupTracking());
+      const firstResult = result.current;
+
+      // Record a backup, which changes lastBackupDate
+      act(() => {
+        result.current.recordBackupDate();
+      });
+
+      // After recording, the backing data changes
+      mockGetAppData.mockReturnValue({
+        lastBackupDate: '2024-06-15',
+      } as ReturnType<typeof localStorage.getAppData>);
+
+      rerender();
+
+      // If useMemo dep array is [], the returned object won't update
+      // With correct deps, lastBackupDate should now be defined
+      expect(result.current.lastBackupDate).toBe('2024-06-15');
+      // The object identity should change since deps changed
+      expect(result.current).not.toBe(firstResult);
     });
   });
 

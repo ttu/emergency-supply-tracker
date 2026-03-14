@@ -23,17 +23,10 @@ import {
 } from '@/shared/utils/constants';
 
 describe('recommendedQuantity mutation killers', () => {
-  describe('L21: adults * ADULT_REQUIREMENT_MULTIPLIER (not division)', () => {
-    it('household multiplier scales linearly with adults', () => {
-      // With 2 adults, 0 children, 1 day:
-      // Correct: (2 * 1.0 + 0 * 0.75) * 1 = 2
-      // Mutant (division): (2 / 1.0 + 0 * 0.75) * 1 = 2 (same with multiplier=1.0!)
-      // Use 3 adults to differentiate:
-      // Correct: (3 * 1.0) * 1 = 3
-      // Division: (3 / 1.0) * 1 = 3 (still same!)
-      // The multiplier is 1.0, so * and / give same result.
-      // We need to test with a non-1.0 multiplier for children to see the effect.
-
+  describe('L21: children * CHILDREN_REQUIREMENT_MULTIPLIER (not division)', () => {
+    // NOTE: ADULT_REQUIREMENT_MULTIPLIER is 1.0, making * vs / equivalent for adults.
+    // This test targets the children multiplier (0.75) where * vs / produces different results.
+    it('household multiplier scales correctly with children multiplier', () => {
       const household1 = createMockHousehold({
         adults: 1,
         children: 2,

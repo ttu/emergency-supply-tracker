@@ -184,7 +184,7 @@ describe('Mutation killers: getStateForIndex expiring offset (L80 ArithmeticOper
   });
 
   it('expiring offset is exactly 30 when random returns 1', () => {
-    const mockRandom = () => 1.0;
+    const mockRandom = () => 1;
     const state = getStateForIndex(90, 100, mockRandom);
     // Math.floor(7 + 1.0 * 23) = Math.floor(30) = 30
     expect(state.expirationOffsetDays).toBe(30);

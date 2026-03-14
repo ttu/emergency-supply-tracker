@@ -101,21 +101,21 @@ describe('useKeyboardNavigation – mutation kills', () => {
     });
   });
 
-  describe('focus management with containerRef (L71, L76, L77)', () => {
-    function createContainer(buttonConfigs: { tabindex?: string }[]) {
-      const container = document.createElement('div');
-      buttonConfigs.forEach(({ tabindex }) => {
-        const btn = document.createElement('button');
-        if (tabindex !== undefined) {
-          btn.setAttribute('tabindex', tabindex);
-        }
-        btn.focus = vi.fn();
-        container.appendChild(btn);
-      });
-      document.body.appendChild(container);
-      return container;
-    }
+  function createContainer(buttonConfigs: { tabindex?: string }[]) {
+    const container = document.createElement('div');
+    buttonConfigs.forEach(({ tabindex }) => {
+      const btn = document.createElement('button');
+      if (tabindex !== undefined) {
+        btn.setAttribute('tabindex', tabindex);
+      }
+      btn.focus = vi.fn();
+      container.appendChild(btn);
+    });
+    document.body.appendChild(container);
+    return container;
+  }
 
+  describe('focus management with containerRef (L71, L76, L77)', () => {
     it('should focus the new item when navigating and container exists', () => {
       const container = createContainer([
         { tabindex: '0' },

@@ -27,7 +27,7 @@ describe('logger mutation tests — generateLogId random suffix', () => {
     const logs = getLogs();
     const id = logs[0].id;
 
-    // Format: {timestamp}-{base36RandomChars}
+    // ID contains a timestamp followed by a dash and base-36 random characters
     const dashIndex = id.indexOf('-');
     expect(dashIndex).toBeGreaterThan(0);
 

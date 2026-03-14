@@ -2,8 +2,8 @@
  * Mutation-killing tests for useDataValidation.ts
  *
  * Target: ArrayDeclaration L52 ["Stryker was here"] — the useCallback dependency array [].
- * If mutated to ["Stryker was here"], the retry callback would be recreated on every render
- * instead of being stable. We verify referential stability of the retry function.
+ * With empty deps [], the retry callback should be referentially stable across renders.
+ * With ["Stryker was here"] in deps, it would create a new function each render.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
@@ -40,15 +40,14 @@ describe('useDataValidation mutation tests — useCallback deps', () => {
     });
   });
 
-  it('retry function maintains referential identity across rerenders', () => {
+  it('retry callback is referentially stable across rerenders (empty deps)', () => {
     const { result, rerender } = renderHook(() => useDataValidation());
-    const firstRetry = result.current.retry;
+    const retryFirst = result.current.retry;
 
     rerender();
-    const secondRetry = result.current.retry;
 
-    // If deps array is mutated to contain a string, useCallback would recreate
-    // the function on every render since the deps always change
-    expect(firstRetry).toBe(secondRetry);
+    // With [] deps, retry should be the same reference
+    // With ["Stryker was here"] deps, a new function would be created
+    expect(result.current.retry).toBe(retryFirst);
   });
 });

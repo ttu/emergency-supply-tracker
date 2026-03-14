@@ -37,10 +37,13 @@ describe('household calculations - mutation killing tests', () => {
       expect(result).toBeCloseTo(4.5, 5);
     });
 
-    it('L42: peopleMultiplier uses multiplication not division for adults', () => {
-      // In calculateRecommendedQuantity, L42 has:
-      // household.adults * ADULT_REQUIREMENT_MULTIPLIER
-      // If mutated to division, result changes
+    it('L42: peopleMultiplier uses multiplication not division for children', () => {
+      // ADULT_REQUIREMENT_MULTIPLIER is 1.0, so * vs / is equivalent for adults.
+      // Instead, target the children multiplier (0.75) where * vs / differs.
+      // L42 area: adults * ADULT + children * CHILDREN
+      // If children * CHILDREN is mutated to children / CHILDREN:
+      //   correct: 1 * (0 * 1.0 + 4 * 0.75) = 3
+      //   mutant:  1 * (0 * 1.0 + 4 / 0.75) = 5.33 -> ceil = 6
       const item = createMockRecommendedItem({
         id: createProductTemplateId('test-item'),
         baseQuantity: createQuantity(1),
@@ -49,17 +52,14 @@ describe('household calculations - mutation killing tests', () => {
         scaleWithPets: false,
       });
       const household = createMockHousehold({
-        adults: 4,
-        children: 0,
+        adults: 0,
+        children: 4,
         pets: 0,
-        supplyDurationDays: 3,
+        supplyDurationDays: 1,
       });
       const result = calculateRecommendedQuantity(item, household);
-      // correct: 1 * (4 * 1.0 + 0 * 0.75) = 4
-      // mutant (adults / ADULT): 1 * (4 / 1.0 + 0) = 4 -- same!
-      // ADULT_REQUIREMENT_MULTIPLIER is 1.0, so * vs / gives same result.
-      // We need to test with children to distinguish * vs / on L42's second operand
-      expect(result).toBe(4);
+      expect(result).toBe(Math.ceil(4 * CHILDREN_REQUIREMENT_MULTIPLIER));
+      expect(result).toBe(3);
     });
 
     it('L42: children multiplied (not divided) by childrenMultiplier', () => {

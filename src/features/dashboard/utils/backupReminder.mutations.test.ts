@@ -15,8 +15,10 @@ import {
   createQuantity,
 } from '@/shared/types';
 import { saveAppData, getAppData } from '@/shared/utils/storage/localStorage';
-import { createMockAppData } from '@/shared/utils/test/factories';
-import { createMockInventoryItem } from '@/shared/utils/test/factories';
+import {
+  createMockAppData,
+  createMockInventoryItem,
+} from '@/shared/utils/test/factories';
 
 describe('backupReminder mutation killers', () => {
   beforeEach(() => {
