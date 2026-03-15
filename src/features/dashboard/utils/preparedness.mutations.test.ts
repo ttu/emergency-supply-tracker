@@ -1,6 +1,9 @@
 /**
  * Tests specifically targeting surviving mutants in preparedness.ts
  *
+ * NOTE: Uses the deprecated calculatePreparednessScore intentionally —
+ * these tests kill mutants within that function's implementation.
+ *
  * Mutant types covered:
  * - ConditionalExpression: L29, L71, L83, L87, L120 (replaced with false)
  * - BlockStatement: L29, L71, L83, L87 (replaced with {})

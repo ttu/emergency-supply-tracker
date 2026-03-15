@@ -475,16 +475,16 @@ describe('Mutation killers: expiration date assignment (L206 BlockStatement)', (
   });
 });
 
-describe('Mutation killers: regex (L217)', () => {
-  function createTranslateSpy() {
-    const calls: string[] = [];
-    const trackTranslate = (key: string) => {
-      calls.push(key);
-      return key;
-    };
-    return { calls, trackTranslate };
-  }
+function createTranslateSpy() {
+  const calls: string[] = [];
+  const trackTranslate = (key: string) => {
+    calls.push(key);
+    return key;
+  };
+  return { calls, trackTranslate };
+}
 
+describe('Mutation killers: regex (L217)', () => {
   it('strips "products." prefix from i18nKey', () => {
     const { calls, trackTranslate } = createTranslateSpy();
     const items = [makeItem({ id: 'test-regex', i18nKey: 'products.my-item' })];
