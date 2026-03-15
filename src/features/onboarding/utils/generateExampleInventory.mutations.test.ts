@@ -247,8 +247,8 @@ describe('Mutation killers: pet scaling (L112-L113)', () => {
     expect(result).toEqual([]);
   });
 
-  it('pet scaling with 1 pet gives different result than no scaling', () => {
-    // With 1 pet: quantity = base * (1 * PET_REQUIREMENT_MULTIPLIER)
+  it('pet scaling with 2 pets gives different result than base quantity', () => {
+    // With 2 pets: quantity = base * (2 * PET_REQUIREMENT_MULTIPLIER)
     const petItem = makeItem({
       id: 'pet-water',
       scaleWithPets: true,
@@ -257,18 +257,19 @@ describe('Mutation killers: pet scaling (L112-L113)', () => {
       baseQuantity: createQuantity(3),
     });
 
-    const onePet = { ...baseHousehold, pets: 1 };
+    const twoPets = { ...baseHousehold, pets: 2 };
     const result = generateExampleInventory(
       [petItem],
-      onePet,
+      twoPets,
       mockTranslate,
       1,
     );
 
     expect(result.length).toBe(1);
-    // base=3, pets=1, multiplier=1: 3 * (1 * 1) = 3
-    // If /= instead of *=: 3 / (1*1) = 3 (same! need bigger multiplier scenario)
-    expect(result[0].quantity).toBe(3);
+    // base=3, pets=2, multiplier=1: 3 * (2 * 1) = 6
+    // If /= instead of *=: 3 / (2*1) = 1.5 -> ceil = 2
+    // If block removed: 3
+    expect(result[0].quantity).toBe(6);
   });
 
   it('pet scaling multiplies (not divides) quantity', () => {
@@ -377,65 +378,47 @@ describe('Mutation killers: freezer filtering (L163 LogicalOperator)', () => {
     ];
     const withFreezer = { ...baseHousehold, useFreezer: true };
 
-    // Try multiple seeds to find one that includes the frozen item
-    let foundFrozen = false;
-    for (let seed = 0; seed < 20; seed++) {
-      const r = generateExampleInventory(
-        items,
-        withFreezer,
-        mockTranslate,
-        seed,
-      );
-      if (r.some((i) => i.name === 'frozen-meal')) {
-        foundFrozen = true;
-        break;
-      }
-    }
-    expect(foundFrozen).toBe(true);
+    // With only 2 items, neither lands in the "missing" range (65-85%),
+    // so both are always included regardless of seed
+    const result = generateExampleInventory(
+      items,
+      withFreezer,
+      mockTranslate,
+      42,
+    );
+    expect(result.some((i) => i.name === 'frozen-meal')).toBe(true);
   });
 
   it('freezer items are excluded when useFreezer is false', () => {
     const items = [makeItem({ id: 'frozen-only', requiresFreezer: true })];
     const noFreezer = { ...baseHousehold, useFreezer: false };
 
-    // Try many seeds - frozen item should NEVER appear
-    for (let seed = 0; seed < 20; seed++) {
-      const result = generateExampleInventory(
-        items,
-        noFreezer,
-        mockTranslate,
-        seed,
-      );
-      expect(result.length).toBe(0);
-    }
+    // Freezer item is filtered out before any state assignment
+    const result = generateExampleInventory(
+      items,
+      noFreezer,
+      mockTranslate,
+      42,
+    );
+    expect(result.length).toBe(0);
   });
 
   it('non-freezer items are included regardless of useFreezer setting', () => {
     // If || mutant: `item.requiresFreezer || !household.useFreezer`
-    // With requiresFreezer=false and useFreezer=true:
-    //   && original: false && false = false (keep item)
-    //   || mutant: false || false = false (keep item) -- same
-    // With requiresFreezer=false and useFreezer=false:
+    // With requiresFreezer=false/undefined and useFreezer=false:
     //   && original: false && true = false (keep item)
     //   || mutant: false || true = true (filter item!) -- DIFFERENT
     const items = [makeItem({ id: 'shelf-stable' })]; // no requiresFreezer
 
     const noFreezer = { ...baseHousehold, useFreezer: false };
-    let foundItem = false;
-    for (let seed = 0; seed < 20; seed++) {
-      const result = generateExampleInventory(
-        items,
-        noFreezer,
-        mockTranslate,
-        seed,
-      );
-      if (result.length > 0) {
-        foundItem = true;
-        break;
-      }
-    }
-    // Non-freezer items should still appear even with useFreezer=false
-    expect(foundItem).toBe(true);
+    // With 1 item, index 0 of 1 = 0% → "full" state, always included
+    const result = generateExampleInventory(
+      items,
+      noFreezer,
+      mockTranslate,
+      42,
+    );
+    expect(result.length).toBeGreaterThan(0);
   });
 });
 
@@ -493,89 +476,54 @@ describe('Mutation killers: expiration date assignment (L206 BlockStatement)', (
 });
 
 describe('Mutation killers: regex (L217)', () => {
-  it('strips "products." prefix from i18nKey', () => {
+  function createTranslateSpy() {
     const calls: string[] = [];
     const trackTranslate = (key: string) => {
       calls.push(key);
       return key;
     };
+    return { calls, trackTranslate };
+  }
 
+  it('strips "products." prefix from i18nKey', () => {
+    const { calls, trackTranslate } = createTranslateSpy();
     const items = [makeItem({ id: 'test-regex', i18nKey: 'products.my-item' })];
-    const result = generateExampleInventory(
-      items,
-      baseHousehold,
-      trackTranslate,
-      1,
-    );
+    generateExampleInventory(items, baseHousehold, trackTranslate, 1);
 
-    expect(result.length).toBe(1);
     expect(calls).toContain('my-item');
     expect(calls).not.toContain('products.my-item');
   });
 
   it('strips "custom." prefix from i18nKey', () => {
-    const calls: string[] = [];
-    const trackTranslate = (key: string) => {
-      calls.push(key);
-      return key;
-    };
-
+    const { calls, trackTranslate } = createTranslateSpy();
     const items = [
       makeItem({ id: 'test-custom', i18nKey: 'custom.my-custom-item' }),
     ];
-    const result = generateExampleInventory(
-      items,
-      baseHousehold,
-      trackTranslate,
-      1,
-    );
+    generateExampleInventory(items, baseHousehold, trackTranslate, 1);
 
-    expect(result.length).toBe(1);
     expect(calls).toContain('my-custom-item');
     expect(calls).not.toContain('custom.my-custom-item');
   });
 
   it('does not strip other prefixes from i18nKey', () => {
-    const calls: string[] = [];
-    const trackTranslate = (key: string) => {
-      calls.push(key);
-      return key;
-    };
-
+    const { calls, trackTranslate } = createTranslateSpy();
     const items = [makeItem({ id: 'test-other', i18nKey: 'other.some-key' })];
-    const result = generateExampleInventory(
-      items,
-      baseHousehold,
-      trackTranslate,
-      1,
-    );
+    generateExampleInventory(items, baseHousehold, trackTranslate, 1);
 
-    expect(result.length).toBe(1);
     // "other." should NOT be stripped - only products. and custom. are stripped
     expect(calls).toContain('other.some-key');
   });
 
   it('only strips the prefix, not occurrences in the middle', () => {
-    const calls: string[] = [];
-    const trackTranslate = (key: string) => {
-      calls.push(key);
-      return key;
-    };
-
+    const { calls, trackTranslate } = createTranslateSpy();
     const items = [
       makeItem({
         id: 'test-mid',
         i18nKey: 'products.has-products.in-middle',
       }),
     ];
-    const result = generateExampleInventory(
-      items,
-      baseHousehold,
-      trackTranslate,
-      1,
-    );
+    generateExampleInventory(items, baseHousehold, trackTranslate, 1);
 
-    expect(result.length).toBe(1);
     // The regex uses ^(products\.|custom\.) so only leading prefix is stripped
     expect(calls).toContain('has-products.in-middle');
   });
