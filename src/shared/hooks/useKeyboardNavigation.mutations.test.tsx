@@ -119,8 +119,8 @@ describe('useKeyboardNavigation – mutation kills', () => {
     it('should focus the new item when navigating and container exists', () => {
       const container = createContainer([
         { tabindex: '0' },
-        { tabindex: '-1' },
-        { tabindex: '-1' },
+        { tabindex: '0' },
+        { tabindex: '0' },
       ]);
 
       const { result } = renderHook(() =>
@@ -145,15 +145,9 @@ describe('useKeyboardNavigation – mutation kills', () => {
       });
 
       expect(mockOnIndexChange).toHaveBeenCalledWith(1);
-      // The second button (index 1) should be focused.
-      // Buttons without tabindex="-1" attribute are focusable by default,
-      // and buttons WITH tabindex="-1" still have tabIndex >= 0 === false,
-      // but getAttribute('tabindex') === '-1' is true. The filter is:
-      // el.getAttribute('tabindex') !== '-1' || el.tabIndex >= 0
-      // For a button with tabindex="-1": getAttribute returns '-1', so first part is false.
-      // el.tabIndex is -1, so second part is false. So it's filtered OUT.
-      // Wait - but we need the button to be in the focusable list to focus it.
-      // Let's use buttons with tabindex="0" instead so they pass the filter.
+      // The second button (index 1) should be focused
+      const buttons = container.querySelectorAll('button');
+      expect(buttons[1].focus).toHaveBeenCalled();
       container.remove();
     });
 

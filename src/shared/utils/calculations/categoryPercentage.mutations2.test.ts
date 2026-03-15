@@ -323,7 +323,8 @@ describe('calculateCategoryPercentage - mutation killers', () => {
         supplyDurationDays: 3,
       });
 
-      // Mix food and non-food recs both mapped to 'food' category
+      // Mix food and non-food recs - the non-food rec lacks calorie data
+      // and should be skipped by the isFoodRecommendedItem guard
       const mixedRecs: RecommendedItemDefinition[] = [
         {
           id: createProductTemplateId('rice'),
@@ -336,6 +337,17 @@ describe('calculateCategoryPercentage - mutation killers', () => {
           caloriesPerUnit: 3600,
           caloriesPer100g: 360,
           weightGramsPerUnit: 1000,
+        },
+        {
+          // Non-food rec incorrectly placed in food category - lacks calorie data
+          id: createProductTemplateId('flashlight'),
+          i18nKey: 'flashlight',
+          category: 'food',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: false,
+          scaleWithDays: false,
+          // no caloriesPerUnit — skipped by isFoodRecommendedItem
         },
       ];
 
@@ -359,8 +371,10 @@ describe('calculateCategoryPercentage - mutation killers', () => {
         mixedRecs,
       );
 
-      // Rice contributes 3600 calories
+      // Only rice contributes calories (flashlight is skipped)
       expect(result.totalActualCalories).toBe(3600);
+      // Total needed only counts rice's contribution
+      expect(result.totalNeededCalories).toBe(6000); // 2000 * 1 * 3
     });
   });
 
@@ -637,10 +651,11 @@ describe('calculateCategoryPercentage - mutation killers', () => {
 
   // ============================================================
   // L379: LogicalOperator - `item.caloriesPerUnit != null && Number.isFinite(...)` → ||
-  // This is in calculateFoodCategoryPercentageWithoutRecommendations.
-  // Same pattern as L237. Items with NaN caloriesPerUnit should NOT be counted.
+  // EQUIVALENT MUTANT: With ||, NaN != null (true) makes the condition pass,
+  // but calculateItemTotalCalories returns 0 for NaN anyway, so both paths
+  // produce the same observable result. This test is a regression check only.
   // ============================================================
-  describe('L379: caloriesPerUnit guard in food-without-recommendations path', () => {
+  describe('L379: caloriesPerUnit guard in food-without-recommendations path (equivalent mutant — regression only)', () => {
     it('does not count items with NaN caloriesPerUnit when no recommendations exist', () => {
       const household = createMockHousehold({
         adults: 1,
@@ -679,12 +694,10 @@ describe('calculateCategoryPercentage - mutation killers', () => {
       );
 
       // Only good-food: 2 * 2000 = 4000 cal
-      // NaN item should be skipped
-      // With || mutant: NaN != null (true) || isFinite(NaN) (false) = true
-      //   → calculateItemTotalCalories(item with NaN) returns 0
-      //   → adds 0, but the issue is it would still "count" it (result is same 4000)
-      // Actually calculateItemTotalCalories returns 0 for NaN, so the result is same.
-      // Let's verify the actual total is correct.
+      // NaN item should be skipped.
+      // NOTE: This is an equivalent mutant — both && and || produce the same
+      // observable result because calculateItemTotalCalories returns 0 for NaN.
+      // This test serves as a regression check for correct calorie totals.
       expect(result.totalActualCalories).toBe(4000);
       expect(result.hasRecommendations).toBe(false);
     });

@@ -15,7 +15,6 @@ import {
   type RecommendedItemDefinition,
   type HouseholdConfig,
 } from '@/shared/types';
-// PET_REQUIREMENT_MULTIPLIER imported for reference in comments only
 
 // --- Helpers ---
 
@@ -379,12 +378,6 @@ describe('Mutation killers: freezer filtering (L163 LogicalOperator)', () => {
       makeItem({ id: 'canned-food', requiresFreezer: false }),
     ];
     const withFreezer = { ...baseHousehold, useFreezer: true };
-    generateExampleInventory(items, withFreezer, mockTranslate, 1);
-
-    // With useFreezer=true, both items should pass the filter
-    // (some may be missing due to state distribution, but with 2 items
-    // and seed=1, at least 1 should exist)
-    // The key assertion: frozen items are NOT filtered out
 
     // Try multiple seeds to find one that includes the frozen item
     let foundFrozen = false;

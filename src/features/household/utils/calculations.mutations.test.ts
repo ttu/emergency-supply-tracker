@@ -16,11 +16,9 @@ import {
 
 describe('household calculations - mutation killing tests', () => {
   describe('calculateHouseholdMultiplier arithmetic operators', () => {
-    it('L21: adults multiplied (not divided) by ADULT_REQUIREMENT_MULTIPLIER', () => {
-      // With adults=4, children=0, days=1:
-      // correct: 4 * 1.0 + 0 * 0.75 = 4, then 4 * 1 = 4
-      // mutant (÷): 4 / 1.0 = 4 -- same result with multiplier 1.0!
-      // Use a different multiplier scenario: children > 0 to catch multiplication
+    it('L21: children multiplied (not divided) by CHILDREN_REQUIREMENT_MULTIPLIER', () => {
+      // NOTE: adults * ADULT_REQUIREMENT_MULTIPLIER (1.0) is equivalent for * vs /
+      // This test targets children multiplier (0.75) where * vs / differs
       const config = createMockHousehold({
         adults: 3,
         children: 2,
@@ -58,27 +56,6 @@ describe('household calculations - mutation killing tests', () => {
         supplyDurationDays: 1,
       });
       const result = calculateRecommendedQuantity(item, household);
-      expect(result).toBe(Math.ceil(4 * CHILDREN_REQUIREMENT_MULTIPLIER));
-      expect(result).toBe(3);
-    });
-
-    it('L42: children multiplied (not divided) by childrenMultiplier', () => {
-      const item = createMockRecommendedItem({
-        id: createProductTemplateId('water'),
-        baseQuantity: createQuantity(1),
-        scaleWithPeople: true,
-        scaleWithDays: false,
-        scaleWithPets: false,
-      });
-      const household = createMockHousehold({
-        adults: 0,
-        children: 4,
-        pets: 0,
-        supplyDurationDays: 1,
-      });
-      const result = calculateRecommendedQuantity(item, household);
-      // correct: 1 * (0 * 1.0 + 4 * 0.75) = 1 * 3 = 3
-      // mutant (children / 0.75): 1 * (0 + 4 / 0.75) = 1 * 5.33 = 6
       expect(result).toBe(Math.ceil(4 * CHILDREN_REQUIREMENT_MULTIPLIER));
       expect(result).toBe(3);
     });

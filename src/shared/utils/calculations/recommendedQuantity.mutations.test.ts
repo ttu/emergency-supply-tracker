@@ -2,9 +2,10 @@
  * Mutation-killing tests for recommendedQuantity.ts
  *
  * Targets surviving mutants:
- * - L21 ArithmeticOperator: division vs multiplication (adults * multiplier)
- * - L42 ArithmeticOperator: division vs multiplication (adults * multiplier in calculateRecommendedQuantity)
- * - L48 ArithmeticOperator: division vs multiplication (pets * multiplier)
+ * - L21 ArithmeticOperator: division vs multiplication (children * CHILDREN_REQUIREMENT_MULTIPLIER)
+ *   NOTE: adults * ADULT_REQUIREMENT_MULTIPLIER (1.0) is equivalent for * vs /
+ * - L42 ArithmeticOperator: division vs multiplication (qty *= peopleMultiplier)
+ * - L48 ArithmeticOperator: division vs multiplication (pets * PET_REQUIREMENT_MULTIPLIER)
  */
 import { describe, it, expect } from 'vitest';
 import {
@@ -24,7 +25,7 @@ import {
 
 describe('recommendedQuantity mutation killers', () => {
   describe('L21: children * CHILDREN_REQUIREMENT_MULTIPLIER (not division)', () => {
-    // NOTE: ADULT_REQUIREMENT_MULTIPLIER is 1.0, making * vs / equivalent for adults.
+    // NOTE: ADULT_REQUIREMENT_MULTIPLIER is 1.0, making * vs / equivalent for adults (unkillable).
     // This test targets the children multiplier (0.75) where * vs / produces different results.
     it('household multiplier scales correctly with children multiplier', () => {
       const household1 = createMockHousehold({

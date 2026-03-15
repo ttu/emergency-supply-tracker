@@ -658,43 +658,7 @@ describe('preparedness mutation killers', () => {
         },
       ];
 
-      // With childrenMultiplier=0.5: need 1*1 + 1*0.5 = 1.5, ceil = 2
-      // With childrenMultiplier=1.0 (default or missing): need 1*1 + 1*1.0 = 2
-      // With {} (no options): default multiplier applies
-      const items = [
-        createMockInventoryItem({
-          id: createItemId('1'),
-          categoryId: createCategoryId('communication-info'),
-          itemType: createProductTemplateId('test-item'),
-          quantity: createQuantity(2),
-        }),
-      ];
-
-      const scoreWithMultiplier = calculateCategoryPreparedness(
-        'communication-info',
-        items,
-        household,
-        customRecommendedItems,
-        [],
-        { childrenMultiplier: 0.5 },
-      );
-
-      calculateCategoryPreparedness(
-        'communication-info',
-        items,
-        household,
-        customRecommendedItems,
-        [],
-        { childrenMultiplier: 1 },
-      );
-
-      // With 0.5 multiplier: need ceil(1.5) = 2, have 2 → 100%
-      // With 1.0 multiplier: need 2, have 2 → 100%
-      // The key insight: changing the multiplier should change the result
-      // when we have a specific quantity that distinguishes the two
-      expect(scoreWithMultiplier).toBe(100);
-
-      // Let's use quantity 1 to distinguish
+      // Use quantity 1 to distinguish different multiplier effects
       const items1 = [
         createMockInventoryItem({
           id: createItemId('2'),
@@ -713,19 +677,7 @@ describe('preparedness mutation killers', () => {
         { childrenMultiplier: 0.5 },
       );
 
-      calculateCategoryPreparedness(
-        'communication-info',
-        items1,
-        household,
-        customRecommendedItems,
-        [],
-        { childrenMultiplier: 1 },
-      );
-
-      // With 0.5: need ceil(1.5) = 2, have 1 → 50%
-      // With 1.0: need 2, have 1 → 50%
-      // Hmm, same. Let's try a bigger difference.
-      // With 0.0: need 1, have 1 → 100%
+      // With 0.0 multiplier: need 1*1 + 1*0 = 1, have 1 → 100%
       const scoreWith0 = calculateCategoryPreparedness(
         'communication-info',
         items1,
@@ -735,8 +687,8 @@ describe('preparedness mutation killers', () => {
         { childrenMultiplier: 0 },
       );
 
-      // With 0.0 multiplier: need 1*1 + 1*0 = 1, have 1 → 100%
-      // With {} (empty options / no multiplier): default applies → different result
+      // Changing childrenMultiplier from 0.5 to 0 produces different scores,
+      // proving the options object is passed through (not replaced with {})
       expect(scoreWith0).toBeGreaterThan(scoreWith05);
     });
 
