@@ -315,7 +315,7 @@ describe('calculateCategoryPercentage - mutation killers', () => {
       expect(result.percentage).toBe(60); // 3600/6000 * 100
     });
 
-    it('includes non-food category recommended item in food recs list - should be skipped', () => {
+    it('skips food-category rec lacking caloriesPerUnit via isFoodRecommendedItem guard', () => {
       const household = createMockHousehold({
         adults: 1,
         children: 0,
@@ -323,8 +323,9 @@ describe('calculateCategoryPercentage - mutation killers', () => {
         supplyDurationDays: 3,
       });
 
-      // Mix food and non-food recs - the non-food rec lacks calorie data
-      // and should be skipped by the isFoodRecommendedItem guard
+      // Both recs have category 'food', but flashlight lacks caloriesPerUnit.
+      // isFoodRecommendedItem returns false for items without calorie data,
+      // so flashlight should be skipped in the calorie calculation.
       const mixedRecs: RecommendedItemDefinition[] = [
         {
           id: createProductTemplateId('rice'),
@@ -339,7 +340,7 @@ describe('calculateCategoryPercentage - mutation killers', () => {
           weightGramsPerUnit: 1000,
         },
         {
-          // Non-food rec incorrectly placed in food category - lacks calorie data
+          // Food rec without caloriesPerUnit — skipped by isFoodRecommendedItem
           id: createProductTemplateId('flashlight'),
           i18nKey: 'flashlight',
           category: 'food',
@@ -347,7 +348,6 @@ describe('calculateCategoryPercentage - mutation killers', () => {
           unit: 'pieces',
           scaleWithPeople: false,
           scaleWithDays: false,
-          // no caloriesPerUnit — skipped by isFoodRecommendedItem
         },
       ];
 

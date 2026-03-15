@@ -147,7 +147,7 @@ describe('recommendedQuantity mutation killers', () => {
       expect(result).toBe(Math.ceil(3 * 2 * PET_REQUIREMENT_MULTIPLIER));
     });
 
-    it('returns base quantity when pets is 0 and scaleWithPets is true', () => {
+    it('returns zero (not base quantity) when pets is 0 and scaleWithPets is true', () => {
       const item = createMockRecommendedItem({
         baseQuantity: createQuantity(4),
         scaleWithPeople: false,

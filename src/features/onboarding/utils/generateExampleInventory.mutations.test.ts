@@ -171,14 +171,12 @@ describe('Mutation killers: shuffle (L43-L44 ArithmeticOperator, EqualityOperato
 });
 
 describe('Mutation killers: getStateForIndex expiring offset (L80 ArithmeticOperator)', () => {
-  it('expiring offset is exactly 7 when random returns 0', () => {
+  it('expiration offset is 18 when random returns 0.5', () => {
     // L80: Math.floor(7 + rand * 23)
-    // If + becomes -, we'd get Math.floor(7 - 0) = 7 (same for rand=0)
-    // If * becomes /, we'd get Math.floor(7 + 0/23) = 7 (same for rand=0)
-    // So test with rand returning non-zero to kill arithmetic mutants
+    // rand=0 would give 7 for both + and -, so use 0.5 to distinguish
     const mockRandom = () => 0.5;
     const state = getStateForIndex(90, 100, mockRandom);
-    // Math.floor(7 + 0.5 * 23) = Math.floor(7 + 11.5) = Math.floor(18.5) = 18
+    // Math.floor(7 + 0.5 * 23) = Math.floor(18.5) = 18
     expect(state.expirationOffsetDays).toBe(18);
   });
 
