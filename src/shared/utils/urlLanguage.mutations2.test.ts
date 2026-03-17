@@ -20,7 +20,7 @@ describe('L36: exact domain match in getLanguageFromDomain', () => {
 
     // Mock location to a known domain
     Object.defineProperty(globalThis, 'location', {
-      value: { hostname: '72tuntia.fi' },
+      value: { hostname: 'tama-sivu.fi' },
       writable: true,
       configurable: true,
     });
@@ -34,11 +34,10 @@ describe('L36: exact domain match in getLanguageFromDomain', () => {
       configurable: true,
     });
 
-    // Should match exact domain and return 'fi'
-    // If condition is false, falls through to subdomain check
-    if (result !== undefined) {
-      expect(result).toBe('fi');
-    }
+    // DOMAIN_LANGUAGE_MAP entries are commented out in source, so result is undefined
+    // This test exercises the code path; when map has entries, it would return 'fi'
+    // The mutation target is the `in` check - with map empty, result is always undefined
+    expect(result).toBeUndefined();
   });
 
   it('returns undefined for unknown domain', () => {
@@ -121,7 +120,7 @@ describe('L44: subdomain base domain check', () => {
     const originalLocation = globalThis.location;
 
     Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'www.72tuntia.fi' },
+      value: { hostname: 'www.tama-sivu.fi' },
       writable: true,
       configurable: true,
     });
@@ -134,10 +133,9 @@ describe('L44: subdomain base domain check', () => {
       configurable: true,
     });
 
-    // www.72tuntia.fi -> base domain = 72tuntia.fi -> 'fi'
-    if (result !== undefined) {
-      expect(result).toBe('fi');
-    }
+    // DOMAIN_LANGUAGE_MAP entries are commented out, so result is undefined
+    // With map populated, www.tama-sivu.fi -> base domain = tama-sivu.fi -> 'fi'
+    expect(result).toBeUndefined();
   });
 });
 
@@ -147,6 +145,7 @@ describe('L44: subdomain base domain check', () => {
 describe('L93: clearLanguageFromUrl', () => {
   it('removes lang parameter from URL', () => {
     const originalLocation = globalThis.location;
+    const originalHistory = globalThis.history;
     const replaceStateSpy = vi.fn();
 
     Object.defineProperty(globalThis, 'location', {
@@ -167,14 +166,19 @@ describe('L93: clearLanguageFromUrl', () => {
 
     clearLanguageFromUrl();
 
-    if (replaceStateSpy.mock.calls.length > 0) {
-      const newUrl = replaceStateSpy.mock.calls[0][2] as string;
-      expect(newUrl).not.toContain('lang=');
-      expect(newUrl).toContain('other=value');
-    }
+    expect(replaceStateSpy).toHaveBeenCalled();
+    const newUrl = replaceStateSpy.mock.calls[0][2] as string;
+    expect(newUrl).not.toContain('lang=');
+    expect(newUrl).toContain('other=value');
 
     Object.defineProperty(globalThis, 'location', {
       value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(globalThis, 'history', {
+      value: originalHistory,
       writable: true,
       configurable: true,
     });

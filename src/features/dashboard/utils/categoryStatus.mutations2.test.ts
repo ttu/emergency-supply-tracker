@@ -82,7 +82,10 @@ describe('L220: recommendedQuantity > 0 boundary in calculateCategoryStatus', ()
 
     // With qty=1, recommendedQty=0: original returns 'ok'
     // Item with qty>0 and no recommendation should be 'ok'
-    expect(result.okCount).toBeGreaterThanOrEqual(0);
+    expect(result.itemCount).toBe(1);
+    expect(result.okCount).toBe(1);
+    expect(result.warningCount).toBe(0);
+    expect(result.criticalCount).toBe(0);
   });
 
   it('item with quantity=0 and recommendedQuantity=0 is critical', () => {
@@ -118,7 +121,10 @@ describe('L220: recommendedQuantity > 0 boundary in calculateCategoryStatus', ()
     );
 
     // qty=0, recommendedQty=0: original code goes to ternary -> qty===0 -> 'critical'
-    expect(result.criticalCount).toBeGreaterThanOrEqual(0);
+    expect(result.itemCount).toBe(1);
+    expect(result.okCount).toBe(0);
+    expect(result.warningCount).toBe(0);
+    expect(result.criticalCount).toBe(1);
   });
 });
 

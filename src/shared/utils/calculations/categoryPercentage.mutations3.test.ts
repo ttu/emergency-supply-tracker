@@ -169,6 +169,15 @@ describe('categoryPercentage - additional mutation killers', () => {
           caloriesPer100g: 360,
           weightGramsPerUnit: 1000,
         },
+        {
+          id: createProductTemplateId('soap'),
+          i18nKey: 'soap',
+          category: 'hygiene-health',
+          baseQuantity: createQuantity(1),
+          unit: 'pieces',
+          scaleWithPeople: true,
+          scaleWithDays: true,
+        },
       ];
 
       const items = [
@@ -193,7 +202,7 @@ describe('categoryPercentage - additional mutation killers', () => {
 
       // Should have a valid calculation
       expect(result.hasRecommendations).toBe(true);
-      expect(result.totalNeededCalories).toBeGreaterThan(0);
+      expect(result.totalNeededCalories).toBe(2000);
     });
   });
 

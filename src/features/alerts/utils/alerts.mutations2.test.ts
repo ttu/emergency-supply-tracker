@@ -67,9 +67,8 @@ describe('L34: templateId checks in getTranslatedItemName', () => {
 
     // The expired custom item should generate an alert with the stored name
     const expiredAlert = alerts.find((a) => a.type === 'critical' && a.itemId);
-    if (expiredAlert) {
-      expect(expiredAlert.itemName).toBe('My Custom Food');
-    }
+    expect(expiredAlert).toBeDefined();
+    expect(expiredAlert!.itemName).toBe('My Custom Food');
   });
 });
 

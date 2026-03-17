@@ -81,7 +81,6 @@ describe('version fallback strings', () => {
 
   it('importData handles data without explicit version', () => {
     const json = JSON.stringify({
-      version: CURRENT_SCHEMA_VERSION,
       items: [],
       household: {
         adults: 1,
