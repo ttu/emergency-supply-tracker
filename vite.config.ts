@@ -46,7 +46,7 @@ export default defineConfig({
     environment: 'jsdom',
     globalSetup: './src/test/globalSetup.ts',
     setupFiles: ['./src/test/setup.ts', './src/test/a11y-setup.ts'],
-    exclude: ['**/node_modules/**', '**/e2e/**'],
+    exclude: ['**/node_modules/**', '**/e2e/**', '**/.worktrees/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -81,6 +81,7 @@ export default defineConfig({
             '**/e2e/**',
             '**/.storybook/**',
             '**/storybook-static/**',
+            '**/.worktrees/**',
             '**/*.stories.{ts,tsx}',
           ],
         },
@@ -103,6 +104,7 @@ export default defineConfig({
             '**/e2e/**',
             '**/.storybook/**',
             '**/storybook-static/**',
+            '**/.worktrees/**',
             '**/*.{test,spec}.{ts,tsx}',
           ],
           browser: {

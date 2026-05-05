@@ -803,3 +803,258 @@ describe('quantity calculation details', () => {
     expect(result).toEqual([]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Behavioral guards added to kill specific mutation-testing survivors.
+// Each describe targets a property of the underlying implementation that pure
+// shape/structure tests above don't constrain tightly enough.
+// ---------------------------------------------------------------------------
+
+function makeItem(
+  id: string,
+  overrides: Partial<RecommendedItemDefinition> = {},
+): RecommendedItemDefinition {
+  return {
+    id: createProductTemplateId(id),
+    i18nKey: `products.${id}`,
+    category: 'food',
+    baseQuantity: createQuantity(1),
+    unit: 'pieces' as const,
+    scaleWithPeople: false,
+    scaleWithDays: false,
+    defaultExpirationMonths: 12,
+    ...overrides,
+  };
+}
+
+describe('seeded random determinism (LCG)', () => {
+  // Two runs with the same seed must produce identical output, including
+  // exact item order and quantities. Guards against arithmetic-operator
+  // mutations to the LCG formula.
+  it('two calls with the same seed produce identical inventory', () => {
+    const items = Array.from({ length: 20 }, (_, i) =>
+      makeItem(`item-${i}`, { scaleWithPeople: true }),
+    );
+    const a = generateExampleInventory(
+      items,
+      standardHousehold,
+      mockTranslate,
+      42,
+    );
+    const b = generateExampleInventory(
+      items,
+      standardHousehold,
+      mockTranslate,
+      42,
+    );
+    expect(a.map((i) => i.itemType)).toEqual(b.map((i) => i.itemType));
+    expect(a.map((i) => i.quantity)).toEqual(b.map((i) => i.quantity));
+    expect(a.map((i) => i.name)).toEqual(b.map((i) => i.name));
+  });
+
+  it('seed=0 and seed=1 produce different orderings (LCG advances)', () => {
+    const items = Array.from({ length: 20 }, (_, i) =>
+      makeItem(`item-${i}`, { scaleWithPeople: true }),
+    );
+    const r0 = generateExampleInventory(
+      items,
+      standardHousehold,
+      mockTranslate,
+      0,
+    );
+    const r1 = generateExampleInventory(
+      items,
+      standardHousehold,
+      mockTranslate,
+      1,
+    );
+    expect(r0.map((i) => i.name)).not.toEqual(r1.map((i) => i.name));
+  });
+});
+
+describe('Fisher-Yates shuffle reorders items', () => {
+  // Guards against the shuffle becoming identity (block emptied or loop-bound
+  // mutations). With 30 items, the chance of identity output is negligible.
+  it('output is not in original input order for many items', () => {
+    const items = Array.from({ length: 30 }, (_, i) =>
+      makeItem(`item-${i}`, { scaleWithPeople: true }),
+    );
+    const result = generateExampleInventory(
+      items,
+      standardHousehold,
+      mockTranslate,
+      42,
+    );
+    const isIdentityOrder = result.every(
+      (item, idx) => item.name === `item-${idx}`,
+    );
+    expect(isIdentityOrder).toBe(false);
+  });
+});
+
+describe('pet scaling arithmetic', () => {
+  // Pin exact quantities to kill `*= → /=` and similar arithmetic mutations.
+  it('multiplies (not divides) quantity by pet count', () => {
+    // base=6, pets=3, PET_REQUIREMENT_MULTIPLIER=1: *= → 18, /= → 2
+    const item = makeItem('pet-treats', {
+      scaleWithPets: true,
+      baseQuantity: createQuantity(6),
+    });
+    const household = { ...standardHousehold, pets: 3 };
+    const result = generateExampleInventory(
+      [item],
+      household,
+      mockTranslate,
+      1,
+    );
+    expect(result.length).toBe(1);
+    expect(result[0].quantity).toBe(18);
+  });
+
+  it('combines people scaling and pet scaling', () => {
+    // base=2, people=3 (2 adults + 1 child) → 6; then pets=2 → 12
+    const item = makeItem('combo', {
+      scaleWithPeople: true,
+      scaleWithPets: true,
+      baseQuantity: createQuantity(2),
+    });
+    const household = { ...standardHousehold, pets: 2 };
+    const result = generateExampleInventory(
+      [item],
+      household,
+      mockTranslate,
+      1,
+    );
+    expect(result.length).toBe(1);
+    expect(result[0].quantity).toBe(12);
+  });
+
+  it('non-pet items are unaffected by pet count', () => {
+    // Guards against `&& → ||` mutation that would scale all items by pets.
+    const item = makeItem('shelf-stable', {
+      scaleWithPets: false,
+      baseQuantity: createQuantity(5),
+    });
+    const household = { ...standardHousehold, pets: 3 };
+    const result = generateExampleInventory(
+      [item],
+      household,
+      mockTranslate,
+      1,
+    );
+    expect(result.length).toBe(1);
+    expect(result[0].quantity).toBe(5);
+  });
+
+  it('items with scaleWithPets are filtered out when pets=0', () => {
+    const item = makeItem('pet-only', {
+      scaleWithPets: true,
+      baseQuantity: createQuantity(4),
+    });
+    const noPets = { ...standardHousehold, pets: 0 };
+    const result = generateExampleInventory([item], noPets, mockTranslate, 1);
+    expect(result).toEqual([]);
+  });
+});
+
+describe('freezer filtering', () => {
+  // Guards against `&& → ||` flip in the freezer filter, which would either
+  // drop non-freezer items or admit freezer items when useFreezer=false.
+  it('non-freezer items are included regardless of useFreezer setting', () => {
+    const item = makeItem('shelf-stable', { requiresFreezer: false });
+    const noFreezer = { ...standardHousehold, useFreezer: false };
+    const result = generateExampleInventory(
+      [item],
+      noFreezer,
+      mockTranslate,
+      42,
+    );
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it('freezer items are included when useFreezer is true', () => {
+    const items = [
+      makeItem('frozen-meal', { requiresFreezer: true }),
+      makeItem('canned-food'),
+    ];
+    const withFreezer = { ...standardHousehold, useFreezer: true };
+    const result = generateExampleInventory(
+      items,
+      withFreezer,
+      mockTranslate,
+      42,
+    );
+    expect(result.some((i) => String(i.itemType) === 'frozen-meal')).toBe(true);
+  });
+});
+
+describe('i18n key prefix stripping', () => {
+  // The regex /(^products\.|^custom\.)/ must match only those two prefixes,
+  // and only at the start of the key.
+  it('strips "products." prefix when calling translate', () => {
+    const calls: string[] = [];
+    const trackTranslate = (key: string) => {
+      calls.push(key);
+      return key;
+    };
+    const item = makeItem('test', { i18nKey: 'products.my-item' });
+    generateExampleInventory([item], standardHousehold, trackTranslate, 1);
+    expect(calls).toContain('my-item');
+    expect(calls).not.toContain('products.my-item');
+  });
+
+  it('strips "custom." prefix when calling translate', () => {
+    const calls: string[] = [];
+    const trackTranslate = (key: string) => {
+      calls.push(key);
+      return key;
+    };
+    const item = makeItem('test', { i18nKey: 'custom.my-custom' });
+    generateExampleInventory([item], standardHousehold, trackTranslate, 1);
+    expect(calls).toContain('my-custom');
+    expect(calls).not.toContain('custom.my-custom');
+  });
+
+  it('does NOT strip other prefixes', () => {
+    const calls: string[] = [];
+    const trackTranslate = (key: string) => {
+      calls.push(key);
+      return key;
+    };
+    const item = makeItem('test', { i18nKey: 'other.some-key' });
+    generateExampleInventory([item], standardHousehold, trackTranslate, 1);
+    expect(calls).toContain('other.some-key');
+  });
+
+  it('only strips the leading prefix, not occurrences in the middle', () => {
+    const calls: string[] = [];
+    const trackTranslate = (key: string) => {
+      calls.push(key);
+      return key;
+    };
+    const item = makeItem('test', {
+      i18nKey: 'products.has-products.in-middle',
+    });
+    generateExampleInventory([item], standardHousehold, trackTranslate, 1);
+    expect(calls).toContain('has-products.in-middle');
+  });
+});
+
+describe('expiration offsets via getStateForIndex (random injection)', () => {
+  // Pin exact offsets to kill arithmetic-operator mutations on the
+  // `Math.floor(7 + rand * 23)` (expiring) and similar (expired) formulas.
+  it('expiring offset is 18 when random returns 0.5', () => {
+    const state = getStateForIndex(90, 100, () => 0.5);
+    expect(state.expirationOffsetDays).toBe(18);
+  });
+
+  it('expiring offset is 30 when random returns 1', () => {
+    const state = getStateForIndex(90, 100, () => 1);
+    expect(state.expirationOffsetDays).toBe(30);
+  });
+
+  it('expiring offset is 12 when random returns 0.25', () => {
+    const state = getStateForIndex(90, 100, () => 0.25);
+    expect(state.expirationOffsetDays).toBe(12);
+  });
+});
