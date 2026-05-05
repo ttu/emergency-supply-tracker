@@ -141,6 +141,9 @@ async function getRemoteFileInfo(
       const metadata = await provider.getFileMetadata(fileId);
       if (metadata) {
         modifiedTime = new Date(metadata.modifiedTime).getTime();
+      } else {
+        // File ID was returned but metadata fetch failed - treat as not found
+        fileId = null;
       }
     }
   }
@@ -191,6 +194,13 @@ async function performSync(
   if (remoteModified > localModified) {
     const remoteDataJson = await provider.download(remoteFileId);
     const remoteData = JSON.parse(remoteDataJson);
+    if (!remoteData || typeof remoteData !== 'object') {
+      throw new CloudSyncError(
+        'Invalid remote data format',
+        'PARSE_ERROR',
+        false,
+      );
+    }
     saveAppData(remoteData);
 
     const newConfig: CloudSyncConfig = {
@@ -327,7 +337,9 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
 
     const provider = getProvider(state.provider) as CloudStorageProvider;
     if (!provider?.isConnected()) {
-      return createErrorResult('Not connected to cloud provider');
+      const message = 'Not connected to cloud provider';
+      setState((prev) => ({ ...prev, state: 'error', error: message }));
+      return createErrorResult(message);
     }
 
     setState((prev) => ({ ...prev, state: 'syncing', error: null }));
@@ -345,6 +357,15 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
       }
 
       const localModified = new Date(localData.lastModified).getTime();
+      if (Number.isNaN(localModified)) {
+        const errorMessage = 'Invalid local data timestamp';
+        setState((prev) => ({
+          ...prev,
+          state: 'error',
+          error: errorMessage,
+        }));
+        return createErrorResult(errorMessage);
+      }
       const { fileId: remoteFileId, modifiedTime: remoteModified } =
         await getRemoteFileInfo(provider, state.remoteFileId);
 

@@ -351,7 +351,7 @@ describe('CloudSyncProvider', () => {
       );
     });
 
-    it('should return error result when no local data without changing state', async () => {
+    it('should return error result and set error state when no local data', async () => {
       const user = userEvent.setup();
       mockLocalStorage.getAppData.mockReturnValue(null);
 
@@ -372,7 +372,7 @@ describe('CloudSyncProvider', () => {
         expect(screen.getByTestId('state')).toHaveTextContent('connected');
       });
 
-      // Sync with no data - should return error result but not change state
+      // Sync with no data - should return error result and set error state
       const result = await capturedSyncNow!();
       expect(result).toEqual(
         expect.objectContaining({
@@ -381,8 +381,9 @@ describe('CloudSyncProvider', () => {
         }),
       );
 
-      // State should stay connected (not changed to error)
-      expect(screen.getByTestId('state')).toHaveTextContent('connected');
+      await waitFor(() => {
+        expect(screen.getByTestId('state')).toHaveTextContent('error');
+      });
     });
 
     it('should upload when local is newer', async () => {
@@ -659,9 +660,12 @@ describe('CloudSyncProvider', () => {
       // Now provider reports disconnected
       await user.click(screen.getByText('Sync'));
 
-      // Should handle gracefully - state remains connected
+      // State should reflect the error so the UI is not misleading
       await waitFor(() => {
-        expect(screen.getByTestId('state')).toHaveTextContent('connected');
+        expect(screen.getByTestId('state')).toHaveTextContent('error');
+        expect(screen.getByTestId('error')).toHaveTextContent(
+          'Not connected to cloud provider',
+        );
       });
     });
   });

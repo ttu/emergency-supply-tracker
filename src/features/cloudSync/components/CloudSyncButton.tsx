@@ -17,26 +17,30 @@ export function CloudSyncButton() {
     setLastResult(null);
     clearError();
 
-    const result = await syncNow();
+    try {
+      const result = await syncNow();
 
-    if (result.success) {
-      switch (result.direction) {
-        case 'upload':
-          setLastResult(t('cloudSync.result.uploaded'));
-          break;
-        case 'download':
-          // Reload page to reflect downloaded data
-          if (result.requiresReload) {
-            globalThis.location.reload();
-          } else {
-            // Only show message if no reload needed
-            setLastResult(t('cloudSync.result.downloaded'));
-          }
-          break;
-        case 'none':
-          setLastResult(t('cloudSync.result.noChanges'));
-          break;
+      if (result.success) {
+        switch (result.direction) {
+          case 'upload':
+            setLastResult(t('cloudSync.result.uploaded'));
+            break;
+          case 'download':
+            // Reload page to reflect downloaded data
+            if (result.requiresReload) {
+              globalThis.location.reload();
+            } else {
+              // Only show message if no reload needed
+              setLastResult(t('cloudSync.result.downloaded'));
+            }
+            break;
+          case 'none':
+            setLastResult(t('cloudSync.result.noChanges'));
+            break;
+        }
       }
+    } catch {
+      // Error state is managed by the provider via state.error
     }
   };
 
