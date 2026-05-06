@@ -812,7 +812,8 @@
       "lastSync": "Last synced: {{date}} at {{time}}"
     },
     "providers": {
-      "google-drive": "Google Drive"
+      "google-drive": "Google Drive",
+      "onedrive": "OneDrive"
     },
     "section": {
       "connectTitle": "Connect to Cloud",
@@ -834,6 +835,12 @@
       "connecting": "Connecting...",
       "connected": "Connected to Google Drive",
       "description": "Sign in with your Google account to sync data to your Google Drive."
+    },
+    "onedrive": {
+      "connect": "Connect OneDrive",
+      "connecting": "Connecting...",
+      "connected": "Connected to OneDrive",
+      "description": "Sign in with your Microsoft account to sync data to your OneDrive."
     },
     "disconnect": {
       "button": "Disconnect",

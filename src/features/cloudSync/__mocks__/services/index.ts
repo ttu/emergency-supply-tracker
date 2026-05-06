@@ -1,4 +1,5 @@
 export { GoogleDriveService } from './googleDrive';
+export { OneDriveService } from './oneDrive';
 export {
   storeTokens,
   getStoredTokens,

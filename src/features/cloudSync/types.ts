@@ -4,7 +4,7 @@
  */
 
 // Supported cloud storage providers
-export type CloudProvider = 'google-drive';
+export type CloudProvider = 'google-drive' | 'onedrive';
 
 // Sync state machine states
 export type SyncState = 'disconnected' | 'connected' | 'syncing' | 'error';
@@ -123,7 +123,7 @@ export class CloudSyncError extends Error {
 // Type guards
 
 export function isCloudProvider(value: unknown): value is CloudProvider {
-  return value === 'google-drive';
+  return value === 'google-drive' || value === 'onedrive';
 }
 
 export function isSyncState(value: unknown): value is SyncState {

@@ -31,12 +31,12 @@ describe('CloudSyncError', () => {
 });
 
 describe('isCloudProvider', () => {
-  it('should return true for valid provider', () => {
+  it('should return true for valid providers', () => {
     expect(isCloudProvider('google-drive')).toBe(true);
+    expect(isCloudProvider('onedrive')).toBe(true);
   });
 
   it('should return false for invalid provider', () => {
-    expect(isCloudProvider('onedrive')).toBe(false);
     expect(isCloudProvider('dropbox')).toBe(false);
     expect(isCloudProvider('')).toBe(false);
     expect(isCloudProvider(null)).toBe(false);
