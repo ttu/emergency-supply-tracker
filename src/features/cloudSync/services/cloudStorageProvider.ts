@@ -7,6 +7,7 @@
 import type { CloudProvider, CloudStorageProvider } from '../types';
 import { GoogleDriveService } from './googleDrive';
 import { OneDriveService } from './oneDrive';
+import { ICloudService } from './iCloud';
 
 // Registry of available providers
 const providerRegistry: Map<CloudProvider, () => CloudStorageProvider> =
@@ -55,6 +56,7 @@ export function isProviderAvailable(providerId: CloudProvider): boolean {
 // Singleton instances per provider
 let googleDriveInstance: GoogleDriveService | null = null;
 let oneDriveInstance: OneDriveService | null = null;
+let iCloudInstance: ICloudService | null = null;
 
 /**
  * Initialize the provider registry with available providers.
@@ -71,7 +73,12 @@ export function initializeProviders(): void {
     return oneDriveInstance;
   });
 
-  // Future: Register Dropbox, iCloud, etc.
+  registerProvider('icloud', () => {
+    iCloudInstance ??= new ICloudService();
+    return iCloudInstance;
+  });
+
+  // Future: Register Dropbox, etc.
 }
 
 /**
@@ -80,5 +87,6 @@ export function initializeProviders(): void {
 export function resetProviders(): void {
   googleDriveInstance = null;
   oneDriveInstance = null;
+  iCloudInstance = null;
   providerRegistry.clear();
 }
