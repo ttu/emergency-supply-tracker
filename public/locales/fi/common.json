@@ -813,7 +813,8 @@
     },
     "providers": {
       "google-drive": "Google Drive",
-      "onedrive": "OneDrive"
+      "onedrive": "OneDrive",
+      "icloud": "iCloud"
     },
     "section": {
       "connectTitle": "Yhdistä pilveen",
@@ -841,6 +842,12 @@
       "connecting": "Yhdistetään...",
       "connected": "Yhdistetty OneDriveen",
       "description": "Kirjaudu sisään Microsoft-tililläsi synkronoidaksesi tiedot OneDriveen."
+    },
+    "icloud": {
+      "connect": "Yhdistä iCloud",
+      "connecting": "Yhdistetään...",
+      "connected": "Yhdistetty iCloudiin",
+      "description": "Kirjaudu sisään Apple ID:lläsi synkronoidaksesi tiedot iCloudiin."
     },
     "disconnect": {
       "button": "Katkaise yhteys",

@@ -5,6 +5,7 @@
 import type { CloudProvider, CloudStorageProvider } from '../../types';
 import { GoogleDriveService } from './googleDrive';
 import { OneDriveService } from './oneDrive';
+import { ICloudService } from './iCloud';
 
 const providerRegistry: Map<CloudProvider, () => CloudStorageProvider> =
   new Map();
@@ -37,6 +38,7 @@ export function isProviderAvailable(providerId: CloudProvider): boolean {
 export function initializeProviders(): void {
   registerProvider('google-drive', () => new GoogleDriveService());
   registerProvider('onedrive', () => new OneDriveService());
+  registerProvider('icloud', () => new ICloudService());
 }
 
 export function resetProviders(): void {

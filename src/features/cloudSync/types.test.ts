@@ -34,6 +34,7 @@ describe('isCloudProvider', () => {
   it('should return true for valid providers', () => {
     expect(isCloudProvider('google-drive')).toBe(true);
     expect(isCloudProvider('onedrive')).toBe(true);
+    expect(isCloudProvider('icloud')).toBe(true);
   });
 
   it('should return false for invalid provider', () => {

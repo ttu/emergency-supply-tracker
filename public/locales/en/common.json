@@ -813,7 +813,8 @@
     },
     "providers": {
       "google-drive": "Google Drive",
-      "onedrive": "OneDrive"
+      "onedrive": "OneDrive",
+      "icloud": "iCloud"
     },
     "section": {
       "connectTitle": "Connect to Cloud",
@@ -841,6 +842,12 @@
       "connecting": "Connecting...",
       "connected": "Connected to OneDrive",
       "description": "Sign in with your Microsoft account to sync data to your OneDrive."
+    },
+    "icloud": {
+      "connect": "Connect iCloud",
+      "connecting": "Connecting...",
+      "connected": "Connected to iCloud",
+      "description": "Sign in with your Apple ID to sync data to your iCloud."
     },
     "disconnect": {
       "button": "Disconnect",

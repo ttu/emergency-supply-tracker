@@ -3,6 +3,7 @@ import { CloudSyncStatus } from './CloudSyncStatus';
 import { CloudSyncButton } from './CloudSyncButton';
 import { ConnectGoogleDrive } from './ConnectGoogleDrive';
 import { ConnectOneDrive } from './ConnectOneDrive';
+import { ConnectICloud } from './ConnectICloud';
 import { useCloudSync } from '../hooks';
 import styles from './CloudSyncSection.module.css';
 
@@ -25,6 +26,7 @@ export function CloudSyncSection() {
 
   const renderActiveProviderControls = () => {
     if (state.provider === 'onedrive') return <ConnectOneDrive />;
+    if (state.provider === 'icloud') return <ConnectICloud />;
     return <ConnectGoogleDrive />;
   };
 
@@ -50,6 +52,7 @@ export function CloudSyncSection() {
             >
               <ConnectGoogleDrive />
               <ConnectOneDrive />
+              <ConnectICloud />
             </div>
           )}
         </div>
