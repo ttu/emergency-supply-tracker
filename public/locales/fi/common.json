@@ -812,7 +812,8 @@
       "lastSync": "Viimeksi synkronoitu: {{date}} klo {{time}}"
     },
     "providers": {
-      "google-drive": "Google Drive"
+      "google-drive": "Google Drive",
+      "onedrive": "OneDrive"
     },
     "section": {
       "connectTitle": "Yhdistä pilveen",
@@ -834,6 +835,12 @@
       "connecting": "Yhdistetään...",
       "connected": "Yhdistetty Google Driveen",
       "description": "Kirjaudu sisään Google-tililläsi synkronoidaksesi tiedot Google Driveen."
+    },
+    "onedrive": {
+      "connect": "Yhdistä OneDrive",
+      "connecting": "Yhdistetään...",
+      "connected": "Yhdistetty OneDriveen",
+      "description": "Kirjaudu sisään Microsoft-tililläsi synkronoidaksesi tiedot OneDriveen."
     },
     "disconnect": {
       "button": "Katkaise yhteys",

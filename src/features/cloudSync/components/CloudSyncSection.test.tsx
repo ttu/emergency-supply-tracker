@@ -25,6 +25,10 @@ vi.mock('./ConnectGoogleDrive', () => ({
   ),
 }));
 
+vi.mock('./ConnectOneDrive', () => ({
+  ConnectOneDrive: () => <div data-testid="connect-onedrive">Connect</div>,
+}));
+
 const defaultState: CloudSyncState = {
   provider: null,
   lastSyncTimestamp: null,
@@ -75,6 +79,20 @@ describe('CloudSyncSection', () => {
       renderWithContext(createMockContext({ state: 'disconnected' }));
 
       expect(screen.getByTestId('connect-google-drive')).toBeInTheDocument();
+    });
+
+    it('should show ConnectOneDrive component', () => {
+      renderWithContext(createMockContext({ state: 'disconnected' }));
+
+      expect(screen.getByTestId('connect-onedrive')).toBeInTheDocument();
+    });
+
+    it('should render both providers in a chooser group', () => {
+      renderWithContext(createMockContext({ state: 'disconnected' }));
+
+      expect(
+        screen.getByTestId('cloud-sync-provider-choices'),
+      ).toBeInTheDocument();
     });
 
     it('should not show CloudSyncButton', () => {
@@ -130,6 +148,18 @@ describe('CloudSyncSection', () => {
       // (the main action shows CloudSyncButton instead)
       const connectComponents = screen.getAllByTestId('connect-google-drive');
       expect(connectComponents).toHaveLength(1);
+      expect(screen.queryByTestId('connect-onedrive')).not.toBeInTheDocument();
+    });
+
+    it('should render OneDrive disconnect when provider is onedrive', () => {
+      renderWithContext(
+        createMockContext({ state: 'connected', provider: 'onedrive' }),
+      );
+
+      expect(screen.getByTestId('connect-onedrive')).toBeInTheDocument();
+      expect(
+        screen.queryByTestId('connect-google-drive'),
+      ).not.toBeInTheDocument();
     });
   });
 
