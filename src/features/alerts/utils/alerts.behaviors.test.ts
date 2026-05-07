@@ -934,9 +934,9 @@ function daysFromNow(n: number): string {
 }
 
 const mockT2 = (key: string, opts?: Record<string, unknown>) => {
-  if (opts?.days !== undefined) return `${key}:${opts.days}`;
-  if (opts?.percent !== undefined) return `${key}:${opts.percent}`;
-  if (opts?.liters !== undefined) return `${key}:${opts.liters}`;
+  if (typeof opts?.days === 'number') return `${key}:${opts.days}`;
+  if (typeof opts?.percent === 'number') return `${key}:${opts.percent}`;
+  if (typeof opts?.liters === 'number') return `${key}:${opts.liters}`;
   if (opts?.ns) return key; // namespace lookup
   return key;
 };

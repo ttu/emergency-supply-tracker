@@ -2827,7 +2827,7 @@ describe('calculateCategoryPercentage behaviors', () => {
             baseQuantity: createQuantity(1),
             unit: 'kilograms',
             requiresWaterLiters: 2,
-          }) as RecommendedItemDefinition,
+          }),
         ],
       );
       // withPrep should have larger totalNeeded due to preparation water
@@ -2887,7 +2887,7 @@ describe('calculateCategoryPercentage behaviors', () => {
         itemType: createProductTemplateId('mystery'),
         quantity: createQuantity(1),
         unit: 'kilograms',
-        caloriesPerUnit: NaN,
+        caloriesPerUnit: Number.NaN,
         neverExpires: true,
       });
       const result = calculateCategoryPercentage(

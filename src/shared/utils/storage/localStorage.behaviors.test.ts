@@ -1003,25 +1003,25 @@ describe('parseMultiInventoryImport version fallback', () => {
 // ===========================================================================
 // importMultiInventory — index bounds and section selection
 // ===========================================================================
-describe('importMultiInventory index bounds', () => {
-  function buildImportData(setCount: number): MultiInventoryExportData {
-    return {
-      version: CURRENT_SCHEMA_VERSION,
-      exportedAt: new Date().toISOString(),
-      appVersion: '1.0.0',
-      inventorySets: Array.from({ length: setCount }, (_, i) => ({
+function buildImportData(setCount: number): MultiInventoryExportData {
+  return {
+    version: CURRENT_SCHEMA_VERSION,
+    exportedAt: new Date().toISOString(),
+    appVersion: '1.0.0',
+    inventorySets: Array.from({ length: setCount }, (_, i) => ({
+      name: `Set ${i}`,
+      includedSections: ['items'] as const,
+      data: {
+        id: createInventorySetId(`s-${i}`),
         name: `Set ${i}`,
-        includedSections: ['items'] as const,
-        data: {
-          id: createInventorySetId(`s-${i}`),
-          name: `Set ${i}`,
-          lastModified: new Date().toISOString(),
-          items: [],
-        },
-      })) as MultiInventoryExportData['inventorySets'],
-    };
-  }
+        lastModified: new Date().toISOString(),
+        items: [],
+      },
+    })) as MultiInventoryExportData['inventorySets'],
+  };
+}
 
+describe('importMultiInventory index bounds', () => {
   it('skips negative indices', () => {
     const importData = buildImportData(2);
     const selection: MultiInventoryImportSelection = {

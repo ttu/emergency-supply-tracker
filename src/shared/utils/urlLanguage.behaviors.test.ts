@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { extractLanguageFromSearch } from './urlLanguage';
 import {
+  extractLanguageFromSearch,
   getLanguageFromDomain,
   clearLanguageFromUrl,
   __DOMAIN_LANGUAGE_MAP__,

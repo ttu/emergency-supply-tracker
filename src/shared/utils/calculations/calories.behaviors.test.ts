@@ -1,14 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { createCategoryId } from '@/shared/types';
+import {
+  createCategoryId,
+  createItemId,
+  createProductTemplateId,
+  createQuantity,
+} from '@/shared/types';
+import type { RecommendedItemDefinition } from '@/shared/types';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
-import { createItemId } from '@/shared/types';
 import {
   calculateTotalCalories,
   calculateItemTotalCalories,
   getTemplateCaloriesPerUnit,
 } from './calories';
-import type { RecommendedItemDefinition } from '@/shared/types';
-import { createProductTemplateId, createQuantity } from '@/shared/types';
 
 describe('calories behaviors', () => {
   describe('calculateTotalCalories kg conversion (L46)', () => {
