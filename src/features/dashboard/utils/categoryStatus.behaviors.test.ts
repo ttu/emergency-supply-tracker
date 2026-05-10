@@ -76,12 +76,7 @@ describe('item filtering by categoryId', () => {
       makeRec('hammer', tools, { baseQuantity: createQuantity(10) }),
     ];
 
-    const result = calculateCategoryShortages(
-      tools as string,
-      items,
-      household,
-      recs,
-    );
+    const result = calculateCategoryShortages(tools, items, household, recs);
 
     expect(result.totalActual).toBe(1);
     expect(result.totalNeeded).toBe(10);
@@ -271,39 +266,18 @@ describe('disabledRecommendedItems default behavior', () => {
     const household = createMockHousehold({ adults: 1, supplyDurationDays: 1 });
     const items: InventoryItem[] = [];
     const recs = [makeRec('rope', tools, { baseQuantity: createQuantity(3) })];
-    const a = calculateCategoryShortages(
-      tools as string,
-      items,
-      household,
-      recs,
-    );
-    const b = calculateCategoryShortages(
-      tools as string,
-      items,
-      household,
-      recs,
-      [],
-    );
+    const a = calculateCategoryShortages(tools, items, household, recs);
+    const b = calculateCategoryShortages(tools, items, household, recs, []);
     expect(a.totalNeeded).toBe(b.totalNeeded);
   });
 
   it('passing the recommendation id as disabled removes it', () => {
     const household = createMockHousehold({ adults: 1, supplyDurationDays: 1 });
     const recs = [makeRec('rope', tools, { baseQuantity: createQuantity(3) })];
-    const enabled = calculateCategoryShortages(
-      tools as string,
-      [],
-      household,
-      recs,
-      [],
-    );
-    const disabled = calculateCategoryShortages(
-      tools as string,
-      [],
-      household,
-      recs,
-      ['rope'],
-    );
+    const enabled = calculateCategoryShortages(tools, [], household, recs, []);
+    const disabled = calculateCategoryShortages(tools, [], household, recs, [
+      'rope',
+    ]);
     expect(enabled.totalNeeded).toBeGreaterThan(0);
     expect(disabled.totalNeeded).toBe(0);
   });
@@ -388,12 +362,7 @@ describe('empty-recommendations early return shape', () => {
       }),
     ];
     const recs = [makeRec('bandage', otherCat)];
-    const result = calculateCategoryShortages(
-      tools as string,
-      items,
-      household,
-      recs,
-    );
+    const result = calculateCategoryShortages(tools, items, household, recs);
     expect(result.shortages).toEqual([]);
     expect(result.totalActual).toBe(0);
     expect(result.totalNeeded).toBe(0);
@@ -780,7 +749,7 @@ describe('kit-empty fallbacks', () => {
       }),
     ];
     const result = getCategoryDisplayStatus(
-      tools as string,
+      tools,
       items,
       householdLocal,
       [],
@@ -1054,13 +1023,7 @@ describe('completionPercentage clamping and overrides', () => {
       adults: 1,
       supplyDurationDays: 1,
     });
-    const result = getCategoryDisplayStatus(
-      tools as string,
-      [],
-      householdLocal,
-      [],
-      [],
-    );
+    const result = getCategoryDisplayStatus(tools, [], householdLocal, [], []);
     expect(Number.isFinite(result.completionPercentage)).toBe(true);
     expect(result.completionPercentage).toBeGreaterThanOrEqual(0);
     expect(result.completionPercentage).toBeLessThanOrEqual(100);

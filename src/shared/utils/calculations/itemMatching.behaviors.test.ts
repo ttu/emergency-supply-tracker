@@ -93,7 +93,7 @@ describe('itemMatching mutation killers', () => {
       const defaultCal = 150;
       const result = sumMatchingItemsCaloriesByType(
         [item],
-        itemTypeId as unknown as string,
+        itemTypeId,
         defaultCal,
       );
 
@@ -110,11 +110,7 @@ describe('itemMatching mutation killers', () => {
         caloriesPerUnit: 300,
       });
 
-      const result = sumMatchingItemsCaloriesByType(
-        [item],
-        itemTypeId as unknown as string,
-        50,
-      );
+      const result = sumMatchingItemsCaloriesByType([item], itemTypeId, 50);
 
       // 2 * 300 = 600, not 2 * 50 = 100
       expect(result).toBe(600);

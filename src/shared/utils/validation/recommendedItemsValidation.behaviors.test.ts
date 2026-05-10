@@ -416,7 +416,7 @@ describe('recommendedItemsValidation mutation kills', () => {
 
     it('file with one error returns valid=false', () => {
       const file = createValidFile({
-        items: [createValidItem({ category: 'nonexistent' as never })],
+        items: [createValidItem({ category: 'nonexistent' })],
       });
       const result = validateRecommendedItemsFile(file);
 

@@ -41,7 +41,7 @@ function rec(
     scaleWithDays: false,
     scaleWithPets: false,
     ...overrides,
-  } as RecommendedItemDefinition;
+  };
 }
 
 describe('calculateCategoryPercentage behaviors', () => {
@@ -2729,19 +2729,13 @@ describe('calculateCategoryPercentage behaviors', () => {
       });
       const recs = [rec('hammer', tools, { baseQuantity: createQuantity(4) })];
       const a = calculateCategoryPercentage(
-        tools as string,
+        tools,
         [],
         household,
         undefined,
         recs,
       );
-      const b = calculateCategoryPercentage(
-        tools as string,
-        [],
-        household,
-        [],
-        recs,
-      );
+      const b = calculateCategoryPercentage(tools, [], household, [], recs);
       expect(a.totalNeeded).toBe(b.totalNeeded);
       expect(a.totalNeeded).toBeGreaterThan(0);
     });
@@ -2753,14 +2747,14 @@ describe('calculateCategoryPercentage behaviors', () => {
       });
       const recs = [rec('hammer', tools, { baseQuantity: createQuantity(4) })];
       const enabled = calculateCategoryPercentage(
-        tools as string,
+        tools,
         [],
         household,
         [],
         recs,
       );
       const disabled = calculateCategoryPercentage(
-        tools as string,
+        tools,
         [],
         household,
         ['hammer'],
@@ -2784,7 +2778,7 @@ describe('calculateCategoryPercentage behaviors', () => {
       });
       const recs = [rec('hammer', tools, { baseQuantity: createQuantity(4) })];
       const result = calculateCategoryPercentage(
-        tools as string,
+        tools,
         [],
         household,
         [],
@@ -2810,14 +2804,14 @@ describe('calculateCategoryPercentage behaviors', () => {
       });
       const recs = [rec('bottled-water', water, { unit: 'liters' })];
       const noPrep = calculateCategoryPercentage(
-        water as string,
+        water,
         [],
         household,
         [],
         recs,
       );
       const withPrep = calculateCategoryPercentage(
-        water as string,
+        water,
         [itemNeedingWater],
         household,
         [],
@@ -2866,7 +2860,7 @@ describe('calculateCategoryPercentage behaviors', () => {
         neverExpires: true,
       });
       const result = calculateCategoryPercentage(
-        food as string,
+        food,
         [item],
         household,
         [],
@@ -2891,7 +2885,7 @@ describe('calculateCategoryPercentage behaviors', () => {
         neverExpires: true,
       });
       const result = calculateCategoryPercentage(
-        food as string,
+        food,
         [itemNaN],
         household,
         [],
@@ -2938,7 +2932,7 @@ describe('calculateCategoryPercentage behaviors', () => {
         neverExpires: true,
       });
       const result = calculateCategoryPercentage(
-        food as string,
+        food,
         [item],
         household,
         [],

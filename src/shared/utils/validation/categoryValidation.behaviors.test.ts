@@ -174,7 +174,7 @@ describe('categoryValidation behaviors', () => {
         { id: 'valid-cat', names: { en: 'Valid' }, icon: '\u{1F600}' },
       ];
       // This should not throw
-      const result = validateImportedCategories(categories as unknown[]);
+      const result = validateImportedCategories(categories);
       // Should get INVALID_CATEGORY errors for non-objects, but no crash
       expect(result.errors.length).toBeGreaterThan(0);
       // The valid category at the end should not trigger duplicate
@@ -187,7 +187,7 @@ describe('categoryValidation behaviors', () => {
     it('only enters id-checking block for actual objects, not primitives', () => {
       // Mix of primitives and objects - only objects should have id checked
       const categories = [false, 0, ''];
-      const result = validateImportedCategories(categories as unknown[]);
+      const result = validateImportedCategories(categories);
       // All should get INVALID_CATEGORY, none should get DUPLICATE_CATEGORY_ID
       expect(
         result.errors.every((e) => e.code !== 'DUPLICATE_CATEGORY_ID'),

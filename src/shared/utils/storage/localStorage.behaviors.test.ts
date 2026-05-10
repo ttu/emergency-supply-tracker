@@ -107,7 +107,7 @@ function buildRoot(
     activeInventorySetId: createInventorySetId(activeId),
     inventorySets: sets,
     settings: baseSettings,
-  } as RootStorage;
+  };
 }
 
 function makeInventorySet(
