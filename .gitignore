@@ -56,3 +56,5 @@ verification-sessions
 /TEST_FAILURES.md
 /DECISIONS.md
 /HANDOFF.md
+
+.claude/*.lock
