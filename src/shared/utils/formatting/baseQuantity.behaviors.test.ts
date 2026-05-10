@@ -31,12 +31,6 @@ describe('formatBaseQuantity behaviors', () => {
       expect(result).toBe('1 units (0.01 rounded up)');
     });
 
-    it('treats negative-zero-like edge: 1.0 is not fractional', () => {
-      // 1.0: rounded=1, 1.0 !== 1 is false -> not fractional
-      const result = formatBaseQuantity(1, 'cans', 'note', true);
-      expect(result).toBe('1 cans');
-    });
-
     it('LogicalOperator mutant: both conditions in isFractional matter', () => {
       // If || replaces &&, whole numbers would be treated as fractional
       // For whole number 3: rounded=3, 3 !== 3 is false, 3 % 1 === 0
@@ -65,44 +59,40 @@ describe('formatBaseQuantity behaviors', () => {
       expect(result3).not.toContain('(some note)');
     });
   });
-});
 
-// ============================================================================
-// Merged from baseQuantity.behaviors2.test.ts
-// ============================================================================
+  // ==========================================================================
+  // L27: ConditionalExpression/LogicalOperator/ArithmeticOperator
+  // isFractional = baseQuantity !== rounded && baseQuantity % 1 !== 0
+  // Mutant: || instead of &&, * instead of /, conditions → true
+  // ==========================================================================
+  describe('isFractional detection (extra cases)', () => {
+    it('whole numbers are NOT fractional', () => {
+      const result = formatBaseQuantity(5, 'pieces', '(~5)');
+      // Whole number: no rounding note
+      expect(result).toBe('5 pieces');
+      expect(result).not.toContain('(');
+    });
 
-// ============================================================================
-// L27: ConditionalExpression/LogicalOperator/ArithmeticOperator
-// isFractional = baseQuantity !== rounded && baseQuantity % 1 !== 0
-// Mutant: || instead of &&, * instead of /, conditions → true
-// ============================================================================
-describe('isFractional detection', () => {
-  it('whole numbers are NOT fractional', () => {
-    const result = formatBaseQuantity(5, 'pieces', '(~5)');
-    // Whole number: no rounding note
-    expect(result).toBe('5 pieces');
-    expect(result).not.toContain('(');
-  });
+    it('fractional numbers ARE fractional and show rounding note', () => {
+      const result = formatBaseQuantity(2.7, 'liters', '(~2.7)');
+      // Fractional: rounds up to 3 and shows note
+      expect(result).toBe('3 liters ((~2.7))');
+    });
 
-  it('fractional numbers ARE fractional and show rounding note', () => {
-    const result = formatBaseQuantity(2.7, 'liters', '(~2.7)');
-    // Fractional: rounds up to 3 and shows note
-    expect(result).toBe('3 liters ((~2.7))');
-  });
+    it('fractional without note shows just rounded value', () => {
+      const result = formatBaseQuantity(2.7, 'liters', '(~2.7)', false);
+      expect(result).toBe('3 liters');
+    });
 
-  it('fractional without note shows just rounded value', () => {
-    const result = formatBaseQuantity(2.7, 'liters', '(~2.7)', false);
-    expect(result).toBe('3 liters');
-  });
+    it('value of 0 is not fractional', () => {
+      const result = formatBaseQuantity(0, 'pieces', '(~0)');
+      expect(result).toBe('0 pieces');
+    });
 
-  it('value of 0 is not fractional', () => {
-    const result = formatBaseQuantity(0, 'pieces', '(~0)');
-    expect(result).toBe('0 pieces');
-  });
-
-  it('large whole number is not fractional', () => {
-    const result = formatBaseQuantity(100, 'pieces', '(~100)');
-    expect(result).toBe('100 pieces');
-    expect(result).not.toContain('(');
+    it('large whole number is not fractional', () => {
+      const result = formatBaseQuantity(100, 'pieces', '(~100)');
+      expect(result).toBe('100 pieces');
+      expect(result).not.toContain('(');
+    });
   });
 });

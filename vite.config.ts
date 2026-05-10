@@ -12,6 +12,12 @@ const dirname =
     ? __dirname
     : path.dirname(fileURLToPath(import.meta.url));
 
+const SHARED_EXCLUDE_GLOBS = [
+  '**/node_modules/**',
+  '**/e2e/**',
+  '**/.worktrees/**',
+];
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [react()],
@@ -46,7 +52,7 @@ export default defineConfig({
     environment: 'jsdom',
     globalSetup: './src/test/globalSetup.ts',
     setupFiles: ['./src/test/setup.ts', './src/test/a11y-setup.ts'],
-    exclude: ['**/node_modules/**', '**/e2e/**', '**/.worktrees/**'],
+    exclude: [...SHARED_EXCLUDE_GLOBS],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -77,11 +83,9 @@ export default defineConfig({
           setupFiles: ['./src/test/setup.ts', './src/test/a11y-setup.ts'],
           include: ['**/*.{test,spec}.{ts,tsx}'],
           exclude: [
-            '**/node_modules/**',
-            '**/e2e/**',
+            ...SHARED_EXCLUDE_GLOBS,
             '**/.storybook/**',
             '**/storybook-static/**',
-            '**/.worktrees/**',
             '**/*.stories.{ts,tsx}',
           ],
         },
@@ -100,11 +104,9 @@ export default defineConfig({
         test: {
           name: 'storybook',
           exclude: [
-            '**/node_modules/**',
-            '**/e2e/**',
+            ...SHARED_EXCLUDE_GLOBS,
             '**/.storybook/**',
             '**/storybook-static/**',
-            '**/.worktrees/**',
             '**/*.{test,spec}.{ts,tsx}',
           ],
           browser: {

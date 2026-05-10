@@ -19,13 +19,23 @@ import {
   calculatePreparednessScoreFromCategoryStatuses,
   calculateCategoryPreparedness,
 } from './preparedness';
-
-// Single re-binding so individual call sites don't repeatedly trip the
-// deprecation linter; we intentionally exercise the deprecated implementation
-// to keep mutation-killing coverage on its internals.
-const calculatePreparednessScore = deprecatedCalculatePreparednessScore;
 import type { CategoryStatusSummary } from './categoryStatus';
-import type { InventoryItem, RecommendedItemDefinition } from '@/shared/types';
+import type {
+  InventoryItem,
+  RecommendedItemDefinition,
+  HouseholdConfig,
+} from '@/shared/types';
+
+// Wrapper around the deprecated implementation. Defining it as a fresh
+// (non-deprecated) function means call sites in this file don't each trigger
+// the deprecation lint — we still intentionally exercise the deprecated impl
+// to keep mutation-killing coverage on its internals.
+const calculatePreparednessScore = (
+  items: InventoryItem[],
+  household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
+): number =>
+  deprecatedCalculatePreparednessScore(items, household, recommendedItems); // NOSONAR
 import {
   createMockHousehold,
   createMockInventoryItem,

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   extractLanguageFromSearch,
   getLanguageFromDomain,
@@ -17,9 +17,20 @@ import {
  */
 describe('urlLanguage – mutation killing', () => {
   describe('getLanguageFromDomain – exact match L36', () => {
+    let originalLocation: Location;
+
+    beforeEach(() => {
+      originalLocation = globalThis.location;
+    });
+
     afterEach(() => {
       delete __DOMAIN_LANGUAGE_MAP__['exact-match.fi'];
       delete __DOMAIN_LANGUAGE_MAP__['sub-match.com'];
+      Object.defineProperty(globalThis, 'location', {
+        value: originalLocation,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('returns mapped language for exact domain match (kills L36 false and BlockStatement {})', () => {

@@ -294,12 +294,9 @@ describe('useDashboardAlerts behaviors', () => {
       });
 
       // If the notification condition is false (mutant), the notification ID
-      // would be pushed to inventoryAlertIds and passed to dismissAlerts
+      // would be pushed to inventoryAlertIds and passed to dismissAlerts.
       const notificationId = APP_NOTIFICATIONS[0].id;
-      if (mockDismissAlerts.mock.calls.length > 0) {
-        const passedIds = mockDismissAlerts.mock.calls[0][0];
-        expect(passedIds).not.toContain(notificationId);
-      }
+      expect(mockDismissAlerts).not.toHaveBeenCalled();
       expect(mockMarkNotificationSeen).toHaveBeenCalledWith(notificationId);
     });
   });
@@ -545,7 +542,7 @@ describe('useDashboardAlerts behaviors', () => {
         (a) => String(a.id) === 'backup-reminder',
       );
       const notificationIdx = alerts.findIndex(
-        (a) => String(a.id) === 'app-notification-release-testing',
+        (a) => String(a.id) === String(APP_NOTIFICATIONS[0].id),
       );
       const inventoryIdx = alerts.findIndex(
         (a) => String(a.id) === 'inv-alert',

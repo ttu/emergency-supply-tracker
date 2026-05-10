@@ -320,16 +320,27 @@ describe('needsMigration condition (ConditionalExpression)', () => {
   });
 });
 
+describe('isVersionSupported', () => {
+  it('returns true for supported version', () => {
+    expect(isVersionSupported('1.0.0')).toBe(true);
+  });
+
+  it('returns false for unsupported version', () => {
+    expect(isVersionSupported('0.0.0')).toBe(false);
+  });
+});
+
 // ============================================================================
 // L251: ConditionalExpression - !needsMigration(data) → true
 // Mutant: always returns data without migrating
 // ============================================================================
-describe('migrateToCurrentVersion skip condition', () => {
-  it('isVersionSupported returns true for supported version', () => {
-    expect(isVersionSupported('1.0.0')).toBe(true);
-  });
+describe('migrateToCurrentVersion skip path (!needsMigration)', () => {
+  it('returns data unchanged when needsMigration(data) is false', () => {
+    const upToDate = createAppData({ version: CURRENT_SCHEMA_VERSION });
+    expect(needsMigration(upToDate)).toBe(false);
 
-  it('isVersionSupported returns false for unsupported version', () => {
-    expect(isVersionSupported('0.0.0')).toBe(false);
+    const result = migrateToCurrentVersion(upToDate);
+    expect(result).toBe(upToDate);
+    expect(result.version).toBe(CURRENT_SCHEMA_VERSION);
   });
 });

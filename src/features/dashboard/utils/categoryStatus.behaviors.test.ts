@@ -40,7 +40,7 @@ function makeRec(
     scaleWithDays: false,
     scaleWithPets: false,
     ...overrides,
-  } as RecommendedItemDefinition;
+  };
 }
 
 // ===========================================================================
