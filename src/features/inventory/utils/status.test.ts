@@ -902,3 +902,159 @@ describe('calculateTotalMissingQuantity', () => {
     });
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// ===========================================================================
+describe('mutation-killers: status.ts', () => {
+  const baseItem = {
+    categoryId: createCategoryId('water-beverages'),
+    itemType: createProductTemplateId('water'),
+    unit: 'pieces' as const,
+    quantity: createQuantity(0),
+    neverExpires: true,
+  };
+
+  // L29: parseDateOnly month - 1 → month + 1
+  describe('parseDateOnly month offset (L29 arithmetic)', () => {
+    it('parses YYYY-03-15 as March 15, not April 15', () => {
+      // If month were + 1 instead of - 1, a date in March compared against today
+      // would be off by two months. Use a fixed date and verify expiration logic.
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      // Today's date → 0 days until expiration
+      expect(
+        getDaysUntilExpiration(
+          createDateOnly(`${year}-${month}-${day}`),
+          false,
+        ),
+      ).toBe(0);
+    });
+
+    it('isItemExpired uses correct month for boundary dates', () => {
+      // Yesterday should be expired; tomorrow should not. With +1 month bug,
+      // these would both be off by 2 months and likely fail.
+      expect(isItemExpired(createDateOnly(daysFromNow(-1)), false)).toBe(true);
+      expect(isItemExpired(createDateOnly(daysFromNow(1)), false)).toBe(false);
+    });
+  });
+
+  // L79: !neverExpires && expirationDate (LogicalOperator + ConditionalExpression true)
+  describe('getItemStatus expiration gate (L79)', () => {
+    it('neverExpires=true with expirationDate in past returns ok (not critical)', () => {
+      // Forces !neverExpires branch to be falsy — guards against AND→OR mutation
+      expect(
+        getItemStatus(10, 10, createDateOnly(daysFromNow(-30)), true),
+      ).toBe('ok');
+    });
+
+    it('neverExpires=false with no expirationDate skips expiration check', () => {
+      // Guards against the AND→OR mutation where missing date still triggers
+      expect(getItemStatus(10, 10, undefined, false)).toBe('ok');
+    });
+  });
+
+  // L202: item.quantity < recommendedQuantity → <= (EqualityOperator)
+  describe('calculateMissingQuantity hasShortage boundary (L202)', () => {
+    it('returns 0 when quantity equals recommendedQuantity', () => {
+      const item = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('eq'),
+        quantity: createQuantity(10),
+      });
+      // If < were <=, equal would be treated as shortage → returns >0
+      expect(calculateMissingQuantity(item, 10)).toBe(0);
+    });
+  });
+
+  // L204: hasShortage && !expired && ... LogicalOperator AND→OR
+  describe('calculateMissingQuantity full AND gate (L204)', () => {
+    it('returns 0 when no shortage even if not expired and rq > 0', () => {
+      const item = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('full'),
+        quantity: createQuantity(20),
+      });
+      expect(calculateMissingQuantity(item, 10)).toBe(0);
+    });
+
+    it('returns 0 when markedAsEnough even with shortage', () => {
+      const item = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('me'),
+        quantity: createQuantity(1),
+        markedAsEnough: true,
+      });
+      expect(calculateMissingQuantity(item, 10)).toBe(0);
+    });
+  });
+
+  // L208: recommendedQuantity > 0 → >= 0 (EqualityOperator)
+  describe('calculateMissingQuantity rq > 0 boundary (L208)', () => {
+    it('returns 0 when recommendedQuantity is exactly 0 even with shortage', () => {
+      const item = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('rq0'),
+        quantity: createQuantity(0),
+      });
+      expect(calculateMissingQuantity(item, 0)).toBe(0);
+    });
+  });
+
+  // L248: item.itemType !== 'custom' && otherItem.itemType !== 'custom' (AND→OR + StringLiteral)
+  describe('calculateTotalMissingQuantity custom exclusion (L248/L249)', () => {
+    it('custom-to-custom items do not match each other', () => {
+      const c1 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('c1'),
+        itemType: createProductTemplateId('custom'),
+        quantity: createQuantity(2),
+      });
+      const c2 = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('c2'),
+        itemType: createProductTemplateId('custom'),
+        quantity: createQuantity(3),
+      });
+      // If AND→OR, customs would match each other and reduce missing.
+      // Falls through to calculateMissingQuantity(c1, 10) = 8.
+      expect(calculateTotalMissingQuantity(c1, [c1, c2], 10)).toBe(8);
+    });
+  });
+
+  // L260: recommendedQuantity <= 0 → < 0 (EqualityOperator) + BlockStatement
+  describe('calculateTotalMissingQuantity rq <= 0 boundary (L260)', () => {
+    it('returns 0 when recommendedQuantity equals 0 across multiple items', () => {
+      const a = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('a'),
+        quantity: createQuantity(1),
+      });
+      const b = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('b'),
+        quantity: createQuantity(2),
+      });
+      expect(calculateTotalMissingQuantity(a, [a, b], 0)).toBe(0);
+    });
+  });
+
+  // L292: totalActual < recommendedQuantity → <= (EqualityOperator) + L295 BlockStatement
+  describe('calculateTotalMissingQuantity total boundary (L292/L295)', () => {
+    it('returns 0 when total exactly equals recommendedQuantity', () => {
+      const a = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('a'),
+        quantity: createQuantity(4),
+      });
+      const b = createMockInventoryItem({
+        ...baseItem,
+        id: createItemId('b'),
+        quantity: createQuantity(6),
+      });
+      expect(calculateTotalMissingQuantity(a, [a, b], 10)).toBe(0);
+    });
+  });
+});

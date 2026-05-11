@@ -96,3 +96,34 @@ describe('formatBaseQuantity behaviors', () => {
     });
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// L27: isFractional = baseQuantity !== rounded && baseQuantity % 1 !== 0
+//      ConditionalExpression true/true; ArithmeticOperator % → *; LogicalOperator
+// ===========================================================================
+describe('mutation-killers: baseQuantity.ts (issue #277)', () => {
+  it('whole number prints WITHOUT the rounding-note suffix (isFractional=false)', () => {
+    const out = formatBaseQuantity(5, 'liters', 'NOTE', true);
+    expect(out).toBe('5 liters');
+    expect(out).not.toContain('NOTE');
+    expect(out).not.toContain('(');
+  });
+
+  it('fractional number prints WITH the rounding-note suffix (isFractional=true)', () => {
+    const out = formatBaseQuantity(0.67, 'cans', 'NOTE', true);
+    expect(out).toBe('1 cans (NOTE)');
+  });
+
+  it('fractional + showRoundingNote=false drops the note but still rounds up', () => {
+    // Distinguishes ArithmeticOperator % vs * mutation:
+    //   With %: 0.67 % 1 = 0.67 !== 0 → fractional; output uses Math.ceil → "1 cans"
+    //   With *: 0.67 * 1 = 0.67 !== 0 → fractional; same. So we also need:
+    expect(formatBaseQuantity(0.67, 'cans', 'NOTE', false)).toBe('1 cans');
+    // For a value where % and * disagree against 0:
+    //   value=0 → 0%1=0 (false) vs 0*1=0 (false). Same.
+    // The mutation truly survives unless % returns 0 for non-integer; instead, check
+    // the OUTPUT contract: integer "5" must NOT be rounded up to "6".
+    expect(formatBaseQuantity(5, 'liters', 'NOTE', false)).toBe('5 liters');
+  });
+});

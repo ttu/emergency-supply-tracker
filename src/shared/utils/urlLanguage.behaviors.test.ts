@@ -313,3 +313,80 @@ describe('extractLanguageFromSearch', () => {
     expect(extractLanguageFromSearch('')).toBeUndefined();
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// These extend coverage by populating __DOMAIN_LANGUAGE_MAP__ at runtime.
+// ===========================================================================
+describe('mutation-killers: urlLanguage.ts (issue #277)', () => {
+  const setLocation = (loc: Partial<Location>) =>
+    Object.defineProperty(globalThis, 'location', {
+      value: loc,
+      writable: true,
+      configurable: true,
+    });
+
+  let originalLocation: Location;
+  let mapKeys: string[];
+
+  beforeEach(() => {
+    originalLocation = globalThis.location;
+    mapKeys = Object.keys(__DOMAIN_LANGUAGE_MAP__);
+  });
+
+  afterEach(() => {
+    Object.defineProperty(globalThis, 'location', {
+      value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
+    // Remove any keys we added during the test
+    for (const key of Object.keys(__DOMAIN_LANGUAGE_MAP__)) {
+      if (!mapKeys.includes(key)) {
+        delete (__DOMAIN_LANGUAGE_MAP__ as Record<string, unknown>)[key];
+      }
+    }
+  });
+
+  it('L36: returns mapped language when hostname is in map', () => {
+    (__DOMAIN_LANGUAGE_MAP__ as Record<string, 'fi'>)['tama-sivu.fi'] = 'fi';
+    setLocation({ hostname: 'tama-sivu.fi' } as Location);
+    expect(getLanguageFromDomain()).toBe('fi');
+  });
+
+  it('L42/L44: 2-part hostname (exact) and 3-part hostname (subdomain) both resolve via map', () => {
+    (__DOMAIN_LANGUAGE_MAP__ as Record<string, 'fi'>)['tama-sivu.fi'] = 'fi';
+    setLocation({ hostname: 'www.tama-sivu.fi' } as Location);
+    expect(getLanguageFromDomain()).toBe('fi');
+  });
+
+  it('L42 boundary: single-part hostname does NOT match via subdomain path', () => {
+    (__DOMAIN_LANGUAGE_MAP__ as Record<string, 'fi'>)['localhost.fi'] = 'fi';
+    setLocation({ hostname: 'localhost' } as Location);
+    // domainParts.length === 1, so the >= 2 gate must block subdomain check.
+    expect(getLanguageFromDomain()).toBeUndefined();
+  });
+
+  it('L93: clearLanguageFromUrl calls replaceState with empty string title', () => {
+    const originalHistory = globalThis.history;
+    const replaceStateSpy = vi.fn();
+    setLocation({
+      href: 'http://example.com?lang=en',
+      search: '?lang=en',
+      hostname: 'example.com',
+    } as unknown as Location);
+    Object.defineProperty(globalThis, 'history', {
+      value: { replaceState: replaceStateSpy },
+      writable: true,
+      configurable: true,
+    });
+    clearLanguageFromUrl();
+    // Title (2nd arg) must be exact empty string, not "Stryker was here!"
+    expect(replaceStateSpy.mock.calls[0][1]).toBe('');
+    Object.defineProperty(globalThis, 'history', {
+      value: originalHistory,
+      writable: true,
+      configurable: true,
+    });
+  });
+});

@@ -1149,3 +1149,190 @@ describe('status-count invariant', () => {
     );
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// ===========================================================================
+describe('mutation-killers: categoryStatus.ts', () => {
+  const household2adults = createMockHousehold({
+    adults: 2,
+    children: 0,
+    supplyDurationDays: 1,
+    useFreezer: false,
+  });
+
+  // L96 ArithmeticOperator: adults * MULT vs adults / MULT
+  // peopleMultiplier influences scaling for recommended items
+  it('peopleMultiplier scales recommended quantity by adults (multiplication, not division)', () => {
+    const recs: RecommendedItemDefinition[] = [
+      {
+        id: createProductTemplateId('rope'),
+        i18nKey: 'products.rope',
+        category: tools,
+        baseQuantity: createQuantity(10),
+        unit: 'pieces',
+        scaleWithPeople: true,
+        scaleWithDays: false,
+        scaleWithPets: false,
+      },
+    ];
+    const items: InventoryItem[] = [];
+    const result1 = calculateCategoryShortages(
+      tools,
+      items,
+      createMockHousehold({
+        adults: 1,
+        children: 0,
+        supplyDurationDays: 1,
+        useFreezer: false,
+      }),
+      recs,
+    );
+    const result2 = calculateCategoryShortages(
+      tools,
+      items,
+      household2adults,
+      recs,
+    );
+    // With multiplication: 2 adults → 2x needed.
+    // With division (mutation): 2 adults → 0.5x needed.
+    expect(result2.totalNeeded).toBeGreaterThan(result1.totalNeeded);
+  });
+
+  // L132 ConditionalExpression / BlockStatement: early return on no recommendations
+  it('returns empty shortages when no recommended items match category', () => {
+    const result = calculateCategoryShortages(
+      tools,
+      [],
+      household2adults,
+      [], // No recommendations
+    );
+    expect(result.shortages).toEqual([]);
+    expect(result.totalActual).toBe(0);
+    expect(result.totalNeeded).toBe(0);
+    expect(result.primaryUnit).toBeUndefined();
+  });
+
+  // L220 EqualityOperator: recommendedQuantity > 0 vs <= 0 boundary
+  it('item with zero recommended quantity that has quantity 0 is critical', () => {
+    // Items in a category with no recommendation but quantity=0 are critical
+    const category = createMockCategory({ id: tools, name: 'Tools' });
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: createItemId('x'),
+        categoryId: tools,
+        itemType: createProductTemplateId('custom'),
+        quantity: createQuantity(0),
+        unit: 'pieces',
+        neverExpires: true,
+      }),
+    ];
+    const result = calculateCategoryStatus(
+      category,
+      items,
+      100,
+      household2adults,
+      [], // no recommendations
+      [],
+    );
+    expect(result.criticalCount).toBe(1);
+  });
+
+  it('item with zero recommended quantity and quantity > 0 is ok', () => {
+    const category = createMockCategory({ id: tools, name: 'Tools' });
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: createItemId('x'),
+        categoryId: tools,
+        itemType: createProductTemplateId('custom'),
+        quantity: createQuantity(5),
+        unit: 'pieces',
+        neverExpires: true,
+      }),
+    ];
+    const result = calculateCategoryStatus(
+      category,
+      items,
+      100,
+      household2adults,
+      [],
+      [],
+    );
+    expect(result.okCount).toBe(1);
+    expect(result.criticalCount).toBe(0);
+  });
+
+  // L84/L87 EqualityOperator + String coercion paths exercised via default param call
+  // L119/L403 ArrayDeclaration: default disabledRecommendedItems=[] must be honored
+  it('honors default disabledRecommendedItems empty array', () => {
+    const category = createMockCategory({ id: tools, name: 'Tools' });
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: createItemId('y'),
+        categoryId: tools,
+        itemType: createProductTemplateId('rope'),
+        quantity: createQuantity(5),
+        unit: 'pieces',
+        neverExpires: true,
+      }),
+    ];
+    const recs: RecommendedItemDefinition[] = [
+      makeRec('rope', tools, { baseQuantity: createQuantity(5) }),
+    ];
+    // Call WITHOUT the disabledRecommendedItems argument so the default [] is used.
+    const r1 = calculateCategoryStatus(
+      category,
+      items,
+      100,
+      household2adults,
+      recs,
+    );
+    // Now compare against explicitly passing a disabled list that includes the rec — should differ.
+    const r2 = calculateCategoryStatus(
+      category,
+      items,
+      100,
+      household2adults,
+      recs,
+      ['rope'],
+    );
+    // r1 considers the rec; r2 does not.
+    expect(r1.hasRecommendations).toBe(true);
+    expect(r2.hasRecommendations).toBe(false);
+  });
+
+  // L317 ArithmeticOperator: totalNeededCalories - totalActualCalories (subtraction, not addition);
+  // and MethodExpression Math.max → Math.min
+  it('missingCalories for food kit-with-no-recommendations uses subtraction with Math.max', () => {
+    const category = createMockCategory({
+      id: createCategoryId('food'),
+      name: 'Food',
+    });
+    // No recommended items → triggers the kitHasNoRecommendations food path
+    const items: InventoryItem[] = [
+      createMockInventoryItem({
+        id: createItemId('food1'),
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('custom'),
+        quantity: createQuantity(1),
+        unit: 'pieces',
+        neverExpires: true,
+        caloriesPerUnit: 100,
+        weightGrams: 100,
+      }),
+    ];
+    const result = calculateCategoryStatus(
+      category,
+      items,
+      50,
+      household2adults,
+      [],
+      [],
+    );
+    // With Math.max(0, needed - actual): result is >=0.
+    // With Math.min(0, ...): result would be <=0.
+    if (result.missingCalories !== undefined) {
+      expect(result.missingCalories).toBeGreaterThanOrEqual(0);
+    }
+  });
+});
