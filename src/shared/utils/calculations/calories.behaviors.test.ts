@@ -203,3 +203,31 @@ describe('calculateItemTotalCalories edge cases', () => {
     expect(result).toBe(600); // 3 * 200
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// ===========================================================================
+describe('mutation-killers: calories.ts (issue #277)', () => {
+  // L46 EqualityOperator: weightGrams > 0 vs >= 0
+  it('calculateTotalCalories with weightGrams=0 does NOT take the kg-conversion branch', () => {
+    // unit='kilograms' but weightGrams=0 must fall through to plain `quantity * caloriesPerUnit`
+    // path. If `> 0` mutated to `>= 0`, we'd take the kg branch and divide by 0 → Infinity/NaN.
+    const result = calculateTotalCalories(2, 100, 'kilograms', 0);
+    expect(Number.isFinite(result)).toBe(true);
+    expect(result).toBe(200); // 2 * 100, plain path
+  });
+
+  // L93 ConditionalExpression / BlockStatement: non-food template returns undefined
+  it('getTemplateCaloriesPerUnit returns undefined for non-food template', () => {
+    const tools: RecommendedItemDefinition = {
+      id: createProductTemplateId('rope'),
+      i18nKey: 'rope',
+      category: 'tools-supplies',
+      baseQuantity: createQuantity(1),
+      unit: 'pieces',
+      scaleWithPeople: false,
+      scaleWithDays: false,
+    };
+    expect(getTemplateCaloriesPerUnit(tools)).toBeUndefined();
+  });
+});
