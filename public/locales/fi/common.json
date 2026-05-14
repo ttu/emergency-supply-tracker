@@ -312,7 +312,10 @@
       "sunset": "Auringonlasku",
       "forest": "Metsä",
       "lavender": "Laventeli",
-      "minimal": "Minimaalinen"
+      "minimal": "Minimaalinen",
+      "cockpit": "Cockpit (suunnittelu v2)",
+      "civil": "Civil Defense (suunnittelu v2)",
+      "pantry": "Pantry (suunnittelu v2)"
     },
     "household": {
       "adults": "Aikuiset",

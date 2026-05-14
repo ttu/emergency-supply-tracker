@@ -312,7 +312,10 @@
       "sunset": "Sunset",
       "forest": "Forest",
       "lavender": "Lavender",
-      "minimal": "Minimal"
+      "minimal": "Minimal",
+      "cockpit": "Cockpit (design v2)",
+      "civil": "Civil Defense (design v2)",
+      "pantry": "Pantry (design v2)"
     },
     "household": {
       "adults": "Adults",

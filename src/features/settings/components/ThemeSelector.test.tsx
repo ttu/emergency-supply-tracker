@@ -19,7 +19,7 @@ describe('ThemeSelector', () => {
     expect(select).toBeInTheDocument();
 
     const options = screen.getAllByRole('option');
-    expect(options).toHaveLength(8);
+    expect(options).toHaveLength(11);
     expect(screen.getByText('settings.theme.light')).toBeInTheDocument();
     expect(screen.getByText('settings.theme.dark')).toBeInTheDocument();
     expect(screen.getByText('settings.theme.midnight')).toBeInTheDocument();
@@ -28,6 +28,9 @@ describe('ThemeSelector', () => {
     expect(screen.getByText('settings.theme.forest')).toBeInTheDocument();
     expect(screen.getByText('settings.theme.lavender')).toBeInTheDocument();
     expect(screen.getByText('settings.theme.minimal')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.civil')).toBeInTheDocument();
+    expect(screen.getByText('settings.theme.pantry')).toBeInTheDocument();
   });
 
   it('should change theme when option is selected', () => {

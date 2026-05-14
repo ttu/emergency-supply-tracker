@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/features/settings';
-import { SELECTABLE_THEMES } from '@/shared/types';
+import { SELECTABLE_THEMES, type Theme } from '@/shared/types';
 import styles from './ThemeSelector.module.css';
 
 export function ThemeSelector() {
@@ -8,15 +8,7 @@ export function ThemeSelector() {
   const { settings, updateSettings } = useSettings();
 
   const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const theme = e.target.value as
-      | 'light'
-      | 'dark'
-      | 'midnight'
-      | 'ocean'
-      | 'sunset'
-      | 'forest'
-      | 'lavender'
-      | 'minimal';
+    const theme = e.target.value as Theme;
     updateSettings({ theme });
 
     // Apply theme to document

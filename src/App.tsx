@@ -13,7 +13,12 @@ import { NotificationBar } from '@/shared/components/NotificationBar';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { composeProviders } from '@/shared/utils/composeProviders';
 import { useDataValidation } from '@/shared/hooks';
-import type { HouseholdConfig, InventoryItem } from '@/shared/types';
+import {
+  isDesignV2Theme,
+  type HouseholdConfig,
+  type InventoryItem,
+} from '@/shared/types';
+import { DesignApp, DesignOnboarding } from '@/features/design';
 import './App.css';
 
 /**
@@ -169,11 +174,28 @@ function AppContent() {
     }
   };
 
+  const useDesignV2 = isDesignV2Theme(settings.theme);
+
   if (!settings.onboardingCompleted) {
+    if (useDesignV2) {
+      return <DesignOnboarding onComplete={handleOnboardingComplete} />;
+    }
     return (
       <Suspense fallback={<LoadingFallback />}>
         <Onboarding onComplete={handleOnboardingComplete} />
       </Suspense>
+    );
+  }
+
+  if (useDesignV2) {
+    return (
+      <>
+        <a href="#main-content" className="skip-link">
+          {t('accessibility.skipToContent')}
+        </a>
+        <DesignApp />
+        <NotificationBar />
+      </>
     );
   }
 

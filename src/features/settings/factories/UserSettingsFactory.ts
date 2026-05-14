@@ -40,6 +40,9 @@ const VALID_THEMES = [
   'forest',
   'lavender',
   'minimal',
+  'cockpit',
+  'civil',
+  'pantry',
 ] as const;
 
 /**

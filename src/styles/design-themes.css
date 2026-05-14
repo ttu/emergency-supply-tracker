@@ -1,0 +1,250 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Emergency Supply Tracker — Design v2 Theme Tokens
+ * Three new themes (cockpit / civil / pantry) introduced by the design update.
+ * Coexist with the existing 8 themes in variables.css.
+ *
+ * These tokens follow the design package contract — semantic names instead of
+ * the existing --color-background / --color-primary scheme. The new design's
+ * components consume these directly.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* ========== COCKPIT — dark operational ========== */
+[data-theme='cockpit'] {
+  --color-bg: #0d141a;
+  --color-bg-2: #121b22;
+  --color-panel: #172129;
+  --color-panel-2: #1d2933;
+  --color-rule: #26333d;
+  --color-rule-soft: #1f2a33;
+
+  --color-text: #e6ecf0;
+  --color-text-2: #8b9aa6;
+  --color-text-3: #5a6975;
+
+  --color-ok: #4ade80;
+  --color-warn: #facc15;
+  --color-crit: #f87171;
+  --color-accent: #7dd3fc;
+  --color-accent-ink: #0d141a;
+
+  --font-display:
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --radius-sm: 4px;
+  --radius-lg: 6px;
+  --radius-pill: 4px;
+  --border-width: 1px;
+
+  --caps-transform: uppercase;
+  --caps-tracking: 0.08em;
+  --display-number-font: var(--font-mono);
+  --display-number-weight: 600;
+
+  --shadow-card: none;
+
+  /* Bridge to existing token system so the existing Navigation / shared
+     components don't visually break if mounted under a design theme. */
+  --color-background: var(--color-bg);
+  --color-background-secondary: var(--color-bg-2);
+  --color-background-tertiary: var(--color-panel-2);
+  --color-surface: var(--color-panel);
+  --color-surface-hover: var(--color-panel-2);
+  --color-surface-active: var(--color-panel-2);
+  --color-surface-secondary: var(--color-panel-2);
+  --color-text-secondary: var(--color-text-2);
+  --color-text-tertiary: var(--color-text-3);
+  --color-text-disabled: var(--color-text-3);
+  --color-border: var(--color-rule);
+  --color-border-hover: var(--color-rule);
+  --color-border-focus: var(--color-accent);
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent);
+  --color-primary-active: var(--color-accent);
+  --color-primary-light: var(--color-accent);
+  --color-primary-alpha: rgba(125, 211, 252, 0.15);
+  --color-primary-alpha-hover: rgba(125, 211, 252, 0.2);
+  --color-primary-on-surface-active: var(--color-accent);
+  --color-success: var(--color-ok);
+  --color-success-light: var(--color-ok);
+  --color-success-dark: var(--color-ok);
+  --color-success-alpha: rgba(74, 222, 128, 0.15);
+  --color-on-success: var(--color-accent-ink);
+  --color-warning: var(--color-warn);
+  --color-warning-light: var(--color-warn);
+  --color-warning-alpha: rgba(250, 204, 21, 0.15);
+  --color-error: var(--color-crit);
+  --color-error-light: var(--color-crit);
+  --color-error-dark: var(--color-crit);
+  --color-error-alpha: rgba(248, 113, 113, 0.15);
+  --color-info: var(--color-accent);
+  --color-info-light: var(--color-accent);
+  --color-info-alpha: rgba(125, 211, 252, 0.15);
+  --color-critical: var(--color-crit);
+  --color-focus: var(--color-accent);
+  --color-focus-ring: rgba(125, 211, 252, 0.4);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  color-scheme: dark;
+}
+
+/* ========== CIVIL DEFENSE — light, official, document-style ========== */
+[data-theme='civil'] {
+  --color-bg: #f4f1ea;
+  --color-bg-2: #ffffff;
+  --color-panel: #ffffff;
+  --color-panel-2: #fbf8f1;
+  --color-rule: #0b1d2a;
+  --color-rule-soft: #c9bfae;
+
+  --color-text: #0b1d2a;
+  --color-text-2: #1f3346;
+  --color-text-3: #5b6b62;
+
+  --color-ok: #2f6b3a;
+  --color-warn: #b9851b;
+  --color-crit: #a3340d;
+  --color-accent: #d94e1f;
+  --color-accent-ink: #ffffff;
+
+  --font-display: 'Inter Tight', 'Helvetica Neue', system-ui, sans-serif;
+  --font-body: 'Inter Tight', 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 0px;
+  --border-width: 1px;
+
+  --caps-transform: uppercase;
+  --caps-tracking: 0.08em;
+  --display-number-font: var(--font-display);
+  --display-number-weight: 700;
+
+  --shadow-card: none;
+
+  --color-background: var(--color-bg);
+  --color-background-secondary: var(--color-bg-2);
+  --color-background-tertiary: var(--color-panel-2);
+  --color-surface: var(--color-panel);
+  --color-surface-hover: var(--color-panel-2);
+  --color-surface-active: var(--color-panel-2);
+  --color-surface-secondary: var(--color-panel-2);
+  --color-text-secondary: var(--color-text-2);
+  --color-text-tertiary: var(--color-text-3);
+  --color-text-disabled: var(--color-text-3);
+  --color-border: var(--color-rule);
+  --color-border-hover: var(--color-rule);
+  --color-border-focus: var(--color-accent);
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent);
+  --color-primary-active: var(--color-accent);
+  --color-primary-light: var(--color-accent);
+  --color-primary-alpha: rgba(217, 78, 31, 0.1);
+  --color-primary-alpha-hover: rgba(217, 78, 31, 0.15);
+  --color-primary-on-surface-active: var(--color-accent);
+  --color-success: var(--color-ok);
+  --color-success-light: var(--color-ok);
+  --color-success-dark: var(--color-ok);
+  --color-success-alpha: rgba(47, 107, 58, 0.1);
+  --color-on-success: #ffffff;
+  --color-warning: var(--color-warn);
+  --color-warning-light: var(--color-warn);
+  --color-warning-alpha: rgba(185, 133, 27, 0.1);
+  --color-error: var(--color-crit);
+  --color-error-light: var(--color-crit);
+  --color-error-dark: var(--color-crit);
+  --color-error-alpha: rgba(163, 52, 13, 0.1);
+  --color-info: var(--color-accent);
+  --color-info-light: var(--color-accent);
+  --color-info-alpha: rgba(217, 78, 31, 0.1);
+  --color-critical: var(--color-crit);
+  --color-focus: var(--color-accent);
+  --color-focus-ring: rgba(217, 78, 31, 0.3);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  color-scheme: light;
+}
+
+/* ========== PANTRY — light, calm, Nordic, serif headlines ========== */
+[data-theme='pantry'] {
+  --color-bg: #eef0ea;
+  --color-bg-2: #fbfaf5;
+  --color-panel: #fbfaf5;
+  --color-panel-2: #f5f3eb;
+  --color-rule: #d8dbcf;
+  --color-rule-soft: #e6e8df;
+
+  --color-text: #1a2620;
+  --color-text-2: #5b6b62;
+  --color-text-3: #6c7a72; /* darkened from #8a978d for WCAG AA on light bg */
+
+  --color-ok: #506b53;
+  --color-warn: #8a6428; /* darkened from #b6863a for WCAG AA contrast */
+  --color-crit: #a14637;
+  --color-accent: #b35d3a; /* darkened from #c9744d for WCAG AA contrast */
+  --color-accent-ink: #fbfaf5;
+
+  --font-display: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+
+  --caps-transform: none;
+  --caps-tracking: 0.04em;
+  --display-number-font: var(--font-display);
+  --display-number-weight: 400;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03);
+
+  --color-background: var(--color-bg);
+  --color-background-secondary: var(--color-bg-2);
+  --color-background-tertiary: var(--color-panel-2);
+  --color-surface: var(--color-panel);
+  --color-surface-hover: var(--color-panel-2);
+  --color-surface-active: var(--color-panel-2);
+  --color-surface-secondary: var(--color-panel-2);
+  --color-text-secondary: var(--color-text-2);
+  --color-text-tertiary: var(--color-text-3);
+  --color-text-disabled: var(--color-text-3);
+  --color-border: var(--color-rule);
+  --color-border-hover: var(--color-rule);
+  --color-border-focus: var(--color-accent);
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent);
+  --color-primary-active: var(--color-accent);
+  --color-primary-light: var(--color-accent);
+  --color-primary-alpha: rgba(179, 93, 58, 0.1);
+  --color-primary-alpha-hover: rgba(179, 93, 58, 0.15);
+  --color-primary-on-surface-active: var(--color-accent);
+  --color-success: var(--color-ok);
+  --color-success-light: var(--color-ok);
+  --color-success-dark: var(--color-ok);
+  --color-success-alpha: rgba(80, 107, 83, 0.1);
+  --color-on-success: #ffffff;
+  --color-warning: var(--color-warn);
+  --color-warning-light: var(--color-warn);
+  --color-warning-alpha: rgba(138, 100, 40, 0.1);
+  --color-error: var(--color-crit);
+  --color-error-light: var(--color-crit);
+  --color-error-dark: var(--color-crit);
+  --color-error-alpha: rgba(161, 70, 55, 0.1);
+  --color-info: var(--color-accent);
+  --color-info-light: var(--color-accent);
+  --color-info-alpha: rgba(179, 93, 58, 0.1);
+  --color-critical: var(--color-crit);
+  --color-focus: var(--color-accent);
+  --color-focus-ring: rgba(179, 93, 58, 0.3);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  color-scheme: light;
+}
