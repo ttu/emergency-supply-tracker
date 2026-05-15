@@ -10,6 +10,7 @@ import {
   Title,
 } from '../primitives';
 import { ThemePicker } from '../ThemePicker';
+import { ClassicThemeSwitcher } from '../ClassicThemeSwitcher';
 import { useDesignTheme } from '../useDesignTheme';
 import { useDesignData, type DesignItemRow } from '../useDesignData';
 import { useSettings } from '@/features/settings';
@@ -1008,6 +1009,14 @@ export function MobileSettings() {
             onChange={setTheme}
             layout="list"
           />
+        </div>
+        <div
+          style={{
+            padding: 14,
+            borderTop: '1px solid var(--color-rule-soft)',
+          }}
+        >
+          <ClassicThemeSwitcher value={settings.theme} onChange={setTheme} />
         </div>
       </Panel>
       <Panel padding={0}>

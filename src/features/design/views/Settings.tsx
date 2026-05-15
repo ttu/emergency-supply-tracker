@@ -1,5 +1,6 @@
 import { Caption, Field, Panel, Title } from '../primitives';
 import { ThemePicker } from '../ThemePicker';
+import { ClassicThemeSwitcher } from '../ClassicThemeSwitcher';
 import { useDesignTheme } from '../useDesignTheme';
 import { useSettings } from '@/features/settings';
 import { useHousehold } from '@/features/household';
@@ -43,6 +44,14 @@ export function Settings() {
         </div>
         <div style={{ padding: 20 }}>
           <ThemePicker value={settings.theme} onChange={setTheme} />
+        </div>
+        <div
+          style={{
+            padding: '20px',
+            borderTop: '1px solid var(--color-rule-soft)',
+          }}
+        >
+          <ClassicThemeSwitcher value={settings.theme} onChange={setTheme} />
         </div>
       </Panel>
 
