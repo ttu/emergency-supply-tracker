@@ -8,11 +8,11 @@ import { useDesignTheme } from '../useDesignTheme';
 import {
   Caption,
   PanelHeader,
-  ReadField,
   SectionHeader,
   StepperRow,
   ToggleRow,
 } from './SettingsRows';
+import { NotificationsSection } from './NotificationsSection';
 import {
   useSettings,
   ExportButton,
@@ -29,7 +29,6 @@ import {
   ShoppingListExport,
   InventorySetSection,
 } from '@/features/settings';
-import { HiddenAlerts } from '@/features/alerts';
 import { useHousehold } from '@/features/household';
 import {
   DAILY_CALORIES_PER_PERSON,
@@ -688,57 +687,7 @@ export function SettingsFull() {
           </Panel>
         </section>
 
-        {/* 06 NOTIFICATIONS — read-only summary + hidden alerts list */}
-        <section id="sec-notifications" style={{ scrollMarginTop: 16 }}>
-          <SectionHeader
-            code="§6"
-            title={themeKey === 'pantry' ? 'Notifications' : 'NOTIFICATIONS'}
-          />
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 14,
-            }}
-          >
-            <Panel padding={0}>
-              <PanelHeader>
-                {themeKey === 'pantry' ? 'Alert windows' : 'WINDOWS · §6.1'}
-              </PanelHeader>
-              <ReadField
-                label={
-                  themeKey === 'pantry'
-                    ? 'Expiry warning window'
-                    : 'EXPIRY WARN'
-                }
-                value="30 days"
-              />
-              <ReadField
-                label={
-                  themeKey === 'pantry' ? 'Low-stock threshold' : 'LOW-STOCK'
-                }
-                value={
-                  themeKey === 'pantry' ? '50% of target' : '50% OF TARGET'
-                }
-              />
-              <ReadField
-                label={
-                  themeKey === 'pantry' ? 'Audit reminder' : 'AUDIT CADENCE'
-                }
-                value={themeKey === 'pantry' ? 'Monthly' : 'MONTHLY · 15TH'}
-                last
-              />
-            </Panel>
-            <Panel padding={0}>
-              <PanelHeader>
-                {themeKey === 'pantry' ? 'Hidden alerts' : 'HIDDEN · §6.2'}
-              </PanelHeader>
-              <div style={{ padding: 20 }}>
-                <HiddenAlerts />
-              </div>
-            </Panel>
-          </div>
-        </section>
+        <NotificationsSection />
 
         {/* 07 RECOMMENDATIONS — kits + disabled items */}
         <section id="sec-recommendations" style={{ scrollMarginTop: 16 }}>
