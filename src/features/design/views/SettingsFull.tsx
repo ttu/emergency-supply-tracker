@@ -26,7 +26,6 @@ import {
   ExportButton,
   ImportButton,
   ClearDataButton,
-  HouseholdForm,
   KitManagement,
   DisabledRecommendations,
   OverriddenRecommendations,
@@ -664,17 +663,6 @@ export function SettingsFull() {
               </div>
             </Panel>
           </div>
-          {/* Full HouseholdForm for any extra fields (freezer hold time, etc.) */}
-          <Panel padding={0} style={{ marginTop: 14 }}>
-            <PanelHeader>
-              {themeKey === 'pantry'
-                ? 'All household options'
-                : 'ALL FIELDS · §2.2'}
-            </PanelHeader>
-            <div style={{ padding: 20 }}>
-              <HouseholdForm />
-            </div>
-          </Panel>
         </section>
 
         {/* 03 INVENTORY SETS */}
