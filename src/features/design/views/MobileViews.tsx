@@ -254,12 +254,18 @@ export function MobileDashboard({ onCategorySelect }: MobileDashboardProps) {
 // ── Mobile Inventory ───────────────────────────────────────────────────────
 interface MobileInventoryProps {
   onItemSelect: (id: string) => void;
+  selectedCategoryId?: string;
+  onCategoryChange: (id?: string) => void;
 }
 type FilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp';
 
-export function MobileInventory({ onItemSelect }: MobileInventoryProps) {
+export function MobileInventory({
+  onItemSelect,
+  selectedCategoryId,
+  onCategoryChange,
+}: MobileInventoryProps) {
   const { themeKey } = useDesignTheme();
-  const { rows } = useDesignData();
+  const { rows, categories } = useDesignData();
   const [filter, setFilter] = useState<FilterKey>('all');
   const [search, setSearch] = useState('');
 
@@ -267,6 +273,11 @@ export function MobileInventory({ onItemSelect }: MobileInventoryProps) {
     // eslint-disable-next-line react-hooks/purity
     const now = Date.now();
     return rows.filter((r) => {
+      if (
+        selectedCategoryId &&
+        String(r.item.categoryId) !== selectedCategoryId
+      )
+        return false;
       if (filter === 'crit' && r.status !== 'crit') return false;
       if (filter === 'warn' && r.status !== 'warn') return false;
       if (filter === 'ok' && r.status !== 'ok') return false;
@@ -280,7 +291,7 @@ export function MobileInventory({ onItemSelect }: MobileInventoryProps) {
         return false;
       return true;
     });
-  }, [rows, filter, search]);
+  }, [rows, filter, search, selectedCategoryId]);
 
   const chips: Array<[FilterKey, string]> = [
     ['all', themeKey === 'pantry' ? 'All' : 'ALL'],
@@ -311,6 +322,31 @@ export function MobileInventory({ onItemSelect }: MobileInventoryProps) {
           width: '100%',
         }}
       />
+      <select
+        value={selectedCategoryId ?? ''}
+        onChange={(e) => onCategoryChange(e.target.value || undefined)}
+        aria-label={themeKey === 'pantry' ? 'Category' : 'CATEGORY'}
+        style={{
+          background: 'var(--color-panel)',
+          border: '1px solid var(--color-rule)',
+          color: 'var(--color-text)',
+          padding: '10px 12px',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 12,
+          borderRadius: 'var(--radius-sm)',
+          outline: 'none',
+          width: '100%',
+        }}
+      >
+        <option value="">
+          {themeKey === 'pantry' ? 'All categories' : 'ALL CATEGORIES'}
+        </option>
+        {categories.map((c) => (
+          <option key={String(c.id)} value={String(c.id)}>
+            {c.name}
+          </option>
+        ))}
+      </select>
       <div style={{ display: 'flex', gap: 6, overflowX: 'auto' }}>
         {chips.map(([k, label]) => {
           const active = filter === k;

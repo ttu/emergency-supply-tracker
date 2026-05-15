@@ -154,37 +154,6 @@ export function Inventory({
         </div>
       </div>
 
-      {selectedCategoryId && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-2)',
-            }}
-          >
-            Filter:{' '}
-            {categories.find((c) => String(c.id) === selectedCategoryId)?.name}
-          </span>
-          <button
-            type="button"
-            onClick={() => onCategoryChange(undefined)}
-            style={{
-              background: 'transparent',
-              border: 0,
-              cursor: 'pointer',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-accent)',
-              letterSpacing: '0.08em',
-              fontWeight: 700,
-            }}
-          >
-            CLEAR ×
-          </button>
-        </div>
-      )}
-
       <Panel padding={0}>
         <div
           style={{
@@ -207,8 +176,34 @@ export function Inventory({
               padding: '10px 16px',
               display: 'flex',
               alignItems: 'center',
+              gap: 8,
             }}
           >
+            <select
+              value={selectedCategoryId ?? ''}
+              onChange={(e) => onCategoryChange(e.target.value || undefined)}
+              aria-label={themeKey === 'pantry' ? 'Category' : 'CATEGORY'}
+              style={{
+                background: 'var(--color-panel-2)',
+                border: '1px solid var(--color-rule)',
+                color: 'var(--color-text)',
+                padding: '6px 10px',
+                fontFamily: 'var(--font-mono)',
+                fontSize: 11,
+                borderRadius: 'var(--radius-sm)',
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <option value="">
+                {themeKey === 'pantry' ? 'All categories' : 'ALL CATEGORIES'}
+              </option>
+              {categories.map((c) => (
+                <option key={String(c.id)} value={String(c.id)}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}

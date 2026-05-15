@@ -81,7 +81,11 @@ export function DesignApp() {
       case 'inv':
         title = voice.inventory;
         body = isMobile ? (
-          <MobileInventory onItemSelect={setSelectedItemId} />
+          <MobileInventory
+            onItemSelect={setSelectedItemId}
+            selectedCategoryId={selectedCategoryId}
+            onCategoryChange={setSelectedCategoryId}
+          />
         ) : (
           <Inventory
             selectedCategoryId={selectedCategoryId}
