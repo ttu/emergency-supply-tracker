@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DesktopShell, MobileShell, type DesignNavId } from './Shell';
 import { Dashboard } from './views/Dashboard';
 import { Inventory } from './views/Inventory';
@@ -10,24 +10,15 @@ import { Guide } from './views/Guide';
 import { Settings } from './views/Settings';
 import { useDesignTheme } from './useDesignTheme';
 import { useDesignData } from './useDesignData';
-
-const MOBILE_BREAKPOINT = 768;
-
-function useIsMobile(): boolean {
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window === 'undefined'
-      ? false
-      : window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches,
-  );
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-  return isMobile;
-}
+import { useIsMobile } from './useIsMobile';
+import {
+  MobileAlerts,
+  MobileDashboard,
+  MobileInventory,
+  MobileItemDetail,
+  MobileSettings,
+  MobileShopping,
+} from './views/MobileViews';
 
 export function DesignApp() {
   const { voice } = useDesignTheme();
@@ -55,7 +46,12 @@ export function DesignApp() {
   if (selectedItemId) {
     title = voice.inventory;
     breadcrumb = selectedItemId.slice(0, 8);
-    body = (
+    body = isMobile ? (
+      <MobileItemDetail
+        itemId={selectedItemId}
+        onBack={() => setSelectedItemId(undefined)}
+      />
+    ) : (
       <ItemDetail
         itemId={selectedItemId}
         onBack={() => setSelectedItemId(undefined)}
@@ -65,7 +61,14 @@ export function DesignApp() {
     switch (nav) {
       case 'home':
         title = voice.home;
-        body = (
+        body = isMobile ? (
+          <MobileDashboard
+            onCategorySelect={(id) => {
+              setSelectedCategoryId(id);
+              setNav('inv');
+            }}
+          />
+        ) : (
           <Dashboard
             onCategorySelect={(id) => {
               setSelectedCategoryId(id);
@@ -77,7 +80,9 @@ export function DesignApp() {
         break;
       case 'inv':
         title = voice.inventory;
-        body = (
+        body = isMobile ? (
+          <MobileInventory onItemSelect={setSelectedItemId} />
+        ) : (
           <Inventory
             selectedCategoryId={selectedCategoryId}
             onCategoryChange={setSelectedCategoryId}
@@ -90,11 +95,15 @@ export function DesignApp() {
         break;
       case 'alerts':
         title = voice.alerts;
-        body = <Alerts onItemSelect={setSelectedItemId} />;
+        body = isMobile ? (
+          <MobileAlerts onItemSelect={setSelectedItemId} />
+        ) : (
+          <Alerts onItemSelect={setSelectedItemId} />
+        );
         break;
       case 'shop':
         title = voice.shopping;
-        body = <Shopping />;
+        body = isMobile ? <MobileShopping /> : <Shopping />;
         break;
       case 'plan':
         title = voice.plan;
@@ -106,7 +115,7 @@ export function DesignApp() {
         break;
       case 'settings':
         title = voice.settings;
-        body = <Settings />;
+        body = isMobile ? <MobileSettings /> : <Settings />;
         break;
     }
   }
