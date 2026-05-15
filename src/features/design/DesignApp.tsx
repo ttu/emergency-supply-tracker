@@ -7,7 +7,7 @@ import { Alerts } from './views/Alerts';
 import { Shopping } from './views/Shopping';
 import { Plan } from './views/Plan';
 import { Guide } from './views/Guide';
-import { Settings } from './views/Settings';
+import { SettingsFull } from './views/SettingsFull';
 import { useDesignTheme } from './useDesignTheme';
 import { useDesignData } from './useDesignData';
 import { useIsMobile } from './useIsMobile';
@@ -16,7 +16,6 @@ import {
   MobileDashboard,
   MobileInventory,
   MobileItemDetail,
-  MobileSettings,
   MobileShopping,
 } from './views/MobileViews';
 
@@ -119,7 +118,7 @@ export function DesignApp() {
         break;
       case 'settings':
         title = voice.settings;
-        body = isMobile ? <MobileSettings /> : <Settings />;
+        body = <SettingsFull />;
         break;
     }
   }
