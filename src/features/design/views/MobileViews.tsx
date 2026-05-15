@@ -13,8 +13,7 @@ import { ThemePicker } from '../ThemePicker';
 import { ClassicThemeSwitcher } from '../ClassicThemeSwitcher';
 import { useDesignTheme } from '../useDesignTheme';
 import { useDesignData, type DesignItemRow } from '../useDesignData';
-import { useSettings } from '@/features/settings';
-import { useHousehold } from '@/features/household';
+import { useSettings, Settings as ClassicSettings } from '@/features/settings';
 import { useInventory } from '@/features/inventory';
 import { categoryCode } from '../voice';
 import { statusOf, type DesignStatus } from '../status';
@@ -984,7 +983,6 @@ export function MobileShopping() {
 export function MobileSettings() {
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
-  const { household } = useHousehold();
   const setTheme = (k: Theme) => updateSettings({ theme: k });
   return (
     <div
@@ -1019,78 +1017,10 @@ export function MobileSettings() {
           <ClassicThemeSwitcher value={settings.theme} onChange={setTheme} />
         </div>
       </Panel>
+      {/* Embed the full classic Settings page for full feature parity. */}
       <Panel padding={0}>
-        <div
-          style={{
-            padding: '12px 14px',
-            borderBottom: '1px solid var(--color-rule-soft)',
-          }}
-        >
-          <Caption>{themeKey === 'pantry' ? 'Household' : 'HOUSEHOLD'}</Caption>
-        </div>
-        <MobileSummaryRow
-          label={themeKey === 'pantry' ? 'People' : 'OCCUPANTS'}
-          value={`${household.adults} adult${household.adults !== 1 ? 's' : ''} · ${household.children} child${household.children !== 1 ? 'ren' : ''} · ${household.pets} pet${household.pets !== 1 ? 's' : ''}`}
-        />
-        <MobileSummaryRow
-          label={themeKey === 'pantry' ? 'Target' : 'TARGET'}
-          value={`${household.supplyDurationDays} ${themeKey === 'pantry' ? 'days' : 'D'}`}
-        />
+        <ClassicSettings />
       </Panel>
-      <Panel padding={0}>
-        <div
-          style={{
-            padding: '12px 14px',
-            borderBottom: '1px solid var(--color-rule-soft)',
-          }}
-        >
-          <Caption>
-            {themeKey === 'pantry' ? 'Notifications' : 'NOTIFICATIONS'}
-          </Caption>
-        </div>
-        <MobileSummaryRow
-          label={themeKey === 'pantry' ? 'Expiry warnings' : 'EXPIRY WARN'}
-          value="30 days"
-        />
-        <MobileSummaryRow
-          label={themeKey === 'pantry' ? 'Language' : 'LANGUAGE'}
-          value={settings.language.toUpperCase()}
-        />
-      </Panel>
-    </div>
-  );
-}
-
-function MobileSummaryRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div
-      style={{
-        padding: '14px 16px',
-        borderBottom: '1px solid var(--color-rule-soft)',
-      }}
-    >
-      <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: 'var(--caps-tracking)',
-          textTransform:
-            'var(--caps-transform)' as CSSProperties['textTransform'],
-          color: 'var(--color-text-3)',
-        }}
-      >
-        {label}
-      </div>
-      <div
-        style={{
-          fontSize: 14,
-          color: 'var(--color-text)',
-          marginTop: 4,
-          fontWeight: 500,
-        }}
-      >
-        {value}
-      </div>
     </div>
   );
 }
