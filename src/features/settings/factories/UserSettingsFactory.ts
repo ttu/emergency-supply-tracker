@@ -112,7 +112,9 @@ export class UserSettingsFactory {
 
     const defaults: UserSettings = {
       language: 'en',
-      theme: 'ocean',
+      // Design v2 (cockpit) is the new default. Existing users keep their
+      // stored theme because the factory spreads input over defaults.
+      theme: 'cockpit',
       highContrast: false,
       advancedFeatures: {
         calorieTracking: false,

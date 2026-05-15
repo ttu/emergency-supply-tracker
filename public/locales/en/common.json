@@ -317,6 +317,12 @@
       "civil": "Civil Defense (design v2)",
       "pantry": "Pantry (design v2)"
     },
+    "designV2Notice": {
+      "title": "New themes available",
+      "body": "Three redesigned themes — Cockpit, Civil Defense, and Pantry — are now available. They include a new dashboard, inventory, and onboarding layout.",
+      "tryAction": "Try Cockpit",
+      "dismissAction": "Maybe later"
+    },
     "household": {
       "adults": "Adults",
       "children": "Children",

@@ -22,7 +22,7 @@ describe('UserSettingsFactory', () => {
       const settings = UserSettingsFactory.create();
 
       expect(settings.language).toBe('en');
-      expect(settings.theme).toBe('ocean');
+      expect(settings.theme).toBe('cockpit');
       expect(settings.highContrast).toBe(false);
       expect(settings.advancedFeatures.calorieTracking).toBe(false);
       expect(settings.advancedFeatures.powerManagement).toBe(false);
@@ -206,7 +206,7 @@ describe('UserSettingsFactory', () => {
       const settings = UserSettingsFactory.createDefault();
 
       expect(settings.language).toBe('en');
-      expect(settings.theme).toBe('ocean');
+      expect(settings.theme).toBe('cockpit');
       expect(settings.highContrast).toBe(false);
     });
   });

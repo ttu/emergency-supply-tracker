@@ -37,8 +37,8 @@ describe('ThemeSelector', () => {
     renderWithSettings(<ThemeSelector />);
     const select = screen.getByRole('combobox') as HTMLSelectElement;
 
-    // Initially ocean theme
-    expect(select.value).toBe('ocean');
+    // Initially cockpit theme (the new default for fresh users)
+    expect(select.value).toBe('cockpit');
 
     // Change to dark theme
     fireEvent.change(select, { target: { value: 'dark' } });

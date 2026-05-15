@@ -317,6 +317,12 @@
       "civil": "Civil Defense (suunnittelu v2)",
       "pantry": "Pantry (suunnittelu v2)"
     },
+    "designV2Notice": {
+      "title": "Uusia teemoja saatavilla",
+      "body": "Kolme uudelleen suunniteltua teemaa — Cockpit, Civil Defense ja Pantry — ovat nyt käytettävissä. Niihin sisältyy uusi koontinäyttö, varasto ja perehdytysnäkymä.",
+      "tryAction": "Kokeile Cockpitia",
+      "dismissAction": "Ehkä myöhemmin"
+    },
     "household": {
       "adults": "Aikuiset",
       "children": "Lapset",

@@ -18,7 +18,7 @@ import {
   type HouseholdConfig,
   type InventoryItem,
 } from '@/shared/types';
-import { DesignApp, DesignOnboarding } from '@/features/design';
+import { DesignApp, DesignOnboarding, DesignV2Notice } from '@/features/design';
 import './App.css';
 
 /**
@@ -205,6 +205,7 @@ function AppContent() {
         {t('accessibility.skipToContent')}
       </a>
       <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+      <DesignV2Notice />
       <main id="main-content" className="main">
         {renderPage()}
       </main>
