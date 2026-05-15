@@ -12,6 +12,8 @@ import {
 import { useDesignTheme } from '../useDesignTheme';
 import { useDesignData, type DesignItemRow } from '../useDesignData';
 import { useInventory } from '@/features/inventory';
+import { useDashboardAlerts } from '@/features/dashboard';
+import type { AlertType } from '@/features/alerts';
 import { categoryCode } from '../voice';
 import { statusOf, type DesignStatus } from '../status';
 import { createQuantity, type InventoryItem } from '@/shared/types';
@@ -688,57 +690,15 @@ interface MobileAlertsProps {
 }
 export function MobileAlerts({ onItemSelect }: MobileAlertsProps) {
   const { themeKey, voice } = useDesignTheme();
-  const { rows } = useDesignData();
-  // eslint-disable-next-line react-hooks/purity
-  const now = Date.now();
-  const alerts = rows
-    .map((r, idx) => {
-      let sev: DesignStatus | null = null;
-      let m = '';
-      if (r.item.quantity === 0) {
-        sev = 'crit';
-        m = themeKey === 'pantry' ? 'Out of stock' : 'Reached zero';
-      } else if (r.item.expirationDate && !r.item.neverExpires) {
-        const d =
-          (new Date(r.item.expirationDate).getTime() - now) / MS_PER_DAY;
-        if (d < 0) {
-          sev = 'crit';
-          m =
-            themeKey === 'pantry'
-              ? `Expired ${r.item.expirationDate}`
-              : `Expired ${r.item.expirationDate}`;
-        } else if (d < 30) {
-          sev = 'warn';
-          m =
-            themeKey === 'pantry'
-              ? `Best before ${r.item.expirationDate}`
-              : `Expires ${r.item.expirationDate}`;
-        }
-      }
-      if (sev === null && r.recommended && r.item.quantity < r.recommended) {
-        sev = 'warn';
-        m = `${r.item.quantity}/${r.recommended} ${r.item.unit}`;
-      }
-      if (sev === null) return null;
-      return {
-        sev,
-        code: `A-${String(idx + 1).padStart(3, '0')}`,
-        title: r.item.name,
-        m,
-        itemId: String(r.item.id),
-      };
-    })
-    .filter(Boolean) as Array<{
-    sev: DesignStatus;
-    code: string;
-    title: string;
-    m: string;
-    itemId: string;
-  }>;
+  const { activeAlerts, handleDismissAlert } = useDashboardAlerts();
   const counts = {
-    crit: alerts.filter((a) => a.sev === 'crit').length,
-    warn: alerts.filter((a) => a.sev === 'warn').length,
+    crit: activeAlerts.filter((a) => a.type === 'critical').length,
+    warn: activeAlerts.filter((a) => a.type === 'warning').length,
+    info: activeAlerts.filter((a) => a.type === 'info').length,
   };
+  const dotFor = (t: AlertType): DesignStatus =>
+    t === 'critical' ? 'crit' : t === 'warning' ? 'warn' : 'ok';
+
   return (
     <div
       style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
@@ -746,25 +706,39 @@ export function MobileAlerts({ onItemSelect }: MobileAlertsProps) {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 8,
         }}
       >
         <Panel padding={12}>
           <Caption>{voice.critical}</Caption>
           <div style={{ marginTop: 4 }}>
-            <NumberDisplay value={counts.crit} size={24} tone="crit" />
+            <NumberDisplay
+              value={counts.crit}
+              size={24}
+              tone={counts.crit > 0 ? 'crit' : undefined}
+            />
           </div>
         </Panel>
         <Panel padding={12}>
           <Caption>{voice.warning}</Caption>
           <div style={{ marginTop: 4 }}>
-            <NumberDisplay value={counts.warn} size={24} tone="warn" />
+            <NumberDisplay
+              value={counts.warn}
+              size={24}
+              tone={counts.warn > 0 ? 'warn' : undefined}
+            />
+          </div>
+        </Panel>
+        <Panel padding={12}>
+          <Caption>{themeKey === 'pantry' ? 'Info' : 'INFO'}</Caption>
+          <div style={{ marginTop: 4 }}>
+            <NumberDisplay value={counts.info} size={24} />
           </div>
         </Panel>
       </div>
       <Panel padding={0}>
-        {alerts.length === 0 && (
+        {activeAlerts.length === 0 && (
           <div
             style={{
               padding: 24,
@@ -775,71 +749,80 @@ export function MobileAlerts({ onItemSelect }: MobileAlertsProps) {
             {themeKey === 'pantry' ? 'All clear.' : 'NOMINAL'}
           </div>
         )}
-        {alerts.map((a, i) => (
-          <button
-            key={a.code}
-            type="button"
-            onClick={() => onItemSelect(a.itemId)}
+        {activeAlerts.map((a, i) => (
+          <div
+            key={String(a.id)}
             style={{
               padding: '12px 14px',
               display: 'grid',
-              gridTemplateColumns: '12px 1fr',
+              gridTemplateColumns: '12px 1fr auto',
               gap: 10,
+              alignItems: 'center',
               borderBottom:
-                i < alerts.length - 1
+                i < activeAlerts.length - 1
                   ? '1px solid var(--color-rule-soft)'
                   : 'none',
-              background: 'transparent',
-              border: 0,
-              textAlign: 'left',
-              fontFamily: 'inherit',
-              color: 'inherit',
-              cursor: 'pointer',
-              width: '100%',
             }}
           >
             <div style={{ marginTop: 5 }}>
-              <StatusDot status={a.sev} size={7} />
+              <StatusDot status={dotFor(a.type)} size={7} />
             </div>
-            <div>
+            <button
+              type="button"
+              onClick={a.itemId ? () => onItemSelect(a.itemId!) : undefined}
+              disabled={!a.itemId}
+              style={{
+                background: 'transparent',
+                border: 0,
+                textAlign: 'left',
+                fontFamily: 'inherit',
+                color: 'inherit',
+                cursor: a.itemId ? 'pointer' : 'default',
+                padding: 0,
+                minWidth: 0,
+              }}
+            >
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'baseline',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: 'var(--color-text)',
                 }}
               >
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: 'var(--color-text)',
-                  }}
-                >
-                  {a.title}
-                </span>
-                <span
+                {a.itemName ?? a.message}
+              </div>
+              {a.itemName && (
+                <div
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-3)',
+                    fontSize: 10,
+                    color: 'var(--color-text-2)',
+                    marginTop: 3,
                   }}
                 >
-                  {a.code}
-                </span>
-              </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-2)',
-                  marginTop: 3,
-                }}
-              >
-                {a.m}
-              </div>
-            </div>
-          </button>
+                  {a.message}
+                </div>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDismissAlert(a.id)}
+              aria-label="Dismiss alert"
+              style={{
+                background: 'transparent',
+                border: '1px solid var(--color-rule)',
+                color: 'var(--color-text-3)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: 10,
+                padding: '3px 8px',
+                cursor: 'pointer',
+                borderRadius: 'var(--radius-pill)',
+                fontWeight: 700,
+              }}
+            >
+              ×
+            </button>
+          </div>
         ))}
       </Panel>
     </div>
