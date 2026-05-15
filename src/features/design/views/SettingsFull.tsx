@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '../useIsMobile';
 import { Button, Field, Panel, Title } from '../primitives';
@@ -56,6 +57,67 @@ export function SettingsFull() {
   const { household, updateHousehold } = useHousehold();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
+  const [activeSection, setActiveSection] = useState<string>('appearance');
+
+  // Highlight whichever section is currently in view (scroll spy).
+  useEffect(() => {
+    if (isMobile) return;
+    const ids = [
+      'appearance',
+      'household',
+      'inventorysets',
+      'nutrition',
+      'advanced',
+      'notifications',
+      'recommendations',
+      'categories',
+      'data',
+      'about',
+      'danger',
+    ];
+    const targets = ids
+      .map((id) => document.getElementById(`sec-${id}`))
+      .filter((el): el is HTMLElement => el !== null);
+    if (targets.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort(
+            (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
+          )[0];
+        if (visible) {
+          const id = visible.target.id.replace(/^sec-/, '');
+          setActiveSection(id);
+        }
+      },
+      { rootMargin: '-20% 0px -70% 0px', threshold: 0 },
+    );
+    targets.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [isMobile]);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(`sec-${id}`);
+    if (!el) return;
+    // Find the closest scrollable ancestor and scroll IT, not the document.
+    // scrollIntoView in nested overflow:auto containers is unreliable.
+    let scroller: HTMLElement | null = el.parentElement;
+    while (scroller && scroller !== document.body) {
+      const o = getComputedStyle(scroller).overflowY;
+      if (o === 'auto' || o === 'scroll') break;
+      scroller = scroller.parentElement;
+    }
+    if (scroller && scroller !== document.body) {
+      const elTop = el.getBoundingClientRect().top;
+      const scTop = scroller.getBoundingClientRect().top;
+      const offset = elTop - scTop + scroller.scrollTop - 16;
+      scroller.scrollTo({ top: offset, behavior: 'smooth' });
+    } else {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setActiveSection(id);
+  };
 
   const setTheme = (k: Theme) => updateSettings({ theme: k });
   const setNum = (k: keyof HouseholdConfig) => (v: number) =>
@@ -150,47 +212,62 @@ export function SettingsFull() {
             {themeKey === 'pantry' ? 'Sections' : 'SECTIONS'}
           </Caption>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {sections.map((s) => (
-              <a
-                key={s.id}
-                href={`#sec-${s.id}`}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '36px 1fr',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '8px 10px',
-                  borderRadius: 'var(--radius-sm)',
-                  cursor: 'pointer',
-                  background: 'transparent',
-                  textDecoration: 'none',
-                  color: s.danger ? 'var(--color-crit)' : 'var(--color-text-2)',
-                  fontFamily: 'var(--font-body)',
-                  fontSize: 12,
-                  fontWeight: 600,
-                }}
-              >
-                <span
+            {sections.map((s) => {
+              const isActive = activeSection === s.id;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => scrollToSection(s.id)}
+                  aria-current={isActive ? 'true' : undefined}
                   style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text-3)',
-                    letterSpacing: '0.08em',
+                    display: 'grid',
+                    gridTemplateColumns: '36px 1fr',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '8px 10px',
+                    borderRadius: 'var(--radius-sm)',
+                    cursor: 'pointer',
+                    background: isActive ? 'var(--color-panel)' : 'transparent',
+                    border: 0,
+                    borderLeft: isActive
+                      ? '3px solid var(--color-accent)'
+                      : '3px solid transparent',
+                    textAlign: 'left',
+                    color: s.danger
+                      ? 'var(--color-crit)'
+                      : isActive
+                        ? 'var(--color-text)'
+                        : 'var(--color-text-2)',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 12,
+                    fontWeight: 600,
                   }}
                 >
-                  {s.code}
-                </span>
-                <span
-                  style={{
-                    letterSpacing: 'var(--caps-tracking)',
-                    textTransform:
-                      'var(--caps-transform)' as React.CSSProperties['textTransform'],
-                  }}
-                >
-                  {s.label}
-                </span>
-              </a>
-            ))}
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 10,
+                      color: isActive
+                        ? 'var(--color-accent)'
+                        : 'var(--color-text-3)',
+                      letterSpacing: '0.08em',
+                    }}
+                  >
+                    {s.code}
+                  </span>
+                  <span
+                    style={{
+                      letterSpacing: 'var(--caps-tracking)',
+                      textTransform:
+                        'var(--caps-transform)' as React.CSSProperties['textTransform'],
+                    }}
+                  >
+                    {s.label}
+                  </span>
+                </button>
+              );
+            })}
           </nav>
           <div
             style={{
@@ -245,7 +322,7 @@ export function SettingsFull() {
         </div>
 
         {/* 01 APPEARANCE */}
-        <section id="sec-appearance" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-appearance" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§1"
             title={themeKey === 'pantry' ? 'Appearance' : 'APPEARANCE'}
@@ -372,7 +449,7 @@ export function SettingsFull() {
         </section>
 
         {/* 02 HOUSEHOLD — v2 styled steppers + classic form for full editing */}
-        <section id="sec-household" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-household" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§2"
             title={themeKey === 'pantry' ? 'Household' : 'HOUSEHOLD'}
@@ -455,7 +532,7 @@ export function SettingsFull() {
         </section>
 
         {/* 03 INVENTORY SETS */}
-        <section id="sec-inventorysets" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-inventorysets" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§3"
             title={themeKey === 'pantry' ? 'Inventory sets' : 'INVENTORY SETS'}
@@ -473,7 +550,7 @@ export function SettingsFull() {
         </section>
 
         {/* 04 NUTRITION */}
-        <section id="sec-nutrition" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-nutrition" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§4"
             title={
@@ -556,7 +633,7 @@ export function SettingsFull() {
         </section>
 
         {/* 05 ADVANCED FEATURES */}
-        <section id="sec-advanced" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-advanced" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§5"
             title={
@@ -612,7 +689,7 @@ export function SettingsFull() {
         </section>
 
         {/* 06 NOTIFICATIONS — read-only summary + hidden alerts list */}
-        <section id="sec-notifications" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-notifications" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§6"
             title={themeKey === 'pantry' ? 'Notifications' : 'NOTIFICATIONS'}
@@ -664,7 +741,7 @@ export function SettingsFull() {
         </section>
 
         {/* 07 RECOMMENDATIONS — kits + disabled items */}
-        <section id="sec-recommendations" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-recommendations" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§7"
             title={
@@ -713,7 +790,7 @@ export function SettingsFull() {
         </section>
 
         {/* 08 CATEGORIES */}
-        <section id="sec-categories" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-categories" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§8"
             title={themeKey === 'pantry' ? 'Categories' : 'CATEGORIES'}
@@ -744,7 +821,7 @@ export function SettingsFull() {
         </section>
 
         {/* 09 DATA & BACKUP */}
-        <section id="sec-data" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-data" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§9"
             title={themeKey === 'pantry' ? 'Data & backup' : 'DATA & BACKUP'}
@@ -800,7 +877,7 @@ export function SettingsFull() {
         </section>
 
         {/* 10 ABOUT */}
-        <section id="sec-about" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-about" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§10"
             title={themeKey === 'pantry' ? 'About' : 'ABOUT'}
@@ -955,7 +1032,7 @@ export function SettingsFull() {
         </section>
 
         {/* 11 DANGER ZONE */}
-        <section id="sec-danger" style={{ scrollMarginTop: 20 }}>
+        <section id="sec-danger" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§11"
             title={themeKey === 'pantry' ? 'Danger zone' : 'DANGER ZONE'}
