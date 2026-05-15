@@ -13,11 +13,23 @@ import { ThemePicker } from '../ThemePicker';
 import { ClassicThemeSwitcher } from '../ClassicThemeSwitcher';
 import { useDesignTheme } from '../useDesignTheme';
 import { useDesignData, type DesignItemRow } from '../useDesignData';
-import { useSettings, Settings as ClassicSettings } from '@/features/settings';
+import {
+  useSettings,
+  Settings as ClassicSettings,
+  ExportButton,
+  ImportButton,
+  ClearDataButton,
+} from '@/features/settings';
+import { useHousehold } from '@/features/household';
 import { useInventory } from '@/features/inventory';
 import { categoryCode } from '../voice';
 import { statusOf, type DesignStatus } from '../status';
-import { createQuantity, type InventoryItem, type Theme } from '@/shared/types';
+import {
+  createQuantity,
+  type HouseholdConfig,
+  type InventoryItem,
+  type Theme,
+} from '@/shared/types';
 
 const MS_PER_DAY = 86_400_000;
 
@@ -1019,24 +1031,20 @@ export function MobileShopping() {
 export function MobileSettings() {
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
+  const { household, updateHousehold } = useHousehold();
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const setTheme = (k: Theme) => updateSettings({ theme: k });
+  const setNum = (k: keyof HouseholdConfig) => (v: number) =>
+    updateHousehold({ [k]: Math.max(0, v) });
+
   return (
     <div
       style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}
     >
       <Panel padding={0}>
-        <div
-          style={{
-            padding: '12px 14px',
-            borderBottom: '1px solid var(--color-rule-soft)',
-          }}
-        >
-          <Caption>
-            {themeKey === 'pantry'
-              ? 'Appearance · theme'
-              : 'APPEARANCE · THEME'}
-          </Caption>
-        </div>
+        <MobileSectionHeader>
+          {themeKey === 'pantry' ? 'Appearance · theme' : 'APPEARANCE · THEME'}
+        </MobileSectionHeader>
         <div style={{ padding: 12 }}>
           <ThemePicker
             value={settings.theme}
@@ -1053,10 +1061,245 @@ export function MobileSettings() {
           <ClassicThemeSwitcher value={settings.theme} onChange={setTheme} />
         </div>
       </Panel>
-      {/* Embed the full classic Settings page for full feature parity. */}
+
       <Panel padding={0}>
-        <ClassicSettings />
+        <MobileSectionHeader>
+          {themeKey === 'pantry' ? 'Household profile' : 'HOUSEHOLD'}
+        </MobileSectionHeader>
+        <MobileNumberRow
+          label={themeKey === 'pantry' ? 'Adults' : 'ADULTS'}
+          value={household.adults}
+          onChange={setNum('adults')}
+          min={1}
+        />
+        <MobileNumberRow
+          label={themeKey === 'pantry' ? 'Children' : 'CHILDREN'}
+          value={household.children}
+          onChange={setNum('children')}
+        />
+        <MobileNumberRow
+          label={themeKey === 'pantry' ? 'Pets' : 'PETS'}
+          value={household.pets}
+          onChange={setNum('pets')}
+        />
+        <MobileNumberRow
+          label={
+            themeKey === 'pantry' ? 'Coverage target (days)' : 'COVERAGE TARGET'
+          }
+          value={household.supplyDurationDays}
+          onChange={setNum('supplyDurationDays')}
+          min={1}
+        />
       </Panel>
+
+      <Panel padding={0}>
+        <MobileSectionHeader>
+          {themeKey === 'pantry' ? 'Notifications' : 'NOTIFICATIONS'}
+        </MobileSectionHeader>
+        <MobileReadRow
+          label={themeKey === 'pantry' ? 'Expiry warnings' : 'EXPIRY WARN'}
+          value="30 days"
+        />
+        <MobileReadRow
+          label={themeKey === 'pantry' ? 'Language' : 'LANGUAGE'}
+          value={settings.language.toUpperCase()}
+        />
+      </Panel>
+
+      <Panel padding={0}>
+        <MobileSectionHeader>
+          {themeKey === 'pantry' ? 'Data & storage' : 'DATA · STORAGE'}
+        </MobileSectionHeader>
+        <div
+          style={{
+            padding: 14,
+            display: 'flex',
+            gap: 8,
+            flexWrap: 'wrap',
+          }}
+        >
+          <ExportButton />
+          <ImportButton />
+        </div>
+        <div
+          style={{
+            padding: 14,
+            borderTop: '1px solid var(--color-rule-soft)',
+          }}
+        >
+          <ClearDataButton />
+        </div>
+      </Panel>
+
+      <Panel padding={0}>
+        <button
+          type="button"
+          onClick={() => setAdvancedOpen((v) => !v)}
+          aria-expanded={advancedOpen}
+          style={{
+            width: '100%',
+            padding: '12px 14px',
+            background: 'transparent',
+            border: 0,
+            cursor: 'pointer',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontFamily: 'inherit',
+            color: 'inherit',
+          }}
+        >
+          <Caption>
+            {themeKey === 'pantry' ? 'Advanced settings' : 'ADVANCED'}
+          </Caption>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              color: 'var(--color-text-2)',
+            }}
+            aria-hidden
+          >
+            {advancedOpen ? '▾' : '▸'}
+          </span>
+        </button>
+        {advancedOpen && (
+          <div
+            style={{
+              borderTop: '1px solid var(--color-rule-soft)',
+            }}
+          >
+            <ClassicSettings />
+          </div>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
+function MobileSectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        padding: '12px 14px',
+        borderBottom: '1px solid var(--color-rule-soft)',
+      }}
+    >
+      <Caption>{children}</Caption>
+    </div>
+  );
+}
+
+function MobileNumberRow({
+  label,
+  value,
+  onChange,
+  min = 0,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+}) {
+  const stepperStyle: CSSProperties = {
+    width: 32,
+    height: 32,
+    border: '1px solid var(--color-rule)',
+    background: 'transparent',
+    color: 'var(--color-text)',
+    fontSize: 16,
+    borderRadius: 'var(--radius-sm)',
+    cursor: 'pointer',
+  };
+  return (
+    <div
+      style={{
+        padding: '14px 16px',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto',
+        alignItems: 'center',
+        gap: 12,
+        borderBottom: '1px solid var(--color-rule-soft)',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: 10,
+          letterSpacing: 'var(--caps-tracking)',
+          textTransform:
+            'var(--caps-transform)' as CSSProperties['textTransform'],
+          color: 'var(--color-text-3)',
+        }}
+      >
+        {label}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <button
+          type="button"
+          aria-label={`Decrease ${label}`}
+          onClick={() => onChange(Math.max(min, value - 1))}
+          disabled={value <= min}
+          style={stepperStyle}
+        >
+          −
+        </button>
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 18,
+            fontWeight: 600,
+            minWidth: 32,
+            textAlign: 'center',
+            color: 'var(--color-text)',
+            fontFeatureSettings: '"tnum"',
+          }}
+        >
+          {value}
+        </span>
+        <button
+          type="button"
+          aria-label={`Increase ${label}`}
+          onClick={() => onChange(value + 1)}
+          style={stepperStyle}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MobileReadRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      style={{
+        padding: '14px 16px',
+        borderBottom: '1px solid var(--color-rule-soft)',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: 10,
+          letterSpacing: 'var(--caps-tracking)',
+          textTransform:
+            'var(--caps-transform)' as CSSProperties['textTransform'],
+          color: 'var(--color-text-3)',
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: 14,
+          color: 'var(--color-text)',
+          marginTop: 4,
+          fontWeight: 500,
+        }}
+      >
+        {value}
+      </div>
     </div>
   );
 }
