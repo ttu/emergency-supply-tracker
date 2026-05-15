@@ -1,18 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '../useIsMobile';
-import { Button, Field, Panel, Title } from '../primitives';
+import { Button, Field, NumberDisplay, Panel, Title } from '../primitives';
 import { ThemePicker } from '../ThemePicker';
 import { ClassicThemeSwitcher } from '../ClassicThemeSwitcher';
 import { useDesignTheme } from '../useDesignTheme';
 import {
   Caption,
   PanelHeader,
+  ReadField,
   SectionHeader,
   StepperRow,
   ToggleRow,
 } from './SettingsRows';
 import { NotificationsSection } from './NotificationsSection';
+import { useDesignPrefs } from './useDesignPref';
+import { useInventory } from '@/features/inventory';
+import {
+  getLocalStorageUsageMB,
+  LOCAL_STORAGE_LIMIT_BYTES,
+} from '@/shared/utils/storage/storageUsage';
+import { getAppData } from '@/shared/utils/storage/localStorage';
 import {
   useSettings,
   ExportButton,
@@ -194,6 +202,50 @@ export function SettingsFull() {
   const childPct =
     settings.childrenRequirementPercentage ??
     CHILDREN_REQUIREMENT_MULTIPLIER * 100;
+
+  const [designPrefs, setDesignPref] = useDesignPrefs();
+  const { items, deleteItems, enableAllRecommendedItems } = useInventory();
+
+  // Computed live targets for §2 Household
+  const computed = useMemo(() => {
+    const ppl = household.adults + household.children * (childPct / 100);
+    const days = household.supplyDurationDays;
+    return {
+      water: Math.ceil(water * ppl * days),
+      kcal: Math.ceil(cal * ppl * days),
+      itemCount: items.length,
+    };
+  }, [household, childPct, water, cal, items.length]);
+
+  // Storage info for §9 Data & Backup
+  const storageMB = getLocalStorageUsageMB();
+  const limitMB = Math.round(LOCAL_STORAGE_LIMIT_BYTES / (1024 * 1024));
+  const appData = getAppData();
+  const lastBackup = appData?.lastBackupDate;
+  const lastWrite = appData?.lastModified;
+
+  const handleResetItems = () => {
+    if (
+      confirm(
+        themeKey === 'pantry'
+          ? 'Remove every item? Household and settings will be kept.'
+          : 'PURGE ALL ITEMS? HOUSEHOLD + CONFIG RETAINED.',
+      )
+    ) {
+      deleteItems(items.map((i) => i.id));
+    }
+  };
+  const handleResetRecommendations = () => {
+    if (
+      confirm(
+        themeKey === 'pantry'
+          ? 'Restore default recommendations and re-enable all items?'
+          : 'REVERT TO BUILT-IN BASELINE + CLEAR DISABLED LIST?',
+      )
+    ) {
+      enableAllRecommendedItems();
+    }
+  };
 
   return (
     <div
@@ -442,81 +494,176 @@ export function SettingsFull() {
               }
               on={!!settings.highContrast}
               onChange={(v) => updateSettings({ highContrast: v })}
+            />
+            <ToggleRow
+              label={themeKey === 'pantry' ? 'Reduce motion' : 'REDUCE MOTION'}
+              hint={
+                themeKey === 'pantry'
+                  ? 'Disables non-essential animations.'
+                  : 'DISABLES TRANSITIONS · RESPECTS prefers-reduced-motion'
+              }
+              on={designPrefs.reduceMotion}
+              onChange={(v) => setDesignPref('reduceMotion', v)}
               last
             />
           </Panel>
         </section>
 
-        {/* 02 HOUSEHOLD — v2 styled steppers + classic form for full editing */}
+        {/* 02 HOUSEHOLD — v2 styled steppers + computed/live side panel */}
         <section id="sec-household" style={{ scrollMarginTop: 16 }}>
           <SectionHeader
             code="§2"
             title={themeKey === 'pantry' ? 'Household' : 'HOUSEHOLD'}
           />
-          <Panel padding={0}>
-            <PanelHeader>
-              {themeKey === 'pantry' ? 'Profile' : 'PROFILE · §2.1'}
-            </PanelHeader>
-            <StepperRow
-              label={themeKey === 'pantry' ? 'Adults' : 'ADULTS'}
-              hint={
-                themeKey === 'pantry'
-                  ? 'Aged 14 and over'
-                  : 'AGE ≥ 14 · 1.0× SCALE'
-              }
-              value={household.adults}
-              onChange={setNum('adults')}
-              min={1}
-            />
-            <StepperRow
-              label={themeKey === 'pantry' ? 'Children' : 'CHILDREN'}
-              hint={
-                themeKey === 'pantry'
-                  ? 'Under 14 — scaled to 75%'
-                  : 'AGE < 14 · 0.75× SCALE'
-              }
-              value={household.children}
-              onChange={setNum('children')}
-            />
-            <StepperRow
-              label={themeKey === 'pantry' ? 'Pets' : 'PETS'}
-              hint={
-                themeKey === 'pantry'
-                  ? 'Enables the pets category'
-                  : 'ENABLES §PET CATEGORY'
-              }
-              value={household.pets}
-              onChange={setNum('pets')}
-            />
-            <StepperRow
-              label={
-                themeKey === 'pantry'
-                  ? 'Target days of supply'
-                  : 'COVERAGE TARGET'
-              }
-              hint={
-                themeKey === 'pantry'
-                  ? 'How many days you want to be self-sufficient'
-                  : 'DAYS · SELF-SUFFICIENCY TARGET'
-              }
-              value={household.supplyDurationDays}
-              onChange={setNum('supplyDurationDays')}
-              suffix="d"
-              min={1}
-              max={365}
-            />
-            <ToggleRow
-              label={themeKey === 'pantry' ? 'Use freezer' : 'USE FREEZER'}
-              hint={
-                themeKey === 'pantry'
-                  ? 'Adds frozen-food recommendations'
-                  : 'INCLUDES FROZEN ITEMS IN BASELINE'
-              }
-              on={!!household.useFreezer}
-              onChange={(v) => updateHousehold({ useFreezer: v })}
-              last
-            />
-          </Panel>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1.6fr 1fr',
+              gap: 14,
+            }}
+          >
+            <Panel padding={0}>
+              <PanelHeader>
+                {themeKey === 'pantry' ? 'Profile' : 'PROFILE · §2.1'}
+              </PanelHeader>
+              <StepperRow
+                label={themeKey === 'pantry' ? 'Adults' : 'ADULTS'}
+                hint={
+                  themeKey === 'pantry'
+                    ? 'Aged 14 and over'
+                    : 'AGE ≥ 14 · 1.0× SCALE'
+                }
+                value={household.adults}
+                onChange={setNum('adults')}
+                min={1}
+              />
+              <StepperRow
+                label={themeKey === 'pantry' ? 'Children' : 'CHILDREN'}
+                hint={
+                  themeKey === 'pantry'
+                    ? 'Under 14 — scaled to 75%'
+                    : 'AGE < 14 · 0.75× SCALE'
+                }
+                value={household.children}
+                onChange={setNum('children')}
+              />
+              <StepperRow
+                label={themeKey === 'pantry' ? 'Pets' : 'PETS'}
+                hint={
+                  themeKey === 'pantry'
+                    ? 'Enables the pets category'
+                    : 'ENABLES §PET CATEGORY'
+                }
+                value={household.pets}
+                onChange={setNum('pets')}
+              />
+              <StepperRow
+                label={
+                  themeKey === 'pantry'
+                    ? 'Target days of supply'
+                    : 'COVERAGE TARGET'
+                }
+                hint={
+                  themeKey === 'pantry'
+                    ? 'How many days you want to be self-sufficient'
+                    : 'DAYS · SELF-SUFFICIENCY TARGET'
+                }
+                value={household.supplyDurationDays}
+                onChange={setNum('supplyDurationDays')}
+                suffix="d"
+                min={1}
+                max={365}
+              />
+              <ToggleRow
+                label={themeKey === 'pantry' ? 'Use freezer' : 'USE FREEZER'}
+                hint={
+                  themeKey === 'pantry'
+                    ? 'Adds frozen-food recommendations'
+                    : 'INCLUDES FROZEN ITEMS IN BASELINE'
+                }
+                on={!!household.useFreezer}
+                onChange={(v) => updateHousehold({ useFreezer: v })}
+                last
+              />
+            </Panel>
+            <Panel padding={20}>
+              <Caption>
+                {themeKey === 'pantry' ? 'Calculated' : 'COMPUTED · LIVE'}
+              </Caption>
+              <div style={{ marginTop: 14 }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}
+                >
+                  <NumberDisplay value={computed.water} size={40} />
+                  <span style={{ fontSize: 13, color: 'var(--color-text-2)' }}>
+                    L ·{' '}
+                    {themeKey === 'pantry'
+                      ? `water for ${household.supplyDurationDays}d`
+                      : `WATER · ${household.supplyDurationDays}D`}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    color: 'var(--color-text-3)',
+                    marginTop: 4,
+                  }}
+                >
+                  = {water} L × {household.adults} ADULTS ×{' '}
+                  {household.supplyDurationDays} D
+                </div>
+              </div>
+              <div style={{ marginTop: 18 }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}
+                >
+                  <NumberDisplay
+                    value={computed.kcal.toLocaleString()}
+                    size={28}
+                  />
+                  <span style={{ fontSize: 12, color: 'var(--color-text-2)' }}>
+                    kcal ·{' '}
+                    {themeKey === 'pantry'
+                      ? `total food`
+                      : `TOTAL · ${household.supplyDurationDays}D`}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    color: 'var(--color-text-3)',
+                    marginTop: 4,
+                  }}
+                >
+                  = {cal} × {household.adults} × {household.supplyDurationDays}{' '}
+                  D
+                </div>
+              </div>
+              <div
+                style={{
+                  marginTop: 18,
+                  paddingTop: 16,
+                  borderTop: '1px solid var(--color-rule-soft)',
+                }}
+              >
+                <Caption>
+                  {themeKey === 'pantry' ? 'Items tracked' : 'INVENTORY ITEMS'}
+                </Caption>
+                <div
+                  style={{
+                    marginTop: 6,
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: 6,
+                  }}
+                >
+                  <NumberDisplay value={computed.itemCount} size={28} />
+                </div>
+              </div>
+            </Panel>
+          </div>
           {/* Full HouseholdForm for any extra fields (freezer hold time, etc.) */}
           <Panel padding={0} style={{ marginTop: 14 }}>
             <PanelHeader>
@@ -626,6 +773,31 @@ export function SettingsFull() {
               min={0}
               max={100}
               suffix="%"
+            />
+            <ReadField
+              label={
+                themeKey === 'pantry'
+                  ? 'Expiry warning window'
+                  : 'EXPIRY WARN WINDOW'
+              }
+              value="30 days"
+              hint={
+                themeKey === 'pantry' ? 'fixed' : 'WARN ≤ N DAYS BEFORE EXPIRY'
+              }
+            />
+            <ToggleRow
+              label={
+                themeKey === 'pantry'
+                  ? 'Track hygiene water separately'
+                  : 'TRACK HYGIENE WATER SEPARATELY'
+              }
+              hint={
+                themeKey === 'pantry'
+                  ? 'Add 3 L/person/day for hygiene'
+                  : 'ADDS 3 L/PERSON/DAY · ADV WATER MODE'
+              }
+              on={designPrefs.trackHygieneWaterSeparately}
+              onChange={(v) => setDesignPref('trackHygieneWaterSeparately', v)}
               last
             />
           </Panel>
@@ -682,6 +854,36 @@ export function SettingsFull() {
               }
               on={adv.waterTracking}
               onChange={setAdv('waterTracking')}
+            />
+            <ToggleRow
+              label={
+                themeKey === 'pantry'
+                  ? 'Plan view (preview)'
+                  : 'PLAN VIEW · BETA'
+              }
+              hint={
+                themeKey === 'pantry'
+                  ? 'Track high-level preparedness goals, not just items.'
+                  : 'OBJECTIVE-LEVEL TRACKING · v0.5'
+              }
+              on={designPrefs.planViewBeta}
+              onChange={(v) => setDesignPref('planViewBeta', v)}
+            />
+            <ToggleRow
+              label={
+                themeKey === 'pantry'
+                  ? 'Multi-device sync (coming soon)'
+                  : 'MULTI-DEVICE SYNC · ROADMAP'
+              }
+              hint={
+                themeKey === 'pantry'
+                  ? 'Share inventory across devices via encrypted backup.'
+                  : 'NOT YET AVAILABLE · E2E ENCRYPTED'
+              }
+              on={false}
+              onChange={() => {
+                /* roadmap — disabled */
+              }}
               last
             />
           </Panel>
@@ -798,10 +1000,22 @@ export function SettingsFull() {
                     ? 'This browser only'
                     : 'BROWSER LOCALSTORAGE'
                 }
+                hint={themeKey === 'pantry' ? 'No cloud' : 'OFFLINE-ONLY'}
               />
               <Field
-                label={themeKey === 'pantry' ? 'Language' : 'LANGUAGE'}
-                value={settings.language.toUpperCase()}
+                label={themeKey === 'pantry' ? 'Last save' : 'LAST WRITE'}
+                value={
+                  lastWrite ? lastWrite.slice(0, 16).replace('T', ' · ') : '—'
+                }
+              />
+              <Field
+                label={themeKey === 'pantry' ? 'Records' : 'RECORD COUNT'}
+                value={`${items.length} ${themeKey === 'pantry' ? 'items' : 'ITEMS'}`}
+              />
+              <Field
+                label={themeKey === 'pantry' ? 'Storage used' : 'DISK USAGE'}
+                value={`${storageMB} MB / ~${limitMB} MB`}
+                hint={`${Math.round((Number(storageMB) / limitMB) * 100)}%`}
               />
             </Panel>
             <Panel padding={0}>
@@ -812,6 +1026,25 @@ export function SettingsFull() {
                 <ExportButton />
                 <ShoppingListExport />
                 <ImportButton />
+              </div>
+              <div
+                style={{
+                  padding: '12px 22px',
+                  background: 'var(--color-panel-2)',
+                  borderTop: '1px solid var(--color-rule-soft)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  color: 'var(--color-text-2)',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                {lastBackup
+                  ? themeKey === 'pantry'
+                    ? `Last backup: ${lastBackup}`
+                    : `LAST BACKUP ${lastBackup}`
+                  : themeKey === 'pantry'
+                    ? 'No backup yet — consider exporting soon.'
+                    : 'NO BACKUP RECORDED · ▸ EXPORT RECOMMENDED'}
               </div>
             </Panel>
           </div>
@@ -999,6 +1232,32 @@ export function SettingsFull() {
                   : 'IRREVERSIBLE · CONFIRM EACH ACTION'}
               </Caption>
             </div>
+            <DangerRow
+              title={
+                themeKey === 'pantry' ? 'Reset all items' : 'RESET INVENTORY'
+              }
+              detail={
+                themeKey === 'pantry'
+                  ? 'Removes every item but keeps household and settings.'
+                  : 'PURGE ITEMS · RETAIN HOUSEHOLD + CONFIG'
+              }
+              action={themeKey === 'pantry' ? 'Reset items' : 'RESET'}
+              onClick={handleResetItems}
+            />
+            <DangerRow
+              title={
+                themeKey === 'pantry'
+                  ? 'Reset recommendations'
+                  : 'RESET RECOMMENDATIONS'
+              }
+              detail={
+                themeKey === 'pantry'
+                  ? 'Re-enable every recommended item.'
+                  : 'CLEAR DISABLED LIST · ENABLE ALL'
+              }
+              action={themeKey === 'pantry' ? 'Reset list' : 'RESET'}
+              onClick={handleResetRecommendations}
+            />
             <div
               style={{
                 padding: '16px 22px',
@@ -1057,6 +1316,47 @@ export function SettingsFull() {
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function DangerRow({
+  title,
+  detail,
+  action,
+  onClick,
+}: {
+  title: string;
+  detail: string;
+  action: string;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      style={{
+        padding: '16px 22px',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto',
+        alignItems: 'center',
+        gap: 16,
+        borderBottom: '1px solid var(--color-rule-soft)',
+      }}
+    >
+      <div>
+        <div
+          style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)' }}
+        >
+          {title}
+        </div>
+        <div
+          style={{ fontSize: 12, color: 'var(--color-text-2)', marginTop: 4 }}
+        >
+          {detail}
+        </div>
+      </div>
+      <Button variant="secondary" onClick={onClick}>
+        {action}
+      </Button>
     </div>
   );
 }
