@@ -11,104 +11,97 @@ import {
 } from '../src/shared/utils/test/factories';
 import { createDateOnly } from '../src/shared/types';
 
+/**
+ * In design v2 the backup reminder surfaces on the Alerts page (via
+ * useDashboardAlerts), not as a dashboard banner. Each test sets the
+ * mock app data + navigates to v2-nav-alerts.
+ */
+
+const v2Settings = {
+  onboardingCompleted: true as const,
+  language: 'en' as const,
+  theme: 'cockpit' as const,
+  highContrast: false,
+  advancedFeatures: {
+    calorieTracking: false,
+    powerManagement: false,
+    waterTracking: false,
+  },
+};
+
+const daysAgo = (n: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d;
+};
+
 test.describe('Backup Reminder', () => {
   test('should show backup reminder after 30 days without backup', async ({
     page,
   }) => {
-    // Setup app data with lastModified 31 days ago and no backup
-    const oldDate = new Date();
-    oldDate.setDate(oldDate.getDate() - 31);
-
+    const old = daysAgo(31);
     const appData = createMockAppData({
       items: [
         createMockInventoryItem({
           name: 'Test Item',
           neverExpires: true,
-          createdAt: oldDate.toISOString(),
-          updatedAt: oldDate.toISOString(),
+          createdAt: old.toISOString(),
+          updatedAt: old.toISOString(),
         }),
       ],
-      lastModified: oldDate.toISOString(),
-      lastBackupDate: undefined, // Never backed up
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
+      lastModified: old.toISOString(),
+      lastBackupDate: undefined,
+      settings: v2Settings,
     });
 
     await page.goto('/');
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Should show backup reminder on dashboard
-    await expect(page.getByText(/backup|Backup|varmuuskopio/i)).toBeVisible({
-      timeout: 5000,
-    });
+    await page.getByTestId('v2-nav-alerts').click();
+    await expect(
+      page.getByText(/backup|Backup|varmuuskopio/i).first(),
+    ).toBeVisible({ timeout: 5000 });
   });
 
   test('should dismiss backup reminder', async ({ page }) => {
-    // Setup with old data
-    const oldDate = new Date();
-    oldDate.setDate(oldDate.getDate() - 31);
-
+    const old = daysAgo(31);
     const appData = createMockAppData({
       items: [
         createMockInventoryItem({
           name: 'Test Item',
           neverExpires: true,
-          createdAt: oldDate.toISOString(),
-          updatedAt: oldDate.toISOString(),
+          createdAt: old.toISOString(),
+          updatedAt: old.toISOString(),
         }),
       ],
-      lastModified: oldDate.toISOString(),
+      lastModified: old.toISOString(),
       lastBackupDate: undefined,
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
+      settings: v2Settings,
     });
 
     await page.goto('/');
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Find dismiss button for backup reminder
-    const dismissButton = page
-      .locator(
-        'button[aria-label*="Dismiss" i], button[aria-label*="Sulje" i], button:has-text("✕")',
-      )
-      .first();
-    await expect(dismissButton).toBeVisible({ timeout: 5000 });
-    await dismissButton.click();
+    await page.getByTestId('v2-nav-alerts').click();
+    const reminder = page.getByText(/backup|Backup|varmuuskopio/i).first();
+    await expect(reminder).toBeVisible({ timeout: 5000 });
 
-    // Reminder should be hidden (use specific testid to avoid matching the notification)
-    await expect(
-      page.locator('[data-testid="alert-backup-reminder"]'),
-    ).not.toBeVisible({ timeout: 3000 });
+    // v2 Alerts row has a "DISMISS" button (cockpit voice).
+    const dismiss = page
+      .getByRole('button', { name: /DISMISS|Dismiss/ })
+      .first();
+    await expect(dismiss).toBeVisible({ timeout: 5000 });
+    await dismiss.click();
+
+    await expect(reminder).not.toBeVisible({ timeout: 3000 });
   });
 
   test('should not show reminder after dismissal until next month', async ({
     page,
   }) => {
-    // Setup with dismissed reminder
-    const oldDate = new Date();
-    oldDate.setDate(oldDate.getDate() - 31);
-
-    // Set dismissedUntil to first day of next month
+    const old = daysAgo(31);
     const nextMonth = new Date();
     nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
     nextMonth.setHours(0, 0, 0, 0);
@@ -118,151 +111,104 @@ test.describe('Backup Reminder', () => {
         createMockInventoryItem({
           name: 'Test Item',
           neverExpires: true,
-          createdAt: oldDate.toISOString(),
-          updatedAt: oldDate.toISOString(),
+          createdAt: old.toISOString(),
+          updatedAt: old.toISOString(),
         }),
       ],
-      lastModified: oldDate.toISOString(),
+      lastModified: old.toISOString(),
       lastBackupDate: undefined,
       backupReminderDismissedUntil: createDateOnly(
         toLocalDateString(nextMonth),
       ),
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
+      settings: v2Settings,
     });
 
     await page.goto('/');
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Reminder should not be visible (dismissed until next month)
-    await expect(page.getByText(/backup|Backup|varmuuskopio/i)).not.toBeVisible(
-      { timeout: 3000 },
-    );
+    await page.getByTestId('v2-nav-alerts').click();
+    await expect(page.getByText(/backup|varmuuskopio/i)).not.toBeVisible({
+      timeout: 3000,
+    });
   });
 
   test('should remove reminder when backup date is recorded', async ({
     page,
   }) => {
-    // Setup with old data
-    const oldDate = new Date();
-    oldDate.setDate(oldDate.getDate() - 31);
-
+    const old = daysAgo(31);
     const appData = createMockAppData({
       items: [
         createMockInventoryItem({
           name: 'Test Item',
           neverExpires: true,
-          createdAt: oldDate.toISOString(),
-          updatedAt: oldDate.toISOString(),
+          createdAt: old.toISOString(),
+          updatedAt: old.toISOString(),
         }),
       ],
-      lastModified: oldDate.toISOString(),
+      lastModified: old.toISOString(),
       lastBackupDate: undefined,
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
+      settings: v2Settings,
     });
 
     await page.goto('/');
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Should see backup reminder
-    await expect(page.getByText(/backup|Backup|varmuuskopio/i)).toBeVisible({
-      timeout: 5000,
-    });
+    // Reminder visible on Alerts page
+    await page.getByTestId('v2-nav-alerts').click();
+    await expect(
+      page.getByText(/backup|Backup|varmuuskopio/i).first(),
+    ).toBeVisible({ timeout: 5000 });
 
-    // Export data (this should record backup date)
-    await page.getByTestId('v2-nav-settings').click();
+    // Trigger an export (records lastBackupDate)
     await navigateToSettingsSection(page, 'data');
     const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
     await exportButton.click();
 
-    // Wait for export selection modal to open and click export button
+    // Format-selection modal opens; click the primary Export button.
     const exportModalButton = page.locator('button', {
       hasText: /^Export$|^Vie$/i,
     });
     await expect(exportModalButton).toBeVisible({ timeout: 5000 });
     await exportModalButton.click();
-
-    // Wait for modal to close and export to complete
     await page.waitForTimeout(500);
 
-    // Navigate back to Dashboard
-    await page.getByTestId('v2-nav-home').click();
+    // Back to alerts — reminder gone.
+    await page.getByTestId('v2-nav-alerts').click();
     await page.waitForLoadState('networkidle');
-
-    // Reminder should be gone (backup date was recorded)
-    // The backup reminder logic checks if data was modified after backup
-    // Since lastModified is old (31 days ago) and lastBackupDate is now (after export),
-    // the condition lastModified <= lastBackupDate should be true, so reminder should not show
-    await expect(page.getByText(/backup|Backup|varmuuskopio/i)).not.toBeVisible(
-      {
-        timeout: 3000,
-      },
-    );
+    await expect(page.getByText(/backup|varmuuskopio/i)).not.toBeVisible({
+      timeout: 3000,
+    });
   });
 
-  test('should show reminder on dashboard when conditions are met', async ({
+  test('should surface the reminder under the v2 Alerts page', async ({
     page,
   }) => {
-    // Setup with items and old modification date
-    const oldDate = new Date();
-    oldDate.setDate(oldDate.getDate() - 35);
-
+    const old = daysAgo(35);
     const appData = createMockAppData({
       items: [
         createMockInventoryItem({
           name: 'Test Item',
           neverExpires: true,
-          createdAt: oldDate.toISOString(),
-          updatedAt: oldDate.toISOString(),
+          createdAt: old.toISOString(),
+          updatedAt: old.toISOString(),
         }),
       ],
-      lastModified: oldDate.toISOString(),
+      lastModified: old.toISOString(),
       lastBackupDate: undefined,
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
+      settings: v2Settings,
     });
 
     await page.goto('/');
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Should see backup reminder in alerts section
-    await expect(page.getByText(/backup|Backup|varmuuskopio/i)).toBeVisible({
-      timeout: 5000,
-    });
-
-    // Should be in the alerts section
-    await expect(page.getByTestId('alerts-section')).toBeVisible();
+    await page.getByTestId('v2-nav-alerts').click();
+    await expect(page.getByText('ALERTS · LOG')).toBeVisible();
+    await expect(
+      page.getByText(/backup|Backup|varmuuskopio/i).first(),
+    ).toBeVisible({ timeout: 5000 });
   });
 });
