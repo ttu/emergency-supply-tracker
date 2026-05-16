@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { DesktopShell, MobileShell, type DesignNavId } from './Shell';
 import { Dashboard } from './views/Dashboard';
 import { Inventory } from './views/Inventory';
-import { ItemDetail } from './views/ItemDetail';
+import { ItemDetail, NEW_ITEM_ID } from './views/ItemDetail';
 import { Alerts } from './views/Alerts';
 import { Shopping } from './views/Shopping';
 import { Plan } from './views/Plan';
@@ -18,7 +18,6 @@ import {
   MobileItemDetail,
   MobileShopping,
 } from './views/MobileViews';
-import { AddItemModal } from './views/AddItemModal';
 
 export function DesignApp() {
   const { voice } = useDesignTheme();
@@ -30,7 +29,6 @@ export function DesignApp() {
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
     undefined,
   );
-  const [addItemOpen, setAddItemOpen] = useState(false);
   const data = useDesignData();
   const alertCount = data.totals.crit + data.totals.warn;
 
@@ -46,16 +44,25 @@ export function DesignApp() {
 
   if (selectedItemId) {
     title = voice.inventory;
-    breadcrumb = selectedItemId.slice(0, 8);
+    breadcrumb =
+      selectedItemId === NEW_ITEM_ID
+        ? voice.addItem
+        : selectedItemId.slice(0, 8);
     body = isMobile ? (
       <MobileItemDetail
         itemId={selectedItemId}
         onBack={() => setSelectedItemId(undefined)}
+        defaultCategoryId={
+          selectedItemId === NEW_ITEM_ID ? selectedCategoryId : undefined
+        }
       />
     ) : (
       <ItemDetail
         itemId={selectedItemId}
         onBack={() => setSelectedItemId(undefined)}
+        defaultCategoryId={
+          selectedItemId === NEW_ITEM_ID ? selectedCategoryId : undefined
+        }
       />
     );
   } else {
@@ -86,14 +93,14 @@ export function DesignApp() {
             onItemSelect={setSelectedItemId}
             selectedCategoryId={selectedCategoryId}
             onCategoryChange={setSelectedCategoryId}
-            onAddItem={() => setAddItemOpen(true)}
+            onAddItem={() => setSelectedItemId(NEW_ITEM_ID)}
           />
         ) : (
           <Inventory
             selectedCategoryId={selectedCategoryId}
             onCategoryChange={setSelectedCategoryId}
             onItemSelect={setSelectedItemId}
-            onAddItem={() => setAddItemOpen(true)}
+            onAddItem={() => setSelectedItemId(NEW_ITEM_ID)}
           />
         );
         break;
@@ -138,21 +145,14 @@ export function DesignApp() {
 
   const Shell = isMobile ? MobileShell : DesktopShell;
   return (
-    <>
-      <Shell
-        active={nav}
-        onNav={goTo}
-        title={title}
-        breadcrumb={breadcrumb}
-        alertCount={alertCount}
-      >
-        {body}
-      </Shell>
-      <AddItemModal
-        isOpen={addItemOpen}
-        onClose={() => setAddItemOpen(false)}
-        defaultCategoryId={selectedCategoryId}
-      />
-    </>
+    <Shell
+      active={nav}
+      onNav={goTo}
+      title={title}
+      breadcrumb={breadcrumb}
+      alertCount={alertCount}
+    >
+      {body}
+    </Shell>
   );
 }
