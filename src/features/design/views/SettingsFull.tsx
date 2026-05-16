@@ -14,6 +14,7 @@ import {
   ToggleRow,
 } from './SettingsRows';
 import { NotificationsSection } from './NotificationsSection';
+import { RecommendationsSection } from './RecommendationsSection';
 import { useDesignPrefs } from './useDesignPref';
 import { useInventory } from '@/features/inventory';
 import {
@@ -27,7 +28,6 @@ import {
   ImportButton,
   ClearDataButton,
   KitManagement,
-  DisabledRecommendations,
   OverriddenRecommendations,
   CustomTemplates,
   CategoriesSection,
@@ -677,7 +677,7 @@ export function SettingsFull() {
             }
           />
           <Panel padding={0}>
-            <div style={{ padding: 20 }}>
+            <div className="design-v2-embed" style={{ padding: 20 }}>
               <InventorySetSection />
             </div>
           </Panel>
@@ -879,40 +879,30 @@ export function SettingsFull() {
 
         <NotificationsSection />
 
-        {/* 07 RECOMMENDATIONS — kits + disabled items */}
-        <section id="sec-recommendations" style={{ scrollMarginTop: 16 }}>
+        {/* 07 RECOMMENDATIONS — v2-styled active source + disabled list */}
+        <RecommendationsSection />
+
+        {/* Custom kits + overrides + templates — v1 components in v2 wrappers */}
+        <section style={{ scrollMarginTop: 16 }}>
           <SectionHeader
-            code="§7"
-            title={
-              themeKey === 'pantry' ? 'Recommendations' : 'RECOMMENDATIONS'
-            }
+            code="§7.4"
+            title={themeKey === 'pantry' ? 'Custom kits' : 'CUSTOM KITS'}
             sub={
               themeKey === 'pantry'
-                ? 'The 72tuntia.fi baseline — or your own'
-                : 'SOURCE LIST · IMPORT / EXPORT'
+                ? 'Manage uploaded recommendation files'
+                : 'UPLOADED RECOMMENDATION FILES'
             }
           />
           <Panel padding={0}>
-            <PanelHeader>
-              {themeKey === 'pantry' ? 'Source kits' : 'KITS · §7.1'}
-            </PanelHeader>
-            <div style={{ padding: 20 }}>
+            <div className="design-v2-embed" style={{ padding: 20 }}>
               <KitManagement />
             </div>
           </Panel>
           <Panel padding={0} style={{ marginTop: 14 }}>
             <PanelHeader>
-              {themeKey === 'pantry' ? 'Disabled items' : 'DISABLED · §7.2'}
+              {themeKey === 'pantry' ? 'Custom overrides' : 'OVERRIDES'}
             </PanelHeader>
-            <div style={{ padding: 20 }}>
-              <DisabledRecommendations />
-            </div>
-          </Panel>
-          <Panel padding={0} style={{ marginTop: 14 }}>
-            <PanelHeader>
-              {themeKey === 'pantry' ? 'Custom overrides' : 'OVERRIDES · §7.3'}
-            </PanelHeader>
-            <div style={{ padding: 20 }}>
+            <div className="design-v2-embed" style={{ padding: 20 }}>
               <OverriddenRecommendations />
             </div>
           </Panel>
@@ -920,9 +910,9 @@ export function SettingsFull() {
             <PanelHeader>
               {themeKey === 'pantry'
                 ? 'Custom item templates'
-                : 'CUSTOM TEMPLATES · §7.4'}
+                : 'CUSTOM TEMPLATES'}
             </PanelHeader>
-            <div style={{ padding: 20 }}>
+            <div className="design-v2-embed" style={{ padding: 20 }}>
               <CustomTemplates />
             </div>
           </Panel>
@@ -943,7 +933,7 @@ export function SettingsFull() {
             <PanelHeader>
               {themeKey === 'pantry' ? 'Custom categories' : 'CUSTOM · §8.1'}
             </PanelHeader>
-            <div style={{ padding: 20 }}>
+            <div className="design-v2-embed" style={{ padding: 20 }}>
               <CategoriesSection />
             </div>
           </Panel>
@@ -953,7 +943,7 @@ export function SettingsFull() {
                 ? 'Disabled built-in categories'
                 : 'DISABLED · §8.2'}
             </PanelHeader>
-            <div style={{ padding: 20 }}>
+            <div className="design-v2-embed" style={{ padding: 20 }}>
               <DisabledCategories />
             </div>
           </Panel>
@@ -1040,7 +1030,7 @@ export function SettingsFull() {
             <PanelHeader>
               {themeKey === 'pantry' ? 'Diagnostics' : 'DIAGNOSTICS · §9.3'}
             </PanelHeader>
-            <div style={{ padding: 20 }}>
+            <div className="design-v2-embed" style={{ padding: 20 }}>
               <DebugExport />
             </div>
           </Panel>

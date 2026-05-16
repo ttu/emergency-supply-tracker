@@ -8,6 +8,117 @@
  * components consume these directly.
  * ────────────────────────────────────────────────────────────────────────── */
 
+/* ========== Embedded v1 components inside design v2 sections ========== */
+/* Add class="design-v2-embed" to a wrapper that contains a v1 component
+ * (HouseholdForm, KitManagement, CategoriesSection etc.) so its buttons,
+ * inputs, selects and pill toggles pick up v2 tokens instead of the
+ * hardcoded v1 light/dark palette. Toggle/switch buttons keep their own
+ * styling because we target by tag, not role. */
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button:not([role='switch']):not([aria-pressed]) {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: var(--caps-tracking);
+  text-transform: var(--caps-transform);
+  cursor: pointer;
+  box-shadow: none;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='secondary']:not([role='switch']):not([aria-pressed]),
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='outline']:not([role='switch']):not([aria-pressed]) {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-rule);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='ghost']:not([role='switch']):not([aria-pressed]) {
+  background: transparent;
+  color: var(--color-text-2);
+  border: none;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='danger']:not([role='switch']):not([aria-pressed]),
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='Danger']:not([role='switch']):not([aria-pressed]) {
+  background: var(--color-crit);
+  color: #fff;
+  border: none;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='text'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='number'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='date'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='email'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='search'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  textarea,
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  select {
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input:focus,
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  select:focus,
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  textarea:focus {
+  border-color: var(--color-accent);
+}
+/* Inline status badges (e.g. Active) inside embedded panels */
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  span[class*='active'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  span[class*='Active'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  span[class*='badge'] {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+}
+
 /* ========== COCKPIT — dark operational ========== */
 [data-theme='cockpit'] {
   --color-bg: #0d141a;
