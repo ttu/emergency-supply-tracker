@@ -18,6 +18,7 @@ import {
   MobileItemDetail,
   MobileShopping,
 } from './views/MobileViews';
+import { AddItemModal } from './views/AddItemModal';
 
 export function DesignApp() {
   const { voice } = useDesignTheme();
@@ -29,6 +30,7 @@ export function DesignApp() {
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
     undefined,
   );
+  const [addItemOpen, setAddItemOpen] = useState(false);
   const data = useDesignData();
   const alertCount = data.totals.crit + data.totals.warn;
 
@@ -84,24 +86,35 @@ export function DesignApp() {
             onItemSelect={setSelectedItemId}
             selectedCategoryId={selectedCategoryId}
             onCategoryChange={setSelectedCategoryId}
+            onAddItem={() => setAddItemOpen(true)}
           />
         ) : (
           <Inventory
             selectedCategoryId={selectedCategoryId}
             onCategoryChange={setSelectedCategoryId}
             onItemSelect={setSelectedItemId}
-            onAddItem={() => {
-              /* TODO: open add modal — defer */
-            }}
+            onAddItem={() => setAddItemOpen(true)}
           />
         );
         break;
       case 'alerts':
         title = voice.alerts;
         body = isMobile ? (
-          <MobileAlerts onItemSelect={setSelectedItemId} />
+          <MobileAlerts
+            onItemSelect={setSelectedItemId}
+            onCategorySelect={(id) => {
+              setSelectedCategoryId(id);
+              setNav('inv');
+            }}
+          />
         ) : (
-          <Alerts onItemSelect={setSelectedItemId} />
+          <Alerts
+            onItemSelect={setSelectedItemId}
+            onCategorySelect={(id) => {
+              setSelectedCategoryId(id);
+              setNav('inv');
+            }}
+          />
         );
         break;
       case 'shop':
@@ -125,14 +138,21 @@ export function DesignApp() {
 
   const Shell = isMobile ? MobileShell : DesktopShell;
   return (
-    <Shell
-      active={nav}
-      onNav={goTo}
-      title={title}
-      breadcrumb={breadcrumb}
-      alertCount={alertCount}
-    >
-      {body}
-    </Shell>
+    <>
+      <Shell
+        active={nav}
+        onNav={goTo}
+        title={title}
+        breadcrumb={breadcrumb}
+        alertCount={alertCount}
+      >
+        {body}
+      </Shell>
+      <AddItemModal
+        isOpen={addItemOpen}
+        onClose={() => setAddItemOpen(false)}
+        defaultCategoryId={selectedCategoryId}
+      />
+    </>
   );
 }

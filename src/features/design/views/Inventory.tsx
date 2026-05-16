@@ -122,9 +122,13 @@ export function Inventory({
     );
   };
 
+  // 7 columns with column-gap so REC/EXPIRES don't visually merge under
+  // narrower viewports. QTY and REC are combined into one "qty / rec" cell.
   const cellStyles: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: '90px 1fr 110px 70px 110px 100px 110px 90px',
+    gridTemplateColumns:
+      '80px minmax(160px, 1fr) 70px 110px 100px minmax(80px, 110px) 80px',
+    columnGap: 12,
     padding: '12px 20px',
     alignItems: 'center',
     fontSize: 13,
@@ -242,8 +246,9 @@ export function Inventory({
           <span>ID</span>
           <span>Item</span>
           <span>Category</span>
-          <span style={{ textAlign: 'right' }}>{voice.qty}</span>
-          <span style={{ textAlign: 'right' }}>{voice.rec}</span>
+          <span style={{ textAlign: 'right' }}>
+            {voice.qty} / {voice.rec}
+          </span>
           <span>{voice.expires}</span>
           <span>{voice.location}</span>
           <span>Status</span>
@@ -316,22 +321,23 @@ export function Inventory({
               style={{
                 textAlign: 'right',
                 fontFamily: 'var(--font-mono)',
-                color:
-                  r.item.quantity === 0
-                    ? 'var(--color-crit)'
-                    : 'var(--color-text)',
+                whiteSpace: 'nowrap',
               }}
             >
-              {r.item.quantity}
-            </span>
-            <span
-              style={{
-                textAlign: 'right',
-                fontFamily: 'var(--font-mono)',
-                color: 'var(--color-text-3)',
-              }}
-            >
-              {r.recommended || '—'}
+              <span
+                style={{
+                  color:
+                    r.item.quantity === 0
+                      ? 'var(--color-crit)'
+                      : 'var(--color-text)',
+                }}
+              >
+                {r.item.quantity}
+              </span>
+              <span style={{ color: 'var(--color-text-3)' }}>
+                {' / '}
+                {r.recommended || '—'}
+              </span>
             </span>
             <span
               style={{

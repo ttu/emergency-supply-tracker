@@ -9,6 +9,8 @@ import {
 } from '../primitives';
 import { useDesignTheme } from '../useDesignTheme';
 import { useDesignData } from '../useDesignData';
+import { useInventory } from '@/features/inventory';
+import { createQuantity, type ItemId } from '@/shared/types';
 import type { DesignStatus } from '../status';
 
 const STORAGE_KEY = 'est:design:shopping-checked';
@@ -33,6 +35,7 @@ function saveChecked(state: Record<string, boolean>) {
 export function Shopping() {
   const { themeKey, voice } = useDesignTheme();
   const { rows } = useDesignData();
+  const { updateItem } = useInventory();
   const [checked, setChecked] = useState<Record<string, boolean>>(loadChecked);
 
   const list = useMemo(() => {
@@ -40,9 +43,11 @@ export function Shopping() {
       .filter((r) => r.status !== 'ok' && r.recommended > r.item.quantity)
       .map((r) => ({
         id: String(r.item.id),
+        rawId: r.item.id,
         name: r.item.name,
         cat: r.categoryCode,
         need: r.recommended - r.item.quantity,
+        currentQty: r.item.quantity,
         unit: r.item.unit,
         priority: r.status as DesignStatus,
       }))
@@ -53,6 +58,14 @@ export function Shopping() {
 
   const toggle = (id: string) => {
     const next = { ...checked, [id]: !checked[id] };
+    setChecked(next);
+    saveChecked(next);
+  };
+
+  /** Add the needed amount to the item's inventory quantity and check the row off. */
+  const addToInventory = (id: ItemId, currentQty: number, need: number) => {
+    updateItem(id, { quantity: createQuantity(currentQty + need) });
+    const next = { ...checked, [String(id)]: true };
     setChecked(next);
     saveChecked(next);
   };
@@ -121,7 +134,7 @@ export function Shopping() {
             const rowStyle: CSSProperties = {
               padding: '12px 20px',
               display: 'grid',
-              gridTemplateColumns: '24px 70px 1fr 80px 90px',
+              gridTemplateColumns: '24px 70px 1fr 80px 90px auto',
               gap: 14,
               alignItems: 'center',
               borderBottom:
@@ -184,6 +197,15 @@ export function Shopping() {
                 <StatusPill status={it.priority}>
                   {labelFor(it.priority)}
                 </StatusPill>
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    addToInventory(it.rawId, it.currentQty, it.need)
+                  }
+                  ariaLabel={`Add ${it.need} ${it.unit} to ${it.name}`}
+                >
+                  {themeKey === 'pantry' ? '+ Add' : '+ ADD'}
+                </Button>
               </div>
             );
           })}

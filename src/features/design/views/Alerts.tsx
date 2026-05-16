@@ -14,6 +14,7 @@ import type { DesignStatus } from '../status';
 
 interface AlertsProps {
   onItemSelect: (id: string) => void;
+  onCategorySelect: (categoryId: string) => void;
 }
 
 const TYPE_TO_DOT: Record<AlertType, DesignStatus> = {
@@ -22,7 +23,7 @@ const TYPE_TO_DOT: Record<AlertType, DesignStatus> = {
   info: 'ok',
 };
 
-export function Alerts({ onItemSelect }: AlertsProps) {
+export function Alerts({ onItemSelect, onCategorySelect }: AlertsProps) {
   const { themeKey, voice } = useDesignTheme();
   const {
     activeAlerts,
@@ -137,6 +138,13 @@ export function Alerts({ onItemSelect }: AlertsProps) {
             isLast={i === activeAlerts.length - 1}
             onDismiss={() => handleDismissAlert(a.id)}
             onItemSelect={a.itemId ? () => onItemSelect(a.itemId!) : undefined}
+            onRowClick={
+              a.categoryId
+                ? () => onCategorySelect(String(a.categoryId))
+                : a.itemId
+                  ? () => onItemSelect(a.itemId!)
+                  : undefined
+            }
             resolveLabel={voice.resolveAction}
             dismissLabel={themeKey === 'pantry' ? 'Dismiss' : 'DISMISS'}
           />
@@ -182,6 +190,7 @@ function AlertRow({
   isLast,
   onDismiss,
   onItemSelect,
+  onRowClick,
   resolveLabel,
   dismissLabel,
 }: {
@@ -191,6 +200,7 @@ function AlertRow({
   isLast: boolean;
   onDismiss: () => void;
   onItemSelect?: () => void;
+  onRowClick?: () => void;
   resolveLabel: string;
   dismissLabel: string;
 }) {
@@ -201,9 +211,25 @@ function AlertRow({
     gap: 14,
     alignItems: 'center',
     borderBottom: isLast ? 'none' : '1px solid var(--color-rule-soft)',
+    cursor: onRowClick ? 'pointer' : 'default',
   };
   return (
-    <div style={rowStyle}>
+    <div
+      style={rowStyle}
+      onClick={onRowClick}
+      role={onRowClick ? 'button' : undefined}
+      tabIndex={onRowClick ? 0 : undefined}
+      onKeyDown={
+        onRowClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onRowClick();
+              }
+            }
+          : undefined
+      }
+    >
       <span
         style={{
           fontFamily: 'var(--font-mono)',
@@ -245,7 +271,10 @@ function AlertRow({
           </div>
         )}
       </div>
-      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+      <div
+        style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {onItemSelect && (
           <button type="button" onClick={onItemSelect} style={pillButtonStyle}>
             {resolveLabel}

@@ -255,6 +255,7 @@ interface MobileInventoryProps {
   onItemSelect: (id: string) => void;
   selectedCategoryId?: string;
   onCategoryChange: (id?: string) => void;
+  onAddItem: () => void;
 }
 type FilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp';
 
@@ -262,6 +263,7 @@ export function MobileInventory({
   onItemSelect,
   selectedCategoryId,
   onCategoryChange,
+  onAddItem,
 }: MobileInventoryProps) {
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
@@ -304,6 +306,9 @@ export function MobileInventory({
     <div
       style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
     >
+      <Button variant="primary" full onClick={onAddItem}>
+        {themeKey === 'pantry' ? '+ Add item' : '+ ADD ITEM'}
+      </Button>
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
@@ -687,8 +692,12 @@ function MobileEditField({
 // ── Mobile Alerts ──────────────────────────────────────────────────────────
 interface MobileAlertsProps {
   onItemSelect: (id: string) => void;
+  onCategorySelect: (id: string) => void;
 }
-export function MobileAlerts({ onItemSelect }: MobileAlertsProps) {
+export function MobileAlerts({
+  onItemSelect,
+  onCategorySelect,
+}: MobileAlertsProps) {
   const { themeKey, voice } = useDesignTheme();
   const { activeAlerts, handleDismissAlert } = useDashboardAlerts();
   const counts = {
@@ -769,15 +778,21 @@ export function MobileAlerts({ onItemSelect }: MobileAlertsProps) {
             </div>
             <button
               type="button"
-              onClick={a.itemId ? () => onItemSelect(a.itemId!) : undefined}
-              disabled={!a.itemId}
+              onClick={
+                a.categoryId
+                  ? () => onCategorySelect(String(a.categoryId))
+                  : a.itemId
+                    ? () => onItemSelect(a.itemId!)
+                    : undefined
+              }
+              disabled={!a.categoryId && !a.itemId}
               style={{
                 background: 'transparent',
                 border: 0,
                 textAlign: 'left',
                 fontFamily: 'inherit',
                 color: 'inherit',
-                cursor: a.itemId ? 'pointer' : 'default',
+                cursor: a.categoryId || a.itemId ? 'pointer' : 'default',
                 padding: 0,
                 minWidth: 0,
               }}
@@ -851,6 +866,7 @@ function saveChecked(state: Record<string, boolean>) {
 export function MobileShopping() {
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
+  const { updateItem } = useInventory();
   const [checked, setChecked] = useState<Record<string, boolean>>(loadChecked);
   const list = useMemo(
     () =>
@@ -858,14 +874,27 @@ export function MobileShopping() {
         .filter((r) => r.status !== 'ok' && r.recommended > r.item.quantity)
         .map((r) => ({
           id: String(r.item.id),
+          rawId: r.item.id,
           name: r.item.name,
           q: `${r.recommended - r.item.quantity} ${r.item.unit}`,
+          need: r.recommended - r.item.quantity,
+          currentQty: r.item.quantity,
           p: r.status as DesignStatus,
         })),
     [rows],
   );
   const toggle = (id: string) => {
     const next = { ...checked, [id]: !checked[id] };
+    setChecked(next);
+    saveChecked(next);
+  };
+  const addToInventory = (
+    rawId: (typeof list)[number]['rawId'],
+    currentQty: number,
+    need: number,
+  ) => {
+    updateItem(rawId, { quantity: createQuantity(currentQty + need) });
+    const next = { ...checked, [String(rawId)]: true };
     setChecked(next);
     saveChecked(next);
   };
@@ -986,7 +1015,25 @@ export function MobileShopping() {
                   {it.q}
                 </div>
               </div>
-              <StatusPill status={it.p}>{labelFor(it.p)}</StatusPill>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                  alignItems: 'flex-end',
+                }}
+              >
+                <StatusPill status={it.p}>{labelFor(it.p)}</StatusPill>
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    addToInventory(it.rawId, it.currentQty, it.need)
+                  }
+                  ariaLabel={`Add ${it.q} to ${it.name}`}
+                >
+                  {themeKey === 'pantry' ? '+ Add' : '+ ADD'}
+                </Button>
+              </div>
             </div>
           );
         })}
