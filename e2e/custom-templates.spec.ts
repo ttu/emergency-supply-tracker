@@ -49,9 +49,7 @@ test.describe('Custom Product Templates', () => {
 
     // Navigate to Inventory and open template selector
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-
+    await page.getByRole('button', { name: '+ ADD' }).click();
     // Custom template should be displayed in the "Your Templates" section
     await expect(page.getByText('Custom Template Item')).toBeVisible();
     await expect(page.getByText('Your Templates')).toBeVisible();
@@ -88,9 +86,7 @@ test.describe('Custom Product Templates', () => {
 
     // Navigate to Inventory
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-
+    await page.getByRole('button', { name: '+ ADD' }).click();
     // Click on the custom template
     await page.getByText('My Custom Product').click();
 
@@ -169,9 +165,7 @@ test.describe('Custom Product Templates', () => {
   }) => {
     // Navigate to inventory and add a custom item with "Save as Template" checked
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'New Saved Template');
@@ -192,9 +186,7 @@ test.describe('Custom Product Templates', () => {
     ).toBeVisible();
 
     // Template should be saved - verify by opening template selector again
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-
+    await page.getByRole('button', { name: '+ ADD' }).click();
     // The new template should appear in the "Your Templates" section
     await expect(page.getByText('Your Templates')).toBeVisible();
     await expect(
@@ -288,9 +280,7 @@ test.describe('Custom Product Templates', () => {
 
     // Navigate to Inventory and open template selector
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-
+    await page.getByRole('button', { name: '+ ADD' }).click();
     // Custom template should be visible before search
     await expect(page.getByText('Searchable Template')).toBeVisible();
 

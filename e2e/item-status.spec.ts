@@ -9,9 +9,7 @@ test.describe('Item Status Indicators', () => {
     page,
   }) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity >= recommended
@@ -49,9 +47,7 @@ test.describe('Item Status Indicators', () => {
     page,
   }) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity < 50% of recommended
@@ -101,9 +97,7 @@ test.describe('Item Status Indicators', () => {
     page,
   }) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity = 0
@@ -133,9 +127,7 @@ test.describe('Item Status Indicators', () => {
   test('should show Critical status for expired item', async ({ page }) => {
     // Add expired item
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Expired Critical Item');
@@ -173,9 +165,7 @@ test.describe('Item Status Indicators', () => {
   test('should update status when quantity changes', async ({ page }) => {
     // Add item with low quantity
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Status Update Item');
@@ -207,9 +197,7 @@ test.describe('Item Status Indicators', () => {
     await page.getByTestId('v2-nav-inv').click();
 
     // Add OK item
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'OK Food Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -219,9 +207,7 @@ test.describe('Item Status Indicators', () => {
     await page.getByTestId('save-item-button').click();
 
     // Add Critical item
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Critical Food Item');
     await page.selectOption('select[name="category"]', 'food');

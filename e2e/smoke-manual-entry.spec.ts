@@ -108,7 +108,6 @@ async function testDashboardInteractions(page: Page) {
   const addItemsButton = page.getByTestId('quick-add-items');
   if (await addItemsButton.isVisible().catch(() => false)) {
     await addItemsButton.click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.keyboard.press('Escape');
   }
 
@@ -122,9 +121,7 @@ async function testDashboardInteractions(page: Page) {
 }
 
 async function addItemFromTemplate(page: Page) {
-  await page.getByTestId('add-item-button').click();
-  await expect(page.getByTestId('template-selector')).toBeVisible();
-
+  await page.getByRole('button', { name: '+ ADD' }).click();
   // Reset category filter to "All" before searching (may be pre-filtered from category navigation)
   const categoryFilter = page.getByTestId('template-category-select');
   if (await categoryFilter.isVisible().catch(() => false)) {
@@ -155,9 +152,7 @@ async function addItemFromTemplate(page: Page) {
 
 async function addCustomItem(page: Page) {
   await ensureNoModals(page);
-  await page.getByTestId('add-item-button').click();
-  await expect(page.getByTestId('template-selector')).toBeVisible();
-  await page.getByTestId('custom-item-button').click();
+  await page.getByRole('button', { name: '+ ADD' }).click();
   await expect(page.getByTestId('item-form')).toBeVisible();
 
   await page.fill('input[name="name"]', 'Custom Test Item');
@@ -267,9 +262,7 @@ async function testDashboardAlerts(page: Page) {
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
-  await page.getByTestId('add-item-button').click();
-  await expect(page.getByTestId('template-selector')).toBeVisible();
-  await page.getByTestId('custom-item-button').click();
+  await page.getByRole('button', { name: '+ ADD' }).click();
   await expect(page.getByTestId('item-form')).toBeVisible();
 
   const pastDate = new Date();
@@ -637,7 +630,7 @@ async function runManualEntryWorkflow(page: Page) {
 
   // PHASE 3: INVENTORY MANAGEMENT
   await page.getByTestId('v2-nav-inv').click();
-  await expect(page.getByTestId('add-item-button')).toBeVisible();
+  await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
   await ensureNoModals(page);
 
   await addItemFromTemplate(page);

@@ -101,9 +101,7 @@ test.describe('Custom Categories', () => {
 
     // Click on custom category (if visible in navigation)
     // Or add item and select custom category
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Fill form

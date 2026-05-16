@@ -109,7 +109,7 @@ async function completeQuickSetupOnboarding(page: Page) {
 
 async function verifyRecommendedItemsAdded(page: Page) {
   await page.getByTestId('v2-nav-inv').click();
-  await expect(page.getByTestId('add-item-button')).toBeVisible();
+  await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
   // Use scoped selector to avoid strict mode violations
   const viewport = page.viewportSize();
   const isMobile = viewport && viewport.width < 768;
@@ -247,9 +247,7 @@ async function testDashboardAlertsQuickSetup(page: Page) {
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
-  await page.getByTestId('add-item-button').click();
-  await expect(page.getByTestId('template-selector')).toBeVisible();
-  await page.getByTestId('custom-item-button').click();
+  await page.getByRole('button', { name: '+ ADD' }).click();
   await expect(page.getByTestId('item-form')).toBeVisible();
 
   const pastDate = new Date();

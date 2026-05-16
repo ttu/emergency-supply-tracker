@@ -122,7 +122,7 @@ test.describe('Onboarding Flow', () => {
 
     // Navigate to Inventory to verify items were added
     await page.getByTestId('v2-nav-inv').click();
-    await expect(page.getByTestId('add-item-button')).toBeVisible();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
 
     // Should have items in inventory (at least some recommended items)
     // Note: Items are added with quantity 0, so they may not be visible
