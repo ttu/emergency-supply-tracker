@@ -1,18 +1,17 @@
-import { useMemo, useState, type CSSProperties } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Button,
   Caption,
   Panel,
-  StatusDot,
-  StatusPill,
   Title,
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useDesignData } from '@/shared/hooks/useDesignData';
 import {
-  useDesignData,
-  type DesignItemRow,
-} from '@/shared/hooks/useDesignData';
-import type { CategoryId } from '@/shared/types';
+  InventoryFilterStrip,
+  type InventoryFilterKey,
+} from './InventoryFilterStrip';
+import { InventoryTable } from './InventoryTable';
 
 interface InventoryProps {
   selectedCategoryId?: string;
@@ -20,8 +19,6 @@ interface InventoryProps {
   onItemSelect: (id: string) => void;
   onAddItem: () => void;
 }
-
-type FilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp';
 
 const MS_PER_DAY = 86_400_000;
 
@@ -33,7 +30,7 @@ export function Inventory({
 }: InventoryProps) {
   const { themeKey, voice } = useDesignTheme();
   const { rows, categories } = useDesignData();
-  const [filter, setFilter] = useState<FilterKey>('all');
+  const [filter, setFilter] = useState<InventoryFilterKey>('all');
   const [search, setSearch] = useState('');
 
   const counts = useMemo(() => {
@@ -86,57 +83,6 @@ export function Inventory({
     });
   }, [rows, filter, selectedCategoryId, search]);
 
-  const filterChip = (k: FilterKey, label: string, n: number) => {
-    const active = filter === k;
-    return (
-      <button
-        key={k}
-        type="button"
-        onClick={() => setFilter(k)}
-        style={{
-          padding: '12px 20px',
-          cursor: 'pointer',
-          background: 'transparent',
-          border: 0,
-          borderBottom: active
-            ? '2px solid var(--color-accent)'
-            : '2px solid transparent',
-          marginBottom: -1,
-          fontFamily: 'var(--font-display)',
-          fontSize: 12,
-          fontWeight: 600,
-          letterSpacing: 'var(--caps-tracking)',
-          textTransform:
-            'var(--caps-transform)' as CSSProperties['textTransform'],
-          color: active ? 'var(--color-text)' : 'var(--color-text-3)',
-        }}
-      >
-        {label}{' '}
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--color-text-3)',
-            marginLeft: 4,
-          }}
-        >
-          {n}
-        </span>
-      </button>
-    );
-  };
-
-  // 7 columns with column-gap so REC/EXPIRES don't visually merge under
-  // narrower viewports. QTY and REC are combined into one "qty / rec" cell.
-  const cellStyles: CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns:
-      '80px minmax(160px, 1fr) 70px 110px 100px minmax(80px, 110px) 80px',
-    columnGap: 12,
-    padding: '12px 20px',
-    alignItems: 'center',
-    fontSize: 13,
-  };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div
@@ -162,228 +108,22 @@ export function Inventory({
       </div>
 
       <Panel padding={0}>
-        <div
-          style={{
-            display: 'flex',
-            borderBottom: '1px solid var(--color-rule-soft)',
-          }}
-        >
-          {filterChip('all', themeKey === 'pantry' ? 'All' : 'ALL', counts.all)}
-          {filterChip('crit', voice.statusCrit, counts.crit)}
-          {filterChip('warn', voice.statusWarn, counts.warn)}
-          {filterChip('ok', voice.statusOk, counts.ok)}
-          {filterChip(
-            'exp',
-            themeKey === 'pantry' ? 'Expiring' : 'EXP ≤30D',
-            counts.exp,
-          )}
-          <div style={{ flex: 1 }} />
-          <div
-            style={{
-              padding: '10px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <select
-              value={selectedCategoryId ?? ''}
-              onChange={(e) => onCategoryChange(e.target.value || undefined)}
-              aria-label={themeKey === 'pantry' ? 'Category' : 'CATEGORY'}
-              style={{
-                background: 'var(--color-panel-2)',
-                border: '1px solid var(--color-rule)',
-                color: 'var(--color-text)',
-                padding: '6px 10px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                borderRadius: 'var(--radius-sm)',
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="">
-                {themeKey === 'pantry' ? 'All categories' : 'ALL CATEGORIES'}
-              </option>
-              {categories.map((c) => (
-                <option key={String(c.id)} value={String(c.id)}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={themeKey === 'pantry' ? 'Search items…' : 'SEARCH'}
-              aria-label="Search inventory"
-              style={{
-                background: 'var(--color-panel-2)',
-                border: '1px solid var(--color-rule)',
-                color: 'var(--color-text)',
-                padding: '6px 10px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                borderRadius: 'var(--radius-sm)',
-                width: 200,
-                outline: 'none',
-              }}
-            />
-          </div>
-        </div>
-
-        <div
-          style={{
-            ...cellStyles,
-            padding: '10px 20px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            letterSpacing: 'var(--caps-tracking)',
-            textTransform:
-              'var(--caps-transform)' as CSSProperties['textTransform'],
-            color: 'var(--color-text-3)',
-            fontWeight: 600,
-            borderBottom: '1px solid var(--color-rule-soft)',
-            background: 'var(--color-panel-2)',
-          }}
-        >
-          <span>ID</span>
-          <span>Item</span>
-          <span>Category</span>
-          <span style={{ textAlign: 'right' }}>
-            {voice.qty} / {voice.rec}
-          </span>
-          <span>{voice.expires}</span>
-          <span>{voice.location}</span>
-          <span>Status</span>
-        </div>
-
-        {filtered.length === 0 && (
-          <div
-            style={{
-              padding: 32,
-              textAlign: 'center',
-              color: 'var(--color-text-2)',
-            }}
-          >
-            {themeKey === 'pantry' ? 'No items match.' : 'EMPTY · NO MATCH'}
-          </div>
-        )}
-
-        {filtered.map((r: DesignItemRow, i) => (
-          <button
-            key={String(r.item.id)}
-            type="button"
-            onClick={() => onItemSelect(String(r.item.id))}
-            style={{
-              ...cellStyles,
-              cursor: 'pointer',
-              borderBottom:
-                i < filtered.length - 1
-                  ? '1px solid var(--color-rule-soft)'
-                  : 'none',
-              background: 'transparent',
-              border: 0,
-              borderRadius: 0,
-              fontFamily: 'inherit',
-              color: 'inherit',
-              textAlign: 'left',
-              width: '100%',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-3)',
-              }}
-            >
-              {String(r.item.id).slice(0, 10)}
-            </span>
-            <span
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                color: 'var(--color-text)',
-                fontWeight: 500,
-              }}
-            >
-              <StatusDot status={r.status} size={6} />
-              {r.item.name}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-2)',
-              }}
-            >
-              {r.categoryCode}
-            </span>
-            <span
-              style={{
-                textAlign: 'right',
-                fontFamily: 'var(--font-mono)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span
-                style={{
-                  color:
-                    r.item.quantity === 0
-                      ? 'var(--color-crit)'
-                      : 'var(--color-text)',
-                }}
-              >
-                {r.item.quantity}
-              </span>
-              <span style={{ color: 'var(--color-text-3)' }}>
-                {' / '}
-                {r.recommended || '—'}
-              </span>
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: r.item.expirationDate
-                  ? 'var(--color-text-2)'
-                  : 'var(--color-text-3)',
-              }}
-            >
-              {r.item.expirationDate ?? '—'}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-2)',
-              }}
-            >
-              {r.item.location ?? '—'}
-            </span>
-            <StatusPill status={r.status} />
-          </button>
-        ))}
-
-        <div
-          style={{
-            padding: '12px 20px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-text-3)',
-            borderTop: '1px solid var(--color-rule-soft)',
-          }}
-        >
-          <span>
-            Showing {filtered.length} of {rows.length}
-          </span>
-        </div>
+        <InventoryFilterStrip
+          filter={filter}
+          onFilterChange={setFilter}
+          counts={counts}
+          selectedCategoryId={selectedCategoryId}
+          onCategoryChange={onCategoryChange}
+          categories={categories}
+          search={search}
+          onSearchChange={setSearch}
+        />
+        <InventoryTable
+          rows={filtered}
+          totalRowCount={rows.length}
+          onItemSelect={onItemSelect}
+        />
       </Panel>
     </div>
   );
 }
-
-export type _CategoryIdUnused = CategoryId;
