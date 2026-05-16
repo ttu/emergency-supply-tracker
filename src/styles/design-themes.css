@@ -8,6 +8,23 @@
  * components consume these directly.
  * ────────────────────────────────────────────────────────────────────────── */
 
+/* Lock the document scroll under design v2 themes — the DesktopShell /
+ * MobileShell wrappers are fixed at 100vh and own the inner scrolling
+ * (their <main> is overflow:auto). Without this rule the page itself can
+ * pick up a scrollbar that competes with the inner one, producing a
+ * "double scrollbar" effect. */
+:where(html, body):has(
+  :where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+) {
+  overflow: hidden;
+  height: 100vh;
+}
+[data-theme='cockpit'],
+[data-theme='civil'],
+[data-theme='pantry'] {
+  overflow: hidden;
+}
+
 /* ========== Embedded v1 components inside design v2 sections ========== */
 /* Add class="design-v2-embed" to a wrapper that contains a v1 component
  * (HouseholdForm, KitManagement, CategoriesSection etc.) so its buttons,
