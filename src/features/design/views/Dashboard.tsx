@@ -197,6 +197,7 @@ export function Dashboard({
               <button
                 key={String(s.category.id)}
                 type="button"
+                data-testid={`v2-category-${String(s.category.id)}`}
                 onClick={() => onCategorySelect(String(s.category.id))}
                 style={cellStyle}
               >

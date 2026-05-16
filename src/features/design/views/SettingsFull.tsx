@@ -85,6 +85,8 @@ export function SettingsFull() {
       .map((id) => document.getElementById(`sec-${id}`))
       .filter((el): el is HTMLElement => el !== null);
     if (targets.length === 0) return;
+    // Guard for environments without IntersectionObserver (jsdom in tests).
+    if (typeof IntersectionObserver === 'undefined') return;
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
