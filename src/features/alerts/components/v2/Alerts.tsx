@@ -6,11 +6,11 @@ import {
   Panel,
   StatusDot,
   Title,
-} from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDashboardAlerts } from '@/features/dashboard';
 import type { Alert, AlertType } from '@/features/alerts';
-import type { DesignStatus } from '../status';
+import type { DesignStatus } from '@/shared/utils/designStatus';
 
 interface AlertsProps {
   onItemSelect: (id: string) => void;

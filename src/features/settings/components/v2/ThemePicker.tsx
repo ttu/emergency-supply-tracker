@@ -4,7 +4,7 @@ import {
   type DesignV2Theme,
   type Theme,
 } from '@/shared/types';
-import { useDesignTheme } from './useDesignTheme';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 const PREVIEWS: Record<
   DesignV2Theme,

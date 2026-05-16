@@ -6,12 +6,12 @@ import {
   Panel,
   StatusPill,
   Title,
-} from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
-import { useDesignData } from '../useDesignData';
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory } from '@/features/inventory';
 import { createQuantity, type ItemId } from '@/shared/types';
-import type { DesignStatus } from '../status';
+import type { DesignStatus } from '@/shared/utils/designStatus';
 
 const STORAGE_KEY = 'est:design:shopping-checked';
 

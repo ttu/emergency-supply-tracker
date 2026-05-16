@@ -1,23 +1,28 @@
 import { useState } from 'react';
-import { DesktopShell, MobileShell, type DesignNavId } from './Shell';
-import { Dashboard } from './views/Dashboard';
-import { Inventory } from './views/Inventory';
-import { ItemDetail, NEW_ITEM_ID } from './views/ItemDetail';
-import { Alerts } from './views/Alerts';
-import { Shopping } from './views/Shopping';
-import { Plan } from './views/Plan';
-import { Guide } from './views/Guide';
-import { SettingsFull } from './views/SettingsFull';
-import { useDesignTheme } from './useDesignTheme';
-import { useDesignData } from './useDesignData';
-import { useIsMobile } from './useIsMobile';
 import {
-  MobileAlerts,
-  MobileDashboard,
-  MobileInventory,
-  MobileItemDetail,
-  MobileShopping,
-} from './views/MobileViews';
+  DesktopShell,
+  MobileShell,
+  type DesignNavId,
+} from '@/shared/components/design-v2/Shell';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useDesignData } from '@/shared/hooks/useDesignData';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import { Dashboard } from '@/features/dashboard/components/v2/Dashboard';
+import { MobileDashboard } from '@/features/dashboard/components/v2/MobileDashboard';
+import { Plan } from '@/features/dashboard/components/v2/Plan';
+import { Inventory } from '@/features/inventory/components/v2/Inventory';
+import { MobileInventory } from '@/features/inventory/components/v2/MobileInventory';
+import {
+  ItemDetail,
+  NEW_ITEM_ID,
+} from '@/features/inventory/components/v2/ItemDetail';
+import { MobileItemDetail } from '@/features/inventory/components/v2/MobileItemDetail';
+import { Shopping } from '@/features/inventory/components/v2/Shopping';
+import { MobileShopping } from '@/features/inventory/components/v2/MobileShopping';
+import { Alerts } from '@/features/alerts/components/v2/Alerts';
+import { MobileAlerts } from '@/features/alerts/components/v2/MobileAlerts';
+import { Guide } from '@/features/help/components/v2/Guide';
+import { SettingsFull } from '@/features/settings/components/v2/SettingsFull';
 
 export function DesignApp() {
   const { voice } = useDesignTheme();

@@ -6,9 +6,12 @@ import {
   StatusDot,
   StatusPill,
   Title,
-} from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
-import { useDesignData, type DesignItemRow } from '../useDesignData';
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import {
+  useDesignData,
+  type DesignItemRow,
+} from '@/shared/hooks/useDesignData';
 import type { CategoryId } from '@/shared/types';
 
 interface InventoryProps {

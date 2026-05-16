@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useIsMobile } from '../useIsMobile';
-import { Button, Field, NumberDisplay, Panel, Title } from '../primitives';
-import { ThemePicker } from '../ThemePicker';
-import { ClassicThemeSwitcher } from '../ClassicThemeSwitcher';
-import { useDesignTheme } from '../useDesignTheme';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import {
+  Button,
+  Field,
+  NumberDisplay,
+  Panel,
+  Title,
+} from '@/shared/components/design-v2/primitives';
+import { ThemePicker } from '@/features/settings/components/v2/ThemePicker';
+import { ClassicThemeSwitcher } from '@/features/settings/components/v2/ClassicThemeSwitcher';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
   Caption,
   PanelHeader,
@@ -15,7 +21,7 @@ import {
 } from './SettingsRows';
 import { NotificationsSection } from './NotificationsSection';
 import { RecommendationsSection } from './RecommendationsSection';
-import { useDesignPrefs } from './useDesignPref';
+import { useDesignPrefs } from '@/features/settings/hooks/useDesignPref';
 import { useInventory } from '@/features/inventory';
 import {
   getLocalStorageUsageMB,

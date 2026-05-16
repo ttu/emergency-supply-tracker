@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { Title } from '../primitives';
+import { Title } from '@/shared/components/design-v2/primitives';
 
 /** Compact section header used in the sectioned Settings page. */
 export function SectionHeader({

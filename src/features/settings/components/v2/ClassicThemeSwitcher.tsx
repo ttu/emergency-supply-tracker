@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDesignTheme } from './useDesignTheme';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { SELECTABLE_THEMES, isDesignV2Theme, type Theme } from '@/shared/types';
 
 interface ClassicThemeSwitcherProps {

@@ -1,5 +1,9 @@
-import { Caption, Panel, Title } from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
+import {
+  Caption,
+  Panel,
+  Title,
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 export function Guide() {
   const { themeKey, voice } = useDesignTheme();

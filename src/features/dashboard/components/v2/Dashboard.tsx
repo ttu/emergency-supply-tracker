@@ -8,10 +8,10 @@ import {
   StatusDot,
   StatusPill,
   Title,
-} from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
-import { useDesignData } from '../useDesignData';
-import { categoryCode } from '../voice';
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useDesignData } from '@/shared/hooks/useDesignData';
+import { categoryCode } from '@/shared/i18n/voice';
 import type { CategoryId } from '@/shared/types';
 
 interface DashboardProps {

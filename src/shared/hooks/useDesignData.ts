@@ -9,8 +9,8 @@ import {
   statusOf,
   type CategoryStats,
   type DesignStatus,
-} from './status';
-import { categoryCode } from './voice';
+} from '@/shared/utils/designStatus';
+import { categoryCode } from '@/shared/i18n/voice';
 import type { Category, InventoryItem } from '@/shared/types';
 
 export interface DesignItemRow {

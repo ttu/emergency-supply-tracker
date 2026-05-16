@@ -5,8 +5,8 @@ import {
   StatusBar,
   StatusPill,
   Title,
-} from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 export function Plan() {
   const { themeKey, voice } = useDesignTheme();

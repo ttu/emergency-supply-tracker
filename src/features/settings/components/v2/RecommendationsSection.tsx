@@ -1,11 +1,11 @@
 import { useMemo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Panel } from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
+import { Button, Panel } from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { Caption, SectionHeader } from './SettingsRows';
 import { useInventory } from '@/features/inventory';
 import { useRecommendedItems, RECOMMENDED_ITEMS } from '@/features/templates';
-import { categoryCode } from '../voice';
+import { categoryCode } from '@/shared/i18n/voice';
 
 export function RecommendationsSection() {
   const { themeKey } = useDesignTheme();

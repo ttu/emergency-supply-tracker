@@ -1,7 +1,7 @@
 import { useMemo, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Panel } from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
+import { Button, Panel } from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
   Caption,
   PanelHeader,

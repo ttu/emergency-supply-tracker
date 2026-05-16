@@ -1,6 +1,6 @@
 import { useSettings } from '@/features/settings';
 import { isDesignV2Theme, type DesignV2Theme } from '@/shared/types';
-import { VOICE, type Voice } from './voice';
+import { VOICE, type Voice } from '@/shared/i18n/voice';
 
 export interface DesignThemeContext {
   themeKey: DesignV2Theme;

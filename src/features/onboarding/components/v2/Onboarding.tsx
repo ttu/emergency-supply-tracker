@@ -1,8 +1,14 @@
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Caption, NumberDisplay, Panel, Title } from './primitives';
-import { ThemePicker } from './ThemePicker';
-import { useDesignTheme } from './useDesignTheme';
+import {
+  Button,
+  Caption,
+  NumberDisplay,
+  Panel,
+  Title,
+} from '@/shared/components/design-v2/primitives';
+import { ThemePicker } from '@/features/settings/components/v2/ThemePicker';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
 import type { HouseholdConfig, InventoryItem, Theme } from '@/shared/types';
 

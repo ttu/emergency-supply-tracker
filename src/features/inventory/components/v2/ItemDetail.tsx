@@ -7,9 +7,9 @@ import {
   StatusBar,
   StatusDot,
   Title,
-} from '../primitives';
-import { useDesignTheme } from '../useDesignTheme';
-import { useDesignData } from '../useDesignData';
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useDesignData } from '@/shared/hooks/useDesignData';
 import {
   useInventory,
   useLocationSuggestions,
@@ -19,8 +19,8 @@ import { createQuantity, type InventoryItem } from '@/shared/types';
 
 /** Sentinel id used when navigating to ItemDetail to add a new item. */
 export const NEW_ITEM_ID = '__new__';
-import { categoryCode } from '../voice';
-import { statusOf } from '../status';
+import { categoryCode } from '@/shared/i18n/voice';
+import { statusOf } from '@/shared/utils/designStatus';
 
 interface ItemDetailProps {
   itemId: string;

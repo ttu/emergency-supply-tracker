@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { useDesignTheme } from './useDesignTheme';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 export type Status = 'ok' | 'warn' | 'crit';
 

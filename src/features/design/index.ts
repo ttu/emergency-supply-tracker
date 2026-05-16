@@ -1,7 +1,7 @@
 export { DesignApp } from './DesignApp';
-export { DesignOnboarding } from './Onboarding';
+export { DesignOnboarding } from '@/features/onboarding/components/v2/Onboarding';
 export { DesignV2Notice } from './DesignV2Notice';
-export { ThemePicker } from './ThemePicker';
-export { useDesignTheme } from './useDesignTheme';
-export { VOICE, CATEGORY_CODES, categoryCode } from './voice';
-export type { Voice } from './voice';
+export { ThemePicker } from '@/features/settings/components/v2/ThemePicker';
+export { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+export { VOICE, CATEGORY_CODES, categoryCode } from '@/shared/i18n/voice';
+export type { Voice } from '@/shared/i18n/voice';
