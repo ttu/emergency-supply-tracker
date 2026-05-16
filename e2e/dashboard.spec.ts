@@ -5,149 +5,84 @@ test.describe('Dashboard', () => {
     await setupApp();
   });
 
-  test('should display dashboard page', async ({ page }) => {
-    // Verify dashboard page is visible
-    await expect(page.getByTestId('page-dashboard')).toBeVisible();
-
-    // Verify quick actions section
-    await expect(page.getByTestId('quick-actions')).toBeVisible();
-
-    // Verify categories overview
-    await expect(page.getByTestId('categories-overview')).toBeVisible();
+  test('should display the v2 dashboard with hero + KPI row + matrix', async ({
+    page,
+  }) => {
+    // Cockpit voice: "HOUSEHOLD STATUS" is the hero title, "READINESS" is the
+    // first KPI caption, "COVERAGE MATRIX" is the matrix caption.
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
+    await expect(page.getByText('READINESS').first()).toBeVisible();
+    await expect(page.getByText(/COVERAGE MATRIX/)).toBeVisible();
   });
 
-  test('should show category cards', async ({ page }) => {
-    // Verify at least some standard categories are shown using data-testid
-    await expect(page.getByTestId('category-food')).toBeVisible();
+  test('should show a tile per category in the coverage matrix', async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('v2-category-food')).toBeVisible();
+    await expect(page.getByTestId('v2-category-water-beverages')).toBeVisible();
   });
 
-  test('should navigate to inventory from quick action', async ({ page }) => {
-    // Navigate to Inventory via navigation
+  test('should navigate to inventory from the nav', async ({ page }) => {
     await page.getByTestId('v2-nav-inv').click();
-
-    // Should be on Inventory page
-    await expect(page.getByTestId('add-item-button')).toBeVisible();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
   });
 
   test('should update dashboard when items are added', async ({ page }) => {
-    // Navigate to Inventory and add an item
+    // Add an item from Inventory via the inline + ADD flow.
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Test Food Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '10');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByLabel(/never expires/i).check();
     await page.getByTestId('save-item-button').click();
 
-    // Navigate back to Dashboard
+    // Back on the dashboard, the Food tile should still be visible (CoverageMatrix).
     await page.getByTestId('v2-nav-home').click();
-
-    // The Food category should show some status (not empty)
-    await expect(page.getByTestId('category-food')).toBeVisible();
+    await expect(page.getByTestId('v2-category-food')).toBeVisible();
   });
 
-  test('should show alerts when items need attention', async ({ page }) => {
-    // Add item with zero quantity to trigger critical alert
+  test('should surface low-stock items in the priority queue', async ({
+    page,
+  }) => {
+    // Add an item with zero quantity — it becomes a critical-status row.
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Out of Stock Item');
     await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '0'); // Zero quantity triggers alert
+    await page.fill('input[name="quantity"]', '0');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    await page.getByLabel(/never expires/i).check();
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Dashboard
     await page.getByTestId('v2-nav-home').click();
-
-    // Should show alerts section
-    await expect(page.getByTestId('alerts-section')).toBeVisible();
+    // Dashboard's PriorityQueue lists non-OK items.
+    await expect(page.getByText(/PRIORITY QUEUE/)).toBeVisible();
+    // Wait past the notification toast so only the PriorityQueue row remains.
+    await page.waitForTimeout(3000);
+    await expect(
+      page.getByText('Out of Stock Item', { exact: true }),
+    ).toBeVisible();
   });
 
-  test('should navigate via quick action buttons', async ({ page }) => {
-    // Verify Quick Actions section is visible
-    await expect(page.getByTestId('quick-actions')).toBeVisible();
-
-    // Test "Add Items" button - should navigate to Inventory and open template selector
-    await expect(page.getByTestId('quick-add-items')).toBeVisible();
-    await page.getByTestId('quick-add-items').click();
-
-    // Should be on Inventory page with template selector modal open
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-
-    // Close the modal
-    await page.getByTestId('modal-close-button').click();
-
-    // Go back to Dashboard
-    await page.getByTestId('v2-nav-home').click();
-
-    // Test "View Inventory" button
-    await expect(page.getByTestId('quick-view-inventory')).toBeVisible();
-    await page.getByTestId('quick-view-inventory').click();
-
-    // Should navigate to Inventory page
-    await expect(page.getByTestId('add-item-button')).toBeVisible();
-
-    // Go back to Dashboard
-    await page.getByTestId('v2-nav-home').click();
-
-    // Test "Export Shopping List" button is visible
-    await expect(page.getByTestId('quick-export-shopping-list')).toBeVisible();
-
-    // Note: We don't click export as it's a download action
-    // The presence of the button validates it's wired up
-  });
-
-  test('should navigate to inventory with category filter when clicking category card', async ({
+  test('clicking a category tile navigates to inventory filtered by that category', async ({
     page,
   }) => {
-    // Click on Food category card
-    const foodCategoryCard = page.getByTestId('category-food');
-    await expect(foodCategoryCard).toBeVisible();
-    await foodCategoryCard.click();
-
-    // Should navigate to Inventory page
-    await expect(page.getByTestId('page-inventory')).toBeVisible();
-
-    // Scope to active container to avoid strict mode violations
-    const viewport = page.viewportSize();
-    const isMobile = viewport && viewport.width < 768;
-    const menuContainer = isMobile
-      ? page.getByTestId('sidemenu-drawer')
-      : page.getByTestId('sidemenu-sidebar');
-    const foodCategoryMenuItem =
-      menuContainer.getByTestId('sidemenu-item-food');
-    await expect(foodCategoryMenuItem).toHaveClass(/selected|active/);
+    await page.getByTestId('v2-category-food').click();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
+    // The category select reflects the picked category.
+    await expect(
+      page.getByRole('combobox', { name: /category/i }).first(),
+    ).toHaveValue('food');
   });
 
-  test('should navigate to inventory with category filter on mobile', async ({
+  test('VIEW ALL → on the priority queue navigates to inventory', async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
-    // Click on Food category card
-    const foodCategoryCard = page.getByTestId('category-food');
-    await expect(foodCategoryCard).toBeVisible();
-    await foodCategoryCard.click();
-
-    // Should navigate to Inventory page
-    await expect(page.getByTestId('page-inventory')).toBeVisible();
-
-    // On mobile, open hamburger to access drawer
-    const hamburger = page.getByTestId('sidemenu-hamburger');
-    if (await hamburger.isVisible().catch(() => false)) {
-      await hamburger.click();
-      await page.waitForTimeout(300);
-    }
-    const menuContainer = page.getByTestId('sidemenu-drawer');
-    const foodCategoryMenuItem =
-      menuContainer.getByTestId('sidemenu-item-food');
-    await expect(foodCategoryMenuItem).toHaveClass(/selected|active/);
+    await page.getByRole('button', { name: /VIEW ALL/ }).click();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
   });
 });
