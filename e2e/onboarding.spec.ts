@@ -140,7 +140,7 @@ test.describe('Onboarding Flow', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,

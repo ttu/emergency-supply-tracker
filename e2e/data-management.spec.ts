@@ -93,7 +93,7 @@ test.describe('Backup & Transfer', () => {
       },
       settings: {
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         onboardingCompleted: true,
       },
       lastModified: new Date().toISOString(),

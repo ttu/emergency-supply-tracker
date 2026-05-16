@@ -33,7 +33,7 @@ test.describe('Custom Product Templates', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,
@@ -72,7 +72,7 @@ test.describe('Custom Product Templates', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,
@@ -128,7 +128,7 @@ test.describe('Custom Product Templates', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,
@@ -221,7 +221,7 @@ test.describe('Custom Product Templates', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,
@@ -272,7 +272,7 @@ test.describe('Custom Product Templates', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,

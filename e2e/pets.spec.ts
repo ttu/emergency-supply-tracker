@@ -90,7 +90,7 @@ test.describe('Pet Support', () => {
         settings: {
           onboardingCompleted: true,
           language: 'en',
-          theme: 'light',
+          theme: 'cockpit',
           highContrast: false,
           advancedFeatures: {
             calorieTracking: false,
@@ -126,7 +126,7 @@ test.describe('Pet Support', () => {
         settings: {
           onboardingCompleted: true,
           language: 'en',
-          theme: 'light',
+          theme: 'cockpit',
           highContrast: false,
           advancedFeatures: {
             calorieTracking: false,
@@ -167,7 +167,7 @@ test.describe('Pet Support', () => {
         settings: {
           onboardingCompleted: true,
           language: 'en',
-          theme: 'light',
+          theme: 'cockpit',
           highContrast: false,
           advancedFeatures: {
             calorieTracking: false,
@@ -223,7 +223,7 @@ test.describe('Pet Support', () => {
         settings: {
           onboardingCompleted: true,
           language: 'en',
-          theme: 'light',
+          theme: 'cockpit',
           highContrast: false,
           advancedFeatures: {
             calorieTracking: false,

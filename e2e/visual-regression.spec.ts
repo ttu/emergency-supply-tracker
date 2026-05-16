@@ -105,7 +105,7 @@ test.describe('Visual Regression - Dashboard', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,
@@ -143,7 +143,7 @@ test.describe('Visual Regression - Inventory', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,
@@ -298,7 +298,7 @@ test.describe('Visual Regression - Mobile', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,
@@ -348,7 +348,7 @@ test.describe('Visual Regression - UI States', () => {
       settings: {
         onboardingCompleted: true,
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         advancedFeatures: {
           calorieTracking: false,
