@@ -7,7 +7,7 @@ test.describe('Shopping List Export Formats', () => {
 
   test('should export shopping list as TXT format', async ({ page }) => {
     // Add items that need restocking using a recommended item template
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     // Search for rice (a recommended food item)
@@ -21,7 +21,7 @@ test.describe('Shopping List Export Formats', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard where the shopping list export button is
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Find Export Shopping List button in Quick Actions
     const exportButton = page.getByTestId('quick-export-shopping-list');
@@ -66,7 +66,7 @@ test.describe('Shopping List Export Formats', () => {
     page,
   }) => {
     // Add multiple items to inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Add first item
     await page.getByTestId('add-item-button').click();
@@ -93,7 +93,7 @@ test.describe('Shopping List Export Formats', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard where the shopping list export button is
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
     await page.waitForLoadState('networkidle');
 
     // The export button should be visible on Dashboard
@@ -103,7 +103,7 @@ test.describe('Shopping List Export Formats', () => {
 
   test('should show alert when no items need restocking', async ({ page }) => {
     // Ensure we have items but all are fully stocked
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -118,7 +118,7 @@ test.describe('Shopping List Export Formats', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard where the shopping list export button is
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Export button should be visible
     const exportButton = page.getByTestId('quick-export-shopping-list');
@@ -140,7 +140,7 @@ test.describe('Shopping List Export Formats', () => {
     page,
   }) => {
     // Add item that needs restocking using a recommended item template
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     // Search for rice (a recommended food item)
@@ -170,7 +170,7 @@ test.describe('Shopping List Export Formats', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard where the shopping list export button is
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Export shopping list
     const exportButton = page.getByTestId('quick-export-shopping-list');

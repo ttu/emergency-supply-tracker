@@ -48,7 +48,7 @@ test.describe('Custom Product Templates', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory and open template selector
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
 
@@ -87,7 +87,7 @@ test.describe('Custom Product Templates', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
 
@@ -145,7 +145,7 @@ test.describe('Custom Product Templates', () => {
     // Reload again and wait for app to finish loading before reading storage
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('networkidle');
-    await expect(page.getByTestId('nav-settings')).toBeVisible({
+    await expect(page.getByTestId('v2-nav-settings')).toBeVisible({
       timeout: 10000,
     });
 
@@ -168,7 +168,7 @@ test.describe('Custom Product Templates', () => {
     page,
   }) => {
     // Navigate to inventory and add a custom item with "Save as Template" checked
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -236,7 +236,7 @@ test.describe('Custom Product Templates', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Export data
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await navigateToSettingsSection(page, 'data');
     const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
@@ -287,7 +287,7 @@ test.describe('Custom Product Templates', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory and open template selector
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
 

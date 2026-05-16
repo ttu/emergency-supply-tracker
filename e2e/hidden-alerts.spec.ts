@@ -113,7 +113,7 @@ test.describe('Hidden Alerts Management', () => {
     await dismissButton.click();
 
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Hidden Alerts section
     await navigateToSettingsSection(page, 'notifications');
@@ -194,7 +194,7 @@ test.describe('Hidden Alerts Management', () => {
     await dismissButton.click();
 
     // Go to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Hidden Alerts section
     await navigateToSettingsSection(page, 'notifications');
@@ -211,7 +211,7 @@ test.describe('Hidden Alerts Management', () => {
       await reactivateButton.click();
 
       // Navigate back to Dashboard
-      await page.getByTestId('nav-dashboard').click();
+      await page.getByTestId('v2-nav-home').click();
 
       // Alert should be visible again (might take a moment)
       await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
@@ -287,7 +287,7 @@ test.describe('Hidden Alerts Management', () => {
     }
 
     // Go to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Hidden Alerts section
     await navigateToSettingsSection(page, 'notifications');
@@ -304,7 +304,7 @@ test.describe('Hidden Alerts Management', () => {
       await reactivateAllButton.click();
 
       // Navigate back to Dashboard
-      await page.getByTestId('nav-dashboard').click();
+      await page.getByTestId('v2-nav-home').click();
 
       // Alerts should be visible again
       await expect(page.getByText(/expired|vanhentunut/i)).toBeVisible({
@@ -385,7 +385,7 @@ test.describe('Hidden Alerts Management', () => {
     expect(alertVisible).toBe(false);
 
     // Go to Settings and verify it's in hidden alerts
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Hidden Alerts section
     await navigateToSettingsSection(page, 'notifications');

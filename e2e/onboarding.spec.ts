@@ -121,7 +121,7 @@ test.describe('Onboarding Flow', () => {
     });
 
     // Navigate to Inventory to verify items were added
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await expect(page.getByTestId('add-item-button')).toBeVisible();
 
     // Should have items in inventory (at least some recommended items)
@@ -193,7 +193,7 @@ test.describe('Onboarding Flow', () => {
     await page.getByTestId('skip-quick-setup-button').click();
 
     // Language should persist - navigation should be in Finnish
-    await expect(page.getByTestId('nav-dashboard')).toBeVisible({
+    await expect(page.getByTestId('v2-nav-home')).toBeVisible({
       timeout: 5000,
     });
   });

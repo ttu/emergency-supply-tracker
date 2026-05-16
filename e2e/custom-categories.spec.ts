@@ -49,7 +49,7 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     await expect(page.getByTestId('page-inventory')).toBeVisible();
 
@@ -97,7 +97,7 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Click on custom category (if visible in navigation)
     // Or add item and select custom category
@@ -274,7 +274,7 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Try to filter by custom category
     // Custom categories should appear in category navigation
@@ -324,7 +324,7 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await expect(page.getByTestId('page-settings')).toBeVisible();
 
     // Navigate to Custom Categories section
@@ -356,7 +356,7 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Navigate to Settings -> Custom Categories
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await navigateToSettingsSection(page, 'categories');
 
     // Click Add Category
@@ -412,7 +412,7 @@ test.describe('Custom Categories', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Export data
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await navigateToSettingsSection(page, 'data');
     const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });

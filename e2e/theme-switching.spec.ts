@@ -6,7 +6,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should change theme in settings', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     // Navigate to Appearance section (default is now Household)
     await page
       .getByTestId('sidemenu-sidebar')
@@ -28,7 +28,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should persist theme after page reload', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     // Navigate to Appearance section (default is now Household)
     await page
       .getByTestId('sidemenu-sidebar')
@@ -59,7 +59,7 @@ test.describe('Theme Switching', () => {
     expect(themeAttribute).toBe('midnight');
 
     // Verify theme selector shows correct value
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await page.waitForLoadState('networkidle');
     // Navigate to Appearance section (default is now Household)
     await page
@@ -75,7 +75,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should apply theme immediately without reload', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     // Navigate to Appearance section (default is now Household)
     await page
       .getByTestId('sidemenu-sidebar')
@@ -107,7 +107,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should toggle high contrast mode', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     // Navigate to Appearance section (default is now Household)
     await page
       .getByTestId('sidemenu-sidebar')
@@ -134,7 +134,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should persist high contrast mode after reload', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     // Navigate to Appearance section (default is now Household)
     await page
       .getByTestId('sidemenu-sidebar')
@@ -153,7 +153,7 @@ test.describe('Theme Switching', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Verify high contrast persisted
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     // Navigate to Appearance section (default is now Household)
     await page
       .getByTestId('sidemenu-sidebar')
@@ -167,7 +167,7 @@ test.describe('Theme Switching', () => {
   });
 
   test('should apply theme to all pages', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     // Navigate to Appearance section (default is now Household)
     await page
       .getByTestId('sidemenu-sidebar')
@@ -179,19 +179,19 @@ test.describe('Theme Switching', () => {
     await themeSelect.selectOption('forest');
 
     // Navigate to different pages and verify theme persists
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
     let themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('forest');
 
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('forest');
 
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );

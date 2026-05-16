@@ -6,84 +6,83 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate between pages', async ({ page }) => {
-    // Start on Dashboard
-    await expect(page.getByTestId('page-dashboard')).toBeVisible();
+    // Start on Dashboard (Overview)
+    await expect(page.getByText('READINESS').first()).toBeVisible();
 
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
-    await expect(page.getByTestId('add-item-button')).toBeVisible();
+    await page.getByTestId('v2-nav-inv').click();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
 
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
-    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await page.getByTestId('v2-nav-settings').click();
+    await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible();
 
-    // Navigate to Help
-    await page.getByTestId('nav-help').click();
-    await expect(page.getByTestId('page-help')).toBeVisible();
+    // Navigate to Help (Guide)
+    await page.getByTestId('v2-nav-help').click();
+    await expect(page.getByText('CIVIL PREPAREDNESS · BASELINE')).toBeVisible();
 
     // Navigate back to Dashboard
-    await page.getByTestId('nav-dashboard').click();
-    await expect(page.getByTestId('quick-actions')).toBeVisible();
+    await page.getByTestId('v2-nav-home').click();
+    await expect(page.getByText('READINESS').first()).toBeVisible();
   });
 
   test('should show active navigation state', async ({ page }) => {
-    // Dashboard should be active initially
-    const dashboardNav = page.getByTestId('nav-dashboard');
-    await expect(dashboardNav).toHaveAttribute('aria-current', 'page');
+    // Dashboard (home) should be active initially
+    const home = page.getByTestId('v2-nav-home');
+    await expect(home).toHaveAttribute('aria-current', 'page');
 
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
-    const inventoryNav = page.getByTestId('nav-inventory');
-    await expect(inventoryNav).toHaveAttribute('aria-current', 'page');
-    await expect(dashboardNav).not.toHaveAttribute('aria-current', 'page');
+    await page.getByTestId('v2-nav-inv').click();
+    const inv = page.getByTestId('v2-nav-inv');
+    await expect(inv).toHaveAttribute('aria-current', 'page');
+    await expect(home).not.toHaveAttribute('aria-current', 'page');
 
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
-    const settingsNav = page.getByTestId('nav-settings');
-    await expect(settingsNav).toHaveAttribute('aria-current', 'page');
-    await expect(inventoryNav).not.toHaveAttribute('aria-current', 'page');
+    await page.getByTestId('v2-nav-settings').click();
+    const settings = page.getByTestId('v2-nav-settings');
+    await expect(settings).toHaveAttribute('aria-current', 'page');
+    await expect(inv).not.toHaveAttribute('aria-current', 'page');
   });
 
   test('should persist data across page navigation', async ({ page }) => {
-    // Add item on Inventory page
-    await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    // Add an item from Inventory via the v2 + ADD button (inline detail view)
+    await page.getByTestId('v2-nav-inv').click();
+    await page.getByRole('button', { name: '+ ADD' }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Persistent Item');
     await page.selectOption('select[name="category"]', 'food');
     await page.fill('input[name="quantity"]', '1');
     await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
+    // "Never expires" is required when no expiry date is set.
+    await page.getByLabel(/never expires/i).check();
     await page.getByTestId('save-item-button').click();
 
+    // After save, ItemDetail returns to the inventory list.
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
+
     // Navigate away to Settings
-    await page.getByTestId('nav-settings').click();
-    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await page.getByTestId('v2-nav-settings').click();
+    await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible();
 
-    // Navigate back to Inventory
-    await page.getByTestId('nav-inventory').click();
-
-    // Verify item still exists
-    // Use getByRole to target item card button specifically
+    // Navigate back to Inventory and verify the item persisted
+    await page.getByTestId('v2-nav-inv').click();
+    // Match the inventory row (a button), not the notification toast.
     await expect(
-      page.getByRole('button', { name: /Persistent Item/i }),
+      page.getByRole('button', { name: /Persistent Item/ }),
     ).toBeVisible();
   });
 
-  test('should work on mobile viewport', async ({ page }) => {
-    // Set mobile viewport
+  test('should work on mobile viewport', async ({ page, setupApp }) => {
+    // Re-run setup at mobile size so the MobileShell mounts from the start.
     await page.setViewportSize({ width: 375, height: 667 });
+    await setupApp();
 
-    // Navigation should still be visible and functional
-    await expect(page.locator('nav')).toBeVisible();
+    await page.getByTestId('v2-nav-inv').click();
+    await expect(
+      page.getByRole('button', { name: '+ ADD ITEM' }),
+    ).toBeVisible();
 
-    // Navigate to different pages
-    await page.getByTestId('nav-inventory').click();
-    await expect(page.getByTestId('add-item-button')).toBeVisible();
-
-    await page.getByTestId('nav-settings').click();
-    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await page.getByTestId('v2-nav-settings').click();
+    await expect(page.getByText(/SYSTEM CONFIGURATION|Settings/)).toBeVisible();
   });
 });

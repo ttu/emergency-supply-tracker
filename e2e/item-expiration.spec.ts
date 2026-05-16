@@ -6,7 +6,7 @@ test.describe('Item Expiration Tracking', () => {
   });
 
   test('should add item with expiration date', async ({ page }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -37,7 +37,7 @@ test.describe('Item Expiration Tracking', () => {
   test('should show expiring soon alert for items expiring within 30 days', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -59,7 +59,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
     await page.waitForLoadState('networkidle');
 
     // Verify we're on dashboard
@@ -74,7 +74,7 @@ test.describe('Item Expiration Tracking', () => {
   test('should show expired alert for items past expiration date', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -96,7 +96,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Should show expired alert - scope to alerts section to avoid notifications
     const alertsSection = page.getByTestId('alerts-section');
@@ -108,7 +108,7 @@ test.describe('Item Expiration Tracking', () => {
   test('should not show expiration warnings for items with neverExpires=true', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -124,7 +124,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Should not show expiration alerts for this item
     // (Other items might have alerts, but this one shouldn't)
@@ -144,7 +144,7 @@ test.describe('Item Expiration Tracking', () => {
 
   test('should update expiration date when editing item', async ({ page }) => {
     // Add item first
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -182,7 +182,7 @@ test.describe('Item Expiration Tracking', () => {
   });
 
   test('should show expiration date on item card', async ({ page }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();

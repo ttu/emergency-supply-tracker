@@ -14,7 +14,7 @@ test.describe('Settings', () => {
   });
 
   test('should display settings page', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Verify settings page is visible
     await expect(page.getByTestId('page-settings')).toBeVisible();
@@ -27,7 +27,7 @@ test.describe('Settings', () => {
   });
 
   test('should change language', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to appearance section which has the language selector
     await navigateToSettingsSection(page, 'appearance');
@@ -40,12 +40,12 @@ test.describe('Settings', () => {
 
     // Wait for language change to apply by waiting for Finnish text to appear
     // Finnish for "Dashboard" is "Etusivu"
-    await expect(page.getByTestId('nav-dashboard')).toContainText('Etusivu', {
+    await expect(page.getByTestId('v2-nav-home')).toContainText('Etusivu', {
       timeout: 5000,
     });
 
     // Navigate to different page to see translated content
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Check if navigation changed to Finnish
     // (This assumes navigation labels change with language)
@@ -55,7 +55,7 @@ test.describe('Settings', () => {
   });
 
   test('should update household configuration', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to household section
     await navigateToSettingsSection(page, 'household');
@@ -67,8 +67,8 @@ test.describe('Settings', () => {
 
     // Values should be saved to localStorage automatically
     // Navigate away and back to verify persistence
-    await page.getByTestId('nav-dashboard').click();
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-home').click();
+    await page.getByTestId('v2-nav-settings').click();
     await navigateToSettingsSection(page, 'household');
 
     // Verify value persisted
@@ -76,7 +76,7 @@ test.describe('Settings', () => {
   });
 
   test('should use household presets', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to household section
     await navigateToSettingsSection(page, 'household');
@@ -94,7 +94,7 @@ test.describe('Settings', () => {
   });
 
   test('should toggle advanced features', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to appearance section which has the high contrast checkbox
     await navigateToSettingsSection(page, 'appearance');
@@ -113,7 +113,7 @@ test.describe('Settings', () => {
   });
 
   test('should navigate to GitHub from About section', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to about section
     await navigateToSettingsSection(page, 'about');
@@ -128,7 +128,7 @@ test.describe('Settings', () => {
   });
 
   test('should display disabled recommendations section', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to disabled recommendations section
     await navigateToSettingsSection(page, 'recommendations');
@@ -149,7 +149,7 @@ test.describe('Settings', () => {
     page,
   }) => {
     // First, disable an item from inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
@@ -177,7 +177,7 @@ test.describe('Settings', () => {
     });
 
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to disabled recommendations section
     await navigateToSettingsSection(page, 'recommendations');
@@ -200,7 +200,7 @@ test.describe('Settings', () => {
     page,
   }) => {
     // First, disable an item from inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
@@ -231,7 +231,7 @@ test.describe('Settings', () => {
     expect(afterDisableCount).toBe(initialCount - 1);
 
     // Navigate to Settings and re-enable the item
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to disabled recommendations section
     await navigateToSettingsSection(page, 'recommendations');
@@ -246,7 +246,7 @@ test.describe('Settings', () => {
     await enableButton.click();
 
     // Navigate back to inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items again
@@ -263,7 +263,7 @@ test.describe('Settings', () => {
     page,
   }) => {
     // First, disable multiple items from inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
@@ -294,7 +294,7 @@ test.describe('Settings', () => {
     });
 
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to disabled recommendations section
     await navigateToSettingsSection(page, 'recommendations');
@@ -312,7 +312,7 @@ test.describe('Settings', () => {
     await enableAllButton.click();
 
     // Navigate back to inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items again

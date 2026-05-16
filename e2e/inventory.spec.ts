@@ -14,7 +14,7 @@ test.describe('Inventory Management', () => {
 
   test('should add item from template', async ({ page }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Click "Add Item" button
     await page.getByTestId('add-item-button').click();
@@ -40,7 +40,7 @@ test.describe('Inventory Management', () => {
 
   test('should add custom item', async ({ page }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Click "Add Item" to open template selector
     await page.getByTestId('add-item-button').click();
@@ -69,7 +69,7 @@ test.describe('Inventory Management', () => {
 
   test('should edit existing item', async ({ page }) => {
     // Navigate to Inventory and add an item first
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -104,7 +104,7 @@ test.describe('Inventory Management', () => {
 
   test('should delete item', async ({ page }) => {
     // Navigate to Inventory and add an item first
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -145,7 +145,7 @@ test.describe('Inventory Management', () => {
 
   test('should filter items by category', async ({ page }) => {
     // Navigate to Inventory and add items in different categories
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Add food item
     await page.getByTestId('add-item-button').click();
@@ -208,7 +208,7 @@ test.describe('Inventory Management', () => {
 
   test('should search items', async ({ page }) => {
     // Navigate to Inventory and add items
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
@@ -259,7 +259,7 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Click "Add Item" button
     await page.getByTestId('add-item-button').click();
@@ -322,7 +322,7 @@ test.describe('Inventory Management', () => {
 
   test('should show item type when adding from template', async ({ page }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Open template selector and select a template
     await page.getByTestId('add-item-button').click();
@@ -346,7 +346,7 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Open template selector
     await page.getByTestId('add-item-button').click();
@@ -367,7 +367,7 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory and add an item first
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -405,7 +405,7 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Open template selector
     await page.getByTestId('add-item-button').click();
@@ -424,7 +424,7 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Click on Water category to see category status using SideMenu
     await selectInventoryCategory(page, 'water-beverages');
@@ -441,7 +441,7 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);
@@ -471,7 +471,7 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Ensure no modals are open
     await ensureNoModals(page);

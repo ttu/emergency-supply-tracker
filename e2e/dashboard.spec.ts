@@ -23,7 +23,7 @@ test.describe('Dashboard', () => {
 
   test('should navigate to inventory from quick action', async ({ page }) => {
     // Navigate to Inventory via navigation
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Should be on Inventory page
     await expect(page.getByTestId('add-item-button')).toBeVisible();
@@ -31,7 +31,7 @@ test.describe('Dashboard', () => {
 
   test('should update dashboard when items are added', async ({ page }) => {
     // Navigate to Inventory and add an item
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -44,7 +44,7 @@ test.describe('Dashboard', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate back to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // The Food category should show some status (not empty)
     await expect(page.getByTestId('category-food')).toBeVisible();
@@ -52,7 +52,7 @@ test.describe('Dashboard', () => {
 
   test('should show alerts when items need attention', async ({ page }) => {
     // Add item with zero quantity to trigger critical alert
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -65,7 +65,7 @@ test.describe('Dashboard', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Should show alerts section
     await expect(page.getByTestId('alerts-section')).toBeVisible();
@@ -86,7 +86,7 @@ test.describe('Dashboard', () => {
     await page.getByTestId('modal-close-button').click();
 
     // Go back to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Test "View Inventory" button
     await expect(page.getByTestId('quick-view-inventory')).toBeVisible();
@@ -96,7 +96,7 @@ test.describe('Dashboard', () => {
     await expect(page.getByTestId('add-item-button')).toBeVisible();
 
     // Go back to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Test "Export Shopping List" button is visible
     await expect(page.getByTestId('quick-export-shopping-list')).toBeVisible();

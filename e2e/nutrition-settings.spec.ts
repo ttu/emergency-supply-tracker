@@ -6,7 +6,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should change daily calories per person', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section
     await navigateToSettingsSection(page, 'nutrition');
@@ -26,7 +26,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should change daily water per person', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section
     await navigateToSettingsSection(page, 'nutrition');
@@ -46,7 +46,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should change children requirement percentage', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section
     await navigateToSettingsSection(page, 'nutrition');
@@ -66,7 +66,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should persist nutrition settings after reload', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section
     await navigateToSettingsSection(page, 'nutrition');
@@ -91,7 +91,7 @@ test.describe('Nutrition Settings', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Verify settings persisted
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await navigateToSettingsSection(page, 'nutrition');
     await page.waitForLoadState('networkidle');
 
@@ -101,7 +101,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should clamp values to valid ranges', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section
     await navigateToSettingsSection(page, 'nutrition');
@@ -139,7 +139,7 @@ test.describe('Nutrition Settings', () => {
   });
 
   test('should reset to defaults', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section
     await navigateToSettingsSection(page, 'nutrition');

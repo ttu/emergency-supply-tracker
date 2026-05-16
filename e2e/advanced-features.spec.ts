@@ -8,7 +8,7 @@ test.describe('Advanced Features', () => {
   test('should enable calorie tracking and show calorie data', async ({
     page,
   }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
     await navigateToSettingsSection(page, 'nutrition');
@@ -46,7 +46,7 @@ test.describe('Advanced Features', () => {
   test('should enable water tracking and show water preparation needs', async ({
     page,
   }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
     await navigateToSettingsSection(page, 'nutrition');
@@ -82,7 +82,7 @@ test.describe('Advanced Features', () => {
   test('should enable power management and show power data', async ({
     page,
   }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
     await navigateToSettingsSection(page, 'nutrition');
@@ -118,7 +118,7 @@ test.describe('Advanced Features', () => {
   test('should persist advanced features settings after reload', async ({
     page,
   }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
     await navigateToSettingsSection(page, 'nutrition');
@@ -150,7 +150,7 @@ test.describe('Advanced Features', () => {
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Verify settings persisted - use helper to handle mobile hamburger menu
-      await page.getByTestId('nav-settings').click();
+      await page.getByTestId('v2-nav-settings').click();
       await navigateToSettingsSection(page, 'nutrition');
       await page.waitForLoadState('networkidle');
       const checkboxAfterReload = page
@@ -164,7 +164,7 @@ test.describe('Advanced Features', () => {
   test('should disable advanced features and hide related data', async ({
     page,
   }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to nutrition section which contains the feature checkboxes
     await navigateToSettingsSection(page, 'nutrition');

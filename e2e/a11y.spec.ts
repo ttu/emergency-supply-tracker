@@ -38,7 +38,7 @@ async function ensureDrawerClosed(page: Page) {
 }
 
 async function openInventorySetsSection(page: Page) {
-  await page.getByTestId('nav-settings').click();
+  await page.getByTestId('v2-nav-settings').click();
   await expect(page.getByTestId('page-settings')).toBeVisible();
   // Click the Inventory Sets menu item in the sidebar (desktop view)
   await page
@@ -84,7 +84,7 @@ test.describe('Accessibility', () => {
     page,
   }) => {
     // Navigate via nav (app is state-based; goto('/settings') does not change visible page)
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await expect(page.getByTestId('page-settings')).toBeVisible();
     await page.waitForLoadState('networkidle');
 
@@ -144,7 +144,7 @@ test.describe('Accessibility', () => {
     page,
   }) => {
     // Navigate to inventory using navigation to ensure app is fully loaded
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await expect(page.getByTestId('page-inventory')).toBeVisible();
 
     // Ensure drawer is closed on mobile before clicking other elements

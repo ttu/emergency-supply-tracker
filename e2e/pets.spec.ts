@@ -17,7 +17,7 @@ test.describe('Pet Support', () => {
     test('should display pets input field in household form', async ({
       page,
     }) => {
-      await page.getByTestId('nav-settings').click();
+      await page.getByTestId('v2-nav-settings').click();
 
       // Navigate to household section
       await navigateToSettingsSection(page, 'household');
@@ -29,7 +29,7 @@ test.describe('Pet Support', () => {
     });
 
     test('should update pets count and persist value', async ({ page }) => {
-      await page.getByTestId('nav-settings').click();
+      await page.getByTestId('v2-nav-settings').click();
       await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
@@ -38,8 +38,8 @@ test.describe('Pet Support', () => {
       await petsInput.fill('2');
 
       // Navigate away and back to verify persistence
-      await page.getByTestId('nav-dashboard').click();
-      await page.getByTestId('nav-settings').click();
+      await page.getByTestId('v2-nav-home').click();
+      await page.getByTestId('v2-nav-settings').click();
       await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
@@ -50,7 +50,7 @@ test.describe('Pet Support', () => {
     test('should set pets to 0 when selecting family preset', async ({
       page,
     }) => {
-      await page.getByTestId('nav-settings').click();
+      await page.getByTestId('v2-nav-settings').click();
       await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
@@ -66,7 +66,7 @@ test.describe('Pet Support', () => {
       page,
     }) => {
       // First set pets to non-zero
-      await page.getByTestId('nav-settings').click();
+      await page.getByTestId('v2-nav-settings').click();
       await navigateToSettingsSection(page, 'household');
       await expect(page.getByTestId('section-household')).toBeVisible();
 
@@ -113,7 +113,7 @@ test.describe('Pet Support', () => {
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Navigate to inventory
-      await page.getByTestId('nav-inventory').click();
+      await page.getByTestId('v2-nav-inv').click();
 
       // Pets category should be visible in the side menu (scope to sidebar for desktop)
       const sidebar = page.getByTestId('sidemenu-sidebar');
@@ -149,7 +149,7 @@ test.describe('Pet Support', () => {
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Navigate to inventory and click pets category
-      await page.getByTestId('nav-inventory').click();
+      await page.getByTestId('v2-nav-inv').click();
       await selectInventoryCategory(page, 'pets');
 
       // Expand recommended items
@@ -190,7 +190,7 @@ test.describe('Pet Support', () => {
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Navigate to inventory
-      await page.getByTestId('nav-inventory').click();
+      await page.getByTestId('v2-nav-inv').click();
 
       // Pets category should not be clickable or should show 0 recommended items
       // The category may still exist but clicking should show no items
@@ -246,7 +246,7 @@ test.describe('Pet Support', () => {
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Navigate to pets category
-      await page.getByTestId('nav-inventory').click();
+      await page.getByTestId('v2-nav-inv').click();
       await selectInventoryCategory(page, 'pets');
 
       // Expand recommended items
@@ -316,7 +316,7 @@ test.describe('Pet Support', () => {
       await page.getByTestId('skip-quick-setup-button').click();
 
       // Verify pets value persisted
-      await page.getByTestId('nav-settings').click();
+      await page.getByTestId('v2-nav-settings').click();
       await navigateToSettingsSection(page, 'household');
       const settingsPetsInput = page.locator('#pets');
       await expect(settingsPetsInput).toHaveValue('2');

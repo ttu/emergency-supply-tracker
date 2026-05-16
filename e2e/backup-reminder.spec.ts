@@ -191,7 +191,7 @@ test.describe('Backup Reminder', () => {
     });
 
     // Export data (this should record backup date)
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await navigateToSettingsSection(page, 'data');
     const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
@@ -208,7 +208,7 @@ test.describe('Backup Reminder', () => {
     await page.waitForTimeout(500);
 
     // Navigate back to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
     await page.waitForLoadState('networkidle');
 
     // Reminder should be gone (backup date was recorded)

@@ -8,7 +8,7 @@ test.describe('Item Status Indicators', () => {
   test('should show OK status for item with sufficient quantity', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -48,7 +48,7 @@ test.describe('Item Status Indicators', () => {
   test('should show Warning status for item with low quantity', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -100,7 +100,7 @@ test.describe('Item Status Indicators', () => {
   test('should show Critical status for item with zero quantity', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -124,7 +124,7 @@ test.describe('Item Status Indicators', () => {
     await expect(itemCard).toBeVisible();
 
     // Critical items should trigger alerts on dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
     await expect(page.getByTestId('alerts-section')).toBeVisible({
       timeout: 5000,
     });
@@ -132,7 +132,7 @@ test.describe('Item Status Indicators', () => {
 
   test('should show Critical status for expired item', async ({ page }) => {
     // Add expired item
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -148,7 +148,7 @@ test.describe('Item Status Indicators', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Inventory to check item card status (not dashboard alerts)
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await expect(page.getByTestId('page-inventory')).toBeVisible({
       timeout: 5000,
     });
@@ -172,7 +172,7 @@ test.describe('Item Status Indicators', () => {
 
   test('should update status when quantity changes', async ({ page }) => {
     // Add item with low quantity
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -204,7 +204,7 @@ test.describe('Item Status Indicators', () => {
 
   test('should show status in category summary', async ({ page }) => {
     // Add items with different statuses
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Add OK item
     await page.getByTestId('add-item-button').click();
@@ -231,7 +231,7 @@ test.describe('Item Status Indicators', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Food category card should show status (critical due to zero quantity item)
     const foodCategoryCard = page.locator('[data-testid="category-food"]');

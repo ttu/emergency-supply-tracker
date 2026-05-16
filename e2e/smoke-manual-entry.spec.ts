@@ -117,7 +117,7 @@ async function testDashboardInteractions(page: Page) {
   if (await foodCategoryCard.isVisible().catch(() => false)) {
     await foodCategoryCard.click();
     await expect(page.getByTestId('page-inventory')).toBeVisible();
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
   }
 }
 
@@ -252,7 +252,7 @@ async function editCustomItemIfVisible(page: Page) {
 
 async function testDashboardAlerts(page: Page) {
   // Navigate to Dashboard - should see alerts for insufficient quantities
-  await page.getByTestId('nav-dashboard').click();
+  await page.getByTestId('v2-nav-home').click();
   await page.waitForLoadState('networkidle');
 
   // Verify alerts appear
@@ -262,7 +262,7 @@ async function testDashboardAlerts(page: Page) {
 
   // Add expired item to ensure we have at least one alert
   await ensureNoModals(page);
-  await page.getByTestId('nav-inventory').click();
+  await page.getByTestId('v2-nav-inv').click();
   await expect(page.getByTestId('page-inventory')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
@@ -295,7 +295,7 @@ async function testDashboardAlerts(page: Page) {
     .catch(() => {});
 
   // Navigate to Dashboard and verify/dismiss alert
-  await page.getByTestId('nav-dashboard').click();
+  await page.getByTestId('v2-nav-home').click();
   await page.waitForLoadState('networkidle');
   // Scope to alerts section to avoid notifications
   const alertsSection = page.getByTestId('alerts-section');
@@ -319,7 +319,7 @@ async function testDashboardAlerts(page: Page) {
 }
 
 async function testSettingsFeatures(page: Page) {
-  await page.getByTestId('nav-settings').click();
+  await page.getByTestId('v2-nav-settings').click();
   await page.waitForLoadState('networkidle');
 
   // Navigate to Appearance section first (default is now Household)
@@ -473,7 +473,7 @@ async function testDataManagement(page: Page) {
   }
 
   // Export shopping list (on Dashboard Quick Actions)
-  await page.getByTestId('nav-dashboard').click();
+  await page.getByTestId('v2-nav-home').click();
   await page.waitForLoadState('networkidle');
   const shoppingListButton = page.getByTestId('quick-export-shopping-list');
   if (await shoppingListButton.isVisible().catch(() => false)) {
@@ -484,7 +484,7 @@ async function testDataManagement(page: Page) {
   }
 
   // Export recommendations (back on Settings page)
-  await page.getByTestId('nav-settings').click();
+  await page.getByTestId('v2-nav-settings').click();
   await page.waitForLoadState('networkidle');
   const exportRecsButton = page.getByTestId('export-recommendations-button');
   if (await exportRecsButton.isVisible().catch(() => false)) {
@@ -568,7 +568,7 @@ async function testNavigationAndPersistence(page: Page) {
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await page.getByTestId('nav-settings').click();
+  await page.getByTestId('v2-nav-settings').click();
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
@@ -636,7 +636,7 @@ async function runManualEntryWorkflow(page: Page) {
   await testDashboardInteractions(page);
 
   // PHASE 3: INVENTORY MANAGEMENT
-  await page.getByTestId('nav-inventory').click();
+  await page.getByTestId('v2-nav-inv').click();
   await expect(page.getByTestId('add-item-button')).toBeVisible();
   await ensureNoModals(page);
 

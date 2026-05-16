@@ -13,7 +13,7 @@ test.describe('Backup & Transfer', () => {
 
   test('should export data', async ({ page }) => {
     // Add some test data first
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -26,7 +26,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Backup & Transfer section
     await navigateToSettingsSection(page, 'data');
@@ -62,7 +62,7 @@ test.describe('Backup & Transfer', () => {
 
   test('should import data', async ({ page }) => {
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Backup & Transfer section
     await navigateToSettingsSection(page, 'data');
@@ -129,7 +129,7 @@ test.describe('Backup & Transfer', () => {
 
     // The imported data goes into a new inventory set.
     // Navigate to Settings -> Inventory Sets section to switch to it.
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await navigateToSettingsSection(page, 'inventorysets');
 
     // Wait for inventory set section to load
@@ -144,7 +144,7 @@ test.describe('Backup & Transfer', () => {
     });
 
     // Navigate to Inventory to verify import
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Verify imported item is visible
     // Use getByRole to target item card button specifically
@@ -156,7 +156,7 @@ test.describe('Backup & Transfer', () => {
   test('should export shopping list', async ({ page }) => {
     // Add item that needs restocking (quantity 0 = definitely needs restocking)
     // Use a recommended item template so it matches a recommended item definition
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     // Search for rice (a recommended food item)
@@ -170,7 +170,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Dashboard where the shopping list export button is
-    await page.getByTestId('nav-dashboard').click();
+    await page.getByTestId('v2-nav-home').click();
 
     // Verify Export Shopping List button is visible in Quick Actions
     const exportButton = page.getByTestId('quick-export-shopping-list');
@@ -197,7 +197,7 @@ test.describe('Backup & Transfer', () => {
 
   test('should clear all data', async ({ page }) => {
     // Add some test data
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.getByTestId('add-item-button').click();
     await expect(page.getByTestId('template-selector')).toBeVisible();
     await page.getByTestId('custom-item-button').click();
@@ -216,7 +216,7 @@ test.describe('Backup & Transfer', () => {
     ).toBeVisible();
 
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Danger Zone section where Clear Data button is located
     await navigateToSettingsSection(page, 'danger');
@@ -235,7 +235,7 @@ test.describe('Backup & Transfer', () => {
 
   test('should import custom recommendations', async ({ page }) => {
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Recommendation Kits section
     await navigateToSettingsSection(page, 'recommendations');
@@ -299,7 +299,7 @@ test.describe('Backup & Transfer', () => {
 
   test('should export recommendations', async ({ page }) => {
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Recommendation Kits section
     await navigateToSettingsSection(page, 'recommendations');
@@ -319,7 +319,7 @@ test.describe('Backup & Transfer', () => {
 
   test('should reset to default recommendations', async ({ page }) => {
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Recommendation Kits section
     await navigateToSettingsSection(page, 'recommendations');
@@ -387,7 +387,7 @@ test.describe('Backup & Transfer', () => {
     page,
   }) => {
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Recommendation Kits section
     await navigateToSettingsSection(page, 'recommendations');
@@ -441,7 +441,7 @@ test.describe('Backup & Transfer', () => {
     ).toBeVisible();
 
     // Navigate to Inventory and select Water & Beverages category
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Wait for inventory page to load
     await expect(page.getByTestId('page-inventory')).toBeVisible();
@@ -458,12 +458,12 @@ test.describe('Backup & Transfer', () => {
     });
 
     // Switch to Finnish - navigate to Appearance settings section
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await navigateToSettingsSection(page, 'appearance');
     await page.selectOption('#language-select', 'fi');
 
     // Navigate back to Inventory using testid (works regardless of language)
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await selectInventoryCategory(page, 'water-beverages');
 
     // Expand recommended items again (in Finnish, use "Suositeltu:" instead of "Recommended:")
@@ -487,7 +487,7 @@ test.describe('Backup & Transfer', () => {
 
   test('should reject invalid recommendations file', async ({ page }) => {
     // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
 
     // Navigate to Recommendation Kits section
     await navigateToSettingsSection(page, 'recommendations');

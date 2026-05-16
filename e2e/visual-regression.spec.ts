@@ -167,7 +167,7 @@ test.describe('Visual Regression - Inventory', () => {
   });
 
   test('inventory list', async ({ page }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.waitForLoadState('networkidle');
 
     await expect(page).toHaveScreenshot('inventory-list.png', {
@@ -176,7 +176,7 @@ test.describe('Visual Regression - Inventory', () => {
   });
 
   test('inventory category view', async ({ page }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.waitForLoadState('networkidle');
 
     // Select food category
@@ -198,7 +198,7 @@ test.describe('Visual Regression - Settings', () => {
   });
 
   test('settings household section', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await disableAnimations(page);
     await page.waitForLoadState('networkidle');
 
@@ -208,7 +208,7 @@ test.describe('Visual Regression - Settings', () => {
   });
 
   test('settings appearance section', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-settings').click();
     await disableAnimations(page);
     await page
       .getByTestId('sidemenu-sidebar')
@@ -330,7 +330,7 @@ test.describe('Visual Regression - Mobile', () => {
   });
 
   test('mobile inventory', async ({ page }) => {
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.waitForLoadState('networkidle');
 
     await expect(page).toHaveScreenshot('mobile-inventory.png', {
@@ -371,7 +371,7 @@ test.describe('Visual Regression - UI States', () => {
     await disableAnimations(page);
 
     // Navigate to inventory and open add item modal
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
     await page.waitForLoadState('networkidle');
 
     // Click add item button
