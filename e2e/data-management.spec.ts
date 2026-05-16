@@ -29,7 +29,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Backup & Transfer section
-    await navigateToSettingsSection(page, 'backupTransfer');
+    await navigateToSettingsSection(page, 'data');
 
     // Verify Export Data button is visible
     const exportButton = page.getByTestId('export-data-button');
@@ -65,7 +65,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Backup & Transfer section
-    await navigateToSettingsSection(page, 'backupTransfer');
+    await navigateToSettingsSection(page, 'data');
 
     // Create test data file with all required fields
     const testData = {
@@ -130,7 +130,7 @@ test.describe('Backup & Transfer', () => {
     // The imported data goes into a new inventory set.
     // Navigate to Settings -> Inventory Sets section to switch to it.
     await page.getByTestId('nav-settings').click();
-    await navigateToSettingsSection(page, 'inventorySets');
+    await navigateToSettingsSection(page, 'inventorysets');
 
     // Wait for inventory set section to load
     await expect(page.getByTestId('inventory-set-section')).toBeVisible({
@@ -219,7 +219,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Danger Zone section where Clear Data button is located
-    await navigateToSettingsSection(page, 'dangerZone');
+    await navigateToSettingsSection(page, 'danger');
 
     // Verify Clear All Data button is visible using data-testid
     const clearButton = page.getByTestId('clear-data-button');
@@ -238,7 +238,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Recommendation Kits section
-    await navigateToSettingsSection(page, 'recommendationKits');
+    await navigateToSettingsSection(page, 'recommendations');
     await expect(page.getByTestId('kit-management')).toBeVisible();
 
     // Create custom recommendations file
@@ -302,7 +302,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Recommendation Kits section
-    await navigateToSettingsSection(page, 'recommendationKits');
+    await navigateToSettingsSection(page, 'recommendations');
     await expect(page.getByTestId('kit-management')).toBeVisible();
 
     // Verify Export Kit button is visible in Kit Management section
@@ -322,7 +322,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Recommendation Kits section
-    await navigateToSettingsSection(page, 'recommendationKits');
+    await navigateToSettingsSection(page, 'recommendations');
     await expect(page.getByTestId('kit-management')).toBeVisible();
     await expect(page.getByTestId('kit-selector')).toBeVisible();
 
@@ -390,7 +390,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Recommendation Kits section
-    await navigateToSettingsSection(page, 'recommendationKits');
+    await navigateToSettingsSection(page, 'recommendations');
     await expect(page.getByTestId('kit-management')).toBeVisible();
     await expect(page.getByTestId('kit-selector')).toBeVisible();
 
@@ -490,7 +490,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Recommendation Kits section
-    await navigateToSettingsSection(page, 'recommendationKits');
+    await navigateToSettingsSection(page, 'recommendations');
     await expect(page.getByTestId('kit-management')).toBeVisible();
     await expect(page.getByTestId('kit-selector')).toBeVisible();
 

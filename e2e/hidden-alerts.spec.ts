@@ -116,7 +116,7 @@ test.describe('Hidden Alerts Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Hidden Alerts section
-    await navigateToSettingsSection(page, 'hiddenAlerts');
+    await navigateToSettingsSection(page, 'notifications');
 
     // Should see hidden alerts section (use heading to avoid multiple matches)
     await expect(
@@ -197,7 +197,7 @@ test.describe('Hidden Alerts Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Hidden Alerts section
-    await navigateToSettingsSection(page, 'hiddenAlerts');
+    await navigateToSettingsSection(page, 'notifications');
 
     // Find and click reactivate button
     const reactivateButton = page
@@ -290,7 +290,7 @@ test.describe('Hidden Alerts Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Hidden Alerts section
-    await navigateToSettingsSection(page, 'hiddenAlerts');
+    await navigateToSettingsSection(page, 'notifications');
 
     // Find "Show All Alerts" or "Reactivate All" button
     const reactivateAllButton = page.locator('button', {
@@ -388,7 +388,7 @@ test.describe('Hidden Alerts Management', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to Hidden Alerts section
-    await navigateToSettingsSection(page, 'hiddenAlerts');
+    await navigateToSettingsSection(page, 'notifications');
     await page.waitForLoadState('networkidle');
 
     // Check if hidden alerts section shows the alert

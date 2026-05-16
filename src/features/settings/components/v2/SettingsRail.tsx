@@ -36,6 +36,7 @@ export function SettingsRail({
               type="button"
               onClick={() => onSelect(s.id)}
               aria-current={isActive ? 'true' : undefined}
+              data-testid={`v2-settings-section-${s.id}`}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '36px 1fr',

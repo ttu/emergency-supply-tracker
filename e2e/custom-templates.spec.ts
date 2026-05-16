@@ -237,7 +237,7 @@ test.describe('Custom Product Templates', () => {
 
     // Export data
     await page.getByTestId('nav-settings').click();
-    await navigateToSettingsSection(page, 'backupTransfer');
+    await navigateToSettingsSection(page, 'data');
     const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
     await exportButton.click();

@@ -145,6 +145,7 @@ export function DesktopShell({
                 type="button"
                 onClick={() => onNav(n.id)}
                 aria-current={isActive ? 'page' : undefined}
+                data-testid={`v2-nav-${n.id}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -366,6 +367,7 @@ export function MobileShell({
               type="button"
               onClick={() => onNav(id)}
               aria-current={isActive ? 'page' : undefined}
+              data-testid={`v2-nav-${id}`}
               style={{
                 padding: '10px 4px 6px',
                 textAlign: 'center',

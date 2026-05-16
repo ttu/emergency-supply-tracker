@@ -131,7 +131,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to disabled recommendations section
-    await navigateToSettingsSection(page, 'disabledRecommendations');
+    await navigateToSettingsSection(page, 'recommendations');
 
     // Verify disabled recommendations section exists
     await expect(
@@ -180,7 +180,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to disabled recommendations section
-    await navigateToSettingsSection(page, 'disabledRecommendations');
+    await navigateToSettingsSection(page, 'recommendations');
 
     // Should see the Disabled Recommendations section with the item
     await expect(
@@ -234,7 +234,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to disabled recommendations section
-    await navigateToSettingsSection(page, 'disabledRecommendations');
+    await navigateToSettingsSection(page, 'recommendations');
     await expect(
       page.getByTestId('section-disabled-recommendations'),
     ).toBeVisible();
@@ -297,7 +297,7 @@ test.describe('Settings', () => {
     await page.getByTestId('nav-settings').click();
 
     // Navigate to disabled recommendations section
-    await navigateToSettingsSection(page, 'disabledRecommendations');
+    await navigateToSettingsSection(page, 'recommendations');
     await expect(
       page.getByTestId('section-disabled-recommendations'),
     ).toBeVisible();

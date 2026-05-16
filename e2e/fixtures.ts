@@ -36,12 +36,13 @@ export async function waitForCountChange(
   await expect(locator).toHaveCount(expectedCount, { timeout });
 }
 
-// Default app data with onboarding completed
+// Default app data with onboarding completed. Theme defaults to `cockpit`
+// (design v2) — matches the production first-run theme that real users see.
 export const defaultAppData = createMockAppData({
   settings: {
     onboardingCompleted: true,
     language: 'en',
-    theme: 'light',
+    theme: 'cockpit',
     highContrast: false,
     advancedFeatures: {
       calorieTracking: false,
@@ -145,55 +146,88 @@ export const test = base.extend<{
   },
 });
 
-// Helper to navigate to a specific section in Settings page
-// Settings page uses SideMenu with sections
-export async function navigateToSettingsSection(page: Page, sectionId: string) {
-  const viewport = page.viewportSize();
-  const isMobile = viewport && viewport.width < 768;
+/**
+ * Design-v2 top-nav targets. The v2 shell uses a left rail (desktop) or
+ * bottom tab bar (mobile); both expose the same data-testid per item.
+ */
+export type V2NavId =
+  | 'home'
+  | 'inv'
+  | 'alerts'
+  | 'shop'
+  | 'plan'
+  | 'help'
+  | 'settings';
 
-  // On mobile, we need to open the hamburger menu first
-  if (isMobile) {
-    const hamburger = page.getByTestId('sidemenu-hamburger');
-    const isHamburgerVisible = await hamburger.isVisible().catch(() => false);
-    if (isHamburgerVisible) {
-      await hamburger.click();
-      await page.waitForTimeout(300);
-    }
-  }
-
-  // Scope selector to drawer (mobile) or sidebar (desktop) to avoid strict mode violations
-  const menuContainer = isMobile
-    ? page.getByTestId('sidemenu-drawer')
-    : page.getByTestId('sidemenu-sidebar');
-  const menuItem = menuContainer.getByTestId(`sidemenu-item-${sectionId}`);
-  await expect(menuItem).toBeVisible({ timeout: 5000 });
-  await menuItem.click();
+/** Click a top-level v2 nav item. Works on desktop rail + mobile tab bar. */
+export async function navigateV2(page: Page, id: V2NavId) {
+  const nav = page.getByTestId(`v2-nav-${id}`);
+  await expect(nav).toBeVisible({ timeout: 5000 });
+  await nav.click();
   await page.waitForTimeout(100);
 }
 
-// Helper to select a category in Inventory page
-// Inventory page uses SideMenu for category navigation
-export async function selectInventoryCategory(page: Page, categoryId: string) {
+/**
+ * V2 settings section ids exposed by the SettingsRail. Pass these to
+ * `navigateToSettingsSection`. Old v1 ids (e.g. 'backupTransfer') no
+ * longer exist — use the v2 equivalents below.
+ */
+export type V2SettingsSectionId =
+  | 'appearance'
+  | 'household'
+  | 'inventorysets'
+  | 'nutrition'
+  | 'advanced'
+  | 'notifications'
+  | 'recommendations'
+  | 'categories'
+  | 'data'
+  | 'about'
+  | 'danger';
+
+/**
+ * Navigate to a section in the v2 Settings page. Ensures we are on the
+ * settings route first, then clicks the SettingsRail entry which scrolls
+ * the section into view.
+ *
+ * On mobile the rail is hidden; the function falls back to scrolling the
+ * section into view via its DOM id (`sec-<sectionId>`).
+ */
+export async function navigateToSettingsSection(
+  page: Page,
+  sectionId: V2SettingsSectionId,
+) {
+  // Ensure we're on the settings page.
+  await navigateV2(page, 'settings');
+
   const viewport = page.viewportSize();
   const isMobile = viewport && viewport.width < 768;
+  const rail = page.getByTestId(`v2-settings-section-${sectionId}`);
 
-  // On mobile, we need to open the hamburger menu first
-  if (isMobile) {
-    const hamburger = page.getByTestId('sidemenu-hamburger');
-    const isHamburgerVisible = await hamburger.isVisible().catch(() => false);
-    if (isHamburgerVisible) {
-      await hamburger.click();
-      await page.waitForTimeout(300);
-    }
+  if (!isMobile && (await rail.isVisible().catch(() => false))) {
+    await rail.click();
+    await page.waitForTimeout(150);
+    return;
   }
 
-  // Scope selector to drawer (mobile) or sidebar (desktop) to avoid strict mode violations
-  const menuContainer = isMobile
-    ? page.getByTestId('sidemenu-drawer')
-    : page.getByTestId('sidemenu-sidebar');
-  const menuItem = menuContainer.getByTestId(`sidemenu-item-${categoryId}`);
-  await expect(menuItem).toBeVisible({ timeout: 5000 });
-  await menuItem.click();
+  // Mobile (or rail hidden): scroll the target section directly.
+  await page.evaluate((id) => {
+    document.getElementById(`sec-${id}`)?.scrollIntoView({ block: 'start' });
+  }, sectionId);
+  await page.waitForTimeout(150);
+}
+
+/**
+ * Select a category in the v2 Inventory page using the filter strip's
+ * category dropdown. Ensures we are on the inventory route first.
+ */
+export async function selectInventoryCategory(page: Page, categoryId: string) {
+  await navigateV2(page, 'inv');
+  // The filter strip uses a <select> with aria-label "CATEGORY" (cockpit/civil)
+  // or "Category" (pantry). "all" maps to the empty (no-filter) option.
+  const select = page.getByRole('combobox', { name: /category/i }).first();
+  await expect(select).toBeVisible({ timeout: 5000 });
+  await select.selectOption(categoryId === 'all' ? '' : categoryId);
   await page.waitForTimeout(100);
 }
 

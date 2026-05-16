@@ -328,7 +328,7 @@ test.describe('Custom Categories', () => {
     await expect(page.getByTestId('page-settings')).toBeVisible();
 
     // Navigate to Custom Categories section
-    await navigateToSettingsSection(page, 'customCategories');
+    await navigateToSettingsSection(page, 'categories');
     await expect(page.getByTestId('section-custom-categories')).toBeVisible();
 
     // Should show empty state or add button
@@ -357,7 +357,7 @@ test.describe('Custom Categories', () => {
 
     // Navigate to Settings -> Custom Categories
     await page.getByTestId('nav-settings').click();
-    await navigateToSettingsSection(page, 'customCategories');
+    await navigateToSettingsSection(page, 'categories');
 
     // Click Add Category
     const addButton = page.getByRole('button', { name: /add category/i });
@@ -413,7 +413,7 @@ test.describe('Custom Categories', () => {
 
     // Export data
     await page.getByTestId('nav-settings').click();
-    await navigateToSettingsSection(page, 'backupTransfer');
+    await navigateToSettingsSection(page, 'data');
     const exportButton = page.getByTestId('export-data-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
     await exportButton.click();
