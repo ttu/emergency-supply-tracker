@@ -1,8 +1,7 @@
-import { useState, type CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import {
   Button,
   Caption,
-  Field,
   NumberDisplay,
   Panel,
   StatusBar,
@@ -11,13 +10,8 @@ import {
 } from '../primitives';
 import { useDesignTheme } from '../useDesignTheme';
 import { useDesignData } from '../useDesignData';
-import { useInventory } from '@/features/inventory';
-import {
-  createItemId,
-  createQuantity,
-  type ItemId,
-  type InventoryItem,
-} from '@/shared/types';
+import { useInventory, ItemForm } from '@/features/inventory';
+import { createQuantity, type InventoryItem } from '@/shared/types';
 import { categoryCode } from '../voice';
 import { statusOf } from '../status';
 
@@ -28,12 +22,11 @@ interface ItemDetailProps {
 
 export function ItemDetail({ itemId, onBack }: ItemDetailProps) {
   const { themeKey, voice } = useDesignTheme();
-  const { rows } = useDesignData();
+  const { rows, categories } = useDesignData();
   const { updateItem, deleteItem } = useInventory();
   const row = rows.find((r) => String(r.item.id) === itemId);
-  const [draft, setDraft] = useState<InventoryItem | null>(row?.item ?? null);
 
-  if (!row || !draft) {
+  if (!row) {
     return (
       <div style={{ padding: 32, color: 'var(--color-text-2)' }}>
         Item not found.{' '}
@@ -53,44 +46,34 @@ export function ItemDetail({ itemId, onBack }: ItemDetailProps) {
     );
   }
 
+  const item = row.item;
   const cat = row.category;
-  const status = statusOf(draft, row.recommended);
+  const status = statusOf(item, row.recommended);
   const pct = row.recommended
-    ? Math.round((draft.quantity / row.recommended) * 100)
+    ? Math.round((item.quantity / row.recommended) * 100)
     : 100;
 
-  const set = <K extends keyof InventoryItem>(
-    key: K,
-    value: InventoryItem[K],
-  ) => setDraft((d) => (d ? { ...d, [key]: value } : d));
-
-  const save = () => {
-    const id = createItemId(String(draft.id) as unknown as ItemId);
-    updateItem(id, {
-      name: draft.name,
-      quantity: draft.quantity,
-      expirationDate: draft.expirationDate,
-      location: draft.location,
-      notes: draft.notes,
-    });
+  const handleSubmit = (
+    update: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
+  ) => {
+    updateItem(item.id, update);
     onBack();
   };
 
-  const remove = () => {
+  const handleDelete = () => {
     if (
       !confirm(
         themeKey === 'pantry' ? 'Remove this item?' : 'DELETE THIS ITEM?',
       )
     )
       return;
-    const id = createItemId(String(draft.id) as unknown as ItemId);
-    deleteItem(id);
+    deleteItem(item.id);
     onBack();
   };
 
   const adjust = (delta: number) => {
-    const next = Math.max(0, draft.quantity + delta);
-    set('quantity', createQuantity(next));
+    const next = Math.max(0, item.quantity + delta);
+    updateItem(item.id, { quantity: createQuantity(next) });
   };
 
   const breadcrumbStyle: CSSProperties = {
@@ -124,11 +107,11 @@ export function ItemDetail({ itemId, onBack }: ItemDetailProps) {
         </button>
         <span style={{ color: 'var(--color-text-3)' }}>/</span>
         <span style={{ ...breadcrumbStyle, color: 'var(--color-text-3)' }}>
-          {categoryCode(String(draft.categoryId))}
+          {categoryCode(String(item.categoryId))}
         </span>
         <span style={{ color: 'var(--color-text-3)' }}>/</span>
         <span style={{ ...breadcrumbStyle, color: 'var(--color-text)' }}>
-          {String(draft.id).slice(0, 10)}
+          {String(item.id).slice(0, 10)}
         </span>
       </div>
 
@@ -144,25 +127,32 @@ export function ItemDetail({ itemId, onBack }: ItemDetailProps) {
             {themeKey === 'pantry' ? 'Item details' : 'ITEM RECORD'}
           </Caption>
           <Title size={32} style={{ marginTop: 4 }}>
-            {draft.name}
+            {item.name}
           </Title>
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              color: 'var(--color-text-3)',
+              marginTop: 6,
+              letterSpacing: '0.06em',
+            }}
+          >
+            {categoryCode(String(item.categoryId))} ·{' '}
+            {cat?.name ?? String(item.categoryId)}
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Button variant="secondary" onClick={remove}>
-            {voice.delete}
-          </Button>
-          <Button variant="secondary" onClick={onBack}>
-            {voice.cancel}
-          </Button>
-          <Button variant="primary" onClick={save}>
-            {voice.save}
-          </Button>
-        </div>
+        <Button variant="secondary" onClick={handleDelete}>
+          {voice.delete}
+        </Button>
       </div>
 
       <div
         style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}
       >
+        {/* Full v1 ItemForm — gives the v2 page every field the v1 form had:
+            Item Type, Item Name, Category, Quantity, Unit, Weight, Calories,
+            Water for prep, Never Expires, Expiration, Purchase, Location, Notes. */}
         <Panel padding={0}>
           <div
             style={{
@@ -176,88 +166,17 @@ export function ItemDetail({ itemId, onBack }: ItemDetailProps) {
                 : 'FIELDS · §1 IDENTIFICATION'}
             </Caption>
           </div>
-          <EditableField
-            label={themeKey === 'pantry' ? 'Item name' : 'NAME'}
-            value={draft.name}
-            onChange={(v) => set('name', v)}
-            focus
-          />
-          <Field
-            label={themeKey === 'pantry' ? 'Category' : 'CATEGORY'}
-            value={`${categoryCode(String(draft.categoryId))} · ${cat?.name ?? ''}`}
-          />
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
-              borderBottom: '1px solid var(--color-rule-soft)',
-            }}
-          >
-            <EditableField
-              label={voice.qty}
-              type="number"
-              value={String(draft.quantity)}
-              onChange={(v) =>
-                set('quantity', createQuantity(Math.max(0, Number(v) || 0)))
-              }
-            />
-            <Field
-              label={voice.rec}
-              value={`${row.recommended || '—'} ${draft.unit}`}
-            />
-            <Field
-              label={themeKey === 'pantry' ? 'Unit' : 'UNIT'}
-              value={draft.unit}
-            />
-          </div>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              borderBottom: '1px solid var(--color-rule-soft)',
-            }}
-          >
-            <EditableField
-              label={voice.expires}
-              type="date"
-              value={draft.expirationDate ?? ''}
-              onChange={(v) =>
-                set(
-                  'expirationDate',
-                  (v || undefined) as InventoryItem['expirationDate'],
-                )
-              }
-            />
-            <EditableField
-              label={voice.location}
-              value={draft.location ?? ''}
-              onChange={(v) => set('location', v)}
-            />
-          </div>
-          <div style={{ padding: '14px 20px' }}>
-            <Caption>
-              {themeKey === 'pantry' ? 'Notes' : 'NOTES · OPTIONAL'}
-            </Caption>
-            <textarea
-              value={draft.notes ?? ''}
-              onChange={(e) => set('notes', e.target.value)}
-              rows={3}
-              style={{
-                marginTop: 8,
-                width: '100%',
-                background: 'var(--color-panel-2)',
-                border: '1px solid var(--color-rule)',
-                borderRadius: 'var(--radius-sm)',
-                padding: 10,
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-body)',
-                fontSize: 13,
-                resize: 'vertical',
-              }}
+          <div className="design-v2-embed" style={{ padding: 20 }}>
+            <ItemForm
+              item={item}
+              categories={categories}
+              onSubmit={handleSubmit}
+              onCancel={onBack}
             />
           </div>
         </Panel>
 
+        {/* Side panels: live status + quick actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <Panel padding={20}>
             <Caption>
@@ -282,7 +201,7 @@ export function ItemDetail({ itemId, onBack }: ItemDetailProps) {
               >
                 {themeKey === 'pantry' ? 'of recommended' : 'OF RECOMMENDED'}
                 <br />
-                {draft.quantity} / {row.recommended || '—'} {draft.unit}
+                {item.quantity} / {row.recommended || '—'} {item.unit}
               </div>
             </div>
             <div style={{ marginTop: 16 }}>
@@ -300,79 +219,48 @@ export function ItemDetail({ itemId, onBack }: ItemDetailProps) {
             <Caption>{themeKey === 'pantry' ? 'Quick actions' : 'OPS'}</Caption>
             <div
               style={{
+                marginTop: 12,
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
                 gap: 8,
-                marginTop: 12,
               }}
             >
-              <Button variant="secondary" onClick={() => adjust(-1)}>
+              <Button
+                variant="secondary"
+                onClick={() => adjust(-1)}
+                ariaLabel={`Decrease ${item.name} by 1`}
+              >
                 −1
               </Button>
-              <Button variant="secondary" onClick={() => adjust(1)}>
+              <Button
+                variant="secondary"
+                onClick={() => adjust(1)}
+                ariaLabel={`Increase ${item.name} by 1`}
+              >
                 +1
               </Button>
-              <Button variant="secondary" full onClick={() => adjust(-1)}>
-                {themeKey === 'pantry' ? 'Mark consumed' : 'CONSUME'}
-              </Button>
+              <div style={{ gridColumn: 'span 2' }}>
+                <Button variant="secondary" full onClick={() => adjust(-1)}>
+                  {themeKey === 'pantry' ? 'Mark consumed' : 'CONSUME'}
+                </Button>
+              </div>
+            </div>
+            <div
+              style={{
+                marginTop: 10,
+                fontFamily: 'var(--font-mono)',
+                fontSize: 10,
+                color: 'var(--color-text-3)',
+                letterSpacing: '0.06em',
+              }}
+            >
+              {themeKey === 'pantry'
+                ? 'Quick actions write through immediately — no need to save the form.'
+                : 'WRITES IMMEDIATELY · INDEPENDENT OF FORM SAVE'}
             </div>
           </Panel>
         </div>
       </div>
-    </div>
-  );
-}
-
-function EditableField({
-  label,
-  value,
-  onChange,
-  focus,
-  type = 'text',
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  focus?: boolean;
-  type?: 'text' | 'number' | 'date';
-}) {
-  return (
-    <div
-      style={{
-        padding: '14px 16px',
-        background: focus ? 'var(--color-panel-2)' : 'transparent',
-        borderBottom: '1px solid var(--color-rule-soft)',
-      }}
-    >
-      <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: 'var(--caps-tracking)',
-          textTransform:
-            'var(--caps-transform)' as CSSProperties['textTransform'],
-          color: 'var(--color-text-3)',
-        }}
-      >
-        {label}
-      </div>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-label={label}
-        style={{
-          marginTop: 4,
-          width: '100%',
-          background: 'transparent',
-          border: 0,
-          outline: 'none',
-          fontSize: 16,
-          color: 'var(--color-text)',
-          fontWeight: 500,
-          fontFamily: 'inherit',
-        }}
-      />
     </div>
   );
 }

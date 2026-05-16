@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Button,
   Caption,
@@ -11,7 +11,7 @@ import {
 } from '../primitives';
 import { useDesignTheme } from '../useDesignTheme';
 import { useDesignData, type DesignItemRow } from '../useDesignData';
-import { useInventory } from '@/features/inventory';
+import { useInventory, ItemForm } from '@/features/inventory';
 import { useDashboardAlerts } from '@/features/dashboard';
 import type { AlertType } from '@/features/alerts';
 import { categoryCode } from '../voice';
@@ -477,12 +477,11 @@ interface MobileItemDetailProps {
 }
 export function MobileItemDetail({ itemId, onBack }: MobileItemDetailProps) {
   const { themeKey, voice } = useDesignTheme();
-  const { rows } = useDesignData();
+  const { rows, categories } = useDesignData();
   const { updateItem, deleteItem } = useInventory();
   const row = rows.find((r) => String(r.item.id) === itemId);
-  const [draft, setDraft] = useState<InventoryItem | null>(row?.item ?? null);
 
-  if (!row || !draft) {
+  if (!row) {
     return (
       <div style={{ padding: 24, color: 'var(--color-text-2)' }}>
         Item not found.{' '}
@@ -502,38 +501,28 @@ export function MobileItemDetail({ itemId, onBack }: MobileItemDetailProps) {
     );
   }
 
-  const status = statusOf(draft, row.recommended);
+  const item = row.item;
+  const status = statusOf(item, row.recommended);
   const pct = row.recommended
-    ? Math.round((draft.quantity / row.recommended) * 100)
+    ? Math.round((item.quantity / row.recommended) * 100)
     : 100;
 
-  const set = <K extends keyof InventoryItem>(
-    key: K,
-    value: InventoryItem[K],
-  ) => setDraft((d) => (d ? { ...d, [key]: value } : d));
-
-  const save = () => {
-    updateItem(draft.id, {
-      name: draft.name,
-      quantity: draft.quantity,
-      expirationDate: draft.expirationDate,
-      location: draft.location,
-      notes: draft.notes,
-    });
+  const handleSubmit = (
+    update: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
+  ) => {
+    updateItem(item.id, update);
     onBack();
   };
-  const remove = () => {
+  const handleDelete = () => {
     if (
       !confirm(
         themeKey === 'pantry' ? 'Remove this item?' : 'DELETE THIS ITEM?',
       )
     )
       return;
-    deleteItem(draft.id);
+    deleteItem(item.id);
     onBack();
   };
-  const adjust = (delta: number) =>
-    set('quantity', createQuantity(Math.max(0, draft.quantity + delta)));
 
   return (
     <div
@@ -557,7 +546,7 @@ export function MobileItemDetail({ itemId, onBack }: MobileItemDetailProps) {
         ← {voice.inventory}
       </button>
       <div>
-        <Title size={22}>{draft.name}</Title>
+        <Title size={22}>{item.name}</Title>
         <div
           style={{
             fontFamily: 'var(--font-mono)',
@@ -566,7 +555,7 @@ export function MobileItemDetail({ itemId, onBack }: MobileItemDetailProps) {
             marginTop: 4,
           }}
         >
-          {String(draft.id).slice(0, 12)} · {row.categoryCode}
+          {String(item.id).slice(0, 12)} · {row.categoryCode}
         </div>
       </div>
 
@@ -582,109 +571,25 @@ export function MobileItemDetail({ itemId, onBack }: MobileItemDetailProps) {
               marginLeft: 'auto',
             }}
           >
-            {draft.quantity}/{row.recommended || '—'} {draft.unit}
+            {item.quantity}/{row.recommended || '—'} {item.unit}
           </span>
         </div>
       </Panel>
 
       <Panel padding={0}>
-        <MobileEditField
-          label={themeKey === 'pantry' ? 'Item name' : 'NAME'}
-          value={draft.name}
-          onChange={(v) => set('name', v)}
-        />
-        <MobileEditField
-          label={voice.qty}
-          type="number"
-          value={String(draft.quantity)}
-          onChange={(v) =>
-            set('quantity', createQuantity(Math.max(0, Number(v) || 0)))
-          }
-        />
-        <MobileEditField
-          label={voice.expires}
-          type="date"
-          value={draft.expirationDate ?? ''}
-          onChange={(v) =>
-            set(
-              'expirationDate',
-              (v || undefined) as InventoryItem['expirationDate'],
-            )
-          }
-        />
-        <MobileEditField
-          label={voice.location}
-          value={draft.location ?? ''}
-          onChange={(v) => set('location', v)}
-        />
+        <div className="design-v2-embed" style={{ padding: 14 }}>
+          <ItemForm
+            item={item}
+            categories={categories}
+            onSubmit={handleSubmit}
+            onCancel={onBack}
+          />
+        </div>
       </Panel>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-        <Button variant="secondary" full onClick={() => adjust(-1)}>
-          −1
-        </Button>
-        <Button variant="secondary" full onClick={() => adjust(1)}>
-          +1
-        </Button>
-      </div>
-      <Button variant="primary" full onClick={save}>
-        {voice.save}
-      </Button>
-      <Button variant="ghost" full onClick={remove}>
+      <Button variant="ghost" full onClick={handleDelete}>
         {voice.delete}
       </Button>
-    </div>
-  );
-}
-
-function MobileEditField({
-  label,
-  value,
-  onChange,
-  type = 'text',
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: 'text' | 'number' | 'date';
-}) {
-  return (
-    <div
-      style={{
-        padding: '14px 16px',
-        borderBottom: '1px solid var(--color-rule-soft)',
-      }}
-    >
-      <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: 'var(--caps-tracking)',
-          textTransform:
-            'var(--caps-transform)' as CSSProperties['textTransform'],
-          color: 'var(--color-text-3)',
-        }}
-      >
-        {label}
-      </div>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-label={label}
-        style={{
-          marginTop: 4,
-          width: '100%',
-          background: 'transparent',
-          border: 0,
-          outline: 'none',
-          fontSize: 16,
-          color: 'var(--color-text)',
-          fontWeight: 500,
-          fontFamily: 'inherit',
-          minHeight: 24,
-        }}
-      />
     </div>
   );
 }
