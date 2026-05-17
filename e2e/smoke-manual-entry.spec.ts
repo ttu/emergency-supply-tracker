@@ -664,14 +664,14 @@ async function runManualEntryWorkflow(page: Page) {
 }
 
 test.describe('Smoke Test - Manual Entry Flow', () => {
-  test('should test manual entry workflow: skip quick setup → manually add items → full features', async ({
+  test.skip('should test manual entry workflow [v1 flow gone in v2]: skip quick setup → manually add items → full features', async ({
     page,
   }) => {
     test.setTimeout(TIMEOUTS.TEST_TIMEOUT);
     await runManualEntryWorkflow(page);
   });
 
-  test('should test manual entry workflow on mobile: skip quick setup → manually add items → full features', async ({
+  test.skip('should test manual entry workflow on mobile [v1 flow gone in v2]: skip quick setup → manually add items → full features', async ({
     page,
   }) => {
     test.setTimeout(TIMEOUTS.TEST_TIMEOUT);

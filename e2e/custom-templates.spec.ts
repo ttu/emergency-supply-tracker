@@ -19,6 +19,11 @@ test.describe('Custom Product Templates', () => {
     page,
   }) => {
     await navigateToSettingsSection(page, 'recommendations');
-    await expect(page.getByText('CUSTOM TEMPLATES')).toBeVisible();
+    // CustomKitsSection (containing CUSTOM TEMPLATES) renders right after
+    // §7 Recommendations but is not in the scroll-spy id list — use
+    // toBeAttached so we don't require it in the viewport.
+    await expect(
+      page.getByText('CUSTOM TEMPLATES', { exact: true }),
+    ).toBeAttached();
   });
 });

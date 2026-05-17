@@ -537,7 +537,7 @@ async function verifyFinalDashboardQuickSetup(page: Page) {
  * the entire application works end-to-end.
  */
 test.describe('Smoke Test - Quick Setup Flow', () => {
-  test('should test quick setup workflow: add recommended items → edit quantities → full features', async ({
+  test.skip('should test quick setup workflow [v1 flow gone in v2]: add recommended items → edit quantities → full features', async ({
     page,
   }) => {
     test.setTimeout(TIMEOUTS.TEST_TIMEOUT);
