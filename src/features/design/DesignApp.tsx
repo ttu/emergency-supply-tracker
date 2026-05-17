@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   DesktopShell,
   MobileShell,
@@ -24,6 +24,127 @@ import { MobileAlerts } from '@/features/alerts/components/v2/MobileAlerts';
 import { Guide } from '@/features/help/components/v2/Guide';
 import { SettingsFull } from '@/features/settings/components/v2/SettingsFull';
 
+interface ViewContext {
+  voice: ReturnType<typeof useDesignTheme>['voice'];
+  isMobile: boolean;
+  selectedCategoryId: string | undefined;
+  setSelectedCategoryId: (id: string | undefined) => void;
+  setSelectedItemId: (id: string | undefined) => void;
+  setNav: (id: DesignNavId) => void;
+}
+
+function renderItemDetail(
+  selectedItemId: string,
+  ctx: ViewContext,
+): { title: string; breadcrumb: string; body: ReactNode } {
+  const { voice, isMobile, selectedCategoryId, setSelectedItemId } = ctx;
+  const breadcrumb =
+    selectedItemId === NEW_ITEM_ID ? voice.addItem : selectedItemId.slice(0, 8);
+  const defaultCategoryId =
+    selectedItemId === NEW_ITEM_ID ? selectedCategoryId : undefined;
+  const onBack = () => setSelectedItemId(undefined);
+  const body = isMobile ? (
+    <MobileItemDetail
+      itemId={selectedItemId}
+      onBack={onBack}
+      defaultCategoryId={defaultCategoryId}
+    />
+  ) : (
+    <ItemDetail
+      itemId={selectedItemId}
+      onBack={onBack}
+      defaultCategoryId={defaultCategoryId}
+    />
+  );
+  return { title: voice.inventory, breadcrumb, body };
+}
+
+function renderHome(ctx: ViewContext): ReactNode {
+  const { isMobile, setSelectedCategoryId, setNav } = ctx;
+  const onCategorySelect = (id: string) => {
+    setSelectedCategoryId(id);
+    setNav('inv');
+  };
+  return isMobile ? (
+    <MobileDashboard onCategorySelect={onCategorySelect} />
+  ) : (
+    <Dashboard
+      onCategorySelect={onCategorySelect}
+      onViewAllPriority={() => setNav('inv')}
+    />
+  );
+}
+
+function renderInventory(ctx: ViewContext): ReactNode {
+  const {
+    isMobile,
+    selectedCategoryId,
+    setSelectedCategoryId,
+    setSelectedItemId,
+  } = ctx;
+  const onAddItem = () => setSelectedItemId(NEW_ITEM_ID);
+  return isMobile ? (
+    <MobileInventory
+      onItemSelect={setSelectedItemId}
+      selectedCategoryId={selectedCategoryId}
+      onCategoryChange={setSelectedCategoryId}
+      onAddItem={onAddItem}
+    />
+  ) : (
+    <Inventory
+      selectedCategoryId={selectedCategoryId}
+      onCategoryChange={setSelectedCategoryId}
+      onItemSelect={setSelectedItemId}
+      onAddItem={onAddItem}
+    />
+  );
+}
+
+function renderAlerts(ctx: ViewContext): ReactNode {
+  const { isMobile, setSelectedItemId, setSelectedCategoryId, setNav } = ctx;
+  const onCategorySelect = (id: string) => {
+    setSelectedCategoryId(id);
+    setNav('inv');
+  };
+  return isMobile ? (
+    <MobileAlerts
+      onItemSelect={setSelectedItemId}
+      onCategorySelect={onCategorySelect}
+    />
+  ) : (
+    <Alerts
+      onItemSelect={setSelectedItemId}
+      onCategorySelect={onCategorySelect}
+    />
+  );
+}
+
+function renderNav(
+  nav: DesignNavId,
+  ctx: ViewContext,
+): { title: string; body: ReactNode } {
+  const { voice, isMobile } = ctx;
+  switch (nav) {
+    case 'home':
+      return { title: voice.home, body: renderHome(ctx) };
+    case 'inv':
+      return { title: voice.inventory, body: renderInventory(ctx) };
+    case 'alerts':
+      return { title: voice.alerts, body: renderAlerts(ctx) };
+    case 'shop':
+      return {
+        title: voice.shopping,
+        body: isMobile ? <MobileShopping /> : <Shopping />,
+      };
+    case 'plan':
+      return { title: voice.plan, body: <Plan /> };
+    case 'help':
+      return { title: voice.guide, body: <Guide /> };
+    case 'settings':
+      return { title: voice.settings, body: <SettingsFull /> };
+  }
+}
+
 export function DesignApp() {
   const { voice } = useDesignTheme();
   const isMobile = useIsMobile();
@@ -43,121 +164,30 @@ export function DesignApp() {
     if (id !== 'inv') setSelectedCategoryId(undefined);
   };
 
-  let title = '';
-  let breadcrumb: string | undefined;
-  let body: React.ReactNode;
+  const ctx: ViewContext = {
+    voice,
+    isMobile,
+    selectedCategoryId,
+    setSelectedCategoryId,
+    setSelectedItemId,
+    setNav,
+  };
 
-  if (selectedItemId) {
-    title = voice.inventory;
-    breadcrumb =
-      selectedItemId === NEW_ITEM_ID
-        ? voice.addItem
-        : selectedItemId.slice(0, 8);
-    body = isMobile ? (
-      <MobileItemDetail
-        itemId={selectedItemId}
-        onBack={() => setSelectedItemId(undefined)}
-        defaultCategoryId={
-          selectedItemId === NEW_ITEM_ID ? selectedCategoryId : undefined
-        }
-      />
-    ) : (
-      <ItemDetail
-        itemId={selectedItemId}
-        onBack={() => setSelectedItemId(undefined)}
-        defaultCategoryId={
-          selectedItemId === NEW_ITEM_ID ? selectedCategoryId : undefined
-        }
-      />
-    );
-  } else {
-    switch (nav) {
-      case 'home':
-        title = voice.home;
-        body = isMobile ? (
-          <MobileDashboard
-            onCategorySelect={(id) => {
-              setSelectedCategoryId(id);
-              setNav('inv');
-            }}
-          />
-        ) : (
-          <Dashboard
-            onCategorySelect={(id) => {
-              setSelectedCategoryId(id);
-              setNav('inv');
-            }}
-            onViewAllPriority={() => setNav('inv')}
-          />
-        );
-        break;
-      case 'inv':
-        title = voice.inventory;
-        body = isMobile ? (
-          <MobileInventory
-            onItemSelect={setSelectedItemId}
-            selectedCategoryId={selectedCategoryId}
-            onCategoryChange={setSelectedCategoryId}
-            onAddItem={() => setSelectedItemId(NEW_ITEM_ID)}
-          />
-        ) : (
-          <Inventory
-            selectedCategoryId={selectedCategoryId}
-            onCategoryChange={setSelectedCategoryId}
-            onItemSelect={setSelectedItemId}
-            onAddItem={() => setSelectedItemId(NEW_ITEM_ID)}
-          />
-        );
-        break;
-      case 'alerts':
-        title = voice.alerts;
-        body = isMobile ? (
-          <MobileAlerts
-            onItemSelect={setSelectedItemId}
-            onCategorySelect={(id) => {
-              setSelectedCategoryId(id);
-              setNav('inv');
-            }}
-          />
-        ) : (
-          <Alerts
-            onItemSelect={setSelectedItemId}
-            onCategorySelect={(id) => {
-              setSelectedCategoryId(id);
-              setNav('inv');
-            }}
-          />
-        );
-        break;
-      case 'shop':
-        title = voice.shopping;
-        body = isMobile ? <MobileShopping /> : <Shopping />;
-        break;
-      case 'plan':
-        title = voice.plan;
-        body = <Plan />;
-        break;
-      case 'help':
-        title = voice.guide;
-        body = <Guide />;
-        break;
-      case 'settings':
-        title = voice.settings;
-        body = <SettingsFull />;
-        break;
-    }
-  }
+  const view: { title: string; body: ReactNode; breadcrumb?: string } =
+    selectedItemId
+      ? renderItemDetail(selectedItemId, ctx)
+      : renderNav(nav, ctx);
 
   const Shell = isMobile ? MobileShell : DesktopShell;
   return (
     <Shell
       active={nav}
       onNav={goTo}
-      title={title}
-      breadcrumb={breadcrumb}
+      title={view.title}
+      breadcrumb={view.breadcrumb}
       alertCount={alertCount}
     >
-      {body}
+      {view.body}
     </Shell>
   );
 }

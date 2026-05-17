@@ -30,7 +30,7 @@ const DEFAULT_ENABLED_CATEGORIES = [
  * (household, enabled categories, preset selection) and renders one step
  * component at a time.
  */
-export function DesignOnboarding({ onComplete }: OnboardingProps) {
+export function DesignOnboarding({ onComplete }: Readonly<OnboardingProps>) {
   const [step, setStep] = useState<StepIndex>(1);
   const [household, setHousehold] = useState<HouseholdConfig>({
     adults: 2,

@@ -22,11 +22,20 @@ interface MobileItemDetailProps {
   defaultCategoryId?: string;
 }
 
+function mobileDetailTitle(
+  isNew: boolean,
+  themeKey: string,
+  itemName: string | undefined,
+): string | undefined {
+  if (!isNew) return itemName;
+  return themeKey === 'pantry' ? 'Add an item' : 'ADD ITEM';
+}
+
 export function MobileItemDetail({
   itemId,
   onBack,
   defaultCategoryId,
-}: MobileItemDetailProps) {
+}: Readonly<MobileItemDetailProps>) {
   const { themeKey, voice } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const { items, addItem, updateItem, deleteItem } = useInventory();
@@ -108,11 +117,7 @@ export function MobileItemDetail({
       </button>
       <div>
         <Title size={22}>
-          {isNew
-            ? themeKey === 'pantry'
-              ? 'Add an item'
-              : 'ADD ITEM'
-            : item?.name}
+          {mobileDetailTitle(isNew, themeKey, item?.name)}
         </Title>
         {item && (
           <div

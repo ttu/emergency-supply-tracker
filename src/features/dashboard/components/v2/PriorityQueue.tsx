@@ -14,12 +14,21 @@ interface PriorityQueueProps {
 }
 
 /** Top-N items needing action — non-OK status sorted critical-first. */
-export function PriorityQueue({ onViewAll, limit = 5 }: PriorityQueueProps) {
+function critFirst(a: { status: string }, b: { status: string }): number {
+  if (a.status === 'crit') return -1;
+  if (b.status === 'crit') return 1;
+  return 0;
+}
+
+export function PriorityQueue({
+  onViewAll,
+  limit = 5,
+}: Readonly<PriorityQueueProps>) {
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
   const priority = [...rows]
     .filter((r) => r.status !== 'ok')
-    .sort((a, b) => (a.status === 'crit' ? -1 : b.status === 'crit' ? 1 : 0))
+    .sort(critFirst)
     .slice(0, limit);
 
   return (

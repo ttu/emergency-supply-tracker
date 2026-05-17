@@ -10,7 +10,16 @@ interface OnboardStep02Props {
 }
 
 /** Step 2: theme picker — switching here reskins the entire flow live. */
-export function OnboardStep02Theme({ onNext, onBack }: OnboardStep02Props) {
+function themeLeadTitle(themeKey: string): string {
+  if (themeKey === 'pantry') return 'Pick a look.';
+  if (themeKey === 'civil') return 'SELECT INTERFACE THEME';
+  return 'CHOOSE THEME';
+}
+
+export function OnboardStep02Theme({
+  onNext,
+  onBack,
+}: Readonly<OnboardStep02Props>) {
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
   return (
@@ -18,12 +27,7 @@ export function OnboardStep02Theme({ onNext, onBack }: OnboardStep02Props) {
       step={2}
       title={themeKey === 'pantry' ? 'Appearance' : 'APPEARANCE · THEME'}
       lead={{
-        title:
-          themeKey === 'pantry'
-            ? 'Pick a look.'
-            : themeKey === 'civil'
-              ? 'SELECT INTERFACE THEME'
-              : 'CHOOSE THEME',
+        title: themeLeadTitle(themeKey),
         sub:
           themeKey === 'pantry'
             ? 'Three looks, same app. You can switch any time in settings — your data and layout stay identical.'

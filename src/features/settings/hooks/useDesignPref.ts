@@ -38,11 +38,11 @@ export function useDesignPrefs(): [
   DesignPrefs,
   (k: keyof DesignPrefs, v: boolean) => void,
 ] {
-  const [prefs, setState] = useState<DesignPrefs>(load);
-  const set = (k: keyof DesignPrefs, v: boolean) => {
+  const [prefs, setPrefs] = useState<DesignPrefs>(load);
+  const updatePref = (k: keyof DesignPrefs, v: boolean) => {
     const next = { ...prefs, [k]: v };
-    setState(next);
+    setPrefs(next);
     save(next);
   };
-  return [prefs, set];
+  return [prefs, updatePref];
 }

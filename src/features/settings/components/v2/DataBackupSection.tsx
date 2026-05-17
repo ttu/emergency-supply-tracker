@@ -14,6 +14,21 @@ import {
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { PanelHeader, SectionHeader } from './SettingsRows';
 
+function backupLabel(themeKey: string, lastBackup: string | undefined): string {
+  if (lastBackup) {
+    return themeKey === 'pantry'
+      ? `Last backup: ${lastBackup}`
+      : `LAST BACKUP ${lastBackup}`;
+  }
+  return themeKey === 'pantry'
+    ? 'No backup yet — consider exporting soon.'
+    : 'NO BACKUP RECORDED · ▸ EXPORT RECOMMENDED';
+}
+
+function storageLocationLabel(themeKey: string): string {
+  return themeKey === 'pantry' ? 'This browser only' : 'BROWSER LOCALSTORAGE';
+}
+
 /** §9 Data & backup: storage info + export/import + diagnostics. */
 export function DataBackupSection() {
   const { themeKey } = useDesignTheme();
@@ -49,11 +64,7 @@ export function DataBackupSection() {
           </PanelHeader>
           <Field
             label={themeKey === 'pantry' ? 'Where' : 'LOCATION'}
-            value={
-              themeKey === 'pantry'
-                ? 'This browser only'
-                : 'BROWSER LOCALSTORAGE'
-            }
+            value={storageLocationLabel(themeKey)}
             hint={themeKey === 'pantry' ? 'No cloud' : 'OFFLINE-ONLY'}
           />
           <Field
@@ -93,13 +104,7 @@ export function DataBackupSection() {
               letterSpacing: '0.04em',
             }}
           >
-            {lastBackup
-              ? themeKey === 'pantry'
-                ? `Last backup: ${lastBackup}`
-                : `LAST BACKUP ${lastBackup}`
-              : themeKey === 'pantry'
-                ? 'No backup yet — consider exporting soon.'
-                : 'NO BACKUP RECORDED · ▸ EXPORT RECOMMENDED'}
+            {backupLabel(themeKey, lastBackup)}
           </div>
         </Panel>
       </div>

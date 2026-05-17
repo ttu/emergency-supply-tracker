@@ -27,7 +27,7 @@ export function KpiTile({
   size = 56,
   tone,
   children,
-}: KpiTileProps) {
+}: Readonly<KpiTileProps>) {
   return (
     <Panel padding={20}>
       <Caption>{label}</Caption>

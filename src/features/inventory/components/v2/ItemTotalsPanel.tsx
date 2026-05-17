@@ -11,23 +11,26 @@ interface ItemTotalsPanelProps {
 }
 
 /** Stack totals: total kcal, weight, water, capacity Wh derived from per-unit. */
-export function ItemTotalsPanel({ item }: ItemTotalsPanelProps) {
+function multiplyOrUndefined(
+  perUnit: number | undefined,
+  quantity: number,
+): number | undefined {
+  return perUnit === undefined ? undefined : perUnit * quantity;
+}
+
+export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
   const { themeKey } = useDesignTheme();
 
-  const totalCalories =
-    item.caloriesPerUnit !== undefined
-      ? item.caloriesPerUnit * item.quantity
-      : undefined;
-  const totalWeightG =
-    item.weightGrams !== undefined
-      ? item.weightGrams * item.quantity
-      : undefined;
-  const totalWaterL =
-    item.requiresWaterLiters !== undefined
-      ? item.requiresWaterLiters * item.quantity
-      : undefined;
-  const totalCapacityWh =
-    item.capacityWh !== undefined ? item.capacityWh * item.quantity : undefined;
+  const totalCalories = multiplyOrUndefined(
+    item.caloriesPerUnit,
+    item.quantity,
+  );
+  const totalWeightG = multiplyOrUndefined(item.weightGrams, item.quantity);
+  const totalWaterL = multiplyOrUndefined(
+    item.requiresWaterLiters,
+    item.quantity,
+  );
+  const totalCapacityWh = multiplyOrUndefined(item.capacityWh, item.quantity);
 
   const hasTotals =
     totalCalories !== undefined ||
@@ -93,17 +96,14 @@ export function ItemTotalsPanel({ item }: ItemTotalsPanelProps) {
   );
 }
 
-function TotalsRow({
-  label,
-  value,
-  suffix,
-  detail,
-}: {
+interface TotalsRowProps {
   label: string;
   value: string;
   suffix: string;
   detail: string;
-}) {
+}
+
+function TotalsRow({ label, value, suffix, detail }: Readonly<TotalsRowProps>) {
   return (
     <div>
       <Caption>{label}</Caption>

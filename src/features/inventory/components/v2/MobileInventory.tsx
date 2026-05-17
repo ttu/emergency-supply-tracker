@@ -25,7 +25,7 @@ export function MobileInventory({
   selectedCategoryId,
   onCategoryChange,
   onAddItem,
-}: MobileInventoryProps) {
+}: Readonly<MobileInventoryProps>) {
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const [filter, setFilter] = useState<FilterKey>('all');

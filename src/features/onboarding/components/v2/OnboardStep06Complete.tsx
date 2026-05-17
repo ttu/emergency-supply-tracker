@@ -18,7 +18,7 @@ export function OnboardStep06Complete({
   household,
   enabledCategories,
   onComplete,
-}: OnboardStep06Props) {
+}: Readonly<OnboardStep06Props>) {
   const { themeKey, voice } = useDesignTheme();
   return (
     <div

@@ -131,7 +131,12 @@ export function AboutSection() {
   );
 }
 
-function AboutStat({ label, value }: { label: string; value: string }) {
+interface AboutStatProps {
+  label: string;
+  value: string;
+}
+
+function AboutStat({ label, value }: Readonly<AboutStatProps>) {
   return (
     <div>
       <Caption>{label}</Caption>

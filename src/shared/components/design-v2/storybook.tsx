@@ -24,7 +24,7 @@ interface DesignV2StoryProps {
 export function DesignV2Story({
   theme = 'cockpit',
   children,
-}: DesignV2StoryProps) {
+}: Readonly<DesignV2StoryProps>) {
   saveAppData(
     createMockAppData({
       settings: createMockSettings({ theme, language: 'en' }),

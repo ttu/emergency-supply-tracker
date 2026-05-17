@@ -22,7 +22,7 @@ export function OnboardStep04Household({
   onHouseholdChange,
   onNext,
   onBack,
-}: OnboardStep04Props) {
+}: Readonly<OnboardStep04Props>) {
   const { themeKey } = useDesignTheme();
   const targets = computeOnboardingTargets(household);
 
@@ -182,7 +182,7 @@ function OnboardStepperRow({
   value,
   onChange,
   min = 0,
-}: StepperRowProps) {
+}: Readonly<StepperRowProps>) {
   const buttonStyle: CSSProperties = {
     width: 36,
     height: 36,

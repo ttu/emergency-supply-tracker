@@ -32,6 +32,30 @@ function saveChecked(state: Record<string, boolean>) {
   }
 }
 
+const PANTRY_LABELS: Record<DesignStatus, string> = {
+  crit: 'Now',
+  warn: 'Soon',
+  ok: 'When',
+};
+const URGENT_LABELS: Record<DesignStatus, string> = {
+  crit: 'URGENT',
+  warn: 'SOON',
+  ok: 'WHEN',
+};
+
+function shoppingLabel(themeKey: string, p: DesignStatus): string {
+  return (themeKey === 'pantry' ? PANTRY_LABELS : URGENT_LABELS)[p];
+}
+
+function critFirstShopping(
+  a: { priority: string },
+  b: { priority: string },
+): number {
+  if (a.priority === 'crit') return -1;
+  if (b.priority === 'crit') return 1;
+  return 0;
+}
+
 export function Shopping() {
   const { themeKey, voice } = useDesignTheme();
   const { rows } = useDesignData();
@@ -49,11 +73,9 @@ export function Shopping() {
         need: r.recommended - r.item.quantity,
         currentQty: r.item.quantity,
         unit: r.item.unit,
-        priority: r.status as DesignStatus,
+        priority: r.status,
       }))
-      .sort((a, b) =>
-        a.priority === 'crit' ? -1 : b.priority === 'crit' ? 1 : 0,
-      );
+      .sort(critFirstShopping);
   }, [rows]);
 
   const toggle = (id: string) => {
@@ -73,18 +95,7 @@ export function Shopping() {
   const open = list.filter((it) => !checked[it.id]).length;
   const done = list.filter((it) => checked[it.id]).length;
 
-  const labelFor = (p: DesignStatus) =>
-    themeKey === 'pantry'
-      ? p === 'crit'
-        ? 'Now'
-        : p === 'warn'
-          ? 'Soon'
-          : 'When'
-      : p === 'crit'
-        ? 'URGENT'
-        : p === 'warn'
-          ? 'SOON'
-          : 'WHEN';
+  const labelFor = (p: DesignStatus) => shoppingLabel(themeKey, p);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

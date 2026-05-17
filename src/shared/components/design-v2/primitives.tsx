@@ -3,12 +3,13 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 export type Status = 'ok' | 'warn' | 'crit';
 
-const statusVar = (s: Status) =>
-  s === 'ok'
-    ? 'var(--color-ok)'
-    : s === 'warn'
-      ? 'var(--color-warn)'
-      : 'var(--color-crit)';
+const STATUS_VAR: Record<Status, string> = {
+  ok: 'var(--color-ok)',
+  warn: 'var(--color-warn)',
+  crit: 'var(--color-crit)',
+};
+
+const statusVar = (s: Status) => STATUS_VAR[s];
 
 interface PanelProps {
   children: ReactNode;
@@ -16,9 +17,6 @@ interface PanelProps {
   noBorder?: boolean;
   style?: CSSProperties;
   className?: string;
-  onClick?: () => void;
-  role?: string;
-  ariaLabel?: string;
 }
 
 export function Panel({
@@ -27,15 +25,9 @@ export function Panel({
   noBorder,
   style,
   className,
-  onClick,
-  role,
-  ariaLabel,
-}: PanelProps) {
+}: Readonly<PanelProps>) {
   return (
     <div
-      role={role}
-      aria-label={ariaLabel}
-      onClick={onClick}
       className={className}
       style={{
         background: 'var(--color-panel)',
@@ -53,13 +45,12 @@ export function Panel({
   );
 }
 
-export function Caption({
-  children,
-  style,
-}: {
+interface CaptionProps {
   children: ReactNode;
   style?: CSSProperties;
-}) {
+}
+
+export function Caption({ children, style }: Readonly<CaptionProps>) {
   return (
     <div
       style={{
@@ -78,15 +69,13 @@ export function Caption({
   );
 }
 
-export function Title({
-  children,
-  size = 32,
-  style,
-}: {
+interface TitleProps {
   children: ReactNode;
   size?: number;
   style?: CSSProperties;
-}) {
+}
+
+export function Title({ children, size = 32, style }: Readonly<TitleProps>) {
   const { themeKey } = useDesignTheme();
   return (
     <h1
@@ -106,17 +95,19 @@ export function Title({
   );
 }
 
+interface NumberDisplayProps {
+  value: string | number;
+  suffix?: string;
+  size?: number;
+  tone?: Status;
+}
+
 export function NumberDisplay({
   value,
   suffix,
   size = 56,
   tone,
-}: {
-  value: string | number;
-  suffix?: string;
-  size?: number;
-  tone?: Status;
-}) {
+}: Readonly<NumberDisplayProps>) {
   const color = tone ? statusVar(tone) : 'var(--color-text)';
   return (
     <span
@@ -147,13 +138,12 @@ export function NumberDisplay({
   );
 }
 
-export function StatusDot({
-  status,
-  size = 8,
-}: {
+interface StatusDotProps {
   status: Status;
   size?: number;
-}) {
+}
+
+export function StatusDot({ status, size = 8 }: Readonly<StatusDotProps>) {
   return (
     <span
       aria-hidden
@@ -169,22 +159,34 @@ export function StatusDot({
   );
 }
 
-export function StatusPill({
-  status,
-  children,
-}: {
+interface StatusPillProps {
   status: Status;
   children?: ReactNode;
-}) {
+}
+
+function defaultStatusLabel(
+  status: Status,
+  voice: { statusOk: string; statusWarn: string; statusCrit: string },
+): string {
+  if (status === 'ok') return voice.statusOk;
+  if (status === 'warn') return voice.statusWarn;
+  return voice.statusCrit;
+}
+
+function statusPillTextColor(
+  themeKey: string,
+  isCockpit: boolean,
+  color: string,
+): string {
+  if (isCockpit) return color;
+  if (themeKey === 'civil') return '#fff';
+  return 'var(--color-bg-2)';
+}
+
+export function StatusPill({ status, children }: Readonly<StatusPillProps>) {
   const { themeKey, voice } = useDesignTheme();
   const color = statusVar(status);
-  const label =
-    children ??
-    (status === 'ok'
-      ? voice.statusOk
-      : status === 'warn'
-        ? voice.statusWarn
-        : voice.statusCrit);
+  const label = children ?? defaultStatusLabel(status, voice);
   const isCockpit = themeKey === 'cockpit';
   return (
     <span
@@ -195,11 +197,7 @@ export function StatusPill({
         padding: themeKey === 'pantry' ? '3px 10px' : '3px 8px',
         borderRadius: 'var(--radius-pill)',
         background: isCockpit ? 'transparent' : color,
-        color: isCockpit
-          ? color
-          : themeKey === 'civil'
-            ? '#fff'
-            : 'var(--color-bg-2)',
+        color: statusPillTextColor(themeKey, isCockpit, color),
         border: isCockpit ? `1px solid ${color}` : 'none',
         fontFamily: 'var(--font-mono)',
         fontSize: 10,
@@ -213,19 +211,21 @@ export function StatusPill({
   );
 }
 
+interface StatusBarProps {
+  ok: number;
+  warn: number;
+  crit: number;
+  total: number;
+  height?: number;
+}
+
 export function StatusBar({
   ok,
   warn,
   crit,
   total,
   height = 5,
-}: {
-  ok: number;
-  warn: number;
-  crit: number;
-  total: number;
-  height?: number;
-}) {
+}: Readonly<StatusBarProps>) {
   const t = total <= 0 ? 1 : total;
   return (
     <div
@@ -258,6 +258,51 @@ export function StatusBar({
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
 
+interface ButtonProps {
+  children: ReactNode;
+  variant?: ButtonVariant;
+  full?: boolean;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  ariaLabel?: string;
+  style?: CSSProperties;
+}
+
+function buttonVariantStyle(
+  variant: ButtonVariant,
+  themeKey: string,
+): CSSProperties {
+  switch (variant) {
+    case 'primary':
+      return {
+        background: 'var(--color-accent)',
+        color: 'var(--color-accent-ink)',
+        border: 'none',
+      };
+    case 'secondary':
+      return {
+        background: 'transparent',
+        color: 'var(--color-text)',
+        border: '1px solid var(--color-rule)',
+      };
+    case 'ghost':
+      return {
+        background: 'transparent',
+        color: 'var(--color-text-2)',
+        border: 'none',
+      };
+    case 'danger':
+      return { background: 'var(--color-crit)', color: '#fff', border: 'none' };
+    case 'success':
+      return {
+        background: 'var(--color-ok)',
+        color: themeKey === 'cockpit' ? 'var(--color-bg)' : '#fff',
+        border: 'none',
+      };
+  }
+}
+
 export function Button({
   children,
   variant = 'primary',
@@ -267,43 +312,9 @@ export function Button({
   disabled,
   ariaLabel,
   style,
-}: {
-  children: ReactNode;
-  variant?: ButtonVariant;
-  full?: boolean;
-  onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
-  disabled?: boolean;
-  ariaLabel?: string;
-  style?: CSSProperties;
-}) {
+}: Readonly<ButtonProps>) {
   const { themeKey } = useDesignTheme();
-  const variantStyle: CSSProperties =
-    variant === 'primary'
-      ? {
-          background: 'var(--color-accent)',
-          color: 'var(--color-accent-ink)',
-          border: 'none',
-        }
-      : variant === 'secondary'
-        ? {
-            background: 'transparent',
-            color: 'var(--color-text)',
-            border: '1px solid var(--color-rule)',
-          }
-        : variant === 'ghost'
-          ? {
-              background: 'transparent',
-              color: 'var(--color-text-2)',
-              border: 'none',
-            }
-          : variant === 'danger'
-            ? { background: 'var(--color-crit)', color: '#fff', border: 'none' }
-            : {
-                background: 'var(--color-ok)',
-                color: themeKey === 'cockpit' ? 'var(--color-bg)' : '#fff',
-                border: 'none',
-              };
+  const variantStyle = buttonVariantStyle(variant, themeKey);
   return (
     <button
       type={type}
@@ -331,17 +342,14 @@ export function Button({
   );
 }
 
-export function Field({
-  label,
-  value,
-  hint,
-  focus,
-}: {
+interface FieldProps {
   label: string;
   value: ReactNode;
   hint?: string;
   focus?: boolean;
-}) {
+}
+
+export function Field({ label, value, hint, focus }: Readonly<FieldProps>) {
   return (
     <div
       style={{
@@ -385,7 +393,11 @@ export function Field({
   );
 }
 
-export function CategoryCode({ children }: { children: ReactNode }) {
+interface CategoryCodeProps {
+  children: ReactNode;
+}
+
+export function CategoryCode({ children }: Readonly<CategoryCodeProps>) {
   return (
     <span
       style={{

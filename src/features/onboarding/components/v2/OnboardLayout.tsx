@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Button, Title } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
@@ -8,12 +8,16 @@ interface StepBarProps {
 }
 
 /** Five-segment progress indicator for the onboarding flow. */
-export function StepBar({ step, total }: StepBarProps) {
+export function StepBar({ step, total }: Readonly<StepBarProps>) {
+  const segmentIds = useMemo(
+    () => Array.from({ length: total }, () => crypto.randomUUID()),
+    [total],
+  );
   return (
     <div style={{ display: 'flex', gap: 4 }}>
-      {Array.from({ length: total }).map((_, i) => (
+      {segmentIds.map((id, i) => (
         <div
-          key={i}
+          key={id}
           style={{
             flex: 1,
             height: 3,
@@ -47,7 +51,7 @@ export function OnboardLayout({
   back,
   onContinue,
   primaryLabel,
-}: OnboardLayoutProps) {
+}: Readonly<OnboardLayoutProps>) {
   const { themeKey, voice } = useDesignTheme();
   return (
     <div

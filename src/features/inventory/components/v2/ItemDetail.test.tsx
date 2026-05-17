@@ -36,7 +36,7 @@ describe('ItemDetail (v2)', () => {
   let confirmSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
   });
 
   afterEach(() => {

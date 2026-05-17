@@ -16,11 +16,17 @@ interface SettingsRailProps {
 }
 
 /** Sticky sub-nav rail on the left of v2 Settings (desktop only). */
+function railColor(danger: boolean, isActive: boolean): string {
+  if (danger) return 'var(--color-crit)';
+  if (isActive) return 'var(--color-text)';
+  return 'var(--color-text-2)';
+}
+
 export function SettingsRail({
   sections,
   activeSection,
   onSelect,
-}: SettingsRailProps) {
+}: Readonly<SettingsRailProps>) {
   const { themeKey } = useDesignTheme();
   return (
     <aside style={{ position: 'sticky', top: 0, alignSelf: 'flex-start' }}>
@@ -54,11 +60,7 @@ export function SettingsRail({
                   ? '3px solid var(--color-accent)'
                   : '3px solid transparent',
                 textAlign: 'left',
-                color: s.danger
-                  ? 'var(--color-crit)'
-                  : isActive
-                    ? 'var(--color-text)'
-                    : 'var(--color-text-2)',
+                color: railColor(!!s.danger, isActive),
                 fontFamily: 'var(--font-body)',
                 fontSize: 12,
                 fontWeight: 600,

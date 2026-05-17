@@ -97,7 +97,7 @@ export function ThemePicker({
   value,
   onChange,
   layout = 'grid',
-}: ThemePickerProps) {
+}: Readonly<ThemePickerProps>) {
   const { themeKey: activeKey } = useDesignTheme();
   const isList = layout === 'list';
   const containerStyle: CSSProperties = isList
@@ -109,9 +109,7 @@ export function ThemePicker({
       {DESIGN_V2_THEMES.map((key) => {
         const t = PREVIEWS[key];
         const selected = value === key;
-        const accent =
-          PREVIEWS[activeKey as DesignV2Theme]?.accent ??
-          PREVIEWS.cockpit.accent;
+        const accent = PREVIEWS[activeKey]?.accent ?? PREVIEWS.cockpit.accent;
         return (
           <button
             key={key}
@@ -155,17 +153,19 @@ export function ThemePicker({
                 {t.name}
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
-                {[t.text, t.accent, t.ok, t.warn, t.crit].map((c, j) => (
-                  <div
-                    key={j}
-                    style={{
-                      width: 18,
-                      height: 18,
-                      background: c,
-                      borderRadius: t.radius,
-                    }}
-                  />
-                ))}
+                {(['text', 'accent', 'ok', 'warn', 'crit'] as const).map(
+                  (slot) => (
+                    <div
+                      key={slot}
+                      style={{
+                        width: 18,
+                        height: 18,
+                        background: t[slot],
+                        borderRadius: t.radius,
+                      }}
+                    />
+                  ),
+                )}
               </div>
               <div
                 style={{

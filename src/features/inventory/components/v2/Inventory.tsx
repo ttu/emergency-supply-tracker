@@ -22,12 +22,41 @@ interface InventoryProps {
 
 const MS_PER_DAY = 86_400_000;
 
+function isExpiringWithin30Days(
+  item: { expirationDate?: string; neverExpires?: boolean },
+  now: number,
+): boolean {
+  if (!item.expirationDate || item.neverExpires) return false;
+  const days = (new Date(item.expirationDate).getTime() - now) / MS_PER_DAY;
+  return days >= 0 && days < 30;
+}
+
+function matchesStatusFilter(
+  status: string,
+  filter: InventoryFilterKey,
+): boolean {
+  if (filter === 'all' || filter === 'exp') return true;
+  return status === filter;
+}
+
+function matchesSearch(
+  row: { item: { name: string }; categoryCode: string },
+  search: string,
+): boolean {
+  if (!search) return true;
+  const q = search.toLowerCase();
+  return (
+    row.item.name.toLowerCase().includes(q) ||
+    row.categoryCode.toLowerCase().includes(q)
+  );
+}
+
 export function Inventory({
   selectedCategoryId,
   onCategoryChange,
   onItemSelect,
   onAddItem,
-}: InventoryProps) {
+}: Readonly<InventoryProps>) {
   const { themeKey, voice } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const [filter, setFilter] = useState<InventoryFilterKey>('all');
@@ -62,24 +91,10 @@ export function Inventory({
         String(r.item.categoryId) !== selectedCategoryId
       )
         return false;
-      if (filter === 'crit' && r.status !== 'crit') return false;
-      if (filter === 'warn' && r.status !== 'warn') return false;
-      if (filter === 'ok' && r.status !== 'ok') return false;
-      if (filter === 'exp') {
-        if (!r.item.expirationDate || r.item.neverExpires) return false;
-        const days =
-          (new Date(r.item.expirationDate).getTime() - now) / MS_PER_DAY;
-        if (days < 0 || days >= 30) return false;
-      }
-      if (search) {
-        const q = search.toLowerCase();
-        if (
-          !r.item.name.toLowerCase().includes(q) &&
-          !r.categoryCode.toLowerCase().includes(q)
-        )
-          return false;
-      }
-      return true;
+      if (!matchesStatusFilter(r.status, filter)) return false;
+      if (filter === 'exp' && !isExpiringWithin30Days(r.item, now))
+        return false;
+      return matchesSearch(r, search);
     });
   }, [rows, filter, selectedCategoryId, search]);
 

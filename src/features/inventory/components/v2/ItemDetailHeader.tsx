@@ -15,13 +15,27 @@ interface ItemDetailHeaderProps {
 }
 
 /** Caption + title + category line; right-aligned Delete for existing items. */
+function headerCaption(isNew: boolean, themeKey: string): string {
+  if (isNew) return themeKey === 'pantry' ? 'New item' : 'NEW ITEM';
+  return themeKey === 'pantry' ? 'Item details' : 'ITEM RECORD';
+}
+
+function headerTitle(
+  isNew: boolean,
+  themeKey: string,
+  itemName: string | undefined,
+): string | undefined {
+  if (!isNew) return itemName;
+  return themeKey === 'pantry' ? 'Add an item' : 'ADD ITEM';
+}
+
 export function ItemDetailHeader({
   isNew,
   itemName,
   itemCategoryId,
   categoryName,
   onDelete,
-}: ItemDetailHeaderProps) {
+}: Readonly<ItemDetailHeaderProps>) {
   const { themeKey, voice } = useDesignTheme();
   return (
     <div
@@ -32,21 +46,9 @@ export function ItemDetailHeader({
       }}
     >
       <div>
-        <Caption>
-          {isNew
-            ? themeKey === 'pantry'
-              ? 'New item'
-              : 'NEW ITEM'
-            : themeKey === 'pantry'
-              ? 'Item details'
-              : 'ITEM RECORD'}
-        </Caption>
+        <Caption>{headerCaption(isNew, themeKey)}</Caption>
         <Title size={32} style={{ marginTop: 4 }}>
-          {isNew
-            ? themeKey === 'pantry'
-              ? 'Add an item'
-              : 'ADD ITEM'
-            : itemName}
+          {headerTitle(isNew, themeKey, itemName)}
         </Title>
         {itemCategoryId && (
           <div

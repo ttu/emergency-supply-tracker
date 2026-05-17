@@ -16,7 +16,7 @@ interface ClassicThemeSwitcherProps {
 export function ClassicThemeSwitcher({
   value,
   onChange,
-}: ClassicThemeSwitcherProps) {
+}: Readonly<ClassicThemeSwitcherProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const classicThemes = SELECTABLE_THEMES.filter((k) => !isDesignV2Theme(k));

@@ -115,17 +115,19 @@ export function DangerZoneSection() {
   );
 }
 
+interface DangerRowProps {
+  title: string;
+  detail: string;
+  action: string;
+  onClick: () => void;
+}
+
 function DangerRow({
   title,
   detail,
   action,
   onClick,
-}: {
-  title: string;
-  detail: string;
-  action: string;
-  onClick: () => void;
-}) {
+}: Readonly<DangerRowProps>) {
   return (
     <div
       style={{

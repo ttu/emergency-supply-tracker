@@ -3,6 +3,12 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { KpiTile } from './KpiTile';
 
+function readinessTone(readiness: number): 'ok' | 'warn' | 'crit' {
+  if (readiness >= 80) return 'ok';
+  if (readiness >= 60) return 'warn';
+  return 'crit';
+}
+
 /**
  * The four-up KPI row at the top of the Dashboard:
  * Readiness / Days covered / Expiring / Critical.
@@ -11,7 +17,7 @@ export function KpiRow() {
   const { themeKey, voice } = useDesignTheme();
   const { totals, readiness, expiringCount, criticalCount, daysCovered } =
     useDesignData();
-  const tone = readiness >= 80 ? 'ok' : readiness >= 60 ? 'warn' : 'crit';
+  const tone = readinessTone(readiness);
 
   return (
     <div

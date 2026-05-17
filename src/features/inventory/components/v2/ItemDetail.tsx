@@ -28,7 +28,7 @@ export function ItemDetail({
   itemId,
   onBack,
   defaultCategoryId,
-}: ItemDetailProps) {
+}: Readonly<ItemDetailProps>) {
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const { items, addItem, updateItem, deleteItem } = useInventory();

@@ -23,7 +23,7 @@ export function ItemStatusPanel({
   quantity,
   recommended,
   unit,
-}: ItemStatusPanelProps) {
+}: Readonly<ItemStatusPanelProps>) {
   const { themeKey } = useDesignTheme();
   return (
     <Panel padding={20}>

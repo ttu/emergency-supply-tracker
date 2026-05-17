@@ -11,7 +11,10 @@ interface ItemOpsPanelProps {
 }
 
 /** −1 / +1 / Consume quick-action grid. Writes via the parent's adjust callback. */
-export function ItemOpsPanel({ itemName, onAdjust }: ItemOpsPanelProps) {
+export function ItemOpsPanel({
+  itemName,
+  onAdjust,
+}: Readonly<ItemOpsPanelProps>) {
   const { themeKey } = useDesignTheme();
   return (
     <Panel padding={20}>

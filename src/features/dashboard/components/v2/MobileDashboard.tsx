@@ -14,18 +14,39 @@ interface MobileDashboardProps {
   onCategorySelect: (id: string) => void;
 }
 
-export function MobileDashboard({ onCategorySelect }: MobileDashboardProps) {
+function mobileReadinessTone(readiness: number): 'ok' | 'warn' | 'crit' {
+  if (readiness >= 80) return 'ok';
+  if (readiness >= 60) return 'warn';
+  return 'crit';
+}
+
+function pantryHeadline(readiness: number): string {
+  return readiness >= 80 ? 'Mostly ready' : 'Needs attention';
+}
+
+function mobileHeadline(themeKey: string, readiness: number): string {
+  if (themeKey === 'pantry') return pantryHeadline(readiness);
+  return 'STATUS';
+}
+
+function mobileStatTone(s: {
+  crit: number;
+  warn: number;
+}): 'crit' | 'warn' | 'ok' {
+  if (s.crit > 0) return 'crit';
+  if (s.warn > 0) return 'warn';
+  return 'ok';
+}
+
+export function MobileDashboard({
+  onCategorySelect,
+}: Readonly<MobileDashboardProps>) {
   const { themeKey, voice } = useDesignTheme();
   const { totals, readiness, stats, expiringCount, criticalCount, rows } =
     useDesignData();
-  const tone = readiness >= 80 ? 'ok' : readiness >= 60 ? 'warn' : 'crit';
+  const tone = mobileReadinessTone(readiness);
   const priority = [...rows].filter((r) => r.status !== 'ok').slice(0, 4);
-  const headline =
-    themeKey === 'pantry'
-      ? readiness >= 80
-        ? 'Mostly ready'
-        : 'Needs attention'
-      : 'STATUS';
+  const headline = mobileHeadline(themeKey, readiness);
 
   return (
     <div
@@ -176,7 +197,7 @@ export function MobileDashboard({ onCategorySelect }: MobileDashboardProps) {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
           {stats.slice(0, 6).map((s, i) => {
-            const t = s.crit > 0 ? 'crit' : s.warn > 0 ? 'warn' : 'ok';
+            const t = mobileStatTone(s);
             return (
               <button
                 key={String(s.category.id)}

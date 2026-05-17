@@ -86,12 +86,9 @@ export function useDesignData(): DesignData {
       return days >= 0 && days < 30;
     }).length;
     const criticalCount = totals.crit;
+    const okRatio = totals.total > 0 ? totals.ok / totals.total : 0;
     const daysCovered = household.supplyDurationDays
-      ? Math.round(
-          (totals.total > 0 ? totals.ok / totals.total : 0) *
-            household.supplyDurationDays *
-            10,
-        ) / 10
+      ? Math.round(okRatio * household.supplyDurationDays * 10) / 10
       : 0;
     return {
       categories,

@@ -33,7 +33,7 @@ export function InventoryFilterStrip({
   categories,
   search,
   onSearchChange,
-}: InventoryFilterStripProps) {
+}: Readonly<InventoryFilterStripProps>) {
   const { themeKey, voice } = useDesignTheme();
   const chip = (k: InventoryFilterKey, label: string, n: number) => {
     const active = filter === k;

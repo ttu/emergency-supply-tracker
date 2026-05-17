@@ -14,10 +14,26 @@ interface MobileAlertsProps {
   onCategorySelect: (id: string) => void;
 }
 
+const ALERT_TYPE_TO_DOT: Record<AlertType, DesignStatus> = {
+  critical: 'crit',
+  warning: 'warn',
+  info: 'ok',
+};
+
+function resolveAlertClick(
+  alert: { categoryId?: string | number; itemId?: string },
+  onItemSelect: (id: string) => void,
+  onCategorySelect: (id: string) => void,
+): (() => void) | undefined {
+  if (alert.categoryId) return () => onCategorySelect(String(alert.categoryId));
+  if (alert.itemId) return () => onItemSelect(alert.itemId!);
+  return undefined;
+}
+
 export function MobileAlerts({
   onItemSelect,
   onCategorySelect,
-}: MobileAlertsProps) {
+}: Readonly<MobileAlertsProps>) {
   const { themeKey, voice } = useDesignTheme();
   const { activeAlerts, handleDismissAlert } = useDashboardAlerts();
   const counts = {
@@ -25,8 +41,6 @@ export function MobileAlerts({
     warn: activeAlerts.filter((a) => a.type === 'warning').length,
     info: activeAlerts.filter((a) => a.type === 'info').length,
   };
-  const dotFor = (t: AlertType): DesignStatus =>
-    t === 'critical' ? 'crit' : t === 'warning' ? 'warn' : 'ok';
 
   return (
     <div
@@ -94,17 +108,11 @@ export function MobileAlerts({
             }}
           >
             <div style={{ marginTop: 5 }}>
-              <StatusDot status={dotFor(a.type)} size={7} />
+              <StatusDot status={ALERT_TYPE_TO_DOT[a.type]} size={7} />
             </div>
             <button
               type="button"
-              onClick={
-                a.categoryId
-                  ? () => onCategorySelect(String(a.categoryId))
-                  : a.itemId
-                    ? () => onItemSelect(a.itemId!)
-                    : undefined
-              }
+              onClick={resolveAlertClick(a, onItemSelect, onCategorySelect)}
               disabled={!a.categoryId && !a.itemId}
               style={{
                 background: 'transparent',

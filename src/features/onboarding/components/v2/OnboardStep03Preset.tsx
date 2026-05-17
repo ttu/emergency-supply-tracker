@@ -19,7 +19,7 @@ export function OnboardStep03Preset({
   onApplyPreset,
   onNext,
   onBack,
-}: OnboardStep03Props) {
+}: Readonly<OnboardStep03Props>) {
   const { themeKey } = useDesignTheme();
   return (
     <OnboardLayout
@@ -152,7 +152,12 @@ export function OnboardStep03Preset({
   );
 }
 
-function PresetStat({ label, value }: { label: string; value: number }) {
+interface PresetStatProps {
+  label: string;
+  value: number;
+}
+
+function PresetStat({ label, value }: Readonly<PresetStatProps>) {
   return (
     <div>
       <Caption>{label}</Caption>

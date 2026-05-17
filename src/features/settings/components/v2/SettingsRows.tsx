@@ -1,16 +1,18 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { Title } from '@/shared/components/design-v2/primitives';
 
+interface SectionHeaderProps {
+  code: string;
+  title: string;
+  sub?: string;
+}
+
 /** Compact section header used in the sectioned Settings page. */
 export function SectionHeader({
   code,
   title,
   sub,
-}: {
-  code: string;
-  title: string;
-  sub?: string;
-}) {
+}: Readonly<SectionHeaderProps>) {
   return (
     <div
       style={{
@@ -48,7 +50,11 @@ export function SectionHeader({
   );
 }
 
-export function PanelHeader({ children }: { children: ReactNode }) {
+interface PanelHeaderProps {
+  children: ReactNode;
+}
+
+export function PanelHeader({ children }: Readonly<PanelHeaderProps>) {
   return (
     <div
       style={{
@@ -61,13 +67,12 @@ export function PanelHeader({ children }: { children: ReactNode }) {
   );
 }
 
-export function Caption({
-  children,
-  style,
-}: {
+interface CaptionProps {
   children: ReactNode;
   style?: CSSProperties;
-}) {
+}
+
+export function Caption({ children, style }: Readonly<CaptionProps>) {
   return (
     <div
       style={{
@@ -92,7 +97,7 @@ interface ToggleProps {
   ariaLabel: string;
 }
 
-export function Toggle({ on, onChange, ariaLabel }: ToggleProps) {
+export function Toggle({ on, onChange, ariaLabel }: Readonly<ToggleProps>) {
   return (
     <button
       type="button"
@@ -136,7 +141,13 @@ interface ToggleRowProps {
   last?: boolean;
 }
 
-export function ToggleRow({ label, hint, on, onChange, last }: ToggleRowProps) {
+export function ToggleRow({
+  label,
+  hint,
+  on,
+  onChange,
+  last,
+}: Readonly<ToggleRowProps>) {
   return (
     <div
       style={{
@@ -191,7 +202,7 @@ export function StepperRow({
   suffix,
   decimals = 0,
   last,
-}: StepperRowProps) {
+}: Readonly<StepperRowProps>) {
   const clamp = (v: number) => Math.min(max, Math.max(min, v));
   const display =
     decimals > 0 ? value.toFixed(decimals) : value.toLocaleString();
@@ -302,7 +313,7 @@ export function ReadField({
   hint,
   onAction,
   last,
-}: ReadFieldProps) {
+}: Readonly<ReadFieldProps>) {
   return (
     <div
       style={{

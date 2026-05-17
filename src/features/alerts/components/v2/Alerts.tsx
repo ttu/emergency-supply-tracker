@@ -23,7 +23,20 @@ const TYPE_TO_DOT: Record<AlertType, DesignStatus> = {
   info: 'ok',
 };
 
-export function Alerts({ onItemSelect, onCategorySelect }: AlertsProps) {
+function resolveRowClick(
+  alert: Alert,
+  onItemSelect: (id: string) => void,
+  onCategorySelect: (categoryId: string) => void,
+): (() => void) | undefined {
+  if (alert.categoryId) return () => onCategorySelect(String(alert.categoryId));
+  if (alert.itemId) return () => onItemSelect(alert.itemId!);
+  return undefined;
+}
+
+export function Alerts({
+  onItemSelect,
+  onCategorySelect,
+}: Readonly<AlertsProps>) {
   const { themeKey, voice } = useDesignTheme();
   const {
     activeAlerts,
@@ -138,13 +151,7 @@ export function Alerts({ onItemSelect, onCategorySelect }: AlertsProps) {
             isLast={i === activeAlerts.length - 1}
             onDismiss={() => handleDismissAlert(a.id)}
             onItemSelect={a.itemId ? () => onItemSelect(a.itemId!) : undefined}
-            onRowClick={
-              a.categoryId
-                ? () => onCategorySelect(String(a.categoryId))
-                : a.itemId
-                  ? () => onItemSelect(a.itemId!)
-                  : undefined
-            }
+            onRowClick={resolveRowClick(a, onItemSelect, onCategorySelect)}
             resolveLabel={voice.resolveAction}
             dismissLabel={themeKey === 'pantry' ? 'Dismiss' : 'DISMISS'}
           />
@@ -183,6 +190,18 @@ export function Alerts({ onItemSelect, onCategorySelect }: AlertsProps) {
   );
 }
 
+interface AlertRowProps {
+  alert: Alert;
+  code: string;
+  date: string;
+  isLast: boolean;
+  onDismiss: () => void;
+  onItemSelect?: () => void;
+  onRowClick?: () => void;
+  resolveLabel: string;
+  dismissLabel: string;
+}
+
 function AlertRow({
   alert,
   code,
@@ -193,43 +212,33 @@ function AlertRow({
   onRowClick,
   resolveLabel,
   dismissLabel,
-}: {
-  alert: Alert;
-  code: string;
-  date: string;
-  isLast: boolean;
-  onDismiss: () => void;
-  onItemSelect?: () => void;
-  onRowClick?: () => void;
-  resolveLabel: string;
-  dismissLabel: string;
-}) {
+}: Readonly<AlertRowProps>) {
   const rowStyle: CSSProperties = {
     padding: '14px 20px',
     display: 'grid',
-    gridTemplateColumns: '70px 16px 90px 1fr auto',
+    gridTemplateColumns: '1fr auto',
     gap: 14,
     alignItems: 'center',
     borderBottom: isLast ? 'none' : '1px solid var(--color-rule-soft)',
-    cursor: onRowClick ? 'pointer' : 'default',
   };
-  return (
-    <div
-      style={rowStyle}
-      onClick={onRowClick}
-      role={onRowClick ? 'button' : undefined}
-      tabIndex={onRowClick ? 0 : undefined}
-      onKeyDown={
-        onRowClick
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onRowClick();
-              }
-            }
-          : undefined
-      }
-    >
+  const contentGridStyle: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: '70px 16px 90px 1fr',
+    gap: 14,
+    alignItems: 'center',
+    background: 'transparent',
+    border: 0,
+    padding: 0,
+    margin: 0,
+    textAlign: 'left',
+    font: 'inherit',
+    color: 'inherit',
+    cursor: onRowClick ? 'pointer' : 'default',
+    minWidth: 0,
+    width: '100%',
+  };
+  const content = (
+    <>
       <span
         style={{
           fontFamily: 'var(--font-mono)',
@@ -271,10 +280,18 @@ function AlertRow({
           </div>
         )}
       </div>
-      <div
-        style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    </>
+  );
+  return (
+    <div style={rowStyle}>
+      {onRowClick ? (
+        <button type="button" onClick={onRowClick} style={contentGridStyle}>
+          {content}
+        </button>
+      ) : (
+        <div style={contentGridStyle}>{content}</div>
+      )}
+      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
         {onItemSelect && (
           <button type="button" onClick={onItemSelect} style={pillButtonStyle}>
             {resolveLabel}

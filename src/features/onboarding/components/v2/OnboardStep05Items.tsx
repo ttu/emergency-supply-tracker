@@ -15,7 +15,7 @@ export function OnboardStep05Items({
   onToggleCategory,
   onNext,
   onBack,
-}: OnboardStep05Props) {
+}: Readonly<OnboardStep05Props>) {
   const { themeKey } = useDesignTheme();
   const cats = [
     [

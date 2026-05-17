@@ -10,23 +10,26 @@ interface DashboardProps {
   onViewAllPriority: () => void;
 }
 
+function pantryReadinessTitle(readiness: number): string {
+  if (readiness >= 80) return 'Your household is mostly ready';
+  if (readiness >= 50) return 'A few things need attention';
+  return 'Your kit needs work';
+}
+
+function dashboardHeroTitle(themeKey: string, readiness: number): string {
+  if (themeKey === 'pantry') return pantryReadinessTitle(readiness);
+  if (themeKey === 'civil') return 'HOUSEHOLD READINESS REPORT';
+  return 'HOUSEHOLD STATUS';
+}
+
 export function Dashboard({
   onCategorySelect,
   onViewAllPriority,
-}: DashboardProps) {
+}: Readonly<DashboardProps>) {
   const { themeKey, voice } = useDesignTheme();
   const { readiness } = useDesignData();
 
-  const heroTitle =
-    themeKey === 'pantry'
-      ? readiness >= 80
-        ? 'Your household is mostly ready'
-        : readiness >= 50
-          ? 'A few things need attention'
-          : 'Your kit needs work'
-      : themeKey === 'civil'
-        ? 'HOUSEHOLD READINESS REPORT'
-        : 'HOUSEHOLD STATUS';
+  const heroTitle = dashboardHeroTitle(themeKey, readiness);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

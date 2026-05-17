@@ -18,7 +18,7 @@ export function InventoryRow({
   cellStyles,
   isLast,
   onSelect,
-}: InventoryRowProps) {
+}: Readonly<InventoryRowProps>) {
   return (
     <button
       type="button"

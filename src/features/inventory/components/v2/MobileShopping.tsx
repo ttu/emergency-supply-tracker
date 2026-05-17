@@ -30,6 +30,23 @@ function saveChecked(state: Record<string, boolean>) {
   }
 }
 
+const PANTRY_SHOPPING_LABELS: Record<DesignStatus, string> = {
+  crit: 'Now',
+  warn: 'Soon',
+  ok: 'When',
+};
+const CAPS_SHOPPING_LABELS: Record<DesignStatus, string> = {
+  crit: 'NOW',
+  warn: 'SOON',
+  ok: 'WHEN',
+};
+
+function mobileShoppingLabel(themeKey: string, p: DesignStatus): string {
+  const labels =
+    themeKey === 'pantry' ? PANTRY_SHOPPING_LABELS : CAPS_SHOPPING_LABELS;
+  return labels[p];
+}
+
 export function MobileShopping() {
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
@@ -46,7 +63,7 @@ export function MobileShopping() {
           q: `${r.recommended - r.item.quantity} ${r.item.unit}`,
           need: r.recommended - r.item.quantity,
           currentQty: r.item.quantity,
-          p: r.status as DesignStatus,
+          p: r.status,
         })),
     [rows],
   );
@@ -67,18 +84,7 @@ export function MobileShopping() {
   };
   const open = list.filter((it) => !checked[it.id]).length;
 
-  const labelFor = (p: DesignStatus) =>
-    themeKey === 'pantry'
-      ? p === 'crit'
-        ? 'Now'
-        : p === 'warn'
-          ? 'Soon'
-          : 'When'
-      : p === 'crit'
-        ? 'NOW'
-        : p === 'warn'
-          ? 'SOON'
-          : 'WHEN';
+  const labelFor = (p: DesignStatus) => mobileShoppingLabel(themeKey, p);
 
   return (
     <div

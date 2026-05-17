@@ -14,7 +14,7 @@ export function InventoryTable({
   rows,
   totalRowCount,
   onItemSelect,
-}: InventoryTableProps) {
+}: Readonly<InventoryTableProps>) {
   const { themeKey, voice } = useDesignTheme();
   // 7 cols with column-gap so REC/EXPIRES don't visually merge under
   // narrower viewports. QTY and REC are combined into one "qty / rec" cell.

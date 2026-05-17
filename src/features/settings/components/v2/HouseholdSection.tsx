@@ -22,6 +22,48 @@ import {
   ToggleRow,
 } from './SettingsRows';
 
+interface HouseholdLabels {
+  adults: string;
+  adultsHint: string;
+  children: string;
+  childrenHint: string;
+  pets: string;
+  petsHint: string;
+  days: string;
+  daysHint: string;
+  freezer: string;
+  freezerHint: string;
+}
+
+function householdLabels(themeKey: string): HouseholdLabels {
+  if (themeKey === 'pantry') {
+    return {
+      adults: 'Adults',
+      adultsHint: 'Aged 14 and over',
+      children: 'Children',
+      childrenHint: 'Under 14 — scaled to 75%',
+      pets: 'Pets',
+      petsHint: 'Enables the pets category',
+      days: 'Target days of supply',
+      daysHint: 'How many days you want to be self-sufficient',
+      freezer: 'Use freezer',
+      freezerHint: 'Adds frozen-food recommendations',
+    };
+  }
+  return {
+    adults: 'ADULTS',
+    adultsHint: 'AGE ≥ 14 · 1.0× SCALE',
+    children: 'CHILDREN',
+    childrenHint: 'AGE < 14 · 0.75× SCALE',
+    pets: 'PETS',
+    petsHint: 'ENABLES §PET CATEGORY',
+    days: 'COVERAGE TARGET',
+    daysHint: 'DAYS · SELF-SUFFICIENCY TARGET',
+    freezer: 'USE FREEZER',
+    freezerHint: 'INCLUDES FROZEN ITEMS IN BASELINE',
+  };
+}
+
 /** §2 Household: profile steppers + freezer toggle + computed/live side panel. */
 export function HouseholdSection() {
   const { themeKey } = useDesignTheme();
@@ -38,6 +80,7 @@ export function HouseholdSection() {
 
   const setNum = (k: keyof HouseholdConfig) => (v: number) =>
     updateHousehold({ [k]: Math.max(0, v) });
+  const L = householdLabels(themeKey);
 
   const computed = useMemo(() => {
     const ppl = household.adults + household.children * (childPct / 100);
@@ -67,47 +110,27 @@ export function HouseholdSection() {
             {themeKey === 'pantry' ? 'Profile' : 'PROFILE · §2.1'}
           </PanelHeader>
           <StepperRow
-            label={themeKey === 'pantry' ? 'Adults' : 'ADULTS'}
-            hint={
-              themeKey === 'pantry'
-                ? 'Aged 14 and over'
-                : 'AGE ≥ 14 · 1.0× SCALE'
-            }
+            label={L.adults}
+            hint={L.adultsHint}
             value={household.adults}
             onChange={setNum('adults')}
             min={1}
           />
           <StepperRow
-            label={themeKey === 'pantry' ? 'Children' : 'CHILDREN'}
-            hint={
-              themeKey === 'pantry'
-                ? 'Under 14 — scaled to 75%'
-                : 'AGE < 14 · 0.75× SCALE'
-            }
+            label={L.children}
+            hint={L.childrenHint}
             value={household.children}
             onChange={setNum('children')}
           />
           <StepperRow
-            label={themeKey === 'pantry' ? 'Pets' : 'PETS'}
-            hint={
-              themeKey === 'pantry'
-                ? 'Enables the pets category'
-                : 'ENABLES §PET CATEGORY'
-            }
+            label={L.pets}
+            hint={L.petsHint}
             value={household.pets}
             onChange={setNum('pets')}
           />
           <StepperRow
-            label={
-              themeKey === 'pantry'
-                ? 'Target days of supply'
-                : 'COVERAGE TARGET'
-            }
-            hint={
-              themeKey === 'pantry'
-                ? 'How many days you want to be self-sufficient'
-                : 'DAYS · SELF-SUFFICIENCY TARGET'
-            }
+            label={L.days}
+            hint={L.daysHint}
             value={household.supplyDurationDays}
             onChange={setNum('supplyDurationDays')}
             suffix="d"
@@ -115,12 +138,8 @@ export function HouseholdSection() {
             max={365}
           />
           <ToggleRow
-            label={themeKey === 'pantry' ? 'Use freezer' : 'USE FREEZER'}
-            hint={
-              themeKey === 'pantry'
-                ? 'Adds frozen-food recommendations'
-                : 'INCLUDES FROZEN ITEMS IN BASELINE'
-            }
+            label={L.freezer}
+            hint={L.freezerHint}
             on={!!household.useFreezer}
             onChange={(v) => updateHousehold({ useFreezer: v })}
             last

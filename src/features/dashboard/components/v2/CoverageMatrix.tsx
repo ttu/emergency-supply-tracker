@@ -16,7 +16,15 @@ interface CoverageMatrixProps {
 }
 
 /** 5-col grid of category tiles showing OK/WARN/CRIT distribution per category. */
-export function CoverageMatrix({ onCategorySelect }: CoverageMatrixProps) {
+function statTone(s: { crit: number; warn: number }): 'crit' | 'warn' | 'ok' {
+  if (s.crit > 0) return 'crit';
+  if (s.warn > 0) return 'warn';
+  return 'ok';
+}
+
+export function CoverageMatrix({
+  onCategorySelect,
+}: Readonly<CoverageMatrixProps>) {
   const { i18n } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { stats, categories } = useDesignData();
@@ -55,15 +63,17 @@ export function CoverageMatrix({ onCategorySelect }: CoverageMatrixProps) {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
         {stats.map((s, i) => {
-          const tone = s.crit > 0 ? 'crit' : s.warn > 0 ? 'warn' : 'ok';
+          const tone = statTone(s);
+          const isLastInRow = (i + 1) % 5 === 0;
+          const isInLastRow = i >= Math.floor((stats.length - 1) / 5) * 5;
           const cellStyle: CSSProperties = {
             padding: '16px 18px',
-            borderRight:
-              (i + 1) % 5 !== 0 ? '1px solid var(--color-rule-soft)' : 'none',
-            borderBottom:
-              i < Math.floor((stats.length - 1) / 5) * 5
-                ? '1px solid var(--color-rule-soft)'
-                : 'none',
+            borderRight: isLastInRow
+              ? 'none'
+              : '1px solid var(--color-rule-soft)',
+            borderBottom: isInLastRow
+              ? 'none'
+              : '1px solid var(--color-rule-soft)',
             cursor: 'pointer',
             background: 'transparent',
             textAlign: 'left',

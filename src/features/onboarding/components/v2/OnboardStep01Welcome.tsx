@@ -9,7 +9,14 @@ interface OnboardStep01Props {
 }
 
 /** Step 1: welcome / outputs preview / language picker. */
-export function OnboardStep01Welcome({ onNext }: OnboardStep01Props) {
+function leadTitle(themeKey: string): string {
+  if (themeKey === 'pantry') return "Let's set up your kit.";
+  if (themeKey === 'civil')
+    return 'EMERGENCY SUPPLY TRACKER · INITIAL CONFIGURATION';
+  return 'INITIALIZE · HOUSEHOLD PROFILE';
+}
+
+export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
   const { i18n } = useTranslation();
@@ -20,7 +27,9 @@ export function OnboardStep01Welcome({ onNext }: OnboardStep01Props) {
   ];
 
   const setLang = (lang: 'en' | 'fi') => {
-    void i18n.changeLanguage(lang);
+    i18n.changeLanguage(lang).catch(() => {
+      /* ignore language switch errors */
+    });
     updateSettings({ language: lang });
   };
 
@@ -46,12 +55,7 @@ export function OnboardStep01Welcome({ onNext }: OnboardStep01Props) {
       step={1}
       title={themeKey === 'pantry' ? 'Welcome' : 'WELCOME · LANGUAGE'}
       lead={{
-        title:
-          themeKey === 'pantry'
-            ? "Let's set up your kit."
-            : themeKey === 'civil'
-              ? 'EMERGENCY SUPPLY TRACKER · INITIAL CONFIGURATION'
-              : 'INITIALIZE · HOUSEHOLD PROFILE',
+        title: leadTitle(themeKey),
         sub:
           themeKey === 'pantry'
             ? "A short, five-step setup. We'll ask who lives with you and what you already have, then build a checklist based on civil-defense guidance."

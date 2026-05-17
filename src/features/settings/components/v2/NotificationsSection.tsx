@@ -46,6 +46,114 @@ function savePrefs(prefs: Prefs) {
   }
 }
 
+function hiddenAlertsValue(isPantry: boolean, count: number): string {
+  if (count === 0) return isPantry ? 'None' : 'NONE';
+  return isPantry ? `${count} hidden` : `${count} HIDDEN`;
+}
+
+function hiddenAlertsHint(
+  isPantry: boolean,
+  count: number,
+): string | undefined {
+  if (count === 0) return undefined;
+  return isPantry ? 'restore' : 'RESTORE';
+}
+
+interface HiddenAlertsPanelProps {
+  isPantry: boolean;
+  hiddenAlerts: ReturnType<typeof generateDashboardAlerts>;
+  reactivateAlert: (
+    id: ReturnType<typeof generateDashboardAlerts>[number]['id'],
+  ) => void;
+  reactivateAllAlerts: () => void;
+}
+
+function HiddenAlertsPanel({
+  isPantry,
+  hiddenAlerts,
+  reactivateAlert,
+  reactivateAllAlerts,
+}: Readonly<HiddenAlertsPanelProps>) {
+  return (
+    <Panel padding={0} style={{ marginTop: 14 }}>
+      <div
+        style={{
+          padding: '14px 22px',
+          borderBottom: '1px solid var(--color-rule-soft)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
+        <Caption>
+          {isPantry
+            ? 'Currently hidden alerts'
+            : `HIDDEN ALERTS · ${hiddenAlerts.length} ACTIVE`}
+        </Caption>
+        <button
+          type="button"
+          onClick={reactivateAllAlerts}
+          style={restoreAllStyle}
+        >
+          {isPantry ? 'Restore all' : 'RESTORE ALL'}
+        </button>
+      </div>
+      {hiddenAlerts.map((a, i) => (
+        <div
+          key={String(a.id)}
+          style={{
+            padding: '12px 22px',
+            display: 'grid',
+            gridTemplateColumns: '70px 1fr auto',
+            gap: 14,
+            alignItems: 'center',
+            borderBottom:
+              i < hiddenAlerts.length - 1
+                ? '1px solid var(--color-rule-soft)'
+                : 'none',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 10,
+              color: 'var(--color-text-3)',
+            }}
+          >
+            {`A-${String(i + 1).padStart(3, '0')}`}
+          </span>
+          <div style={{ minWidth: 0 }}>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--color-text)',
+              }}
+            >
+              {a.itemName ?? a.message}
+            </div>
+            {a.itemName && (
+              <div
+                style={{
+                  fontSize: 11,
+                  color: 'var(--color-text-3)',
+                  marginTop: 2,
+                }}
+              >
+                {a.message}
+              </div>
+            )}
+          </div>
+          <Button variant="secondary" onClick={() => reactivateAlert(a.id)}>
+            {isPantry ? 'Restore' : 'RESTORE'}
+          </Button>
+        </div>
+      ))}
+    </Panel>
+  );
+}
+
 export function NotificationsSection() {
   const { themeKey } = useDesignTheme();
   const { t } = useTranslation();
@@ -54,10 +162,10 @@ export function NotificationsSection() {
   const { household } = useHousehold();
   const { recommendedItems } = useRecommendedItems();
 
-  const [prefs, setPrefsState] = useState<Prefs>(loadPrefs);
-  const setPrefs = (k: keyof Prefs) => (v: boolean) => {
+  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
+  const togglePref = (k: keyof Prefs) => (v: boolean) => {
     const next = { ...prefs, [k]: v };
-    setPrefsState(next);
+    setPrefs(next);
     savePrefs(next);
   };
 
@@ -95,13 +203,13 @@ export function NotificationsSection() {
             label={isPantry ? 'Critical alerts' : 'CRITICAL ALERTS'}
             hint={isPantry ? 'Items missing or expired' : 'q = 0 OR EXPIRED'}
             on={prefs.critical}
-            onChange={setPrefs('critical')}
+            onChange={togglePref('critical')}
           />
           <ToggleRow
             label={isPantry ? 'Low-stock warnings' : 'LOW-STOCK WARNINGS'}
             hint={isPantry ? 'Below 50% of recommended' : 'q < r · WARN'}
             on={prefs.lowStock}
-            onChange={setPrefs('lowStock')}
+            onChange={togglePref('lowStock')}
           />
           <ToggleRow
             label={isPantry ? 'Expiry warnings' : 'EXPIRY WARNINGS'}
@@ -109,7 +217,7 @@ export function NotificationsSection() {
               isPantry ? 'Items expiring within 30 days' : 'EXP ≤ 30D · WARN'
             }
             on={prefs.expiry}
-            onChange={setPrefs('expiry')}
+            onChange={togglePref('expiry')}
           />
           <ToggleRow
             label={isPantry ? 'Backup reminders' : 'BACKUP REMINDERS'}
@@ -119,7 +227,7 @@ export function NotificationsSection() {
                 : '30D SINCE LAST EXPORT'
             }
             on={prefs.backup}
-            onChange={setPrefs('backup')}
+            onChange={togglePref('backup')}
             last
           />
         </Panel>
@@ -133,7 +241,7 @@ export function NotificationsSection() {
             label={isPantry ? 'Weekly summary' : 'WEEKLY SUMMARY'}
             hint={isPantry ? 'Mondays 09:00' : 'MON 09:00 EET'}
             on={prefs.weeklyEmail}
-            onChange={setPrefs('weeklyEmail')}
+            onChange={togglePref('weeklyEmail')}
           />
           <ReadField
             label={isPantry ? 'Audit reminder' : 'AUDIT CADENCE'}
@@ -141,22 +249,8 @@ export function NotificationsSection() {
           />
           <ReadField
             label={isPantry ? 'Hidden alerts' : 'DISMISSED ALERTS'}
-            value={
-              hiddenAlerts.length === 0
-                ? isPantry
-                  ? 'None'
-                  : 'NONE'
-                : isPantry
-                  ? `${hiddenAlerts.length} hidden`
-                  : `${hiddenAlerts.length} HIDDEN`
-            }
-            hint={
-              hiddenAlerts.length > 0
-                ? isPantry
-                  ? 'restore'
-                  : 'RESTORE'
-                : undefined
-            }
+            value={hiddenAlertsValue(isPantry, hiddenAlerts.length)}
+            hint={hiddenAlertsHint(isPantry, hiddenAlerts.length)}
             onAction={
               hiddenAlerts.length > 0 ? () => reactivateAllAlerts() : undefined
             }
@@ -165,84 +259,13 @@ export function NotificationsSection() {
         </Panel>
       </div>
 
-      {/* Hidden alerts list */}
       {hiddenAlerts.length > 0 && (
-        <Panel padding={0} style={{ marginTop: 14 }}>
-          <div
-            style={{
-              padding: '14px 22px',
-              borderBottom: '1px solid var(--color-rule-soft)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <Caption>
-              {isPantry
-                ? 'Currently hidden alerts'
-                : `HIDDEN ALERTS · ${hiddenAlerts.length} ACTIVE`}
-            </Caption>
-            <button
-              type="button"
-              onClick={reactivateAllAlerts}
-              style={restoreAllStyle}
-            >
-              {isPantry ? 'Restore all' : 'RESTORE ALL'}
-            </button>
-          </div>
-          {hiddenAlerts.map((a, i) => (
-            <div
-              key={String(a.id)}
-              style={{
-                padding: '12px 22px',
-                display: 'grid',
-                gridTemplateColumns: '70px 1fr auto',
-                gap: 14,
-                alignItems: 'center',
-                borderBottom:
-                  i < hiddenAlerts.length - 1
-                    ? '1px solid var(--color-rule-soft)'
-                    : 'none',
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-3)',
-                }}
-              >
-                {`A-${String(i + 1).padStart(3, '0')}`}
-              </span>
-              <div style={{ minWidth: 0 }}>
-                <div
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: 'var(--color-text)',
-                  }}
-                >
-                  {a.itemName ?? a.message}
-                </div>
-                {a.itemName && (
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: 'var(--color-text-3)',
-                      marginTop: 2,
-                    }}
-                  >
-                    {a.message}
-                  </div>
-                )}
-              </div>
-              <Button variant="secondary" onClick={() => reactivateAlert(a.id)}>
-                {isPantry ? 'Restore' : 'RESTORE'}
-              </Button>
-            </div>
-          ))}
-        </Panel>
+        <HiddenAlertsPanel
+          isPantry={isPantry}
+          hiddenAlerts={hiddenAlerts}
+          reactivateAlert={reactivateAlert}
+          reactivateAllAlerts={reactivateAllAlerts}
+        />
       )}
     </section>
   );

@@ -60,13 +60,16 @@ const NAV: NavDef[] = [
 
 const MOBILE_NAV: DesignNavId[] = ['home', 'inv', 'alerts', 'shop', 'settings'];
 
-interface ShellProps {
+interface MobileShellProps {
   active: DesignNavId;
   onNav: (id: DesignNavId) => void;
   title: string;
-  breadcrumb?: string;
   alertCount?: number;
   children: ReactNode;
+}
+
+interface DesktopShellProps extends MobileShellProps {
+  breadcrumb?: string;
 }
 
 export function DesktopShell({
@@ -76,7 +79,7 @@ export function DesktopShell({
   breadcrumb,
   alertCount,
   children,
-}: ShellProps) {
+}: Readonly<DesktopShellProps>) {
   const { themeKey, voice } = useDesignTheme();
   const capsStyle = (transform = true): CSSProperties => ({
     textTransform: transform
@@ -302,7 +305,7 @@ export function MobileShell({
   title,
   alertCount,
   children,
-}: ShellProps) {
+}: Readonly<MobileShellProps>) {
   const { themeKey, voice } = useDesignTheme();
   return (
     <div

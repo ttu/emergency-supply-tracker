@@ -16,19 +16,19 @@ const breadcrumbStyle: CSSProperties = {
 };
 
 /** Inventory / CAT / id back link, also handles the "new" case. */
+function newCatLabel(themeKey: string): string {
+  return themeKey === 'pantry' ? 'New' : 'NEW';
+}
+
 export function ItemDetailBreadcrumb({
   itemId,
   itemCategoryId,
   defaultCategoryId,
   onBack,
-}: ItemDetailBreadcrumbProps) {
+}: Readonly<ItemDetailBreadcrumbProps>) {
   const { themeKey, voice } = useDesignTheme();
   const cat = itemCategoryId ?? defaultCategoryId;
-  const catLabel = cat
-    ? categoryCode(cat)
-    : themeKey === 'pantry'
-      ? 'New'
-      : 'NEW';
+  const catLabel = cat ? categoryCode(cat) : newCatLabel(themeKey);
   return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <button
