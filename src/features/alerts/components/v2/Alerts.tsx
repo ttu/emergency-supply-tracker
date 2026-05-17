@@ -55,6 +55,7 @@ export function Alerts({
     [activeAlerts],
   );
 
+  // Alerts have no createdAt; the log aesthetic shows today's date for every row.
   const today = new Date().toISOString().slice(0, 10);
 
   return (

@@ -28,5 +28,6 @@ describe('Alerts (v2)', () => {
     setup();
     expect(screen.getByText('CRITICAL')).toBeInTheDocument();
     expect(screen.getByText('WARN')).toBeInTheDocument();
+    expect(screen.getByText('INFO')).toBeInTheDocument();
   });
 });
