@@ -89,12 +89,9 @@ test.describe('Item Expiration Tracking', () => {
 
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Dashboard
-    await page.getByTestId('v2-nav-home').click();
-
-    // Should show expired alert - scope to alerts section to avoid notifications
-    const alertsSection = page.getByTestId('alerts-section');
-    await expect(alertsSection.getByText(/expired|vanhentunut/i)).toBeVisible({
+    // v2 surfaces alerts on the dedicated Alerts page, not the dashboard.
+    await page.getByTestId('v2-nav-alerts').click();
+    await expect(page.getByText(/expired|vanhentunut/i).first()).toBeVisible({
       timeout: 5000,
     });
   });

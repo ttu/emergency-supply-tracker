@@ -117,9 +117,10 @@ test.describe('Item Status Indicators', () => {
     const itemCard = itemCardButton.locator('..');
     await expect(itemCard).toBeVisible();
 
-    // Critical items should trigger alerts on dashboard
-    await page.getByTestId('v2-nav-home').click();
-    await expect(page.getByTestId('alerts-section')).toBeVisible({
+    // Critical items surface on the v2 Alerts page (not the dashboard).
+    await page.getByTestId('v2-nav-alerts').click();
+    await expect(page.getByText('ALERTS · LOG')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Critical Status Item').first()).toBeVisible({
       timeout: 5000,
     });
   });
@@ -145,21 +146,15 @@ test.describe('Item Status Indicators', () => {
       timeout: 5000,
     });
 
-    // Should show expired text in item card - use getByRole to target item card button specifically
+    // v2 inventory row has no "expired" CSS class; instead the expiration
+    // column shows the past date and the StatusPill shows CRIT.
     const itemCardButton = page.getByRole('button', {
       name: /Expired Critical Item/i,
     });
     await expect(itemCardButton).toBeVisible();
-    // Check that expired text is visible within the item card
-    // Use CSS selector to target the expired class specifically to avoid matching item name
-    const itemCard = itemCardButton.locator('..');
-    // Target the expired status element by its CSS class (contains "expired" in the class name)
-    const expiredElement = itemCard.locator('[class*="expired"]');
-    await expect(expiredElement).toBeVisible({
-      timeout: 5000,
-    });
-    // Verify it contains the expired text
-    await expect(expiredElement.getByText(/⚠️/i)).toBeVisible();
+    // The row contains both the date string and the CRIT pill text.
+    await expect(itemCardButton).toContainText('2024-01-01');
+    await expect(itemCardButton).toContainText('CRIT');
   });
 
   test('should update status when quantity changes', async ({ page }) => {
@@ -216,15 +211,9 @@ test.describe('Item Status Indicators', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Dashboard
+    // Navigate to Dashboard — v2 uses CoverageMatrix tiles instead of v1
+    // category-overview cards.
     await page.getByTestId('v2-nav-home').click();
-
-    // Food category card should show status (critical due to zero quantity item)
-    const foodCategoryCard = page.locator('[data-testid="category-food"]');
-    await expect(foodCategoryCard).toBeVisible();
-
-    // Category should reflect critical status
-    // Status might be shown as color, icon, or text
-    await expect(foodCategoryCard).toBeVisible();
+    await expect(page.getByTestId('v2-category-food')).toBeVisible();
   });
 });

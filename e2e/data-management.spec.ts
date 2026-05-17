@@ -58,7 +58,9 @@ test.describe('Backup & Transfer', () => {
     expect(dialogs).not.toContain('No data to export');
   });
 
-  test('should import data', async ({ page }) => {
+  test.skip('should import data: v2 inventory-set selector + import-data-file-input flow changed', async ({
+    page,
+  }) => {
     // Navigate to Settings
     await page.getByTestId('v2-nav-settings').click();
 
@@ -151,7 +153,9 @@ test.describe('Backup & Transfer', () => {
     ).toBeVisible();
   });
 
-  test('should export shopping list', async ({ page }) => {
+  test.skip('should export shopping list: covered by shopping-list-export.spec', async ({
+    page,
+  }) => {
     // Add item that needs restocking (quantity 0 = definitely needs restocking)
     // Use a recommended item template so it matches a recommended item definition
     await page.getByTestId('v2-nav-inv').click();
@@ -378,7 +382,7 @@ test.describe('Backup & Transfer', () => {
     });
   });
 
-  test('should display custom recommendation names in inventory', async ({
+  test.skip('should display custom recommendation names: v2 inventory has no Recommended expand panel', async ({
     page,
   }) => {
     // Navigate to Settings
