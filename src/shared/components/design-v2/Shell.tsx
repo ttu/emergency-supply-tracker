@@ -134,7 +134,7 @@ export function DesktopShell({
             {voice.tagline}
           </div>
         </div>
-        <nav style={{ padding: '12px 8px', flex: 1 }}>
+        <nav aria-label="Main" style={{ padding: '12px 8px', flex: 1 }}>
           {NAV.map((n) => {
             const isActive = active === n.id;
             const badge =
@@ -285,7 +285,10 @@ export function DesktopShell({
             </span>
           </div>
         </header>
-        <main style={{ flex: 1, overflow: 'auto', padding: 28 }}>
+        <main
+          id="main-content"
+          style={{ flex: 1, overflow: 'auto', padding: 28 }}
+        >
           {children}
         </main>
       </div>
@@ -346,7 +349,9 @@ export function MobileShell({
           ● LIVE
         </span>
       </header>
-      <main style={{ flex: 1, overflow: 'auto' }}>{children}</main>
+      <main id="main-content" style={{ flex: 1, overflow: 'auto' }}>
+        {children}
+      </main>
       <nav
         aria-label="Primary"
         style={{

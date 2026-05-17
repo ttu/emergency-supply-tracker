@@ -27,7 +27,10 @@ export function SettingsRail({
       <Caption style={{ marginBottom: 12 }}>
         {themeKey === 'pantry' ? 'Sections' : 'SECTIONS'}
       </Caption>
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <nav
+        aria-label="Settings sections"
+        style={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+      >
         {sections.map((s) => {
           const isActive = activeSection === s.id;
           return (
