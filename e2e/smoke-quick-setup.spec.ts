@@ -102,7 +102,7 @@ async function completeQuickSetupOnboarding(page: Page) {
   // Now click Add Selected Items (button should be enabled)
   await page.getByTestId('add-items-button').click();
 
-  await expect(page.getByTestId('page-dashboard')).toBeVisible({
+  await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 }
@@ -243,7 +243,7 @@ async function testDashboardAlertsQuickSetup(page: Page) {
 
   await ensureNoModals(page);
   await page.getByTestId('v2-nav-inv').click();
-  await expect(page.getByTestId('page-inventory')).toBeVisible({
+  await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
@@ -481,7 +481,7 @@ async function testPersistenceQuickSetup(page: Page) {
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await expect(page.getByTestId('page-settings')).toBeVisible({
+  await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const themeSelectAfterReload = page.locator('#theme-select');
@@ -504,7 +504,7 @@ async function verifyFinalDashboardQuickSetup(page: Page) {
   });
 
   const dashboardLoaded = await page
-    .getByTestId('page-dashboard')
+    .getByText('HOUSEHOLD STATUS')
     .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
     .catch(() => false);
 

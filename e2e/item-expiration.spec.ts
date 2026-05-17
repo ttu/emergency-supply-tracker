@@ -59,7 +59,7 @@ test.describe('Item Expiration Tracking', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify we're on dashboard
-    await expect(page.getByTestId('page-dashboard')).toBeVisible();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
 
     // Note: Expiring soon alerts may not always appear immediately or may require
     // specific conditions. The item was successfully added with an expiration date,

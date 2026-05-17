@@ -39,7 +39,7 @@ async function ensureDrawerClosed(page: Page) {
 
 async function openInventorySetsSection(page: Page) {
   await page.getByTestId('v2-nav-settings').click();
-  await expect(page.getByTestId('page-settings')).toBeVisible();
+  await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible();
   // Click the Inventory Sets menu item in the sidebar (desktop view)
   await page
     .getByTestId('sidemenu-sidebar')
@@ -85,7 +85,7 @@ test.describe('Accessibility', () => {
   }) => {
     // Navigate via nav (app is state-based; goto('/settings') does not change visible page)
     await page.getByTestId('v2-nav-settings').click();
-    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible();
     await page.waitForLoadState('networkidle');
 
     const accessibilityScanResults = await new AxeBuilder({ page })
@@ -145,7 +145,7 @@ test.describe('Accessibility', () => {
   }) => {
     // Navigate to inventory using navigation to ensure app is fully loaded
     await page.getByTestId('v2-nav-inv').click();
-    await expect(page.getByTestId('page-inventory')).toBeVisible();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
 
     // Ensure drawer is closed on mobile before clicking other elements
     await ensureDrawerClosed(page);

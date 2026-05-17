@@ -1,476 +1,135 @@
-import {
-  test,
-  expect,
-  expandRecommendedItems,
-  ensureNoModals,
-  waitForCountChange,
-  selectInventoryCategory,
-} from './fixtures';
+import { test, expect, selectInventoryCategory } from './fixtures';
+
+/**
+ * Design v2 simplified the inventory flow significantly:
+ *  - No template-selector modal (every new item starts as custom)
+ *  - No "expand recommended items" panel under categories
+ *  - No quick + / × buttons next to recommended items in the inventory
+ * Tests that previously exercised those v1-only flows are gone; what
+ * remains covers the v2 inventory: list view, status filtering, search,
+ * and the inline ItemDetail add/edit/delete cycle.
+ */
 
 test.describe('Inventory Management', () => {
   test.beforeEach(async ({ setupApp }) => {
     await setupApp();
   });
 
-  test('should add item from template', async ({ page }) => {
-    // Navigate to Inventory
+  const addItem = async (
+    page: import('@playwright/test').Page,
+    overrides: {
+      name: string;
+      category?: string;
+      quantity?: string;
+      unit?: string;
+    },
+  ) => {
     await page.getByTestId('v2-nav-inv').click();
-
-    // Click "Add Item" button
     await page.getByRole('button', { name: '+ ADD' }).click();
-    // Search for water
-    await page.getByTestId('template-search-input').fill('water');
-
-    // Wait for search results to filter - wait for the water template to be visible
-    const waterTemplate = page.getByTestId('template-card-bottled-water');
-    await expect(waterTemplate).toBeVisible();
-    await waterTemplate.click();
-
-    // Fill in the form
-    await page.fill('input[name="quantity"]', '24');
-
-    // Save the item
-    await page.getByTestId('save-item-button').click();
-
-    // Verify item with "water" appears in inventory
-    await expect(page.locator('text=/water/i').first()).toBeVisible();
-  });
-
-  test('should add custom item', async ({ page }) => {
-    // Navigate to Inventory
-    await page.getByTestId('v2-nav-inv').click();
-
-    // Click "Add Item" to open template selector
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    // Click "Custom Item" button in template selector
     await expect(page.getByTestId('item-form')).toBeVisible();
-
-    // Fill in the form
-    await page.fill('input[name="name"]', 'Custom Flashlight');
-    await page.selectOption('select[name="category"]', 'tools-supplies');
-    await page.fill('input[name="quantity"]', '2');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]'); // Never Expires
-
-    // Save the item
+    await page.fill('input[name="name"]', overrides.name);
+    if (overrides.category) {
+      await page.selectOption('select[name="category"]', overrides.category);
+    }
+    await page.fill('input[name="quantity"]', overrides.quantity ?? '5');
+    await page.selectOption('select[name="unit"]', overrides.unit ?? 'pieces');
+    await page.getByLabel(/never expires/i).check();
     await page.getByTestId('save-item-button').click();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
+  };
 
-    // Verify item appears in inventory - use getByRole to target item card button specifically
+  test('should add a custom item', async ({ page }) => {
+    await addItem(page, { name: 'Trail Mix', category: 'food' });
+    await page.waitForTimeout(2500); // let the toast clear
     await expect(
-      page.getByRole('button', { name: /Custom Flashlight/i }),
+      page.getByText('Trail Mix', { exact: true }).first(),
     ).toBeVisible();
   });
 
-  test('should edit existing item', async ({ page }) => {
-    // Navigate to Inventory and add an item first
-    await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+  test('should edit an existing item', async ({ page }) => {
+    await addItem(page, { name: 'Original Name', category: 'food' });
+    await page.waitForTimeout(2500);
+
+    await page.getByRole('button', { name: /Original Name/ }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
-
-    await page.fill('input[name="name"]', 'Test Item');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '5');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
+    await page.fill('input[name="name"]', 'Updated Name');
     await page.getByTestId('save-item-button').click();
 
-    // Wait for item to appear and click on the card to edit
-    // Use getByRole to target item card button specifically (not notification)
-    const itemCardButton = page.getByRole('button', { name: /Test Item/i });
-    await expect(itemCardButton).toBeVisible();
-    await itemCardButton.click();
-
-    // Wait for form to appear and update quantity
-    await page.waitForSelector('input[name="quantity"]');
-    await page.fill('input[name="quantity"]', '8');
-
-    // Save changes
-    await page.getByTestId('save-item-button').click();
-
-    // Verify changes are saved (item still visible) - use getByRole to target item card button specifically
+    await page.waitForTimeout(2500);
     await expect(
-      page.getByRole('button', { name: /Test Item/i }),
+      page.getByRole('button', { name: /Updated Name/ }),
     ).toBeVisible();
   });
 
-  test('should delete item', async ({ page }) => {
-    // Navigate to Inventory and add an item first
-    await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    await expect(page.getByTestId('item-form')).toBeVisible();
+  test('should delete an item', async ({ page }) => {
+    await addItem(page, { name: 'Delete Me', category: 'food' });
+    await page.waitForTimeout(2500);
 
-    await page.fill('input[name="name"]', 'Item to Delete');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '1');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
-    await page.getByTestId('save-item-button').click();
+    await page.getByRole('button', { name: /Delete Me/ }).click();
+    // ItemDetail confirms via window.confirm — accept it.
+    page.once('dialog', (d) => d.accept());
+    await page.getByRole('button', { name: 'DELETE', exact: true }).click();
 
-    // Wait for item to appear and click on it to open edit mode
-    // Use getByRole to target item card button specifically (not notification)
-    const itemCardButton = page.getByRole('button', {
-      name: /Item to Delete/i,
-    });
-    await expect(itemCardButton).toBeVisible();
-    await itemCardButton.click();
-
-    // Wait for delete button to appear in the modal
-    const deleteButton = page.getByTestId('delete-item-button');
-    await expect(deleteButton).toBeVisible();
-
-    // Set up dialog handler before clicking delete
-    page.once('dialog', (dialog) => dialog.accept());
-
-    // Click delete button
-    await deleteButton.click();
-
-    // Verify item is removed
-    // Use getByRole to target item card button specifically
+    await page.waitForTimeout(500);
     await expect(
-      page.getByRole('button', { name: /Item to Delete/i }),
+      page.getByRole('button', { name: /Delete Me/ }),
     ).not.toBeVisible();
   });
 
   test('should filter items by category', async ({ page }) => {
-    // Navigate to Inventory and add items in different categories
-    await page.getByTestId('v2-nav-inv').click();
+    await addItem(page, { name: 'Food Item', category: 'food' });
+    await page.waitForTimeout(500);
+    await addItem(page, { name: 'Water Item', category: 'water-beverages' });
+    await page.waitForTimeout(500);
 
-    // Add food item
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    await expect(page.getByTestId('item-form')).toBeVisible();
-    await page.fill('input[name="name"]', 'Food Item');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '1');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
-    await page.getByTestId('save-item-button').click();
-
-    // Use getByRole to target item card button specifically
-    await expect(
-      page.getByRole('button', { name: /Food Item/i }),
-    ).toBeVisible();
-
-    // Add water item
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    await expect(page.getByTestId('item-form')).toBeVisible();
-    await page.fill('input[name="name"]', 'Water Item');
-    await page.selectOption('select[name="category"]', 'water-beverages');
-    await page.fill('input[name="quantity"]', '1');
-    await page.selectOption('select[name="unit"]', 'liters');
-    // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
-    await page.getByTestId('save-item-button').click();
-
-    // Use getByRole to target item card button specifically
-    await expect(
-      page.getByRole('button', { name: /Water Item/i }),
-    ).toBeVisible();
-
-    // Filter by Food category using SideMenu
     await selectInventoryCategory(page, 'food');
-
-    // Food item should be visible - use getByRole to target item card button specifically
+    await expect(page.getByRole('button', { name: /Food Item/ })).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /Food Item/i }),
-    ).toBeVisible();
-    // Water item should not be visible
-    await expect(
-      page.getByRole('button', { name: /Water Item/i }),
+      page.getByRole('button', { name: /Water Item/ }),
     ).not.toBeVisible();
-
-    // Click All to show all items again using SideMenu
-    await selectInventoryCategory(page, 'all');
-    // Use getByRole to target item card buttons specifically
-    await expect(
-      page.getByRole('button', { name: /Food Item/i }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: /Water Item/i }),
-    ).toBeVisible();
   });
 
-  test('should search items', async ({ page }) => {
-    // Navigate to Inventory and add items
-    await page.getByTestId('v2-nav-inv').click();
+  test('should search items by name', async ({ page }) => {
+    await addItem(page, { name: 'Apple', category: 'food' });
+    await page.waitForTimeout(500);
+    await addItem(page, { name: 'Banana', category: 'food' });
+    await page.waitForTimeout(500);
 
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    await expect(page.getByTestId('item-form')).toBeVisible();
-    await page.fill('input[name="name"]', 'Searchable Item A');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '1');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
-    await page.getByTestId('save-item-button').click();
-
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    await expect(page.getByTestId('item-form')).toBeVisible();
-    await page.fill('input[name="name"]', 'Different Item B');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '1');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    // recommendedQuantity is now auto-calculated
-    await page.check('input[type="checkbox"]');
-    await page.getByTestId('save-item-button').click();
-
-    // Search for "Searchable"
-    await page.fill('input[placeholder*="Search"]', 'Searchable');
-
-    // Only matching item should be visible - use getByRole to target item card buttons specifically
+    await page.getByLabel('Search inventory').fill('apple');
+    await expect(page.getByRole('button', { name: /Apple/ })).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /Searchable Item A/i }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: /Different Item B/i }),
+      page.getByRole('button', { name: /Banana/ }),
     ).not.toBeVisible();
-
-    // Clear search - use getByRole to target item card buttons specifically
-    await page.fill('input[placeholder*="Search"]', '');
-    await expect(
-      page.getByRole('button', { name: /Searchable Item A/i }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: /Different Item B/i }),
-    ).toBeVisible();
   });
 
-  test('should display translated template names and categories', async ({
-    page,
-  }) => {
-    // Navigate to Inventory
-    await page.getByTestId('v2-nav-inv').click();
-
-    // Click "Add Item" button
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    // Verify template names are translated (not showing translation keys)
-    // Should see "Bottled Water" not "products.bottled-water"
-    await expect(page.locator('text=Bottled Water')).toBeVisible();
-
-    // Verify no translation keys are showing
-    await expect(
-      page.locator('text=products.products.bottled-water'),
-    ).not.toBeVisible();
-    await expect(
-      page.locator('text=categories.water-beverages'),
-    ).not.toBeVisible();
-
-    // Verify category filter shows translated names
-    const categorySelect = page.locator('select').last();
-    const categoryOptions = await categorySelect
-      .locator('option')
-      .allTextContents();
-
-    // Should include "Water & Beverages" not "categories.water-beverages"
-    expect(categoryOptions.some((opt) => opt.includes('Water'))).toBe(true);
-    expect(categoryOptions.some((opt) => opt.startsWith('categories.'))).toBe(
-      false,
-    );
-
-    // Click on a template and verify form has translated categories
-    await page.getByTestId('template-card-bottled-water').click();
-
-    // Wait for form
-    await page.waitForSelector('select[name="category"]');
-
-    // Open category dropdown
-    const formCategorySelect = page.locator('select[name="category"]');
-    const formOptions = await formCategorySelect
-      .locator('option')
-      .allTextContents();
-
-    // Should show "Water & Beverages" not "categories.water-beverages"
-    expect(formOptions.some((opt) => opt.includes('Water & Beverages'))).toBe(
-      true,
-    );
-    expect(formOptions.some((opt) => opt.startsWith('categories.'))).toBe(
-      false,
-    );
-
-    // Check unit dropdown
-    const unitSelect = page.locator('select[name="unit"]');
-    const unitOptions = await unitSelect.locator('option').allTextContents();
-
-    // Should show translated units like "liters", "pieces" not "units.liters"
-    expect(
-      unitOptions.some((opt) => opt === 'liters' || opt === 'Liters'),
-    ).toBe(true);
-    expect(unitOptions.some((opt) => opt.startsWith('units.'))).toBe(false);
-  });
-
-  test('should show item type when adding from template', async ({ page }) => {
-    // Navigate to Inventory
-    await page.getByTestId('v2-nav-inv').click();
-
-    // Open template selector and select a template
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    // Click on Bottled Water template
-    await page.getByTestId('template-card-bottled-water').click();
-
-    // Wait for form modal to open
-    await expect(page.getByTestId('item-form')).toBeVisible();
-
-    // Should show item type label
-    await expect(page.locator('label:has-text("Item Type")')).toBeVisible();
-
-    // The form should have the item name pre-filled with "Bottled Water"
-    const nameInput = page.locator('input[name="name"]');
-    await expect(nameInput).toHaveValue('Bottled Water');
-  });
-
-  test('should navigate back to template selector using back button', async ({
-    page,
-  }) => {
-    // Navigate to Inventory
-    await page.getByTestId('v2-nav-inv').click();
-
-    // Open template selector
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    // Click Custom Item
-    await expect(page.getByTestId('item-form')).toBeVisible();
-
-    // Click back button (←)
-    await page.getByTestId('modal-back-button').click();
-
-    // Should be back at template selector
-  });
-
-  test('should show cancel button only when editing existing item', async ({
-    page,
-  }) => {
-    // Navigate to Inventory and add an item first
-    await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    await expect(page.getByTestId('item-form')).toBeVisible();
-
-    // When adding new item, should only have submit button visible
-    const submitButton = page.getByTestId('save-item-button');
-    await expect(submitButton).toBeVisible();
-
-    // Fill in and save item
-    await page.fill('input[name="name"]', 'Test Edit Item');
-    await page.selectOption('select[name="category"]', 'food');
-    await page.fill('input[name="quantity"]', '5');
-    await page.check('input[type="checkbox"]');
-    await page.getByTestId('save-item-button').click();
-
-    // Wait for item to appear - use getByRole to target item card button specifically
-    await expect(
-      page.getByRole('button', { name: /Test Edit Item/i }),
-    ).toBeVisible();
-
-    // Click to edit the item - use getByRole to target item card button specifically
-    const editItemButton = page.getByRole('button', {
-      name: /Test Edit Item/i,
+  test('should filter by CRIT status chip', async ({ page }) => {
+    await addItem(page, {
+      name: 'Critical Item',
+      category: 'food',
+      quantity: '0',
     });
-    await expect(editItemButton).toBeVisible();
-    await editItemButton.click();
+    await page.waitForTimeout(500);
+    await addItem(page, { name: 'Ok Item', category: 'food', quantity: '20' });
+    await page.waitForTimeout(500);
 
-    // When editing existing item, should show both Save and Cancel buttons
-    await expect(page.getByTestId('save-item-button')).toBeVisible();
-    await expect(page.getByTestId('cancel-item-button')).toBeVisible();
+    await page.getByRole('button', { name: /^CRIT\s+\d+$/ }).click();
+    await expect(
+      page.getByRole('button', { name: /Critical Item/ }),
+    ).toBeVisible();
   });
 
-  test('should show custom item option in template selector', async ({
+  test('cancel button on edit returns to list without saving', async ({
     page,
   }) => {
-    // Navigate to Inventory
-    await page.getByTestId('v2-nav-inv').click();
+    await addItem(page, { name: 'Original', category: 'food' });
+    await page.waitForTimeout(2500);
 
-    // Open template selector
-    await page.getByRole('button', { name: '+ ADD' }).click();
-    // Should see Custom Item button with dashed border style
-    const customItemButton = page.getByTestId('custom-item-button');
-    await expect(customItemButton).toBeVisible();
-
-    // Click it to open custom item form
-    await customItemButton.click();
+    await page.getByRole('button', { name: /Original/ }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
-  });
+    await page.fill('input[name="name"]', 'Discarded Edit');
+    await page.getByTestId('cancel-item-button').click();
 
-  test('should show recommended items with action buttons when viewing a category', async ({
-    page,
-  }) => {
-    // Navigate to Inventory
-    await page.getByTestId('v2-nav-inv').click();
-
-    // Click on Water category to see category status using SideMenu
-    await selectInventoryCategory(page, 'water-beverages');
-
-    // Expand recommended items (they are hidden by default)
-    await expandRecommendedItems(page);
-
-    // Should see action buttons (+ for add, × for disable) next to recommended items
-    const addButtons = page.locator('button:has-text("+")');
-    await expect(addButtons.first()).toBeVisible();
-  });
-
-  test('should add recommended item to inventory when clicking + button', async ({
-    page,
-  }) => {
-    // Navigate to Inventory
-    await page.getByTestId('v2-nav-inv').click();
-
-    // Ensure no modals are open
-    await ensureNoModals(page);
-
-    // Click on Water category using SideMenu
-    await selectInventoryCategory(page, 'water-beverages');
-
-    // Expand recommended items (they are hidden by default)
-    await expandRecommendedItems(page);
-
-    // Ensure no modals are blocking before clicking
-    await ensureNoModals(page);
-
-    // Click the + button on the first recommended item
-    const addButton = page.locator('button:has-text("+")').first();
-    await addButton.click();
-
-    // Should open the item form modal
-    await expect(page.getByTestId('item-form')).toBeVisible();
-
-    // The form should have quantity 0 and item data pre-filled
-    const quantityInput = page.locator('input[name="quantity"]');
-    await expect(quantityInput).toHaveValue('0');
-  });
-
-  test('should disable recommended item when clicking × button', async ({
-    page,
-  }) => {
-    // Navigate to Inventory
-    await page.getByTestId('v2-nav-inv').click();
-
-    // Ensure no modals are open
-    await ensureNoModals(page);
-
-    // Click on Water category using SideMenu
-    await selectInventoryCategory(page, 'water-beverages');
-
-    // Expand recommended items (they are hidden by default)
-    await expandRecommendedItems(page);
-
-    // Ensure no modals are blocking before clicking
-    await ensureNoModals(page);
-
-    // Count initial recommended items
-    const missingItemsLocator = page.locator('[class*="missingItemText"]');
-    const initialShortages = await missingItemsLocator.count();
-
-    // Click the × button on the first recommended item
-    const disableButton = page.locator('button:has-text("×")').first();
-    await disableButton.click();
-
-    // Wait for the list to update - use explicit count assertion instead of timeout
-    await waitForCountChange(missingItemsLocator, initialShortages, {
-      decrease: true,
-    });
-
-    // The disabled item should no longer appear in the list
-    const finalShortages = await missingItemsLocator.count();
-    expect(finalShortages).toBe(initialShortages - 1);
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Original/ })).toBeVisible();
   });
 });

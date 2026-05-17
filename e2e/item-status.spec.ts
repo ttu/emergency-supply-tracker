@@ -141,7 +141,7 @@ test.describe('Item Status Indicators', () => {
 
     // Navigate to Inventory to check item card status (not dashboard alerts)
     await page.getByTestId('v2-nav-inv').click();
-    await expect(page.getByTestId('page-inventory')).toBeVisible({
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible({
       timeout: 5000,
     });
 

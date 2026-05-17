@@ -51,7 +51,7 @@ test.describe('Custom Categories', () => {
     // Navigate to Inventory
     await page.getByTestId('v2-nav-inv').click();
 
-    await expect(page.getByTestId('page-inventory')).toBeVisible();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
 
     // Verify custom category is visible in the sidebar
     await expect(
@@ -210,7 +210,7 @@ test.describe('Custom Categories', () => {
 
     // Custom category should appear on dashboard
     // Dashboard shows category cards, custom categories should be included
-    await expect(page.getByTestId('page-dashboard')).toBeVisible();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
 
     // Category might be shown as a card or in a list
     // This is a soft check - custom categories are supported in the data model
@@ -228,7 +228,7 @@ test.describe('Custom Categories', () => {
     } else {
       // Custom category not visible in UI (integration may be pending)
       // Verify dashboard loaded successfully as fallback
-      await expect(page.getByTestId('page-dashboard')).toBeVisible();
+      await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
     }
   });
 
@@ -323,7 +323,7 @@ test.describe('Custom Categories', () => {
 
     // Navigate to Settings
     await page.getByTestId('v2-nav-settings').click();
-    await expect(page.getByTestId('page-settings')).toBeVisible();
+    await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible();
 
     // Navigate to Custom Categories section
     await navigateToSettingsSection(page, 'categories');

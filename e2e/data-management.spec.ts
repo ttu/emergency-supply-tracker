@@ -439,7 +439,7 @@ test.describe('Backup & Transfer', () => {
     await page.getByTestId('v2-nav-inv').click();
 
     // Wait for inventory page to load
-    await expect(page.getByTestId('page-inventory')).toBeVisible();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
 
     // Select Water & Beverages category using SideMenu
     await selectInventoryCategory(page, 'water-beverages');

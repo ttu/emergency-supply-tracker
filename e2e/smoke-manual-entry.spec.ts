@@ -94,7 +94,7 @@ async function completeOnboarding(page: Page) {
   await page.getByTestId('skip-quick-setup-button').click();
 
   // Should navigate to Dashboard
-  await expect(page.getByTestId('page-dashboard')).toBeVisible({
+  await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 }
@@ -115,7 +115,7 @@ async function testDashboardInteractions(page: Page) {
   const foodCategoryCard = page.getByTestId('category-food');
   if (await foodCategoryCard.isVisible().catch(() => false)) {
     await foodCategoryCard.click();
-    await expect(page.getByTestId('page-inventory')).toBeVisible();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
     await page.getByTestId('v2-nav-home').click();
   }
 }
@@ -258,7 +258,7 @@ async function testDashboardAlerts(page: Page) {
   // Add expired item to ensure we have at least one alert
   await ensureNoModals(page);
   await page.getByTestId('v2-nav-inv').click();
-  await expect(page.getByTestId('page-inventory')).toBeVisible({
+  await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
@@ -565,7 +565,7 @@ async function testNavigationAndPersistence(page: Page) {
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await expect(page.getByTestId('page-settings')).toBeVisible({
+  await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const themeSelectAfterReload = page.locator('#theme-select');
@@ -588,7 +588,7 @@ async function verifyFinalDashboard(page: Page) {
   });
 
   const dashboardLoaded = await page
-    .getByTestId('page-dashboard')
+    .getByText('HOUSEHOLD STATUS')
     .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
     .catch(() => false);
 
