@@ -17,10 +17,10 @@ describe('Plan (v2)', () => {
     expect(screen.getByText('G-05')).toBeInTheDocument();
   });
 
-  it('renders the goal titles in cockpit voice', () => {
+  it('renders the goal titles in cockpit theme', () => {
     setup();
-    expect(screen.getByText('7-DAY WATER COVERAGE')).toBeInTheDocument();
-    expect(screen.getByText('72H FOOD AUTONOMY')).toBeInTheDocument();
-    expect(screen.getByText('OFF-GRID LIGHTING')).toBeInTheDocument();
+    expect(screen.getByText('v2.plan.goals.g01.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.plan.goals.g02.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.plan.goals.g03.cockpit')).toBeInTheDocument();
   });
 });

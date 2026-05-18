@@ -25,7 +25,7 @@ function statTone(s: { crit: number; warn: number }): 'crit' | 'warn' | 'ok' {
 export function CoverageMatrix({
   onCategorySelect,
 }: Readonly<CoverageMatrixProps>) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { stats, categories } = useDesignData();
   const lang = i18n.language || 'en';
@@ -46,11 +46,7 @@ export function CoverageMatrix({
           alignItems: 'center',
         }}
       >
-        <Caption>
-          {themeKey === 'pantry'
-            ? 'Coverage by category'
-            : 'COVERAGE MATRIX · ALL CATEGORIES'}
-        </Caption>
+        <Caption>{t(`v2.dashboard.coverageTitle.${themeKey}`)}</Caption>
         <span
           style={{
             fontFamily: 'var(--font-mono)',

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Caption,
   NumberDisplay,
@@ -8,86 +9,80 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
+interface GoalSeed {
+  code: string;
+  key: string;
+  p: number;
+  target: string;
+  status: 'crit' | 'warn' | 'ok';
+}
+
+const GOAL_SEEDS: GoalSeed[] = [
+  {
+    code: 'G-01',
+    key: 'g01',
+    p: 32,
+    target: '21 L/person · 84 L total',
+    status: 'crit',
+  },
+  {
+    code: 'G-02',
+    key: 'g02',
+    p: 78,
+    target: '6000 kcal/person',
+    status: 'warn',
+  },
+  {
+    code: 'G-03',
+    key: 'g03',
+    p: 92,
+    target: '3 sources · 30h runtime',
+    status: 'ok',
+  },
+  {
+    code: 'G-04',
+    key: 'g04',
+    p: 68,
+    target: 'Per civil-defense list',
+    status: 'warn',
+  },
+  { code: 'G-05', key: 'g05', p: 100, target: 'Stove + 7d fuel', status: 'ok' },
+  {
+    code: 'G-06',
+    key: 'g06',
+    p: 60,
+    target: 'Radio + offline maps',
+    status: 'warn',
+  },
+  { code: 'G-07', key: 'g07', p: 84, target: '€500 small bills', status: 'ok' },
+  {
+    code: 'G-08',
+    key: 'g08',
+    p: 100,
+    target: 'Sealed + digital',
+    status: 'ok',
+  },
+];
+
 export function Plan() {
-  const { themeKey, voice } = useDesignTheme();
-  const goals = [
-    {
-      code: 'G-01',
-      name:
-        themeKey === 'pantry' ? 'One week of water' : '7-DAY WATER COVERAGE',
-      p: 32,
-      target: '21 L/person · 84 L total',
-      status: 'crit' as const,
-    },
-    {
-      code: 'G-02',
-      name: themeKey === 'pantry' ? 'Three days of food' : '72H FOOD AUTONOMY',
-      p: 78,
-      target: '6000 kcal/person',
-      status: 'warn' as const,
-    },
-    {
-      code: 'G-03',
-      name: themeKey === 'pantry' ? 'Light without power' : 'OFF-GRID LIGHTING',
-      p: 92,
-      target: '3 sources · 30h runtime',
-      status: 'ok' as const,
-    },
-    {
-      code: 'G-04',
-      name: themeKey === 'pantry' ? 'Basic first aid' : 'FIRST-AID KIT FULL',
-      p: 68,
-      target: 'Per civil-defense list',
-      status: 'warn' as const,
-    },
-    {
-      code: 'G-05',
-      name:
-        themeKey === 'pantry'
-          ? 'Cooking without electricity'
-          : 'OFF-GRID COOKING',
-      p: 100,
-      target: 'Stove + 7d fuel',
-      status: 'ok' as const,
-    },
-    {
-      code: 'G-06',
-      name: themeKey === 'pantry' ? 'Information & comms' : 'COMMS REDUNDANCY',
-      p: 60,
-      target: 'Radio + offline maps',
-      status: 'warn' as const,
-    },
-    {
-      code: 'G-07',
-      name: themeKey === 'pantry' ? 'Cash on hand' : 'CASH RESERVE',
-      p: 84,
-      target: '€500 small bills',
-      status: 'ok' as const,
-    },
-    {
-      code: 'G-08',
-      name: themeKey === 'pantry' ? 'Documents copy' : 'DOCS BACKUP',
-      p: 100,
-      target: 'Sealed + digital',
-      status: 'ok' as const,
-    },
-  ];
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
+  const goals = GOAL_SEEDS.map((g) => ({
+    ...g,
+    name: t(`v2.plan.goals.${g.key}.${themeKey}`),
+  }));
   const overall = Math.round(goals.reduce((s, g) => s + g.p, 0) / goals.length);
   const onTrack = goals.filter((g) => g.status === 'ok').length;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div>
-        <Caption>{voice.plan}</Caption>
+        <Caption>{t(`v2.voice.plan.${themeKey}`)}</Caption>
         <Title size={32} style={{ marginTop: 4 }}>
-          {themeKey === 'pantry'
-            ? 'Goals & milestones'
-            : 'PREPAREDNESS OBJECTIVES'}
+          {t(`v2.plan.title.${themeKey}`)}
         </Title>
       </div>
       <Panel padding={20}>
-        <Caption>
-          {themeKey === 'pantry' ? 'Overall' : 'OVERALL · 7-DAY TARGET'}
-        </Caption>
+        <Caption>{t(`v2.plan.overall.${themeKey}`)}</Caption>
         <div
           style={{
             marginTop: 14,
@@ -111,9 +106,10 @@ export function Plan() {
                 marginBottom: 6,
               }}
             >
-              {themeKey === 'pantry'
-                ? `${onTrack} of ${goals.length} goals on track`
-                : `${onTrack} / ${goals.length} OBJECTIVES ON TRACK`}
+              {t(`v2.plan.onTrack.${themeKey}`, {
+                onTrack,
+                total: goals.length,
+              })}
             </div>
             <StatusBar
               ok={onTrack}
@@ -133,9 +129,7 @@ export function Plan() {
           }}
         >
           <Caption>
-            {themeKey === 'pantry'
-              ? `${goals.length} goals`
-              : `OBJECTIVES · ${goals.length} TRACKED`}
+            {t(`v2.plan.goalsCount.${themeKey}`, { count: goals.length })}
           </Caption>
         </div>
         {goals.map((g, i) => (

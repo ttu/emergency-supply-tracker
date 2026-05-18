@@ -22,28 +22,38 @@ describe('Dashboard (v2)', () => {
       },
     );
 
-  it('renders the greeting caption and hero title in cockpit voice', async () => {
+  it('renders the greeting caption and hero title in cockpit theme', async () => {
     setup();
     await waitFor(() => {
-      expect(screen.getByText('OVERVIEW')).toBeInTheDocument();
+      expect(screen.getByText('v2.voice.greeting.cockpit')).toBeInTheDocument();
     });
-    expect(screen.getByText('HOUSEHOLD STATUS')).toBeInTheDocument();
+    expect(screen.getByText('v2.dashboard.heroCockpit')).toBeInTheDocument();
   });
 
   it('composes KpiRow + CoverageMatrix + PriorityQueue', async () => {
     setup();
     await waitFor(() => {
-      expect(screen.getByText('READINESS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
-    expect(screen.getByText(/COVERAGE MATRIX/)).toBeInTheDocument();
-    expect(screen.getByText(/PRIORITY QUEUE/)).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.dashboard.coverageTitle.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.dashboard.priorityTitle.cockpit'),
+    ).toBeInTheDocument();
   });
 
-  it('clicking VIEW ALL → on priority queue calls onViewAllPriority', async () => {
+  it('clicking view-all on priority queue calls onViewAllPriority', async () => {
     const onViewAllPriority = vi.fn();
     setup({ onViewAllPriority });
-    await waitFor(() => screen.getByRole('button', { name: /VIEW ALL/ }));
-    fireEvent.click(screen.getByRole('button', { name: /VIEW ALL/ }));
+    await waitFor(() =>
+      screen.getByRole('button', { name: 'v2.dashboard.priorityViewAll' }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.dashboard.priorityViewAll' }),
+    );
     expect(onViewAllPriority).toHaveBeenCalled();
   });
 });

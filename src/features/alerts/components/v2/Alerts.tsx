@@ -1,4 +1,5 @@
 import { useMemo, type CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Caption,
@@ -37,7 +38,8 @@ export function Alerts({
   onItemSelect,
   onCategorySelect,
 }: Readonly<AlertsProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const {
     activeAlerts,
     hiddenAlertsCount,
@@ -61,9 +63,9 @@ export function Alerts({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div>
-        <Caption>{voice.alerts}</Caption>
+        <Caption>{t(`v2.voice.alerts.${themeKey}`)}</Caption>
         <Title size={32} style={{ marginTop: 4 }}>
-          {themeKey === 'pantry' ? 'What needs attention' : 'ALERTS · LOG'}
+          {t(`v2.alerts.title.${themeKey}`)}
         </Title>
       </div>
 
@@ -75,7 +77,7 @@ export function Alerts({
         }}
       >
         <Panel padding={20}>
-          <Caption>{voice.critical}</Caption>
+          <Caption>{t(`v2.voice.critical.${themeKey}`)}</Caption>
           <div style={{ marginTop: 10 }}>
             <NumberDisplay
               value={counts.crit}
@@ -85,7 +87,7 @@ export function Alerts({
           </div>
         </Panel>
         <Panel padding={20}>
-          <Caption>{voice.warning}</Caption>
+          <Caption>{t(`v2.voice.warning.${themeKey}`)}</Caption>
           <div style={{ marginTop: 10 }}>
             <NumberDisplay
               value={counts.warn}
@@ -95,7 +97,7 @@ export function Alerts({
           </div>
         </Panel>
         <Panel padding={20}>
-          <Caption>{themeKey === 'pantry' ? 'Info' : 'INFO'}</Caption>
+          <Caption>{t(`v2.alerts.info.${themeKey}`)}</Caption>
           <div style={{ marginTop: 10 }}>
             <NumberDisplay value={counts.info} size={48} />
           </div>
@@ -113,18 +115,14 @@ export function Alerts({
             gap: 12,
           }}
         >
-          <Caption>
-            {themeKey === 'pantry'
-              ? 'Latest first'
-              : 'EVENT STREAM · NEWEST FIRST'}
-          </Caption>
+          <Caption>{t(`v2.alerts.eventStream.${themeKey}`)}</Caption>
           {activeAlerts.length > 0 && (
             <button
               type="button"
               onClick={handleDismissAllAlerts}
               style={dismissAllStyle}
             >
-              {themeKey === 'pantry' ? 'Dismiss all' : 'DISMISS ALL'}
+              {t(`v2.alerts.dismissAll.${themeKey}`)}
             </button>
           )}
         </div>
@@ -137,9 +135,7 @@ export function Alerts({
               color: 'var(--color-text-2)',
             }}
           >
-            {themeKey === 'pantry'
-              ? 'All clear. Nothing to act on.'
-              : 'NOMINAL · ZERO ACTIVE ALERTS'}
+            {t(`v2.alerts.empty.${themeKey}`)}
           </div>
         )}
 
@@ -153,8 +149,8 @@ export function Alerts({
             onDismiss={() => handleDismissAlert(a.id)}
             onItemSelect={a.itemId ? () => onItemSelect(a.itemId!) : undefined}
             onRowClick={resolveRowClick(a, onItemSelect, onCategorySelect)}
-            resolveLabel={voice.resolveAction}
-            dismissLabel={themeKey === 'pantry' ? 'Dismiss' : 'DISMISS'}
+            resolveLabel={t(`v2.voice.resolveAction.${themeKey}`)}
+            dismissLabel={t(`v2.alerts.dismiss.${themeKey}`)}
           />
         ))}
 
@@ -177,12 +173,12 @@ export function Alerts({
                 letterSpacing: '0.06em',
               }}
             >
-              {themeKey === 'pantry'
-                ? `${hiddenAlertsCount} hidden`
-                : `${hiddenAlertsCount} HIDDEN`}
+              {t(`v2.alerts.hiddenCount.${themeKey}`, {
+                count: hiddenAlertsCount,
+              })}
             </span>
             <Button variant="secondary" onClick={handleShowAllAlerts}>
-              {themeKey === 'pantry' ? 'Restore all' : 'RESTORE ALL'}
+              {t(`v2.alerts.restoreAll.${themeKey}`)}
             </Button>
           </div>
         )}

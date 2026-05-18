@@ -8,7 +8,7 @@ import {
 } from '@/shared/utils/test/factories';
 
 describe('MobileAlerts (v2)', () => {
-  it('renders the three alert-count captions in cockpit voice', () => {
+  it('renders the three alert-count captions in cockpit theme', () => {
     renderWithProviders(
       <MobileAlerts onItemSelect={vi.fn()} onCategorySelect={vi.fn()} />,
       {
@@ -18,7 +18,7 @@ describe('MobileAlerts (v2)', () => {
         }),
       },
     );
-    expect(screen.getByText('CRITICAL')).toBeInTheDocument();
-    expect(screen.getByText('WARN')).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.critical.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.warning.cockpit')).toBeInTheDocument();
   });
 });

@@ -809,5 +809,315 @@
       "idExists": "An item with this ID already exists",
       "quantityPositive": "Quantity must be greater than 0"
     }
+  },
+  "v2": {
+    "voice": {
+      "appName": {
+        "cockpit": "EST",
+        "civil": "EMERGENCY SUPPLY TRACKER",
+        "pantry": "Pantry"
+      },
+      "tagline": {
+        "cockpit": "household.local",
+        "civil": "Form 72-A · Household Inventory",
+        "pantry": "Calm preparedness"
+      },
+      "greeting": {
+        "cockpit": "OVERVIEW",
+        "civil": "FORM 72-A · DASHBOARD",
+        "pantry": "Good morning"
+      },
+      "readiness": {
+        "cockpit": "READINESS",
+        "civil": "OVERALL READINESS",
+        "pantry": "Household readiness"
+      },
+      "daysCovered": {
+        "cockpit": "DAYS COVERED",
+        "civil": "DAYS COVERED",
+        "pantry": "Days covered"
+      },
+      "expiringSoon": {
+        "cockpit": "EXPIRING ≤30D",
+        "civil": "EXPIRING ≤ 30 DAYS",
+        "pantry": "Expiring soon"
+      },
+      "critical": {
+        "cockpit": "CRITICAL",
+        "civil": "CRITICAL",
+        "pantry": "Critical"
+      },
+      "warning": { "cockpit": "WARN", "civil": "WARNING", "pantry": "Low" },
+      "ok": { "cockpit": "OK", "civil": "SUFFICIENT", "pantry": "Sufficient" },
+      "home": {
+        "cockpit": "OVERVIEW",
+        "civil": "DASHBOARD",
+        "pantry": "Overview"
+      },
+      "inventory": {
+        "cockpit": "INVENTORY",
+        "civil": "INVENTORY",
+        "pantry": "Inventory"
+      },
+      "alerts": { "cockpit": "ALERTS", "civil": "ALERTS", "pantry": "Alerts" },
+      "shopping": {
+        "cockpit": "PROCUREMENT",
+        "civil": "PROCUREMENT",
+        "pantry": "Shopping list"
+      },
+      "plan": { "cockpit": "PLAN", "civil": "OBJECTIVES", "pantry": "Plan" },
+      "guide": { "cockpit": "GUIDE", "civil": "GUIDE", "pantry": "Guide" },
+      "settings": {
+        "cockpit": "SETTINGS",
+        "civil": "SETTINGS",
+        "pantry": "Settings"
+      },
+      "addItem": {
+        "cockpit": "+ ADD",
+        "civil": "+ ADD ITEM",
+        "pantry": "+ Add item"
+      },
+      "save": { "cockpit": "SAVE", "civil": "SAVE", "pantry": "Save" },
+      "cancel": { "cockpit": "CANCEL", "civil": "CANCEL", "pantry": "Cancel" },
+      "delete": { "cockpit": "DELETE", "civil": "DELETE", "pantry": "Remove" },
+      "edit": { "cockpit": "EDIT", "civil": "EDIT", "pantry": "Edit" },
+      "back": { "cockpit": "BACK", "civil": "BACK", "pantry": "Back" },
+      "continueAction": {
+        "cockpit": "CONTINUE →",
+        "civil": "CONTINUE →",
+        "pantry": "Continue"
+      },
+      "resolveAction": {
+        "cockpit": "RESOLVE",
+        "civil": "RESOLVE",
+        "pantry": "Resolve"
+      },
+      "exportAction": {
+        "cockpit": "EXPORT",
+        "civil": "EXPORT",
+        "pantry": "Export"
+      },
+      "importAction": {
+        "cockpit": "IMPORT",
+        "civil": "IMPORT",
+        "pantry": "Import"
+      },
+      "qty": { "cockpit": "QTY", "civil": "QUANTITY", "pantry": "You have" },
+      "rec": {
+        "cockpit": "REC",
+        "civil": "RECOMMENDED",
+        "pantry": "Recommended"
+      },
+      "expires": {
+        "cockpit": "EXPIRES",
+        "civil": "EXPIRES",
+        "pantry": "Best before"
+      },
+      "location": { "cockpit": "LOC", "civil": "LOCATION", "pantry": "Where" },
+      "notes": { "cockpit": "NOTES", "civil": "NOTES", "pantry": "Notes" },
+      "category": {
+        "cockpit": "CAT",
+        "civil": "CATEGORY",
+        "pantry": "Category"
+      },
+      "unit": { "cockpit": "UNIT", "civil": "UNIT", "pantry": "Unit" },
+      "statusOk": { "cockpit": "OK", "civil": "OK", "pantry": "OK" },
+      "statusWarn": { "cockpit": "WARN", "civil": "WARN", "pantry": "Low" },
+      "statusCrit": { "cockpit": "CRIT", "civil": "CRIT", "pantry": "Out" },
+      "statusInfo": { "cockpit": "INFO", "civil": "INFO", "pantry": "Info" },
+      "onbWelcome": {
+        "cockpit": "WELCOME · LANGUAGE",
+        "civil": "WELCOME · LANGUAGE",
+        "pantry": "Welcome"
+      },
+      "onbTheme": {
+        "cockpit": "APPEARANCE · THEME",
+        "civil": "APPEARANCE · THEME",
+        "pantry": "Appearance"
+      },
+      "onbPreset": {
+        "cockpit": "PRESET · §3",
+        "civil": "PRESET · §3 BASELINE",
+        "pantry": "Household size"
+      },
+      "onbHousehold": {
+        "cockpit": "HOUSEHOLD · §4",
+        "civil": "HOUSEHOLD · §4 PROFILE",
+        "pantry": "Details"
+      },
+      "onbItems": {
+        "cockpit": "BASELINE · §5",
+        "civil": "BASELINE · §5 LINE ITEMS",
+        "pantry": "Starting kit"
+      },
+      "onbComplete": {
+        "cockpit": "PROVISIONING COMPLETE",
+        "civil": "PROVISIONING COMPLETE",
+        "pantry": "You're set up"
+      }
+    },
+    "alerts": {
+      "title": {
+        "cockpit": "ALERTS · LOG",
+        "civil": "ALERTS · LOG",
+        "pantry": "What needs attention"
+      },
+      "info": { "cockpit": "INFO", "civil": "INFO", "pantry": "Info" },
+      "eventStream": {
+        "cockpit": "EVENT STREAM · NEWEST FIRST",
+        "civil": "EVENT STREAM · NEWEST FIRST",
+        "pantry": "Latest first"
+      },
+      "dismissAll": {
+        "cockpit": "DISMISS ALL",
+        "civil": "DISMISS ALL",
+        "pantry": "Dismiss all"
+      },
+      "dismiss": {
+        "cockpit": "DISMISS",
+        "civil": "DISMISS",
+        "pantry": "Dismiss"
+      },
+      "empty": {
+        "cockpit": "NOMINAL · ZERO ACTIVE ALERTS",
+        "civil": "NOMINAL · ZERO ACTIVE ALERTS",
+        "pantry": "All clear. Nothing to act on."
+      },
+      "emptyShort": {
+        "cockpit": "NOMINAL",
+        "civil": "NOMINAL",
+        "pantry": "All clear."
+      },
+      "hiddenCount": {
+        "cockpit": "{{count}} HIDDEN",
+        "civil": "{{count}} HIDDEN",
+        "pantry": "{{count}} hidden"
+      },
+      "restoreAll": {
+        "cockpit": "RESTORE ALL",
+        "civil": "RESTORE ALL",
+        "pantry": "Restore all"
+      },
+      "dismissAria": "Dismiss alert"
+    },
+    "dashboard": {
+      "statusOk": "OK",
+      "statusWarn": "WARN",
+      "statusCrit": "CRIT",
+      "kpiTarget": {
+        "cockpit": "TARGET: 7D",
+        "civil": "TARGET: 7D",
+        "pantry": "Goal: 7 days"
+      },
+      "kpiNext30": {
+        "cockpit": "NEXT 30 DAYS",
+        "civil": "NEXT 30 DAYS",
+        "pantry": "Items to use up"
+      },
+      "kpiActionRequired": {
+        "cockpit": "ACTION REQUIRED",
+        "civil": "ACTION REQUIRED",
+        "pantry": "Need attention now"
+      },
+      "coverageTitle": {
+        "cockpit": "COVERAGE MATRIX · ALL CATEGORIES",
+        "civil": "COVERAGE MATRIX · ALL CATEGORIES",
+        "pantry": "Coverage by category"
+      },
+      "priorityTitle": {
+        "cockpit": "PRIORITY QUEUE · TOP ACTIONS",
+        "civil": "PRIORITY QUEUE · TOP ACTIONS",
+        "pantry": "Needs your attention"
+      },
+      "priorityViewAll": "VIEW ALL →",
+      "priorityEmpty": {
+        "cockpit": "NOMINAL · NO ACTION ITEMS",
+        "civil": "NOMINAL · NO ACTION ITEMS",
+        "pantry": "Nothing urgent. Nice work."
+      },
+      "heroCockpit": "HOUSEHOLD STATUS",
+      "heroCivil": "HOUSEHOLD READINESS REPORT",
+      "heroPantryReady": "Your household is mostly ready",
+      "heroPantryAttention": "A few things need attention",
+      "heroPantryWork": "Your kit needs work",
+      "mobileHeadlineCockpit": "STATUS",
+      "mobileHeadlineCivil": "STATUS",
+      "mobileHeadlinePantryReady": "Mostly ready",
+      "mobileHeadlinePantryAttention": "Needs attention",
+      "mobilePriority": {
+        "cockpit": "PRIORITY",
+        "civil": "PRIORITY",
+        "pantry": "Needs attention"
+      },
+      "mobileCoverage": {
+        "cockpit": "COVERAGE",
+        "civil": "COVERAGE",
+        "pantry": "Categories"
+      }
+    },
+    "plan": {
+      "title": {
+        "cockpit": "PREPAREDNESS OBJECTIVES",
+        "civil": "PREPAREDNESS OBJECTIVES",
+        "pantry": "Goals & milestones"
+      },
+      "overall": {
+        "cockpit": "OVERALL · 7-DAY TARGET",
+        "civil": "OVERALL · 7-DAY TARGET",
+        "pantry": "Overall"
+      },
+      "onTrack": {
+        "cockpit": "{{onTrack}} / {{total}} OBJECTIVES ON TRACK",
+        "civil": "{{onTrack}} / {{total}} OBJECTIVES ON TRACK",
+        "pantry": "{{onTrack}} of {{total}} goals on track"
+      },
+      "goalsCount": {
+        "cockpit": "OBJECTIVES · {{count}} TRACKED",
+        "civil": "OBJECTIVES · {{count}} TRACKED",
+        "pantry": "{{count}} goals"
+      },
+      "goals": {
+        "g01": {
+          "cockpit": "7-DAY WATER COVERAGE",
+          "civil": "7-DAY WATER COVERAGE",
+          "pantry": "One week of water"
+        },
+        "g02": {
+          "cockpit": "72H FOOD AUTONOMY",
+          "civil": "72H FOOD AUTONOMY",
+          "pantry": "Three days of food"
+        },
+        "g03": {
+          "cockpit": "OFF-GRID LIGHTING",
+          "civil": "OFF-GRID LIGHTING",
+          "pantry": "Light without power"
+        },
+        "g04": {
+          "cockpit": "FIRST-AID KIT FULL",
+          "civil": "FIRST-AID KIT FULL",
+          "pantry": "Basic first aid"
+        },
+        "g05": {
+          "cockpit": "OFF-GRID COOKING",
+          "civil": "OFF-GRID COOKING",
+          "pantry": "Cooking without electricity"
+        },
+        "g06": {
+          "cockpit": "COMMS REDUNDANCY",
+          "civil": "COMMS REDUNDANCY",
+          "pantry": "Information & comms"
+        },
+        "g07": {
+          "cockpit": "CASH RESERVE",
+          "civil": "CASH RESERVE",
+          "pantry": "Cash on hand"
+        },
+        "g08": {
+          "cockpit": "DOCS BACKUP",
+          "civil": "DOCS BACKUP",
+          "pantry": "Documents copy"
+        }
+      }
+    }
   }
 }

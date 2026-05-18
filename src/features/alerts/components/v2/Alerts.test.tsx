@@ -19,15 +19,15 @@ describe('Alerts (v2)', () => {
       },
     );
 
-  it('renders the ALERTS · LOG title in cockpit voice', () => {
+  it('renders the alerts title key in cockpit theme', () => {
     setup();
-    expect(screen.getByText('ALERTS · LOG')).toBeInTheDocument();
+    expect(screen.getByText('v2.alerts.title.cockpit')).toBeInTheDocument();
   });
 
-  it('renders three count panels (CRITICAL / WARN / OK or INFO)', () => {
+  it('renders three count panel captions (critical / warning / info)', () => {
     setup();
-    expect(screen.getByText('CRITICAL')).toBeInTheDocument();
-    expect(screen.getByText('WARN')).toBeInTheDocument();
-    expect(screen.getByText('INFO')).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.critical.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.warning.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.alerts.info.cockpit')).toBeInTheDocument();
   });
 });

@@ -8,16 +8,20 @@ import {
 } from '@/shared/utils/test/factories';
 
 describe('KpiRow (v2)', () => {
-  it('renders the four KPI labels in cockpit voice', () => {
+  it('renders the four KPI labels in cockpit theme', () => {
     renderWithProviders(<KpiRow />, {
       initialAppData: createMockAppData({
         settings: createMockSettings({ theme: 'cockpit' }),
       }),
     });
-    expect(screen.getByText('READINESS')).toBeInTheDocument();
-    expect(screen.getByText('DAYS COVERED')).toBeInTheDocument();
-    expect(screen.getByText(/EXPIRING/)).toBeInTheDocument();
-    expect(screen.getByText('CRITICAL')).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.readiness.cockpit')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.voice.daysCovered.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.voice.expiringSoon.cockpit'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.critical.cockpit')).toBeInTheDocument();
   });
 
   it('renders OK/WARN/CRIT mini-tally legend under readiness', () => {
@@ -26,8 +30,8 @@ describe('KpiRow (v2)', () => {
         settings: createMockSettings({ theme: 'cockpit' }),
       }),
     });
-    expect(screen.getByText(/OK$/)).toBeInTheDocument();
-    expect(screen.getByText(/WARN$/)).toBeInTheDocument();
-    expect(screen.getByText(/CRIT$/)).toBeInTheDocument();
+    expect(screen.getByText(/v2\.dashboard\.statusOk$/)).toBeInTheDocument();
+    expect(screen.getByText(/v2\.dashboard\.statusWarn$/)).toBeInTheDocument();
+    expect(screen.getByText(/v2\.dashboard\.statusCrit$/)).toBeInTheDocument();
   });
 });

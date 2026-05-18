@@ -21,25 +21,33 @@ const setup = (
   });
 
 describe('PriorityQueue (v2)', () => {
-  it('renders the priority queue caption in cockpit voice', async () => {
+  it('renders the priority queue caption in cockpit theme', async () => {
     setup([]);
     await waitFor(() => {
-      expect(screen.getByText(/PRIORITY QUEUE/)).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.dashboard.priorityTitle.cockpit'),
+      ).toBeInTheDocument();
     });
   });
 
-  it('clicking VIEW ALL → invokes onViewAll', async () => {
+  it('clicking view-all invokes onViewAll', async () => {
     const onViewAll = vi.fn();
     setup([], onViewAll);
-    await waitFor(() => screen.getByRole('button', { name: /VIEW ALL/ }));
-    fireEvent.click(screen.getByRole('button', { name: /VIEW ALL/ }));
+    await waitFor(() =>
+      screen.getByRole('button', { name: 'v2.dashboard.priorityViewAll' }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.dashboard.priorityViewAll' }),
+    );
     expect(onViewAll).toHaveBeenCalled();
   });
 
   it('renders the empty-state copy when nothing is non-OK', async () => {
     setup([]);
     await waitFor(() => {
-      expect(screen.getByText(/NOMINAL · NO ACTION ITEMS/)).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.dashboard.priorityEmpty.cockpit'),
+      ).toBeInTheDocument();
     });
   });
 

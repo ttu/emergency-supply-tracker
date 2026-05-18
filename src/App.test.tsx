@@ -78,7 +78,9 @@ describe('App', () => {
 
     // The v2 dashboard leads with the READINESS caption (no Quick Actions).
     await waitFor(() => {
-      expect(screen.getByText('READINESS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
   });
 
@@ -86,7 +88,9 @@ describe('App', () => {
     renderApp();
 
     await waitFor(() => {
-      expect(screen.getByText('READINESS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'INVENTORY' }));
@@ -95,14 +99,18 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: '+ ADD' })).toBeInTheDocument();
     });
-    expect(screen.queryByText('READINESS')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('v2.voice.readiness.cockpit'),
+    ).not.toBeInTheDocument();
   });
 
   it('navigates to settings when clicking settings button', async () => {
     renderApp();
 
     await waitFor(() => {
-      expect(screen.getByText('READINESS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'SETTINGS' }));
@@ -119,7 +127,9 @@ describe('App', () => {
     renderApp();
 
     await waitFor(() => {
-      expect(screen.getByText('READINESS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'SETTINGS' }));
@@ -134,7 +144,9 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'OVERVIEW' }));
     await waitFor(() => {
-      expect(screen.getByText('READINESS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
   });
 
@@ -142,7 +154,9 @@ describe('App', () => {
     renderApp();
 
     await waitFor(() => {
-      expect(screen.getByText('READINESS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'GUIDE' }));
@@ -186,7 +200,9 @@ describe('App', () => {
     renderApp();
 
     await waitFor(() => {
-      expect(screen.getByText('READINESS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
 
     // v2 dashboard tags each category tile with v2-category-<id>.

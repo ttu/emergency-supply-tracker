@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Caption,
   NumberDisplay,
@@ -34,7 +35,8 @@ export function MobileAlerts({
   onItemSelect,
   onCategorySelect,
 }: Readonly<MobileAlertsProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const { activeAlerts, handleDismissAlert } = useDashboardAlerts();
   const counts = {
     crit: activeAlerts.filter((a) => a.type === 'critical').length,
@@ -54,7 +56,7 @@ export function MobileAlerts({
         }}
       >
         <Panel padding={12}>
-          <Caption>{voice.critical}</Caption>
+          <Caption>{t(`v2.voice.critical.${themeKey}`)}</Caption>
           <div style={{ marginTop: 4 }}>
             <NumberDisplay
               value={counts.crit}
@@ -64,7 +66,7 @@ export function MobileAlerts({
           </div>
         </Panel>
         <Panel padding={12}>
-          <Caption>{voice.warning}</Caption>
+          <Caption>{t(`v2.voice.warning.${themeKey}`)}</Caption>
           <div style={{ marginTop: 4 }}>
             <NumberDisplay
               value={counts.warn}
@@ -74,7 +76,7 @@ export function MobileAlerts({
           </div>
         </Panel>
         <Panel padding={12}>
-          <Caption>{themeKey === 'pantry' ? 'Info' : 'INFO'}</Caption>
+          <Caption>{t(`v2.alerts.info.${themeKey}`)}</Caption>
           <div style={{ marginTop: 4 }}>
             <NumberDisplay value={counts.info} size={24} />
           </div>
@@ -89,7 +91,7 @@ export function MobileAlerts({
               color: 'var(--color-text-2)',
             }}
           >
-            {themeKey === 'pantry' ? 'All clear.' : 'NOMINAL'}
+            {t(`v2.alerts.emptyShort.${themeKey}`)}
           </div>
         )}
         {activeAlerts.map((a, i) => (
@@ -150,7 +152,7 @@ export function MobileAlerts({
             <button
               type="button"
               onClick={() => handleDismissAlert(a.id)}
-              aria-label="Dismiss alert"
+              aria-label={t('v2.alerts.dismissAria')}
               style={{
                 background: 'transparent',
                 border: '1px solid var(--color-rule)',

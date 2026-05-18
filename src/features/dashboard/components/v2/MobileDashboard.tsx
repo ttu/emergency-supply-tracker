@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   Caption,
   NumberDisplay,
@@ -20,13 +22,20 @@ function mobileReadinessTone(readiness: number): 'ok' | 'warn' | 'crit' {
   return 'crit';
 }
 
-function pantryHeadline(readiness: number): string {
-  return readiness >= 80 ? 'Mostly ready' : 'Needs attention';
+function pantryHeadline(readiness: number, t: TFunction): string {
+  return readiness >= 80
+    ? t('v2.dashboard.mobileHeadlinePantryReady')
+    : t('v2.dashboard.mobileHeadlinePantryAttention');
 }
 
-function mobileHeadline(themeKey: string, readiness: number): string {
-  if (themeKey === 'pantry') return pantryHeadline(readiness);
-  return 'STATUS';
+function mobileHeadline(
+  themeKey: string,
+  readiness: number,
+  t: TFunction,
+): string {
+  if (themeKey === 'pantry') return pantryHeadline(readiness, t);
+  if (themeKey === 'civil') return t('v2.dashboard.mobileHeadlineCivil');
+  return t('v2.dashboard.mobileHeadlineCockpit');
 }
 
 function mobileStatTone(s: {
@@ -41,19 +50,20 @@ function mobileStatTone(s: {
 export function MobileDashboard({
   onCategorySelect,
 }: Readonly<MobileDashboardProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const { totals, readiness, stats, expiringCount, criticalCount, rows } =
     useDesignData();
   const tone = mobileReadinessTone(readiness);
   const priority = [...rows].filter((r) => r.status !== 'ok').slice(0, 4);
-  const headline = mobileHeadline(themeKey, readiness);
+  const headline = mobileHeadline(themeKey, readiness, t);
 
   return (
     <div
       style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}
     >
       <div>
-        <Caption>{voice.greeting}</Caption>
+        <Caption>{t(`v2.voice.greeting.${themeKey}`)}</Caption>
         <div
           style={{
             fontFamily: 'var(--font-display)',
@@ -69,7 +79,7 @@ export function MobileDashboard({
       </div>
 
       <Panel padding={16}>
-        <Caption>{voice.readiness}</Caption>
+        <Caption>{t(`v2.voice.readiness.${themeKey}`)}</Caption>
         <div
           style={{
             marginTop: 10,
@@ -98,19 +108,21 @@ export function MobileDashboard({
             fontSize: 10,
           }}
         >
-          <span style={{ color: 'var(--color-ok)' }}>{totals.ok} OK</span>
+          <span style={{ color: 'var(--color-ok)' }}>
+            {totals.ok} {t(`v2.voice.statusOk.${themeKey}`)}
+          </span>
           <span style={{ color: 'var(--color-warn)' }}>
-            {totals.warn} {voice.statusWarn}
+            {totals.warn} {t(`v2.voice.statusWarn.${themeKey}`)}
           </span>
           <span style={{ color: 'var(--color-crit)' }}>
-            {totals.crit} {voice.statusCrit}
+            {totals.crit} {t(`v2.voice.statusCrit.${themeKey}`)}
           </span>
         </div>
       </Panel>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <Panel padding={14}>
-          <Caption>{voice.expiringSoon}</Caption>
+          <Caption>{t(`v2.voice.expiringSoon.${themeKey}`)}</Caption>
           <div style={{ marginTop: 6 }}>
             <NumberDisplay
               value={expiringCount}
@@ -120,7 +132,7 @@ export function MobileDashboard({
           </div>
         </Panel>
         <Panel padding={14}>
-          <Caption>{voice.critical}</Caption>
+          <Caption>{t(`v2.voice.critical.${themeKey}`)}</Caption>
           <div style={{ marginTop: 6 }}>
             <NumberDisplay
               value={criticalCount}
@@ -139,9 +151,7 @@ export function MobileDashboard({
               borderBottom: '1px solid var(--color-rule-soft)',
             }}
           >
-            <Caption>
-              {themeKey === 'pantry' ? 'Needs attention' : 'PRIORITY'}
-            </Caption>
+            <Caption>{t(`v2.dashboard.mobilePriority.${themeKey}`)}</Caption>
           </div>
           {priority.map((r, i) => (
             <div
@@ -193,11 +203,11 @@ export function MobileDashboard({
             borderBottom: '1px solid var(--color-rule-soft)',
           }}
         >
-          <Caption>{themeKey === 'pantry' ? 'Categories' : 'COVERAGE'}</Caption>
+          <Caption>{t(`v2.dashboard.mobileCoverage.${themeKey}`)}</Caption>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
           {stats.slice(0, 6).map((s, i) => {
-            const t = mobileStatTone(s);
+            const tn = mobileStatTone(s);
             return (
               <button
                 key={String(s.category.id)}
@@ -229,7 +239,7 @@ export function MobileDashboard({
                   >
                     {categoryCode(String(s.category.id))}
                   </span>
-                  <StatusDot status={t} size={6} />
+                  <StatusDot status={tn} size={6} />
                 </div>
                 <div
                   style={{

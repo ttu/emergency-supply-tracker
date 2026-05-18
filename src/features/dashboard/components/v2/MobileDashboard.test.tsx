@@ -8,12 +8,12 @@ import {
 } from '@/shared/utils/test/factories';
 
 describe('MobileDashboard (v2)', () => {
-  it('renders the READINESS KPI under cockpit voice', () => {
+  it('renders the readiness KPI under cockpit theme', () => {
     renderWithProviders(<MobileDashboard onCategorySelect={vi.fn()} />, {
       initialAppData: createMockAppData({
         settings: createMockSettings({ theme: 'cockpit' }),
       }),
     });
-    expect(screen.getByText('READINESS')).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.readiness.cockpit')).toBeInTheDocument();
   });
 });

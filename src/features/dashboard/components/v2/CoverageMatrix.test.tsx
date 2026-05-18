@@ -29,7 +29,9 @@ describe('CoverageMatrix (v2)', () => {
   it('renders the coverage matrix caption (cockpit voice)', async () => {
     setup();
     await waitFor(() => {
-      expect(screen.getByText(/COVERAGE MATRIX/)).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.dashboard.coverageTitle.cockpit'),
+      ).toBeInTheDocument();
     });
   });
 

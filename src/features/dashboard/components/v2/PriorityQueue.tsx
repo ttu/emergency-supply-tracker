@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Caption,
   Panel,
@@ -24,6 +25,7 @@ export function PriorityQueue({
   onViewAll,
   limit = 5,
 }: Readonly<PriorityQueueProps>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
   const priority = [...rows]
@@ -41,11 +43,7 @@ export function PriorityQueue({
           justifyContent: 'space-between',
         }}
       >
-        <Caption>
-          {themeKey === 'pantry'
-            ? 'Needs your attention'
-            : 'PRIORITY QUEUE · TOP ACTIONS'}
-        </Caption>
+        <Caption>{t(`v2.dashboard.priorityTitle.${themeKey}`)}</Caption>
         <button
           type="button"
           onClick={onViewAll}
@@ -60,7 +58,7 @@ export function PriorityQueue({
             fontWeight: 700,
           }}
         >
-          VIEW ALL →
+          {t('v2.dashboard.priorityViewAll')}
         </button>
       </div>
       {priority.length === 0 && (
@@ -72,9 +70,7 @@ export function PriorityQueue({
             textAlign: 'center',
           }}
         >
-          {themeKey === 'pantry'
-            ? 'Nothing urgent. Nice work.'
-            : 'NOMINAL · NO ACTION ITEMS'}
+          {t(`v2.dashboard.priorityEmpty.${themeKey}`)}
         </div>
       )}
       {priority.map((r, i) => (
