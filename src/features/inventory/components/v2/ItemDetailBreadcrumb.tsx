@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { categoryCode } from '@/shared/i18n/voice';
 
@@ -15,20 +16,18 @@ const breadcrumbStyle: CSSProperties = {
   letterSpacing: '0.08em',
 };
 
-/** Inventory / CAT / id back link, also handles the "new" case. */
-function newCatLabel(themeKey: string): string {
-  return themeKey === 'pantry' ? 'New' : 'NEW';
-}
-
 export function ItemDetailBreadcrumb({
   itemId,
   itemCategoryId,
   defaultCategoryId,
   onBack,
 }: Readonly<ItemDetailBreadcrumbProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const cat = itemCategoryId ?? defaultCategoryId;
-  const catLabel = cat ? categoryCode(cat) : newCatLabel(themeKey);
+  const catLabel = cat
+    ? categoryCode(cat)
+    : t(`v2.inventory.newCatLabel.${themeKey}`);
   return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <button
@@ -42,7 +41,7 @@ export function ItemDetailBreadcrumb({
           color: 'var(--color-text-2)',
         }}
       >
-        ← {voice.inventory}
+        ← {t(`v2.voice.inventory.${themeKey}`)}
       </button>
       <span style={{ color: 'var(--color-text-3)' }}>/</span>
       <span style={{ ...breadcrumbStyle, color: 'var(--color-text-3)' }}>

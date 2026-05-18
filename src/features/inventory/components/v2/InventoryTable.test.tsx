@@ -29,20 +29,24 @@ const renderTable = (rows: DesignItemRow[], totalRowCount = rows.length) =>
   );
 
 describe('InventoryTable (v2)', () => {
-  it('renders header columns in cockpit voice', () => {
+  it('renders header columns in cockpit theme', () => {
     renderTable([]);
-    expect(screen.getByText('ID')).toBeInTheDocument();
-    expect(screen.getByText('Item')).toBeInTheDocument();
-    expect(screen.getByText('Category')).toBeInTheDocument();
-    expect(screen.getByText(/QTY\s*\/\s*REC/)).toBeInTheDocument();
-    expect(screen.getByText('EXPIRES')).toBeInTheDocument();
-    expect(screen.getByText('LOC')).toBeInTheDocument();
-    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByText('v2.inventory.tableId')).toBeInTheDocument();
+    expect(screen.getByText('v2.inventory.tableItem')).toBeInTheDocument();
+    expect(screen.getByText('v2.inventory.tableCategory')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /v2\.voice\.qty\.cockpit\s*\/\s*v2\.voice\.rec\.cockpit/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.expires.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.voice.location.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.inventory.tableStatus')).toBeInTheDocument();
   });
 
   it('renders empty state when there are no rows', () => {
     renderTable([], 0);
-    expect(screen.getByText(/EMPTY|No items match/)).toBeInTheDocument();
+    expect(screen.getByText('v2.inventory.empty.cockpit')).toBeInTheDocument();
   });
 
   it('renders one row per item', () => {
@@ -53,7 +57,7 @@ describe('InventoryTable (v2)', () => {
 
   it('renders footer with showing/total count', () => {
     renderTable([row('A', 'AAA')], 5);
-    expect(screen.getByText(/Showing\s*1\s*of\s*5/)).toBeInTheDocument();
+    expect(screen.getByText('v2.inventory.footerShowing')).toBeInTheDocument();
   });
 
   it('clicking a row forwards onItemSelect with item id', () => {

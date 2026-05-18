@@ -1071,6 +1071,208 @@
         "pantry": "Kategoriat"
       }
     },
+    "inventory": {
+      "title": {
+        "cockpit": "VARASTO · KAIKKI TUOTTEET",
+        "civil": "VARASTO · KAIKKI TUOTTEET",
+        "pantry": "Kaikki mitä sinulla on"
+      },
+      "filterAll": {
+        "cockpit": "KAIKKI",
+        "civil": "KAIKKI",
+        "pantry": "Kaikki"
+      },
+      "filterCrit": { "cockpit": "KRIIT", "civil": "KRIIT", "pantry": "Loppu" },
+      "filterWarn": { "cockpit": "VARO", "civil": "VARO", "pantry": "Vähissä" },
+      "filterOk": { "cockpit": "OK", "civil": "OK", "pantry": "OK" },
+      "filterExp": {
+        "cockpit": "VANH ≤30VRK",
+        "civil": "VANH ≤30VRK",
+        "pantry": "Vanhenee"
+      },
+      "filterExpShort": {
+        "cockpit": "VANH",
+        "civil": "VANH",
+        "pantry": "Vanhenee"
+      },
+      "categoryAria": {
+        "cockpit": "KATEGORIA",
+        "civil": "KATEGORIA",
+        "pantry": "Kategoria"
+      },
+      "allCategories": {
+        "cockpit": "KAIKKI KATEGORIAT",
+        "civil": "KAIKKI KATEGORIAT",
+        "pantry": "Kaikki kategoriat"
+      },
+      "searchPlaceholder": {
+        "cockpit": "HAKU",
+        "civil": "HAKU",
+        "pantry": "Hae tuotteita…"
+      },
+      "searchAria": "Hae varastosta",
+      "tableId": "ID",
+      "tableItem": "Tuote",
+      "tableCategory": "Kategoria",
+      "tableStatus": "Tila",
+      "empty": {
+        "cockpit": "TYHJÄ · EI OSUMIA",
+        "civil": "TYHJÄ · EI OSUMIA",
+        "pantry": "Ei osumia."
+      },
+      "footerShowing": "Näytetään {{shown}} / {{total}}",
+      "newCatLabel": { "cockpit": "UUSI", "civil": "UUSI", "pantry": "Uusi" }
+    },
+    "itemDetail": {
+      "captionNew": {
+        "cockpit": "UUSI TUOTE",
+        "civil": "UUSI TUOTE",
+        "pantry": "Uusi tuote"
+      },
+      "captionExisting": {
+        "cockpit": "TUOTETIETUE",
+        "civil": "TUOTETIETUE",
+        "pantry": "Tuotteen tiedot"
+      },
+      "titleNew": {
+        "cockpit": "LISÄÄ TUOTE",
+        "civil": "LISÄÄ TUOTE",
+        "pantry": "Lisää tuote"
+      },
+      "notFound": "Tuotetta ei löytynyt.",
+      "backLink": "← Takaisin",
+      "fieldsCaption": {
+        "cockpit": "KENTÄT · §1 TUNNISTUS",
+        "civil": "KENTÄT · §1 TUNNISTUS",
+        "pantry": "Tuotteen tiedot"
+      },
+      "confirmDelete": {
+        "cockpit": "POISTA TÄMÄ TUOTE?",
+        "civil": "POISTA TÄMÄ TUOTE?",
+        "pantry": "Poistetaanko tämä tuote?"
+      },
+      "opsCaption": {
+        "cockpit": "TOIM.",
+        "civil": "TOIM.",
+        "pantry": "Pikatoiminnot"
+      },
+      "opsDecreaseAria": "Vähennä {{name}} yhdellä",
+      "opsIncreaseAria": "Lisää {{name}} yhdellä",
+      "opsConsume": {
+        "cockpit": "KULUTA",
+        "civil": "KULUTA",
+        "pantry": "Merkitse käytetyksi"
+      },
+      "opsHint": {
+        "cockpit": "TALLENTAA HETI · LOMAKKEEN TALLENNUKSESTA RIIPPUMATTA",
+        "civil": "TALLENTAA HETI · LOMAKKEEN TALLENNUKSESTA RIIPPUMATTA",
+        "pantry": "Pikatoiminnot tallennetaan heti — lomaketta ei tarvitse tallentaa."
+      },
+      "statusCaption": {
+        "cockpit": "NYKYTILA",
+        "civil": "NYKYTILA",
+        "pantry": "Tila"
+      },
+      "statusOfRecommended": {
+        "cockpit": "SUOSITUKSESTA",
+        "civil": "SUOSITUKSESTA",
+        "pantry": "suosituksesta"
+      },
+      "totalsCaption": {
+        "cockpit": "YHTEENSÄ · NYKYINEN MÄÄRÄ",
+        "civil": "YHTEENSÄ · NYKYINEN MÄÄRÄ",
+        "pantry": "Yhteensä varastossa"
+      },
+      "totalsKcal": {
+        "cockpit": "KCAL YHT",
+        "civil": "KCAL YHT",
+        "pantry": "Kalorit yhteensä"
+      },
+      "totalsWeight": {
+        "cockpit": "PAINO YHT",
+        "civil": "PAINO YHT",
+        "pantry": "Paino yhteensä"
+      },
+      "totalsWaterPrep": {
+        "cockpit": "VESI · VALMISTUS",
+        "civil": "VESI · VALMISTUS",
+        "pantry": "Vettä valmistukseen"
+      },
+      "totalsCapacity": {
+        "cockpit": "KAPASITEETTI YHT",
+        "civil": "KAPASITEETTI YHT",
+        "pantry": "Kapasiteetti yhteensä"
+      }
+    },
+    "shopping": {
+      "title": {
+        "cockpit": "HANKINTAJONO",
+        "civil": "HANKINTAJONO",
+        "pantry": "Mitä ostaa seuraavaksi"
+      },
+      "queueCaption": {
+        "cockpit": "JONO · {{open}} AUKI · {{done}} VALMIS",
+        "civil": "JONO · {{open}} AUKI · {{done}} VALMIS",
+        "pantry": "{{open}} auki · {{done}} valmis"
+      },
+      "empty": {
+        "cockpit": "EI HANKINTOJA",
+        "civil": "EI HANKINTOJA",
+        "pantry": "Ei mitään listalla. Ehdotamme tuotteita kun varasto vähenee."
+      },
+      "emptyShort": {
+        "cockpit": "EI HANKINTOJA",
+        "civil": "EI HANKINTOJA",
+        "pantry": "Ei mitään listalla."
+      },
+      "labelNow": {
+        "cockpit": "KIIREELLINEN",
+        "civil": "KIIREELLINEN",
+        "pantry": "Nyt"
+      },
+      "labelSoon": { "cockpit": "PIAN", "civil": "PIAN", "pantry": "Pian" },
+      "labelWhen": { "cockpit": "KUN", "civil": "KUN", "pantry": "Joskus" },
+      "labelNowShort": { "cockpit": "NYT", "civil": "NYT", "pantry": "Nyt" },
+      "addBtn": {
+        "cockpit": "+ LISÄÄ",
+        "civil": "+ LISÄÄ",
+        "pantry": "+ Lisää"
+      },
+      "addBtnAria": "Lisää {{need}} {{unit}} tuotteeseen {{name}}",
+      "addBtnAriaShort": "Lisää {{q}} tuotteeseen {{name}}",
+      "markDoneAria": "Merkitse {{name}} valmiiksi",
+      "itemsToBuy": {
+        "cockpit": "AVOIMET",
+        "civil": "AVOIMET",
+        "pantry": "Tuotteita ostettavaksi"
+      },
+      "doneCount": {
+        "cockpit": "{{done}} VALMISTA · {{total}} YHT",
+        "civil": "{{done}} VALMISTA · {{total}} YHT",
+        "pantry": "{{done}} jo valmiina"
+      },
+      "tipsCaption": {
+        "cockpit": "MUIST.",
+        "civil": "MUIST.",
+        "pantry": "Vinkkejä"
+      },
+      "tipsBody": {
+        "cockpit": "MERKITSE TUOTTEET HANKITUIKSI. TILA SÄILYY PAIKALLISESTI KUNNES TYHJENNETÄÄN.",
+        "civil": "MERKITSE TUOTTEET HANKITUIKSI. TILA SÄILYY PAIKALLISESTI KUNNES TYHJENNETÄÄN.",
+        "pantry": "Merkitse tuotteet ostetuiksi — ne säilyvät listalla kunnes nollaat sen."
+      },
+      "reset": {
+        "cockpit": "NOLLAA",
+        "civil": "NOLLAA",
+        "pantry": "Nollaa lista"
+      },
+      "mobileOpen": {
+        "cockpit": "AUKI",
+        "civil": "AUKI",
+        "pantry": "Ostettavaa"
+      },
+      "mobileTotal": { "cockpit": "YHT", "civil": "YHT", "pantry": "tuotetta" }
+    },
     "plan": {
       "title": {
         "cockpit": "VARAUTUMISEN TAVOITTEET",

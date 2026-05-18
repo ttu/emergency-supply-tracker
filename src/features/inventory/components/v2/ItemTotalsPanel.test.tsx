@@ -25,13 +25,19 @@ describe('ItemTotalsPanel (v2)', () => {
       requiresWaterLiters: undefined,
       capacityWh: undefined,
     });
-    expect(screen.queryByText('TOTALS · CURRENT QTY')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('v2.itemDetail.totalsCaption.cockpit'),
+    ).not.toBeInTheDocument();
   });
 
   it('shows total kcal multiplied by quantity', () => {
     renderPanel({ quantity: createQuantity(4), caloriesPerUnit: 250 });
-    expect(screen.getByText('TOTALS · CURRENT QTY')).toBeInTheDocument();
-    expect(screen.getByText('KCAL TOTAL')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.totalsCaption.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.totalsKcal.cockpit'),
+    ).toBeInTheDocument();
     // Locale separator can be comma, period, NBSP, narrow-NBSP, or none.
     expect(screen.getByText(/1\D?000/)).toBeInTheDocument();
   });
@@ -40,7 +46,9 @@ describe('ItemTotalsPanel (v2)', () => {
     renderPanel({ quantity: createQuantity(3), weightGrams: 200 });
     // 200 × 3 = 600 g
     expect(screen.getByText('600')).toBeInTheDocument();
-    expect(screen.getByText('WEIGHT TOTAL')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.totalsWeight.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders weight total in kilograms when at or above 1kg', () => {
@@ -51,7 +59,9 @@ describe('ItemTotalsPanel (v2)', () => {
 
   it('renders capacity total in Wh', () => {
     renderPanel({ quantity: createQuantity(2), capacityWh: 10000 });
-    expect(screen.getByText('CAPACITY TOTAL')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.totalsCapacity.cockpit'),
+    ).toBeInTheDocument();
     expect(screen.getByText(/20\D?000/)).toBeInTheDocument();
   });
 });

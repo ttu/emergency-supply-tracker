@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Caption,
   NumberDisplay,
@@ -24,10 +25,11 @@ export function ItemStatusPanel({
   recommended,
   unit,
 }: Readonly<ItemStatusPanelProps>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
     <Panel padding={20}>
-      <Caption>{themeKey === 'pantry' ? 'Status' : 'CURRENT STATUS'}</Caption>
+      <Caption>{t(`v2.itemDetail.statusCaption.${themeKey}`)}</Caption>
       <div
         style={{
           marginTop: 14,
@@ -45,7 +47,7 @@ export function ItemStatusPanel({
             color: 'var(--color-text-2)',
           }}
         >
-          {themeKey === 'pantry' ? 'of recommended' : 'OF RECOMMENDED'}
+          {t(`v2.itemDetail.statusOfRecommended.${themeKey}`)}
           <br />
           {quantity} / {recommended || '—'} {unit}
         </div>

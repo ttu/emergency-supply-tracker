@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Caption,
   NumberDisplay,
@@ -10,7 +11,6 @@ interface ItemTotalsPanelProps {
   item: InventoryItem;
 }
 
-/** Stack totals: total kcal, weight, water, capacity Wh derived from per-unit. */
 function multiplyOrUndefined(
   perUnit: number | undefined,
   quantity: number,
@@ -19,6 +19,7 @@ function multiplyOrUndefined(
 }
 
 export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
 
   const totalCalories = multiplyOrUndefined(
@@ -42,9 +43,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
 
   return (
     <Panel padding={20}>
-      <Caption>
-        {themeKey === 'pantry' ? 'Stack totals' : 'TOTALS · CURRENT QTY'}
-      </Caption>
+      <Caption>{t(`v2.itemDetail.totalsCaption.${themeKey}`)}</Caption>
       <div
         style={{
           marginTop: 14,
@@ -55,7 +54,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
       >
         {totalCalories !== undefined && (
           <TotalsRow
-            label={themeKey === 'pantry' ? 'Total calories' : 'KCAL TOTAL'}
+            label={t(`v2.itemDetail.totalsKcal.${themeKey}`)}
             value={totalCalories.toLocaleString()}
             suffix="kcal"
             detail={`${item.caloriesPerUnit} kcal × ${item.quantity} ${item.unit}`}
@@ -63,7 +62,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
         )}
         {totalWeightG !== undefined && (
           <TotalsRow
-            label={themeKey === 'pantry' ? 'Total weight' : 'WEIGHT TOTAL'}
+            label={t(`v2.itemDetail.totalsWeight.${themeKey}`)}
             value={
               totalWeightG >= 1000
                 ? (totalWeightG / 1000).toFixed(1)
@@ -75,9 +74,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
         )}
         {totalWaterL !== undefined && (
           <TotalsRow
-            label={
-              themeKey === 'pantry' ? 'Water needed to prepare' : 'WATER · PREP'
-            }
+            label={t(`v2.itemDetail.totalsWaterPrep.${themeKey}`)}
             value={totalWaterL.toFixed(1)}
             suffix="L"
             detail={`${item.requiresWaterLiters} L × ${item.quantity} ${item.unit}`}
@@ -85,7 +82,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
         )}
         {totalCapacityWh !== undefined && (
           <TotalsRow
-            label={themeKey === 'pantry' ? 'Total capacity' : 'CAPACITY TOTAL'}
+            label={t(`v2.itemDetail.totalsCapacity.${themeKey}`)}
             value={totalCapacityWh.toLocaleString()}
             suffix="Wh"
             detail={`${item.capacityWh} Wh × ${item.quantity} ${item.unit}`}

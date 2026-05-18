@@ -15,9 +15,11 @@ describe('ItemDetailBreadcrumb (v2)', () => {
   it('renders ← INVENTORY back link and NEW label when no item/category is set', () => {
     render();
     expect(
-      screen.getByRole('button', { name: /←\s*INVENTORY/ }),
+      screen.getByRole('button', { name: /←\s*v2\.voice\.inventory\.cockpit/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText('NEW')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.inventory.newCatLabel.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('shows category code from defaultCategoryId when creating a new item', () => {
@@ -34,7 +36,9 @@ describe('ItemDetailBreadcrumb (v2)', () => {
   it('clicking the back link calls onBack', () => {
     const onBack = vi.fn();
     render({ onBack });
-    fireEvent.click(screen.getByRole('button', { name: /←\s*INVENTORY/ }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /←\s*v2\.voice\.inventory\.cockpit/ }),
+    );
     expect(onBack).toHaveBeenCalled();
   });
 });

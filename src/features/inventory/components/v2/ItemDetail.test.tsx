@@ -49,20 +49,34 @@ describe('ItemDetail (v2)', () => {
       expect(screen.getByText('Bottled water')).toBeInTheDocument();
     });
     expect(
-      screen.getByRole('button', { name: /←\s*INVENTORY/ }),
+      screen.getByRole('button', {
+        name: /←\s*v2\.voice\.inventory\.cockpit/,
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByText('ITEM RECORD')).toBeInTheDocument();
-    expect(screen.getByText('CURRENT STATUS')).toBeInTheDocument();
-    expect(screen.getByText('OPS')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.captionExisting.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.statusCaption.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.opsCaption.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders NEW ITEM header and hides side panels in new-item mode', async () => {
     renderDetail(NEW_ITEM_ID, { defaultCategoryId: 'food' });
     await waitFor(() => {
-      expect(screen.getByText('ADD ITEM')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.itemDetail.titleNew.cockpit'),
+      ).toBeInTheDocument();
     });
-    expect(screen.queryByText('CURRENT STATUS')).not.toBeInTheDocument();
-    expect(screen.queryByText('OPS')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('v2.itemDetail.statusCaption.cockpit'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('v2.itemDetail.opsCaption.cockpit'),
+    ).not.toBeInTheDocument();
   });
 
   it('shows "Item not found" fallback when itemId does not match', () => {
@@ -72,7 +86,7 @@ describe('ItemDetail (v2)', () => {
         items: [],
       }),
     });
-    expect(screen.getByText(/Item not found/)).toBeInTheDocument();
+    expect(screen.getByText('v2.itemDetail.notFound')).toBeInTheDocument();
   });
 
   it('clicking back from the not-found fallback calls onBack', () => {
@@ -83,7 +97,9 @@ describe('ItemDetail (v2)', () => {
         items: [],
       }),
     });
-    fireEvent.click(screen.getByRole('button', { name: /←\s*Back/ }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.itemDetail.backLink' }),
+    );
     expect(onBack).toHaveBeenCalled();
   });
 
@@ -105,8 +121,12 @@ describe('ItemDetail (v2)', () => {
         }),
       },
     );
-    await waitFor(() => screen.getByRole('button', { name: 'DELETE' }));
-    fireEvent.click(screen.getByRole('button', { name: 'DELETE' }));
+    await waitFor(() =>
+      screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
+    );
     expect(confirmSpy).toHaveBeenCalled();
     expect(onBack).not.toHaveBeenCalled();
   });

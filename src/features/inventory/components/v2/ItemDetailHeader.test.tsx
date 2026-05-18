@@ -12,8 +12,12 @@ const render = (props: Partial<Parameters<typeof ItemDetailHeader>[0]> = {}) =>
 describe('ItemDetailHeader (v2)', () => {
   it('renders ADD ITEM title and NEW ITEM caption in new mode', () => {
     render({ isNew: true });
-    expect(screen.getByText('NEW ITEM')).toBeInTheDocument();
-    expect(screen.getByText('ADD ITEM')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.captionNew.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.titleNew.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders item name + ITEM RECORD caption when editing existing item', () => {
@@ -23,7 +27,9 @@ describe('ItemDetailHeader (v2)', () => {
       itemCategoryId: 'water-beverages',
       categoryName: 'Water & beverages',
     });
-    expect(screen.getByText('ITEM RECORD')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.captionExisting.cockpit'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Bottled water')).toBeInTheDocument();
     expect(screen.getByText(/H2O\s*·\s*Water & beverages/)).toBeInTheDocument();
   });
@@ -35,12 +41,14 @@ describe('ItemDetailHeader (v2)', () => {
       itemName: 'A',
       onDelete,
     });
-    fireEvent.click(screen.getByRole('button', { name: 'DELETE' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
+    );
     expect(onDelete).toHaveBeenCalled();
 
     rerender(<ItemDetailHeader isNew={true} onDelete={onDelete} />);
     expect(
-      screen.queryByRole('button', { name: 'DELETE' }),
+      screen.queryByRole('button', { name: 'v2.voice.delete.cockpit' }),
     ).not.toBeInTheDocument();
   });
 });

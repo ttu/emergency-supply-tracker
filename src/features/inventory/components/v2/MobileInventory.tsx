@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Panel,
@@ -26,6 +27,7 @@ export function MobileInventory({
   onCategoryChange,
   onAddItem,
 }: Readonly<MobileInventoryProps>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const [filter, setFilter] = useState<FilterKey>('all');
@@ -56,11 +58,11 @@ export function MobileInventory({
   }, [rows, filter, search, selectedCategoryId]);
 
   const chips: Array<[FilterKey, string]> = [
-    ['all', themeKey === 'pantry' ? 'All' : 'ALL'],
-    ['crit', themeKey === 'pantry' ? 'Out' : 'CRIT'],
-    ['warn', themeKey === 'pantry' ? 'Low' : 'WARN'],
-    ['ok', 'OK'],
-    ['exp', themeKey === 'pantry' ? 'Expiring' : 'EXP'],
+    ['all', t(`v2.inventory.filterAll.${themeKey}`)],
+    ['crit', t(`v2.inventory.filterCrit.${themeKey}`)],
+    ['warn', t(`v2.inventory.filterWarn.${themeKey}`)],
+    ['ok', t(`v2.inventory.filterOk.${themeKey}`)],
+    ['exp', t(`v2.inventory.filterExpShort.${themeKey}`)],
   ];
 
   return (
@@ -68,13 +70,13 @@ export function MobileInventory({
       style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
     >
       <Button variant="primary" full onClick={onAddItem}>
-        {themeKey === 'pantry' ? '+ Add item' : '+ ADD ITEM'}
+        {t(`v2.voice.addItem.${themeKey}`)}
       </Button>
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={themeKey === 'pantry' ? 'Search items…' : 'SEARCH'}
-        aria-label="Search inventory"
+        placeholder={t(`v2.inventory.searchPlaceholder.${themeKey}`)}
+        aria-label={t('v2.inventory.searchAria')}
         style={{
           background: 'var(--color-panel)',
           border: '1px solid var(--color-rule)',
@@ -90,7 +92,7 @@ export function MobileInventory({
       <select
         value={selectedCategoryId ?? ''}
         onChange={(e) => onCategoryChange(e.target.value || undefined)}
-        aria-label={themeKey === 'pantry' ? 'Category' : 'CATEGORY'}
+        aria-label={t(`v2.inventory.categoryAria.${themeKey}`)}
         style={{
           background: 'var(--color-panel)',
           border: '1px solid var(--color-rule)',
@@ -103,9 +105,7 @@ export function MobileInventory({
           width: '100%',
         }}
       >
-        <option value="">
-          {themeKey === 'pantry' ? 'All categories' : 'ALL CATEGORIES'}
-        </option>
+        <option value="">{t(`v2.inventory.allCategories.${themeKey}`)}</option>
         {categories.map((c) => (
           <option key={String(c.id)} value={String(c.id)}>
             {c.name}
@@ -148,7 +148,7 @@ export function MobileInventory({
               color: 'var(--color-text-2)',
             }}
           >
-            {themeKey === 'pantry' ? 'No items match.' : 'EMPTY · NO MATCH'}
+            {t(`v2.inventory.empty.${themeKey}`)}
           </div>
         )}
         {filtered.map((r: DesignItemRow, i) => (

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Caption,
@@ -15,10 +16,11 @@ export function ItemOpsPanel({
   itemName,
   onAdjust,
 }: Readonly<ItemOpsPanelProps>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
     <Panel padding={20}>
-      <Caption>{themeKey === 'pantry' ? 'Quick actions' : 'OPS'}</Caption>
+      <Caption>{t(`v2.itemDetail.opsCaption.${themeKey}`)}</Caption>
       <div
         style={{
           marginTop: 12,
@@ -30,20 +32,20 @@ export function ItemOpsPanel({
         <Button
           variant="secondary"
           onClick={() => onAdjust(-1)}
-          ariaLabel={`Decrease ${itemName} by 1`}
+          ariaLabel={t('v2.itemDetail.opsDecreaseAria', { name: itemName })}
         >
           −1
         </Button>
         <Button
           variant="secondary"
           onClick={() => onAdjust(1)}
-          ariaLabel={`Increase ${itemName} by 1`}
+          ariaLabel={t('v2.itemDetail.opsIncreaseAria', { name: itemName })}
         >
           +1
         </Button>
         <div style={{ gridColumn: 'span 2' }}>
           <Button variant="secondary" full onClick={() => onAdjust(-1)}>
-            {themeKey === 'pantry' ? 'Mark consumed' : 'CONSUME'}
+            {t(`v2.itemDetail.opsConsume.${themeKey}`)}
           </Button>
         </div>
       </div>
@@ -56,9 +58,7 @@ export function ItemOpsPanel({
           letterSpacing: '0.06em',
         }}
       >
-        {themeKey === 'pantry'
-          ? 'Quick actions write through immediately — no need to save the form.'
-          : 'WRITES IMMEDIATELY · INDEPENDENT OF FORM SAVE'}
+        {t(`v2.itemDetail.opsHint.${themeKey}`)}
       </div>
     </Panel>
   );

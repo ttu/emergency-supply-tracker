@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Caption,
@@ -57,7 +58,8 @@ export function Inventory({
   onItemSelect,
   onAddItem,
 }: Readonly<InventoryProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const [filter, setFilter] = useState<InventoryFilterKey>('all');
   const [search, setSearch] = useState('');
@@ -108,16 +110,14 @@ export function Inventory({
         }}
       >
         <div>
-          <Caption>{voice.inventory}</Caption>
+          <Caption>{t(`v2.voice.inventory.${themeKey}`)}</Caption>
           <Title size={32} style={{ marginTop: 4 }}>
-            {themeKey === 'pantry'
-              ? 'Everything you have'
-              : 'INVENTORY · ALL ITEMS'}
+            {t(`v2.inventory.title.${themeKey}`)}
           </Title>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <Button variant="primary" onClick={onAddItem}>
-            {voice.addItem}
+            {t(`v2.voice.addItem.${themeKey}`)}
           </Button>
         </div>
       </div>

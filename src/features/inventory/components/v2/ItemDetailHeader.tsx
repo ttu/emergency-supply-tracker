@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   Button,
   Caption,
@@ -14,19 +16,20 @@ interface ItemDetailHeaderProps {
   onDelete?: () => void;
 }
 
-/** Caption + title + category line; right-aligned Delete for existing items. */
-function headerCaption(isNew: boolean, themeKey: string): string {
-  if (isNew) return themeKey === 'pantry' ? 'New item' : 'NEW ITEM';
-  return themeKey === 'pantry' ? 'Item details' : 'ITEM RECORD';
+function headerCaption(isNew: boolean, themeKey: string, t: TFunction): string {
+  return isNew
+    ? t(`v2.itemDetail.captionNew.${themeKey}`)
+    : t(`v2.itemDetail.captionExisting.${themeKey}`);
 }
 
 function headerTitle(
   isNew: boolean,
   themeKey: string,
   itemName: string | undefined,
+  t: TFunction,
 ): string | undefined {
   if (!isNew) return itemName;
-  return themeKey === 'pantry' ? 'Add an item' : 'ADD ITEM';
+  return t(`v2.itemDetail.titleNew.${themeKey}`);
 }
 
 export function ItemDetailHeader({
@@ -36,7 +39,8 @@ export function ItemDetailHeader({
   categoryName,
   onDelete,
 }: Readonly<ItemDetailHeaderProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   return (
     <div
       style={{
@@ -46,9 +50,9 @@ export function ItemDetailHeader({
       }}
     >
       <div>
-        <Caption>{headerCaption(isNew, themeKey)}</Caption>
+        <Caption>{headerCaption(isNew, themeKey, t)}</Caption>
         <Title size={32} style={{ marginTop: 4 }}>
-          {headerTitle(isNew, themeKey, itemName)}
+          {headerTitle(isNew, themeKey, itemName, t)}
         </Title>
         {itemCategoryId && (
           <div
@@ -66,7 +70,7 @@ export function ItemDetailHeader({
       </div>
       {!isNew && onDelete && (
         <Button variant="secondary" onClick={onDelete}>
-          {voice.delete}
+          {t(`v2.voice.delete.${themeKey}`)}
         </Button>
       )}
     </div>

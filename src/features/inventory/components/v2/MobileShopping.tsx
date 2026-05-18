@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Caption,
@@ -11,6 +12,7 @@ import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory } from '@/features/inventory';
 import { createQuantity } from '@/shared/types';
 import type { DesignStatus } from '@/shared/utils/designStatus';
+import type { TFunction } from 'i18next';
 
 const SHOPPING_KEY = 'est:design:shopping-checked';
 
@@ -30,24 +32,18 @@ function saveChecked(state: Record<string, boolean>) {
   }
 }
 
-const PANTRY_SHOPPING_LABELS: Record<DesignStatus, string> = {
-  crit: 'Now',
-  warn: 'Soon',
-  ok: 'When',
-};
-const CAPS_SHOPPING_LABELS: Record<DesignStatus, string> = {
-  crit: 'NOW',
-  warn: 'SOON',
-  ok: 'WHEN',
-};
-
-function mobileShoppingLabel(themeKey: string, p: DesignStatus): string {
-  const labels =
-    themeKey === 'pantry' ? PANTRY_SHOPPING_LABELS : CAPS_SHOPPING_LABELS;
-  return labels[p];
+function mobileShoppingLabel(
+  themeKey: string,
+  p: DesignStatus,
+  t: TFunction,
+): string {
+  if (p === 'crit') return t(`v2.shopping.labelNowShort.${themeKey}`);
+  if (p === 'warn') return t(`v2.shopping.labelSoon.${themeKey}`);
+  return t(`v2.shopping.labelWhen.${themeKey}`);
 }
 
 export function MobileShopping() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
   const { updateItem } = useInventory();
@@ -84,14 +80,14 @@ export function MobileShopping() {
   };
   const open = list.filter((it) => !checked[it.id]).length;
 
-  const labelFor = (p: DesignStatus) => mobileShoppingLabel(themeKey, p);
+  const labelFor = (p: DesignStatus) => mobileShoppingLabel(themeKey, p, t);
 
   return (
     <div
       style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
     >
       <Panel padding={14}>
-        <Caption>{themeKey === 'pantry' ? 'To buy' : 'OPEN'}</Caption>
+        <Caption>{t(`v2.shopping.mobileOpen.${themeKey}`)}</Caption>
         <div
           style={{
             display: 'flex',
@@ -112,7 +108,7 @@ export function MobileShopping() {
               color: 'var(--color-text-3)',
             }}
           >
-            · {list.length} {themeKey === 'pantry' ? 'items' : 'TOTAL'}
+            · {list.length} {t(`v2.shopping.mobileTotal.${themeKey}`)}
           </span>
         </div>
       </Panel>
@@ -125,7 +121,7 @@ export function MobileShopping() {
               color: 'var(--color-text-2)',
             }}
           >
-            {themeKey === 'pantry' ? 'Nothing on the list.' : 'NIL'}
+            {t(`v2.shopping.emptyShort.${themeKey}`)}
           </div>
         )}
         {list.map((it, i) => {
@@ -150,7 +146,7 @@ export function MobileShopping() {
                 type="button"
                 onClick={() => toggle(it.id)}
                 aria-pressed={isDone}
-                aria-label={`Mark ${it.name} done`}
+                aria-label={t('v2.shopping.markDoneAria', { name: it.name })}
                 style={{
                   width: 16,
                   height: 16,
@@ -202,9 +198,12 @@ export function MobileShopping() {
                   onClick={() =>
                     addToInventory(it.rawId, it.currentQty, it.need)
                   }
-                  ariaLabel={`Add ${it.q} to ${it.name}`}
+                  ariaLabel={t('v2.shopping.addBtnAriaShort', {
+                    q: it.q,
+                    name: it.name,
+                  })}
                 >
-                  {themeKey === 'pantry' ? '+ Add' : '+ ADD'}
+                  {t(`v2.shopping.addBtn.${themeKey}`)}
                 </Button>
               </div>
             </div>

@@ -44,9 +44,13 @@ describe('Inventory (v2)', () => {
   it('renders inventory title with cockpit voice and ADD button', async () => {
     setup();
     await waitFor(() => {
-      expect(screen.getByText(/INVENTORY · ALL ITEMS/)).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.inventory.title.cockpit'),
+      ).toBeInTheDocument();
     });
-    expect(screen.getByRole('button', { name: '+ ADD' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+    ).toBeInTheDocument();
   });
 
   it('renders every item in the inventory by default', async () => {
@@ -63,7 +67,11 @@ describe('Inventory (v2)', () => {
       expect(screen.getByText('Bottled water')).toBeInTheDocument();
     });
     // Match the chip ("CRIT <count>"), not StatusPills inside rows.
-    fireEvent.click(screen.getByRole('button', { name: /^CRIT\s+\d+$/ }));
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /^v2\.voice\.statusCrit\.cockpit\s+\d+$/,
+      }),
+    );
     await waitFor(() => {
       expect(screen.queryByText('Canned beans')).not.toBeInTheDocument();
     });
@@ -75,7 +83,7 @@ describe('Inventory (v2)', () => {
     await waitFor(() => {
       expect(screen.getByText('Bottled water')).toBeInTheDocument();
     });
-    fireEvent.change(screen.getByLabelText('Search inventory'), {
+    fireEvent.change(screen.getByLabelText('v2.inventory.searchAria'), {
       target: { value: 'water' },
     });
     await waitFor(() => {
@@ -97,8 +105,12 @@ describe('Inventory (v2)', () => {
         }),
       },
     );
-    await waitFor(() => screen.getByRole('button', { name: '+ ADD' }));
-    fireEvent.click(screen.getByRole('button', { name: '+ ADD' }));
+    await waitFor(() =>
+      screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+    );
     expect(onAddItem).toHaveBeenCalled();
   });
 });

@@ -97,7 +97,9 @@ describe('App', () => {
 
     // v2 Inventory shows the "+ ADD" primary button and an "ALL" filter chip.
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '+ ADD' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      ).toBeInTheDocument();
     });
     expect(
       screen.queryByText('v2.voice.readiness.cockpit'),
@@ -139,7 +141,9 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'INVENTORY' }));
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '+ ADD' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'OVERVIEW' }));
@@ -211,11 +215,15 @@ describe('App', () => {
 
     // Should land on Inventory.
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '+ ADD' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      ).toBeInTheDocument();
     });
 
     // The category filter dropdown should be preselected to water-beverages.
-    const categorySelect = screen.getByLabelText('CATEGORY');
+    const categorySelect = screen.getByLabelText(
+      'v2.inventory.categoryAria.cockpit',
+    );
     expect((categorySelect as HTMLSelectElement).value).toBe('water-beverages');
   });
 });

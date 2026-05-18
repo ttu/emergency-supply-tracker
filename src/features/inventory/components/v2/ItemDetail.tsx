@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Caption, Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
@@ -29,6 +30,7 @@ export function ItemDetail({
   onBack,
   defaultCategoryId,
 }: Readonly<ItemDetailProps>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const { items, addItem, updateItem, deleteItem } = useInventory();
@@ -41,7 +43,7 @@ export function ItemDetail({
   if (!isNew && !row) {
     return (
       <div style={{ padding: 32, color: 'var(--color-text-2)' }}>
-        Item not found.{' '}
+        {t('v2.itemDetail.notFound')}{' '}
         <button
           type="button"
           onClick={onBack}
@@ -52,7 +54,7 @@ export function ItemDetail({
             cursor: 'pointer',
           }}
         >
-          ← Back
+          {t('v2.itemDetail.backLink')}
         </button>
       </div>
     );
@@ -79,12 +81,7 @@ export function ItemDetail({
 
   const handleDelete = () => {
     if (!item) return;
-    if (
-      !confirm(
-        themeKey === 'pantry' ? 'Remove this item?' : 'DELETE THIS ITEM?',
-      )
-    )
-      return;
+    if (!confirm(t(`v2.itemDetail.confirmDelete.${themeKey}`))) return;
     deleteItem(item.id);
     onBack();
   };
@@ -128,11 +125,7 @@ export function ItemDetail({
               borderBottom: '1px solid var(--color-rule-soft)',
             }}
           >
-            <Caption>
-              {themeKey === 'pantry'
-                ? 'Item details'
-                : 'FIELDS · §1 IDENTIFICATION'}
-            </Caption>
+            <Caption>{t(`v2.itemDetail.fieldsCaption.${themeKey}`)}</Caption>
           </div>
           <div className="design-v2-embed" style={{ padding: 20 }}>
             <ItemForm

@@ -1055,6 +1055,184 @@
         "pantry": "Categories"
       }
     },
+    "inventory": {
+      "title": {
+        "cockpit": "INVENTORY · ALL ITEMS",
+        "civil": "INVENTORY · ALL ITEMS",
+        "pantry": "Everything you have"
+      },
+      "filterAll": { "cockpit": "ALL", "civil": "ALL", "pantry": "All" },
+      "filterCrit": { "cockpit": "CRIT", "civil": "CRIT", "pantry": "Out" },
+      "filterWarn": { "cockpit": "WARN", "civil": "WARN", "pantry": "Low" },
+      "filterOk": { "cockpit": "OK", "civil": "OK", "pantry": "OK" },
+      "filterExp": {
+        "cockpit": "EXP ≤30D",
+        "civil": "EXP ≤30D",
+        "pantry": "Expiring"
+      },
+      "filterExpShort": {
+        "cockpit": "EXP",
+        "civil": "EXP",
+        "pantry": "Expiring"
+      },
+      "categoryAria": {
+        "cockpit": "CATEGORY",
+        "civil": "CATEGORY",
+        "pantry": "Category"
+      },
+      "allCategories": {
+        "cockpit": "ALL CATEGORIES",
+        "civil": "ALL CATEGORIES",
+        "pantry": "All categories"
+      },
+      "searchPlaceholder": {
+        "cockpit": "SEARCH",
+        "civil": "SEARCH",
+        "pantry": "Search items…"
+      },
+      "searchAria": "Search inventory",
+      "tableId": "ID",
+      "tableItem": "Item",
+      "tableCategory": "Category",
+      "tableStatus": "Status",
+      "empty": {
+        "cockpit": "EMPTY · NO MATCH",
+        "civil": "EMPTY · NO MATCH",
+        "pantry": "No items match."
+      },
+      "footerShowing": "Showing {{shown}} of {{total}}",
+      "newCatLabel": { "cockpit": "NEW", "civil": "NEW", "pantry": "New" }
+    },
+    "itemDetail": {
+      "captionNew": {
+        "cockpit": "NEW ITEM",
+        "civil": "NEW ITEM",
+        "pantry": "New item"
+      },
+      "captionExisting": {
+        "cockpit": "ITEM RECORD",
+        "civil": "ITEM RECORD",
+        "pantry": "Item details"
+      },
+      "titleNew": {
+        "cockpit": "ADD ITEM",
+        "civil": "ADD ITEM",
+        "pantry": "Add an item"
+      },
+      "notFound": "Item not found.",
+      "backLink": "← Back",
+      "fieldsCaption": {
+        "cockpit": "FIELDS · §1 IDENTIFICATION",
+        "civil": "FIELDS · §1 IDENTIFICATION",
+        "pantry": "Item details"
+      },
+      "confirmDelete": {
+        "cockpit": "DELETE THIS ITEM?",
+        "civil": "DELETE THIS ITEM?",
+        "pantry": "Remove this item?"
+      },
+      "opsCaption": {
+        "cockpit": "OPS",
+        "civil": "OPS",
+        "pantry": "Quick actions"
+      },
+      "opsDecreaseAria": "Decrease {{name}} by 1",
+      "opsIncreaseAria": "Increase {{name}} by 1",
+      "opsConsume": {
+        "cockpit": "CONSUME",
+        "civil": "CONSUME",
+        "pantry": "Mark consumed"
+      },
+      "opsHint": {
+        "cockpit": "WRITES IMMEDIATELY · INDEPENDENT OF FORM SAVE",
+        "civil": "WRITES IMMEDIATELY · INDEPENDENT OF FORM SAVE",
+        "pantry": "Quick actions write through immediately — no need to save the form."
+      },
+      "statusCaption": {
+        "cockpit": "CURRENT STATUS",
+        "civil": "CURRENT STATUS",
+        "pantry": "Status"
+      },
+      "statusOfRecommended": {
+        "cockpit": "OF RECOMMENDED",
+        "civil": "OF RECOMMENDED",
+        "pantry": "of recommended"
+      },
+      "totalsCaption": {
+        "cockpit": "TOTALS · CURRENT QTY",
+        "civil": "TOTALS · CURRENT QTY",
+        "pantry": "Stack totals"
+      },
+      "totalsKcal": {
+        "cockpit": "KCAL TOTAL",
+        "civil": "KCAL TOTAL",
+        "pantry": "Total calories"
+      },
+      "totalsWeight": {
+        "cockpit": "WEIGHT TOTAL",
+        "civil": "WEIGHT TOTAL",
+        "pantry": "Total weight"
+      },
+      "totalsWaterPrep": {
+        "cockpit": "WATER · PREP",
+        "civil": "WATER · PREP",
+        "pantry": "Water needed to prepare"
+      },
+      "totalsCapacity": {
+        "cockpit": "CAPACITY TOTAL",
+        "civil": "CAPACITY TOTAL",
+        "pantry": "Total capacity"
+      }
+    },
+    "shopping": {
+      "title": {
+        "cockpit": "PROCUREMENT QUEUE",
+        "civil": "PROCUREMENT QUEUE",
+        "pantry": "What to buy next"
+      },
+      "queueCaption": {
+        "cockpit": "QUEUE · {{open}} OPEN · {{done}} DONE",
+        "civil": "QUEUE · {{open}} OPEN · {{done}} DONE",
+        "pantry": "{{open}} open · {{done}} done"
+      },
+      "empty": {
+        "cockpit": "NIL · NO PROCUREMENT REQUIRED",
+        "civil": "NIL · NO PROCUREMENT REQUIRED",
+        "pantry": "Nothing on the list. We'll suggest items when stock runs low."
+      },
+      "emptyShort": {
+        "cockpit": "NIL",
+        "civil": "NIL",
+        "pantry": "Nothing on the list."
+      },
+      "labelNow": { "cockpit": "URGENT", "civil": "URGENT", "pantry": "Now" },
+      "labelSoon": { "cockpit": "SOON", "civil": "SOON", "pantry": "Soon" },
+      "labelWhen": { "cockpit": "WHEN", "civil": "WHEN", "pantry": "When" },
+      "labelNowShort": { "cockpit": "NOW", "civil": "NOW", "pantry": "Now" },
+      "addBtn": { "cockpit": "+ ADD", "civil": "+ ADD", "pantry": "+ Add" },
+      "addBtnAria": "Add {{need}} {{unit}} to {{name}}",
+      "addBtnAriaShort": "Add {{q}} to {{name}}",
+      "markDoneAria": "Mark {{name}} done",
+      "itemsToBuy": {
+        "cockpit": "OPEN ITEMS",
+        "civil": "OPEN ITEMS",
+        "pantry": "Items to buy"
+      },
+      "doneCount": {
+        "cockpit": "{{done}} CHECKED · {{total}} TOTAL",
+        "civil": "{{done}} CHECKED · {{total}} TOTAL",
+        "pantry": "{{done}} already done"
+      },
+      "tipsCaption": { "cockpit": "NOTES", "civil": "NOTES", "pantry": "Tips" },
+      "tipsBody": {
+        "cockpit": "CHECK ITEMS WHEN PROCURED. STATE PERSISTS LOCALLY UNTIL CLEARED.",
+        "civil": "CHECK ITEMS WHEN PROCURED. STATE PERSISTS LOCALLY UNTIL CLEARED.",
+        "pantry": "Check items off as you buy them — they stay checked until you reset the list."
+      },
+      "reset": { "cockpit": "RESET", "civil": "RESET", "pantry": "Reset list" },
+      "mobileOpen": { "cockpit": "OPEN", "civil": "OPEN", "pantry": "To buy" },
+      "mobileTotal": { "cockpit": "TOTAL", "civil": "TOTAL", "pantry": "items" }
+    },
     "plan": {
       "title": {
         "cockpit": "PREPAREDNESS OBJECTIVES",

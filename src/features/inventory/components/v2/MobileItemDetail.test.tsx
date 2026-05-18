@@ -19,7 +19,7 @@ describe('MobileItemDetail (v2)', () => {
         }),
       },
     );
-    expect(screen.getByText(/Item not found/)).toBeInTheDocument();
+    expect(screen.getByText('v2.itemDetail.notFound')).toBeInTheDocument();
   });
 
   it('clicking the back link from the fallback calls onBack', () => {
@@ -30,7 +30,9 @@ describe('MobileItemDetail (v2)', () => {
         items: [],
       }),
     });
-    fireEvent.click(screen.getByRole('button', { name: /←\s*Back/ }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.itemDetail.backLink' }),
+    );
     expect(onBack).toHaveBeenCalled();
   });
 
@@ -45,6 +47,8 @@ describe('MobileItemDetail (v2)', () => {
     );
     // ItemForm is the v1 form embedded inside the v2 shell.
     // It renders a form element with the expected save button label.
-    expect(screen.queryByText(/Item not found/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('v2.itemDetail.notFound'),
+    ).not.toBeInTheDocument();
   });
 });

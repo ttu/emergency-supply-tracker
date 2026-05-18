@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import type { Category } from '@/shared/types';
 
@@ -34,7 +35,8 @@ export function InventoryFilterStrip({
   search,
   onSearchChange,
 }: Readonly<InventoryFilterStripProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const chip = (k: InventoryFilterKey, label: string, n: number) => {
     const active = filter === k;
     return (
@@ -81,11 +83,11 @@ export function InventoryFilterStrip({
         borderBottom: '1px solid var(--color-rule-soft)',
       }}
     >
-      {chip('all', themeKey === 'pantry' ? 'All' : 'ALL', counts.all)}
-      {chip('crit', voice.statusCrit, counts.crit)}
-      {chip('warn', voice.statusWarn, counts.warn)}
-      {chip('ok', voice.statusOk, counts.ok)}
-      {chip('exp', themeKey === 'pantry' ? 'Expiring' : 'EXP ≤30D', counts.exp)}
+      {chip('all', t(`v2.inventory.filterAll.${themeKey}`), counts.all)}
+      {chip('crit', t(`v2.voice.statusCrit.${themeKey}`), counts.crit)}
+      {chip('warn', t(`v2.voice.statusWarn.${themeKey}`), counts.warn)}
+      {chip('ok', t(`v2.voice.statusOk.${themeKey}`), counts.ok)}
+      {chip('exp', t(`v2.inventory.filterExp.${themeKey}`), counts.exp)}
       <div style={{ flex: 1 }} />
       <div
         style={{
@@ -98,7 +100,7 @@ export function InventoryFilterStrip({
         <select
           value={selectedCategoryId ?? ''}
           onChange={(e) => onCategoryChange(e.target.value || undefined)}
-          aria-label={themeKey === 'pantry' ? 'Category' : 'CATEGORY'}
+          aria-label={t(`v2.inventory.categoryAria.${themeKey}`)}
           style={{
             background: 'var(--color-panel-2)',
             border: '1px solid var(--color-rule)',
@@ -112,7 +114,7 @@ export function InventoryFilterStrip({
           }}
         >
           <option value="">
-            {themeKey === 'pantry' ? 'All categories' : 'ALL CATEGORIES'}
+            {t(`v2.inventory.allCategories.${themeKey}`)}
           </option>
           {categories.map((c) => (
             <option key={String(c.id)} value={String(c.id)}>
@@ -123,8 +125,8 @@ export function InventoryFilterStrip({
         <input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={themeKey === 'pantry' ? 'Search items…' : 'SEARCH'}
-          aria-label="Search inventory"
+          placeholder={t(`v2.inventory.searchPlaceholder.${themeKey}`)}
+          aria-label={t('v2.inventory.searchAria')}
           style={{
             background: 'var(--color-panel-2)',
             border: '1px solid var(--color-rule)',

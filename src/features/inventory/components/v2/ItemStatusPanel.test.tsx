@@ -22,7 +22,9 @@ const renderPanel = (
 describe('ItemStatusPanel (v2)', () => {
   it('renders the status caption in cockpit voice', () => {
     renderPanel();
-    expect(screen.getByText('CURRENT STATUS')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.itemDetail.statusCaption.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders the percentage value and qty/rec breakdown', () => {

@@ -31,29 +31,43 @@ const renderStrip = (
   );
 
 describe('InventoryFilterStrip (v2)', () => {
-  it('renders status chip labels with counts (cockpit voice)', () => {
+  it('renders status chip labels with counts (cockpit theme)', () => {
     renderStrip();
     expect(
-      screen.getByRole('button', { name: /^ALL\s+12$/ }),
+      screen.getByRole('button', {
+        name: /^v2\.inventory\.filterAll\.cockpit\s+12$/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /^CRIT\s+2$/ }),
+      screen.getByRole('button', {
+        name: /^v2\.voice\.statusCrit\.cockpit\s+2$/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /^WARN\s+3$/ }),
+      screen.getByRole('button', {
+        name: /^v2\.voice\.statusWarn\.cockpit\s+3$/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /^OK\s+7$/ }),
+      screen.getByRole('button', {
+        name: /^v2\.voice\.statusOk\.cockpit\s+7$/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /^EXP.*1$/ }),
+      screen.getByRole('button', {
+        name: /^v2\.inventory\.filterExp\.cockpit\s+1$/,
+      }),
     ).toBeInTheDocument();
   });
 
   it('invokes onFilterChange when a status chip is clicked', () => {
     const onFilterChange = vi.fn();
     renderStrip({ onFilterChange });
-    fireEvent.click(screen.getByRole('button', { name: /^CRIT\s+2$/ }));
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /^v2\.voice\.statusCrit\.cockpit\s+2$/,
+      }),
+    );
     expect(onFilterChange).toHaveBeenCalledWith('crit');
   });
 
@@ -62,7 +76,9 @@ describe('InventoryFilterStrip (v2)', () => {
     renderStrip({ onCategoryChange });
     const select = screen.getByRole('combobox') as HTMLSelectElement;
     expect(
-      screen.getByRole('option', { name: 'ALL CATEGORIES' }),
+      screen.getByRole('option', {
+        name: 'v2.inventory.allCategories.cockpit',
+      }),
     ).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Water' })).toBeInTheDocument();
     fireEvent.change(select, { target: { value: String(cats[0].id) } });
@@ -80,7 +96,7 @@ describe('InventoryFilterStrip (v2)', () => {
   it('forwards search input changes', () => {
     const onSearchChange = vi.fn();
     renderStrip({ onSearchChange });
-    fireEvent.change(screen.getByLabelText('Search inventory'), {
+    fireEvent.change(screen.getByLabelText('v2.inventory.searchAria'), {
       target: { value: 'water' },
     });
     expect(onSearchChange).toHaveBeenCalledWith('water');

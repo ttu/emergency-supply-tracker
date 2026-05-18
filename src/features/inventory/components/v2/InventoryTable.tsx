@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import type { DesignItemRow } from '@/shared/hooks/useDesignData';
 import { InventoryRow } from './InventoryRow';
@@ -9,15 +10,13 @@ interface InventoryTableProps {
   onItemSelect: (id: string) => void;
 }
 
-/** 7-column inventory grid table with header + rows + footer count. */
 export function InventoryTable({
   rows,
   totalRowCount,
   onItemSelect,
 }: Readonly<InventoryTableProps>) {
-  const { themeKey, voice } = useDesignTheme();
-  // 7 cols with column-gap so REC/EXPIRES don't visually merge under
-  // narrower viewports. QTY and REC are combined into one "qty / rec" cell.
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const cellStyles: CSSProperties = {
     display: 'grid',
     gridTemplateColumns:
@@ -45,15 +44,15 @@ export function InventoryTable({
           background: 'var(--color-panel-2)',
         }}
       >
-        <span>ID</span>
-        <span>Item</span>
-        <span>Category</span>
+        <span>{t('v2.inventory.tableId')}</span>
+        <span>{t('v2.inventory.tableItem')}</span>
+        <span>{t('v2.inventory.tableCategory')}</span>
         <span style={{ textAlign: 'right' }}>
-          {voice.qty} / {voice.rec}
+          {t(`v2.voice.qty.${themeKey}`)} / {t(`v2.voice.rec.${themeKey}`)}
         </span>
-        <span>{voice.expires}</span>
-        <span>{voice.location}</span>
-        <span>Status</span>
+        <span>{t(`v2.voice.expires.${themeKey}`)}</span>
+        <span>{t(`v2.voice.location.${themeKey}`)}</span>
+        <span>{t('v2.inventory.tableStatus')}</span>
       </div>
 
       {rows.length === 0 && (
@@ -64,7 +63,7 @@ export function InventoryTable({
             color: 'var(--color-text-2)',
           }}
         >
-          {themeKey === 'pantry' ? 'No items match.' : 'EMPTY · NO MATCH'}
+          {t(`v2.inventory.empty.${themeKey}`)}
         </div>
       )}
 
@@ -90,7 +89,10 @@ export function InventoryTable({
         }}
       >
         <span>
-          Showing {rows.length} of {totalRowCount}
+          {t('v2.inventory.footerShowing', {
+            shown: rows.length,
+            total: totalRowCount,
+          })}
         </span>
       </div>
     </>

@@ -1,4 +1,5 @@
 import { useMemo, useState, type CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Caption,
@@ -12,6 +13,7 @@ import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory } from '@/features/inventory';
 import { createQuantity, type ItemId } from '@/shared/types';
 import type { DesignStatus } from '@/shared/utils/designStatus';
+import type { TFunction } from 'i18next';
 
 const STORAGE_KEY = 'est:design:shopping-checked';
 
@@ -32,19 +34,14 @@ function saveChecked(state: Record<string, boolean>) {
   }
 }
 
-const PANTRY_LABELS: Record<DesignStatus, string> = {
-  crit: 'Now',
-  warn: 'Soon',
-  ok: 'When',
-};
-const URGENT_LABELS: Record<DesignStatus, string> = {
-  crit: 'URGENT',
-  warn: 'SOON',
-  ok: 'WHEN',
-};
-
-function shoppingLabel(themeKey: string, p: DesignStatus): string {
-  return (themeKey === 'pantry' ? PANTRY_LABELS : URGENT_LABELS)[p];
+function shoppingLabel(
+  themeKey: string,
+  p: DesignStatus,
+  t: TFunction,
+): string {
+  if (p === 'crit') return t(`v2.shopping.labelNow.${themeKey}`);
+  if (p === 'warn') return t(`v2.shopping.labelSoon.${themeKey}`);
+  return t(`v2.shopping.labelWhen.${themeKey}`);
 }
 
 function critFirstShopping(
@@ -57,7 +54,8 @@ function critFirstShopping(
 }
 
 export function Shopping() {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
   const { updateItem } = useInventory();
   const [checked, setChecked] = useState<Record<string, boolean>>(loadChecked);
@@ -84,7 +82,6 @@ export function Shopping() {
     saveChecked(next);
   };
 
-  /** Add the needed amount to the item's inventory quantity and check the row off. */
   const addToInventory = (id: ItemId, currentQty: number, need: number) => {
     updateItem(id, { quantity: createQuantity(currentQty + need) });
     const next = { ...checked, [String(id)]: true };
@@ -95,7 +92,7 @@ export function Shopping() {
   const open = list.filter((it) => !checked[it.id]).length;
   const done = list.filter((it) => checked[it.id]).length;
 
-  const labelFor = (p: DesignStatus) => shoppingLabel(themeKey, p);
+  const labelFor = (p: DesignStatus) => shoppingLabel(themeKey, p, t);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -107,9 +104,9 @@ export function Shopping() {
         }}
       >
         <div>
-          <Caption>{voice.shopping}</Caption>
+          <Caption>{t(`v2.voice.shopping.${themeKey}`)}</Caption>
           <Title size={32} style={{ marginTop: 4 }}>
-            {themeKey === 'pantry' ? 'What to buy next' : 'PROCUREMENT QUEUE'}
+            {t(`v2.shopping.title.${themeKey}`)}
           </Title>
         </div>
       </div>
@@ -122,9 +119,7 @@ export function Shopping() {
             }}
           >
             <Caption>
-              {themeKey === 'pantry'
-                ? `${open} open · ${done} done`
-                : `QUEUE · ${open} OPEN · ${done} DONE`}
+              {t(`v2.shopping.queueCaption.${themeKey}`, { open, done })}
             </Caption>
           </div>
           {list.length === 0 && (
@@ -135,9 +130,7 @@ export function Shopping() {
                 color: 'var(--color-text-2)',
               }}
             >
-              {themeKey === 'pantry'
-                ? 'Nothing on the list. We’ll suggest items when stock runs low.'
-                : 'NIL · NO PROCUREMENT REQUIRED'}
+              {t(`v2.shopping.empty.${themeKey}`)}
             </div>
           )}
           {list.map((it, i) => {
@@ -160,7 +153,7 @@ export function Shopping() {
                   type="button"
                   onClick={() => toggle(it.id)}
                   aria-pressed={isDone}
-                  aria-label={`Mark ${it.name} done`}
+                  aria-label={t('v2.shopping.markDoneAria', { name: it.name })}
                   style={{
                     width: 16,
                     height: 16,
@@ -213,9 +206,13 @@ export function Shopping() {
                   onClick={() =>
                     addToInventory(it.rawId, it.currentQty, it.need)
                   }
-                  ariaLabel={`Add ${it.need} ${it.unit} to ${it.name}`}
+                  ariaLabel={t('v2.shopping.addBtnAria', {
+                    need: it.need,
+                    unit: it.unit,
+                    name: it.name,
+                  })}
                 >
-                  {themeKey === 'pantry' ? '+ Add' : '+ ADD'}
+                  {t(`v2.shopping.addBtn.${themeKey}`)}
                 </Button>
               </div>
             );
@@ -223,9 +220,7 @@ export function Shopping() {
         </Panel>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <Panel padding={20}>
-            <Caption>
-              {themeKey === 'pantry' ? 'Items to buy' : 'OPEN ITEMS'}
-            </Caption>
+            <Caption>{t(`v2.shopping.itemsToBuy.${themeKey}`)}</Caption>
             <div style={{ marginTop: 10 }}>
               <NumberDisplay
                 value={open}
@@ -241,13 +236,14 @@ export function Shopping() {
                 marginTop: 6,
               }}
             >
-              {themeKey === 'pantry'
-                ? `${done} already done`
-                : `${done} CHECKED · ${list.length} TOTAL`}
+              {t(`v2.shopping.doneCount.${themeKey}`, {
+                done,
+                total: list.length,
+              })}
             </div>
           </Panel>
           <Panel padding={20}>
-            <Caption>{themeKey === 'pantry' ? 'Tips' : 'NOTES'}</Caption>
+            <Caption>{t(`v2.shopping.tipsCaption.${themeKey}`)}</Caption>
             <div
               style={{
                 marginTop: 10,
@@ -256,9 +252,7 @@ export function Shopping() {
                 lineHeight: 1.5,
               }}
             >
-              {themeKey === 'pantry'
-                ? 'Check items off as you buy them — they stay checked until you reset the list.'
-                : 'CHECK ITEMS WHEN PROCURED. STATE PERSISTS LOCALLY UNTIL CLEARED.'}
+              {t(`v2.shopping.tipsBody.${themeKey}`)}
             </div>
             <div style={{ marginTop: 12 }}>
               <Button
@@ -268,7 +262,7 @@ export function Shopping() {
                   saveChecked({});
                 }}
               >
-                {themeKey === 'pantry' ? 'Reset list' : 'RESET'}
+                {t(`v2.shopping.reset.${themeKey}`)}
               </Button>
             </div>
           </Panel>

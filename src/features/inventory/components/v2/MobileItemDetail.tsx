@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   Button,
   NumberDisplay,
@@ -26,9 +28,10 @@ function mobileDetailTitle(
   isNew: boolean,
   themeKey: string,
   itemName: string | undefined,
+  t: TFunction,
 ): string | undefined {
   if (!isNew) return itemName;
-  return themeKey === 'pantry' ? 'Add an item' : 'ADD ITEM';
+  return t(`v2.itemDetail.titleNew.${themeKey}`);
 }
 
 export function MobileItemDetail({
@@ -36,7 +39,8 @@ export function MobileItemDetail({
   onBack,
   defaultCategoryId,
 }: Readonly<MobileItemDetailProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const { items, addItem, updateItem, deleteItem } = useInventory();
   const locationSuggestions = useLocationSuggestions(items);
@@ -48,7 +52,7 @@ export function MobileItemDetail({
   if (!isNew && !row) {
     return (
       <div style={{ padding: 24, color: 'var(--color-text-2)' }}>
-        Item not found.{' '}
+        {t('v2.itemDetail.notFound')}{' '}
         <button
           type="button"
           onClick={onBack}
@@ -59,7 +63,7 @@ export function MobileItemDetail({
             cursor: 'pointer',
           }}
         >
-          ← Back
+          {t('v2.itemDetail.backLink')}
         </button>
       </div>
     );
@@ -84,12 +88,7 @@ export function MobileItemDetail({
   };
   const handleDelete = () => {
     if (!item) return;
-    if (
-      !confirm(
-        themeKey === 'pantry' ? 'Remove this item?' : 'DELETE THIS ITEM?',
-      )
-    )
-      return;
+    if (!confirm(t(`v2.itemDetail.confirmDelete.${themeKey}`))) return;
     deleteItem(item.id);
     onBack();
   };
@@ -113,11 +112,11 @@ export function MobileItemDetail({
           padding: 0,
         }}
       >
-        ← {voice.inventory}
+        ← {t(`v2.voice.inventory.${themeKey}`)}
       </button>
       <div>
         <Title size={22}>
-          {mobileDetailTitle(isNew, themeKey, item?.name)}
+          {mobileDetailTitle(isNew, themeKey, item?.name, t)}
         </Title>
         {item && (
           <div
@@ -167,7 +166,7 @@ export function MobileItemDetail({
 
       {!isNew && (
         <Button variant="ghost" full onClick={handleDelete}>
-          {voice.delete}
+          {t(`v2.voice.delete.${themeKey}`)}
         </Button>
       )}
     </div>
