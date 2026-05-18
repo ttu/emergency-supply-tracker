@@ -11,6 +11,27 @@ why it is exploration-mode, and the options for closing it out.
   Locale keys `v2.settings.advanced.sync` / `v2.settings.advanced.syncHint`
   remain in `common.json` and are now unused; safe to delete when adding the
   next batch of locale strings.
+- **Notification preferences wired into `generateDashboardAlerts`.** The four
+  toggles in `NotificationsSection` (critical, lowStock, expiry, backup) now
+  actually filter the dashboard alert pipeline. Added
+  `useNotificationPrefs()` + `readNotificationPrefs()` in `@/features/alerts`
+  and a `prefs` argument on `generateDashboardAlerts` that defaults to
+  "everything on" so behaviour is preserved for existing users. `backup` is
+  gated inside `useDashboardAlerts` (it does not flow through inventory
+  generation).
+- **Email digest panel removed** from `NotificationsSection.tsx`. The
+  "Weekly summary" toggle and "Audit cadence: Monthly · 15th" read-field
+  promised a feature with no backend. The functional Hidden-Alerts row was
+  relocated into the In-App alerts panel. Locale keys `v2.settings.notifications.weekly*` /
+  `v2.settings.notifications.audit*` / `v2.settings.notifications.emailHeader*`
+  are now unused; safe to delete with the next locale batch.
+- **`est:design:*` localStorage keys renamed** with one-shot migration:
+  - `est:design:notification-prefs` → `est:notification-prefs`
+  - `est:design:prefs` → `est:design-prefs`
+  - `est:design:shopping-checked` → `est:shopping-checked`
+
+  Each migration: on first read of the new key, copy the legacy value and
+  delete the legacy key. Existing user state is preserved.
 
 ## Must address before release
 
@@ -34,54 +55,9 @@ ships labelled "BETA / preview"), so it is not exposed by default. Options:
 If the gate stays, also localise the `target` strings (they are currently
 hard-coded English in `Plan.tsx` rather than in `common.json`).
 
-### 2. `settings/v2/NotificationsSection.tsx` — toggles do nothing
-
-The in-app alerts panel exposes four toggles — `critical`, `lowStock`,
-`expiry`, `backup` — and persists them to `localStorage` under
-`est:design:notification-prefs`. **No consumer reads the value.**
-`generateDashboardAlerts()` produces alerts regardless of these prefs, so the
-toggles are decorative.
-
-Options:
-
-- **Recommended:** wire the prefs into `generateDashboardAlerts` (filter the
-  output by alert category against `Prefs`). Inexpensive change. Ensure
-  defaults remain `true` so behaviour is preserved for existing users.
-- **Alternative:** delete the panel for the release; reintroduce when the
-  alerts pipeline supports per-category opt-out.
-
-### 3. `settings/v2/NotificationsSection.tsx` — email digest with no backend
-
-Same panel renders a "Weekly summary" toggle (`MON 09:00 EET`) and an "Audit
-cadence" read-field (`Monthly · 15th`). There is no email backend in the
-project at all (no API routes, no scheduled jobs, no SMTP config). These two
-fields promise a feature that physically does not exist.
-
-Options:
-
-- **Recommended:** remove the entire `Email digest` panel from
-  `NotificationsSection.tsx` (the `<Panel>` containing `weekly` /
-  `audit` / `hidden`). Keep the `hidden` (dismissed alerts) row by relocating
-  it to the in-app panel — that row works correctly.
-- **Alternative:** leave the panel but label it `Email digest · coming soon`
-  with the toggle disabled; same UX debt as the sync toggle we just removed.
-
 ## Nice-to-have before release
 
-### 4. Storage-key prefix `est:design:*`
-
-Three localStorage keys are prefixed with `design:` from when v2 was an
-exploration:
-
-- `est:design:notification-prefs` — `NotificationsSection.tsx`
-- `est:design:prefs` — `useDesignPref.ts`
-- `est:design:shopping-checked` — `Shopping.tsx`, `MobileShopping.tsx`
-
-This is purely cosmetic; the keys work fine. Renaming requires a one-shot
-migration to preserve existing user data. **Leave as-is for the release**
-unless we do a broader localStorage cleanup at the same time.
-
-### 5. `alerts/v2/Alerts.tsx` — fake "today" date on every alert row
+### 2. `alerts/v2/Alerts.tsx` — fake "today" date on every alert row
 
 Each alert row shows today's date because the `Alert` type has no
 `createdAt`. The component has a comment acknowledging this and the visual is
@@ -94,7 +70,7 @@ Options:
   status snapshot, not a falsified historical log. Add `createdAt` in a
   follow-up if real alert history becomes a requirement.
 
-### 6. `onboarding/v2/OnboardStep06Complete.tsx` — hardcoded `value="0"` for readiness
+### 3. `onboarding/v2/OnboardStep06Complete.tsx` — hardcoded `value="0"` for readiness
 
 The "all done" screen shows readiness as `0%` because no items have been
 added during onboarding yet. Acceptable — it's literally accurate at that

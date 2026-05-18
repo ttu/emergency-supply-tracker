@@ -17,6 +17,10 @@ import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
 import type { Alert, AlertCounts, TranslationFunction } from '../types';
 import { ALERT_PRIORITY } from '../types';
+import {
+  DEFAULT_NOTIFICATION_PREFS,
+  type NotificationPrefs,
+} from '../hooks/useNotificationPrefs';
 
 /**
  * Get the translated item name for an inventory item.
@@ -251,31 +255,55 @@ function generateWaterShortageAlerts(
 }
 
 /**
- * Generate all alerts for dashboard
+ * Generate all alerts for dashboard.
+ *
+ * `prefs` lets the caller suppress whole categories of alerts based on the
+ * user's notification preferences (Settings → Notifications). All defaults
+ * are `true`, so omitting the argument preserves the legacy behaviour.
+ *
+ * Mapping:
+ *   - `prefs.expiry`    → expiration alerts from {@link generateExpirationAlerts}
+ *   - `prefs.critical`  → critical-typed category stock alerts (out-of-stock,
+ *                          critically low)
+ *   - `prefs.lowStock`  → warning-typed category stock alerts (low stock) +
+ *                          water preparation shortfall
+ *
+ * `backup` is not handled here because the backup reminder is built in
+ * {@link useDashboardAlerts} from app state, not from inventory data.
  */
 export function generateDashboardAlerts(
   items: InventoryItem[],
   t: TranslationFunction,
   household: HouseholdConfig,
   recommendedItems: RecommendedItemDefinition[],
+  prefs: NotificationPrefs = DEFAULT_NOTIFICATION_PREFS,
 ): Alert[] {
-  const expirationAlerts = generateExpirationAlerts(items, t);
-  const categoryStockAlerts = generateCategoryStockAlerts(
+  const expirationAlerts = prefs.expiry
+    ? generateExpirationAlerts(items, t)
+    : [];
+
+  const categoryStockAlertsAll = generateCategoryStockAlerts(
     items,
     t,
     household,
     recommendedItems,
   );
-  const waterShortageAlerts = generateWaterShortageAlerts(items, household, t);
+  const categoryStockAlerts = categoryStockAlertsAll.filter((a) => {
+    if (a.type === 'critical') return prefs.critical;
+    if (a.type === 'warning') return prefs.lowStock;
+    return true;
+  });
 
-  // Combine alerts (removed item-level critical alerts as they're now covered by category alerts)
+  const waterShortageAlerts = prefs.lowStock
+    ? generateWaterShortageAlerts(items, household, t)
+    : [];
+
   const allAlerts = [
     ...expirationAlerts,
     ...categoryStockAlerts,
     ...waterShortageAlerts,
   ];
 
-  // Sort by priority: critical first, then warning, then info
   allAlerts.sort((a, b) => ALERT_PRIORITY[a.type] - ALERT_PRIORITY[b.type]);
 
   return allAlerts;

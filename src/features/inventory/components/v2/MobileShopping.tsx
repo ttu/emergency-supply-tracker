@@ -10,27 +10,13 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory } from '@/features/inventory';
+import {
+  loadCheckedItems,
+  saveCheckedItems,
+} from '@/features/inventory/utils/shoppingChecked';
 import { createQuantity } from '@/shared/types';
 import type { DesignStatus } from '@/shared/utils/designStatus';
 import type { TFunction } from 'i18next';
-
-const SHOPPING_KEY = 'est:design:shopping-checked';
-
-function loadChecked(): Record<string, boolean> {
-  try {
-    const raw = localStorage.getItem(SHOPPING_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
-  } catch {
-    return {};
-  }
-}
-function saveChecked(state: Record<string, boolean>) {
-  try {
-    localStorage.setItem(SHOPPING_KEY, JSON.stringify(state));
-  } catch {
-    /* ignore */
-  }
-}
 
 function mobileShoppingLabel(
   themeKey: string,
@@ -47,7 +33,8 @@ export function MobileShopping() {
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
   const { updateItem } = useInventory();
-  const [checked, setChecked] = useState<Record<string, boolean>>(loadChecked);
+  const [checked, setChecked] =
+    useState<Record<string, boolean>>(loadCheckedItems);
   const list = useMemo(
     () =>
       rows
@@ -66,7 +53,7 @@ export function MobileShopping() {
   const toggle = (id: string) => {
     const next = { ...checked, [id]: !checked[id] };
     setChecked(next);
-    saveChecked(next);
+    saveCheckedItems(next);
   };
   const addToInventory = (
     rawId: (typeof list)[number]['rawId'],
@@ -76,7 +63,7 @@ export function MobileShopping() {
     updateItem(rawId, { quantity: createQuantity(currentQty + need) });
     const next = { ...checked, [String(rawId)]: true };
     setChecked(next);
-    saveChecked(next);
+    saveCheckedItems(next);
   };
   const open = list.filter((it) => !checked[it.id]).length;
 

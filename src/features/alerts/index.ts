@@ -17,6 +17,14 @@ export {
 // Utils
 export { generateDashboardAlerts, countAlerts } from './utils';
 
+// Hooks
+export {
+  useNotificationPrefs,
+  readNotificationPrefs,
+  DEFAULT_NOTIFICATION_PREFS,
+  type NotificationPrefs,
+} from './hooks/useNotificationPrefs';
+
 // Components
 export { AlertBanner, HiddenAlerts } from './components';
 export type { AlertBannerProps } from './components';

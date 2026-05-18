@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { Button, Panel } from '@/shared/components/design-v2/primitives';
@@ -13,47 +13,10 @@ import {
 import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
-import { generateDashboardAlerts } from '@/features/alerts';
-
-// TODO(v2-release): These notification preferences are persisted to
-// localStorage but no consumer reads them — generateDashboardAlerts ignores
-// the toggles. Either wire the prefs into alert generation (drop alerts the
-// user opted out of) or remove the in-app-alerts panel before release.
-// `weeklyEmail` + the "audit cadence" ReadField additionally surface a
-// feature (email digest) for which the app has no backend at all and should
-// be removed or gated behind a future server-side build.
-// See docs/V2_RELEASE_TODO.md.
-const PREFS_KEY = 'est:design:notification-prefs';
-
-interface Prefs {
-  critical: boolean;
-  lowStock: boolean;
-  expiry: boolean;
-  backup: boolean;
-  weeklyEmail: boolean;
-}
-const DEFAULT_PREFS: Prefs = {
-  critical: true,
-  lowStock: true,
-  expiry: true,
-  backup: true,
-  weeklyEmail: false,
-};
-function loadPrefs(): Prefs {
-  try {
-    const raw = localStorage.getItem(PREFS_KEY);
-    return raw ? { ...DEFAULT_PREFS, ...JSON.parse(raw) } : DEFAULT_PREFS;
-  } catch {
-    return DEFAULT_PREFS;
-  }
-}
-function savePrefs(prefs: Prefs) {
-  try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-  } catch {
-    /* ignore */
-  }
-}
+import {
+  generateDashboardAlerts,
+  useNotificationPrefs,
+} from '@/features/alerts';
 
 function hiddenAlertsValue(
   themeKey: string,
@@ -177,14 +140,10 @@ export function NotificationsSection() {
     useInventory();
   const { household } = useHousehold();
   const { recommendedItems } = useRecommendedItems();
+  const [prefs, setPref] = useNotificationPrefs();
 
-  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
-  const togglePref = (k: keyof Prefs) => (v: boolean) => {
-    const next = { ...prefs, [k]: v };
-    setPrefs(next);
-    savePrefs(next);
-  };
-
+  // Compute hidden alerts off the unfiltered alert set so the user can
+  // restore an alert even if its category is currently toggled off.
   const allAlerts = useMemo(
     () => generateDashboardAlerts(items, t, household, recommendedItems),
     [items, t, household, recommendedItems],
@@ -201,71 +160,44 @@ export function NotificationsSection() {
         title={t(`v2.settings.notifications.title.${themeKey}`)}
       />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 14,
-        }}
-      >
-        {/* In-app alerts */}
-        <Panel padding={0}>
-          <PanelHeader>
-            {t(`v2.settings.notifications.inAppHeader.${themeKey}`)}
-          </PanelHeader>
-          <ToggleRow
-            label={t(`v2.settings.notifications.critical.${themeKey}`)}
-            hint={t(`v2.settings.notifications.criticalHint.${themeKey}`)}
-            on={prefs.critical}
-            onChange={togglePref('critical')}
-          />
-          <ToggleRow
-            label={t(`v2.settings.notifications.lowStock.${themeKey}`)}
-            hint={t(`v2.settings.notifications.lowStockHint.${themeKey}`)}
-            on={prefs.lowStock}
-            onChange={togglePref('lowStock')}
-          />
-          <ToggleRow
-            label={t(`v2.settings.notifications.expiry.${themeKey}`)}
-            hint={t(`v2.settings.notifications.expiryHint.${themeKey}`)}
-            on={prefs.expiry}
-            onChange={togglePref('expiry')}
-          />
-          <ToggleRow
-            label={t(`v2.settings.notifications.backup.${themeKey}`)}
-            hint={t(`v2.settings.notifications.backupHint.${themeKey}`)}
-            on={prefs.backup}
-            onChange={togglePref('backup')}
-            last
-          />
-        </Panel>
-
-        {/* Email digest */}
-        <Panel padding={0}>
-          <PanelHeader>
-            {t(`v2.settings.notifications.emailHeader.${themeKey}`)}
-          </PanelHeader>
-          <ToggleRow
-            label={t(`v2.settings.notifications.weekly.${themeKey}`)}
-            hint={t(`v2.settings.notifications.weeklyHint.${themeKey}`)}
-            on={prefs.weeklyEmail}
-            onChange={togglePref('weeklyEmail')}
-          />
-          <ReadField
-            label={t(`v2.settings.notifications.audit.${themeKey}`)}
-            value={t(`v2.settings.notifications.auditValue.${themeKey}`)}
-          />
-          <ReadField
-            label={t(`v2.settings.notifications.hidden.${themeKey}`)}
-            value={hiddenAlertsValue(themeKey, hiddenAlerts.length, t)}
-            hint={hiddenAlertsHint(themeKey, hiddenAlerts.length, t)}
-            onAction={
-              hiddenAlerts.length > 0 ? () => reactivateAllAlerts() : undefined
-            }
-            last
-          />
-        </Panel>
-      </div>
+      <Panel padding={0}>
+        <PanelHeader>
+          {t(`v2.settings.notifications.inAppHeader.${themeKey}`)}
+        </PanelHeader>
+        <ToggleRow
+          label={t(`v2.settings.notifications.critical.${themeKey}`)}
+          hint={t(`v2.settings.notifications.criticalHint.${themeKey}`)}
+          on={prefs.critical}
+          onChange={(v) => setPref('critical', v)}
+        />
+        <ToggleRow
+          label={t(`v2.settings.notifications.lowStock.${themeKey}`)}
+          hint={t(`v2.settings.notifications.lowStockHint.${themeKey}`)}
+          on={prefs.lowStock}
+          onChange={(v) => setPref('lowStock', v)}
+        />
+        <ToggleRow
+          label={t(`v2.settings.notifications.expiry.${themeKey}`)}
+          hint={t(`v2.settings.notifications.expiryHint.${themeKey}`)}
+          on={prefs.expiry}
+          onChange={(v) => setPref('expiry', v)}
+        />
+        <ToggleRow
+          label={t(`v2.settings.notifications.backup.${themeKey}`)}
+          hint={t(`v2.settings.notifications.backupHint.${themeKey}`)}
+          on={prefs.backup}
+          onChange={(v) => setPref('backup', v)}
+        />
+        <ReadField
+          label={t(`v2.settings.notifications.hidden.${themeKey}`)}
+          value={hiddenAlertsValue(themeKey, hiddenAlerts.length, t)}
+          hint={hiddenAlertsHint(themeKey, hiddenAlerts.length, t)}
+          onAction={
+            hiddenAlerts.length > 0 ? () => reactivateAllAlerts() : undefined
+          }
+          last
+        />
+      </Panel>
 
       {hiddenAlerts.length > 0 && (
         <HiddenAlertsPanel

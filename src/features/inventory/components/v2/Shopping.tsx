@@ -11,28 +11,13 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory } from '@/features/inventory';
+import {
+  loadCheckedItems,
+  saveCheckedItems,
+} from '@/features/inventory/utils/shoppingChecked';
 import { createQuantity, type ItemId } from '@/shared/types';
 import type { DesignStatus } from '@/shared/utils/designStatus';
 import type { TFunction } from 'i18next';
-
-const STORAGE_KEY = 'est:design:shopping-checked';
-
-function loadChecked(): Record<string, boolean> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveChecked(state: Record<string, boolean>) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    /* ignore */
-  }
-}
 
 function shoppingLabel(
   themeKey: string,
@@ -58,7 +43,8 @@ export function Shopping() {
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
   const { updateItem } = useInventory();
-  const [checked, setChecked] = useState<Record<string, boolean>>(loadChecked);
+  const [checked, setChecked] =
+    useState<Record<string, boolean>>(loadCheckedItems);
 
   const list = useMemo(() => {
     return rows
@@ -79,14 +65,14 @@ export function Shopping() {
   const toggle = (id: string) => {
     const next = { ...checked, [id]: !checked[id] };
     setChecked(next);
-    saveChecked(next);
+    saveCheckedItems(next);
   };
 
   const addToInventory = (id: ItemId, currentQty: number, need: number) => {
     updateItem(id, { quantity: createQuantity(currentQty + need) });
     const next = { ...checked, [String(id)]: true };
     setChecked(next);
-    saveChecked(next);
+    saveCheckedItems(next);
   };
 
   const open = list.filter((it) => !checked[it.id]).length;
@@ -259,7 +245,7 @@ export function Shopping() {
                 variant="secondary"
                 onClick={() => {
                   setChecked({});
-                  saveChecked({});
+                  saveCheckedItems({});
                 }}
               >
                 {t(`v2.shopping.reset.${themeKey}`)}

@@ -17,7 +17,7 @@ const setup = () =>
 
 describe('Shopping (v2)', () => {
   beforeEach(() => {
-    localStorage.removeItem('est:design:shopping-checked');
+    localStorage.removeItem('est:shopping-checked');
   });
 
   it('renders the procurement title in cockpit voice', async () => {
@@ -56,10 +56,7 @@ describe('Shopping (v2)', () => {
   });
 
   it('clicking RESET clears stored check state', async () => {
-    localStorage.setItem(
-      'est:design:shopping-checked',
-      JSON.stringify({ x: true }),
-    );
+    localStorage.setItem('est:shopping-checked', JSON.stringify({ x: true }));
     setup();
     await waitFor(() =>
       screen.getByRole('button', { name: 'v2.shopping.reset.cockpit' }),
@@ -67,6 +64,6 @@ describe('Shopping (v2)', () => {
     fireEvent.click(
       screen.getByRole('button', { name: 'v2.shopping.reset.cockpit' }),
     );
-    expect(localStorage.getItem('est:design:shopping-checked')).toBe('{}');
+    expect(localStorage.getItem('est:shopping-checked')).toBe('{}');
   });
 });
