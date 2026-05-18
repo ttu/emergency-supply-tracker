@@ -8,6 +8,9 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
+import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
+import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
+import type { DateOnly } from '@/shared/types';
 import {
   InventoryFilterStrip,
   type InventoryFilterKey,
@@ -21,15 +24,14 @@ interface InventoryProps {
   onAddItem: () => void;
 }
 
-const MS_PER_DAY = 86_400_000;
-
-function isExpiringWithin30Days(
-  item: { expirationDate?: string; neverExpires?: boolean },
-  now: number,
-): boolean {
-  if (!item.expirationDate || item.neverExpires) return false;
-  const days = (new Date(item.expirationDate).getTime() - now) / MS_PER_DAY;
-  return days >= 0 && days < 30;
+function isExpiringSoon(item: {
+  expirationDate?: DateOnly;
+  neverExpires?: boolean;
+}): boolean {
+  const days = getDaysUntilExpiration(item.expirationDate, item.neverExpires);
+  return (
+    days !== undefined && days >= 0 && days <= EXPIRING_SOON_DAYS_THRESHOLD
+  );
 }
 
 function matchesStatusFilter(
@@ -65,8 +67,6 @@ export function Inventory({
   const [search, setSearch] = useState('');
 
   const counts = useMemo(() => {
-    // eslint-disable-next-line react-hooks/purity
-    const now = Date.now();
     let crit = 0;
     let warn = 0;
     let ok = 0;
@@ -75,18 +75,12 @@ export function Inventory({
       if (r.status === 'crit') crit++;
       else if (r.status === 'warn') warn++;
       else ok++;
-      if (r.item.expirationDate && !r.item.neverExpires) {
-        const days =
-          (new Date(r.item.expirationDate).getTime() - now) / MS_PER_DAY;
-        if (days >= 0 && days < 30) exp++;
-      }
+      if (isExpiringSoon(r.item)) exp++;
     }
     return { crit, warn, ok, exp, all: rows.length };
   }, [rows]);
 
   const filtered = useMemo(() => {
-    // eslint-disable-next-line react-hooks/purity
-    const now = Date.now();
     return rows.filter((r) => {
       if (
         selectedCategoryId &&
@@ -94,8 +88,7 @@ export function Inventory({
       )
         return false;
       if (!matchesStatusFilter(r.status, filter)) return false;
-      if (filter === 'exp' && !isExpiringWithin30Days(r.item, now))
-        return false;
+      if (filter === 'exp' && !isExpiringSoon(r.item)) return false;
       return matchesSearch(r, search);
     });
   }, [rows, filter, selectedCategoryId, search]);

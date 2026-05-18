@@ -1,27 +1,31 @@
-import type { InventoryItem, Category } from '@/shared/types';
+import type { InventoryItem, ItemStatus, Category } from '@/shared/types';
+import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
 
+/**
+ * Compact status name used by the v2 design system. The canonical status
+ * vocabulary is {@link ItemStatus} (`'ok' | 'warning' | 'critical'`); v2 maps
+ * these to shorter labels for the cockpit/civil/pantry visual language.
+ */
 export type DesignStatus = 'ok' | 'warn' | 'crit';
 
-const MS_PER_DAY = 86_400_000;
+/** Map the canonical {@link ItemStatus} to the compact v2 vocabulary. */
+export function toDesignStatus(s: ItemStatus): DesignStatus {
+  if (s === 'critical') return 'crit';
+  if (s === 'warning') return 'warn';
+  return 'ok';
+}
 
+/**
+ * v2 wrapper around {@link calculateItemStatus} returning the compact
+ * {@link DesignStatus} variant. Routes through the canonical implementation
+ * so v1 and v2 always agree on what "ok"/"warn"/"crit" means (including
+ * timezone-safe expiration handling).
+ */
 export function statusOf(
   item: InventoryItem,
   recommendedQuantity: number | undefined,
-  now: Date = new Date(),
 ): DesignStatus {
-  if (item.markedAsEnough) return 'ok';
-  if (item.quantity === 0) return 'crit';
-  if (item.expirationDate && !item.neverExpires) {
-    const exp = new Date(item.expirationDate);
-    const days = (exp.getTime() - now.getTime()) / MS_PER_DAY;
-    if (days < 0) return 'crit';
-    if (days < 30) return 'warn';
-  }
-  if (recommendedQuantity && recommendedQuantity > 0) {
-    if (item.quantity < recommendedQuantity * 0.5) return 'crit';
-    if (item.quantity < recommendedQuantity) return 'warn';
-  }
-  return 'ok';
+  return toDesignStatus(calculateItemStatus(item, recommendedQuantity ?? 0));
 }
 
 export interface CategoryStats {

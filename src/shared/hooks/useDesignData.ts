@@ -3,6 +3,8 @@ import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
+import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
+import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 import {
   categoryStats,
   readinessPercent,
@@ -33,8 +35,6 @@ export interface DesignData {
   criticalCount: number;
   daysCovered: number;
 }
-
-const MS_PER_DAY = 86_400_000;
 
 export function useDesignData(): DesignData {
   const { items, categories } = useInventory();
@@ -78,12 +78,11 @@ export function useDesignData(): DesignData {
       }),
       { total: 0, ok: 0, warn: 0, crit: 0 },
     );
-    // eslint-disable-next-line react-hooks/purity
-    const now = Date.now();
     const expiringCount = items.filter((it) => {
-      if (it.neverExpires || !it.expirationDate) return false;
-      const days = (new Date(it.expirationDate).getTime() - now) / MS_PER_DAY;
-      return days >= 0 && days < 30;
+      const days = getDaysUntilExpiration(it.expirationDate, it.neverExpires);
+      return (
+        days !== undefined && days >= 0 && days <= EXPIRING_SOON_DAYS_THRESHOLD
+      );
     }).length;
     const criticalCount = totals.crit;
     const okRatio = totals.total > 0 ? totals.ok / totals.total : 0;

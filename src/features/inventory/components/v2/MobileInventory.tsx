@@ -10,8 +10,8 @@ import {
   useDesignData,
   type DesignItemRow,
 } from '@/shared/hooks/useDesignData';
-
-const MS_PER_DAY = 86_400_000;
+import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
+import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 
 interface MobileInventoryProps {
   onItemSelect: (id: string) => void;
@@ -34,8 +34,6 @@ export function MobileInventory({
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
-    // eslint-disable-next-line react-hooks/purity
-    const now = Date.now();
     return rows.filter((r) => {
       if (
         selectedCategoryId &&
@@ -46,10 +44,16 @@ export function MobileInventory({
       if (filter === 'warn' && r.status !== 'warn') return false;
       if (filter === 'ok' && r.status !== 'ok') return false;
       if (filter === 'exp') {
-        if (!r.item.expirationDate || r.item.neverExpires) return false;
-        const days =
-          (new Date(r.item.expirationDate).getTime() - now) / MS_PER_DAY;
-        if (days < 0 || days >= 30) return false;
+        const days = getDaysUntilExpiration(
+          r.item.expirationDate,
+          r.item.neverExpires,
+        );
+        if (
+          days === undefined ||
+          days < 0 ||
+          days > EXPIRING_SOON_DAYS_THRESHOLD
+        )
+          return false;
       }
       if (search && !r.item.name.toLowerCase().includes(search.toLowerCase()))
         return false;
