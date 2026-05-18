@@ -9,9 +9,7 @@ describe('Guide (v2)', () => {
     renderWithProviders(<Guide />, {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
-    expect(
-      screen.getByText('CIVIL PREPAREDNESS · BASELINE'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('v2.guide.title.cockpit')).toBeInTheDocument();
   });
 
   it('renders all six guide sections by code (§1 – §6)', () => {
@@ -27,8 +25,14 @@ describe('Guide (v2)', () => {
     renderWithProviders(<Guide />, {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
-    expect(screen.getByText('PURPOSE')).toBeInTheDocument();
-    expect(screen.getByText(/WATER · TIER 1/)).toBeInTheDocument();
-    expect(screen.getByText(/FOOD · TIER 1/)).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.guide.sections.s1.title.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.guide.sections.s2.title.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.guide.sections.s3.title.cockpit'),
+    ).toBeInTheDocument();
   });
 });

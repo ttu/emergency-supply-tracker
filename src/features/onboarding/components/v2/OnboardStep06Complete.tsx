@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Caption,
@@ -13,13 +14,13 @@ interface OnboardStep06Props {
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;
 }
 
-/** Step 6: provisioning-complete summary + Open dashboard CTA. */
 export function OnboardStep06Complete({
   household,
   enabledCategories,
   onComplete,
 }: Readonly<OnboardStep06Props>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   return (
     <div
       style={{
@@ -43,13 +44,10 @@ export function OnboardStep06Complete({
             letterSpacing: '0.12em',
           }}
         >
-          ✓{' '}
-          {themeKey === 'pantry'
-            ? 'Setup complete · 5 / 5'
-            : 'SETUP COMPLETE · 05 / 05'}
+          ✓ {t(`v2.onboarding.step06.setupComplete.${themeKey}`)}
         </div>
         <Title size={56} style={{ marginTop: 18 }}>
-          {themeKey === 'pantry' ? "You're set up." : 'PROVISIONING COMPLETE'}
+          {t(`v2.onboarding.step06.title.${themeKey}`)}
         </Title>
         <div
           style={{
@@ -59,9 +57,9 @@ export function OnboardStep06Complete({
             lineHeight: 1.6,
           }}
         >
-          {themeKey === 'pantry'
-            ? "Your starting kit is ready. We'll keep an eye on expiry dates and remind you when something runs low — open the dashboard to see what's next."
-            : `BASELINE PROVISIONED · ${enabledCategories.size} CATEGORIES ENABLED. EXPIRY MONITORING ACTIVE.`}
+          {t(`v2.onboarding.step06.subtitle.${themeKey}`, {
+            count: enabledCategories.size,
+          })}
         </div>
         <div
           style={{
@@ -76,14 +74,14 @@ export function OnboardStep06Complete({
           }}
         >
           <div>
-            <Caption>{voice.readiness}</Caption>
+            <Caption>{t(`v2.voice.readiness.${themeKey}`)}</Caption>
             <div style={{ marginTop: 8 }}>
               <NumberDisplay value="0" suffix="%" size={36} tone="crit" />
             </div>
           </div>
           <div>
             <Caption>
-              {themeKey === 'pantry' ? 'Categories' : 'CATEGORIES'}
+              {t(`v2.onboarding.step06.categoriesCaption.${themeKey}`)}
             </Caption>
             <div style={{ marginTop: 8 }}>
               <NumberDisplay
@@ -95,7 +93,7 @@ export function OnboardStep06Complete({
           </div>
           <div>
             <Caption>
-              {themeKey === 'pantry' ? 'Days target' : 'TARGET DAYS'}
+              {t(`v2.onboarding.step06.daysCaption.${themeKey}`)}
             </Caption>
             <div style={{ marginTop: 8 }}>
               <NumberDisplay value={household.supplyDurationDays} size={36} />
@@ -104,7 +102,7 @@ export function OnboardStep06Complete({
         </div>
         <div style={{ marginTop: 32 }}>
           <Button variant="primary" onClick={() => onComplete(household, [])}>
-            {themeKey === 'pantry' ? 'Open dashboard →' : 'OPEN OVERVIEW →'}
+            {t(`v2.onboarding.step06.openDashboard.${themeKey}`)}
           </Button>
         </div>
       </div>

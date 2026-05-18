@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Title } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
@@ -52,7 +53,8 @@ export function OnboardLayout({
   onContinue,
   primaryLabel,
 }: Readonly<OnboardLayoutProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   return (
     <div
       style={{
@@ -91,7 +93,7 @@ export function OnboardLayout({
               borderRadius: themeKey === 'pantry' ? 999 : 0,
             }}
           />
-          {voice.appName}
+          {t(`v2.voice.appName.${themeKey}`)}
         </div>
         <div
           style={{
@@ -102,7 +104,11 @@ export function OnboardLayout({
             letterSpacing: '0.1em',
           }}
         >
-          STEP {String(step).padStart(2, '0')} / 05 · {title}
+          {t('v2.onboarding.stepLabel', {
+            step: String(step).padStart(2, '0'),
+            total: '05',
+            title,
+          })}
         </div>
         <div style={{ marginTop: 8 }}>
           <StepBar step={step} total={5} />
@@ -142,18 +148,16 @@ export function OnboardLayout({
               letterSpacing: '0.08em',
             }}
           >
-            {themeKey === 'pantry'
-              ? 'You can change everything later in settings.'
-              : 'ALL DATA IS STORED LOCALLY · NO ACCOUNT REQUIRED'}
+            {t(`v2.onboarding.footerNote.${themeKey}`)}
           </span>
           <div style={{ display: 'flex', gap: 10 }}>
             {back && (
               <Button variant="secondary" onClick={back}>
-                {voice.back}
+                {t(`v2.voice.back.${themeKey}`)}
               </Button>
             )}
             <Button variant="primary" onClick={onContinue}>
-              {primaryLabel ?? voice.continueAction}
+              {primaryLabel ?? t(`v2.voice.continueAction.${themeKey}`)}
             </Button>
           </div>
         </div>

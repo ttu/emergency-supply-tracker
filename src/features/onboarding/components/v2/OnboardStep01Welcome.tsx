@@ -1,7 +1,8 @@
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Caption } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
-import { useTranslation } from 'react-i18next';
 import { OnboardLayout } from './OnboardLayout';
 
 interface OnboardStep01Props {
@@ -9,17 +10,16 @@ interface OnboardStep01Props {
 }
 
 /** Step 1: welcome / outputs preview / language picker. */
-function leadTitle(themeKey: string): string {
-  if (themeKey === 'pantry') return "Let's set up your kit.";
-  if (themeKey === 'civil')
-    return 'EMERGENCY SUPPLY TRACKER · INITIAL CONFIGURATION';
-  return 'INITIALIZE · HOUSEHOLD PROFILE';
+function leadTitle(themeKey: string, t: TFunction): string {
+  if (themeKey === 'pantry') return t('v2.onboarding.step01.leadTitlePantry');
+  if (themeKey === 'civil') return t('v2.onboarding.step01.leadTitleCivil');
+  return t('v2.onboarding.step01.leadTitleCockpit');
 }
 
 export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
+  const { t, i18n } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
-  const { i18n } = useTranslation();
 
   const langs: Array<{ code: 'en' | 'fi'; label: string; sub: string }> = [
     { code: 'en', label: 'English', sub: 'United Kingdom' },
@@ -34,38 +34,25 @@ export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
   };
 
   const outputs: Array<[string, string]> = [
-    [
-      '§1',
-      themeKey === 'pantry'
-        ? 'A baseline shopping list'
-        : 'BASELINE PROCUREMENT LIST',
-    ],
-    [
-      '§2',
-      themeKey === 'pantry'
-        ? 'Tracking by category'
-        : 'COVERAGE BY CATEGORY · 10 TIERS',
-    ],
-    ['§3', themeKey === 'pantry' ? 'Expiry reminders' : 'EXPIRY MONITORING'],
-    ['§4', themeKey === 'pantry' ? 'A readiness score' : 'READINESS METRIC'],
+    ['§1', t(`v2.onboarding.step01.o1.${themeKey}`)],
+    ['§2', t(`v2.onboarding.step01.o2.${themeKey}`)],
+    ['§3', t(`v2.onboarding.step01.o3.${themeKey}`)],
+    ['§4', t(`v2.onboarding.step01.o4.${themeKey}`)],
   ];
 
   return (
     <OnboardLayout
       step={1}
-      title={themeKey === 'pantry' ? 'Welcome' : 'WELCOME · LANGUAGE'}
+      title={t(`v2.voice.onbWelcome.${themeKey}`)}
       lead={{
-        title: leadTitle(themeKey),
-        sub:
-          themeKey === 'pantry'
-            ? "A short, five-step setup. We'll ask who lives with you and what you already have, then build a checklist based on civil-defense guidance."
-            : 'FIVE-STEP PROVISIONING · NO ACCOUNT · NO CLOUD · ALL STATE LOCAL · ~90 SECONDS.',
+        title: leadTitle(themeKey, t),
+        sub: t(`v2.onboarding.step01.leadSub.${themeKey}`),
       }}
       onContinue={onNext}
       side={
         <div>
           <Caption>
-            {themeKey === 'pantry' ? "What you'll get" : 'OUTPUTS'}
+            {t(`v2.onboarding.step01.outputsCaption.${themeKey}`)}
           </Caption>
           <div
             style={{
@@ -75,7 +62,7 @@ export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
               gap: 14,
             }}
           >
-            {outputs.map(([code, t]) => (
+            {outputs.map(([code, text]) => (
               <div
                 key={code}
                 style={{
@@ -96,12 +83,12 @@ export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
                 >
                   {code}
                 </span>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{t}</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{text}</div>
               </div>
             ))}
           </div>
           <Caption style={{ marginTop: 32 }}>
-            {themeKey === 'pantry' ? 'Language' : 'LANGUAGE · SELECT'}
+            {t(`v2.onboarding.step01.languageCaption.${themeKey}`)}
           </Caption>
           <div
             style={{

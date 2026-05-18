@@ -1233,6 +1233,297 @@
       "mobileOpen": { "cockpit": "OPEN", "civil": "OPEN", "pantry": "To buy" },
       "mobileTotal": { "cockpit": "TOTAL", "civil": "TOTAL", "pantry": "items" }
     },
+    "onboarding": {
+      "stepLabel": "STEP {{step}} / {{total}} · {{title}}",
+      "footerNote": {
+        "cockpit": "ALL DATA IS STORED LOCALLY · NO ACCOUNT REQUIRED",
+        "civil": "ALL DATA IS STORED LOCALLY · NO ACCOUNT REQUIRED",
+        "pantry": "You can change everything later in settings."
+      },
+      "stepperDecreaseAria": "Decrease {{label}}",
+      "stepperIncreaseAria": "Increase {{label}}",
+      "labelAdults": {
+        "cockpit": "ADULTS",
+        "civil": "ADULTS",
+        "pantry": "Adults"
+      },
+      "labelChildren": {
+        "cockpit": "CHILDREN",
+        "civil": "CHILDREN",
+        "pantry": "Children"
+      },
+      "labelDays": { "cockpit": "DAYS", "civil": "DAYS", "pantry": "Days" },
+      "labelPets": { "cockpit": "PETS", "civil": "PETS", "pantry": "Pets" },
+      "step01": {
+        "leadTitlePantry": "Let's set up your kit.",
+        "leadTitleCivil": "EMERGENCY SUPPLY TRACKER · INITIAL CONFIGURATION",
+        "leadTitleCockpit": "INITIALIZE · HOUSEHOLD PROFILE",
+        "leadSub": {
+          "cockpit": "FIVE-STEP PROVISIONING · NO ACCOUNT · NO CLOUD · ALL STATE LOCAL · ~90 SECONDS.",
+          "civil": "FIVE-STEP PROVISIONING · NO ACCOUNT · NO CLOUD · ALL STATE LOCAL · ~90 SECONDS.",
+          "pantry": "A short, five-step setup. We'll ask who lives with you and what you already have, then build a checklist based on civil-defense guidance."
+        },
+        "outputsCaption": {
+          "cockpit": "OUTPUTS",
+          "civil": "OUTPUTS",
+          "pantry": "What you'll get"
+        },
+        "languageCaption": {
+          "cockpit": "LANGUAGE · SELECT",
+          "civil": "LANGUAGE · SELECT",
+          "pantry": "Language"
+        },
+        "o1": {
+          "cockpit": "BASELINE PROCUREMENT LIST",
+          "civil": "BASELINE PROCUREMENT LIST",
+          "pantry": "A baseline shopping list"
+        },
+        "o2": {
+          "cockpit": "COVERAGE BY CATEGORY · 10 TIERS",
+          "civil": "COVERAGE BY CATEGORY · 10 TIERS",
+          "pantry": "Tracking by category"
+        },
+        "o3": {
+          "cockpit": "EXPIRY MONITORING",
+          "civil": "EXPIRY MONITORING",
+          "pantry": "Expiry reminders"
+        },
+        "o4": {
+          "cockpit": "READINESS METRIC",
+          "civil": "READINESS METRIC",
+          "pantry": "A readiness score"
+        }
+      },
+      "step02": {
+        "leadTitlePantry": "Pick a look.",
+        "leadTitleCivil": "SELECT INTERFACE THEME",
+        "leadTitleCockpit": "CHOOSE THEME",
+        "leadSub": {
+          "cockpit": "SAME DATA · SAME LAYOUT · TOKENS, TYPE, AND TONE SWAP",
+          "civil": "SAME DATA · SAME LAYOUT · TOKENS, TYPE, AND TONE SWAP",
+          "pantry": "Three looks, same app. You can switch any time in settings — your data and layout stay identical."
+        }
+      },
+      "step03": {
+        "leadTitle": {
+          "cockpit": "SELECT HOUSEHOLD PRESET",
+          "civil": "SELECT HOUSEHOLD PRESET",
+          "pantry": "Who are we planning for?"
+        },
+        "leadSub": {
+          "cockpit": "PRESETS PRE-FILL THE NEXT SECTION.",
+          "civil": "PRESETS PRE-FILL THE NEXT SECTION.",
+          "pantry": "Pick the closest match — you can fine-tune next."
+        }
+      },
+      "step04": {
+        "leadTitle": {
+          "cockpit": "CONFIRM HOUSEHOLD PARAMETERS",
+          "civil": "CONFIRM HOUSEHOLD PARAMETERS",
+          "pantry": "Fine-tune your household."
+        },
+        "leadSub": {
+          "cockpit": "PARAMETERS DRIVE BASELINE QUANTITIES. EACH CHILD COUNTS AS 0.75 ADULT-EQUIVALENT.",
+          "civil": "PARAMETERS DRIVE BASELINE QUANTITIES. EACH CHILD COUNTS AS 0.75 ADULT-EQUIVALENT.",
+          "pantry": "These drive every recommendation. Adjust now or any time in settings."
+        },
+        "computedCaption": {
+          "cockpit": "COMPUTED · LIVE",
+          "civil": "COMPUTED · LIVE",
+          "pantry": "Calculated targets"
+        },
+        "waterLabel": {
+          "cockpit": "L WATER · {{days}}D",
+          "civil": "L WATER · {{days}}D",
+          "pantry": "litres of water"
+        },
+        "kcalTotal": {
+          "cockpit": "KCAL TOTAL",
+          "civil": "KCAL TOTAL",
+          "pantry": "Total kcal"
+        },
+        "adultsHint": {
+          "cockpit": "AGE ≥ 14 · FULL RATIONS",
+          "civil": "AGE ≥ 14 · FULL RATIONS",
+          "pantry": "Aged 14+"
+        },
+        "childrenHint": {
+          "cockpit": "AGE < 14 · 0.75× SCALE",
+          "civil": "AGE < 14 · 0.75× SCALE",
+          "pantry": "Under 14, scaled to 75%"
+        },
+        "petsHint": {
+          "cockpit": "ENABLES §PET CATEGORY",
+          "civil": "ENABLES §PET CATEGORY",
+          "pantry": "Adds a pet category"
+        },
+        "coverageTarget": {
+          "cockpit": "COVERAGE TARGET",
+          "civil": "COVERAGE TARGET",
+          "pantry": "Target days"
+        }
+      },
+      "step05": {
+        "leadTitle": {
+          "cockpit": "INITIAL INVENTORY · OPTIONAL",
+          "civil": "INITIAL INVENTORY · OPTIONAL",
+          "pantry": "What categories should we track?"
+        },
+        "leadSub": {
+          "cockpit": "TOGGLE CATEGORIES. ALL TEN ENABLED BY DEFAULT.",
+          "civil": "TOGGLE CATEGORIES. ALL TEN ENABLED BY DEFAULT.",
+          "pantry": "Tick the categories that apply to your household. You can add or remove items inside each one later."
+        },
+        "primaryLabel": {
+          "cockpit": "COMMIT BASELINE →",
+          "civil": "COMMIT BASELINE →",
+          "pantry": "Finish setup"
+        },
+        "enabledCount": {
+          "cockpit": "CATEGORY ENABLEMENT · {{enabled}} / {{total}}",
+          "civil": "CATEGORY ENABLEMENT · {{enabled}} / {{total}}",
+          "pantry": "{{enabled}} of {{total}} enabled"
+        },
+        "cat": {
+          "water-beverages": {
+            "cockpit": "WATER & BEVERAGES",
+            "civil": "WATER & BEVERAGES",
+            "pantry": "Water & beverages"
+          },
+          "food": { "cockpit": "FOOD", "civil": "FOOD", "pantry": "Food" },
+          "cooking-heat": {
+            "cockpit": "COOKING & HEAT",
+            "civil": "COOKING & HEAT",
+            "pantry": "Cooking & heat"
+          },
+          "light-power": {
+            "cockpit": "LIGHT & POWER",
+            "civil": "LIGHT & POWER",
+            "pantry": "Light & power"
+          },
+          "communication-info": {
+            "cockpit": "COMMUNICATION",
+            "civil": "COMMUNICATION",
+            "pantry": "Communication"
+          },
+          "medical-health": {
+            "cockpit": "MEDICAL & HEALTH",
+            "civil": "MEDICAL & HEALTH",
+            "pantry": "Medical"
+          },
+          "hygiene-sanitation": {
+            "cockpit": "HYGIENE & SANITATION",
+            "civil": "HYGIENE & SANITATION",
+            "pantry": "Hygiene"
+          },
+          "tools-supplies": {
+            "cockpit": "TOOLS & SUPPLIES",
+            "civil": "TOOLS & SUPPLIES",
+            "pantry": "Tools"
+          },
+          "cash-documents": {
+            "cockpit": "CASH & DOCUMENTS",
+            "civil": "CASH & DOCUMENTS",
+            "pantry": "Cash & documents"
+          },
+          "pets": { "cockpit": "PETS", "civil": "PETS", "pantry": "Pets" }
+        }
+      },
+      "step06": {
+        "setupComplete": {
+          "cockpit": "SETUP COMPLETE · 05 / 05",
+          "civil": "SETUP COMPLETE · 05 / 05",
+          "pantry": "Setup complete · 5 / 5"
+        },
+        "title": {
+          "cockpit": "PROVISIONING COMPLETE",
+          "civil": "PROVISIONING COMPLETE",
+          "pantry": "You're set up."
+        },
+        "subtitle": {
+          "cockpit": "BASELINE PROVISIONED · {{count}} CATEGORIES ENABLED. EXPIRY MONITORING ACTIVE.",
+          "civil": "BASELINE PROVISIONED · {{count}} CATEGORIES ENABLED. EXPIRY MONITORING ACTIVE.",
+          "pantry": "Your starting kit is ready. We'll keep an eye on expiry dates and remind you when something runs low — open the dashboard to see what's next."
+        },
+        "categoriesCaption": {
+          "cockpit": "CATEGORIES",
+          "civil": "CATEGORIES",
+          "pantry": "Categories"
+        },
+        "daysCaption": {
+          "cockpit": "TARGET DAYS",
+          "civil": "TARGET DAYS",
+          "pantry": "Days target"
+        },
+        "openDashboard": {
+          "cockpit": "OPEN OVERVIEW →",
+          "civil": "OPEN OVERVIEW →",
+          "pantry": "Open dashboard →"
+        }
+      }
+    },
+    "guide": {
+      "title": {
+        "cockpit": "CIVIL PREPAREDNESS · BASELINE",
+        "civil": "CIVIL PREPAREDNESS · BASELINE",
+        "pantry": "How to be prepared"
+      },
+      "intro": {
+        "cockpit": "BASELINE GUIDANCE FOR HOUSEHOLD PREPAREDNESS · 72-HOUR MINIMUM · 7-DAY TARGET.",
+        "civil": "BASELINE GUIDANCE FOR HOUSEHOLD PREPAREDNESS · 72-HOUR MINIMUM · 7-DAY TARGET.",
+        "pantry": "A short, practical guide — what to keep at home so a power cut, water break, or supply shock is an inconvenience, not a crisis."
+      },
+      "sections": {
+        "s1": {
+          "title": {
+            "cockpit": "PURPOSE",
+            "civil": "PURPOSE",
+            "pantry": "Why prepare?"
+          },
+          "body": "Power outages, water disruptions, supply shocks. 72 hours of self-sufficiency is the practical baseline; one week is the recommended target for most households."
+        },
+        "s2": {
+          "title": {
+            "cockpit": "WATER · TIER 1",
+            "civil": "WATER · TIER 1",
+            "pantry": "Water — the priority"
+          },
+          "body": "Plan for 3 L/person/day for drinking and cooking, plus 3 L for hygiene. A two-person household needs ~84 L for one week. Bottled, jerrycans, or filled containers all qualify."
+        },
+        "s3": {
+          "title": {
+            "cockpit": "FOOD · TIER 1",
+            "civil": "FOOD · TIER 1",
+            "pantry": "Food that lasts"
+          },
+          "body": "Calorie-dense, shelf-stable, edible without cooking: canned goods, dry pasta and rice, crackers, peanut butter, dried fruit. Rotate every 6–12 months."
+        },
+        "s4": {
+          "title": {
+            "cockpit": "LIGHT & POWER",
+            "civil": "LIGHT & POWER",
+            "pantry": "Light & warmth"
+          },
+          "body": "Two independent light sources per room. Battery-powered radio. Power bank charged. If applicable: gas stove with two days of fuel."
+        },
+        "s5": {
+          "title": {
+            "cockpit": "MEDICAL",
+            "civil": "MEDICAL",
+            "pantry": "First aid"
+          },
+          "body": "Standard first-aid kit. Two weeks of any prescription medication. Iodine tablets per civil-defense recommendation."
+        },
+        "s6": {
+          "title": {
+            "cockpit": "DOCS & CASH",
+            "civil": "DOCS & CASH",
+            "pantry": "Documents & cash"
+          },
+          "body": "Copies of ID, insurance, bank info. €500 in small bills. Both sealed in a waterproof container."
+        }
+      }
+    },
     "plan": {
       "title": {
         "cockpit": "PREPAREDNESS OBJECTIVES",

@@ -29,8 +29,12 @@ const renderStep = (
 describe('OnboardStep04Household (v2)', () => {
   it('renders the household lead and computed targets side panel', () => {
     renderStep();
-    expect(screen.getByText(/HOUSEHOLD · §4 PROFILE/)).toBeInTheDocument();
-    expect(screen.getByText('COMPUTED · LIVE')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.onboarding.step04.leadTitle.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.onboarding.step04.computedCaption.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('shows computed litres of water based on the household', () => {
@@ -42,7 +46,9 @@ describe('OnboardStep04Household (v2)', () => {
   it('continue button advances', () => {
     const onNext = vi.fn();
     renderStep({ onNext });
-    fireEvent.click(screen.getByRole('button', { name: /CONTINUE →/ }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
+    );
     expect(onNext).toHaveBeenCalled();
   });
 });

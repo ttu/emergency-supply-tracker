@@ -28,16 +28,18 @@ const renderLayout = (
 describe('OnboardLayout (v2)', () => {
   it('renders step indicator, lead title and footer text', () => {
     renderLayout();
-    expect(screen.getByText(/STEP 02 \/ 05/)).toBeInTheDocument();
+    expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
     expect(screen.getByText('LEAD')).toBeInTheDocument();
     expect(screen.getByText('SUB')).toBeInTheDocument();
-    expect(screen.getByText(/ALL DATA IS STORED LOCALLY/)).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.onboarding.footerNote.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders BACK only when back prop is provided', () => {
     const { rerender } = renderLayout();
     expect(
-      screen.queryByRole('button', { name: 'BACK' }),
+      screen.queryByRole('button', { name: 'v2.voice.back.cockpit' }),
     ).not.toBeInTheDocument();
 
     const back = vi.fn();
@@ -50,7 +52,9 @@ describe('OnboardLayout (v2)', () => {
         onContinue={vi.fn()}
       />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'BACK' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.back.cockpit' }),
+    );
     expect(back).toHaveBeenCalled();
   });
 
@@ -58,7 +62,7 @@ describe('OnboardLayout (v2)', () => {
     const onContinue = vi.fn();
     const { rerender } = renderLayout({ onContinue });
     expect(
-      screen.getByRole('button', { name: /CONTINUE →/ }),
+      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
     ).toBeInTheDocument();
 
     rerender(

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Caption } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import type { HouseholdConfig } from '@/shared/types';
@@ -20,20 +21,15 @@ export function OnboardStep03Preset({
   onNext,
   onBack,
 }: Readonly<OnboardStep03Props>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
     <OnboardLayout
       step={3}
-      title={themeKey === 'pantry' ? 'Household size' : 'PRESET · §3 BASELINE'}
+      title={t(`v2.voice.onbPreset.${themeKey}`)}
       lead={{
-        title:
-          themeKey === 'pantry'
-            ? 'Who are we planning for?'
-            : 'SELECT HOUSEHOLD PRESET',
-        sub:
-          themeKey === 'pantry'
-            ? 'Pick the closest match — you can fine-tune next.'
-            : 'PRESETS PRE-FILL THE NEXT SECTION.',
+        title: t(`v2.onboarding.step03.leadTitle.${themeKey}`),
+        sub: t(`v2.onboarding.step03.leadSub.${themeKey}`),
       }}
       back={onBack}
       onContinue={() => {
@@ -132,15 +128,15 @@ export function OnboardStep03Preset({
                 }}
               >
                 <PresetStat
-                  label={themeKey === 'pantry' ? 'Adults' : 'ADULTS'}
+                  label={t(`v2.onboarding.labelAdults.${themeKey}`)}
                   value={p.adults}
                 />
                 <PresetStat
-                  label={themeKey === 'pantry' ? 'Children' : 'CHILDREN'}
+                  label={t(`v2.onboarding.labelChildren.${themeKey}`)}
                   value={p.children}
                 />
                 <PresetStat
-                  label={themeKey === 'pantry' ? 'Days' : 'DAYS'}
+                  label={t(`v2.onboarding.labelDays.${themeKey}`)}
                   value={p.days}
                 />
               </div>

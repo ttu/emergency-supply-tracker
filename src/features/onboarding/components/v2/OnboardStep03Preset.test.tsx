@@ -38,7 +38,9 @@ describe('OnboardStep03Preset (v2)', () => {
     const onApplyPreset = vi.fn();
     const onNext = vi.fn();
     renderStep({ presetCode: 'P-03', onApplyPreset, onNext });
-    fireEvent.click(screen.getByRole('button', { name: /CONTINUE →/ }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
+    );
     expect(onApplyPreset).toHaveBeenCalledWith({
       adults: 2,
       children: 2,
@@ -51,7 +53,9 @@ describe('OnboardStep03Preset (v2)', () => {
   it('continue does NOT apply preset when "Custom" (P-04) is selected', () => {
     const onApplyPreset = vi.fn();
     renderStep({ presetCode: 'P-04', onApplyPreset });
-    fireEvent.click(screen.getByRole('button', { name: /CONTINUE →/ }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
+    );
     expect(onApplyPreset).not.toHaveBeenCalled();
   });
 });

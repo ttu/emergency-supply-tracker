@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Caption,
   Panel,
@@ -5,40 +6,24 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
+const SECTION_KEYS = ['s1', 's2', 's3', 's4', 's5', 's6'] as const;
+const SECTION_CODES: Record<(typeof SECTION_KEYS)[number], string> = {
+  s1: '§1',
+  s2: '§2',
+  s3: '§3',
+  s4: '§4',
+  s5: '§5',
+  s6: '§6',
+};
+
 export function Guide() {
-  const { themeKey, voice } = useDesignTheme();
-  const sections = [
-    {
-      code: '§1',
-      title: themeKey === 'pantry' ? 'Why prepare?' : 'PURPOSE',
-      body: 'Power outages, water disruptions, supply shocks. 72 hours of self-sufficiency is the practical baseline; one week is the recommended target for most households.',
-    },
-    {
-      code: '§2',
-      title: themeKey === 'pantry' ? 'Water — the priority' : 'WATER · TIER 1',
-      body: 'Plan for 3 L/person/day for drinking and cooking, plus 3 L for hygiene. A two-person household needs ~84 L for one week. Bottled, jerrycans, or filled containers all qualify.',
-    },
-    {
-      code: '§3',
-      title: themeKey === 'pantry' ? 'Food that lasts' : 'FOOD · TIER 1',
-      body: 'Calorie-dense, shelf-stable, edible without cooking: canned goods, dry pasta and rice, crackers, peanut butter, dried fruit. Rotate every 6–12 months.',
-    },
-    {
-      code: '§4',
-      title: themeKey === 'pantry' ? 'Light & warmth' : 'LIGHT & POWER',
-      body: 'Two independent light sources per room. Battery-powered radio. Power bank charged. If applicable: gas stove with two days of fuel.',
-    },
-    {
-      code: '§5',
-      title: themeKey === 'pantry' ? 'First aid' : 'MEDICAL',
-      body: 'Standard first-aid kit. Two weeks of any prescription medication. Iodine tablets per civil-defense recommendation.',
-    },
-    {
-      code: '§6',
-      title: themeKey === 'pantry' ? 'Documents & cash' : 'DOCS & CASH',
-      body: 'Copies of ID, insurance, bank info. €500 in small bills. Both sealed in a waterproof container.',
-    },
-  ];
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
+  const sections = SECTION_KEYS.map((k) => ({
+    code: SECTION_CODES[k],
+    title: t(`v2.guide.sections.${k}.title.${themeKey}`),
+    body: t(`v2.guide.sections.${k}.body`),
+  }));
   return (
     <div
       style={{
@@ -49,11 +34,9 @@ export function Guide() {
       }}
     >
       <div>
-        <Caption>{voice.guide}</Caption>
+        <Caption>{t(`v2.voice.guide.${themeKey}`)}</Caption>
         <Title size={36} style={{ marginTop: 4 }}>
-          {themeKey === 'pantry'
-            ? 'How to be prepared'
-            : 'CIVIL PREPAREDNESS · BASELINE'}
+          {t(`v2.guide.title.${themeKey}`)}
         </Title>
         <div
           style={{
@@ -64,9 +47,7 @@ export function Guide() {
             maxWidth: 720,
           }}
         >
-          {themeKey === 'pantry'
-            ? 'A short, practical guide — what to keep at home so a power cut, water break, or supply shock is an inconvenience, not a crisis.'
-            : 'BASELINE GUIDANCE FOR HOUSEHOLD PREPAREDNESS · 72-HOUR MINIMUM · 7-DAY TARGET.'}
+          {t(`v2.guide.intro.${themeKey}`)}
         </div>
       </div>
       <Panel padding={0}>

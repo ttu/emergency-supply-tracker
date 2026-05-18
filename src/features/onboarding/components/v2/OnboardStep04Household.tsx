@@ -1,4 +1,6 @@
 import type { CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   Caption,
   NumberDisplay,
@@ -16,36 +18,30 @@ interface OnboardStep04Props {
   onBack: () => void;
 }
 
-/** Step 4: Adults/Children/Pets steppers + Coverage target chips + live targets. */
 export function OnboardStep04Household({
   household,
   onHouseholdChange,
   onNext,
   onBack,
 }: Readonly<OnboardStep04Props>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const targets = computeOnboardingTargets(household);
 
   return (
     <OnboardLayout
       step={4}
-      title={themeKey === 'pantry' ? 'Details' : 'HOUSEHOLD · §4 PROFILE'}
+      title={t(`v2.voice.onbHousehold.${themeKey}`)}
       lead={{
-        title:
-          themeKey === 'pantry'
-            ? 'Fine-tune your household.'
-            : 'CONFIRM HOUSEHOLD PARAMETERS',
-        sub:
-          themeKey === 'pantry'
-            ? 'These drive every recommendation. Adjust now or any time in settings.'
-            : 'PARAMETERS DRIVE BASELINE QUANTITIES. EACH CHILD COUNTS AS 0.75 ADULT-EQUIVALENT.',
+        title: t(`v2.onboarding.step04.leadTitle.${themeKey}`),
+        sub: t(`v2.onboarding.step04.leadSub.${themeKey}`),
       }}
       back={onBack}
       onContinue={onNext}
       side={
         <div>
           <Caption>
-            {themeKey === 'pantry' ? 'Calculated targets' : 'COMPUTED · LIVE'}
+            {t(`v2.onboarding.step04.computedCaption.${themeKey}`)}
           </Caption>
           <div
             style={{
@@ -59,9 +55,9 @@ export function OnboardStep04Household({
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
               <NumberDisplay value={targets.water} size={48} />
               <span style={{ fontSize: 14, color: 'var(--color-text-2)' }}>
-                {themeKey === 'pantry'
-                  ? 'litres of water'
-                  : `L WATER · ${household.supplyDurationDays}D`}
+                {t(`v2.onboarding.step04.waterLabel.${themeKey}`, {
+                  days: household.supplyDurationDays,
+                })}
               </span>
             </div>
             <div
@@ -96,7 +92,7 @@ export function OnboardStep04Household({
                 marginTop: 6,
               }}
             >
-              {themeKey === 'pantry' ? 'Total kcal' : 'KCAL TOTAL'}
+              {t(`v2.onboarding.step04.kcalTotal.${themeKey}`)}
             </div>
           </div>
         </div>
@@ -104,36 +100,31 @@ export function OnboardStep04Household({
     >
       <Panel padding={0}>
         <OnboardStepperRow
-          label={themeKey === 'pantry' ? 'Adults' : 'ADULTS'}
-          hint={themeKey === 'pantry' ? 'Aged 14+' : 'AGE ≥ 14 · FULL RATIONS'}
+          label={t(`v2.onboarding.labelAdults.${themeKey}`)}
+          hint={t(`v2.onboarding.step04.adultsHint.${themeKey}`)}
           value={household.adults}
           onChange={(v) => onHouseholdChange((h) => ({ ...h, adults: v }))}
           min={1}
+          t={t}
         />
         <OnboardStepperRow
-          label={themeKey === 'pantry' ? 'Children' : 'CHILDREN'}
-          hint={
-            themeKey === 'pantry'
-              ? 'Under 14, scaled to 75%'
-              : 'AGE < 14 · 0.75× SCALE'
-          }
+          label={t(`v2.onboarding.labelChildren.${themeKey}`)}
+          hint={t(`v2.onboarding.step04.childrenHint.${themeKey}`)}
           value={household.children}
           onChange={(v) => onHouseholdChange((h) => ({ ...h, children: v }))}
+          t={t}
         />
         <OnboardStepperRow
-          label={themeKey === 'pantry' ? 'Pets' : 'PETS'}
-          hint={
-            themeKey === 'pantry'
-              ? 'Adds a pet category'
-              : 'ENABLES §PET CATEGORY'
-          }
+          label={t(`v2.onboarding.labelPets.${themeKey}`)}
+          hint={t(`v2.onboarding.step04.petsHint.${themeKey}`)}
           value={household.pets}
           onChange={(v) => onHouseholdChange((h) => ({ ...h, pets: v }))}
+          t={t}
         />
       </Panel>
       <div style={{ marginTop: 14 }}>
         <Caption>
-          {themeKey === 'pantry' ? 'Target days' : 'COVERAGE TARGET'}
+          {t(`v2.onboarding.step04.coverageTarget.${themeKey}`)}
         </Caption>
         <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
           {[3, 7, 14, 30].map((n) => {
@@ -174,6 +165,7 @@ interface StepperRowProps {
   value: number;
   onChange: (v: number) => void;
   min?: number;
+  t: TFunction;
 }
 
 function OnboardStepperRow({
@@ -182,6 +174,7 @@ function OnboardStepperRow({
   value,
   onChange,
   min = 0,
+  t,
 }: Readonly<StepperRowProps>) {
   const buttonStyle: CSSProperties = {
     width: 36,
@@ -215,7 +208,7 @@ function OnboardStepperRow({
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           type="button"
-          aria-label={`Decrease ${label}`}
+          aria-label={t('v2.onboarding.stepperDecreaseAria', { label })}
           onClick={() => onChange(Math.max(min, value - 1))}
           style={buttonStyle}
         >
@@ -236,7 +229,7 @@ function OnboardStepperRow({
         </div>
         <button
           type="button"
-          aria-label={`Increase ${label}`}
+          aria-label={t('v2.onboarding.stepperIncreaseAria', { label })}
           onClick={() => onChange(value + 1)}
           style={{
             ...buttonStyle,

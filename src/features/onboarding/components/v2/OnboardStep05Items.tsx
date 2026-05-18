@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Caption, Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { OnboardLayout } from './OnboardLayout';
@@ -9,80 +10,59 @@ interface OnboardStep05Props {
   onBack: () => void;
 }
 
-/** Step 5: 10-row category checklist (toggle which categories to track). */
+const CAT_IDS = [
+  'water-beverages',
+  'food',
+  'cooking-heat',
+  'light-power',
+  'communication-info',
+  'medical-health',
+  'hygiene-sanitation',
+  'tools-supplies',
+  'cash-documents',
+  'pets',
+] as const;
+const CAT_CODES: Record<(typeof CAT_IDS)[number], string> = {
+  'water-beverages': 'H2O',
+  food: 'FUD',
+  'cooking-heat': 'CKH',
+  'light-power': 'PWR',
+  'communication-info': 'CMM',
+  'medical-health': 'MED',
+  'hygiene-sanitation': 'HYG',
+  'tools-supplies': 'TLS',
+  'cash-documents': 'DOC',
+  pets: 'PET',
+};
+
 export function OnboardStep05Items({
   enabledCategories,
   onToggleCategory,
   onNext,
   onBack,
 }: Readonly<OnboardStep05Props>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const cats = [
-    [
-      'water-beverages',
-      'H2O',
-      themeKey === 'pantry' ? 'Water & beverages' : 'WATER & BEVERAGES',
-    ],
-    ['food', 'FUD', themeKey === 'pantry' ? 'Food' : 'FOOD'],
-    [
-      'cooking-heat',
-      'CKH',
-      themeKey === 'pantry' ? 'Cooking & heat' : 'COOKING & HEAT',
-    ],
-    [
-      'light-power',
-      'PWR',
-      themeKey === 'pantry' ? 'Light & power' : 'LIGHT & POWER',
-    ],
-    [
-      'communication-info',
-      'CMM',
-      themeKey === 'pantry' ? 'Communication' : 'COMMUNICATION',
-    ],
-    [
-      'medical-health',
-      'MED',
-      themeKey === 'pantry' ? 'Medical' : 'MEDICAL & HEALTH',
-    ],
-    [
-      'hygiene-sanitation',
-      'HYG',
-      themeKey === 'pantry' ? 'Hygiene' : 'HYGIENE & SANITATION',
-    ],
-    [
-      'tools-supplies',
-      'TLS',
-      themeKey === 'pantry' ? 'Tools' : 'TOOLS & SUPPLIES',
-    ],
-    [
-      'cash-documents',
-      'DOC',
-      themeKey === 'pantry' ? 'Cash & documents' : 'CASH & DOCUMENTS',
-    ],
-    ['pets', 'PET', themeKey === 'pantry' ? 'Pets' : 'PETS'],
-  ] as const;
+  const cats = CAT_IDS.map(
+    (id) =>
+      [
+        id,
+        CAT_CODES[id],
+        t(`v2.onboarding.step05.cat.${id}.${themeKey}`),
+      ] as const,
+  );
 
   return (
     <OnboardLayout
       step={5}
-      title={
-        themeKey === 'pantry' ? 'Starting kit' : 'BASELINE · §5 LINE ITEMS'
-      }
+      title={t(`v2.voice.onbItems.${themeKey}`)}
       lead={{
-        title:
-          themeKey === 'pantry'
-            ? 'What categories should we track?'
-            : 'INITIAL INVENTORY · OPTIONAL',
-        sub:
-          themeKey === 'pantry'
-            ? 'Tick the categories that apply to your household. You can add or remove items inside each one later.'
-            : 'TOGGLE CATEGORIES. ALL TEN ENABLED BY DEFAULT.',
+        title: t(`v2.onboarding.step05.leadTitle.${themeKey}`),
+        sub: t(`v2.onboarding.step05.leadSub.${themeKey}`),
       }}
       back={onBack}
       onContinue={onNext}
-      primaryLabel={
-        themeKey === 'pantry' ? 'Finish setup' : 'COMMIT BASELINE →'
-      }
+      primaryLabel={t(`v2.onboarding.step05.primaryLabel.${themeKey}`)}
     >
       <Panel padding={0}>
         <div
@@ -95,9 +75,10 @@ export function OnboardStep05Items({
           }}
         >
           <Caption>
-            {themeKey === 'pantry'
-              ? `${enabledCategories.size} of ${cats.length} enabled`
-              : `CATEGORY ENABLEMENT · ${enabledCategories.size} / ${cats.length}`}
+            {t(`v2.onboarding.step05.enabledCount.${themeKey}`, {
+              enabled: enabledCategories.size,
+              total: cats.length,
+            })}
           </Caption>
         </div>
         {cats.map(([id, code, name], i) => {

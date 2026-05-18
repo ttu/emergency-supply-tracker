@@ -12,15 +12,21 @@ const renderStep = (onNext = vi.fn(), onBack = vi.fn()) =>
 describe('OnboardStep02Theme (v2)', () => {
   it('renders the appearance lead', () => {
     renderStep();
-    expect(screen.getByText('CHOOSE THEME')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.onboarding.step02.leadTitleCockpit'),
+    ).toBeInTheDocument();
   });
 
   it('continue and back trigger their callbacks', () => {
     const onNext = vi.fn();
     const onBack = vi.fn();
     renderStep(onNext, onBack);
-    fireEvent.click(screen.getByRole('button', { name: 'BACK' }));
-    fireEvent.click(screen.getByRole('button', { name: /CONTINUE →/ }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.back.cockpit' }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
+    );
     expect(onBack).toHaveBeenCalled();
     expect(onNext).toHaveBeenCalled();
   });

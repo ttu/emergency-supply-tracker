@@ -1273,6 +1273,305 @@
       },
       "mobileTotal": { "cockpit": "YHT", "civil": "YHT", "pantry": "tuotetta" }
     },
+    "onboarding": {
+      "stepLabel": "VAIHE {{step}} / {{total}} · {{title}}",
+      "footerNote": {
+        "cockpit": "TIEDOT TALLENNETAAN PAIKALLISESTI · EI VAADI TILIÄ",
+        "civil": "TIEDOT TALLENNETAAN PAIKALLISESTI · EI VAADI TILIÄ",
+        "pantry": "Voit muuttaa kaiken myöhemmin asetuksista."
+      },
+      "stepperDecreaseAria": "Vähennä {{label}}",
+      "stepperIncreaseAria": "Lisää {{label}}",
+      "labelAdults": {
+        "cockpit": "AIKUISET",
+        "civil": "AIKUISET",
+        "pantry": "Aikuiset"
+      },
+      "labelChildren": {
+        "cockpit": "LAPSET",
+        "civil": "LAPSET",
+        "pantry": "Lapset"
+      },
+      "labelDays": { "cockpit": "VRK", "civil": "VRK", "pantry": "Päivää" },
+      "labelPets": {
+        "cockpit": "LEMMIKIT",
+        "civil": "LEMMIKIT",
+        "pantry": "Lemmikit"
+      },
+      "step01": {
+        "leadTitlePantry": "Asetetaan pakkauksesi.",
+        "leadTitleCivil": "VALMIUSVARASTON SEURANTA · ALKUMÄÄRITYS",
+        "leadTitleCockpit": "ALUSTUS · KOTITALOUDEN PROFIILI",
+        "leadSub": {
+          "cockpit": "VIISIVAIHEINEN VALMISTELU · EI TILIÄ · EI PILVEÄ · KAIKKI TILA PAIKALLINEN · ~90 SEKUNTIA.",
+          "civil": "VIISIVAIHEINEN VALMISTELU · EI TILIÄ · EI PILVEÄ · KAIKKI TILA PAIKALLINEN · ~90 SEKUNTIA.",
+          "pantry": "Lyhyt, viisivaiheinen asennus. Kysymme ketä kanssasi asuu ja mitä sinulla jo on, ja rakennamme tarkistuslistan pelastusviranomaisten ohjeiden mukaan."
+        },
+        "outputsCaption": {
+          "cockpit": "TUOTOKSET",
+          "civil": "TUOTOKSET",
+          "pantry": "Mitä saat"
+        },
+        "languageCaption": {
+          "cockpit": "KIELI · VALITSE",
+          "civil": "KIELI · VALITSE",
+          "pantry": "Kieli"
+        },
+        "o1": {
+          "cockpit": "PERUS-HANKINTALISTA",
+          "civil": "PERUS-HANKINTALISTA",
+          "pantry": "Perus-ostoslista"
+        },
+        "o2": {
+          "cockpit": "KATTAVUUS KATEGORIOITTAIN · 10 TASOA",
+          "civil": "KATTAVUUS KATEGORIOITTAIN · 10 TASOA",
+          "pantry": "Seuranta kategorioittain"
+        },
+        "o3": {
+          "cockpit": "VANHENEMISEN VALVONTA",
+          "civil": "VANHENEMISEN VALVONTA",
+          "pantry": "Vanhenemismuistutukset"
+        },
+        "o4": {
+          "cockpit": "VALMIUSMITTARI",
+          "civil": "VALMIUSMITTARI",
+          "pantry": "Valmiuspisteet"
+        }
+      },
+      "step02": {
+        "leadTitlePantry": "Valitse ulkoasu.",
+        "leadTitleCivil": "VALITSE KÄYTTÖLIITTYMÄN TEEMA",
+        "leadTitleCockpit": "VALITSE TEEMA",
+        "leadSub": {
+          "cockpit": "SAMA DATA · SAMA ASETTELU · TYYLI, TYYPPI JA SÄVY VAIHTUVAT",
+          "civil": "SAMA DATA · SAMA ASETTELU · TYYLI, TYYPPI JA SÄVY VAIHTUVAT",
+          "pantry": "Kolme ulkoasua, sama sovellus. Voit vaihtaa milloin tahansa asetuksista — tiedot ja asettelu pysyvät samoina."
+        }
+      },
+      "step03": {
+        "leadTitle": {
+          "cockpit": "VALITSE KOTITALOUDEN ESIASETUS",
+          "civil": "VALITSE KOTITALOUDEN ESIASETUS",
+          "pantry": "Ketä varten suunnittelemme?"
+        },
+        "leadSub": {
+          "cockpit": "ESIASETUKSET ESITÄYTTÄVÄT SEURAAVAN OSION.",
+          "civil": "ESIASETUKSET ESITÄYTTÄVÄT SEURAAVAN OSION.",
+          "pantry": "Valitse lähin vastaava — voit hienosäätää seuraavaksi."
+        }
+      },
+      "step04": {
+        "leadTitle": {
+          "cockpit": "VAHVISTA KOTITALOUDEN PARAMETRIT",
+          "civil": "VAHVISTA KOTITALOUDEN PARAMETRIT",
+          "pantry": "Hienosäädä kotitalouttasi."
+        },
+        "leadSub": {
+          "cockpit": "PARAMETRIT OHJAAVAT PERUSMÄÄRIÄ. KUKIN LAPSI LASKETAAN 0.75 AIKUISVASTAAVAKSI.",
+          "civil": "PARAMETRIT OHJAAVAT PERUSMÄÄRIÄ. KUKIN LAPSI LASKETAAN 0.75 AIKUISVASTAAVAKSI.",
+          "pantry": "Nämä ohjaavat kaikkia suosituksia. Säädä nyt tai myöhemmin asetuksista."
+        },
+        "computedCaption": {
+          "cockpit": "LASKETTU · LIVE",
+          "civil": "LASKETTU · LIVE",
+          "pantry": "Lasketut tavoitteet"
+        },
+        "waterLabel": {
+          "cockpit": "L VETTÄ · {{days}}VRK",
+          "civil": "L VETTÄ · {{days}}VRK",
+          "pantry": "litraa vettä"
+        },
+        "kcalTotal": {
+          "cockpit": "KCAL YHT",
+          "civil": "KCAL YHT",
+          "pantry": "Kalorit yhteensä"
+        },
+        "adultsHint": {
+          "cockpit": "IKÄ ≥ 14 · TÄYDET ANNOKSET",
+          "civil": "IKÄ ≥ 14 · TÄYDET ANNOKSET",
+          "pantry": "14 v. ja vanhemmat"
+        },
+        "childrenHint": {
+          "cockpit": "IKÄ < 14 · 0.75× SKAALA",
+          "civil": "IKÄ < 14 · 0.75× SKAALA",
+          "pantry": "Alle 14 v., 75 % annoksesta"
+        },
+        "petsHint": {
+          "cockpit": "OTTAA KÄYTTÖÖN §LEMMIKIT-KATEGORIAN",
+          "civil": "OTTAA KÄYTTÖÖN §LEMMIKIT-KATEGORIAN",
+          "pantry": "Lisää lemmikkikategorian"
+        },
+        "coverageTarget": {
+          "cockpit": "KATTAVUUSTAVOITE",
+          "civil": "KATTAVUUSTAVOITE",
+          "pantry": "Tavoitepäivät"
+        }
+      },
+      "step05": {
+        "leadTitle": {
+          "cockpit": "ALKUVARASTO · VALINNAINEN",
+          "civil": "ALKUVARASTO · VALINNAINEN",
+          "pantry": "Mitä kategorioita seuraamme?"
+        },
+        "leadSub": {
+          "cockpit": "KÄYTÄ KATEGORIOITA. KAIKKI KYMMENEN KÄYTÖSSÄ OLETUKSENA.",
+          "civil": "KÄYTÄ KATEGORIOITA. KAIKKI KYMMENEN KÄYTÖSSÄ OLETUKSENA.",
+          "pantry": "Valitse kotitaloudellesi sopivat kategoriat. Voit lisätä tai poistaa tuotteita kunkin sisältä myöhemmin."
+        },
+        "primaryLabel": {
+          "cockpit": "VAHVISTA PERUSTASO →",
+          "civil": "VAHVISTA PERUSTASO →",
+          "pantry": "Viimeistele asetus"
+        },
+        "enabledCount": {
+          "cockpit": "KATEGORIOIDEN KÄYTTÖ · {{enabled}} / {{total}}",
+          "civil": "KATEGORIOIDEN KÄYTTÖ · {{enabled}} / {{total}}",
+          "pantry": "{{enabled}} / {{total}} käytössä"
+        },
+        "cat": {
+          "water-beverages": {
+            "cockpit": "VESI & JUOMAT",
+            "civil": "VESI & JUOMAT",
+            "pantry": "Vesi & juomat"
+          },
+          "food": { "cockpit": "RUOKA", "civil": "RUOKA", "pantry": "Ruoka" },
+          "cooking-heat": {
+            "cockpit": "RUOANLAITTO & LÄMPÖ",
+            "civil": "RUOANLAITTO & LÄMPÖ",
+            "pantry": "Ruoanlaitto & lämpö"
+          },
+          "light-power": {
+            "cockpit": "VALO & VIRTA",
+            "civil": "VALO & VIRTA",
+            "pantry": "Valo & virta"
+          },
+          "communication-info": {
+            "cockpit": "VIESTINTÄ",
+            "civil": "VIESTINTÄ",
+            "pantry": "Viestintä"
+          },
+          "medical-health": {
+            "cockpit": "LÄÄKINTÄ & TERVEYS",
+            "civil": "LÄÄKINTÄ & TERVEYS",
+            "pantry": "Lääkintä"
+          },
+          "hygiene-sanitation": {
+            "cockpit": "HYGIENIA & SANITAATIO",
+            "civil": "HYGIENIA & SANITAATIO",
+            "pantry": "Hygienia"
+          },
+          "tools-supplies": {
+            "cockpit": "TYÖKALUT & TARVIKKEET",
+            "civil": "TYÖKALUT & TARVIKKEET",
+            "pantry": "Työkalut"
+          },
+          "cash-documents": {
+            "cockpit": "KÄTEINEN & ASIAKIRJAT",
+            "civil": "KÄTEINEN & ASIAKIRJAT",
+            "pantry": "Käteinen & asiakirjat"
+          },
+          "pets": {
+            "cockpit": "LEMMIKIT",
+            "civil": "LEMMIKIT",
+            "pantry": "Lemmikit"
+          }
+        }
+      },
+      "step06": {
+        "setupComplete": {
+          "cockpit": "ASETUS VALMIS · 05 / 05",
+          "civil": "ASETUS VALMIS · 05 / 05",
+          "pantry": "Asetus valmis · 5 / 5"
+        },
+        "title": {
+          "cockpit": "VALMISTELU VALMIS",
+          "civil": "VALMISTELU VALMIS",
+          "pantry": "Olet valmis."
+        },
+        "subtitle": {
+          "cockpit": "PERUSTASO VALMIS · {{count}} KATEGORIAA KÄYTÖSSÄ. VANHENEMISEN VALVONTA AKTIIVINEN.",
+          "civil": "PERUSTASO VALMIS · {{count}} KATEGORIAA KÄYTÖSSÄ. VANHENEMISEN VALVONTA AKTIIVINEN.",
+          "pantry": "Aloituspakkauksesi on valmis. Pidämme silmällä vanhenemispäiviä ja muistutamme kun jokin vähenee — avaa etusivu nähdäksesi mitä seuraavaksi."
+        },
+        "categoriesCaption": {
+          "cockpit": "KATEGORIAT",
+          "civil": "KATEGORIAT",
+          "pantry": "Kategoriat"
+        },
+        "daysCaption": {
+          "cockpit": "TAVOITEPÄIVÄT",
+          "civil": "TAVOITEPÄIVÄT",
+          "pantry": "Tavoitepäivät"
+        },
+        "openDashboard": {
+          "cockpit": "AVAA YLEISKATSAUS →",
+          "civil": "AVAA YLEISKATSAUS →",
+          "pantry": "Avaa etusivu →"
+        }
+      }
+    },
+    "guide": {
+      "title": {
+        "cockpit": "SIVIILIVARAUTUMINEN · PERUSTASO",
+        "civil": "SIVIILIVARAUTUMINEN · PERUSTASO",
+        "pantry": "Näin varaudut"
+      },
+      "intro": {
+        "cockpit": "PERUSOHJE KOTITALOUDEN VARAUTUMISEEN · 72 TUNNIN MINIMI · 7 PÄIVÄN TAVOITE.",
+        "civil": "PERUSOHJE KOTITALOUDEN VARAUTUMISEEN · 72 TUNNIN MINIMI · 7 PÄIVÄN TAVOITE.",
+        "pantry": "Lyhyt, käytännöllinen opas — mitä pitää kotona, jotta sähkökatko, vesikatko tai tarvikepula on harmi, ei kriisi."
+      },
+      "sections": {
+        "s1": {
+          "title": {
+            "cockpit": "TARKOITUS",
+            "civil": "TARKOITUS",
+            "pantry": "Miksi varautua?"
+          },
+          "body": "Sähkökatkot, vesihäiriöt, tarvikepulat. 72 tunnin omavaraisuus on käytännön perustaso; viikko on suositeltu tavoite useimmille kotitalouksille."
+        },
+        "s2": {
+          "title": {
+            "cockpit": "VESI · TASO 1",
+            "civil": "VESI · TASO 1",
+            "pantry": "Vesi — tärkein"
+          },
+          "body": "Varaudu 3 l/hlö/vrk juomiseen ja ruoanlaittoon, lisäksi 3 l hygieniaan. Kahden hengen kotitalous tarvitsee n. 84 l viikoksi. Pullovesi, kanisterit tai täytetyt astiat käyvät."
+        },
+        "s3": {
+          "title": {
+            "cockpit": "RUOKA · TASO 1",
+            "civil": "RUOKA · TASO 1",
+            "pantry": "Ruokaa joka säilyy"
+          },
+          "body": "Energiapitoinen, säilyvä, syötävissä ilman kypsentämistä: säilykkeet, kuivapasta ja riisi, näkkileipä, maapähkinävoi, kuivatut hedelmät. Kierrätä 6–12 kuukauden välein."
+        },
+        "s4": {
+          "title": {
+            "cockpit": "VALO & VIRTA",
+            "civil": "VALO & VIRTA",
+            "pantry": "Valoa & lämpöä"
+          },
+          "body": "Kaksi itsenäistä valonlähdettä per huone. Paristokäyttöinen radio. Ladattu varavirtalähde. Tarvittaessa kaasuliesi ja kahden päivän polttoaine."
+        },
+        "s5": {
+          "title": {
+            "cockpit": "LÄÄKINTÄ",
+            "civil": "LÄÄKINTÄ",
+            "pantry": "Ensiapu"
+          },
+          "body": "Tavallinen ensiapulaukku. Kahden viikon reseptilääkkeet. Jodi­tabletit pelastusviranomaisten suosituksen mukaan."
+        },
+        "s6": {
+          "title": {
+            "cockpit": "ASIAKIRJAT & KÄTEINEN",
+            "civil": "ASIAKIRJAT & KÄTEINEN",
+            "pantry": "Asiakirjat & käteinen"
+          },
+          "body": "Henkilöllisyystodistuksen, vakuutusten ja pankkitietojen kopiot. 500 € pieninä seteleinä. Molemmat vedenpitävässä rasiassa."
+        }
+      }
+    },
     "plan": {
       "title": {
         "cockpit": "VARAUTUMISEN TAVOITTEET",

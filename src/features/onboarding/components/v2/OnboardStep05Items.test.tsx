@@ -42,7 +42,7 @@ describe('OnboardStep05Items (v2)', () => {
   it('shows enabled / total count in the header', () => {
     renderStep();
     expect(
-      screen.getByText(/CATEGORY ENABLEMENT · 10 \/ 10/),
+      screen.getByText('v2.onboarding.step05.enabledCount.cockpit'),
     ).toBeInTheDocument();
   });
 
@@ -56,7 +56,9 @@ describe('OnboardStep05Items (v2)', () => {
   it('uses COMMIT BASELINE → as the continue label', () => {
     renderStep();
     expect(
-      screen.getByRole('button', { name: /COMMIT BASELINE →/ }),
+      screen.getByRole('button', {
+        name: 'v2.onboarding.step05.primaryLabel.cockpit',
+      }),
     ).toBeInTheDocument();
   });
 });

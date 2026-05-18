@@ -188,7 +188,7 @@ describe('App', () => {
 
     // v2 onboarding step 01 (Welcome) leads with the step indicator.
     await waitFor(() => {
-      expect(screen.getByText(/STEP 01 \/ 05 · WELCOME/)).toBeInTheDocument();
+      expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
     });
   });
 
