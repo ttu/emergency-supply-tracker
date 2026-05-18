@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 export type DesignNavId =
@@ -80,7 +81,8 @@ export function DesktopShell({
   alertCount,
   children,
 }: Readonly<DesktopShellProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const capsStyle = (transform = true): CSSProperties => ({
     textTransform: transform
       ? ('var(--caps-transform)' as CSSProperties['textTransform'])
@@ -123,7 +125,7 @@ export function DesktopShell({
               color: 'var(--color-text)',
             }}
           >
-            {voice.appName}
+            {t(`v2.voice.appName.${themeKey}`)}
           </div>
           <div
             style={{
@@ -134,7 +136,7 @@ export function DesktopShell({
               ...capsStyle(),
             }}
           >
-            {voice.tagline}
+            {t(`v2.voice.tagline.${themeKey}`)}
           </div>
         </div>
         <nav aria-label="Main" style={{ padding: '12px 8px', flex: 1 }}>
@@ -306,7 +308,8 @@ export function MobileShell({
   alertCount,
   children,
 }: Readonly<MobileShellProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   return (
     <div
       style={{
@@ -336,7 +339,7 @@ export function MobileShell({
             letterSpacing: themeKey === 'pantry' ? '-0.01em' : '0.06em',
           }}
         >
-          {title || voice.appName}
+          {title || t(`v2.voice.appName.${themeKey}`)}
         </div>
         <span
           style={{

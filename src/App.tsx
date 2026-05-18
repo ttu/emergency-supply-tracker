@@ -177,14 +177,12 @@ function AppContent() {
   const useDesignV2 = isDesignV2Theme(settings.theme);
 
   if (!settings.onboardingCompleted) {
-    if (useDesignV2) {
-      return <DesignOnboarding onComplete={handleOnboardingComplete} />;
-    }
-    return (
-      <Suspense fallback={<LoadingFallback />}>
-        <Onboarding onComplete={handleOnboardingComplete} />
-      </Suspense>
+    const onboardingNode = useDesignV2 ? (
+      <DesignOnboarding onComplete={handleOnboardingComplete} />
+    ) : (
+      <Onboarding onComplete={handleOnboardingComplete} />
     );
+    return <Suspense fallback={<LoadingFallback />}>{onboardingNode}</Suspense>;
   }
 
   if (useDesignV2) {

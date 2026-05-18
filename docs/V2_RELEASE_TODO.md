@@ -83,11 +83,10 @@ These do not block release but are worth tracking:
 
 - **Unused locale keys**: `v2.settings.advanced.sync` /
   `v2.settings.advanced.syncHint` after the sync toggle removal.
-- **Voice abstraction**: `useDesignTheme()` still returns a `voice` object
-  that no v2 component consumes (every voice reference now uses
-  `t('v2.voice.<key>.<theme>')`). The `voice.ts` `VOICE` static record is
-  effectively dead code; safe to delete with a small `useDesignTheme.ts`
-  trim. Punted from the i18n migration to keep that diff focused.
+- ~~**Voice abstraction**~~ — done. `useDesignTheme()` now returns only
+  `{ themeKey }`; the static `VOICE` record was deleted from
+  `voice.ts` and the last consumers (`DesignApp.tsx`, `Shell.tsx`,
+  `StatusPill` in `primitives.tsx`) now use `t('v2.voice.<key>.<theme>')`.
 - **FI translation quality pass**: The FI strings in `v2.*` were authored
   programmatically in one pass; a native-speaker review is recommended
   before the Finnish-language launch. Areas to focus on:

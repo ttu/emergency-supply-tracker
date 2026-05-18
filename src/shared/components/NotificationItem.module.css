@@ -60,3 +60,77 @@
   /* Add contrasting box-shadow for visibility on all backgrounds */
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.3);
 }
+
+/* --- Design v2 (cockpit / civil / pantry) override ---------------------- */
+/* When a v2 theme is active anywhere up the tree, render notifications in
+   the v2 panel language: white-on-color → panel surface + status accent
+   strip, mono caption, status colours from the v2 token palette. */
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification {
+  background-color: var(--color-panel);
+  color: var(--color-text);
+  border: 1px solid var(--color-rule);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification.success {
+  border-left-color: var(--color-ok);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification.error {
+  border-left-color: var(--color-crit);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification.info {
+  border-left-color: var(--color-accent);
+}
+
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification
+  .icon {
+  color: var(--color-text-2);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification.success
+  .icon {
+  color: var(--color-ok);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification.error
+  .icon {
+  color: var(--color-crit);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification.info
+  .icon {
+  color: var(--color-accent);
+}
+
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification
+  .message {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification
+  .closeButton {
+  color: var(--color-text-3);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification
+  .closeButton:hover {
+  color: var(--color-text);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .notification
+  .closeButton:focus-visible {
+  outline-color: var(--color-accent);
+  box-shadow: none;
+}

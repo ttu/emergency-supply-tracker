@@ -1,4 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 export type Status = 'ok' | 'warn' | 'crit';
@@ -166,11 +168,12 @@ interface StatusPillProps {
 
 function defaultStatusLabel(
   status: Status,
-  voice: { statusOk: string; statusWarn: string; statusCrit: string },
+  themeKey: string,
+  t: TFunction,
 ): string {
-  if (status === 'ok') return voice.statusOk;
-  if (status === 'warn') return voice.statusWarn;
-  return voice.statusCrit;
+  if (status === 'ok') return t(`v2.voice.statusOk.${themeKey}`);
+  if (status === 'warn') return t(`v2.voice.statusWarn.${themeKey}`);
+  return t(`v2.voice.statusCrit.${themeKey}`);
 }
 
 function statusPillTextColor(
@@ -184,9 +187,10 @@ function statusPillTextColor(
 }
 
 export function StatusPill({ status, children }: Readonly<StatusPillProps>) {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const color = statusVar(status);
-  const label = children ?? defaultStatusLabel(status, voice);
+  const label = children ?? defaultStatusLabel(status, themeKey, t);
   const isCockpit = themeKey === 'cockpit';
   return (
     <span

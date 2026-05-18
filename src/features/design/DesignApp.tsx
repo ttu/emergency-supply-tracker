@@ -1,4 +1,6 @@
-import { useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   DesktopShell,
   MobileShell,
@@ -7,6 +9,7 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import type { DesignV2Theme } from '@/shared/types';
 import { Dashboard } from '@/features/dashboard/components/v2/Dashboard';
 import { MobileDashboard } from '@/features/dashboard/components/v2/MobileDashboard';
 import { Plan } from '@/features/dashboard/components/v2/Plan';
@@ -25,7 +28,8 @@ import { Guide } from '@/features/help/components/v2/Guide';
 import { SettingsFull } from '@/features/settings/components/v2/SettingsFull';
 
 interface ViewContext {
-  voice: ReturnType<typeof useDesignTheme>['voice'];
+  t: TFunction;
+  themeKey: DesignV2Theme;
   isMobile: boolean;
   selectedCategoryId: string | undefined;
   setSelectedCategoryId: (id: string | undefined) => void;
@@ -37,9 +41,11 @@ function renderItemDetail(
   selectedItemId: string,
   ctx: ViewContext,
 ): { title: string; breadcrumb: string; body: ReactNode } {
-  const { voice, isMobile, selectedCategoryId, setSelectedItemId } = ctx;
+  const { t, themeKey, isMobile, selectedCategoryId, setSelectedItemId } = ctx;
   const breadcrumb =
-    selectedItemId === NEW_ITEM_ID ? voice.addItem : selectedItemId.slice(0, 8);
+    selectedItemId === NEW_ITEM_ID
+      ? t(`v2.voice.addItem.${themeKey}`)
+      : selectedItemId.slice(0, 8);
   const defaultCategoryId =
     selectedItemId === NEW_ITEM_ID ? selectedCategoryId : undefined;
   const onBack = () => setSelectedItemId(undefined);
@@ -56,7 +62,7 @@ function renderItemDetail(
       defaultCategoryId={defaultCategoryId}
     />
   );
-  return { title: voice.inventory, breadcrumb, body };
+  return { title: t(`v2.voice.inventory.${themeKey}`), breadcrumb, body };
 }
 
 function renderHome(ctx: ViewContext): ReactNode {
@@ -123,30 +129,40 @@ function renderNav(
   nav: DesignNavId,
   ctx: ViewContext,
 ): { title: string; body: ReactNode } {
-  const { voice, isMobile } = ctx;
+  const { t, themeKey, isMobile } = ctx;
   switch (nav) {
     case 'home':
-      return { title: voice.home, body: renderHome(ctx) };
+      return { title: t(`v2.voice.home.${themeKey}`), body: renderHome(ctx) };
     case 'inv':
-      return { title: voice.inventory, body: renderInventory(ctx) };
+      return {
+        title: t(`v2.voice.inventory.${themeKey}`),
+        body: renderInventory(ctx),
+      };
     case 'alerts':
-      return { title: voice.alerts, body: renderAlerts(ctx) };
+      return {
+        title: t(`v2.voice.alerts.${themeKey}`),
+        body: renderAlerts(ctx),
+      };
     case 'shop':
       return {
-        title: voice.shopping,
+        title: t(`v2.voice.shopping.${themeKey}`),
         body: isMobile ? <MobileShopping /> : <Shopping />,
       };
     case 'plan':
-      return { title: voice.plan, body: <Plan /> };
+      return { title: t(`v2.voice.plan.${themeKey}`), body: <Plan /> };
     case 'help':
-      return { title: voice.guide, body: <Guide /> };
+      return { title: t(`v2.voice.guide.${themeKey}`), body: <Guide /> };
     case 'settings':
-      return { title: voice.settings, body: <SettingsFull /> };
+      return {
+        title: t(`v2.voice.settings.${themeKey}`),
+        body: <SettingsFull />,
+      };
   }
 }
 
 export function DesignApp() {
-  const { voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const isMobile = useIsMobile();
   const [nav, setNav] = useState<DesignNavId>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<
@@ -158,25 +174,32 @@ export function DesignApp() {
   const data = useDesignData();
   const alertCount = data.totals.crit + data.totals.warn;
 
-  const goTo = (id: DesignNavId) => {
+  const goTo = useCallback((id: DesignNavId) => {
     setNav(id);
     setSelectedItemId(undefined);
     if (id !== 'inv') setSelectedCategoryId(undefined);
-  };
+  }, []);
 
-  const ctx: ViewContext = {
-    voice,
-    isMobile,
-    selectedCategoryId,
-    setSelectedCategoryId,
-    setSelectedItemId,
-    setNav,
-  };
+  const ctx: ViewContext = useMemo(
+    () => ({
+      t,
+      themeKey,
+      isMobile,
+      selectedCategoryId,
+      setSelectedCategoryId,
+      setSelectedItemId,
+      setNav,
+    }),
+    [t, themeKey, isMobile, selectedCategoryId],
+  );
 
-  const view: { title: string; body: ReactNode; breadcrumb?: string } =
-    selectedItemId
-      ? renderItemDetail(selectedItemId, ctx)
-      : renderNav(nav, ctx);
+  const view: { title: string; body: ReactNode; breadcrumb?: string } = useMemo(
+    () =>
+      selectedItemId
+        ? renderItemDetail(selectedItemId, ctx)
+        : renderNav(nav, ctx),
+    [selectedItemId, nav, ctx],
+  );
 
   const Shell = isMobile ? MobileShell : DesktopShell;
   return (
