@@ -15,6 +15,14 @@ import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import { generateDashboardAlerts } from '@/features/alerts';
 
+// TODO(v2-release): These notification preferences are persisted to
+// localStorage but no consumer reads them — generateDashboardAlerts ignores
+// the toggles. Either wire the prefs into alert generation (drop alerts the
+// user opted out of) or remove the in-app-alerts panel before release.
+// `weeklyEmail` + the "audit cadence" ReadField additionally surface a
+// feature (email digest) for which the app has no backend at all and should
+// be removed or gated behind a future server-side build.
+// See docs/V2_RELEASE_TODO.md.
 const PREFS_KEY = 'est:design:notification-prefs';
 
 interface Prefs {

@@ -17,6 +17,13 @@ interface GoalSeed {
   status: 'crit' | 'warn' | 'ok';
 }
 
+// TODO(v2-release): GOAL_SEEDS percentages, targets, and statuses are static
+// placeholder data carried over from the v2 design exploration. Before this
+// view is exposed in production, derive `p` and `status` from real inventory
+// + household state (see useDesignData) and either localise `target` strings
+// or compute them from household + recommendation data. The Plan view is
+// currently gated behind the settings.advanced.planView (beta) toggle.
+// See docs/V2_RELEASE_TODO.md.
 const GOAL_SEEDS: GoalSeed[] = [
   {
     code: 'G-01',

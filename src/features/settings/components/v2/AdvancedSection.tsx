@@ -50,14 +50,6 @@ export function AdvancedSection() {
           hint={t(`v2.settings.advanced.planViewHint.${themeKey}`)}
           on={designPrefs.planViewBeta}
           onChange={(v) => setDesignPref('planViewBeta', v)}
-        />
-        <ToggleRow
-          label={t(`v2.settings.advanced.sync.${themeKey}`)}
-          hint={t(`v2.settings.advanced.syncHint.${themeKey}`)}
-          on={false}
-          onChange={() => {
-            /* roadmap — disabled */
-          }}
           last
         />
       </Panel>
