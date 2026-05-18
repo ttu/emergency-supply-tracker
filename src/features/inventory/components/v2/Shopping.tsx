@@ -1,4 +1,10 @@
-import { useMemo, useState, type CSSProperties } from 'react';
+import {
+  memo,
+  useCallback,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -38,6 +44,90 @@ function critFirstShopping(
   return 0;
 }
 
+const CONTAINER_STYLE: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+};
+const HEADER_STYLE: CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-end',
+};
+const COLUMNS_STYLE: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '2fr 1fr',
+  gap: 16,
+};
+const QUEUE_HEADER_STYLE: CSSProperties = {
+  padding: '14px 20px',
+  borderBottom: '1px solid var(--color-rule-soft)',
+};
+const EMPTY_STATE_STYLE: CSSProperties = {
+  padding: 32,
+  textAlign: 'center',
+  color: 'var(--color-text-2)',
+};
+const SIDE_COLUMN_STYLE: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+};
+const SIDE_TILE_VALUE_STYLE: CSSProperties = { marginTop: 10 };
+const SIDE_TILE_FOOTNOTE_STYLE: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 10,
+  color: 'var(--color-text-3)',
+  marginTop: 6,
+};
+const TIPS_BODY_STYLE: CSSProperties = {
+  marginTop: 10,
+  fontSize: 13,
+  color: 'var(--color-text-2)',
+  lineHeight: 1.5,
+};
+const TIPS_BUTTON_WRAP_STYLE: CSSProperties = { marginTop: 12 };
+
+const ROW_BASE_STYLE: CSSProperties = {
+  padding: '12px 20px',
+  display: 'grid',
+  gridTemplateColumns: '24px 70px 1fr 80px 90px auto',
+  gap: 14,
+  alignItems: 'center',
+};
+const CHECK_BUTTON_BASE_STYLE: CSSProperties = {
+  width: 16,
+  height: 16,
+  border: '1.5px solid var(--color-rule)',
+  color: 'var(--color-accent-ink)',
+  fontSize: 11,
+  cursor: 'pointer',
+  display: 'grid',
+  placeItems: 'center',
+};
+const ROW_CAT_STYLE: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 10,
+  color: 'var(--color-text-3)',
+};
+const ROW_NEED_STYLE: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 12,
+  color: 'var(--color-text-2)',
+  textAlign: 'right',
+};
+
+interface ShoppingListItem {
+  id: string;
+  rawId: ItemId;
+  name: string;
+  cat: string;
+  need: number;
+  currentQty: number;
+  unit: string;
+  priority: DesignStatus;
+}
+
 export function Shopping() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -46,7 +136,7 @@ export function Shopping() {
   const [checked, setChecked] =
     useState<Record<string, boolean>>(loadCheckedItems);
 
-  const list = useMemo(() => {
+  const list: ShoppingListItem[] = useMemo(() => {
     return rows
       .filter((r) => r.status !== 'ok' && r.recommended > r.item.quantity)
       .map((r) => ({
@@ -62,33 +152,39 @@ export function Shopping() {
       .sort(critFirstShopping);
   }, [rows]);
 
-  const toggle = (id: string) => {
-    const next = { ...checked, [id]: !checked[id] };
-    setChecked(next);
-    saveCheckedItems(next);
-  };
+  const toggle = useCallback((id: string) => {
+    setChecked((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      saveCheckedItems(next);
+      return next;
+    });
+  }, []);
 
-  const addToInventory = (id: ItemId, currentQty: number, need: number) => {
-    updateItem(id, { quantity: createQuantity(currentQty + need) });
-    const next = { ...checked, [String(id)]: true };
-    setChecked(next);
-    saveCheckedItems(next);
-  };
+  const addToInventory = useCallback(
+    (id: ItemId, currentQty: number, need: number) => {
+      updateItem(id, { quantity: createQuantity(currentQty + need) });
+      setChecked((prev) => {
+        const next = { ...prev, [String(id)]: true };
+        saveCheckedItems(next);
+        return next;
+      });
+    },
+    [updateItem],
+  );
+
+  const reset = useCallback(() => {
+    setChecked({});
+    saveCheckedItems({});
+  }, []);
 
   const open = list.filter((it) => !checked[it.id]).length;
   const done = list.filter((it) => checked[it.id]).length;
 
-  const labelFor = (p: DesignStatus) => shoppingLabel(themeKey, p, t);
+  const addBtnLabel = t(`v2.shopping.addBtn.${themeKey}`);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-        }}
-      >
+    <div style={CONTAINER_STYLE}>
+      <div style={HEADER_STYLE}>
         <div>
           <Caption>{t(`v2.voice.shopping.${themeKey}`)}</Caption>
           <Title size={32} style={{ marginTop: 4 }}>
@@ -96,132 +192,49 @@ export function Shopping() {
           </Title>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+      <div style={COLUMNS_STYLE}>
         <Panel padding={0}>
-          <div
-            style={{
-              padding: '14px 20px',
-              borderBottom: '1px solid var(--color-rule-soft)',
-            }}
-          >
+          <div style={QUEUE_HEADER_STYLE}>
             <Caption>
               {t(`v2.shopping.queueCaption.${themeKey}`, { open, done })}
             </Caption>
           </div>
           {list.length === 0 && (
-            <div
-              style={{
-                padding: 32,
-                textAlign: 'center',
-                color: 'var(--color-text-2)',
-              }}
-            >
+            <div style={EMPTY_STATE_STYLE}>
               {t(`v2.shopping.empty.${themeKey}`)}
             </div>
           )}
-          {list.map((it, i) => {
-            const isDone = !!checked[it.id];
-            const rowStyle: CSSProperties = {
-              padding: '12px 20px',
-              display: 'grid',
-              gridTemplateColumns: '24px 70px 1fr 80px 90px auto',
-              gap: 14,
-              alignItems: 'center',
-              borderBottom:
-                i < list.length - 1
-                  ? '1px solid var(--color-rule-soft)'
-                  : 'none',
-              opacity: isDone ? 0.4 : 1,
-            };
-            return (
-              <div key={it.id} style={rowStyle}>
-                <button
-                  type="button"
-                  onClick={() => toggle(it.id)}
-                  aria-pressed={isDone}
-                  aria-label={t('v2.shopping.markDoneAria', { name: it.name })}
-                  style={{
-                    width: 16,
-                    height: 16,
-                    border: '1.5px solid var(--color-rule)',
-                    borderRadius: themeKey === 'pantry' ? 4 : 0,
-                    background: isDone ? 'var(--color-accent)' : 'transparent',
-                    color: 'var(--color-accent-ink)',
-                    fontSize: 11,
-                    cursor: 'pointer',
-                    display: 'grid',
-                    placeItems: 'center',
-                  }}
-                >
-                  {isDone ? '✓' : ''}
-                </button>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text-3)',
-                  }}
-                >
-                  {it.cat}
-                </span>
-                <span
-                  style={{
-                    fontSize: 13,
-                    color: 'var(--color-text)',
-                    textDecoration: isDone ? 'line-through' : 'none',
-                    fontWeight: 500,
-                  }}
-                >
-                  {it.name}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    color: 'var(--color-text-2)',
-                    textAlign: 'right',
-                  }}
-                >
-                  {it.need} {it.unit}
-                </span>
-                <StatusPill status={it.priority}>
-                  {labelFor(it.priority)}
-                </StatusPill>
-                <Button
-                  variant="secondary"
-                  onClick={() =>
-                    addToInventory(it.rawId, it.currentQty, it.need)
-                  }
-                  ariaLabel={t('v2.shopping.addBtnAria', {
-                    need: it.need,
-                    unit: it.unit,
-                    name: it.name,
-                  })}
-                >
-                  {t(`v2.shopping.addBtn.${themeKey}`)}
-                </Button>
-              </div>
-            );
-          })}
+          {list.map((it, i) => (
+            <ShoppingListRow
+              key={it.id}
+              item={it}
+              isDone={!!checked[it.id]}
+              isLast={i === list.length - 1}
+              themeKey={themeKey}
+              statusLabel={shoppingLabel(themeKey, it.priority, t)}
+              addBtnLabel={addBtnLabel}
+              addAriaLabel={t('v2.shopping.addBtnAria', {
+                need: it.need,
+                unit: it.unit,
+                name: it.name,
+              })}
+              checkAriaLabel={t('v2.shopping.markDoneAria', { name: it.name })}
+              onToggle={toggle}
+              onAdd={addToInventory}
+            />
+          ))}
         </Panel>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={SIDE_COLUMN_STYLE}>
           <Panel padding={20}>
             <Caption>{t(`v2.shopping.itemsToBuy.${themeKey}`)}</Caption>
-            <div style={{ marginTop: 10 }}>
+            <div style={SIDE_TILE_VALUE_STYLE}>
               <NumberDisplay
                 value={open}
                 size={44}
                 tone={open > 0 ? 'warn' : 'ok'}
               />
             </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-3)',
-                marginTop: 6,
-              }}
-            >
+            <div style={SIDE_TILE_FOOTNOTE_STYLE}>
               {t(`v2.shopping.doneCount.${themeKey}`, {
                 done,
                 total: list.length,
@@ -230,24 +243,11 @@ export function Shopping() {
           </Panel>
           <Panel padding={20}>
             <Caption>{t(`v2.shopping.tipsCaption.${themeKey}`)}</Caption>
-            <div
-              style={{
-                marginTop: 10,
-                fontSize: 13,
-                color: 'var(--color-text-2)',
-                lineHeight: 1.5,
-              }}
-            >
+            <div style={TIPS_BODY_STYLE}>
               {t(`v2.shopping.tipsBody.${themeKey}`)}
             </div>
-            <div style={{ marginTop: 12 }}>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setChecked({});
-                  saveCheckedItems({});
-                }}
-              >
+            <div style={TIPS_BUTTON_WRAP_STYLE}>
+              <Button variant="secondary" onClick={reset}>
                 {t(`v2.shopping.reset.${themeKey}`)}
               </Button>
             </div>
@@ -257,3 +257,77 @@ export function Shopping() {
     </div>
   );
 }
+
+interface ShoppingListRowProps {
+  item: ShoppingListItem;
+  isDone: boolean;
+  isLast: boolean;
+  themeKey: string;
+  statusLabel: string;
+  addBtnLabel: string;
+  addAriaLabel: string;
+  checkAriaLabel: string;
+  onToggle: (id: string) => void;
+  onAdd: (id: ItemId, currentQty: number, need: number) => void;
+}
+
+function ShoppingListRowImpl({
+  item: it,
+  isDone,
+  isLast,
+  themeKey,
+  statusLabel,
+  addBtnLabel,
+  addAriaLabel,
+  checkAriaLabel,
+  onToggle,
+  onAdd,
+}: Readonly<ShoppingListRowProps>) {
+  const rowStyle: CSSProperties = {
+    ...ROW_BASE_STYLE,
+    borderBottom: isLast ? 'none' : '1px solid var(--color-rule-soft)',
+    opacity: isDone ? 0.4 : 1,
+  };
+  const checkStyle: CSSProperties = {
+    ...CHECK_BUTTON_BASE_STYLE,
+    borderRadius: themeKey === 'pantry' ? 4 : 0,
+    background: isDone ? 'var(--color-accent)' : 'transparent',
+  };
+  return (
+    <div style={rowStyle}>
+      <button
+        type="button"
+        onClick={() => onToggle(it.id)}
+        aria-pressed={isDone}
+        aria-label={checkAriaLabel}
+        style={checkStyle}
+      >
+        {isDone ? '✓' : ''}
+      </button>
+      <span style={ROW_CAT_STYLE}>{it.cat}</span>
+      <span
+        style={{
+          fontSize: 13,
+          color: 'var(--color-text)',
+          textDecoration: isDone ? 'line-through' : 'none',
+          fontWeight: 500,
+        }}
+      >
+        {it.name}
+      </span>
+      <span style={ROW_NEED_STYLE}>
+        {it.need} {it.unit}
+      </span>
+      <StatusPill status={it.priority}>{statusLabel}</StatusPill>
+      <Button
+        variant="secondary"
+        onClick={() => onAdd(it.rawId, it.currentQty, it.need)}
+        ariaLabel={addAriaLabel}
+      >
+        {addBtnLabel}
+      </Button>
+    </div>
+  );
+}
+
+const ShoppingListRow = memo(ShoppingListRowImpl);

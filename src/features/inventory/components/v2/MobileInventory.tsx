@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -155,82 +155,104 @@ export function MobileInventory({
             {t(`v2.inventory.empty.${themeKey}`)}
           </div>
         )}
-        {filtered.map((r: DesignItemRow, i) => (
-          <button
+        {filtered.map((r, i) => (
+          <MobileInventoryRow
             key={String(r.item.id)}
-            type="button"
-            onClick={() => onItemSelect(String(r.item.id))}
-            style={{
-              padding: '12px 14px',
-              borderBottom:
-                i < filtered.length - 1
-                  ? '1px solid var(--color-rule-soft)'
-                  : 'none',
-              display: 'grid',
-              gridTemplateColumns: '1fr auto',
-              gap: 10,
-              alignItems: 'center',
-              background: 'transparent',
-              border: 0,
-              fontFamily: 'inherit',
-              color: 'inherit',
-              cursor: 'pointer',
-              textAlign: 'left',
-              width: '100%',
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <StatusDot status={r.status} size={6} />
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: 'var(--color-text)',
-                  }}
-                >
-                  {r.item.name}
-                </span>
-              </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-3)',
-                  marginTop: 3,
-                }}
-              >
-                {r.categoryCode} · {r.item.location ?? '—'}
-              </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 13,
-                  color:
-                    r.item.quantity === 0
-                      ? 'var(--color-crit)'
-                      : 'var(--color-text)',
-                  fontFeatureSettings: '"tnum"',
-                }}
-              >
-                {r.item.quantity}/{r.recommended || '—'}
-              </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-3)',
-                  marginTop: 1,
-                }}
-              >
-                {r.item.expirationDate ?? '—'}
-              </div>
-            </div>
-          </button>
+            row={r}
+            isLast={i === filtered.length - 1}
+            onSelect={onItemSelect}
+          />
         ))}
       </Panel>
     </div>
   );
 }
+
+const ROW_BASE_STYLE: CSSProperties = {
+  padding: '12px 14px',
+  display: 'grid',
+  gridTemplateColumns: '1fr auto',
+  gap: 10,
+  alignItems: 'center',
+  background: 'transparent',
+  border: 0,
+  fontFamily: 'inherit',
+  color: 'inherit',
+  cursor: 'pointer',
+  textAlign: 'left',
+  width: '100%',
+};
+const ROW_LEFT_TITLE_STYLE: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+};
+const ROW_NAME_STYLE: CSSProperties = {
+  fontSize: 13,
+  fontWeight: 500,
+  color: 'var(--color-text)',
+};
+const ROW_META_STYLE: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 10,
+  color: 'var(--color-text-3)',
+  marginTop: 3,
+};
+const ROW_RIGHT_WRAP_STYLE: CSSProperties = { textAlign: 'right' };
+const ROW_QTY_BASE_STYLE: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 13,
+  fontFeatureSettings: '"tnum"',
+};
+const ROW_EXP_STYLE: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 9,
+  color: 'var(--color-text-3)',
+  marginTop: 1,
+};
+
+interface MobileInventoryRowProps {
+  row: DesignItemRow;
+  isLast: boolean;
+  onSelect: (id: string) => void;
+}
+
+function MobileInventoryRowImpl({
+  row: r,
+  isLast,
+  onSelect,
+}: Readonly<MobileInventoryRowProps>) {
+  const rowStyle: CSSProperties = {
+    ...ROW_BASE_STYLE,
+    borderBottom: isLast ? 'none' : '1px solid var(--color-rule-soft)',
+  };
+  const qtyStyle: CSSProperties = {
+    ...ROW_QTY_BASE_STYLE,
+    color: r.item.quantity === 0 ? 'var(--color-crit)' : 'var(--color-text)',
+  };
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(String(r.item.id))}
+      style={rowStyle}
+    >
+      <div>
+        <div style={ROW_LEFT_TITLE_STYLE}>
+          <StatusDot status={r.status} size={6} />
+          <span style={ROW_NAME_STYLE}>{r.item.name}</span>
+        </div>
+        <div style={ROW_META_STYLE}>
+          {r.categoryCode} · {r.item.location ?? '—'}
+        </div>
+      </div>
+      <div style={ROW_RIGHT_WRAP_STYLE}>
+        <div style={qtyStyle}>
+          {r.item.quantity}/{r.recommended || '—'}
+        </div>
+        <div style={ROW_EXP_STYLE}>{r.item.expirationDate ?? '—'}</div>
+      </div>
+    </button>
+  );
+}
+
+const MobileInventoryRow = memo(MobileInventoryRowImpl);

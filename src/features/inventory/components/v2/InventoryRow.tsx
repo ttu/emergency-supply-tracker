@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { memo, type CSSProperties } from 'react';
 import {
   StatusDot,
   StatusPill,
@@ -12,8 +12,34 @@ interface InventoryRowProps {
   onSelect: (id: string) => void;
 }
 
-/** A single row in the inventory grid table. Shares cellStyles with the header. */
-export function InventoryRow({
+const codeStyle: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 10,
+  color: 'var(--color-text-3)',
+};
+const nameStyle: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  color: 'var(--color-text)',
+  fontWeight: 500,
+};
+const categoryStyle: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 10,
+  color: 'var(--color-text-2)',
+};
+const qtyCellStyle: CSSProperties = {
+  textAlign: 'right',
+  fontFamily: 'var(--font-mono)',
+  whiteSpace: 'nowrap',
+};
+const recPartStyle: CSSProperties = { color: 'var(--color-text-3)' };
+
+/** A single row in the inventory grid table. Memoized so the table can render
+ *  hundreds of items without re-rendering every row on unrelated parent state
+ *  changes. Shares `cellStyles` with the header. */
+function InventoryRowImpl({
   row: r,
   cellStyles,
   isLast,
@@ -36,43 +62,13 @@ export function InventoryRow({
         width: '100%',
       }}
     >
-      <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          color: 'var(--color-text-3)',
-        }}
-      >
-        {String(r.item.id).slice(0, 10)}
-      </span>
-      <span
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          color: 'var(--color-text)',
-          fontWeight: 500,
-        }}
-      >
+      <span style={codeStyle}>{String(r.item.id).slice(0, 10)}</span>
+      <span style={nameStyle}>
         <StatusDot status={r.status} size={6} />
         {r.item.name}
       </span>
-      <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          color: 'var(--color-text-2)',
-        }}
-      >
-        {r.categoryCode}
-      </span>
-      <span
-        style={{
-          textAlign: 'right',
-          fontFamily: 'var(--font-mono)',
-          whiteSpace: 'nowrap',
-        }}
-      >
+      <span style={categoryStyle}>{r.categoryCode}</span>
+      <span style={qtyCellStyle}>
         <span
           style={{
             color:
@@ -81,7 +77,7 @@ export function InventoryRow({
         >
           {r.item.quantity}
         </span>
-        <span style={{ color: 'var(--color-text-3)' }}>
+        <span style={recPartStyle}>
           {' / '}
           {r.recommended || '—'}
         </span>
@@ -110,3 +106,5 @@ export function InventoryRow({
     </button>
   );
 }
+
+export const InventoryRow = memo(InventoryRowImpl);

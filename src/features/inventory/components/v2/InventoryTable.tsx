@@ -10,6 +10,47 @@ interface InventoryTableProps {
   onItemSelect: (id: string) => void;
 }
 
+const CELL_STYLES: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns:
+    '80px minmax(160px, 1fr) 70px 110px 100px minmax(80px, 110px) 80px',
+  columnGap: 12,
+  padding: '12px 20px',
+  alignItems: 'center',
+  fontSize: 13,
+};
+
+const HEADER_STYLE: CSSProperties = {
+  ...CELL_STYLES,
+  padding: '10px 20px',
+  fontFamily: 'var(--font-mono)',
+  fontSize: 10,
+  letterSpacing: 'var(--caps-tracking)',
+  textTransform: 'var(--caps-transform)' as CSSProperties['textTransform'],
+  color: 'var(--color-text-3)',
+  fontWeight: 600,
+  borderBottom: '1px solid var(--color-rule-soft)',
+  background: 'var(--color-panel-2)',
+};
+
+const HEADER_RIGHT_CELL: CSSProperties = { textAlign: 'right' };
+
+const EMPTY_STATE_STYLE: CSSProperties = {
+  padding: 32,
+  textAlign: 'center',
+  color: 'var(--color-text-2)',
+};
+
+const FOOTER_STYLE: CSSProperties = {
+  padding: '12px 20px',
+  display: 'flex',
+  justifyContent: 'space-between',
+  fontFamily: 'var(--font-mono)',
+  fontSize: 11,
+  color: 'var(--color-text-3)',
+  borderTop: '1px solid var(--color-rule-soft)',
+};
+
 export function InventoryTable({
   rows,
   totalRowCount,
@@ -17,37 +58,14 @@ export function InventoryTable({
 }: Readonly<InventoryTableProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const cellStyles: CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns:
-      '80px minmax(160px, 1fr) 70px 110px 100px minmax(80px, 110px) 80px',
-    columnGap: 12,
-    padding: '12px 20px',
-    alignItems: 'center',
-    fontSize: 13,
-  };
 
   return (
     <>
-      <div
-        style={{
-          ...cellStyles,
-          padding: '10px 20px',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: 'var(--caps-tracking)',
-          textTransform:
-            'var(--caps-transform)' as CSSProperties['textTransform'],
-          color: 'var(--color-text-3)',
-          fontWeight: 600,
-          borderBottom: '1px solid var(--color-rule-soft)',
-          background: 'var(--color-panel-2)',
-        }}
-      >
+      <div style={HEADER_STYLE}>
         <span>{t('v2.inventory.tableId')}</span>
         <span>{t('v2.inventory.tableItem')}</span>
         <span>{t('v2.inventory.tableCategory')}</span>
-        <span style={{ textAlign: 'right' }}>
+        <span style={HEADER_RIGHT_CELL}>
           {t(`v2.voice.qty.${themeKey}`)} / {t(`v2.voice.rec.${themeKey}`)}
         </span>
         <span>{t(`v2.voice.expires.${themeKey}`)}</span>
@@ -56,13 +74,7 @@ export function InventoryTable({
       </div>
 
       {rows.length === 0 && (
-        <div
-          style={{
-            padding: 32,
-            textAlign: 'center',
-            color: 'var(--color-text-2)',
-          }}
-        >
+        <div style={EMPTY_STATE_STYLE}>
           {t(`v2.inventory.empty.${themeKey}`)}
         </div>
       )}
@@ -71,23 +83,13 @@ export function InventoryTable({
         <InventoryRow
           key={String(r.item.id)}
           row={r}
-          cellStyles={cellStyles}
+          cellStyles={CELL_STYLES}
           isLast={i === rows.length - 1}
           onSelect={onItemSelect}
         />
       ))}
 
-      <div
-        style={{
-          padding: '12px 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-3)',
-          borderTop: '1px solid var(--color-rule-soft)',
-        }}
-      >
+      <div style={FOOTER_STYLE}>
         <span>
           {t('v2.inventory.footerShowing', {
             shown: rows.length,
