@@ -22,12 +22,13 @@ export function RecommendationsSection() {
     exportRecommendedItems,
   } = useRecommendedItems();
 
-  const isPantry = themeKey === 'pantry';
   const totalItems = recommendedItems.length;
 
   const activeKit =
     availableKits.find((k) => k.id === selectedKitId) ?? availableKits[0];
   const activeKitName = activeKit?.name ?? '72tuntia.fi';
+  const displayKitName =
+    themeKey === 'pantry' ? activeKitName : String(activeKitName).toUpperCase();
 
   const disabledList = useMemo(() => {
     return disabledRecommendedItems
@@ -65,18 +66,11 @@ export function RecommendationsSection() {
   };
 
   const handleImportClick = () => {
-    // Defer to v1 import infrastructure: synthesize a click on a hidden file input.
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/json';
     input.onchange = () => {
-      // Importing kits is handled via the v1 KitManagement component which
-      // is mounted in the Custom kits panel below — direct the user there.
-      alert(
-        isPantry
-          ? 'Use the Custom kits panel below to import a kit file.'
-          : 'IMPORT VIA CUSTOM KITS · §7.2',
-      );
+      alert(t(`v2.settings.recommendations.importAlert.${themeKey}`));
     };
     input.click();
   };
@@ -85,16 +79,11 @@ export function RecommendationsSection() {
     <section id="sec-recommendations" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§7"
-        title={isPantry ? 'Recommendations' : 'RECOMMENDATIONS'}
-        sub={
-          isPantry
-            ? 'The 72tuntia.fi baseline — or your own'
-            : 'SOURCE LIST · IMPORT / EXPORT'
-        }
+        title={t(`v2.settings.recommendations.title.${themeKey}`)}
+        sub={t(`v2.settings.recommendations.sub.${themeKey}`)}
       />
 
       <Panel padding={0}>
-        {/* Active recommendations row */}
         <div
           style={{
             padding: '18px 22px',
@@ -107,12 +96,13 @@ export function RecommendationsSection() {
         >
           <div>
             <Caption>
-              {isPantry ? 'Current source' : 'ACTIVE RECOMMENDATIONS'}
+              {t(`v2.settings.recommendations.activeCaption.${themeKey}`)}
             </Caption>
             <div style={{ marginTop: 6, fontSize: 16, fontWeight: 600 }}>
-              {isPantry
-                ? `${activeKitName} · ${totalItems} items`
-                : `${String(activeKitName).toUpperCase()} · ${totalItems} ITEMS`}
+              {t(`v2.settings.recommendations.activeValue.${themeKey}`, {
+                kit: displayKitName,
+                total: totalItems,
+              })}
             </div>
             <div
               style={{
@@ -124,21 +114,22 @@ export function RecommendationsSection() {
               }}
             >
               {selectedKitId
-                ? `KIT · ${String(selectedKitId).toUpperCase()}`
-                : 'BUILT-IN'}
+                ? t('v2.settings.recommendations.kitLabel', {
+                    kit: String(selectedKitId).toUpperCase(),
+                  })
+                : t('v2.settings.recommendations.builtIn')}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <Button variant="secondary" onClick={handleExport}>
-              {isPantry ? 'Export current' : 'EXPORT JSON'}
+              {t(`v2.settings.recommendations.exportBtn.${themeKey}`)}
             </Button>
             <Button variant="primary" onClick={handleImportClick}>
-              {isPantry ? 'Import custom' : 'IMPORT JSON'}
+              {t(`v2.settings.recommendations.importBtn.${themeKey}`)}
             </Button>
           </div>
         </div>
 
-        {/* Disabled section header */}
         <div
           style={{
             padding: '14px 22px',
@@ -149,9 +140,10 @@ export function RecommendationsSection() {
           }}
         >
           <Caption>
-            {isPantry
-              ? `Disabled items · ${disabledList.length} of ${totalItems}`
-              : `DISABLED · ${disabledList.length} OF ${totalItems}`}
+            {t(`v2.settings.recommendations.disabledCaption.${themeKey}`, {
+              count: disabledList.length,
+              total: totalItems,
+            })}
           </Caption>
           <div
             style={{
@@ -160,9 +152,7 @@ export function RecommendationsSection() {
               marginTop: 4,
             }}
           >
-            {isPantry
-              ? "Items you've turned off — they won't appear in your inventory recommendations."
-              : 'EXCLUDED FROM BASELINE COMPUTATION + COVERAGE METRICS'}
+            {t(`v2.settings.recommendations.disabledExplain.${themeKey}`)}
           </div>
         </div>
 
@@ -175,9 +165,7 @@ export function RecommendationsSection() {
               fontSize: 13,
             }}
           >
-            {isPantry
-              ? 'Nothing disabled — every recommended item is active.'
-              : 'NIL · ALL RECOMMENDATIONS ACTIVE'}
+            {t(`v2.settings.recommendations.disabledEmpty.${themeKey}`)}
           </div>
         )}
 
@@ -227,7 +215,7 @@ export function RecommendationsSection() {
               variant="secondary"
               onClick={() => enableRecommendedItem(r.id)}
             >
-              {isPantry ? 'Enable' : 'ENABLE'}
+              {t(`v2.settings.recommendations.enableBtn.${themeKey}`)}
             </Button>
           </div>
         ))}
@@ -249,16 +237,17 @@ export function RecommendationsSection() {
                 color: 'var(--color-text-3)',
               }}
             >
-              {isPantry
-                ? `${disabledList.length} of ${totalItems} disabled`
-                : `${disabledList.length} / ${totalItems} DISABLED`}
+              {t(`v2.settings.recommendations.disabledFooter.${themeKey}`, {
+                count: disabledList.length,
+                total: totalItems,
+              })}
             </span>
             <button
               type="button"
               onClick={enableAllRecommendedItems}
               style={enableAllStyle}
             >
-              {isPantry ? 'Enable all' : 'ENABLE ALL'}
+              {t(`v2.settings.recommendations.enableAllBtn.${themeKey}`)}
             </button>
           </div>
         )}

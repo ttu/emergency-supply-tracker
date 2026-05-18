@@ -15,6 +15,8 @@ describe('RecommendationsSection (v2)', () => {
       }),
     });
     expect(screen.getByText('§7')).toBeInTheDocument();
-    expect(screen.getByText('RECOMMENDATIONS')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.recommendations.title.cockpit'),
+    ).toBeInTheDocument();
   });
 });

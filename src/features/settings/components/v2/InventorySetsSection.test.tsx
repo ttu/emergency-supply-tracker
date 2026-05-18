@@ -10,6 +10,8 @@ describe('InventorySetsSection (v2)', () => {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
     expect(screen.getByText('§3')).toBeInTheDocument();
-    expect(screen.getByText('INVENTORY SETS')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.inventorySets.title.cockpit'),
+    ).toBeInTheDocument();
   });
 });

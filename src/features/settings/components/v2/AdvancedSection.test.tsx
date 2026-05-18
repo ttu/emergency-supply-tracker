@@ -10,14 +10,20 @@ describe('AdvancedSection (v2)', () => {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
     expect(screen.getByText('§5')).toBeInTheDocument();
-    expect(screen.getByText('ADVANCED FEATURES')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.advanced.title.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders the capability toggle labels', () => {
     renderWithProviders(<AdvancedSection />, {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
-    expect(screen.getByText('CALORIE TRACKING')).toBeInTheDocument();
-    expect(screen.getByText('POWER MANAGEMENT')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.advanced.calorie.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.advanced.power.cockpit'),
+    ).toBeInTheDocument();
   });
 });

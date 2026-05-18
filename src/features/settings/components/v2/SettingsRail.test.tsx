@@ -5,8 +5,12 @@ import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
 
 const sections = [
-  { id: 'appearance', code: '01', label: 'APPEARANCE' },
-  { id: 'household', code: '02', label: 'HOUSEHOLD' },
+  {
+    id: 'appearance',
+    code: '01',
+    label: 'v2.settings.appearance.title.cockpit',
+  },
+  { id: 'household', code: '02', label: 'v2.settings.household.title.cockpit' },
   { id: 'danger', code: '11', label: 'DANGER ZONE', danger: true },
 ];
 
@@ -24,10 +28,14 @@ describe('SettingsRail (v2)', () => {
   it('renders one button per section with code and label', () => {
     renderRail();
     expect(
-      screen.getByRole('button', { name: /01.*APPEARANCE/ }),
+      screen.getByRole('button', {
+        name: /01.*v2.settings.appearance.title.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /02.*HOUSEHOLD/ }),
+      screen.getByRole('button', {
+        name: /02.*v2.settings.household.title.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /11.*DANGER ZONE/ }),
@@ -37,17 +45,25 @@ describe('SettingsRail (v2)', () => {
   it('marks the active section with aria-current="true"', () => {
     renderRail('household');
     expect(
-      screen.getByRole('button', { name: /02.*HOUSEHOLD/ }),
+      screen.getByRole('button', {
+        name: /02.*v2.settings.household.title.cockpit/,
+      }),
     ).toHaveAttribute('aria-current', 'true');
     expect(
-      screen.getByRole('button', { name: /01.*APPEARANCE/ }),
+      screen.getByRole('button', {
+        name: /01.*v2.settings.appearance.title.cockpit/,
+      }),
     ).not.toHaveAttribute('aria-current');
   });
 
   it('clicking a section forwards its id via onSelect', () => {
     const onSelect = vi.fn();
     renderRail('appearance', onSelect);
-    fireEvent.click(screen.getByRole('button', { name: /02.*HOUSEHOLD/ }));
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /02.*v2.settings.household.title.cockpit/,
+      }),
+    );
     expect(onSelect).toHaveBeenCalledWith('household');
   });
 

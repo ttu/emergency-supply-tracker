@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Title } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
@@ -33,7 +34,8 @@ const SECTION_IDS = [
 ] as const;
 
 export function SettingsFull() {
-  const { themeKey, voice } = useDesignTheme();
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
   const isMobile = useIsMobile();
   const { activeSection, scrollToSection } = useSettingsScrollSpy(
     SECTION_IDS,
@@ -45,61 +47,57 @@ export function SettingsFull() {
       {
         id: 'appearance',
         code: '01',
-        label: themeKey === 'pantry' ? 'Appearance' : 'APPEARANCE',
+        label: t(`v2.settings.nav.appearance.${themeKey}`),
       },
       {
         id: 'household',
         code: '02',
-        label: themeKey === 'pantry' ? 'Household' : 'HOUSEHOLD',
+        label: t(`v2.settings.nav.household.${themeKey}`),
       },
       {
         id: 'inventorysets',
         code: '03',
-        label: themeKey === 'pantry' ? 'Inventory sets' : 'INVENTORY SETS',
+        label: t(`v2.settings.nav.inventorysets.${themeKey}`),
       },
       {
         id: 'nutrition',
         code: '04',
-        label: themeKey === 'pantry' ? 'Nutrition' : 'NUTRITION',
+        label: t(`v2.settings.nav.nutrition.${themeKey}`),
       },
       {
         id: 'advanced',
         code: '05',
-        label: themeKey === 'pantry' ? 'Advanced' : 'ADVANCED',
+        label: t(`v2.settings.nav.advanced.${themeKey}`),
       },
       {
         id: 'notifications',
         code: '06',
-        label: themeKey === 'pantry' ? 'Notifications' : 'NOTIFICATIONS',
+        label: t(`v2.settings.nav.notifications.${themeKey}`),
       },
       {
         id: 'recommendations',
         code: '07',
-        label: themeKey === 'pantry' ? 'Recommendations' : 'RECOMMENDATIONS',
+        label: t(`v2.settings.nav.recommendations.${themeKey}`),
       },
       {
         id: 'categories',
         code: '08',
-        label: themeKey === 'pantry' ? 'Categories' : 'CATEGORIES',
+        label: t(`v2.settings.nav.categories.${themeKey}`),
       },
-      {
-        id: 'data',
-        code: '09',
-        label: themeKey === 'pantry' ? 'Data & backup' : 'DATA & BACKUP',
-      },
+      { id: 'data', code: '09', label: t(`v2.settings.nav.data.${themeKey}`) },
       {
         id: 'about',
         code: '10',
-        label: themeKey === 'pantry' ? 'About' : 'ABOUT',
+        label: t(`v2.settings.nav.about.${themeKey}`),
       },
       {
         id: 'danger',
         code: '11',
-        label: themeKey === 'pantry' ? 'Danger zone' : 'DANGER ZONE',
+        label: t(`v2.settings.nav.danger.${themeKey}`),
         danger: true,
       },
     ],
-    [themeKey],
+    [t, themeKey],
   );
 
   return (
@@ -129,9 +127,9 @@ export function SettingsFull() {
         }}
       >
         <div>
-          <Caption>{voice.settings}</Caption>
+          <Caption>{t(`v2.voice.settings.${themeKey}`)}</Caption>
           <Title size={36} style={{ marginTop: 6 }}>
-            {themeKey === 'pantry' ? 'Settings' : 'SYSTEM CONFIGURATION'}
+            {t(`v2.settings.title.${themeKey}`)}
           </Title>
           <p
             style={{
@@ -143,9 +141,7 @@ export function SettingsFull() {
               lineHeight: 1.55,
             }}
           >
-            {themeKey === 'pantry'
-              ? 'Everything that changes how the app behaves. Most of these have sensible defaults — change what matters to you.'
-              : 'COMPLETE PARAMETER SET. ALL VALUES PERSIST LOCALLY. CHANGES TAKE EFFECT IMMEDIATELY UNLESS NOTED.'}
+            {t(`v2.settings.intro.${themeKey}`)}
           </p>
         </div>
 
@@ -180,7 +176,7 @@ export function SettingsFull() {
             variant="ghost"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            ↑ {themeKey === 'pantry' ? 'Back to top' : 'BACK TO TOP'}
+            ↑ {t(`v2.settings.backToTop.${themeKey}`)}
           </Button>
         </div>
       </div>

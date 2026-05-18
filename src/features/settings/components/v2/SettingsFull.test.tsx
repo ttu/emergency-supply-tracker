@@ -17,44 +17,62 @@ const setup = () =>
 describe('SettingsFull (v2 orchestrator)', () => {
   it('renders the page title and lead copy in cockpit voice', () => {
     setup();
-    expect(screen.getByText('SETTINGS')).toBeInTheDocument();
-    expect(screen.getByText('SYSTEM CONFIGURATION')).toBeInTheDocument();
+    expect(screen.getByText('v2.settings.title.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.settings.title.cockpit')).toBeInTheDocument();
   });
 
   it('renders the SettingsRail with all 11 section labels', () => {
     setup();
     expect(
-      screen.getByRole('button', { name: /01.*APPEARANCE/ }),
+      screen.getByRole('button', {
+        name: /01.*v2.settings.nav.appearance.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /02.*HOUSEHOLD/ }),
+      screen.getByRole('button', {
+        name: /02.*v2.settings.nav.household.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /03.*INVENTORY SETS/ }),
+      screen.getByRole('button', {
+        name: /03.*v2.settings.nav.inventorysets.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /04.*NUTRITION/ }),
+      screen.getByRole('button', {
+        name: /04.*v2.settings.nav.nutrition.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /05.*ADVANCED/ }),
+      screen.getByRole('button', {
+        name: /05.*v2.settings.nav.advanced.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /06.*NOTIFICATIONS/ }),
+      screen.getByRole('button', {
+        name: /06.*v2.settings.nav.notifications.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /07.*RECOMMENDATIONS/ }),
+      screen.getByRole('button', {
+        name: /07.*v2.settings.nav.recommendations.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /08.*CATEGORIES/ }),
+      screen.getByRole('button', {
+        name: /08.*v2.settings.nav.categories.cockpit/,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /09.*DATA & BACKUP/ }),
+      screen.getByRole('button', { name: /09.*v2.settings.nav.data.cockpit/ }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /10.*ABOUT/ }),
+      screen.getByRole('button', { name: /10.*v2.settings.nav.about.cockpit/ }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /11.*DANGER ZONE/ }),
+      screen.getByRole('button', {
+        name: /11.*v2.settings.nav.danger.cockpit/,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -80,7 +98,7 @@ describe('SettingsFull (v2 orchestrator)', () => {
   it('renders the BACK TO TOP footer button', () => {
     setup();
     expect(
-      screen.getByRole('button', { name: /BACK TO TOP/ }),
+      screen.getByRole('button', { name: /v2.settings.backToTop.cockpit/ }),
     ).toBeInTheDocument();
   });
 });

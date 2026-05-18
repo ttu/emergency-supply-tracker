@@ -1,11 +1,12 @@
+import { useTranslation } from 'react-i18next';
 import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
 import { useDesignPrefs } from '@/features/settings/hooks/useDesignPref';
 import { SectionHeader, ToggleRow } from './SettingsRows';
 
-/** §5 Advanced features: 5 capability toggles. */
 export function AdvancedSection() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
   const [designPrefs, setDesignPref] = useDesignPrefs();
@@ -22,77 +23,37 @@ export function AdvancedSection() {
     <section id="sec-advanced" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§5"
-        title={
-          themeKey === 'pantry' ? 'Advanced features' : 'ADVANCED FEATURES'
-        }
-        sub={
-          themeKey === 'pantry'
-            ? 'Disabled by default — turn on what you need'
-            : 'OPTIONAL CAPABILITIES · DISABLED BY DEFAULT'
-        }
+        title={t(`v2.settings.advanced.title.${themeKey}`)}
+        sub={t(`v2.settings.advanced.sub.${themeKey}`)}
       />
       <Panel padding={0}>
         <ToggleRow
-          label={
-            themeKey === 'pantry' ? 'Calorie tracking' : 'CALORIE TRACKING'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? 'Track total calories across food items.'
-              : 'TOTAL KCAL ACROSS FOOD INVENTORY'
-          }
+          label={t(`v2.settings.advanced.calorie.${themeKey}`)}
+          hint={t(`v2.settings.advanced.calorieHint.${themeKey}`)}
           on={adv.calorieTracking}
           onChange={setAdv('calorieTracking')}
         />
         <ToggleRow
-          label={
-            themeKey === 'pantry' ? 'Power management' : 'POWER MANAGEMENT'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? 'Estimate days of power from batteries and power banks.'
-              : 'COMPUTE OFF-GRID RUNTIME'
-          }
+          label={t(`v2.settings.advanced.power.${themeKey}`)}
+          hint={t(`v2.settings.advanced.powerHint.${themeKey}`)}
           on={adv.powerManagement}
           onChange={setAdv('powerManagement')}
         />
         <ToggleRow
-          label={
-            themeKey === 'pantry'
-              ? 'Water tracking (advanced)'
-              : 'WATER TRACKING · ADVANCED'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? 'Separate tracking for drinking, cooking, and hygiene water.'
-              : 'SPLIT INTO DRINK / COOK / HYGIENE BUCKETS'
-          }
+          label={t(`v2.settings.advanced.water.${themeKey}`)}
+          hint={t(`v2.settings.advanced.waterHint.${themeKey}`)}
           on={adv.waterTracking}
           onChange={setAdv('waterTracking')}
         />
         <ToggleRow
-          label={
-            themeKey === 'pantry' ? 'Plan view (preview)' : 'PLAN VIEW · BETA'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? 'Track high-level preparedness goals, not just items.'
-              : 'OBJECTIVE-LEVEL TRACKING · v0.5'
-          }
+          label={t(`v2.settings.advanced.planView.${themeKey}`)}
+          hint={t(`v2.settings.advanced.planViewHint.${themeKey}`)}
           on={designPrefs.planViewBeta}
           onChange={(v) => setDesignPref('planViewBeta', v)}
         />
         <ToggleRow
-          label={
-            themeKey === 'pantry'
-              ? 'Multi-device sync (coming soon)'
-              : 'MULTI-DEVICE SYNC · ROADMAP'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? 'Share inventory across devices via encrypted backup.'
-              : 'NOT YET AVAILABLE · E2E ENCRYPTED'
-          }
+          label={t(`v2.settings.advanced.sync.${themeKey}`)}
+          hint={t(`v2.settings.advanced.syncHint.${themeKey}`)}
           on={false}
           onChange={() => {
             /* roadmap — disabled */

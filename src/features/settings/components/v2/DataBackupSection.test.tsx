@@ -15,9 +15,17 @@ describe('DataBackupSection (v2)', () => {
       }),
     });
     expect(screen.getByText('§9')).toBeInTheDocument();
-    expect(screen.getByText('DATA & BACKUP')).toBeInTheDocument();
-    expect(screen.getByText(/STORAGE · §9\.1/)).toBeInTheDocument();
-    expect(screen.getByText(/BACKUP · §9\.2/)).toBeInTheDocument();
-    expect(screen.getByText(/DIAGNOSTICS · §9\.3/)).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.data.title.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.data.storageHeader.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.data.backupHeader.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.data.diagnosticsHeader.cockpit'),
+    ).toBeInTheDocument();
   });
 });

@@ -5,31 +5,26 @@ import { APP_VERSION } from '@/shared/utils/version';
 import { CONTACT_EMAIL } from '@/shared/utils/constants';
 import { Caption, PanelHeader, SectionHeader } from './SettingsRows';
 
-/** §10 About: app info, version/license/source, external links. */
 export function AboutSection() {
-  const { themeKey } = useDesignTheme();
   const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
 
   const links = [
     {
       href: 'https://github.com/ttu/emergency-supply-tracker',
-      label:
-        themeKey === 'pantry'
-          ? 'Source code (GitHub)'
-          : 'GITHUB · ttu/emergency-supply-tracker',
+      label: t(`v2.settings.about.linkSource.${themeKey}`),
     },
     {
       href: 'https://github.com/ttu/emergency-supply-tracker/issues',
-      label: themeKey === 'pantry' ? 'Report an issue' : 'BUG TRACKER',
+      label: t(`v2.settings.about.linkBugs.${themeKey}`),
     },
     {
       href: 'https://72tuntia.fi',
-      label:
-        themeKey === 'pantry' ? '72tuntia.fi guidance' : '72TUNTIA.FI · SOURCE',
+      label: t(`v2.settings.about.link72tuntia.${themeKey}`),
     },
     {
       href: `mailto:${CONTACT_EMAIL}`,
-      label: themeKey === 'pantry' ? 'Contact' : 'CONTACT',
+      label: t(`v2.settings.about.linkContact.${themeKey}`),
     },
   ];
 
@@ -37,7 +32,7 @@ export function AboutSection() {
     <section id="sec-about" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§10"
-        title={themeKey === 'pantry' ? 'About' : 'ABOUT'}
+        title={t(`v2.settings.about.title.${themeKey}`)}
       />
       <div
         style={{
@@ -47,11 +42,7 @@ export function AboutSection() {
         }}
       >
         <Panel padding={22}>
-          <Caption>
-            {themeKey === 'pantry'
-              ? 'Emergency Supply Tracker'
-              : 'EMERGENCY SUPPLY TRACKER · EST'}
-          </Caption>
+          <Caption>{t(`v2.settings.about.appCaption.${themeKey}`)}</Caption>
           <p
             style={{
               fontSize: 14,
@@ -74,22 +65,22 @@ export function AboutSection() {
             }}
           >
             <AboutStat
-              label={themeKey === 'pantry' ? 'Version' : 'BUILD'}
+              label={t(`v2.settings.about.version.${themeKey}`)}
               value={APP_VERSION}
             />
             <AboutStat
-              label={themeKey === 'pantry' ? 'License' : 'LICENSE'}
+              label={t(`v2.settings.about.license.${themeKey}`)}
               value="MIT"
             />
             <AboutStat
-              label={themeKey === 'pantry' ? 'Source' : 'SOURCE'}
+              label={t(`v2.settings.about.source.${themeKey}`)}
               value="72tuntia.fi"
             />
           </div>
         </Panel>
         <Panel padding={0}>
           <PanelHeader>
-            {themeKey === 'pantry' ? 'Links' : 'EXTERNAL'}
+            {t(`v2.settings.about.linksHeader.${themeKey}`)}
           </PanelHeader>
           {links.map((l, i) => (
             <a

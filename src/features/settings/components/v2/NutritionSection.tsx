@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
@@ -15,8 +16,8 @@ import {
   ToggleRow,
 } from './SettingsRows';
 
-/** §4 Nutrition: kcal/water/children steppers + expiry warn + hygiene toggle. */
 export function NutritionSection() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
   const [designPrefs, setDesignPref] = useDesignPrefs();
@@ -31,29 +32,15 @@ export function NutritionSection() {
     <section id="sec-nutrition" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§4"
-        title={
-          themeKey === 'pantry'
-            ? 'Nutrition & requirements'
-            : 'NUTRITION & REQUIREMENTS'
-        }
-        sub={
-          themeKey === 'pantry'
-            ? 'Fine-tune per-person targets'
-            : 'OVERRIDE DEFAULT PER-PERSON BASELINES'
-        }
+        title={t(`v2.settings.nutrition.title.${themeKey}`)}
+        sub={t(`v2.settings.nutrition.sub.${themeKey}`)}
       />
       <Panel padding={0}>
         <StepperRow
-          label={
-            themeKey === 'pantry'
-              ? 'Calories per person per day'
-              : 'KCAL · PERSON · DAY'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? `Default: ${DAILY_CALORIES_PER_PERSON}`
-              : `DEFAULT ${DAILY_CALORIES_PER_PERSON} · 72TUNTIA.FI BASELINE`
-          }
+          label={t(`v2.settings.nutrition.calories.${themeKey}`)}
+          hint={t(`v2.settings.nutrition.caloriesHint.${themeKey}`, {
+            default: DAILY_CALORIES_PER_PERSON,
+          })}
           value={cal}
           onChange={(v) =>
             updateSettings({ dailyCaloriesPerPerson: Math.max(0, v) })
@@ -64,16 +51,8 @@ export function NutritionSection() {
           suffix="kcal"
         />
         <StepperRow
-          label={
-            themeKey === 'pantry'
-              ? 'Water per person per day'
-              : 'WATER · PERSON · DAY'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? 'Drinking and cooking combined'
-              : 'DRINKING + COOKING · L'
-          }
+          label={t(`v2.settings.nutrition.water.${themeKey}`)}
+          hint={t(`v2.settings.nutrition.waterHint.${themeKey}`)}
           value={water}
           onChange={(v) =>
             updateSettings({ dailyWaterPerPerson: Math.max(0, v) })
@@ -85,14 +64,8 @@ export function NutritionSection() {
           suffix="L"
         />
         <StepperRow
-          label={
-            themeKey === 'pantry' ? 'Children scale' : 'CHILDREN MULTIPLIER'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? 'Children typically need less — default 75%'
-              : 'PERCENT OF ADULT BASELINE'
-          }
+          label={t(`v2.settings.nutrition.children.${themeKey}`)}
+          hint={t(`v2.settings.nutrition.childrenHint.${themeKey}`)}
           value={childPct}
           onChange={(v) =>
             updateSettings({
@@ -107,25 +80,13 @@ export function NutritionSection() {
           suffix="%"
         />
         <ReadField
-          label={
-            themeKey === 'pantry'
-              ? 'Expiry warning window'
-              : 'EXPIRY WARN WINDOW'
-          }
+          label={t(`v2.settings.nutrition.expiryWindow.${themeKey}`)}
           value="30 days"
-          hint={themeKey === 'pantry' ? 'fixed' : 'WARN ≤ N DAYS BEFORE EXPIRY'}
+          hint={t(`v2.settings.nutrition.expiryWindowHint.${themeKey}`)}
         />
         <ToggleRow
-          label={
-            themeKey === 'pantry'
-              ? 'Track hygiene water separately'
-              : 'TRACK HYGIENE WATER SEPARATELY'
-          }
-          hint={
-            themeKey === 'pantry'
-              ? 'Add 3 L/person/day for hygiene'
-              : 'ADDS 3 L/PERSON/DAY · ADV WATER MODE'
-          }
+          label={t(`v2.settings.nutrition.hygiene.${themeKey}`)}
+          hint={t(`v2.settings.nutrition.hygieneHint.${themeKey}`)}
           on={designPrefs.trackHygieneWaterSeparately}
           onChange={(v) => setDesignPref('trackHygieneWaterSeparately', v)}
           last

@@ -1510,6 +1510,764 @@
         }
       }
     },
+    "settings": {
+      "title": {
+        "cockpit": "JÄRJESTELMÄN ASETUKSET",
+        "civil": "JÄRJESTELMÄN ASETUKSET",
+        "pantry": "Asetukset"
+      },
+      "intro": {
+        "cockpit": "TÄYDELLINEN PARAMETRIJOUKKO. KAIKKI ARVOT TALLENNETAAN PAIKALLISESTI. MUUTOKSET TULEVAT VOIMAAN HETI, ELLEI TOISIN MAINITTU.",
+        "civil": "TÄYDELLINEN PARAMETRIJOUKKO. KAIKKI ARVOT TALLENNETAAN PAIKALLISESTI. MUUTOKSET TULEVAT VOIMAAN HETI, ELLEI TOISIN MAINITTU.",
+        "pantry": "Kaikki asetukset jotka muuttavat sovelluksen toimintaa. Useimmilla on järkevät oletukset — muuta vain ne joilla on merkitystä."
+      },
+      "backToTop": {
+        "cockpit": "YLÖS",
+        "civil": "YLÖS",
+        "pantry": "Takaisin ylös"
+      },
+      "railSections": {
+        "cockpit": "OSIOT",
+        "civil": "OSIOT",
+        "pantry": "Osiot"
+      },
+      "nav": {
+        "appearance": {
+          "cockpit": "ULKOASU",
+          "civil": "ULKOASU",
+          "pantry": "Ulkoasu"
+        },
+        "household": {
+          "cockpit": "KOTITALOUS",
+          "civil": "KOTITALOUS",
+          "pantry": "Kotitalous"
+        },
+        "inventorysets": {
+          "cockpit": "VARASTOSARJAT",
+          "civil": "VARASTOSARJAT",
+          "pantry": "Varastosarjat"
+        },
+        "nutrition": {
+          "cockpit": "RAVITSEMUS",
+          "civil": "RAVITSEMUS",
+          "pantry": "Ravitsemus"
+        },
+        "advanced": {
+          "cockpit": "LISÄASETUKSET",
+          "civil": "LISÄASETUKSET",
+          "pantry": "Lisäasetukset"
+        },
+        "notifications": {
+          "cockpit": "ILMOITUKSET",
+          "civil": "ILMOITUKSET",
+          "pantry": "Ilmoitukset"
+        },
+        "recommendations": {
+          "cockpit": "SUOSITUKSET",
+          "civil": "SUOSITUKSET",
+          "pantry": "Suositukset"
+        },
+        "categories": {
+          "cockpit": "KATEGORIAT",
+          "civil": "KATEGORIAT",
+          "pantry": "Kategoriat"
+        },
+        "data": {
+          "cockpit": "DATA & VARMUUSKOPIO",
+          "civil": "DATA & VARMUUSKOPIO",
+          "pantry": "Data & varmuuskopio"
+        },
+        "about": {
+          "cockpit": "TIETOJA",
+          "civil": "TIETOJA",
+          "pantry": "Tietoja"
+        },
+        "danger": {
+          "cockpit": "VAARAVYÖHYKE",
+          "civil": "VAARAVYÖHYKE",
+          "pantry": "Vaaravyöhyke"
+        }
+      },
+      "appearance": {
+        "title": {
+          "cockpit": "ULKOASU",
+          "civil": "ULKOASU",
+          "pantry": "Ulkoasu"
+        },
+        "themeHeader": {
+          "cockpit": "TEEMA · §1.1",
+          "civil": "TEEMA · §1.1",
+          "pantry": "Teema"
+        },
+        "languageHeader": {
+          "cockpit": "KIELI · §1.2",
+          "civil": "KIELI · §1.2",
+          "pantry": "Kieli"
+        },
+        "highContrast": {
+          "cockpit": "KORKEAN KONTRASTIN TILA",
+          "civil": "KORKEAN KONTRASTIN TILA",
+          "pantry": "Korkea kontrasti"
+        },
+        "highContrastHint": {
+          "cockpit": "KASVATTAA KONTRASTIA YLI WCAG AA · OHITTAA AKTIIVISEN TEEMAPALETIN",
+          "civil": "KASVATTAA KONTRASTIA YLI WCAG AA · OHITTAA AKTIIVISEN TEEMAPALETIN",
+          "pantry": "Tehostaa värejä ja reunoja paremman luettavuuden vuoksi."
+        },
+        "reduceMotion": {
+          "cockpit": "VÄHENNÄ LIIKETTÄ",
+          "civil": "VÄHENNÄ LIIKETTÄ",
+          "pantry": "Vähennä liikettä"
+        },
+        "reduceMotionHint": {
+          "cockpit": "POISTAA SIIRTYMÄT · KUNNIOITTAA prefers-reduced-motion",
+          "civil": "POISTAA SIIRTYMÄT · KUNNIOITTAA prefers-reduced-motion",
+          "pantry": "Poistaa ei-välttämättömät animaatiot."
+        }
+      },
+      "classic": {
+        "blurb": {
+          "cockpit": "KLASSISET TEEMAT PALAUTTAVAT V1-SOVELLUSKUOREN. PALAA MIHIN TAHANSA DESIGN V2 -TEEMAAN YLLÄ TAKAISIN.",
+          "civil": "KLASSISET TEEMAT PALAUTTAVAT V1-SOVELLUSKUOREN. PALAA MIHIN TAHANSA DESIGN V2 -TEEMAAN YLLÄ TAKAISIN.",
+          "pantry": "Pidätkö alkuperäisestä asettelusta? Vaihda klassiseen teemaan — design v2 -kuori poistuu ja edellinen sovellus palaa."
+        },
+        "label": {
+          "cockpit": "KLASSINEN TEEMA",
+          "civil": "KLASSINEN TEEMA",
+          "pantry": "Klassinen teema"
+        },
+        "placeholder": {
+          "cockpit": "VALITSE KLASSINEN TEEMA…",
+          "civil": "VALITSE KLASSINEN TEEMA…",
+          "pantry": "Valitse klassinen teema…"
+        }
+      },
+      "household": {
+        "title": {
+          "cockpit": "KOTITALOUS",
+          "civil": "KOTITALOUS",
+          "pantry": "Kotitalous"
+        },
+        "profileHeader": {
+          "cockpit": "PROFIILI · §2.1",
+          "civil": "PROFIILI · §2.1",
+          "pantry": "Profiili"
+        },
+        "adults": {
+          "cockpit": "AIKUISET",
+          "civil": "AIKUISET",
+          "pantry": "Aikuiset"
+        },
+        "adultsHint": {
+          "cockpit": "IKÄ ≥ 14 · 1.0× SKAALA",
+          "civil": "IKÄ ≥ 14 · 1.0× SKAALA",
+          "pantry": "14 vuotta ja vanhemmat"
+        },
+        "children": {
+          "cockpit": "LAPSET",
+          "civil": "LAPSET",
+          "pantry": "Lapset"
+        },
+        "childrenHint": {
+          "cockpit": "IKÄ < 14 · 0.75× SKAALA",
+          "civil": "IKÄ < 14 · 0.75× SKAALA",
+          "pantry": "Alle 14 v. — 75 % annoksesta"
+        },
+        "pets": {
+          "cockpit": "LEMMIKIT",
+          "civil": "LEMMIKIT",
+          "pantry": "Lemmikit"
+        },
+        "petsHint": {
+          "cockpit": "OTTAA KÄYTTÖÖN §LEMMIKIT-KATEGORIAN",
+          "civil": "OTTAA KÄYTTÖÖN §LEMMIKIT-KATEGORIAN",
+          "pantry": "Lisää lemmikkikategorian"
+        },
+        "days": {
+          "cockpit": "KATTAVUUSTAVOITE",
+          "civil": "KATTAVUUSTAVOITE",
+          "pantry": "Tavoitepäivät"
+        },
+        "daysHint": {
+          "cockpit": "PÄIVÄÄ · OMAVARAISUUSTAVOITE",
+          "civil": "PÄIVÄÄ · OMAVARAISUUSTAVOITE",
+          "pantry": "Kuinka monta päivää haluat olla omavarainen"
+        },
+        "freezer": {
+          "cockpit": "KÄYTÄ PAKASTINTA",
+          "civil": "KÄYTÄ PAKASTINTA",
+          "pantry": "Käytä pakastinta"
+        },
+        "freezerHint": {
+          "cockpit": "SISÄLLYTTÄÄ PAKASTETUT TUOTTEET PERUSTASOON",
+          "civil": "SISÄLLYTTÄÄ PAKASTETUT TUOTTEET PERUSTASOON",
+          "pantry": "Lisää pakastettujen ruokien suosituksia"
+        },
+        "calculated": {
+          "cockpit": "LASKETTU · LIVE",
+          "civil": "LASKETTU · LIVE",
+          "pantry": "Laskettu"
+        },
+        "waterFor": {
+          "cockpit": "VETTÄ · {{days}}VRK",
+          "civil": "VETTÄ · {{days}}VRK",
+          "pantry": "vettä {{days}} päivään"
+        },
+        "totalFood": {
+          "cockpit": "YHT · {{days}}VRK",
+          "civil": "YHT · {{days}}VRK",
+          "pantry": "ruokaa yhteensä"
+        },
+        "itemsTracked": {
+          "cockpit": "VARASTON TUOTTEET",
+          "civil": "VARASTON TUOTTEET",
+          "pantry": "Seurattavat tuotteet"
+        }
+      },
+      "inventorySets": {
+        "title": {
+          "cockpit": "VARASTOSARJAT",
+          "civil": "VARASTOSARJAT",
+          "pantry": "Varastosarjat"
+        },
+        "sub": {
+          "cockpit": "RINNAKKAISET KONTEKSTIT · KOTI · AUTO · MÖKKI",
+          "civil": "RINNAKKAISET KONTEKSTIT · KOTI · AUTO · MÖKKI",
+          "pantry": "Useita pakkauksia — koti, auto, mökki"
+        }
+      },
+      "nutrition": {
+        "title": {
+          "cockpit": "RAVITSEMUS & VAATIMUKSET",
+          "civil": "RAVITSEMUS & VAATIMUKSET",
+          "pantry": "Ravitsemus & vaatimukset"
+        },
+        "sub": {
+          "cockpit": "OHITA OLETUS PER HENKILÖ -PERUSTASOT",
+          "civil": "OHITA OLETUS PER HENKILÖ -PERUSTASOT",
+          "pantry": "Hienosäädä per henkilö -tavoitteita"
+        },
+        "calories": {
+          "cockpit": "KCAL · HLÖ · VRK",
+          "civil": "KCAL · HLÖ · VRK",
+          "pantry": "Kalorit per henkilö per päivä"
+        },
+        "caloriesHint": {
+          "cockpit": "OLETUS {{default}} · 72TUNTIA.FI PERUSTASO",
+          "civil": "OLETUS {{default}} · 72TUNTIA.FI PERUSTASO",
+          "pantry": "Oletus: {{default}}"
+        },
+        "water": {
+          "cockpit": "VESI · HLÖ · VRK",
+          "civil": "VESI · HLÖ · VRK",
+          "pantry": "Vesi per henkilö per päivä"
+        },
+        "waterHint": {
+          "cockpit": "JUOMINEN + RUOANLAITTO · L",
+          "civil": "JUOMINEN + RUOANLAITTO · L",
+          "pantry": "Juominen ja ruoanlaitto yhteensä"
+        },
+        "children": {
+          "cockpit": "LASTEN KERROIN",
+          "civil": "LASTEN KERROIN",
+          "pantry": "Lasten skaala"
+        },
+        "childrenHint": {
+          "cockpit": "PROSENTTIA AIKUISTEN PERUSTASOSTA",
+          "civil": "PROSENTTIA AIKUISTEN PERUSTASOSTA",
+          "pantry": "Lapset tarvitsevat tyypillisesti vähemmän — oletus 75 %"
+        },
+        "expiryWindow": {
+          "cockpit": "VANHENEMISEN VAROITUSIKKUNA",
+          "civil": "VANHENEMISEN VAROITUSIKKUNA",
+          "pantry": "Vanhenemisvaroitus"
+        },
+        "expiryWindowHint": {
+          "cockpit": "VAROITA ≤ N PÄIVÄÄ ENNEN VANHENEMISTA",
+          "civil": "VAROITA ≤ N PÄIVÄÄ ENNEN VANHENEMISTA",
+          "pantry": "kiinteä"
+        },
+        "hygiene": {
+          "cockpit": "SEURAA HYGIENIAVETTÄ ERIKSEEN",
+          "civil": "SEURAA HYGIENIAVETTÄ ERIKSEEN",
+          "pantry": "Seuraa hygieniavettä erikseen"
+        },
+        "hygieneHint": {
+          "cockpit": "LISÄÄ 3 L/HLÖ/VRK · ADV-VESITILA",
+          "civil": "LISÄÄ 3 L/HLÖ/VRK · ADV-VESITILA",
+          "pantry": "Lisää 3 l/hlö/vrk hygieniaan"
+        }
+      },
+      "advanced": {
+        "title": {
+          "cockpit": "LISÄOMINAISUUDET",
+          "civil": "LISÄOMINAISUUDET",
+          "pantry": "Lisäominaisuudet"
+        },
+        "sub": {
+          "cockpit": "VALINNAISET KYVYT · POIS PÄÄLTÄ OLETUKSENA",
+          "civil": "VALINNAISET KYVYT · POIS PÄÄLTÄ OLETUKSENA",
+          "pantry": "Pois päältä oletuksena — ota käyttöön tarpeen mukaan"
+        },
+        "calorie": {
+          "cockpit": "KALORISEURANTA",
+          "civil": "KALORISEURANTA",
+          "pantry": "Kaloriseuranta"
+        },
+        "calorieHint": {
+          "cockpit": "KCAL YHTEENSÄ KOKO RUOKAVARASTOSSA",
+          "civil": "KCAL YHTEENSÄ KOKO RUOKAVARASTOSSA",
+          "pantry": "Seuraa kaloreita yhteensä koko ruokavarastossa."
+        },
+        "power": {
+          "cockpit": "VIRRANHALLINTA",
+          "civil": "VIRRANHALLINTA",
+          "pantry": "Virranhallinta"
+        },
+        "powerHint": {
+          "cockpit": "LASKE OFF-GRID-KÄYTTÖAIKA",
+          "civil": "LASKE OFF-GRID-KÄYTTÖAIKA",
+          "pantry": "Arvioi virran riittävyys akuista ja virtapankeista."
+        },
+        "water": {
+          "cockpit": "VESISEURANTA · LAAJENNETTU",
+          "civil": "VESISEURANTA · LAAJENNETTU",
+          "pantry": "Vesiseuranta (laajennettu)"
+        },
+        "waterHint": {
+          "cockpit": "JAA JUOMA / RUOANLAITTO / HYGIENIA -ÄMPÄREIHIN",
+          "civil": "JAA JUOMA / RUOANLAITTO / HYGIENIA -ÄMPÄREIHIN",
+          "pantry": "Erillinen seuranta juoma-, ruoanlaitto- ja hygieniavedelle."
+        },
+        "planView": {
+          "cockpit": "SUUNNITELMA · BETA",
+          "civil": "SUUNNITELMA · BETA",
+          "pantry": "Suunnitelmanäkymä (esikatselu)"
+        },
+        "planViewHint": {
+          "cockpit": "TAVOITETASOINEN SEURANTA · v0.5",
+          "civil": "TAVOITETASOINEN SEURANTA · v0.5",
+          "pantry": "Seuraa varautumistavoitteita yksittäisten tuotteiden lisäksi."
+        },
+        "sync": {
+          "cockpit": "MONILAITESYNK · TIEKARTALLA",
+          "civil": "MONILAITESYNK · TIEKARTALLA",
+          "pantry": "Monilaite­synkronointi (tulossa)"
+        },
+        "syncHint": {
+          "cockpit": "EI VIELÄ KÄYTÖSSÄ · E2E-SALATTU",
+          "civil": "EI VIELÄ KÄYTÖSSÄ · E2E-SALATTU",
+          "pantry": "Jaa varasto laitteiden välillä salatulla varmuuskopiolla."
+        }
+      },
+      "notifications": {
+        "title": {
+          "cockpit": "ILMOITUKSET",
+          "civil": "ILMOITUKSET",
+          "pantry": "Ilmoitukset"
+        },
+        "inAppHeader": {
+          "cockpit": "SOVELLUKSEN HÄLYTYKSET · §6.1",
+          "civil": "SOVELLUKSEN HÄLYTYKSET · §6.1",
+          "pantry": "Sovelluksen hälytykset"
+        },
+        "critical": {
+          "cockpit": "KRIITTISET HÄLYTYKSET",
+          "civil": "KRIITTISET HÄLYTYKSET",
+          "pantry": "Kriittiset hälytykset"
+        },
+        "criticalHint": {
+          "cockpit": "q = 0 TAI VANHENTUNUT",
+          "civil": "q = 0 TAI VANHENTUNUT",
+          "pantry": "Tuotteita puuttuu tai ne ovat vanhentuneet"
+        },
+        "lowStock": {
+          "cockpit": "VÄHÄISEN VARASTON VAROITUKSET",
+          "civil": "VÄHÄISEN VARASTON VAROITUKSET",
+          "pantry": "Vähäisen varaston varoitukset"
+        },
+        "lowStockHint": {
+          "cockpit": "q < r · VAROITUS",
+          "civil": "q < r · VAROITUS",
+          "pantry": "Alle 50 % suosituksesta"
+        },
+        "expiry": {
+          "cockpit": "VANHENEMISVAROITUKSET",
+          "civil": "VANHENEMISVAROITUKSET",
+          "pantry": "Vanhenemisvaroitukset"
+        },
+        "expiryHint": {
+          "cockpit": "VANH ≤ 30VRK · VAROITUS",
+          "civil": "VANH ≤ 30VRK · VAROITUS",
+          "pantry": "Tuotteet jotka vanhenevat 30 päivän kuluessa"
+        },
+        "backup": {
+          "cockpit": "VARMUUSKOPIOINTI­MUISTUTUKSET",
+          "civil": "VARMUUSKOPIOINTI­MUISTUTUKSET",
+          "pantry": "Varmuuskopiointimuistutukset"
+        },
+        "backupHint": {
+          "cockpit": "30VRK VIIME VIENNISTÄ",
+          "civil": "30VRK VIIME VIENNISTÄ",
+          "pantry": "Kuukausittainen muistutus jos et ole vienyt äskettäin"
+        },
+        "emailHeader": {
+          "cockpit": "SÄHKÖPOSTIYHTEENVETO · §6.2",
+          "civil": "SÄHKÖPOSTIYHTEENVETO · §6.2",
+          "pantry": "Sähköpostiyhteenveto"
+        },
+        "weekly": {
+          "cockpit": "VIIKKO­YHTEENVETO",
+          "civil": "VIIKKO­YHTEENVETO",
+          "pantry": "Viikkoyhteenveto"
+        },
+        "weeklyHint": {
+          "cockpit": "MA 09:00 EET",
+          "civil": "MA 09:00 EET",
+          "pantry": "Maanantaisin 09:00"
+        },
+        "audit": {
+          "cockpit": "TARKASTUSVÄLI",
+          "civil": "TARKASTUSVÄLI",
+          "pantry": "Tarkastusmuistutus"
+        },
+        "auditValue": {
+          "cockpit": "KUUKAUSITTAIN · 15. PÄIVÄ",
+          "civil": "KUUKAUSITTAIN · 15. PÄIVÄ",
+          "pantry": "Kuukausittain · 15. päivä"
+        },
+        "hidden": {
+          "cockpit": "HYLÄTYT HÄLYTYKSET",
+          "civil": "HYLÄTYT HÄLYTYKSET",
+          "pantry": "Piilotetut hälytykset"
+        },
+        "hiddenNone": {
+          "cockpit": "EI YHTÄÄN",
+          "civil": "EI YHTÄÄN",
+          "pantry": "Ei yhtään"
+        },
+        "hiddenCount": {
+          "cockpit": "{{count}} PIILOTETTU",
+          "civil": "{{count}} PIILOTETTU",
+          "pantry": "{{count}} piilotettu"
+        },
+        "hiddenRestoreAction": {
+          "cockpit": "PALAUTA",
+          "civil": "PALAUTA",
+          "pantry": "palauta"
+        },
+        "hiddenPanelCaption": {
+          "cockpit": "PIILOTETUT HÄLYTYKSET · {{count}} AKTIIVISTA",
+          "civil": "PIILOTETUT HÄLYTYKSET · {{count}} AKTIIVISTA",
+          "pantry": "Tällä hetkellä piilotetut hälytykset"
+        },
+        "restoreAll": {
+          "cockpit": "PALAUTA KAIKKI",
+          "civil": "PALAUTA KAIKKI",
+          "pantry": "Palauta kaikki"
+        },
+        "restoreSingle": {
+          "cockpit": "PALAUTA",
+          "civil": "PALAUTA",
+          "pantry": "Palauta"
+        }
+      },
+      "recommendations": {
+        "title": {
+          "cockpit": "SUOSITUKSET",
+          "civil": "SUOSITUKSET",
+          "pantry": "Suositukset"
+        },
+        "sub": {
+          "cockpit": "LÄHDELUETTELO · TUO / VIE",
+          "civil": "LÄHDELUETTELO · TUO / VIE",
+          "pantry": "72tuntia.fi-perustaso — tai oma"
+        },
+        "activeCaption": {
+          "cockpit": "AKTIIVISET SUOSITUKSET",
+          "civil": "AKTIIVISET SUOSITUKSET",
+          "pantry": "Nykyinen lähde"
+        },
+        "activeValue": {
+          "cockpit": "{{kit}} · {{total}} TUOTETTA",
+          "civil": "{{kit}} · {{total}} TUOTETTA",
+          "pantry": "{{kit}} · {{total}} tuotetta"
+        },
+        "kitLabel": "PAKETTI · {{kit}}",
+        "builtIn": "SISÄÄNRAKENNETTU",
+        "exportBtn": {
+          "cockpit": "VIE JSON",
+          "civil": "VIE JSON",
+          "pantry": "Vie nykyinen"
+        },
+        "importBtn": {
+          "cockpit": "TUO JSON",
+          "civil": "TUO JSON",
+          "pantry": "Tuo oma"
+        },
+        "importAlert": {
+          "cockpit": "TUO OMIEN PAKETTIEN KAUTTA · §7.2",
+          "civil": "TUO OMIEN PAKETTIEN KAUTTA · §7.2",
+          "pantry": "Käytä alla olevaa Omat paketit -paneelia pakettitiedoston tuomiseen."
+        },
+        "disabledCaption": {
+          "cockpit": "POIS KÄYTÖSTÄ · {{count}} / {{total}}",
+          "civil": "POIS KÄYTÖSTÄ · {{count}} / {{total}}",
+          "pantry": "Pois käytöstä · {{count}} / {{total}}"
+        },
+        "disabledExplain": {
+          "cockpit": "POIS PERUSTASOLASKELMASTA + KATTAVUUSMITTAREISTA",
+          "civil": "POIS PERUSTASOLASKELMASTA + KATTAVUUSMITTAREISTA",
+          "pantry": "Tuotteet jotka olet poistanut käytöstä — ne eivät näy varastosuosituksissa."
+        },
+        "disabledEmpty": {
+          "cockpit": "EI YHTÄÄN · KAIKKI SUOSITUKSET AKTIIVISIA",
+          "civil": "EI YHTÄÄN · KAIKKI SUOSITUKSET AKTIIVISIA",
+          "pantry": "Mitään ei ole poistettu — kaikki suositellut tuotteet ovat aktiivisia."
+        },
+        "enableBtn": {
+          "cockpit": "OTA KÄYTTÖÖN",
+          "civil": "OTA KÄYTTÖÖN",
+          "pantry": "Ota käyttöön"
+        },
+        "disabledFooter": {
+          "cockpit": "{{count}} / {{total}} POIS KÄYTÖSTÄ",
+          "civil": "{{count}} / {{total}} POIS KÄYTÖSTÄ",
+          "pantry": "{{count}} / {{total}} pois käytöstä"
+        },
+        "enableAllBtn": {
+          "cockpit": "OTA KAIKKI KÄYTTÖÖN",
+          "civil": "OTA KAIKKI KÄYTTÖÖN",
+          "pantry": "Ota kaikki käyttöön"
+        }
+      },
+      "customKits": {
+        "title": {
+          "cockpit": "OMAT PAKETIT",
+          "civil": "OMAT PAKETIT",
+          "pantry": "Omat paketit"
+        },
+        "sub": {
+          "cockpit": "LADATUT SUOSITUSTIEDOSTOT",
+          "civil": "LADATUT SUOSITUSTIEDOSTOT",
+          "pantry": "Hallitse ladattuja suositustiedostoja"
+        },
+        "overrides": {
+          "cockpit": "OHITUKSET",
+          "civil": "OHITUKSET",
+          "pantry": "Omat ohitukset"
+        },
+        "templates": {
+          "cockpit": "OMAT MALLIT",
+          "civil": "OMAT MALLIT",
+          "pantry": "Omat tuotemallit"
+        }
+      },
+      "categories": {
+        "title": {
+          "cockpit": "KATEGORIAT",
+          "civil": "KATEGORIAT",
+          "pantry": "Kategoriat"
+        },
+        "sub": {
+          "cockpit": "OMAT + POISTETUT KATEGORIAT",
+          "civil": "OMAT + POISTETUT KATEGORIAT",
+          "pantry": "Piilota sisäänrakennettuja, lisää omia"
+        },
+        "customHeader": {
+          "cockpit": "OMAT · §8.1",
+          "civil": "OMAT · §8.1",
+          "pantry": "Omat kategoriat"
+        },
+        "disabledHeader": {
+          "cockpit": "POIS KÄYTÖSTÄ · §8.2",
+          "civil": "POIS KÄYTÖSTÄ · §8.2",
+          "pantry": "Pois käytöstä olevat sisäänrakennetut kategoriat"
+        }
+      },
+      "data": {
+        "title": {
+          "cockpit": "DATA & VARMUUSKOPIO",
+          "civil": "DATA & VARMUUSKOPIO",
+          "pantry": "Data & varmuuskopio"
+        },
+        "sub": {
+          "cockpit": "PAIKALLINEN TALLENNUS · EI VAADI TILIÄ",
+          "civil": "PAIKALLINEN TALLENNUS · EI VAADI TILIÄ",
+          "pantry": "Kaikki tallennetaan tällä laitteella"
+        },
+        "storageHeader": {
+          "cockpit": "TALLENNUS · §9.1",
+          "civil": "TALLENNUS · §9.1",
+          "pantry": "Tallennus"
+        },
+        "location": {
+          "cockpit": "SIJAINTI",
+          "civil": "SIJAINTI",
+          "pantry": "Missä"
+        },
+        "locationValue": {
+          "cockpit": "SELAIMEN LOCALSTORAGE",
+          "civil": "SELAIMEN LOCALSTORAGE",
+          "pantry": "Vain tässä selaimessa"
+        },
+        "locationHint": {
+          "cockpit": "VAIN OFFLINE",
+          "civil": "VAIN OFFLINE",
+          "pantry": "Ei pilveä"
+        },
+        "lastWrite": {
+          "cockpit": "VIIMEINEN KIRJOITUS",
+          "civil": "VIIMEINEN KIRJOITUS",
+          "pantry": "Viimeinen tallennus"
+        },
+        "records": {
+          "cockpit": "TIETUEMÄÄRÄ",
+          "civil": "TIETUEMÄÄRÄ",
+          "pantry": "Tietueet"
+        },
+        "recordsUnit": {
+          "cockpit": "TUOTETTA",
+          "civil": "TUOTETTA",
+          "pantry": "tuotetta"
+        },
+        "storageUsed": {
+          "cockpit": "LEVYKÄYTTÖ",
+          "civil": "LEVYKÄYTTÖ",
+          "pantry": "Käytetty tila"
+        },
+        "backupHeader": {
+          "cockpit": "VARMUUSKOPIO · §9.2",
+          "civil": "VARMUUSKOPIO · §9.2",
+          "pantry": "Varmuuskopio & siirto"
+        },
+        "diagnosticsHeader": {
+          "cockpit": "DIAGNOSTIIKKA · §9.3",
+          "civil": "DIAGNOSTIIKKA · §9.3",
+          "pantry": "Diagnostiikka"
+        },
+        "lastBackup": {
+          "cockpit": "VIIMEINEN VARMUUSKOPIO {{date}}",
+          "civil": "VIIMEINEN VARMUUSKOPIO {{date}}",
+          "pantry": "Viimeinen varmuuskopio: {{date}}"
+        },
+        "noBackup": {
+          "cockpit": "EI VARMUUSKOPIOTA · ▸ VIENTI SUOSITELLAAN",
+          "civil": "EI VARMUUSKOPIOTA · ▸ VIENTI SUOSITELLAAN",
+          "pantry": "Ei vielä varmuuskopiota — harkitse vientiä pian."
+        }
+      },
+      "about": {
+        "title": {
+          "cockpit": "TIETOJA",
+          "civil": "TIETOJA",
+          "pantry": "Tietoja"
+        },
+        "appCaption": {
+          "cockpit": "VALMIUSVARASTON SEURANTA · EST",
+          "civil": "VALMIUSVARASTON SEURANTA · EST",
+          "pantry": "Valmiusvaraston seuranta"
+        },
+        "version": {
+          "cockpit": "VERSIO",
+          "civil": "VERSIO",
+          "pantry": "Versio"
+        },
+        "license": {
+          "cockpit": "LISENSSI",
+          "civil": "LISENSSI",
+          "pantry": "Lisenssi"
+        },
+        "source": { "cockpit": "LÄHDE", "civil": "LÄHDE", "pantry": "Lähde" },
+        "linksHeader": {
+          "cockpit": "ULKOISET",
+          "civil": "ULKOISET",
+          "pantry": "Linkit"
+        },
+        "linkSource": {
+          "cockpit": "GITHUB · ttu/emergency-supply-tracker",
+          "civil": "GITHUB · ttu/emergency-supply-tracker",
+          "pantry": "Lähdekoodi (GitHub)"
+        },
+        "linkBugs": {
+          "cockpit": "VIANSEURANTA",
+          "civil": "VIANSEURANTA",
+          "pantry": "Ilmoita ongelmasta"
+        },
+        "link72tuntia": {
+          "cockpit": "72TUNTIA.FI · LÄHDE",
+          "civil": "72TUNTIA.FI · LÄHDE",
+          "pantry": "72tuntia.fi-ohjeet"
+        },
+        "linkContact": {
+          "cockpit": "YHTEYSTIEDOT",
+          "civil": "YHTEYSTIEDOT",
+          "pantry": "Yhteystiedot"
+        }
+      },
+      "danger": {
+        "title": {
+          "cockpit": "VAARAVYÖHYKE",
+          "civil": "VAARAVYÖHYKE",
+          "pantry": "Vaaravyöhyke"
+        },
+        "irreversible": {
+          "cockpit": "PERUUTTAMATON · VAHVISTA JOKAINEN TOIMINTO",
+          "civil": "PERUUTTAMATON · VAHVISTA JOKAINEN TOIMINTO",
+          "pantry": "Peruuttamattomat toiminnot"
+        },
+        "resetItems": {
+          "cockpit": "NOLLAA VARASTO",
+          "civil": "NOLLAA VARASTO",
+          "pantry": "Nollaa kaikki tuotteet"
+        },
+        "resetItemsDetail": {
+          "cockpit": "POISTA TUOTTEET · SÄILYTÄ KOTITALOUS + ASETUKSET",
+          "civil": "POISTA TUOTTEET · SÄILYTÄ KOTITALOUS + ASETUKSET",
+          "pantry": "Poistaa kaikki tuotteet mutta säilyttää kotitalouden ja asetukset."
+        },
+        "resetItemsBtn": {
+          "cockpit": "NOLLAA",
+          "civil": "NOLLAA",
+          "pantry": "Nollaa tuotteet"
+        },
+        "resetItemsConfirm": {
+          "cockpit": "POISTA KAIKKI TUOTTEET? KOTITALOUS + ASETUKSET SÄILYVÄT.",
+          "civil": "POISTA KAIKKI TUOTTEET? KOTITALOUS + ASETUKSET SÄILYVÄT.",
+          "pantry": "Poistetaanko kaikki tuotteet? Kotitalous ja asetukset säilyvät."
+        },
+        "resetRecs": {
+          "cockpit": "NOLLAA SUOSITUKSET",
+          "civil": "NOLLAA SUOSITUKSET",
+          "pantry": "Nollaa suositukset"
+        },
+        "resetRecsDetail": {
+          "cockpit": "TYHJENNÄ POISTETTUJEN LISTA · OTA KAIKKI KÄYTTÖÖN",
+          "civil": "TYHJENNÄ POISTETTUJEN LISTA · OTA KAIKKI KÄYTTÖÖN",
+          "pantry": "Ota kaikki suositellut tuotteet uudelleen käyttöön."
+        },
+        "resetRecsBtn": {
+          "cockpit": "NOLLAA",
+          "civil": "NOLLAA",
+          "pantry": "Nollaa lista"
+        },
+        "resetRecsConfirm": {
+          "cockpit": "PALAA SISÄÄNRAKENNETTUUN PERUSTASOON + TYHJENNÄ POISTETTUJEN LISTA?",
+          "civil": "PALAA SISÄÄNRAKENNETTUUN PERUSTASOON + TYHJENNÄ POISTETTUJEN LISTA?",
+          "pantry": "Palautetaanko oletussuositukset ja otetaan kaikki tuotteet uudelleen käyttöön?"
+        },
+        "factoryTitle": {
+          "cockpit": "TEHDASASETUKSET",
+          "civil": "TEHDASASETUKSET",
+          "pantry": "Poista kaikki tiedot"
+        },
+        "factoryDetail": {
+          "cockpit": "POISTA KAIKKI PAIKALLINEN TILA · EI VOI KUMOTA",
+          "civil": "POISTA KAIKKI PAIKALLINEN TILA · EI VOI KUMOTA",
+          "pantry": "Poistaa kaikki tuotteet, asetukset ja historian tällä laitteella."
+        }
+      }
+    },
     "guide": {
       "title": {
         "cockpit": "SIVIILIVARAUTUMINEN · PERUSTASO",

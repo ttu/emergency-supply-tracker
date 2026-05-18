@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   Caption,
   NumberDisplay,
@@ -35,37 +37,23 @@ interface HouseholdLabels {
   freezerHint: string;
 }
 
-function householdLabels(themeKey: string): HouseholdLabels {
-  if (themeKey === 'pantry') {
-    return {
-      adults: 'Adults',
-      adultsHint: 'Aged 14 and over',
-      children: 'Children',
-      childrenHint: 'Under 14 — scaled to 75%',
-      pets: 'Pets',
-      petsHint: 'Enables the pets category',
-      days: 'Target days of supply',
-      daysHint: 'How many days you want to be self-sufficient',
-      freezer: 'Use freezer',
-      freezerHint: 'Adds frozen-food recommendations',
-    };
-  }
+function householdLabels(themeKey: string, t: TFunction): HouseholdLabels {
   return {
-    adults: 'ADULTS',
-    adultsHint: 'AGE ≥ 14 · 1.0× SCALE',
-    children: 'CHILDREN',
-    childrenHint: 'AGE < 14 · 0.75× SCALE',
-    pets: 'PETS',
-    petsHint: 'ENABLES §PET CATEGORY',
-    days: 'COVERAGE TARGET',
-    daysHint: 'DAYS · SELF-SUFFICIENCY TARGET',
-    freezer: 'USE FREEZER',
-    freezerHint: 'INCLUDES FROZEN ITEMS IN BASELINE',
+    adults: t(`v2.settings.household.adults.${themeKey}`),
+    adultsHint: t(`v2.settings.household.adultsHint.${themeKey}`),
+    children: t(`v2.settings.household.children.${themeKey}`),
+    childrenHint: t(`v2.settings.household.childrenHint.${themeKey}`),
+    pets: t(`v2.settings.household.pets.${themeKey}`),
+    petsHint: t(`v2.settings.household.petsHint.${themeKey}`),
+    days: t(`v2.settings.household.days.${themeKey}`),
+    daysHint: t(`v2.settings.household.daysHint.${themeKey}`),
+    freezer: t(`v2.settings.household.freezer.${themeKey}`),
+    freezerHint: t(`v2.settings.household.freezerHint.${themeKey}`),
   };
 }
 
-/** §2 Household: profile steppers + freezer toggle + computed/live side panel. */
 export function HouseholdSection() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const isMobile = useIsMobile();
   const { household, updateHousehold } = useHousehold();
@@ -80,7 +68,7 @@ export function HouseholdSection() {
 
   const setNum = (k: keyof HouseholdConfig) => (v: number) =>
     updateHousehold({ [k]: Math.max(0, v) });
-  const L = householdLabels(themeKey);
+  const L = householdLabels(themeKey, t);
 
   const computed = useMemo(() => {
     const ppl = household.adults + household.children * (childPct / 100);
@@ -96,7 +84,7 @@ export function HouseholdSection() {
     <section id="sec-household" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§2"
-        title={themeKey === 'pantry' ? 'Household' : 'HOUSEHOLD'}
+        title={t(`v2.settings.household.title.${themeKey}`)}
       />
       <div
         style={{
@@ -107,7 +95,7 @@ export function HouseholdSection() {
       >
         <Panel padding={0}>
           <PanelHeader>
-            {themeKey === 'pantry' ? 'Profile' : 'PROFILE · §2.1'}
+            {t(`v2.settings.household.profileHeader.${themeKey}`)}
           </PanelHeader>
           <StepperRow
             label={L.adults}
@@ -146,17 +134,15 @@ export function HouseholdSection() {
           />
         </Panel>
         <Panel padding={20}>
-          <Caption>
-            {themeKey === 'pantry' ? 'Calculated' : 'COMPUTED · LIVE'}
-          </Caption>
+          <Caption>{t(`v2.settings.household.calculated.${themeKey}`)}</Caption>
           <div style={{ marginTop: 14 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
               <NumberDisplay value={computed.water} size={40} />
               <span style={{ fontSize: 13, color: 'var(--color-text-2)' }}>
                 L ·{' '}
-                {themeKey === 'pantry'
-                  ? `water for ${household.supplyDurationDays}d`
-                  : `WATER · ${household.supplyDurationDays}D`}
+                {t(`v2.settings.household.waterFor.${themeKey}`, {
+                  days: household.supplyDurationDays,
+                })}
               </span>
             </div>
             <div
@@ -176,9 +162,9 @@ export function HouseholdSection() {
               <NumberDisplay value={computed.kcal.toLocaleString()} size={28} />
               <span style={{ fontSize: 12, color: 'var(--color-text-2)' }}>
                 kcal ·{' '}
-                {themeKey === 'pantry'
-                  ? `total food`
-                  : `TOTAL · ${household.supplyDurationDays}D`}
+                {t(`v2.settings.household.totalFood.${themeKey}`, {
+                  days: household.supplyDurationDays,
+                })}
               </span>
             </div>
             <div
@@ -200,7 +186,7 @@ export function HouseholdSection() {
             }}
           >
             <Caption>
-              {themeKey === 'pantry' ? 'Items tracked' : 'INVENTORY ITEMS'}
+              {t(`v2.settings.household.itemsTracked.${themeKey}`)}
             </Caption>
             <div
               style={{

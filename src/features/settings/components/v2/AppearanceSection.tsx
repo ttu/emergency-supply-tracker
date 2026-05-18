@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
@@ -9,6 +10,7 @@ import { PanelHeader, SectionHeader, ToggleRow } from './SettingsRows';
 
 /** §1 Appearance: theme picker, classic switcher, language, a11y toggles. */
 export function AppearanceSection() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
   const [designPrefs, setDesignPref] = useDesignPrefs();
@@ -18,11 +20,11 @@ export function AppearanceSection() {
     <section id="sec-appearance" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§1"
-        title={themeKey === 'pantry' ? 'Appearance' : 'APPEARANCE'}
+        title={t(`v2.settings.appearance.title.${themeKey}`)}
       />
       <Panel padding={0}>
         <PanelHeader>
-          {themeKey === 'pantry' ? 'Theme' : 'THEME · §1.1'}
+          {t(`v2.settings.appearance.themeHeader.${themeKey}`)}
         </PanelHeader>
         <div style={{ padding: 20 }}>
           <ThemePicker value={settings.theme} onChange={setTheme} />
@@ -37,7 +39,7 @@ export function AppearanceSection() {
         </div>
         <div style={{ borderTop: '1px solid var(--color-rule-soft)' }}>
           <PanelHeader>
-            {themeKey === 'pantry' ? 'Language' : 'LANGUAGE · §1.2'}
+            {t(`v2.settings.appearance.languageHeader.${themeKey}`)}
           </PanelHeader>
           <div
             style={{
@@ -115,22 +117,14 @@ export function AppearanceSection() {
           </div>
         </div>
         <ToggleRow
-          label={themeKey === 'pantry' ? 'High contrast' : 'HIGH CONTRAST MODE'}
-          hint={
-            themeKey === 'pantry'
-              ? 'Sharpens colours and borders for better readability.'
-              : 'INCREASES CONTRAST ABOVE WCAG AA · OVERRIDES ACTIVE THEME PALETTE'
-          }
+          label={t(`v2.settings.appearance.highContrast.${themeKey}`)}
+          hint={t(`v2.settings.appearance.highContrastHint.${themeKey}`)}
           on={!!settings.highContrast}
           onChange={(v) => updateSettings({ highContrast: v })}
         />
         <ToggleRow
-          label={themeKey === 'pantry' ? 'Reduce motion' : 'REDUCE MOTION'}
-          hint={
-            themeKey === 'pantry'
-              ? 'Disables non-essential animations.'
-              : 'DISABLES TRANSITIONS · RESPECTS prefers-reduced-motion'
-          }
+          label={t(`v2.settings.appearance.reduceMotion.${themeKey}`)}
+          hint={t(`v2.settings.appearance.reduceMotionHint.${themeKey}`)}
           on={designPrefs.reduceMotion}
           onChange={(v) => setDesignPref('reduceMotion', v)}
           last

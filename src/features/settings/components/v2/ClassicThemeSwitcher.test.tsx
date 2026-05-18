@@ -17,7 +17,9 @@ const renderSwitcher = (
 describe('ClassicThemeSwitcher (v2)', () => {
   it('renders a CLASSIC THEME label and a select', () => {
     renderSwitcher();
-    expect(screen.getByText('CLASSIC THEME')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.classic.label.cockpit'),
+    ).toBeInTheDocument();
     expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 

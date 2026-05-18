@@ -15,9 +15,15 @@ describe('HouseholdSection (v2)', () => {
       }),
     });
     expect(screen.getByText('§2')).toBeInTheDocument();
-    expect(screen.getByText('HOUSEHOLD')).toBeInTheDocument();
-    expect(screen.getByText(/PROFILE · §2\.1/)).toBeInTheDocument();
-    expect(screen.getByText('COMPUTED · LIVE')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.household.title.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.household.profileHeader.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.household.calculated.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders profile steppers: ADULTS, CHILDREN, PETS, COVERAGE TARGET', () => {
@@ -26,9 +32,17 @@ describe('HouseholdSection (v2)', () => {
         settings: createMockSettings({ theme: 'cockpit' }),
       }),
     });
-    expect(screen.getByText('ADULTS')).toBeInTheDocument();
-    expect(screen.getByText('CHILDREN')).toBeInTheDocument();
-    expect(screen.getByText('PETS')).toBeInTheDocument();
-    expect(screen.getByText('COVERAGE TARGET')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.household.adults.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.household.children.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.household.pets.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.household.days.cockpit'),
+    ).toBeInTheDocument();
   });
 });

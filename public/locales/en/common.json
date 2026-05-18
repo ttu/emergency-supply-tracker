@@ -1462,6 +1462,752 @@
         }
       }
     },
+    "settings": {
+      "title": {
+        "cockpit": "SYSTEM CONFIGURATION",
+        "civil": "SYSTEM CONFIGURATION",
+        "pantry": "Settings"
+      },
+      "intro": {
+        "cockpit": "COMPLETE PARAMETER SET. ALL VALUES PERSIST LOCALLY. CHANGES TAKE EFFECT IMMEDIATELY UNLESS NOTED.",
+        "civil": "COMPLETE PARAMETER SET. ALL VALUES PERSIST LOCALLY. CHANGES TAKE EFFECT IMMEDIATELY UNLESS NOTED.",
+        "pantry": "Everything that changes how the app behaves. Most of these have sensible defaults — change what matters to you."
+      },
+      "backToTop": {
+        "cockpit": "BACK TO TOP",
+        "civil": "BACK TO TOP",
+        "pantry": "Back to top"
+      },
+      "railSections": {
+        "cockpit": "SECTIONS",
+        "civil": "SECTIONS",
+        "pantry": "Sections"
+      },
+      "nav": {
+        "appearance": {
+          "cockpit": "APPEARANCE",
+          "civil": "APPEARANCE",
+          "pantry": "Appearance"
+        },
+        "household": {
+          "cockpit": "HOUSEHOLD",
+          "civil": "HOUSEHOLD",
+          "pantry": "Household"
+        },
+        "inventorysets": {
+          "cockpit": "INVENTORY SETS",
+          "civil": "INVENTORY SETS",
+          "pantry": "Inventory sets"
+        },
+        "nutrition": {
+          "cockpit": "NUTRITION",
+          "civil": "NUTRITION",
+          "pantry": "Nutrition"
+        },
+        "advanced": {
+          "cockpit": "ADVANCED",
+          "civil": "ADVANCED",
+          "pantry": "Advanced"
+        },
+        "notifications": {
+          "cockpit": "NOTIFICATIONS",
+          "civil": "NOTIFICATIONS",
+          "pantry": "Notifications"
+        },
+        "recommendations": {
+          "cockpit": "RECOMMENDATIONS",
+          "civil": "RECOMMENDATIONS",
+          "pantry": "Recommendations"
+        },
+        "categories": {
+          "cockpit": "CATEGORIES",
+          "civil": "CATEGORIES",
+          "pantry": "Categories"
+        },
+        "data": {
+          "cockpit": "DATA & BACKUP",
+          "civil": "DATA & BACKUP",
+          "pantry": "Data & backup"
+        },
+        "about": { "cockpit": "ABOUT", "civil": "ABOUT", "pantry": "About" },
+        "danger": {
+          "cockpit": "DANGER ZONE",
+          "civil": "DANGER ZONE",
+          "pantry": "Danger zone"
+        }
+      },
+      "appearance": {
+        "title": {
+          "cockpit": "APPEARANCE",
+          "civil": "APPEARANCE",
+          "pantry": "Appearance"
+        },
+        "themeHeader": {
+          "cockpit": "THEME · §1.1",
+          "civil": "THEME · §1.1",
+          "pantry": "Theme"
+        },
+        "languageHeader": {
+          "cockpit": "LANGUAGE · §1.2",
+          "civil": "LANGUAGE · §1.2",
+          "pantry": "Language"
+        },
+        "highContrast": {
+          "cockpit": "HIGH CONTRAST MODE",
+          "civil": "HIGH CONTRAST MODE",
+          "pantry": "High contrast"
+        },
+        "highContrastHint": {
+          "cockpit": "INCREASES CONTRAST ABOVE WCAG AA · OVERRIDES ACTIVE THEME PALETTE",
+          "civil": "INCREASES CONTRAST ABOVE WCAG AA · OVERRIDES ACTIVE THEME PALETTE",
+          "pantry": "Sharpens colours and borders for better readability."
+        },
+        "reduceMotion": {
+          "cockpit": "REDUCE MOTION",
+          "civil": "REDUCE MOTION",
+          "pantry": "Reduce motion"
+        },
+        "reduceMotionHint": {
+          "cockpit": "DISABLES TRANSITIONS · RESPECTS prefers-reduced-motion",
+          "civil": "DISABLES TRANSITIONS · RESPECTS prefers-reduced-motion",
+          "pantry": "Disables non-essential animations."
+        }
+      },
+      "classic": {
+        "blurb": {
+          "cockpit": "CLASSIC THEMES RESTORE THE V1 APP SHELL. SWITCH BACK TO ANY DESIGN V2 THEME ABOVE TO RETURN.",
+          "civil": "CLASSIC THEMES RESTORE THE V1 APP SHELL. SWITCH BACK TO ANY DESIGN V2 THEME ABOVE TO RETURN.",
+          "pantry": "Prefer the original layout? Switch to a classic theme — the design v2 shell exits and the previous app comes back."
+        },
+        "label": {
+          "cockpit": "CLASSIC THEME",
+          "civil": "CLASSIC THEME",
+          "pantry": "Classic theme"
+        },
+        "placeholder": {
+          "cockpit": "PICK A CLASSIC THEME…",
+          "civil": "PICK A CLASSIC THEME…",
+          "pantry": "Pick a classic theme…"
+        }
+      },
+      "household": {
+        "title": {
+          "cockpit": "HOUSEHOLD",
+          "civil": "HOUSEHOLD",
+          "pantry": "Household"
+        },
+        "profileHeader": {
+          "cockpit": "PROFILE · §2.1",
+          "civil": "PROFILE · §2.1",
+          "pantry": "Profile"
+        },
+        "adults": {
+          "cockpit": "ADULTS",
+          "civil": "ADULTS",
+          "pantry": "Adults"
+        },
+        "adultsHint": {
+          "cockpit": "AGE ≥ 14 · 1.0× SCALE",
+          "civil": "AGE ≥ 14 · 1.0× SCALE",
+          "pantry": "Aged 14 and over"
+        },
+        "children": {
+          "cockpit": "CHILDREN",
+          "civil": "CHILDREN",
+          "pantry": "Children"
+        },
+        "childrenHint": {
+          "cockpit": "AGE < 14 · 0.75× SCALE",
+          "civil": "AGE < 14 · 0.75× SCALE",
+          "pantry": "Under 14 — scaled to 75%"
+        },
+        "pets": { "cockpit": "PETS", "civil": "PETS", "pantry": "Pets" },
+        "petsHint": {
+          "cockpit": "ENABLES §PET CATEGORY",
+          "civil": "ENABLES §PET CATEGORY",
+          "pantry": "Enables the pets category"
+        },
+        "days": {
+          "cockpit": "COVERAGE TARGET",
+          "civil": "COVERAGE TARGET",
+          "pantry": "Target days of supply"
+        },
+        "daysHint": {
+          "cockpit": "DAYS · SELF-SUFFICIENCY TARGET",
+          "civil": "DAYS · SELF-SUFFICIENCY TARGET",
+          "pantry": "How many days you want to be self-sufficient"
+        },
+        "freezer": {
+          "cockpit": "USE FREEZER",
+          "civil": "USE FREEZER",
+          "pantry": "Use freezer"
+        },
+        "freezerHint": {
+          "cockpit": "INCLUDES FROZEN ITEMS IN BASELINE",
+          "civil": "INCLUDES FROZEN ITEMS IN BASELINE",
+          "pantry": "Adds frozen-food recommendations"
+        },
+        "calculated": {
+          "cockpit": "COMPUTED · LIVE",
+          "civil": "COMPUTED · LIVE",
+          "pantry": "Calculated"
+        },
+        "waterFor": {
+          "cockpit": "WATER · {{days}}D",
+          "civil": "WATER · {{days}}D",
+          "pantry": "water for {{days}}d"
+        },
+        "totalFood": {
+          "cockpit": "TOTAL · {{days}}D",
+          "civil": "TOTAL · {{days}}D",
+          "pantry": "total food"
+        },
+        "itemsTracked": {
+          "cockpit": "INVENTORY ITEMS",
+          "civil": "INVENTORY ITEMS",
+          "pantry": "Items tracked"
+        }
+      },
+      "inventorySets": {
+        "title": {
+          "cockpit": "INVENTORY SETS",
+          "civil": "INVENTORY SETS",
+          "pantry": "Inventory sets"
+        },
+        "sub": {
+          "cockpit": "PARALLEL CONTEXTS · HOME · CAR · CABIN",
+          "civil": "PARALLEL CONTEXTS · HOME · CAR · CABIN",
+          "pantry": "Multiple kits — home, car, cabin"
+        }
+      },
+      "nutrition": {
+        "title": {
+          "cockpit": "NUTRITION & REQUIREMENTS",
+          "civil": "NUTRITION & REQUIREMENTS",
+          "pantry": "Nutrition & requirements"
+        },
+        "sub": {
+          "cockpit": "OVERRIDE DEFAULT PER-PERSON BASELINES",
+          "civil": "OVERRIDE DEFAULT PER-PERSON BASELINES",
+          "pantry": "Fine-tune per-person targets"
+        },
+        "calories": {
+          "cockpit": "KCAL · PERSON · DAY",
+          "civil": "KCAL · PERSON · DAY",
+          "pantry": "Calories per person per day"
+        },
+        "caloriesHint": {
+          "cockpit": "DEFAULT {{default}} · 72TUNTIA.FI BASELINE",
+          "civil": "DEFAULT {{default}} · 72TUNTIA.FI BASELINE",
+          "pantry": "Default: {{default}}"
+        },
+        "water": {
+          "cockpit": "WATER · PERSON · DAY",
+          "civil": "WATER · PERSON · DAY",
+          "pantry": "Water per person per day"
+        },
+        "waterHint": {
+          "cockpit": "DRINKING + COOKING · L",
+          "civil": "DRINKING + COOKING · L",
+          "pantry": "Drinking and cooking combined"
+        },
+        "children": {
+          "cockpit": "CHILDREN MULTIPLIER",
+          "civil": "CHILDREN MULTIPLIER",
+          "pantry": "Children scale"
+        },
+        "childrenHint": {
+          "cockpit": "PERCENT OF ADULT BASELINE",
+          "civil": "PERCENT OF ADULT BASELINE",
+          "pantry": "Children typically need less — default 75%"
+        },
+        "expiryWindow": {
+          "cockpit": "EXPIRY WARN WINDOW",
+          "civil": "EXPIRY WARN WINDOW",
+          "pantry": "Expiry warning window"
+        },
+        "expiryWindowHint": {
+          "cockpit": "WARN ≤ N DAYS BEFORE EXPIRY",
+          "civil": "WARN ≤ N DAYS BEFORE EXPIRY",
+          "pantry": "fixed"
+        },
+        "hygiene": {
+          "cockpit": "TRACK HYGIENE WATER SEPARATELY",
+          "civil": "TRACK HYGIENE WATER SEPARATELY",
+          "pantry": "Track hygiene water separately"
+        },
+        "hygieneHint": {
+          "cockpit": "ADDS 3 L/PERSON/DAY · ADV WATER MODE",
+          "civil": "ADDS 3 L/PERSON/DAY · ADV WATER MODE",
+          "pantry": "Add 3 L/person/day for hygiene"
+        }
+      },
+      "advanced": {
+        "title": {
+          "cockpit": "ADVANCED FEATURES",
+          "civil": "ADVANCED FEATURES",
+          "pantry": "Advanced features"
+        },
+        "sub": {
+          "cockpit": "OPTIONAL CAPABILITIES · DISABLED BY DEFAULT",
+          "civil": "OPTIONAL CAPABILITIES · DISABLED BY DEFAULT",
+          "pantry": "Disabled by default — turn on what you need"
+        },
+        "calorie": {
+          "cockpit": "CALORIE TRACKING",
+          "civil": "CALORIE TRACKING",
+          "pantry": "Calorie tracking"
+        },
+        "calorieHint": {
+          "cockpit": "TOTAL KCAL ACROSS FOOD INVENTORY",
+          "civil": "TOTAL KCAL ACROSS FOOD INVENTORY",
+          "pantry": "Track total calories across food items."
+        },
+        "power": {
+          "cockpit": "POWER MANAGEMENT",
+          "civil": "POWER MANAGEMENT",
+          "pantry": "Power management"
+        },
+        "powerHint": {
+          "cockpit": "COMPUTE OFF-GRID RUNTIME",
+          "civil": "COMPUTE OFF-GRID RUNTIME",
+          "pantry": "Estimate days of power from batteries and power banks."
+        },
+        "water": {
+          "cockpit": "WATER TRACKING · ADVANCED",
+          "civil": "WATER TRACKING · ADVANCED",
+          "pantry": "Water tracking (advanced)"
+        },
+        "waterHint": {
+          "cockpit": "SPLIT INTO DRINK / COOK / HYGIENE BUCKETS",
+          "civil": "SPLIT INTO DRINK / COOK / HYGIENE BUCKETS",
+          "pantry": "Separate tracking for drinking, cooking, and hygiene water."
+        },
+        "planView": {
+          "cockpit": "PLAN VIEW · BETA",
+          "civil": "PLAN VIEW · BETA",
+          "pantry": "Plan view (preview)"
+        },
+        "planViewHint": {
+          "cockpit": "OBJECTIVE-LEVEL TRACKING · v0.5",
+          "civil": "OBJECTIVE-LEVEL TRACKING · v0.5",
+          "pantry": "Track high-level preparedness goals, not just items."
+        },
+        "sync": {
+          "cockpit": "MULTI-DEVICE SYNC · ROADMAP",
+          "civil": "MULTI-DEVICE SYNC · ROADMAP",
+          "pantry": "Multi-device sync (coming soon)"
+        },
+        "syncHint": {
+          "cockpit": "NOT YET AVAILABLE · E2E ENCRYPTED",
+          "civil": "NOT YET AVAILABLE · E2E ENCRYPTED",
+          "pantry": "Share inventory across devices via encrypted backup."
+        }
+      },
+      "notifications": {
+        "title": {
+          "cockpit": "NOTIFICATIONS",
+          "civil": "NOTIFICATIONS",
+          "pantry": "Notifications"
+        },
+        "inAppHeader": {
+          "cockpit": "IN-APP ALERTS · §6.1",
+          "civil": "IN-APP ALERTS · §6.1",
+          "pantry": "In-app alerts"
+        },
+        "critical": {
+          "cockpit": "CRITICAL ALERTS",
+          "civil": "CRITICAL ALERTS",
+          "pantry": "Critical alerts"
+        },
+        "criticalHint": {
+          "cockpit": "q = 0 OR EXPIRED",
+          "civil": "q = 0 OR EXPIRED",
+          "pantry": "Items missing or expired"
+        },
+        "lowStock": {
+          "cockpit": "LOW-STOCK WARNINGS",
+          "civil": "LOW-STOCK WARNINGS",
+          "pantry": "Low-stock warnings"
+        },
+        "lowStockHint": {
+          "cockpit": "q < r · WARN",
+          "civil": "q < r · WARN",
+          "pantry": "Below 50% of recommended"
+        },
+        "expiry": {
+          "cockpit": "EXPIRY WARNINGS",
+          "civil": "EXPIRY WARNINGS",
+          "pantry": "Expiry warnings"
+        },
+        "expiryHint": {
+          "cockpit": "EXP ≤ 30D · WARN",
+          "civil": "EXP ≤ 30D · WARN",
+          "pantry": "Items expiring within 30 days"
+        },
+        "backup": {
+          "cockpit": "BACKUP REMINDERS",
+          "civil": "BACKUP REMINDERS",
+          "pantry": "Backup reminders"
+        },
+        "backupHint": {
+          "cockpit": "30D SINCE LAST EXPORT",
+          "civil": "30D SINCE LAST EXPORT",
+          "pantry": "Monthly nudge if you haven't exported recently"
+        },
+        "emailHeader": {
+          "cockpit": "EMAIL DIGEST · §6.2",
+          "civil": "EMAIL DIGEST · §6.2",
+          "pantry": "Email digest"
+        },
+        "weekly": {
+          "cockpit": "WEEKLY SUMMARY",
+          "civil": "WEEKLY SUMMARY",
+          "pantry": "Weekly summary"
+        },
+        "weeklyHint": {
+          "cockpit": "MON 09:00 EET",
+          "civil": "MON 09:00 EET",
+          "pantry": "Mondays 09:00"
+        },
+        "audit": {
+          "cockpit": "AUDIT CADENCE",
+          "civil": "AUDIT CADENCE",
+          "pantry": "Audit reminder"
+        },
+        "auditValue": {
+          "cockpit": "MONTHLY · 15TH",
+          "civil": "MONTHLY · 15TH",
+          "pantry": "Monthly · 15th"
+        },
+        "hidden": {
+          "cockpit": "DISMISSED ALERTS",
+          "civil": "DISMISSED ALERTS",
+          "pantry": "Hidden alerts"
+        },
+        "hiddenNone": { "cockpit": "NONE", "civil": "NONE", "pantry": "None" },
+        "hiddenCount": {
+          "cockpit": "{{count}} HIDDEN",
+          "civil": "{{count}} HIDDEN",
+          "pantry": "{{count}} hidden"
+        },
+        "hiddenRestoreAction": {
+          "cockpit": "RESTORE",
+          "civil": "RESTORE",
+          "pantry": "restore"
+        },
+        "hiddenPanelCaption": {
+          "cockpit": "HIDDEN ALERTS · {{count}} ACTIVE",
+          "civil": "HIDDEN ALERTS · {{count}} ACTIVE",
+          "pantry": "Currently hidden alerts"
+        },
+        "restoreAll": {
+          "cockpit": "RESTORE ALL",
+          "civil": "RESTORE ALL",
+          "pantry": "Restore all"
+        },
+        "restoreSingle": {
+          "cockpit": "RESTORE",
+          "civil": "RESTORE",
+          "pantry": "Restore"
+        }
+      },
+      "recommendations": {
+        "title": {
+          "cockpit": "RECOMMENDATIONS",
+          "civil": "RECOMMENDATIONS",
+          "pantry": "Recommendations"
+        },
+        "sub": {
+          "cockpit": "SOURCE LIST · IMPORT / EXPORT",
+          "civil": "SOURCE LIST · IMPORT / EXPORT",
+          "pantry": "The 72tuntia.fi baseline — or your own"
+        },
+        "activeCaption": {
+          "cockpit": "ACTIVE RECOMMENDATIONS",
+          "civil": "ACTIVE RECOMMENDATIONS",
+          "pantry": "Current source"
+        },
+        "activeValue": {
+          "cockpit": "{{kit}} · {{total}} ITEMS",
+          "civil": "{{kit}} · {{total}} ITEMS",
+          "pantry": "{{kit}} · {{total}} items"
+        },
+        "kitLabel": "KIT · {{kit}}",
+        "builtIn": "BUILT-IN",
+        "exportBtn": {
+          "cockpit": "EXPORT JSON",
+          "civil": "EXPORT JSON",
+          "pantry": "Export current"
+        },
+        "importBtn": {
+          "cockpit": "IMPORT JSON",
+          "civil": "IMPORT JSON",
+          "pantry": "Import custom"
+        },
+        "importAlert": {
+          "cockpit": "IMPORT VIA CUSTOM KITS · §7.2",
+          "civil": "IMPORT VIA CUSTOM KITS · §7.2",
+          "pantry": "Use the Custom kits panel below to import a kit file."
+        },
+        "disabledCaption": {
+          "cockpit": "DISABLED · {{count}} OF {{total}}",
+          "civil": "DISABLED · {{count}} OF {{total}}",
+          "pantry": "Disabled items · {{count}} of {{total}}"
+        },
+        "disabledExplain": {
+          "cockpit": "EXCLUDED FROM BASELINE COMPUTATION + COVERAGE METRICS",
+          "civil": "EXCLUDED FROM BASELINE COMPUTATION + COVERAGE METRICS",
+          "pantry": "Items you've turned off — they won't appear in your inventory recommendations."
+        },
+        "disabledEmpty": {
+          "cockpit": "NIL · ALL RECOMMENDATIONS ACTIVE",
+          "civil": "NIL · ALL RECOMMENDATIONS ACTIVE",
+          "pantry": "Nothing disabled — every recommended item is active."
+        },
+        "enableBtn": {
+          "cockpit": "ENABLE",
+          "civil": "ENABLE",
+          "pantry": "Enable"
+        },
+        "disabledFooter": {
+          "cockpit": "{{count}} / {{total}} DISABLED",
+          "civil": "{{count}} / {{total}} DISABLED",
+          "pantry": "{{count}} of {{total}} disabled"
+        },
+        "enableAllBtn": {
+          "cockpit": "ENABLE ALL",
+          "civil": "ENABLE ALL",
+          "pantry": "Enable all"
+        }
+      },
+      "customKits": {
+        "title": {
+          "cockpit": "CUSTOM KITS",
+          "civil": "CUSTOM KITS",
+          "pantry": "Custom kits"
+        },
+        "sub": {
+          "cockpit": "UPLOADED RECOMMENDATION FILES",
+          "civil": "UPLOADED RECOMMENDATION FILES",
+          "pantry": "Manage uploaded recommendation files"
+        },
+        "overrides": {
+          "cockpit": "OVERRIDES",
+          "civil": "OVERRIDES",
+          "pantry": "Custom overrides"
+        },
+        "templates": {
+          "cockpit": "CUSTOM TEMPLATES",
+          "civil": "CUSTOM TEMPLATES",
+          "pantry": "Custom item templates"
+        }
+      },
+      "categories": {
+        "title": {
+          "cockpit": "CATEGORIES",
+          "civil": "CATEGORIES",
+          "pantry": "Categories"
+        },
+        "sub": {
+          "cockpit": "CUSTOM + DISABLED CATEGORIES",
+          "civil": "CUSTOM + DISABLED CATEGORIES",
+          "pantry": "Hide built-ins, add your own"
+        },
+        "customHeader": {
+          "cockpit": "CUSTOM · §8.1",
+          "civil": "CUSTOM · §8.1",
+          "pantry": "Custom categories"
+        },
+        "disabledHeader": {
+          "cockpit": "DISABLED · §8.2",
+          "civil": "DISABLED · §8.2",
+          "pantry": "Disabled built-in categories"
+        }
+      },
+      "data": {
+        "title": {
+          "cockpit": "DATA & BACKUP",
+          "civil": "DATA & BACKUP",
+          "pantry": "Data & backup"
+        },
+        "sub": {
+          "cockpit": "LOCAL STORAGE · NO ACCOUNT REQUIRED",
+          "civil": "LOCAL STORAGE · NO ACCOUNT REQUIRED",
+          "pantry": "Everything is stored on this device"
+        },
+        "storageHeader": {
+          "cockpit": "STORAGE · §9.1",
+          "civil": "STORAGE · §9.1",
+          "pantry": "Storage"
+        },
+        "location": {
+          "cockpit": "LOCATION",
+          "civil": "LOCATION",
+          "pantry": "Where"
+        },
+        "locationValue": {
+          "cockpit": "BROWSER LOCALSTORAGE",
+          "civil": "BROWSER LOCALSTORAGE",
+          "pantry": "This browser only"
+        },
+        "locationHint": {
+          "cockpit": "OFFLINE-ONLY",
+          "civil": "OFFLINE-ONLY",
+          "pantry": "No cloud"
+        },
+        "lastWrite": {
+          "cockpit": "LAST WRITE",
+          "civil": "LAST WRITE",
+          "pantry": "Last save"
+        },
+        "records": {
+          "cockpit": "RECORD COUNT",
+          "civil": "RECORD COUNT",
+          "pantry": "Records"
+        },
+        "recordsUnit": {
+          "cockpit": "ITEMS",
+          "civil": "ITEMS",
+          "pantry": "items"
+        },
+        "storageUsed": {
+          "cockpit": "DISK USAGE",
+          "civil": "DISK USAGE",
+          "pantry": "Storage used"
+        },
+        "backupHeader": {
+          "cockpit": "BACKUP · §9.2",
+          "civil": "BACKUP · §9.2",
+          "pantry": "Backup & transfer"
+        },
+        "diagnosticsHeader": {
+          "cockpit": "DIAGNOSTICS · §9.3",
+          "civil": "DIAGNOSTICS · §9.3",
+          "pantry": "Diagnostics"
+        },
+        "lastBackup": {
+          "cockpit": "LAST BACKUP {{date}}",
+          "civil": "LAST BACKUP {{date}}",
+          "pantry": "Last backup: {{date}}"
+        },
+        "noBackup": {
+          "cockpit": "NO BACKUP RECORDED · ▸ EXPORT RECOMMENDED",
+          "civil": "NO BACKUP RECORDED · ▸ EXPORT RECOMMENDED",
+          "pantry": "No backup yet — consider exporting soon."
+        }
+      },
+      "about": {
+        "title": { "cockpit": "ABOUT", "civil": "ABOUT", "pantry": "About" },
+        "appCaption": {
+          "cockpit": "EMERGENCY SUPPLY TRACKER · EST",
+          "civil": "EMERGENCY SUPPLY TRACKER · EST",
+          "pantry": "Emergency Supply Tracker"
+        },
+        "version": {
+          "cockpit": "BUILD",
+          "civil": "BUILD",
+          "pantry": "Version"
+        },
+        "license": {
+          "cockpit": "LICENSE",
+          "civil": "LICENSE",
+          "pantry": "License"
+        },
+        "source": {
+          "cockpit": "SOURCE",
+          "civil": "SOURCE",
+          "pantry": "Source"
+        },
+        "linksHeader": {
+          "cockpit": "EXTERNAL",
+          "civil": "EXTERNAL",
+          "pantry": "Links"
+        },
+        "linkSource": {
+          "cockpit": "GITHUB · ttu/emergency-supply-tracker",
+          "civil": "GITHUB · ttu/emergency-supply-tracker",
+          "pantry": "Source code (GitHub)"
+        },
+        "linkBugs": {
+          "cockpit": "BUG TRACKER",
+          "civil": "BUG TRACKER",
+          "pantry": "Report an issue"
+        },
+        "link72tuntia": {
+          "cockpit": "72TUNTIA.FI · SOURCE",
+          "civil": "72TUNTIA.FI · SOURCE",
+          "pantry": "72tuntia.fi guidance"
+        },
+        "linkContact": {
+          "cockpit": "CONTACT",
+          "civil": "CONTACT",
+          "pantry": "Contact"
+        }
+      },
+      "danger": {
+        "title": {
+          "cockpit": "DANGER ZONE",
+          "civil": "DANGER ZONE",
+          "pantry": "Danger zone"
+        },
+        "irreversible": {
+          "cockpit": "IRREVERSIBLE · CONFIRM EACH ACTION",
+          "civil": "IRREVERSIBLE · CONFIRM EACH ACTION",
+          "pantry": "Irreversible actions"
+        },
+        "resetItems": {
+          "cockpit": "RESET INVENTORY",
+          "civil": "RESET INVENTORY",
+          "pantry": "Reset all items"
+        },
+        "resetItemsDetail": {
+          "cockpit": "PURGE ITEMS · RETAIN HOUSEHOLD + CONFIG",
+          "civil": "PURGE ITEMS · RETAIN HOUSEHOLD + CONFIG",
+          "pantry": "Removes every item but keeps household and settings."
+        },
+        "resetItemsBtn": {
+          "cockpit": "RESET",
+          "civil": "RESET",
+          "pantry": "Reset items"
+        },
+        "resetItemsConfirm": {
+          "cockpit": "PURGE ALL ITEMS? HOUSEHOLD + CONFIG RETAINED.",
+          "civil": "PURGE ALL ITEMS? HOUSEHOLD + CONFIG RETAINED.",
+          "pantry": "Remove every item? Household and settings will be kept."
+        },
+        "resetRecs": {
+          "cockpit": "RESET RECOMMENDATIONS",
+          "civil": "RESET RECOMMENDATIONS",
+          "pantry": "Reset recommendations"
+        },
+        "resetRecsDetail": {
+          "cockpit": "CLEAR DISABLED LIST · ENABLE ALL",
+          "civil": "CLEAR DISABLED LIST · ENABLE ALL",
+          "pantry": "Re-enable every recommended item."
+        },
+        "resetRecsBtn": {
+          "cockpit": "RESET",
+          "civil": "RESET",
+          "pantry": "Reset list"
+        },
+        "resetRecsConfirm": {
+          "cockpit": "REVERT TO BUILT-IN BASELINE + CLEAR DISABLED LIST?",
+          "civil": "REVERT TO BUILT-IN BASELINE + CLEAR DISABLED LIST?",
+          "pantry": "Restore default recommendations and re-enable all items?"
+        },
+        "factoryTitle": {
+          "cockpit": "FACTORY RESET",
+          "civil": "FACTORY RESET",
+          "pantry": "Clear all data"
+        },
+        "factoryDetail": {
+          "cockpit": "PURGE ALL LOCAL STATE · CANNOT BE UNDONE",
+          "civil": "PURGE ALL LOCAL STATE · CANNOT BE UNDONE",
+          "pantry": "Removes every item, setting, and history entry on this device."
+        }
+      }
+    },
     "guide": {
       "title": {
         "cockpit": "CIVIL PREPAREDNESS · BASELINE",

@@ -10,21 +10,35 @@ describe('AboutSection (v2)', () => {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
     expect(screen.getByText('§10')).toBeInTheDocument();
-    expect(screen.getByText('ABOUT')).toBeInTheDocument();
-    expect(screen.getByText('EXTERNAL')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.about.title.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.about.linksHeader.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders github + bug tracker + contact links', () => {
     renderWithProviders(<AboutSection />, {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
-    expect(screen.getByRole('link', { name: /GITHUB/ })).toHaveAttribute(
+    expect(
+      screen.getByRole('link', {
+        name: /v2\.settings\.about\.linkSource\.cockpit/,
+      }),
+    ).toHaveAttribute(
       'href',
       'https://github.com/ttu/emergency-supply-tracker',
     );
     expect(
-      screen.getByRole('link', { name: /BUG TRACKER/ }),
+      screen.getByRole('link', {
+        name: /v2\.settings\.about\.linkBugs\.cockpit/,
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /CONTACT/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {
+        name: /v2\.settings\.about\.linkContact\.cockpit/,
+      }),
+    ).toBeInTheDocument();
   });
 });

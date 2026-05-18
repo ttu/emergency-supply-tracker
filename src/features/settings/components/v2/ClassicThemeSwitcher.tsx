@@ -11,7 +11,6 @@ interface ClassicThemeSwitcherProps {
 /**
  * Lets the user drop out of the design v2 shell back into the classic app
  * by picking one of the v1 themes (light, dark, midnight, ocean, etc.).
- * Rendered inside the v2 Settings page as an explicit escape hatch.
  */
 export function ClassicThemeSwitcher({
   value,
@@ -31,11 +30,6 @@ export function ClassicThemeSwitcher({
     display: 'block',
   };
 
-  const blurb =
-    themeKey === 'pantry'
-      ? 'Prefer the original layout? Switch to a classic theme — the design v2 shell exits and the previous app comes back.'
-      : 'CLASSIC THEMES RESTORE THE V1 APP SHELL. SWITCH BACK TO ANY DESIGN V2 THEME ABOVE TO RETURN.';
-
   return (
     <div>
       <p
@@ -47,10 +41,10 @@ export function ClassicThemeSwitcher({
           lineHeight: 1.5,
         }}
       >
-        {blurb}
+        {t(`v2.settings.classic.blurb.${themeKey}`)}
       </p>
       <label htmlFor="classic-theme-select" style={labelStyle}>
-        {themeKey === 'pantry' ? 'Classic theme' : 'CLASSIC THEME'}
+        {t(`v2.settings.classic.label.${themeKey}`)}
       </label>
       <select
         id="classic-theme-select"
@@ -73,9 +67,7 @@ export function ClassicThemeSwitcher({
         }}
       >
         <option value="" disabled>
-          {themeKey === 'pantry'
-            ? 'Pick a classic theme…'
-            : 'PICK A CLASSIC THEME…'}
+          {t(`v2.settings.classic.placeholder.${themeKey}`)}
         </option>
         {classicThemes.map((k) => (
           <option key={k} value={k}>

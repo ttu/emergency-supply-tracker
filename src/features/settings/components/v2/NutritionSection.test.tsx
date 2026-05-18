@@ -10,12 +10,20 @@ describe('NutritionSection (v2)', () => {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
     expect(screen.getByText('§4')).toBeInTheDocument();
-    expect(screen.getByText('NUTRITION & REQUIREMENTS')).toBeInTheDocument();
-    expect(screen.getByText('KCAL · PERSON · DAY')).toBeInTheDocument();
-    expect(screen.getByText('WATER · PERSON · DAY')).toBeInTheDocument();
-    expect(screen.getByText('CHILDREN MULTIPLIER')).toBeInTheDocument();
     expect(
-      screen.getByText('TRACK HYGIENE WATER SEPARATELY'),
+      screen.getByText('v2.settings.nutrition.title.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.nutrition.calories.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.nutrition.water.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.nutrition.children.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.nutrition.hygiene.cockpit'),
     ).toBeInTheDocument();
   });
 });

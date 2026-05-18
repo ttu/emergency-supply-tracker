@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { Caption } from './SettingsRows';
 
@@ -27,11 +28,12 @@ export function SettingsRail({
   activeSection,
   onSelect,
 }: Readonly<SettingsRailProps>) {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
     <aside style={{ position: 'sticky', top: 0, alignSelf: 'flex-start' }}>
       <Caption style={{ marginBottom: 12 }}>
-        {themeKey === 'pantry' ? 'Sections' : 'SECTIONS'}
+        {t(`v2.settings.railSections.${themeKey}`)}
       </Caption>
       <nav
         aria-label="Settings sections"

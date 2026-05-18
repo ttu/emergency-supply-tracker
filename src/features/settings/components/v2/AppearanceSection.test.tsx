@@ -13,14 +13,24 @@ describe('AppearanceSection (v2)', () => {
   it('renders the §1 APPEARANCE header', () => {
     render();
     expect(screen.getByText('§1')).toBeInTheDocument();
-    expect(screen.getByText('APPEARANCE')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.appearance.title.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('renders the theme + language sub-panels and a11y toggles', () => {
     render();
-    expect(screen.getByText(/THEME · §1\.1/)).toBeInTheDocument();
-    expect(screen.getByText(/LANGUAGE · §1\.2/)).toBeInTheDocument();
-    expect(screen.getByText('HIGH CONTRAST MODE')).toBeInTheDocument();
-    expect(screen.getByText('REDUCE MOTION')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.appearance.themeHeader.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.appearance.languageHeader.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.appearance.highContrast.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.appearance.reduceMotion.cockpit'),
+    ).toBeInTheDocument();
   });
 });

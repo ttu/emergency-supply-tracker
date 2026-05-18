@@ -15,8 +15,14 @@ describe('CustomKitsSection (v2)', () => {
       }),
     });
     expect(screen.getByText('§7.4')).toBeInTheDocument();
-    expect(screen.getByText('CUSTOM KITS')).toBeInTheDocument();
-    expect(screen.getByText('OVERRIDES')).toBeInTheDocument();
-    expect(screen.getByText('CUSTOM TEMPLATES')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.customKits.title.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.customKits.overrides.cockpit'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.customKits.templates.cockpit'),
+    ).toBeInTheDocument();
   });
 });

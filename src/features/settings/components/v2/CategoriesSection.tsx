@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
@@ -6,23 +7,19 @@ import {
 } from '@/features/settings';
 import { PanelHeader, SectionHeader } from './SettingsRows';
 
-/** §8 Categories — custom categories + disabled built-in categories. */
 export function CategoriesSection() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
     <section id="sec-categories" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§8"
-        title={themeKey === 'pantry' ? 'Categories' : 'CATEGORIES'}
-        sub={
-          themeKey === 'pantry'
-            ? 'Hide built-ins, add your own'
-            : 'CUSTOM + DISABLED CATEGORIES'
-        }
+        title={t(`v2.settings.categories.title.${themeKey}`)}
+        sub={t(`v2.settings.categories.sub.${themeKey}`)}
       />
       <Panel padding={0}>
         <PanelHeader>
-          {themeKey === 'pantry' ? 'Custom categories' : 'CUSTOM · §8.1'}
+          {t(`v2.settings.categories.customHeader.${themeKey}`)}
         </PanelHeader>
         <div className="design-v2-embed" style={{ padding: 20 }}>
           <ClassicCategoriesSection />
@@ -30,9 +27,7 @@ export function CategoriesSection() {
       </Panel>
       <Panel padding={0} style={{ marginTop: 14 }}>
         <PanelHeader>
-          {themeKey === 'pantry'
-            ? 'Disabled built-in categories'
-            : 'DISABLED · §8.2'}
+          {t(`v2.settings.categories.disabledHeader.${themeKey}`)}
         </PanelHeader>
         <div className="design-v2-embed" style={{ padding: 20 }}>
           <DisabledCategories />

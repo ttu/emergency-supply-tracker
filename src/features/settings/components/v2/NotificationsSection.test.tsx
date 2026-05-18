@@ -15,6 +15,8 @@ describe('NotificationsSection (v2)', () => {
       }),
     });
     expect(screen.getByText('§6')).toBeInTheDocument();
-    expect(screen.getByText('NOTIFICATIONS')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.notifications.title.cockpit'),
+    ).toBeInTheDocument();
   });
 });

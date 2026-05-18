@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Field, Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
@@ -14,23 +16,19 @@ import {
 import { getAppData } from '@/shared/utils/storage/localStorage';
 import { PanelHeader, SectionHeader } from './SettingsRows';
 
-function backupLabel(themeKey: string, lastBackup: string | undefined): string {
+function backupLabel(
+  themeKey: string,
+  lastBackup: string | undefined,
+  t: TFunction,
+): string {
   if (lastBackup) {
-    return themeKey === 'pantry'
-      ? `Last backup: ${lastBackup}`
-      : `LAST BACKUP ${lastBackup}`;
+    return t(`v2.settings.data.lastBackup.${themeKey}`, { date: lastBackup });
   }
-  return themeKey === 'pantry'
-    ? 'No backup yet — consider exporting soon.'
-    : 'NO BACKUP RECORDED · ▸ EXPORT RECOMMENDED';
+  return t(`v2.settings.data.noBackup.${themeKey}`);
 }
 
-function storageLocationLabel(themeKey: string): string {
-  return themeKey === 'pantry' ? 'This browser only' : 'BROWSER LOCALSTORAGE';
-}
-
-/** §9 Data & backup: storage info + export/import + diagnostics. */
 export function DataBackupSection() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { items } = useInventory();
 
@@ -44,12 +42,8 @@ export function DataBackupSection() {
     <section id="sec-data" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§9"
-        title={themeKey === 'pantry' ? 'Data & backup' : 'DATA & BACKUP'}
-        sub={
-          themeKey === 'pantry'
-            ? 'Everything is stored on this device'
-            : 'LOCAL STORAGE · NO ACCOUNT REQUIRED'
-        }
+        title={t(`v2.settings.data.title.${themeKey}`)}
+        sub={t(`v2.settings.data.sub.${themeKey}`)}
       />
       <div
         style={{
@@ -60,30 +54,30 @@ export function DataBackupSection() {
       >
         <Panel padding={0}>
           <PanelHeader>
-            {themeKey === 'pantry' ? 'Storage' : 'STORAGE · §9.1'}
+            {t(`v2.settings.data.storageHeader.${themeKey}`)}
           </PanelHeader>
           <Field
-            label={themeKey === 'pantry' ? 'Where' : 'LOCATION'}
-            value={storageLocationLabel(themeKey)}
-            hint={themeKey === 'pantry' ? 'No cloud' : 'OFFLINE-ONLY'}
+            label={t(`v2.settings.data.location.${themeKey}`)}
+            value={t(`v2.settings.data.locationValue.${themeKey}`)}
+            hint={t(`v2.settings.data.locationHint.${themeKey}`)}
           />
           <Field
-            label={themeKey === 'pantry' ? 'Last save' : 'LAST WRITE'}
+            label={t(`v2.settings.data.lastWrite.${themeKey}`)}
             value={lastWrite ? lastWrite.slice(0, 16).replace('T', ' · ') : '—'}
           />
           <Field
-            label={themeKey === 'pantry' ? 'Records' : 'RECORD COUNT'}
-            value={`${items.length} ${themeKey === 'pantry' ? 'items' : 'ITEMS'}`}
+            label={t(`v2.settings.data.records.${themeKey}`)}
+            value={`${items.length} ${t(`v2.settings.data.recordsUnit.${themeKey}`)}`}
           />
           <Field
-            label={themeKey === 'pantry' ? 'Storage used' : 'DISK USAGE'}
+            label={t(`v2.settings.data.storageUsed.${themeKey}`)}
             value={`${storageMB} MB / ~${limitMB} MB`}
             hint={`${Math.round((Number(storageMB) / limitMB) * 100)}%`}
           />
         </Panel>
         <Panel padding={0}>
           <PanelHeader>
-            {themeKey === 'pantry' ? 'Backup & transfer' : 'BACKUP · §9.2'}
+            {t(`v2.settings.data.backupHeader.${themeKey}`)}
           </PanelHeader>
           <div
             className="design-v2-embed"
@@ -104,13 +98,13 @@ export function DataBackupSection() {
               letterSpacing: '0.04em',
             }}
           >
-            {backupLabel(themeKey, lastBackup)}
+            {backupLabel(themeKey, lastBackup, t)}
           </div>
         </Panel>
       </div>
       <Panel padding={0} style={{ marginTop: 14 }}>
         <PanelHeader>
-          {themeKey === 'pantry' ? 'Diagnostics' : 'DIAGNOSTICS · §9.3'}
+          {t(`v2.settings.data.diagnosticsHeader.${themeKey}`)}
         </PanelHeader>
         <div className="design-v2-embed" style={{ padding: 20 }}>
           <DebugExport />

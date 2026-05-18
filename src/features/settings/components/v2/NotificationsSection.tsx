@@ -1,5 +1,6 @@
 import { useMemo, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Button, Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
@@ -46,21 +47,27 @@ function savePrefs(prefs: Prefs) {
   }
 }
 
-function hiddenAlertsValue(isPantry: boolean, count: number): string {
-  if (count === 0) return isPantry ? 'None' : 'NONE';
-  return isPantry ? `${count} hidden` : `${count} HIDDEN`;
+function hiddenAlertsValue(
+  themeKey: string,
+  count: number,
+  t: TFunction,
+): string {
+  if (count === 0) return t(`v2.settings.notifications.hiddenNone.${themeKey}`);
+  return t(`v2.settings.notifications.hiddenCount.${themeKey}`, { count });
 }
 
 function hiddenAlertsHint(
-  isPantry: boolean,
+  themeKey: string,
   count: number,
+  t: TFunction,
 ): string | undefined {
   if (count === 0) return undefined;
-  return isPantry ? 'restore' : 'RESTORE';
+  return t(`v2.settings.notifications.hiddenRestoreAction.${themeKey}`);
 }
 
 interface HiddenAlertsPanelProps {
-  isPantry: boolean;
+  themeKey: string;
+  t: TFunction;
   hiddenAlerts: ReturnType<typeof generateDashboardAlerts>;
   reactivateAlert: (
     id: ReturnType<typeof generateDashboardAlerts>[number]['id'],
@@ -69,7 +76,8 @@ interface HiddenAlertsPanelProps {
 }
 
 function HiddenAlertsPanel({
-  isPantry,
+  themeKey,
+  t,
   hiddenAlerts,
   reactivateAlert,
   reactivateAllAlerts,
@@ -87,16 +95,16 @@ function HiddenAlertsPanel({
         }}
       >
         <Caption>
-          {isPantry
-            ? 'Currently hidden alerts'
-            : `HIDDEN ALERTS · ${hiddenAlerts.length} ACTIVE`}
+          {t(`v2.settings.notifications.hiddenPanelCaption.${themeKey}`, {
+            count: hiddenAlerts.length,
+          })}
         </Caption>
         <button
           type="button"
           onClick={reactivateAllAlerts}
           style={restoreAllStyle}
         >
-          {isPantry ? 'Restore all' : 'RESTORE ALL'}
+          {t(`v2.settings.notifications.restoreAll.${themeKey}`)}
         </button>
       </div>
       {hiddenAlerts.map((a, i) => (
@@ -146,7 +154,7 @@ function HiddenAlertsPanel({
             )}
           </div>
           <Button variant="secondary" onClick={() => reactivateAlert(a.id)}>
-            {isPantry ? 'Restore' : 'RESTORE'}
+            {t(`v2.settings.notifications.restoreSingle.${themeKey}`)}
           </Button>
         </div>
       ))}
@@ -178,13 +186,11 @@ export function NotificationsSection() {
     return allAlerts.filter((a) => dismissed.has(a.id));
   }, [allAlerts, dismissedAlertIds]);
 
-  const isPantry = themeKey === 'pantry';
-
   return (
     <section id="sec-notifications" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§6"
-        title={isPantry ? 'Notifications' : 'NOTIFICATIONS'}
+        title={t(`v2.settings.notifications.title.${themeKey}`)}
       />
 
       <div
@@ -197,35 +203,29 @@ export function NotificationsSection() {
         {/* In-app alerts */}
         <Panel padding={0}>
           <PanelHeader>
-            {isPantry ? 'In-app alerts' : 'IN-APP ALERTS · §6.1'}
+            {t(`v2.settings.notifications.inAppHeader.${themeKey}`)}
           </PanelHeader>
           <ToggleRow
-            label={isPantry ? 'Critical alerts' : 'CRITICAL ALERTS'}
-            hint={isPantry ? 'Items missing or expired' : 'q = 0 OR EXPIRED'}
+            label={t(`v2.settings.notifications.critical.${themeKey}`)}
+            hint={t(`v2.settings.notifications.criticalHint.${themeKey}`)}
             on={prefs.critical}
             onChange={togglePref('critical')}
           />
           <ToggleRow
-            label={isPantry ? 'Low-stock warnings' : 'LOW-STOCK WARNINGS'}
-            hint={isPantry ? 'Below 50% of recommended' : 'q < r · WARN'}
+            label={t(`v2.settings.notifications.lowStock.${themeKey}`)}
+            hint={t(`v2.settings.notifications.lowStockHint.${themeKey}`)}
             on={prefs.lowStock}
             onChange={togglePref('lowStock')}
           />
           <ToggleRow
-            label={isPantry ? 'Expiry warnings' : 'EXPIRY WARNINGS'}
-            hint={
-              isPantry ? 'Items expiring within 30 days' : 'EXP ≤ 30D · WARN'
-            }
+            label={t(`v2.settings.notifications.expiry.${themeKey}`)}
+            hint={t(`v2.settings.notifications.expiryHint.${themeKey}`)}
             on={prefs.expiry}
             onChange={togglePref('expiry')}
           />
           <ToggleRow
-            label={isPantry ? 'Backup reminders' : 'BACKUP REMINDERS'}
-            hint={
-              isPantry
-                ? "Monthly nudge if you haven't exported recently"
-                : '30D SINCE LAST EXPORT'
-            }
+            label={t(`v2.settings.notifications.backup.${themeKey}`)}
+            hint={t(`v2.settings.notifications.backupHint.${themeKey}`)}
             on={prefs.backup}
             onChange={togglePref('backup')}
             last
@@ -235,22 +235,22 @@ export function NotificationsSection() {
         {/* Email digest */}
         <Panel padding={0}>
           <PanelHeader>
-            {isPantry ? 'Email digest' : 'EMAIL DIGEST · §6.2'}
+            {t(`v2.settings.notifications.emailHeader.${themeKey}`)}
           </PanelHeader>
           <ToggleRow
-            label={isPantry ? 'Weekly summary' : 'WEEKLY SUMMARY'}
-            hint={isPantry ? 'Mondays 09:00' : 'MON 09:00 EET'}
+            label={t(`v2.settings.notifications.weekly.${themeKey}`)}
+            hint={t(`v2.settings.notifications.weeklyHint.${themeKey}`)}
             on={prefs.weeklyEmail}
             onChange={togglePref('weeklyEmail')}
           />
           <ReadField
-            label={isPantry ? 'Audit reminder' : 'AUDIT CADENCE'}
-            value={isPantry ? 'Monthly · 15th' : 'MONTHLY · 15TH'}
+            label={t(`v2.settings.notifications.audit.${themeKey}`)}
+            value={t(`v2.settings.notifications.auditValue.${themeKey}`)}
           />
           <ReadField
-            label={isPantry ? 'Hidden alerts' : 'DISMISSED ALERTS'}
-            value={hiddenAlertsValue(isPantry, hiddenAlerts.length)}
-            hint={hiddenAlertsHint(isPantry, hiddenAlerts.length)}
+            label={t(`v2.settings.notifications.hidden.${themeKey}`)}
+            value={hiddenAlertsValue(themeKey, hiddenAlerts.length, t)}
+            hint={hiddenAlertsHint(themeKey, hiddenAlerts.length, t)}
             onAction={
               hiddenAlerts.length > 0 ? () => reactivateAllAlerts() : undefined
             }
@@ -261,7 +261,8 @@ export function NotificationsSection() {
 
       {hiddenAlerts.length > 0 && (
         <HiddenAlertsPanel
-          isPantry={isPantry}
+          themeKey={themeKey}
+          t={t}
           hiddenAlerts={hiddenAlerts}
           reactivateAlert={reactivateAlert}
           reactivateAllAlerts={reactivateAllAlerts}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
@@ -7,19 +8,15 @@ import {
 } from '@/features/settings';
 import { PanelHeader, SectionHeader } from './SettingsRows';
 
-/** §7.4 Custom kits — wraps the classic kit management UI in v2 panels. */
 export function CustomKitsSection() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
     <section style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§7.4"
-        title={themeKey === 'pantry' ? 'Custom kits' : 'CUSTOM KITS'}
-        sub={
-          themeKey === 'pantry'
-            ? 'Manage uploaded recommendation files'
-            : 'UPLOADED RECOMMENDATION FILES'
-        }
+        title={t(`v2.settings.customKits.title.${themeKey}`)}
+        sub={t(`v2.settings.customKits.sub.${themeKey}`)}
       />
       <Panel padding={0}>
         <div className="design-v2-embed" style={{ padding: 20 }}>
@@ -28,7 +25,7 @@ export function CustomKitsSection() {
       </Panel>
       <Panel padding={0} style={{ marginTop: 14 }}>
         <PanelHeader>
-          {themeKey === 'pantry' ? 'Custom overrides' : 'OVERRIDES'}
+          {t(`v2.settings.customKits.overrides.${themeKey}`)}
         </PanelHeader>
         <div className="design-v2-embed" style={{ padding: 20 }}>
           <OverriddenRecommendations />
@@ -36,7 +33,7 @@ export function CustomKitsSection() {
       </Panel>
       <Panel padding={0} style={{ marginTop: 14 }}>
         <PanelHeader>
-          {themeKey === 'pantry' ? 'Custom item templates' : 'CUSTOM TEMPLATES'}
+          {t(`v2.settings.customKits.templates.${themeKey}`)}
         </PanelHeader>
         <div className="design-v2-embed" style={{ padding: 20 }}>
           <CustomTemplates />

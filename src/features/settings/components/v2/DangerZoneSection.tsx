@@ -1,33 +1,22 @@
+import { useTranslation } from 'react-i18next';
 import { Button, Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { ClearDataButton } from '@/features/settings';
 import { useInventory } from '@/features/inventory';
 import { Caption, SectionHeader } from './SettingsRows';
 
-/** §11 Danger zone: reset items, reset recommendations, factory reset. */
 export function DangerZoneSection() {
+  const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { items, deleteItems, enableAllRecommendedItems } = useInventory();
 
   const handleResetItems = () => {
-    if (
-      confirm(
-        themeKey === 'pantry'
-          ? 'Remove every item? Household and settings will be kept.'
-          : 'PURGE ALL ITEMS? HOUSEHOLD + CONFIG RETAINED.',
-      )
-    ) {
+    if (confirm(t(`v2.settings.danger.resetItemsConfirm.${themeKey}`))) {
       deleteItems(items.map((i) => i.id));
     }
   };
   const handleResetRecommendations = () => {
-    if (
-      confirm(
-        themeKey === 'pantry'
-          ? 'Restore default recommendations and re-enable all items?'
-          : 'REVERT TO BUILT-IN BASELINE + CLEAR DISABLED LIST?',
-      )
-    ) {
+    if (confirm(t(`v2.settings.danger.resetRecsConfirm.${themeKey}`))) {
       enableAllRecommendedItems();
     }
   };
@@ -36,7 +25,7 @@ export function DangerZoneSection() {
     <section id="sec-danger" style={{ scrollMarginTop: 16 }}>
       <SectionHeader
         code="§11"
-        title={themeKey === 'pantry' ? 'Danger zone' : 'DANGER ZONE'}
+        title={t(`v2.settings.danger.title.${themeKey}`)}
       />
       <Panel padding={0} style={{ borderColor: 'var(--color-crit)' }}>
         <div
@@ -46,33 +35,19 @@ export function DangerZoneSection() {
           }}
         >
           <Caption style={{ color: 'var(--color-crit)' }}>
-            {themeKey === 'pantry'
-              ? 'Irreversible actions'
-              : 'IRREVERSIBLE · CONFIRM EACH ACTION'}
+            {t(`v2.settings.danger.irreversible.${themeKey}`)}
           </Caption>
         </div>
         <DangerRow
-          title={themeKey === 'pantry' ? 'Reset all items' : 'RESET INVENTORY'}
-          detail={
-            themeKey === 'pantry'
-              ? 'Removes every item but keeps household and settings.'
-              : 'PURGE ITEMS · RETAIN HOUSEHOLD + CONFIG'
-          }
-          action={themeKey === 'pantry' ? 'Reset items' : 'RESET'}
+          title={t(`v2.settings.danger.resetItems.${themeKey}`)}
+          detail={t(`v2.settings.danger.resetItemsDetail.${themeKey}`)}
+          action={t(`v2.settings.danger.resetItemsBtn.${themeKey}`)}
           onClick={handleResetItems}
         />
         <DangerRow
-          title={
-            themeKey === 'pantry'
-              ? 'Reset recommendations'
-              : 'RESET RECOMMENDATIONS'
-          }
-          detail={
-            themeKey === 'pantry'
-              ? 'Re-enable every recommended item.'
-              : 'CLEAR DISABLED LIST · ENABLE ALL'
-          }
-          action={themeKey === 'pantry' ? 'Reset list' : 'RESET'}
+          title={t(`v2.settings.danger.resetRecs.${themeKey}`)}
+          detail={t(`v2.settings.danger.resetRecsDetail.${themeKey}`)}
+          action={t(`v2.settings.danger.resetRecsBtn.${themeKey}`)}
           onClick={handleResetRecommendations}
         />
         <div
@@ -92,7 +67,7 @@ export function DangerZoneSection() {
                 color: 'var(--color-text)',
               }}
             >
-              {themeKey === 'pantry' ? 'Clear all data' : 'FACTORY RESET'}
+              {t(`v2.settings.danger.factoryTitle.${themeKey}`)}
             </div>
             <div
               style={{
@@ -101,9 +76,7 @@ export function DangerZoneSection() {
                 marginTop: 4,
               }}
             >
-              {themeKey === 'pantry'
-                ? 'Removes every item, setting, and history entry on this device.'
-                : 'PURGE ALL LOCAL STATE · CANNOT BE UNDONE'}
+              {t(`v2.settings.danger.factoryDetail.${themeKey}`)}
             </div>
           </div>
           <div className="design-v2-embed">

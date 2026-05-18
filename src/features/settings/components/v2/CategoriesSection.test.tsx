@@ -15,6 +15,8 @@ describe('CategoriesSection (v2)', () => {
       }),
     });
     expect(screen.getByText('§8')).toBeInTheDocument();
-    expect(screen.getByText('CATEGORIES')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.categories.title.cockpit'),
+    ).toBeInTheDocument();
   });
 });

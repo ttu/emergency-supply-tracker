@@ -15,6 +15,8 @@ describe('DangerZoneSection (v2)', () => {
       }),
     });
     expect(screen.getByText('§11')).toBeInTheDocument();
-    expect(screen.getByText('DANGER ZONE')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.settings.danger.title.cockpit'),
+    ).toBeInTheDocument();
   });
 });

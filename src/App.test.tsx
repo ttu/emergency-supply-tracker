@@ -119,10 +119,14 @@ describe('App', () => {
 
     // v2 Settings has a sub-nav rail captioned "SECTIONS".
     await waitFor(() => {
-      expect(screen.getByText('SECTIONS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.settings.railSections.cockpit'),
+      ).toBeInTheDocument();
     });
     // APPEARANCE shows up in both the rail and the §1 heading.
-    expect(screen.getAllByText('APPEARANCE').length).toBeGreaterThanOrEqual(2);
+    expect(
+      screen.getAllByText('v2.settings.appearance.title.cockpit').length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('navigates between pages', async () => {
@@ -136,7 +140,9 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'SETTINGS' }));
     await waitFor(() => {
-      expect(screen.getByText('SECTIONS')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.settings.railSections.cockpit'),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'INVENTORY' }));
