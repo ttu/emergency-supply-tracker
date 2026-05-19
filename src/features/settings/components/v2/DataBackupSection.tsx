@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { Field, Panel } from '@/shared/components/design-v2/primitives';
@@ -32,11 +33,26 @@ export function DataBackupSection() {
   const { themeKey } = useDesignTheme();
   const { items } = useInventory();
 
-  const storageMB = getLocalStorageUsageMB();
+  // Read storage-derived values lazily via useMemo so we don't hit
+  // localStorage on every parent render (Settings re-renders on keystrokes
+  // elsewhere). Inventory changes are the only same-tab event that updates
+  // these values, so keying on `items` covers every user-driven mutation
+  // this panel surfaces. `items` isn't referenced inside the closure — its
+  // identity change is the signal "re-read storage".
+  const { storageMB, lastBackup, lastWrite } = useMemo(
+    () => {
+      const appData = getAppData();
+      return {
+        storageMB: getLocalStorageUsageMB(),
+        lastBackup: appData?.lastBackupDate,
+        lastWrite: appData?.lastModified,
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items],
+  );
+
   const limitMB = Math.round(LOCAL_STORAGE_LIMIT_BYTES / (1024 * 1024));
-  const appData = getAppData();
-  const lastBackup = appData?.lastBackupDate;
-  const lastWrite = appData?.lastModified;
 
   return (
     <section id="sec-data" style={{ scrollMarginTop: 16 }}>
