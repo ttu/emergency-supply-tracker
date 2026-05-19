@@ -77,13 +77,15 @@ export function useNotificationPrefs(): readonly [
   (key: keyof NotificationPrefs, value: boolean) => void,
 ] {
   const [prefs, setPrefs] = useState<NotificationPrefs>(loadPrefs);
-  const set = useCallback(
-    (key: keyof NotificationPrefs, value: boolean) => {
-      const next = { ...prefs, [key]: value };
-      setPrefs(next);
+  // Functional updater + empty dep array so `set` keeps a stable identity
+  // (consumers can rely on referential equality for `memo`) and concurrent
+  // updates within the same tick compose instead of overwriting each other.
+  const set = useCallback((key: keyof NotificationPrefs, value: boolean) => {
+    setPrefs((prev) => {
+      const next = { ...prev, [key]: value };
       savePrefs(next);
-    },
-    [prefs],
-  );
+      return next;
+    });
+  }, []);
   return [prefs, set] as const;
 }
