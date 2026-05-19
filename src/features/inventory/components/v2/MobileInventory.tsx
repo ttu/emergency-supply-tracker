@@ -61,13 +61,16 @@ export function MobileInventory({
     });
   }, [rows, filter, search, selectedCategoryId]);
 
-  const chips: Array<[FilterKey, string]> = [
-    ['all', t(`v2.inventory.filterAll.${themeKey}`)],
-    ['crit', t(`v2.inventory.filterCrit.${themeKey}`)],
-    ['warn', t(`v2.inventory.filterWarn.${themeKey}`)],
-    ['ok', t(`v2.inventory.filterOk.${themeKey}`)],
-    ['exp', t(`v2.inventory.filterExpShort.${themeKey}`)],
-  ];
+  const chips: Array<[FilterKey, string]> = useMemo(
+    () => [
+      ['all', t(`v2.inventory.filterAll.${themeKey}`)],
+      ['crit', t(`v2.inventory.filterCrit.${themeKey}`)],
+      ['warn', t(`v2.inventory.filterWarn.${themeKey}`)],
+      ['ok', t(`v2.inventory.filterOk.${themeKey}`)],
+      ['exp', t(`v2.inventory.filterExpShort.${themeKey}`)],
+    ],
+    [t, themeKey],
+  );
 
   return (
     <div

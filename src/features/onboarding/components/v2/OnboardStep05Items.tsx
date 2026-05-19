@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Caption, Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
@@ -43,13 +44,17 @@ export function OnboardStep05Items({
 }: Readonly<OnboardStep05Props>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const cats = CAT_IDS.map(
-    (id) =>
-      [
-        id,
-        CAT_CODES[id],
-        t(`v2.onboarding.step05.cat.${id}.${themeKey}`),
-      ] as const,
+  const cats = useMemo(
+    () =>
+      CAT_IDS.map(
+        (id) =>
+          [
+            id,
+            CAT_CODES[id],
+            t(`v2.onboarding.step05.cat.${id}.${themeKey}`),
+          ] as const,
+      ),
+    [t, themeKey],
   );
 
   return (
