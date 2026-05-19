@@ -97,8 +97,17 @@ export function useShoppingList(): UseShoppingListResult {
     saveCheckedItems({});
   }, []);
 
-  const open = list.filter((it) => !checked[it.id]).length;
-  const done = list.filter((it) => checked[it.id]).length;
+  // Single pass instead of two .filter().length walks, memoised so
+  // consumers don't recount on unrelated parent state changes.
+  const { open, done } = useMemo(() => {
+    let openCount = 0;
+    let doneCount = 0;
+    for (const it of list) {
+      if (checked[it.id]) doneCount++;
+      else openCount++;
+    }
+    return { open: openCount, done: doneCount };
+  }, [list, checked]);
 
   return { list, checked, open, done, toggle, addToInventory, reset };
 }
