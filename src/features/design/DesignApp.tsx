@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
@@ -180,26 +180,23 @@ export function DesignApp() {
     if (id !== 'inv') setSelectedCategoryId(undefined);
   }, []);
 
-  const ctx: ViewContext = useMemo(
-    () => ({
-      t,
-      themeKey,
-      isMobile,
-      selectedCategoryId,
-      setSelectedCategoryId,
-      setSelectedItemId,
-      setNav,
-    }),
-    [t, themeKey, isMobile, selectedCategoryId],
-  );
-
-  const view: { title: string; body: ReactNode; breadcrumb?: string } = useMemo(
-    () =>
-      selectedItemId
-        ? renderItemDetail(selectedItemId, ctx)
-        : renderNav(nav, ctx),
-    [selectedItemId, nav, ctx],
-  );
+  // renderNav / renderItemDetail are cheap pure helpers that return JSX
+  // trees React then reconciles — there is no benefit to memoising `view`
+  // (it never gates an expensive computation), and the previous memo's
+  // identity invalidated on every selectedCategoryId change anyway.
+  const ctx: ViewContext = {
+    t,
+    themeKey,
+    isMobile,
+    selectedCategoryId,
+    setSelectedCategoryId,
+    setSelectedItemId,
+    setNav,
+  };
+  const view: { title: string; body: ReactNode; breadcrumb?: string } =
+    selectedItemId
+      ? renderItemDetail(selectedItemId, ctx)
+      : renderNav(nav, ctx);
 
   const Shell = isMobile ? MobileShell : DesktopShell;
   return (
