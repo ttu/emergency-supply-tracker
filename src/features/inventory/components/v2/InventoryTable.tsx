@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { CAPS_STYLE } from '@/shared/components/design-v2/primitives';
 import type { DesignItemRow } from '@/shared/hooks/useDesignData';
 import { InventoryRow } from './InventoryRow';
 
@@ -25,8 +26,7 @@ const HEADER_STYLE: CSSProperties = {
   padding: '10px 20px',
   fontFamily: 'var(--font-mono)',
   fontSize: 10,
-  letterSpacing: 'var(--caps-tracking)',
-  textTransform: 'var(--caps-transform)' as CSSProperties['textTransform'],
+  ...CAPS_STYLE,
   color: 'var(--color-text-3)',
   fontWeight: 600,
   borderBottom: '1px solid var(--color-rule-soft)',

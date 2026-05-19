@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { CAPS_STYLE } from '@/shared/components/design-v2/primitives';
 import { Caption } from './SettingsRows';
 
 export interface SettingsNavItem {
@@ -80,15 +80,7 @@ export function SettingsRail({
               >
                 {s.code}
               </span>
-              <span
-                style={{
-                  letterSpacing: 'var(--caps-tracking)',
-                  textTransform:
-                    'var(--caps-transform)' as CSSProperties['textTransform'],
-                }}
-              >
-                {s.label}
-              </span>
+              <span style={CAPS_STYLE}>{s.label}</span>
             </button>
           );
         })}

@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { CAPS_STYLE } from '@/shared/components/design-v2/primitives';
 import type { Category } from '@/shared/types';
 
 export type InventoryFilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp';
@@ -56,9 +56,7 @@ export function InventoryFilterStrip({
           fontFamily: 'var(--font-display)',
           fontSize: 12,
           fontWeight: 600,
-          letterSpacing: 'var(--caps-tracking)',
-          textTransform:
-            'var(--caps-transform)' as CSSProperties['textTransform'],
+          ...CAPS_STYLE,
           color: active ? 'var(--color-text)' : 'var(--color-text-3)',
         }}
       >

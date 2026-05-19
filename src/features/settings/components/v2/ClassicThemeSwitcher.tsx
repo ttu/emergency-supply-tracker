@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { CAPS_STYLE } from '@/shared/components/design-v2/primitives';
 import { SELECTABLE_THEMES, isDesignV2Theme, type Theme } from '@/shared/types';
 
 interface ClassicThemeSwitcherProps {
@@ -24,8 +25,7 @@ export function ClassicThemeSwitcher({
     fontFamily: 'var(--font-mono)',
     fontSize: 11,
     color: 'var(--color-text-2)',
-    letterSpacing: 'var(--caps-tracking)',
-    textTransform: 'var(--caps-transform)' as CSSProperties['textTransform'],
+    ...CAPS_STYLE,
     marginBottom: 8,
     display: 'block',
   };

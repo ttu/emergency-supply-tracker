@@ -1,6 +1,7 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { CAPS_STYLE } from './primitives';
 
 export type DesignNavId =
   | 'home'
@@ -83,12 +84,6 @@ export function DesktopShell({
 }: Readonly<DesktopShellProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const capsStyle = (transform = true): CSSProperties => ({
-    textTransform: transform
-      ? ('var(--caps-transform)' as CSSProperties['textTransform'])
-      : 'none',
-    letterSpacing: 'var(--caps-tracking)',
-  });
   return (
     <div
       style={{
@@ -133,7 +128,7 @@ export function DesktopShell({
               fontSize: 10,
               color: 'var(--color-text-3)',
               marginTop: 4,
-              ...capsStyle(),
+              ...CAPS_STYLE,
             }}
           >
             {t(`v2.voice.tagline.${themeKey}`)}
@@ -192,7 +187,7 @@ export function DesktopShell({
                     fontSize: 12,
                     fontWeight: 600,
                     flex: 1,
-                    ...capsStyle(),
+                    ...CAPS_STYLE,
                   }}
                 >
                   {n.label[themeKey]}
@@ -227,7 +222,7 @@ export function DesktopShell({
             color: 'var(--color-text-3)',
             display: 'flex',
             justifyContent: 'space-between',
-            ...capsStyle(),
+            ...CAPS_STYLE,
           }}
         >
           <span>v0.4.2</span>
@@ -266,7 +261,7 @@ export function DesktopShell({
                   fontFamily: 'var(--font-mono)',
                   fontSize: 11,
                   color: 'var(--color-text-3)',
-                  ...capsStyle(),
+                  ...CAPS_STYLE,
                 }}
               >
                 · {breadcrumb}
@@ -424,9 +419,7 @@ export function MobileShell({
                   fontSize: 9,
                   marginTop: 2,
                   color: isActive ? 'var(--color-text)' : 'var(--color-text-3)',
-                  textTransform:
-                    'var(--caps-transform)' as CSSProperties['textTransform'],
-                  letterSpacing: 'var(--caps-tracking)',
+                  ...CAPS_STYLE,
                   fontWeight: 600,
                 }}
               >

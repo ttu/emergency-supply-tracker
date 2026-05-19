@@ -1,4 +1,4 @@
-import { memo, type CSSProperties } from 'react';
+import { memo, useMemo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Caption,
@@ -89,11 +89,14 @@ export function MobileAlerts({
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { activeAlerts, handleDismissAlert } = useDashboardAlerts();
-  const counts = {
-    crit: activeAlerts.filter((a) => a.type === 'critical').length,
-    warn: activeAlerts.filter((a) => a.type === 'warning').length,
-    info: activeAlerts.filter((a) => a.type === 'info').length,
-  };
+  const counts = useMemo(
+    () => ({
+      crit: activeAlerts.filter((a) => a.type === 'critical').length,
+      warn: activeAlerts.filter((a) => a.type === 'warning').length,
+      info: activeAlerts.filter((a) => a.type === 'info').length,
+    }),
+    [activeAlerts],
+  );
   const dismissAria = t('v2.alerts.dismissAria');
 
   return (

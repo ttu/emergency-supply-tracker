@@ -5,6 +5,21 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 export type Status = 'ok' | 'warn' | 'crit';
 
+/**
+ * Shared caps-style fragment for v2 surfaces that need to honour the
+ * theme's caps tokens. CSS variables aren't valid `textTransform`
+ * values to TypeScript, so the cast is wrapped here once instead of
+ * inlining the same workaround at every call site.
+ *
+ * Spread into a `style` prop:
+ *
+ *     <span style={{ ...CAPS_STYLE, color: 'var(--color-text-3)' }}>
+ */
+export const CAPS_STYLE = {
+  textTransform: 'var(--caps-transform)' as CSSProperties['textTransform'],
+  letterSpacing: 'var(--caps-tracking)',
+} as const satisfies CSSProperties;
+
 const STATUS_VAR: Record<Status, string> = {
   ok: 'var(--color-ok)',
   warn: 'var(--color-warn)',
@@ -60,9 +75,7 @@ export function Caption({ children, style }: Readonly<CaptionProps>) {
         fontSize: 11,
         fontWeight: 500,
         color: 'var(--color-text-3)',
-        textTransform:
-          'var(--caps-transform)' as CSSProperties['textTransform'],
-        letterSpacing: 'var(--caps-tracking)',
+        ...CAPS_STYLE,
         ...style,
       }}
     >
@@ -332,9 +345,7 @@ export function Button({
         fontFamily: 'var(--font-body)',
         fontSize: 13,
         fontWeight: 600,
-        letterSpacing: 'var(--caps-tracking)',
-        textTransform:
-          'var(--caps-transform)' as CSSProperties['textTransform'],
+        ...CAPS_STYLE,
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         width: full ? '100%' : 'auto',
@@ -366,9 +377,7 @@ export function Field({ label, value, hint, focus }: Readonly<FieldProps>) {
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: 10,
-          letterSpacing: 'var(--caps-tracking)',
-          textTransform:
-            'var(--caps-transform)' as CSSProperties['textTransform'],
+          ...CAPS_STYLE,
           color: 'var(--color-text-3)',
         }}
       >
