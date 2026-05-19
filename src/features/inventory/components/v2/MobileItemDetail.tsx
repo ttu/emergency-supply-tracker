@@ -8,15 +8,9 @@ import {
   Title,
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
-import { useDesignData } from '@/shared/hooks/useDesignData';
-import { statusOf } from '@/shared/utils/designStatus';
-import {
-  useInventory,
-  useLocationSuggestions,
-  ItemForm,
-} from '@/features/inventory';
-import { NEW_ITEM_ID } from './ItemDetail';
-import type { InventoryItem } from '@/shared/types';
+import { ItemForm } from '@/features/inventory';
+import { useItemDetailState } from '@/features/inventory/hooks/useItemDetailState';
+import { ItemNotFound } from './ItemNotFound';
 
 interface MobileItemDetailProps {
   itemId: string;
@@ -41,57 +35,21 @@ export function MobileItemDetail({
 }: Readonly<MobileItemDetailProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const { rows, categories } = useDesignData();
-  const { items, addItem, updateItem, deleteItem } = useInventory();
-  const locationSuggestions = useLocationSuggestions(items);
-  const isNew = itemId === NEW_ITEM_ID;
-  const row = isNew
-    ? undefined
-    : rows.find((r) => String(r.item.id) === itemId);
+  const {
+    isNew,
+    row,
+    item,
+    status,
+    pct,
+    categories,
+    locationSuggestions,
+    handleSubmit,
+    handleDelete,
+  } = useItemDetailState(itemId, onBack);
 
   if (!isNew && !row) {
-    return (
-      <div style={{ padding: 24, color: 'var(--color-text-2)' }}>
-        {t('v2.itemDetail.notFound')}{' '}
-        <button
-          type="button"
-          onClick={onBack}
-          style={{
-            background: 'none',
-            border: 0,
-            color: 'var(--color-accent)',
-            cursor: 'pointer',
-          }}
-        >
-          {t('v2.itemDetail.backLink')}
-        </button>
-      </div>
-    );
+    return <ItemNotFound onBack={onBack} padding={24} />;
   }
-
-  const item = row?.item;
-  const status = item ? statusOf(item, row?.recommended ?? 0) : 'ok';
-  const pct =
-    item && row?.recommended
-      ? Math.round((item.quantity / row.recommended) * 100)
-      : 0;
-
-  const handleSubmit = (
-    update: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
-  ) => {
-    if (isNew) {
-      addItem(update);
-    } else if (item) {
-      updateItem(item.id, update);
-    }
-    onBack();
-  };
-  const handleDelete = () => {
-    if (!item) return;
-    if (!confirm(t(`v2.itemDetail.confirmDelete.${themeKey}`))) return;
-    deleteItem(item.id);
-    onBack();
-  };
 
   return (
     <div

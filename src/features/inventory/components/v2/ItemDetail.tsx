@@ -1,22 +1,21 @@
 import { useTranslation } from 'react-i18next';
 import { Caption, Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
-import { useDesignData } from '@/shared/hooks/useDesignData';
+import { ItemForm } from '@/features/inventory';
 import {
-  useInventory,
-  useLocationSuggestions,
-  ItemForm,
-} from '@/features/inventory';
-import { createQuantity, type InventoryItem } from '@/shared/types';
-import { statusOf } from '@/shared/utils/designStatus';
+  NEW_ITEM_ID,
+  useItemDetailState,
+} from '@/features/inventory/hooks/useItemDetailState';
 import { ItemDetailBreadcrumb } from './ItemDetailBreadcrumb';
 import { ItemDetailHeader } from './ItemDetailHeader';
+import { ItemNotFound } from './ItemNotFound';
 import { ItemStatusPanel } from './ItemStatusPanel';
 import { ItemTotalsPanel } from './ItemTotalsPanel';
 import { ItemOpsPanel } from './ItemOpsPanel';
 
-/** Sentinel id used when navigating to ItemDetail to add a new item. */
-export const NEW_ITEM_ID = '__new__';
+// Re-exported so existing callers can keep `import { NEW_ITEM_ID } from
+// './ItemDetail'`; the canonical export lives on the shared hook.
+export { NEW_ITEM_ID };
 
 interface ItemDetailProps {
   itemId: string;
@@ -32,65 +31,23 @@ export function ItemDetail({
 }: Readonly<ItemDetailProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const { rows, categories } = useDesignData();
-  const { items, addItem, updateItem, deleteItem } = useInventory();
-  const locationSuggestions = useLocationSuggestions(items);
-  const isNew = itemId === NEW_ITEM_ID;
-  const row = isNew
-    ? undefined
-    : rows.find((r) => String(r.item.id) === itemId);
+  const {
+    isNew,
+    row,
+    item,
+    category,
+    status,
+    pct,
+    categories,
+    locationSuggestions,
+    handleSubmit,
+    handleDelete,
+    adjust,
+  } = useItemDetailState(itemId, onBack);
 
   if (!isNew && !row) {
-    return (
-      <div style={{ padding: 32, color: 'var(--color-text-2)' }}>
-        {t('v2.itemDetail.notFound')}{' '}
-        <button
-          type="button"
-          onClick={onBack}
-          style={{
-            background: 'none',
-            border: 0,
-            color: 'var(--color-accent)',
-            cursor: 'pointer',
-          }}
-        >
-          {t('v2.itemDetail.backLink')}
-        </button>
-      </div>
-    );
+    return <ItemNotFound onBack={onBack} />;
   }
-
-  const item = row?.item;
-  const cat = row?.category;
-  const status = item ? statusOf(item, row?.recommended ?? 0) : 'ok';
-  const pct =
-    item && row?.recommended
-      ? Math.round((item.quantity / row.recommended) * 100)
-      : 0;
-
-  const handleSubmit = (
-    update: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
-  ) => {
-    if (isNew) {
-      addItem(update);
-    } else if (item) {
-      updateItem(item.id, update);
-    }
-    onBack();
-  };
-
-  const handleDelete = () => {
-    if (!item) return;
-    if (!confirm(t(`v2.itemDetail.confirmDelete.${themeKey}`))) return;
-    deleteItem(item.id);
-    onBack();
-  };
-
-  const adjust = (delta: number) => {
-    if (!item) return;
-    const next = Math.max(0, item.quantity + delta);
-    updateItem(item.id, { quantity: createQuantity(next) });
-  };
 
   return (
     <div
@@ -111,7 +68,7 @@ export function ItemDetail({
         isNew={isNew}
         itemName={item?.name}
         itemCategoryId={item ? String(item.categoryId) : undefined}
-        categoryName={cat?.name}
+        categoryName={category?.name}
         onDelete={handleDelete}
       />
 
