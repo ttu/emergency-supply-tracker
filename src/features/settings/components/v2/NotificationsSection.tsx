@@ -1,7 +1,11 @@
-import { useMemo, type CSSProperties } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { Button, Panel } from '@/shared/components/design-v2/primitives';
+import {
+  AccentTextButton,
+  Button,
+  Panel,
+} from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
   Caption,
@@ -70,13 +74,9 @@ function HiddenAlertsPanel({
             count: hiddenAlerts.length,
           })}
         </Caption>
-        <button
-          type="button"
-          onClick={reactivateAllAlerts}
-          style={restoreAllStyle}
-        >
+        <AccentTextButton onClick={reactivateAllAlerts} fontSize={11}>
           {t(`v2.settings.notifications.restoreAll.${themeKey}`)}
-        </button>
+        </AccentTextButton>
       </div>
       {hiddenAlerts.map((a, i) => (
         <div
@@ -211,15 +211,3 @@ export function NotificationsSection() {
     </section>
   );
 }
-
-const restoreAllStyle: CSSProperties = {
-  background: 'transparent',
-  border: 0,
-  color: 'var(--color-accent)',
-  fontFamily: 'var(--font-mono)',
-  fontSize: 11,
-  letterSpacing: '0.08em',
-  fontWeight: 700,
-  cursor: 'pointer',
-  padding: 0,
-};

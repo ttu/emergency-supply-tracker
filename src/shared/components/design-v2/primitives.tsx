@@ -397,6 +397,46 @@ export function Field({ label, value, hint, focus }: Readonly<FieldProps>) {
   );
 }
 
+interface AccentTextButtonProps {
+  children: ReactNode;
+  onClick: () => void;
+  fontSize?: number;
+  'aria-label'?: string;
+}
+
+/**
+ * Small accent-coloured text button used for inline "Dismiss all" /
+ * "Restore all" / "Enable all" actions inside panel headers and footers.
+ * Mono caps, accent text, no chrome — matches the v2 panel language.
+ */
+export function AccentTextButton({
+  children,
+  onClick,
+  fontSize = 10,
+  'aria-label': ariaLabel,
+}: Readonly<AccentTextButtonProps>) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      style={{
+        background: 'transparent',
+        border: 0,
+        color: 'var(--color-accent)',
+        fontFamily: 'var(--font-mono)',
+        fontSize,
+        padding: 0,
+        cursor: 'pointer',
+        letterSpacing: '0.08em',
+        fontWeight: 700,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 interface CategoryCodeProps {
   children: ReactNode;
 }

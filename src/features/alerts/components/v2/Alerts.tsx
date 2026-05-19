@@ -1,6 +1,7 @@
 import { memo, useMemo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  AccentTextButton,
   Button,
   Caption,
   NumberDisplay,
@@ -134,18 +135,6 @@ const PILL_BUTTON_STYLE: CSSProperties = {
   fontWeight: 700,
 };
 
-const DISMISS_ALL_STYLE: CSSProperties = {
-  background: 'transparent',
-  border: 0,
-  color: 'var(--color-accent)',
-  fontFamily: 'var(--font-mono)',
-  fontSize: 10,
-  padding: 0,
-  cursor: 'pointer',
-  letterSpacing: '0.08em',
-  fontWeight: 700,
-};
-
 export function Alerts({
   onItemSelect,
   onCategorySelect,
@@ -217,13 +206,9 @@ export function Alerts({
         <div style={EVENT_STREAM_HEADER_STYLE}>
           <Caption>{t(`v2.alerts.eventStream.${themeKey}`)}</Caption>
           {activeAlerts.length > 0 && (
-            <button
-              type="button"
-              onClick={handleDismissAllAlerts}
-              style={DISMISS_ALL_STYLE}
-            >
+            <AccentTextButton onClick={handleDismissAllAlerts}>
               {t(`v2.alerts.dismissAll.${themeKey}`)}
-            </button>
+            </AccentTextButton>
           )}
         </div>
 

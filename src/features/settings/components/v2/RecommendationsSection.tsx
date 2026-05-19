@@ -1,6 +1,10 @@
-import { useMemo, type CSSProperties } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Panel } from '@/shared/components/design-v2/primitives';
+import {
+  AccentTextButton,
+  Button,
+  Panel,
+} from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { Caption, SectionHeader } from './SettingsRows';
 import { useInventory } from '@/features/inventory';
@@ -242,28 +246,12 @@ export function RecommendationsSection() {
                 total: totalItems,
               })}
             </span>
-            <button
-              type="button"
-              onClick={enableAllRecommendedItems}
-              style={enableAllStyle}
-            >
+            <AccentTextButton onClick={enableAllRecommendedItems} fontSize={11}>
               {t(`v2.settings.recommendations.enableAllBtn.${themeKey}`)}
-            </button>
+            </AccentTextButton>
           </div>
         )}
       </Panel>
     </section>
   );
 }
-
-const enableAllStyle: CSSProperties = {
-  background: 'transparent',
-  border: 0,
-  color: 'var(--color-accent)',
-  fontFamily: 'var(--font-mono)',
-  fontSize: 11,
-  letterSpacing: '0.08em',
-  fontWeight: 700,
-  cursor: 'pointer',
-  padding: 0,
-};
