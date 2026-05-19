@@ -446,6 +446,49 @@ export function AccentTextButton({
   );
 }
 
+interface StatusBadgeProps {
+  /** Text after the leading bullet ("LOCAL", "LIVE", …). */
+  children: ReactNode;
+  /** Pill outline + text colour. Defaults to the OK status colour. */
+  tone?: Status;
+  /** Outline / text font size. Defaults to 10. */
+  fontSize?: number;
+  /** Inner padding shorthand. */
+  padding?: string;
+}
+
+/**
+ * Small pill-shaped indicator used by the v2 Shell to show app state
+ * (e.g. `● LOCAL`, `● LIVE`). Outlined, mono caps, status-tinted.
+ */
+export function StatusBadge({
+  children,
+  tone = 'ok',
+  fontSize = 10,
+  padding = '4px 8px',
+}: Readonly<StatusBadgeProps>) {
+  const color = statusVar(tone);
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        padding,
+        border: `1px solid ${color}`,
+        color,
+        fontFamily: 'var(--font-mono)',
+        fontSize,
+        fontWeight: 700,
+        letterSpacing: '0.08em',
+        borderRadius: 'var(--radius-pill)',
+      }}
+    >
+      ● {children}
+    </span>
+  );
+}
+
 interface CategoryCodeProps {
   children: ReactNode;
 }

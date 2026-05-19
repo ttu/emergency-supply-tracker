@@ -33,6 +33,29 @@ why it is exploration-mode, and the options for closing it out.
   Each migration: on first read of the new key, copy the legacy value and
   delete the legacy key. Existing user state is preserved.
 
+- **Refactoring-expert audit follow-ups** — every P1 + actionable P2 from
+  the audit landed (separate commits):
+  - Caption deduped between `primitives.tsx` and `SettingsRows.tsx`
+  - `AccentTextButton` primitive replaces three identical "ghost link"
+    inline styles (`Alerts`, `NotificationsSection`,
+    `RecommendationsSection`)
+  - `ALERT_TYPE_TO_DESIGN_STATUS` shared from `designStatus.ts` —
+    `Alerts`/`MobileAlerts` no longer maintain private copies
+  - `useShoppingList()` hook owns the shared shopping state for `Shopping`
+    / `MobileShopping`
+  - `useItemDetailState()` hook + `ItemNotFound` component shared between
+    `ItemDetail` / `MobileItemDetail`
+  - `MobileAlerts.counts` memoised for parity with desktop `Alerts`
+  - `CAPS_STYLE` fragment in `primitives.tsx` replaces 8+ inline
+    `'var(--caps-transform)' as CSSProperties['textTransform']` casts
+  - `StatusBadge` primitive replaces three inline `● LOCAL/LIVE` pill
+    styles in `Shell.tsx`; the hardcoded `v0.4.2` version string is now
+    `APP_VERSION` from `@/shared/utils/version`
+  - Dead-end "Import" button in §7 Recommendations removed (the only
+    working kit-import path lives in §7.4 Custom kits); the
+    `v2.settings.recommendations.importBtn` /
+    `v2.settings.recommendations.importAlert` locale keys are now unused
+
 ## Must address before release
 
 ### 1. `dashboard/v2/Plan.tsx` — static placeholder goal data

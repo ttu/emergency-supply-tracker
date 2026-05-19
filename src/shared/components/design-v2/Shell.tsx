@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
-import { CAPS_STYLE } from './primitives';
+import { APP_VERSION } from '@/shared/utils/version';
+import { CAPS_STYLE, StatusBadge } from './primitives';
 
 export type DesignNavId =
   | 'home'
@@ -225,7 +226,7 @@ export function DesktopShell({
             ...CAPS_STYLE,
           }}
         >
-          <span>v0.4.2</span>
+          <span>{APP_VERSION}</span>
           <span style={{ color: 'var(--color-ok)' }}>● LOCAL</span>
         </div>
       </aside>
@@ -269,20 +270,7 @@ export function DesktopShell({
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <span
-              style={{
-                padding: '4px 8px',
-                border: '1px solid var(--color-ok)',
-                color: 'var(--color-ok)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                borderRadius: 'var(--radius-pill)',
-              }}
-            >
-              ● LOCAL
-            </span>
+            <StatusBadge>LOCAL</StatusBadge>
           </div>
         </header>
         <main
@@ -336,19 +324,9 @@ export function MobileShell({
         >
           {title || t(`v2.voice.appName.${themeKey}`)}
         </div>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            color: 'var(--color-ok)',
-            border: '1px solid var(--color-ok)',
-            padding: '2px 5px',
-            letterSpacing: '0.08em',
-            borderRadius: 'var(--radius-pill)',
-          }}
-        >
-          ● LIVE
-        </span>
+        <StatusBadge fontSize={9} padding="2px 5px">
+          LIVE
+        </StatusBadge>
       </header>
       <main id="main-content" style={{ flex: 1, overflow: 'auto' }}>
         {children}

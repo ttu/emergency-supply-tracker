@@ -69,15 +69,11 @@ export function RecommendationsSection() {
     }
   };
 
-  const handleImportClick = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = () => {
-      alert(t(`v2.settings.recommendations.importAlert.${themeKey}`));
-    };
-    input.click();
-  };
+  // Kit import lives in §7.4 Custom kits (which mounts the v1 KitManagement
+  // UI). The Import button used to live here too but only fired an alert
+  // pointing the user there, which was confusing — better to expose the one
+  // working entry point. The v2.settings.recommendations.importAlert /
+  // importBtn locale keys are now unused; safe to remove in the next batch.
 
   return (
     <section id="sec-recommendations" style={{ scrollMarginTop: 16 }}>
@@ -127,9 +123,6 @@ export function RecommendationsSection() {
           <div style={{ display: 'flex', gap: 8 }}>
             <Button variant="secondary" onClick={handleExport}>
               {t(`v2.settings.recommendations.exportBtn.${themeKey}`)}
-            </Button>
-            <Button variant="primary" onClick={handleImportClick}>
-              {t(`v2.settings.recommendations.importBtn.${themeKey}`)}
             </Button>
           </div>
         </div>
