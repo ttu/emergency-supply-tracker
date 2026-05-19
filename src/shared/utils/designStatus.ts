@@ -1,4 +1,5 @@
 import type { InventoryItem, ItemStatus, Category } from '@/shared/types';
+import type { AlertType } from '@/features/alerts';
 import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
 
 /**
@@ -14,6 +15,18 @@ export function toDesignStatus(s: ItemStatus): DesignStatus {
   if (s === 'warning') return 'warn';
   return 'ok';
 }
+
+/**
+ * Map an {@link AlertType} to the compact {@link DesignStatus} so v2 alert
+ * components can drive the status dot/pill colour from the alert severity.
+ * `info` alerts render with the `ok` status colour by design — they are
+ * informational and shouldn't read as warnings.
+ */
+export const ALERT_TYPE_TO_DESIGN_STATUS: Record<AlertType, DesignStatus> = {
+  critical: 'crit',
+  warning: 'warn',
+  info: 'ok',
+};
 
 /**
  * v2 wrapper around {@link calculateItemStatus} returning the compact

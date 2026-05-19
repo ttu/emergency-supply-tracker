@@ -11,20 +11,14 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDashboardAlerts } from '@/features/dashboard';
-import type { Alert, AlertType } from '@/features/alerts';
+import type { Alert } from '@/features/alerts';
 import type { AlertId } from '@/shared/types';
-import type { DesignStatus } from '@/shared/utils/designStatus';
+import { ALERT_TYPE_TO_DESIGN_STATUS } from '@/shared/utils/designStatus';
 
 interface AlertsProps {
   onItemSelect: (id: string) => void;
   onCategorySelect: (categoryId: string) => void;
 }
-
-const TYPE_TO_DOT: Record<AlertType, DesignStatus> = {
-  critical: 'crit',
-  warning: 'warn',
-  info: 'ok',
-};
 
 const CONTAINER_STYLE: CSSProperties = {
   display: 'flex',
@@ -297,7 +291,7 @@ function AlertRowImpl({
   const content = (
     <>
       <span style={ROW_CODE_STYLE}>{code}</span>
-      <StatusDot status={TYPE_TO_DOT[alert.type]} size={8} />
+      <StatusDot status={ALERT_TYPE_TO_DESIGN_STATUS[alert.type]} size={8} />
       <span style={ROW_DATE_STYLE}>{date}</span>
       <div style={ROW_TITLE_WRAP_STYLE}>
         <div style={ROW_TITLE_STYLE}>{alert.itemName ?? alert.message}</div>

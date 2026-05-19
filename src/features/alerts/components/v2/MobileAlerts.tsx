@@ -8,20 +8,14 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDashboardAlerts } from '@/features/dashboard';
-import type { Alert, AlertType } from '@/features/alerts';
+import type { Alert } from '@/features/alerts';
 import type { AlertId } from '@/shared/types';
-import type { DesignStatus } from '@/shared/utils/designStatus';
+import { ALERT_TYPE_TO_DESIGN_STATUS } from '@/shared/utils/designStatus';
 
 interface MobileAlertsProps {
   onItemSelect: (id: string) => void;
   onCategorySelect: (id: string) => void;
 }
-
-const ALERT_TYPE_TO_DOT: Record<AlertType, DesignStatus> = {
-  critical: 'crit',
-  warning: 'warn',
-  info: 'ok',
-};
 
 const CONTAINER_STYLE: CSSProperties = {
   padding: 16,
@@ -190,7 +184,7 @@ function MobileAlertRowImpl({
   return (
     <div style={rowStyle}>
       <div style={STATUS_DOT_WRAP_STYLE}>
-        <StatusDot status={ALERT_TYPE_TO_DOT[alert.type]} size={7} />
+        <StatusDot status={ALERT_TYPE_TO_DESIGN_STATUS[alert.type]} size={7} />
       </div>
       <button
         type="button"
