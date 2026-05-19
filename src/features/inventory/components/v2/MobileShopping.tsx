@@ -1,10 +1,4 @@
-import {
-  memo,
-  useCallback,
-  useMemo,
-  useState,
-  type CSSProperties,
-} from 'react';
+import { memo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -14,13 +8,11 @@ import {
   StatusPill,
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
-import { useDesignData } from '@/shared/hooks/useDesignData';
-import { useInventory } from '@/features/inventory';
 import {
-  loadCheckedItems,
-  saveCheckedItems,
-} from '@/features/inventory/utils/shoppingChecked';
-import { createQuantity, type ItemId } from '@/shared/types';
+  useShoppingList,
+  type ShoppingListItem,
+} from '@/features/inventory/hooks/useShoppingList';
+import type { ItemId } from '@/shared/types';
 import type { DesignStatus } from '@/shared/utils/designStatus';
 import type { TFunction } from 'i18next';
 
@@ -86,57 +78,10 @@ const ROW_ACTIONS_STYLE: CSSProperties = {
   alignItems: 'flex-end',
 };
 
-interface MobileShoppingItem {
-  id: string;
-  rawId: ItemId;
-  name: string;
-  q: string;
-  need: number;
-  currentQty: number;
-  p: DesignStatus;
-}
-
 export function MobileShopping() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const { rows } = useDesignData();
-  const { updateItem } = useInventory();
-  const [checked, setChecked] =
-    useState<Record<string, boolean>>(loadCheckedItems);
-  const list: MobileShoppingItem[] = useMemo(
-    () =>
-      rows
-        .filter((r) => r.status !== 'ok' && r.recommended > r.item.quantity)
-        .map((r) => ({
-          id: String(r.item.id),
-          rawId: r.item.id,
-          name: r.item.name,
-          q: `${r.recommended - r.item.quantity} ${r.item.unit}`,
-          need: r.recommended - r.item.quantity,
-          currentQty: r.item.quantity,
-          p: r.status,
-        })),
-    [rows],
-  );
-  const toggle = useCallback((id: string) => {
-    setChecked((prev) => {
-      const next = { ...prev, [id]: !prev[id] };
-      saveCheckedItems(next);
-      return next;
-    });
-  }, []);
-  const addToInventory = useCallback(
-    (rawId: ItemId, currentQty: number, need: number) => {
-      updateItem(rawId, { quantity: createQuantity(currentQty + need) });
-      setChecked((prev) => {
-        const next = { ...prev, [String(rawId)]: true };
-        saveCheckedItems(next);
-        return next;
-      });
-    },
-    [updateItem],
-  );
-  const open = list.filter((it) => !checked[it.id]).length;
+  const { list, checked, open, toggle, addToInventory } = useShoppingList();
   const addBtnLabel = t(`v2.shopping.addBtn.${themeKey}`);
 
   return (
@@ -167,10 +112,10 @@ export function MobileShopping() {
             isDone={!!checked[it.id]}
             isLast={i === list.length - 1}
             themeKey={themeKey}
-            statusLabel={mobileShoppingLabel(themeKey, it.p, t)}
+            statusLabel={mobileShoppingLabel(themeKey, it.priority, t)}
             addBtnLabel={addBtnLabel}
             addAriaLabel={t('v2.shopping.addBtnAriaShort', {
-              q: it.q,
+              q: `${it.need} ${it.unit}`,
               name: it.name,
             })}
             checkAriaLabel={t('v2.shopping.markDoneAria', { name: it.name })}
@@ -184,7 +129,7 @@ export function MobileShopping() {
 }
 
 interface MobileShoppingRowProps {
-  item: MobileShoppingItem;
+  item: ShoppingListItem;
   isDone: boolean;
   isLast: boolean;
   themeKey: string;
@@ -240,10 +185,12 @@ function MobileShoppingRowImpl({
         >
           {it.name}
         </div>
-        <div style={ROW_LABEL_STYLE}>{it.q}</div>
+        <div style={ROW_LABEL_STYLE}>
+          {it.need} {it.unit}
+        </div>
       </div>
       <div style={ROW_ACTIONS_STYLE}>
-        <StatusPill status={it.p}>{statusLabel}</StatusPill>
+        <StatusPill status={it.priority}>{statusLabel}</StatusPill>
         <Button
           variant="secondary"
           onClick={() => onAdd(it.rawId, it.currentQty, it.need)}

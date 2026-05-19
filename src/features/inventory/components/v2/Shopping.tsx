@@ -1,10 +1,4 @@
-import {
-  memo,
-  useCallback,
-  useMemo,
-  useState,
-  type CSSProperties,
-} from 'react';
+import { memo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -15,13 +9,11 @@ import {
   Title,
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
-import { useDesignData } from '@/shared/hooks/useDesignData';
-import { useInventory } from '@/features/inventory';
 import {
-  loadCheckedItems,
-  saveCheckedItems,
-} from '@/features/inventory/utils/shoppingChecked';
-import { createQuantity, type ItemId } from '@/shared/types';
+  useShoppingList,
+  type ShoppingListItem,
+} from '@/features/inventory/hooks/useShoppingList';
+import type { ItemId } from '@/shared/types';
 import type { DesignStatus } from '@/shared/utils/designStatus';
 import type { TFunction } from 'i18next';
 
@@ -33,15 +25,6 @@ function shoppingLabel(
   if (p === 'crit') return t(`v2.shopping.labelNow.${themeKey}`);
   if (p === 'warn') return t(`v2.shopping.labelSoon.${themeKey}`);
   return t(`v2.shopping.labelWhen.${themeKey}`);
-}
-
-function critFirstShopping(
-  a: { priority: string },
-  b: { priority: string },
-): number {
-  if (a.priority === 'crit') return -1;
-  if (b.priority === 'crit') return 1;
-  return 0;
 }
 
 const CONTAINER_STYLE: CSSProperties = {
@@ -117,69 +100,11 @@ const ROW_NEED_STYLE: CSSProperties = {
   textAlign: 'right',
 };
 
-interface ShoppingListItem {
-  id: string;
-  rawId: ItemId;
-  name: string;
-  cat: string;
-  need: number;
-  currentQty: number;
-  unit: string;
-  priority: DesignStatus;
-}
-
 export function Shopping() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const { rows } = useDesignData();
-  const { updateItem } = useInventory();
-  const [checked, setChecked] =
-    useState<Record<string, boolean>>(loadCheckedItems);
-
-  const list: ShoppingListItem[] = useMemo(() => {
-    return rows
-      .filter((r) => r.status !== 'ok' && r.recommended > r.item.quantity)
-      .map((r) => ({
-        id: String(r.item.id),
-        rawId: r.item.id,
-        name: r.item.name,
-        cat: r.categoryCode,
-        need: r.recommended - r.item.quantity,
-        currentQty: r.item.quantity,
-        unit: r.item.unit,
-        priority: r.status,
-      }))
-      .sort(critFirstShopping);
-  }, [rows]);
-
-  const toggle = useCallback((id: string) => {
-    setChecked((prev) => {
-      const next = { ...prev, [id]: !prev[id] };
-      saveCheckedItems(next);
-      return next;
-    });
-  }, []);
-
-  const addToInventory = useCallback(
-    (id: ItemId, currentQty: number, need: number) => {
-      updateItem(id, { quantity: createQuantity(currentQty + need) });
-      setChecked((prev) => {
-        const next = { ...prev, [String(id)]: true };
-        saveCheckedItems(next);
-        return next;
-      });
-    },
-    [updateItem],
-  );
-
-  const reset = useCallback(() => {
-    setChecked({});
-    saveCheckedItems({});
-  }, []);
-
-  const open = list.filter((it) => !checked[it.id]).length;
-  const done = list.filter((it) => checked[it.id]).length;
-
+  const { list, checked, open, done, toggle, addToInventory, reset } =
+    useShoppingList();
   const addBtnLabel = t(`v2.shopping.addBtn.${themeKey}`);
 
   return (
