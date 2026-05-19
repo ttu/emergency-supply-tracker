@@ -1,5 +1,8 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { Title } from '@/shared/components/design-v2/primitives';
+import { Caption, Title } from '@/shared/components/design-v2/primitives';
+
+// Re-export so existing imports from './SettingsRows' keep working.
+export { Caption };
 
 interface SectionHeaderProps {
   code: string;
@@ -63,30 +66,6 @@ export function PanelHeader({ children }: Readonly<PanelHeaderProps>) {
       }}
     >
       <Caption>{children}</Caption>
-    </div>
-  );
-}
-
-interface CaptionProps {
-  children: ReactNode;
-  style?: CSSProperties;
-}
-
-export function Caption({ children, style }: Readonly<CaptionProps>) {
-  return (
-    <div
-      style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: 11,
-        fontWeight: 500,
-        color: 'var(--color-text-3)',
-        textTransform:
-          'var(--caps-transform)' as CSSProperties['textTransform'],
-        letterSpacing: 'var(--caps-tracking)',
-        ...style,
-      }}
-    >
-      {children}
     </div>
   );
 }
