@@ -1131,6 +1131,11 @@
         "civil": "DELETE THIS ITEM?",
         "pantry": "Remove this item?"
       },
+      "confirmDeleteBody": {
+        "cockpit": "ITEM WILL BE PURGED FROM INVENTORY. CAN BE RE-ADDED MANUALLY.",
+        "civil": "ITEM WILL BE PURGED FROM INVENTORY. CAN BE RE-ADDED MANUALLY.",
+        "pantry": "This will remove the item from your inventory. You can add it again later if you want."
+      },
       "opsCaption": {
         "cockpit": "OPS",
         "civil": "OPS",

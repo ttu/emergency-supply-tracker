@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Caption, Panel } from '@/shared/components/design-v2/primitives';
+import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { ItemForm } from '@/features/inventory';
 import {
@@ -42,6 +43,12 @@ export function ItemDetail({
     locationSuggestions,
     handleSubmit,
     handleDelete,
+    deleteConfirmOpen,
+    deleteConfirmTitle,
+    deleteConfirmMessage,
+    deleteConfirmAction,
+    confirmDelete,
+    cancelDelete,
     adjust,
   } = useItemDetailState(itemId, onBack);
 
@@ -110,6 +117,16 @@ export function ItemDetail({
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        title={deleteConfirmTitle}
+        message={deleteConfirmMessage}
+        confirmLabel={deleteConfirmAction}
+        tone="danger"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }

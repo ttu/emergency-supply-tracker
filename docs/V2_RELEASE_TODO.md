@@ -49,11 +49,6 @@ The end-of-onboarding screen shows `0%` readiness because no items have been
 added yet. Literally accurate at that moment; could compute against the
 empty inventory + selected categories for a less defeating zero. Cosmetic.
 
-### 4. `useItemDetailState` uses `window.confirm()` for delete
-
-Works but un-themed. Needs a v2 dialog primitive that doesn't exist yet.
-Flagged by the React review (P2, out of scope for this release).
-
 ---
 
 ## 🧹 Post-release cleanup (no rush, but don't lose track)
@@ -114,6 +109,13 @@ on:
   open/done counts memoised, `MobileInventory`/`OnboardStep05Items` chip
   arrays memoised, `DataBackupSection` storage reads memoised on `items`
   change.
+- **`window.confirm` replaced with themed `ConfirmDialog`** — new
+  `design-v2/ConfirmDialog.tsx` primitive (portal, `role="alertdialog"`,
+  focus trap, ESC, focus restore on close, v2 Panel + Button + danger
+  tone). `useItemDetailState` now exposes the dialog state
+  (`deleteConfirmOpen` / `deleteConfirmTitle` / `deleteConfirmMessage` /
+  `deleteConfirmAction` / `confirmDelete` / `cancelDelete`); both
+  `ItemDetail` and `MobileItemDetail` render the dialog inline.
 - **Performance pass** — every long list row in v2 (`InventoryRow`,
   `AlertRow`, `MobileAlertRow`, `ShoppingListRow`, `MobileShoppingRow`,
   `MobileInventoryRow`) wrapped in `React.memo` with stable id-based

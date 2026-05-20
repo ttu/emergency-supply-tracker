@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { ItemDetail, NEW_ITEM_ID } from './ItemDetail';
 import { renderWithProviders } from '@/test/render';
@@ -33,16 +33,6 @@ const renderDetail = (
 };
 
 describe('ItemDetail (v2)', () => {
-  let confirmSpy: ReturnType<typeof vi.spyOn>;
-
-  beforeEach(() => {
-    confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
-  });
-
-  afterEach(() => {
-    confirmSpy.mockRestore();
-  });
-
   it('renders breadcrumb, header and side panels for an existing item', async () => {
     renderDetail();
     await waitFor(() => {
@@ -103,8 +93,7 @@ describe('ItemDetail (v2)', () => {
     expect(onBack).toHaveBeenCalled();
   });
 
-  it('DELETE prompts the user and only deletes when confirmed', async () => {
-    confirmSpy.mockReturnValue(false);
+  it('DELETE opens a themed confirm dialog and only deletes when confirmed', async () => {
     const onBack = vi.fn();
     renderWithProviders(
       <ItemDetail itemId={String(ITEM_ID)} onBack={onBack} />,
@@ -121,13 +110,24 @@ describe('ItemDetail (v2)', () => {
         }),
       },
     );
+    // Header DELETE opens the dialog rather than firing window.confirm.
     await waitFor(() =>
       screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
     );
     fireEvent.click(
       screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
     );
-    expect(confirmSpy).toHaveBeenCalled();
+
+    // The v2 ConfirmDialog renders with role="alertdialog".
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toBeInTheDocument();
+    expect(onBack).not.toHaveBeenCalled();
+
+    // Cancel closes the dialog without deleting.
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.cancel.cockpit' }),
+    );
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
     expect(onBack).not.toHaveBeenCalled();
   });
 });

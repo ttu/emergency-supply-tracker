@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
@@ -37,8 +37,23 @@ export interface UseItemDetailStateResult {
   handleSubmit: (
     update: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>,
   ) => void;
-  /** Prompts for confirmation; only deletes + navigates back on accept. */
+  /** Opens the delete confirmation dialog. The dialog state is exposed
+   *  separately as {@link deleteConfirmOpen} / {@link confirmDelete} /
+   *  {@link cancelDelete} so the caller can render the themed `ConfirmDialog`
+   *  inline. */
   handleDelete: () => void;
+  /** `true` while the delete-confirmation dialog should be visible. */
+  deleteConfirmOpen: boolean;
+  /** Localised dialog title. */
+  deleteConfirmTitle: string;
+  /** Localised explanation rendered in the dialog body. */
+  deleteConfirmMessage: string;
+  /** Localised label for the destructive confirm button. */
+  deleteConfirmAction: string;
+  /** Caller invokes on the dialog's confirm button — deletes + closes. */
+  confirmDelete: () => void;
+  /** Caller invokes on the dialog's cancel button or backdrop click. */
+  cancelDelete: () => void;
   /** ±delta the quantity, clamped at zero. No-op when there is no item. */
   adjust: (delta: number) => void;
 }
@@ -51,10 +66,12 @@ export interface UseItemDetailStateResult {
  * surface the same status/pct, and run the same submit/delete/adjust
  * actions through `useInventory`. Extracting this hook keeps the desktop
  * and mobile detail screens in lockstep — including the delete
- * confirmation prompt, which previously lived in two places.
+ * confirmation prompt, which previously lived in two places and used the
+ * un-themed `window.confirm()`.
  *
- * The hook does **not** render the not-found fallback; the caller checks
- * `row` and renders its own theme-appropriate fallback layout.
+ * The hook does **not** render the not-found fallback or the delete-
+ * confirmation dialog itself; the caller checks `row` and renders both
+ * with v2 primitives.
  */
 export function useItemDetailState(
   itemId: string,
@@ -91,12 +108,20 @@ export function useItemDetailState(
     [isNew, item, addItem, updateItem, onBack],
   );
 
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const handleDelete = useCallback(() => {
     if (!item) return;
-    if (!confirm(t(`v2.itemDetail.confirmDelete.${themeKey}`))) return;
+    setDeleteConfirmOpen(true);
+  }, [item]);
+  const confirmDelete = useCallback(() => {
+    if (!item) return;
+    setDeleteConfirmOpen(false);
     deleteItem(item.id);
     onBack();
-  }, [item, deleteItem, onBack, t, themeKey]);
+  }, [item, deleteItem, onBack]);
+  const cancelDelete = useCallback(() => {
+    setDeleteConfirmOpen(false);
+  }, []);
 
   const adjust = useCallback(
     (delta: number) => {
@@ -118,6 +143,12 @@ export function useItemDetailState(
     categories,
     handleSubmit,
     handleDelete,
+    deleteConfirmOpen,
+    deleteConfirmTitle: t(`v2.itemDetail.confirmDelete.${themeKey}`),
+    deleteConfirmMessage: t(`v2.itemDetail.confirmDeleteBody.${themeKey}`),
+    deleteConfirmAction: t(`v2.voice.delete.${themeKey}`),
+    confirmDelete,
+    cancelDelete,
     adjust,
   };
 }

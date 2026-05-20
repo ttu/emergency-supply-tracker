@@ -1151,6 +1151,11 @@
         "civil": "POISTA TÄMÄ TUOTE?",
         "pantry": "Poistetaanko tämä tuote?"
       },
+      "confirmDeleteBody": {
+        "cockpit": "TUOTE POISTETAAN VARASTOSTA. VOIT LISÄTÄ SEN MYÖHEMMIN UUDELLEEN.",
+        "civil": "TUOTE POISTETAAN VARASTOSTA. VOIT LISÄTÄ SEN MYÖHEMMIN UUDELLEEN.",
+        "pantry": "Tämä poistaa tuotteen varastosta. Voit lisätä sen myöhemmin uudelleen."
+      },
       "opsCaption": {
         "cockpit": "TOIM.",
         "civil": "TOIM.",

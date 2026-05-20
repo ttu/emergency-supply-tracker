@@ -7,6 +7,7 @@ import {
   StatusDot,
   Title,
 } from '@/shared/components/design-v2/primitives';
+import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { ItemForm } from '@/features/inventory';
 import { useItemDetailState } from '@/features/inventory/hooks/useItemDetailState';
@@ -45,6 +46,12 @@ export function MobileItemDetail({
     locationSuggestions,
     handleSubmit,
     handleDelete,
+    deleteConfirmOpen,
+    deleteConfirmTitle,
+    deleteConfirmMessage,
+    deleteConfirmAction,
+    confirmDelete,
+    cancelDelete,
   } = useItemDetailState(itemId, onBack);
 
   if (!isNew && !row) {
@@ -127,6 +134,16 @@ export function MobileItemDetail({
           {t(`v2.voice.delete.${themeKey}`)}
         </Button>
       )}
+
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        title={deleteConfirmTitle}
+        message={deleteConfirmMessage}
+        confirmLabel={deleteConfirmAction}
+        tone="danger"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }
