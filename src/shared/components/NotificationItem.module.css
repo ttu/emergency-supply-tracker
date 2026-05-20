@@ -62,75 +62,94 @@
 }
 
 /* --- Design v2 (cockpit / civil / pantry) override ---------------------- */
-/* When a v2 theme is active anywhere up the tree, render notifications in
-   the v2 panel language: white-on-color → panel surface + status accent
-   strip, mono caption, status colours from the v2 token palette. */
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification {
-  background-color: var(--color-panel);
-  color: var(--color-text);
+/*
+ * Under v2 themes, --color-success / --color-error-dark / --color-primary
+ * get remapped to v2 tokens (ok/crit/accent) — but that still renders the
+ * v1 saturated-pill aesthetic, just with v2 hues. We want a fully v2-native
+ * surface: panel-coloured background with a status-tinted left edge.
+ *
+ * `!important` on the variant backgrounds because the v1 `.success` etc.
+ * rules in this file have the same effective specificity once CSS Modules
+ * hashes the class names — without !important the cascade-order resolution
+ * (later wins) is technically on our side, but bundlers can hoist module
+ * blocks in ways that flip the order. Make the intent unambiguous.
+ */
+[data-theme='cockpit'] .notification,
+[data-theme='civil'] .notification,
+[data-theme='pantry'] .notification {
+  background-color: var(--color-panel) !important;
+  color: var(--color-text) !important;
   border: 1px solid var(--color-rule);
   border-left-width: 3px;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
 }
 
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification.success {
+[data-theme='cockpit'] .notification.success,
+[data-theme='civil'] .notification.success,
+[data-theme='pantry'] .notification.success {
+  background-color: var(--color-panel) !important;
   border-left-color: var(--color-ok);
+  color: var(--color-text) !important;
 }
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification.error {
+[data-theme='cockpit'] .notification.error,
+[data-theme='civil'] .notification.error,
+[data-theme='pantry'] .notification.error {
+  background-color: var(--color-panel) !important;
   border-left-color: var(--color-crit);
+  color: var(--color-text) !important;
 }
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification.info {
+[data-theme='cockpit'] .notification.info,
+[data-theme='civil'] .notification.info,
+[data-theme='pantry'] .notification.info {
+  background-color: var(--color-panel) !important;
   border-left-color: var(--color-accent);
+  color: var(--color-text) !important;
 }
 
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification
-  .icon {
+[data-theme='cockpit'] .notification .icon,
+[data-theme='civil'] .notification .icon,
+[data-theme='pantry'] .notification .icon {
   color: var(--color-text-2);
 }
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification.success
-  .icon {
+[data-theme='cockpit'] .notification.success .icon,
+[data-theme='civil'] .notification.success .icon,
+[data-theme='pantry'] .notification.success .icon {
   color: var(--color-ok);
 }
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification.error
-  .icon {
+[data-theme='cockpit'] .notification.error .icon,
+[data-theme='civil'] .notification.error .icon,
+[data-theme='pantry'] .notification.error .icon {
   color: var(--color-crit);
 }
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification.info
-  .icon {
+[data-theme='cockpit'] .notification.info .icon,
+[data-theme='civil'] .notification.info .icon,
+[data-theme='pantry'] .notification.info .icon {
   color: var(--color-accent);
 }
 
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification
-  .message {
+[data-theme='cockpit'] .notification .message,
+[data-theme='civil'] .notification .message,
+[data-theme='pantry'] .notification .message {
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 500;
   color: var(--color-text);
 }
 
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification
-  .closeButton {
+[data-theme='cockpit'] .notification .closeButton,
+[data-theme='civil'] .notification .closeButton,
+[data-theme='pantry'] .notification .closeButton {
   color: var(--color-text-3);
 }
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification
-  .closeButton:hover {
+[data-theme='cockpit'] .notification .closeButton:hover,
+[data-theme='civil'] .notification .closeButton:hover,
+[data-theme='pantry'] .notification .closeButton:hover {
   color: var(--color-text);
 }
-:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-  .notification
-  .closeButton:focus-visible {
+[data-theme='cockpit'] .notification .closeButton:focus-visible,
+[data-theme='civil'] .notification .closeButton:focus-visible,
+[data-theme='pantry'] .notification .closeButton:focus-visible {
   outline-color: var(--color-accent);
   box-shadow: none;
 }
