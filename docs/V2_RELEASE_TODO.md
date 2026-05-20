@@ -1,123 +1,124 @@
 # V2 Release TODO
 
-Audit of design-v2 components for "this is an exploration" leftovers that need
-to be decided before public release. Each item lists what is currently shipped,
-why it is exploration-mode, and the options for closing it out.
-
-## Already resolved in this branch
-
-- **Multi-device sync toggle** in `settings.advanced` — removed (`AdvancedSection.tsx`).
-  Was a `<ToggleRow on={false} onChange={() => {}}>` with no implementation.
-  Locale keys `v2.settings.advanced.sync` / `v2.settings.advanced.syncHint`
-  remain in `common.json` and are now unused; safe to delete when adding the
-  next batch of locale strings.
-- **Notification preferences wired into `generateDashboardAlerts`.** The four
-  toggles in `NotificationsSection` (critical, lowStock, expiry, backup) now
-  actually filter the dashboard alert pipeline. Added
-  `useNotificationPrefs()` + `readNotificationPrefs()` in `@/features/alerts`
-  and a `prefs` argument on `generateDashboardAlerts` that defaults to
-  "everything on" so behaviour is preserved for existing users. `backup` is
-  gated inside `useDashboardAlerts` (it does not flow through inventory
-  generation).
-- **Email digest panel removed** from `NotificationsSection.tsx`. The
-  "Weekly summary" toggle and "Audit cadence: Monthly · 15th" read-field
-  promised a feature with no backend. The functional Hidden-Alerts row was
-  relocated into the In-App alerts panel. Locale keys `v2.settings.notifications.weekly*` /
-  `v2.settings.notifications.audit*` / `v2.settings.notifications.emailHeader*`
-  are now unused; safe to delete with the next locale batch.
-- **`est:design:*` localStorage keys renamed** with one-shot migration:
-  - `est:design:notification-prefs` → `est:notification-prefs`
-  - `est:design:prefs` → `est:design-prefs`
-  - `est:design:shopping-checked` → `est:shopping-checked`
-
-  Each migration: on first read of the new key, copy the legacy value and
-  delete the legacy key. Existing user state is preserved.
-
-- **Refactoring-expert audit follow-ups** — every P1 + actionable P2 from
-  the audit landed (separate commits):
-  - Caption deduped between `primitives.tsx` and `SettingsRows.tsx`
-  - `AccentTextButton` primitive replaces three identical "ghost link"
-    inline styles (`Alerts`, `NotificationsSection`,
-    `RecommendationsSection`)
-  - `ALERT_TYPE_TO_DESIGN_STATUS` shared from `designStatus.ts` —
-    `Alerts`/`MobileAlerts` no longer maintain private copies
-  - `useShoppingList()` hook owns the shared shopping state for `Shopping`
-    / `MobileShopping`
-  - `useItemDetailState()` hook + `ItemNotFound` component shared between
-    `ItemDetail` / `MobileItemDetail`
-  - `MobileAlerts.counts` memoised for parity with desktop `Alerts`
-  - `CAPS_STYLE` fragment in `primitives.tsx` replaces 8+ inline
-    `'var(--caps-transform)' as CSSProperties['textTransform']` casts
-  - `StatusBadge` primitive replaces three inline `● LOCAL/LIVE` pill
-    styles in `Shell.tsx`; the hardcoded `v0.4.2` version string is now
-    `APP_VERSION` from `@/shared/utils/version`
-  - Dead-end "Import" button in §7 Recommendations removed (the only
-    working kit-import path lives in §7.4 Custom kits); the
-    `v2.settings.recommendations.importBtn` /
-    `v2.settings.recommendations.importAlert` locale keys are now unused
-
-## Must address before release
-
-### 1. `dashboard/v2/Plan.tsx` — static placeholder goal data
-
-`GOAL_SEEDS` is a hand-authored array of eight "preparedness objectives" with
-percentages (32 / 78 / 92 / 68 / 100 / 60 / 84 / 100) and free-text targets
-(`"€500 small bills"`, `"21 L/person · 84 L total"`, etc.). Nothing reads
-the user's actual inventory or household state — every user sees the same
-numbers.
-
-The Plan view is currently gated behind `settings.advanced.planView` (which
-ships labelled "BETA / preview"), so it is not exposed by default. Options:
-
-- **Recommended:** keep the BETA gate and document it as a roadmap feature,
-  do not ship the Plan view in the release announcement, replace the static
-  data before promoting the toggle out of beta.
-- **Alternative:** remove the Plan view, the toggle, and the locale keys
-  entirely, defer to a follow-up.
-
-If the gate stays, also localise the `target` strings (they are currently
-hard-coded English in `Plan.tsx` rather than in `common.json`).
-
-## Nice-to-have before release
-
-### 2. `alerts/v2/Alerts.tsx` — fake "today" date on every alert row
-
-Each alert row shows today's date because the `Alert` type has no
-`createdAt`. The component has a comment acknowledging this and the visual is
-intentional for the "log" aesthetic. Production fix would be to add
-`createdAt` to `Alert` and persist it.
-
-Options:
-
-- **Recommended:** leave as-is for release — the visual reads as a fresh
-  status snapshot, not a falsified historical log. Add `createdAt` in a
-  follow-up if real alert history becomes a requirement.
-
-### 3. `onboarding/v2/OnboardStep06Complete.tsx` — hardcoded `value="0"` for readiness
-
-The "all done" screen shows readiness as `0%` because no items have been
-added during onboarding yet. Acceptable — it's literally accurate at that
-moment — but could compute against the empty inventory + selected categories
-for a less defeating zero. Cosmetic, defer.
-
-## Cleanup follow-ups (post-release)
-
-These do not block release but are worth tracking:
-
-- **Unused locale keys**: `v2.settings.advanced.sync` /
-  `v2.settings.advanced.syncHint` after the sync toggle removal.
-- ~~**Voice abstraction**~~ — done. `useDesignTheme()` now returns only
-  `{ themeKey }`; the static `VOICE` record was deleted from
-  `voice.ts` and the last consumers (`DesignApp.tsx`, `Shell.tsx`,
-  `StatusPill` in `primitives.tsx`) now use `t('v2.voice.<key>.<theme>')`.
-- **FI translation quality pass**: The FI strings in `v2.*` were authored
-  programmatically in one pass; a native-speaker review is recommended
-  before the Finnish-language launch. Areas to focus on:
-  - Cockpit/civil compound nouns (e.g. `VARMUUSKOPIOINTI­MUISTUTUKSET`,
-    `ASIAKIRJAVARMUUSKOPIO`) — may read awkwardly.
-  - Pantry-theme casual phrasing — should sound friendly, not stilted.
+Living checklist of what's left before the design-v2 surface can be released.
+What landed already is summarised at the bottom; the rest of the doc is the
+pending work, ordered by decision urgency.
 
 ---
 
-_Last updated as part of the design-v2 i18n migration. See branch
-`design-update`._
+## 🔴 Blocking — decide before release
+
+### 1. `dashboard/v2/Plan.tsx` — static placeholder goal data
+
+`GOAL_SEEDS` in `Plan.tsx` is a hand-authored array of eight "preparedness
+objectives" with hand-picked percentages (32 / 78 / 92 / 68 / 100 / 60 / 84 / 100) and free-text targets (`"€500 small bills"`, `"21 L/person · 84 L
+total"`, …). **Every user sees the same numbers regardless of their actual
+inventory or household.**
+
+The Plan view is currently gated behind the `Plan view (preview)` toggle in
+Settings → §5 Advanced, which is opt-in and ships labelled BETA. So it is
+**not exposed to users by default**.
+
+**Decision needed:**
+
+- ✅ **Recommended — keep the BETA gate, don't market the feature.** No
+  release-blocker as long as the toggle stays opt-in and the panel keeps the
+  BETA label. Replace the static data before promoting the toggle out of
+  beta.
+- Alternative — remove the Plan view, the BETA toggle, and the `v2.plan.*`
+  locale keys entirely; reintroduce when there is a real implementation.
+
+If we keep the gate, the `target` strings (`"21 L/person · 84 L total"`,
+etc.) inside `Plan.tsx` should also be localised — they are currently
+hard-coded English literals.
+
+---
+
+## 🟡 Deferred — accepted as-is for v1.0, track for follow-up
+
+### 2. `alerts/v2/Alerts.tsx` — all alert rows show today's date
+
+`Alert` has no `createdAt` field, so the v2 "log" surface shows the current
+date on every row. Accepted: the visual reads as a status snapshot rather
+than falsified history. Production fix would be to add `createdAt` to
+`Alert` and persist it.
+
+### 3. `onboarding/v2/OnboardStep06Complete.tsx` — readiness hardcoded `0%`
+
+The end-of-onboarding screen shows `0%` readiness because no items have been
+added yet. Literally accurate at that moment; could compute against the
+empty inventory + selected categories for a less defeating zero. Cosmetic.
+
+### 4. `useItemDetailState` uses `window.confirm()` for delete
+
+Works but un-themed. Needs a v2 dialog primitive that doesn't exist yet.
+Flagged by the React review (P2, out of scope for this release).
+
+---
+
+## 🧹 Post-release cleanup (no rush, but don't lose track)
+
+### Unused locale keys after this branch's cleanups
+
+These keys exist in `public/locales/{en,fi}/common.json` but no component
+reads them any more. Safe to delete in the next locale-cleanup batch:
+
+| Key                                               | Why unused                                            |
+| ------------------------------------------------- | ----------------------------------------------------- |
+| `v2.settings.advanced.sync` / `syncHint`          | Multi-device sync toggle removed (no implementation)  |
+| `v2.settings.notifications.emailHeader`           | Email-digest panel removed (no backend)               |
+| `v2.settings.notifications.weekly` / `weeklyHint` | Same                                                  |
+| `v2.settings.notifications.audit` / `auditValue`  | Same                                                  |
+| `v2.settings.recommendations.importBtn`           | Dead-end Import button removed (use §7.4 Custom kits) |
+| `v2.settings.recommendations.importAlert`         | Same                                                  |
+
+### FI translation quality pass
+
+The `v2.*` Finnish strings were authored programmatically in one pass.
+Native-speaker review recommended before the Finnish-language launch — focus
+on:
+
+- Cockpit/civil compound nouns (e.g. `VARMUUSKOPIOINTI­MUISTUTUKSET`,
+  `ASIAKIRJAVARMUUSKOPIO`) — may read awkwardly in caps.
+- Pantry-theme casual phrasing — should sound friendly, not stilted.
+
+---
+
+## ✅ Resolved on this branch
+
+(Summary for context — full detail in git log.)
+
+- **Design-mindset stubs removed/wired** — Multi-device sync toggle (no
+  implementation), Email digest panel (no backend), Recommendations Import
+  button (dead-end alert) all removed. Notification preference toggles
+  (critical / lowStock / expiry / backup) now actually filter
+  `generateDashboardAlerts`.
+- **i18n migration complete** — every v2 user-facing string now goes through
+  `t('v2.*')`. The `VOICE` static record was deleted; `useDesignTheme()`
+  returns only `{ themeKey }`.
+- **Status logic unified between v1 and v2** — `statusOf` delegates to the
+  canonical `calculateItemStatus`. Fixes a latent timezone bug in v2's
+  expiration math.
+- **`est:design:*` localStorage keys renamed** with one-shot migration to
+  preserve existing user state.
+- **NotificationItem toasts themed** for v2 surfaces via
+  `[data-theme='cockpit'|'civil'|'pantry']` CSS overrides.
+- **Onboarding entry point unified behind `Suspense`** for parity with the
+  v1 lazy-loaded surface.
+- **Refactoring-expert audit follow-ups landed** — `Caption` deduped,
+  `AccentTextButton` / `StatusBadge` / `CAPS_STYLE` primitives introduced,
+  `useShoppingList` / `useItemDetailState` / `ItemNotFound` shared between
+  desktop/mobile, `ALERT_TYPE_TO_DESIGN_STATUS` consolidated.
+- **React-review fixes** — `useNotificationPrefs` functional updater (stale-
+  closure fix), unhelpful `DesignApp` `useMemo`s dropped, `useShoppingList`
+  open/done counts memoised, `MobileInventory`/`OnboardStep05Items` chip
+  arrays memoised, `DataBackupSection` storage reads memoised on `items`
+  change.
+- **Performance pass** — every long list row in v2 (`InventoryRow`,
+  `AlertRow`, `MobileAlertRow`, `ShoppingListRow`, `MobileShoppingRow`,
+  `MobileInventoryRow`) wrapped in `React.memo` with stable id-based
+  callbacks; static style objects hoisted to module scope.
+
+---
+
+_Last updated 2026-05-20 — branch `design-update`._
