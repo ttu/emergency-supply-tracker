@@ -2942,3 +2942,135 @@ describe('calculateCategoryPercentage behaviors', () => {
     });
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// ===========================================================================
+describe('mutation-killers: categoryPercentage.ts', () => {
+  // L111 ArithmeticOperator: adults * MULT vs adults / MULT
+  it('peopleMultiplier uses multiplication so more adults need more food', () => {
+    const food = createCategoryId('food');
+    const recs = mockFoodRecommendedItems;
+    const items: InventoryItem[] = [];
+
+    const h1 = createMockHousehold({
+      adults: 1,
+      children: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+      pets: 0,
+    });
+    const h4 = createMockHousehold({
+      adults: 4,
+      children: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+      pets: 0,
+    });
+
+    const r1 = calculateCategoryPercentage(food, items, h1, [], recs);
+    const r4 = calculateCategoryPercentage(food, items, h4, [], recs);
+
+    expect(r4.totalNeeded).toBeGreaterThan(r1.totalNeeded);
+  });
+
+  // L309 ArithmeticOperator: pets * MULT vs pets / MULT - via scaleWithPets
+  it('pet scaling uses multiplication so more pets need more pet supplies', () => {
+    const tools = createCategoryId('tools-supplies');
+    const petRec: RecommendedItemDefinition = {
+      id: createProductTemplateId('pet-food'),
+      i18nKey: 'petFood',
+      category: 'tools-supplies',
+      baseQuantity: createQuantity(2),
+      unit: 'kilograms',
+      scaleWithPeople: false,
+      scaleWithDays: false,
+      scaleWithPets: true,
+    };
+
+    const r1 = calculateCategoryPercentage(
+      tools,
+      [],
+      createMockHousehold({ adults: 1, pets: 1, supplyDurationDays: 1 }),
+      [],
+      [petRec],
+    );
+    const r3 = calculateCategoryPercentage(
+      tools,
+      [],
+      createMockHousehold({ adults: 1, pets: 3, supplyDurationDays: 1 }),
+      [],
+      [petRec],
+    );
+    expect(r3.totalNeeded).toBeGreaterThan(r1.totalNeeded);
+  });
+
+  // L199 LogicalOperator: !isFoodRec(r) || !r.caloriesPerUnit (early-return guard)
+  it('food recommendation without caloriesPerUnit contributes 0 actual calories', () => {
+    const food = createCategoryId('food');
+    const noCalRec = {
+      id: createProductTemplateId('rice'),
+      i18nKey: 'rice',
+      category: 'food',
+      baseQuantity: createQuantity(1),
+      unit: 'kilograms' as const,
+      scaleWithPeople: true,
+      scaleWithDays: true,
+    } as RecommendedItemDefinition;
+
+    const item = createMockInventoryItem({
+      id: createItemId('rice-item'),
+      categoryId: food,
+      itemType: createProductTemplateId('rice'),
+      quantity: createQuantity(2),
+    });
+
+    const result = calculateCategoryPercentage(
+      food,
+      [item],
+      createMockHousehold({ adults: 1, supplyDurationDays: 1 }),
+      [],
+      [noCalRec],
+    );
+    expect(result.totalActualCalories).toBe(0);
+  });
+
+  // L379 LogicalOperator: item.caloriesPerUnit != null && Number.isFinite(...)
+  it('food item with infinite caloriesPerUnit is not counted', () => {
+    const food = createCategoryId('food');
+    const item = createMockInventoryItem({
+      id: createItemId('weird'),
+      categoryId: food,
+      itemType: createProductTemplateId('custom'),
+      quantity: createQuantity(1),
+      caloriesPerUnit: Infinity,
+      weightGrams: 100,
+    });
+    const result = calculateCategoryPercentage(
+      food,
+      [item],
+      createMockHousehold({ adults: 1, supplyDurationDays: 1 }),
+      [],
+      [],
+    );
+    expect(result.totalActualCalories).toBe(0);
+  });
+
+  it('food item with undefined caloriesPerUnit is not counted', () => {
+    const food = createCategoryId('food');
+    const item = createMockInventoryItem({
+      id: createItemId('no-cal'),
+      categoryId: food,
+      itemType: createProductTemplateId('custom'),
+      quantity: createQuantity(1),
+    });
+    const result = calculateCategoryPercentage(
+      food,
+      [item],
+      createMockHousehold({ adults: 1, supplyDurationDays: 1 }),
+      [],
+      [],
+    );
+    expect(result.totalActualCalories).toBe(0);
+  });
+});

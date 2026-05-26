@@ -77,3 +77,50 @@ describe('analytics storage behaviors', () => {
     });
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// L48 EqualityOperator + ConditionalExpression: data.events.length > MAX_EVENTS
+// MAX_EVENTS = 1000
+// ===========================================================================
+describe('mutation-killers: analytics/storage.ts (issue #277)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('saveAnalyticsData does NOT trim when events.length equals MAX_EVENTS (1000)', () => {
+    const events = Array.from({ length: 1000 }, (_, i) => ({
+      eventType: 'test' as const,
+      timestamp: `e-${i}`,
+    }));
+    const data: AnalyticsData = {
+      events,
+      firstEventDate: 'd',
+      lastEventDate: 'd',
+    } as unknown as AnalyticsData;
+    saveAnalyticsData(data);
+    const stored = JSON.parse(
+      localStorage.getItem('emergencySupplyTracker_analytics') as string,
+    ) as AnalyticsData;
+    expect(stored.events).toHaveLength(1000);
+    expect(stored.events[0].timestamp).toBe('e-0');
+  });
+
+  it('saveAnalyticsData trims when events.length exceeds MAX_EVENTS (1001 → 1000)', () => {
+    const events = Array.from({ length: 1001 }, (_, i) => ({
+      eventType: 'test' as const,
+      timestamp: `e-${i}`,
+    }));
+    const data: AnalyticsData = {
+      events,
+      firstEventDate: 'd',
+      lastEventDate: 'd',
+    } as unknown as AnalyticsData;
+    saveAnalyticsData(data);
+    const stored = JSON.parse(
+      localStorage.getItem('emergencySupplyTracker_analytics') as string,
+    ) as AnalyticsData;
+    expect(stored.events).toHaveLength(1000);
+    expect(stored.events[0].timestamp).toBe('e-1');
+  });
+});

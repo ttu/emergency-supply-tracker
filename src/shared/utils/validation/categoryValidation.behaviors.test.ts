@@ -198,3 +198,34 @@ describe('categoryValidation behaviors', () => {
     });
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// ===========================================================================
+describe('mutation-killers: categoryValidation.ts (issue #277)', () => {
+  // L32 MethodExpression: icon.trim()
+  it('isValidEmoji-style check accepts icon with surrounding whitespace (trim applied)', () => {
+    const category = {
+      id: 'my-cat',
+      names: { en: 'Cat' },
+      icon: '  🔥  ', // whitespace must be trimmed
+    };
+    const result = validateImportedCategory(category, 0);
+    const iconErrors = result.errors.filter(
+      (e) => e.code === 'INVALID_CATEGORY_ICON',
+    );
+    // If trim() were dropped, the raw string would fail emoji regex.
+    expect(iconErrors).toHaveLength(0);
+  });
+
+  // L144 ConditionalExpression true: duplicate-detection guard depends on category being non-null
+  it('validateImportedCategories does NOT crash on null entries', () => {
+    const result = validateImportedCategories([
+      null,
+      { id: 'real-cat', names: { en: 'Real' }, icon: '🔥' },
+    ]);
+    // Null entry doesn't crash the seenIds tracking.
+    const errs = result.errors.filter((e) => e.code === 'INVALID_CATEGORY');
+    expect(errs.length).toBeGreaterThanOrEqual(1);
+  });
+});

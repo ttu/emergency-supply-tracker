@@ -581,3 +581,91 @@ describe('optional field validation', () => {
     expect(result.sessionId).not.toBe(42);
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// ===========================================================================
+describe('mutation-killers: errorLogger/storage.ts (issue #277)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  // L132 EqualityOperator + ConditionalExpression: data.logs.length > MAX_LOG_ENTRIES
+  // (NOT >= and NOT always-true). Exactly MAX (500) should NOT be trimmed.
+  it('saveErrorLogData does NOT trim when logs.length equals MAX_LOG_ENTRIES (500)', () => {
+    const logs: LogEntry[] = Array.from({ length: 500 }, (_, i) => ({
+      id: `id-${i}`,
+      level: 'info',
+      message: `m${i}`,
+      timestamp: new Date().toISOString(),
+    }));
+    const data: ErrorLogData = {
+      logs,
+      sessionId: 's',
+      sessionStart: new Date().toISOString(),
+    };
+    saveErrorLogData(data);
+    const raw = localStorage.getItem(ERROR_LOG_STORAGE_KEY);
+    expect(raw).not.toBeNull();
+    const stored = JSON.parse(raw as string) as ErrorLogData;
+    // > boundary: 500 logs is NOT > 500, so preserved exactly.
+    expect(stored.logs).toHaveLength(500);
+    // First entry should be id-0 (not sliced)
+    expect(stored.logs[0].id).toBe('id-0');
+  });
+
+  it('saveErrorLogData trims to last MAX_LOG_ENTRIES when over (501)', () => {
+    const logs: LogEntry[] = Array.from({ length: 501 }, (_, i) => ({
+      id: `id-${i}`,
+      level: 'info',
+      message: `m${i}`,
+      timestamp: new Date().toISOString(),
+    }));
+    saveErrorLogData({
+      logs,
+      sessionId: 's',
+      sessionStart: new Date().toISOString(),
+    });
+    const stored = JSON.parse(
+      localStorage.getItem(ERROR_LOG_STORAGE_KEY) as string,
+    ) as ErrorLogData;
+    expect(stored.logs).toHaveLength(500);
+    // After slice(-500), first kept entry is id-1
+    expect(stored.logs[0].id).toBe('id-1');
+  });
+
+  // L57 StringLiteral '': the literal `-` separator in sessionId
+  // L57 MethodExpression: Math.random().toString(36) — verify base-36 portion appears
+  it('generateSessionId contains a "-" separator and base-36 suffix', () => {
+    // First access creates a new session
+    vi.resetModules();
+    const info = getSessionInfo();
+    // Format: `${Date.now()}-${Math.random().toString(36).substring(2,9)}`
+    expect(info.id).toMatch(/^\d+-[a-z0-9]+$/);
+    expect(info.id).toContain('-');
+  });
+
+  // L23/L38 conditional/logical: invalid data falls back to defaults
+  it('returns defaults when stored data is not an object', () => {
+    localStorage.setItem(
+      ERROR_LOG_STORAGE_KEY,
+      JSON.stringify('not an object'),
+    );
+    const result = getErrorLogData();
+    expect(result.logs).toEqual([]);
+  });
+
+  it('returns defaults when stored data is null', () => {
+    localStorage.setItem(ERROR_LOG_STORAGE_KEY, JSON.stringify(null));
+    const result = getErrorLogData();
+    expect(result.logs).toEqual([]);
+  });
+
+  it('returns defaults when stored data.logs is not an array', () => {
+    localStorage.setItem(
+      ERROR_LOG_STORAGE_KEY,
+      JSON.stringify({ logs: 'not an array' }),
+    );
+    expect(getErrorLogData().logs).toEqual([]);
+  });
+});

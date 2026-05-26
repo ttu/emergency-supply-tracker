@@ -1148,3 +1148,118 @@ describe('L237-238: water shortage alert conditions', () => {
     expect(waterShortageAlerts).toHaveLength(0);
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// ===========================================================================
+describe('mutation-killers: alerts.ts', () => {
+  const mockT = (
+    key: string,
+    opts?: Record<string, string | number>,
+  ): string => {
+    if (opts && 'percent' in opts) return `${key}:${opts.percent}`;
+    if (opts && 'days' in opts) return `${key}:${opts.days}`;
+    if (opts && 'liters' in opts) return `${key}:${opts.liters}`;
+    return key;
+  };
+
+  // L34 LogicalOperator: templateId && templateId !== CUSTOM_ITEM_TYPE → || mutation
+  it('custom items use stored name (skip translation lookup)', () => {
+    const household = createMockHousehold({
+      adults: 1,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    const expiredCustom = createMockInventoryItem({
+      id: createItemId('custom-1'),
+      name: 'My Custom Thing',
+      categoryId: createCategoryId('tools-supplies'),
+      itemType: createProductTemplateId('custom'),
+      quantity: createQuantity(1),
+      unit: 'pieces',
+      neverExpires: false,
+      expirationDate: createDateOnly(daysFromNow(-10)),
+    });
+    const alerts = generateDashboardAlerts(
+      [expiredCustom],
+      mockT,
+      household,
+      RECOMMENDED_ITEMS,
+    );
+    const expired = alerts.find((a) => a.id.startsWith('expired-'));
+    expect(expired?.itemName).toBe('My Custom Thing');
+  });
+
+  // L62 LogicalOperator: neverExpires || !expirationDate (current AND→OR mutation)
+  // Forces both branches of the early-return guard.
+  it('neverExpires item with expirationDate is not flagged as expired', () => {
+    const household = createMockHousehold({
+      adults: 1,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    const item = createMockInventoryItem({
+      id: createItemId('ne-1'),
+      categoryId: createCategoryId('tools-supplies'),
+      itemType: createProductTemplateId('hammer'),
+      quantity: createQuantity(5),
+      unit: 'pieces',
+      neverExpires: true,
+      expirationDate: createDateOnly(daysFromNow(-30)),
+    });
+    const alerts = generateDashboardAlerts(
+      [item],
+      mockT,
+      household,
+      RECOMMENDED_ITEMS,
+    );
+    expect(alerts.find((a) => a.id.startsWith('expired-'))).toBeUndefined();
+  });
+
+  it('non-neverExpires item with no expirationDate is not flagged', () => {
+    const household = createMockHousehold({
+      adults: 1,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    const item = createMockInventoryItem({
+      id: createItemId('nd-1'),
+      categoryId: createCategoryId('tools-supplies'),
+      itemType: createProductTemplateId('hammer'),
+      quantity: createQuantity(5),
+      unit: 'pieces',
+      neverExpires: false,
+      expirationDate: undefined,
+    });
+    const alerts = generateDashboardAlerts(
+      [item],
+      mockT,
+      household,
+      RECOMMENDED_ITEMS,
+    );
+    expect(alerts.find((a) => a.id.startsWith('expired-'))).toBeUndefined();
+    expect(
+      alerts.find((a) => a.id.startsWith('expiring-soon-')),
+    ).toBeUndefined();
+  });
+
+  // L237/L238 LogicalOperator + EqualityOperator: water shortage gate
+  // !hasEnoughWater && waterShortfall > 0
+  it('does not generate water shortage alert when shortfall is exactly 0', () => {
+    const household = createMockHousehold({
+      adults: 1,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    // No items → no shortage either; shortfall should be 0.
+    const alerts = generateDashboardAlerts(
+      [],
+      mockT,
+      household,
+      RECOMMENDED_ITEMS,
+    );
+    const water = alerts.filter((a) => a.id.startsWith('water-shortage'));
+    // With > vs >=, an exact 0 shortfall must not generate an alert
+    expect(water).toHaveLength(0);
+  });
+});

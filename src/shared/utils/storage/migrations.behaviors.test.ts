@@ -344,3 +344,36 @@ describe('migrateToCurrentVersion skip path (!needsMigration)', () => {
     expect(result.version).toBe(CURRENT_SCHEMA_VERSION);
   });
 });
+
+// ===========================================================================
+// Additional mutation killers (issue #277)
+// ===========================================================================
+describe('mutation-killers: migrations.ts (issue #277)', () => {
+  // L112: vA.major !== vB.major → vA.major <= vB.major
+  // Force the early-return branch to fire ONLY when majors differ.
+  it('compareVersions: identical majors fall through to minor comparison', () => {
+    expect(compareVersions('1.5.0', '1.4.0')).toBe(1);
+    expect(compareVersions('1.4.0', '1.5.0')).toBe(-1);
+  });
+
+  // L113: vA.minor !== vB.minor → <=
+  // Identical major+minor, differing patch: must fall through to patch.
+  it('compareVersions: identical minors fall through to patch comparison', () => {
+    expect(compareVersions('2.3.5', '2.3.4')).toBe(1);
+    expect(compareVersions('2.3.4', '2.3.5')).toBe(-1);
+  });
+
+  // L114: vA.patch !== vB.patch → <=
+  // Identical major+minor+patch returns exactly 0.
+  it('compareVersions: identical versions return exactly 0', () => {
+    expect(compareVersions('1.2.3', '1.2.3')).toBe(0);
+  });
+
+  // L251 ConditionalExpression true: if (!needsMigration(data)) return data
+  // When data is already current, must return the input reference unchanged.
+  it('migrateToCurrentVersion returns input unchanged when no migration needed', () => {
+    const data = createAppData({ version: CURRENT_SCHEMA_VERSION });
+    const result = migrateToCurrentVersion(data);
+    expect(result).toBe(data);
+  });
+});

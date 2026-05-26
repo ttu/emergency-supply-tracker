@@ -149,3 +149,84 @@ describe('household calculations behaviors', () => {
     });
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// L21, L42, L48 ArithmeticOperator: adults*MULT and pets*MULT (not division)
+// ===========================================================================
+describe('mutation-killers: household/calculations.ts (issue #277)', () => {
+  it('calculateHouseholdMultiplier scales with adults (multiplication)', () => {
+    const h1 = createMockHousehold({
+      adults: 1,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    const h4 = createMockHousehold({
+      adults: 4,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    // Multiplication: 4x. Division: 0.25x.
+    expect(calculateHouseholdMultiplier(h4)).toBeGreaterThan(
+      calculateHouseholdMultiplier(h1),
+    );
+  });
+
+  it('calculateRecommendedQuantity scales people via multiplication', () => {
+    const rec = createMockRecommendedItem({
+      id: createProductTemplateId('test'),
+      baseQuantity: createQuantity(2),
+      scaleWithPeople: true,
+      scaleWithDays: false,
+      scaleWithPets: false,
+    });
+    const h1 = createMockHousehold({
+      adults: 1,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    const h3 = createMockHousehold({
+      adults: 3,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    expect(calculateRecommendedQuantity(rec, h3)).toBeGreaterThan(
+      calculateRecommendedQuantity(rec, h1),
+    );
+  });
+
+  it('calculateRecommendedQuantity scales pets via multiplication', () => {
+    const rec = createMockRecommendedItem({
+      id: createProductTemplateId('petfood'),
+      baseQuantity: createQuantity(1),
+      scaleWithPeople: false,
+      scaleWithDays: false,
+      scaleWithPets: true,
+    });
+    const h1 = createMockHousehold({
+      adults: 1,
+      children: 0,
+      pets: 1,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    const h4 = createMockHousehold({
+      adults: 1,
+      children: 0,
+      pets: 4,
+      supplyDurationDays: 1,
+      useFreezer: false,
+    });
+    expect(calculateRecommendedQuantity(rec, h4)).toBeGreaterThan(
+      calculateRecommendedQuantity(rec, h1),
+    );
+  });
+});

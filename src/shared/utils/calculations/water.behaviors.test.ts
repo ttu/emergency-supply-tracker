@@ -456,3 +456,97 @@ describe('calculateRecommendedWaterStorage arithmetic', () => {
     expect(result).toBe(0);
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// ===========================================================================
+describe('mutation-killers: water.ts (issue #277)', () => {
+  // L78 LogicalOperator + StringLiteral + Conditional: 'custom' itemType is NOT looked up
+  it('custom itemType does NOT trigger template lookup (returns 0 when no requiresWaterLiters)', () => {
+    const item = createMockInventoryItem({
+      itemType: createProductTemplateId('custom'),
+      requiresWaterLiters: undefined,
+    });
+    expect(getWaterRequirementPerUnit(item)).toBe(0);
+  });
+
+  it('itemType undefined does NOT trigger template lookup', () => {
+    const item = createMockInventoryItem({
+      itemType: undefined as unknown as ReturnType<
+        typeof createProductTemplateId
+      >,
+      requiresWaterLiters: undefined,
+    });
+    expect(getWaterRequirementPerUnit(item)).toBe(0);
+  });
+
+  // L84 EqualityOperator: template.requiresWaterLiters > 0 (not >= 0)
+  it('item.requiresWaterLiters boundary: 0 returns 0 (not the field value)', () => {
+    const item = createMockInventoryItem({
+      itemType: createProductTemplateId('custom'),
+      requiresWaterLiters: 0,
+    });
+    expect(getWaterRequirementPerUnit(item)).toBe(0);
+  });
+
+  // L117 ConditionalExpression false: filter for bottled-water in available calc
+  it('non-water-beverages items are excluded from calculateTotalWaterAvailable', () => {
+    const items = [
+      createMockInventoryItem({
+        categoryId: createCategoryId('food'),
+        itemType: createProductTemplateId('bottled-water'),
+        quantity: createQuantity(100),
+        unit: 'liters',
+      }),
+    ];
+    expect(calculateTotalWaterAvailable(items)).toBe(0);
+  });
+
+  it('water-beverages bottled-water in liters IS counted', () => {
+    const items = [
+      createMockInventoryItem({
+        categoryId: createCategoryId('water-beverages'),
+        itemType: createProductTemplateId('bottled-water'),
+        quantity: createQuantity(10),
+        unit: 'liters',
+      }),
+    ];
+    expect(calculateTotalWaterAvailable(items)).toBe(10);
+  });
+
+  // L181 ArithmeticOperator: adults * MULT in calculateRecommendedWaterStorage
+  it('calculateRecommendedWaterStorage scales linearly with adults (multiplication)', () => {
+    const h1 = createMockHousehold({
+      adults: 1,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+    });
+    const h4 = createMockHousehold({
+      adults: 4,
+      children: 0,
+      pets: 0,
+      supplyDurationDays: 3,
+      useFreezer: false,
+    });
+    const a = calculateRecommendedWaterStorage(h1, 3);
+    const b = calculateRecommendedWaterStorage(h4, 3);
+    // With multiplication: ~4x. With division: ~0.25x. Strict ordering check kills the mutant.
+    expect(b).toBeGreaterThan(a);
+  });
+
+  // calculateWaterRequirements composes the above; quick sanity check.
+  it('calculateWaterRequirements reports 0 shortfall when no items need water', () => {
+    const items = [
+      createMockInventoryItem({
+        categoryId: createCategoryId('tools-supplies'),
+        itemType: createProductTemplateId('custom'),
+        quantity: createQuantity(5),
+        requiresWaterLiters: 0,
+      }),
+    ];
+    const result = calculateWaterRequirements(items);
+    expect(result.waterShortfall).toBe(0);
+  });
+});

@@ -145,3 +145,34 @@ describe('isValidUnit – mutation killing tests for L22 guard', () => {
     }
   });
 });
+
+// ===========================================================================
+// Mutation-killing tests targeting specific surviving mutants (issue #277)
+// L22 LogicalOperator/ConditionalExpression/BlockStatement on the guard:
+//   if (unit === null || unit === undefined || typeof unit !== 'string')
+// ===========================================================================
+describe('mutation-killers: unitValidation.ts (issue #277)', () => {
+  it('returns false for null', () => {
+    expect(isValidUnit(null as unknown as string)).toBe(false);
+  });
+
+  it('returns false for undefined', () => {
+    expect(isValidUnit(undefined as unknown as string)).toBe(false);
+  });
+
+  it('returns false for number input (typeof !== string)', () => {
+    expect(isValidUnit(42 as unknown as string)).toBe(false);
+  });
+
+  it('returns false for object input', () => {
+    expect(isValidUnit({} as unknown as string)).toBe(false);
+  });
+
+  it('returns false for valid-looking but unknown string', () => {
+    expect(isValidUnit('definitely-not-a-unit')).toBe(false);
+  });
+
+  it('returns true for a known unit', () => {
+    expect(isValidUnit('pieces')).toBe(true);
+  });
+});
