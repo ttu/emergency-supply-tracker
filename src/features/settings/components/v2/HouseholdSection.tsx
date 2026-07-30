@@ -37,6 +37,74 @@ interface HouseholdLabels {
   freezerHint: string;
 }
 
+interface ComputedFigureProps {
+  marginTop: number;
+  value: string | number;
+  size: number;
+  unitSize: number;
+  unit: string;
+  formula: string;
+}
+
+/** A derived target: the figure, its unit, and the arithmetic behind it. */
+function ComputedFigure({
+  marginTop,
+  value,
+  size,
+  unitSize,
+  unit,
+  formula,
+}: Readonly<ComputedFigureProps>) {
+  return (
+    <div style={{ marginTop }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+        <NumberDisplay value={value} size={size} />
+        <span style={{ fontSize: unitSize, color: 'var(--color-text-2)' }}>
+          {unit}
+        </span>
+      </div>
+      <div
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: 10,
+          color: 'var(--color-text-3)',
+          marginTop: 4,
+        }}
+      >
+        {formula}
+      </div>
+    </div>
+  );
+}
+
+/** Item count, split off below a rule from the calculated targets above. */
+function ItemsTracked({
+  caption,
+  value,
+}: Readonly<{ caption: string; value: number }>) {
+  return (
+    <div
+      style={{
+        marginTop: 18,
+        paddingTop: 16,
+        borderTop: '1px solid var(--color-rule-soft)',
+      }}
+    >
+      <Caption>{caption}</Caption>
+      <div
+        style={{
+          marginTop: 6,
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 6,
+        }}
+      >
+        <NumberDisplay value={value} size={28} />
+      </div>
+    </div>
+  );
+}
+
 function householdLabels(themeKey: string, t: TFunction): HouseholdLabels {
   return {
     adults: t(`v2.settings.household.adults.${themeKey}`),
@@ -135,70 +203,30 @@ export function HouseholdSection() {
         </Panel>
         <Panel padding={20}>
           <Caption>{t(`v2.settings.household.calculated.${themeKey}`)}</Caption>
-          <div style={{ marginTop: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <NumberDisplay value={computed.water} size={40} />
-              <span style={{ fontSize: 13, color: 'var(--color-text-2)' }}>
-                L ·{' '}
-                {t(`v2.settings.household.waterFor.${themeKey}`, {
-                  days: household.supplyDurationDays,
-                })}
-              </span>
-            </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-3)',
-                marginTop: 4,
-              }}
-            >
-              = {water} L × {household.adults} ADULTS ×{' '}
-              {household.supplyDurationDays} D
-            </div>
-          </div>
-          <div style={{ marginTop: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <NumberDisplay value={computed.kcal.toLocaleString()} size={28} />
-              <span style={{ fontSize: 12, color: 'var(--color-text-2)' }}>
-                kcal ·{' '}
-                {t(`v2.settings.household.totalFood.${themeKey}`, {
-                  days: household.supplyDurationDays,
-                })}
-              </span>
-            </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-3)',
-                marginTop: 4,
-              }}
-            >
-              = {cal} × {household.adults} × {household.supplyDurationDays} D
-            </div>
-          </div>
-          <div
-            style={{
-              marginTop: 18,
-              paddingTop: 16,
-              borderTop: '1px solid var(--color-rule-soft)',
-            }}
-          >
-            <Caption>
-              {t(`v2.settings.household.itemsTracked.${themeKey}`)}
-            </Caption>
-            <div
-              style={{
-                marginTop: 6,
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: 6,
-              }}
-            >
-              <NumberDisplay value={computed.itemCount} size={28} />
-            </div>
-          </div>
+          <ComputedFigure
+            marginTop={14}
+            value={computed.water}
+            size={40}
+            unitSize={13}
+            unit={`L · ${t(`v2.settings.household.waterFor.${themeKey}`, {
+              days: household.supplyDurationDays,
+            })}`}
+            formula={`= ${water} L × ${household.adults} ADULTS × ${household.supplyDurationDays} D`}
+          />
+          <ComputedFigure
+            marginTop={18}
+            value={computed.kcal.toLocaleString()}
+            size={28}
+            unitSize={12}
+            unit={`kcal · ${t(`v2.settings.household.totalFood.${themeKey}`, {
+              days: household.supplyDurationDays,
+            })}`}
+            formula={`= ${cal} × ${household.adults} × ${household.supplyDurationDays} D`}
+          />
+          <ItemsTracked
+            caption={t(`v2.settings.household.itemsTracked.${themeKey}`)}
+            value={computed.itemCount}
+          />
         </Panel>
       </div>
     </section>

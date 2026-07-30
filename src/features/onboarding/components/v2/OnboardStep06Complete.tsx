@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -12,6 +13,19 @@ interface OnboardStep06Props {
   household: HouseholdConfig;
   enabledCategories: Set<string>;
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;
+}
+
+/** One captioned figure in the completion screen's summary grid. */
+function SummaryStat({
+  caption,
+  children,
+}: Readonly<{ caption: string; children: ReactNode }>) {
+  return (
+    <div>
+      <Caption>{caption}</Caption>
+      <div style={{ marginTop: 8 }}>{children}</div>
+    </div>
+  );
 }
 
 export function OnboardStep06Complete({
@@ -73,32 +87,23 @@ export function OnboardStep06Complete({
             gap: 24,
           }}
         >
-          <div>
-            <Caption>{t(`v2.voice.readiness.${themeKey}`)}</Caption>
-            <div style={{ marginTop: 8 }}>
-              <NumberDisplay value="0" suffix="%" size={36} tone="crit" />
-            </div>
-          </div>
-          <div>
-            <Caption>
-              {t(`v2.onboarding.step06.categoriesCaption.${themeKey}`)}
-            </Caption>
-            <div style={{ marginTop: 8 }}>
-              <NumberDisplay
-                value={enabledCategories.size}
-                suffix="/10"
-                size={36}
-              />
-            </div>
-          </div>
-          <div>
-            <Caption>
-              {t(`v2.onboarding.step06.daysCaption.${themeKey}`)}
-            </Caption>
-            <div style={{ marginTop: 8 }}>
-              <NumberDisplay value={household.supplyDurationDays} size={36} />
-            </div>
-          </div>
+          <SummaryStat caption={t(`v2.voice.readiness.${themeKey}`)}>
+            <NumberDisplay value="0" suffix="%" size={36} tone="crit" />
+          </SummaryStat>
+          <SummaryStat
+            caption={t(`v2.onboarding.step06.categoriesCaption.${themeKey}`)}
+          >
+            <NumberDisplay
+              value={enabledCategories.size}
+              suffix="/10"
+              size={36}
+            />
+          </SummaryStat>
+          <SummaryStat
+            caption={t(`v2.onboarding.step06.daysCaption.${themeKey}`)}
+          >
+            <NumberDisplay value={household.supplyDurationDays} size={36} />
+          </SummaryStat>
         </div>
         <div style={{ marginTop: 32 }}>
           <Button variant="primary" onClick={() => onComplete(household, [])}>
