@@ -138,6 +138,13 @@ export function HouseholdSection() {
     updateHousehold({ [k]: Math.max(0, v) });
   const L = householdLabels(themeKey, t);
 
+  const waterForLabel = t(`v2.settings.household.waterFor.${themeKey}`, {
+    days: household.supplyDurationDays,
+  });
+  const totalFoodLabel = t(`v2.settings.household.totalFood.${themeKey}`, {
+    days: household.supplyDurationDays,
+  });
+
   const computed = useMemo(() => {
     const ppl = household.adults + household.children * (childPct / 100);
     const days = household.supplyDurationDays;
@@ -208,9 +215,7 @@ export function HouseholdSection() {
             value={computed.water}
             size={40}
             unitSize={13}
-            unit={`L · ${t(`v2.settings.household.waterFor.${themeKey}`, {
-              days: household.supplyDurationDays,
-            })}`}
+            unit={`L · ${waterForLabel}`}
             formula={`= ${water} L × ${household.adults} ADULTS × ${household.supplyDurationDays} D`}
           />
           <ComputedFigure
@@ -218,9 +223,7 @@ export function HouseholdSection() {
             value={computed.kcal.toLocaleString()}
             size={28}
             unitSize={12}
-            unit={`kcal · ${t(`v2.settings.household.totalFood.${themeKey}`, {
-              days: household.supplyDurationDays,
-            })}`}
+            unit={`kcal · ${totalFoodLabel}`}
             formula={`= ${cal} × ${household.adults} × ${household.supplyDurationDays} D`}
           />
           <ItemsTracked

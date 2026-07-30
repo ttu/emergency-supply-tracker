@@ -53,6 +53,7 @@ export function DataBackupSection() {
   );
 
   const limitMB = Math.round(LOCAL_STORAGE_LIMIT_BYTES / (1024 * 1024));
+  const recordsUnit = t(`v2.settings.data.recordsUnit.${themeKey}`);
 
   return (
     <section id="sec-data" style={{ scrollMarginTop: 16 }}>
@@ -83,7 +84,7 @@ export function DataBackupSection() {
           />
           <Field
             label={t(`v2.settings.data.records.${themeKey}`)}
-            value={`${items.length} ${t(`v2.settings.data.recordsUnit.${themeKey}`)}`}
+            value={`${items.length} ${recordsUnit}`}
           />
           <Field
             label={t(`v2.settings.data.storageUsed.${themeKey}`)}

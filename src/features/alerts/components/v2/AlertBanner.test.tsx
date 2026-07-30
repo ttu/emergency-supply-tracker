@@ -61,7 +61,7 @@ describe('AlertBanner (v2)', () => {
         expect(screen.getByTestId('v2-alert-banner')).toBeInTheDocument(),
       );
 
-      expect(screen.getAllByTestId('v2-alert-row').length).toBe(3);
+      expect(screen.getAllByTestId('v2-alert-row')).toHaveLength(3);
       expect(screen.getByTestId('v2-alert-toggle')).toBeInTheDocument();
     });
 
@@ -76,7 +76,7 @@ describe('AlertBanner (v2)', () => {
       expect(expanded).toBeGreaterThan(3);
 
       fireEvent.click(screen.getByTestId('v2-alert-toggle'));
-      expect(screen.getAllByTestId('v2-alert-row').length).toBe(3);
+      expect(screen.getAllByTestId('v2-alert-row')).toHaveLength(3);
     });
 
     it('shows no toggle when everything already fits', async () => {
@@ -135,7 +135,7 @@ describe('AlertBanner (v2)', () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryAllByTestId('v2-alert-row').length).toBe(
+      expect(screen.queryAllByTestId('v2-alert-row')).toHaveLength(
         rowsBefore - 1,
       );
     });
