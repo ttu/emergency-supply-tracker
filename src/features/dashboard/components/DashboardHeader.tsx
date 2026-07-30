@@ -7,6 +7,32 @@ export interface DashboardHeaderProps {
   supplyDays: number;
 }
 
+interface ScoreCircleProps {
+  score: number;
+  colorClass: string;
+}
+
+function ScoreCircle({ score, colorClass }: ScoreCircleProps) {
+  return (
+    <div className={styles.scoreCircle}>
+      <svg viewBox="0 0 100 100" className={styles.scoreSvg}>
+        <circle cx="50" cy="50" r="45" className={styles.scoreBackground} />
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          className={`${styles.scoreProgress} ${colorClass}`}
+          strokeDasharray={`${score * 2.83} 283`}
+        />
+      </svg>
+      <div className={styles.scoreValue}>
+        <span className={styles.scoreNumber}>{score}</span>
+        <span className={styles.scorePercent}>%</span>
+      </div>
+    </div>
+  );
+}
+
 export const DashboardHeader = ({
   preparednessScore,
   householdSize,
@@ -40,27 +66,10 @@ export const DashboardHeader = ({
         </div>
 
         <div className={styles.scoreSection}>
-          <div className={styles.scoreCircle}>
-            <svg viewBox="0 0 100 100" className={styles.scoreSvg}>
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                className={styles.scoreBackground}
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                className={`${styles.scoreProgress} ${getScoreColor(preparednessScore)}`}
-                strokeDasharray={`${preparednessScore * 2.83} 283`}
-              />
-            </svg>
-            <div className={styles.scoreValue}>
-              <span className={styles.scoreNumber}>{preparednessScore}</span>
-              <span className={styles.scorePercent}>%</span>
-            </div>
-          </div>
+          <ScoreCircle
+            score={preparednessScore}
+            colorClass={getScoreColor(preparednessScore)}
+          />
           <div className={styles.scoreLabel}>
             {getScoreLabel(preparednessScore)}
           </div>

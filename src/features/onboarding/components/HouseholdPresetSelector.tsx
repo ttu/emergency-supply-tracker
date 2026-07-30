@@ -29,6 +29,52 @@ const PRESETS: HouseholdPreset[] = PRESET_IDS.map((id) => ({
   pets: HOUSEHOLD_PRESETS[id].pets,
 }));
 
+const CUSTOM_PRESET: HouseholdPreset = {
+  id: 'custom',
+  adults: 1,
+  children: 0,
+  pets: 0,
+};
+
+interface PresetCardProps {
+  preset: HouseholdPreset;
+  selected: boolean;
+  onSelect: (preset: HouseholdPreset) => void;
+  title: string;
+  details: React.ReactNode;
+}
+
+function PresetCard({
+  preset,
+  selected,
+  onSelect,
+  title,
+  details,
+}: PresetCardProps) {
+  return (
+    <Card
+      variant={selected ? 'elevated' : 'outlined'}
+      padding="medium"
+      className={`${styles.presetCard} ${selected ? styles.selected : ''}`}
+      onClick={() => onSelect(preset)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(preset);
+        }
+      }}
+      data-testid={`preset-${preset.id}`}
+    >
+      <div className={styles.presetContent}>
+        <h3 className={styles.presetTitle}>{title}</h3>
+        <p className={styles.presetDetails}>{details}</p>
+      </div>
+    </Card>
+  );
+}
+
 export function HouseholdPresetSelector({
   selectedPreset,
   onSelectPreset,
@@ -48,66 +94,29 @@ export function HouseholdPresetSelector({
 
         <div className={styles.presets}>
           {PRESETS.map((preset) => (
-            <Card
+            <PresetCard
               key={preset.id}
-              variant={selectedPreset === preset.id ? 'elevated' : 'outlined'}
-              padding="medium"
-              className={`${styles.presetCard} ${selectedPreset === preset.id ? styles.selected : ''}`}
-              onClick={() => onSelectPreset(preset)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectPreset(preset);
-                }
-              }}
-              data-testid={`preset-${preset.id}`}
-            >
-              <div className={styles.presetContent}>
-                <h3 className={styles.presetTitle}>
-                  {t(`household.presets.${preset.id}`)}
-                </h3>
-                <p className={styles.presetDetails}>
+              preset={preset}
+              selected={selectedPreset === preset.id}
+              onSelect={onSelectPreset}
+              title={t(`household.presets.${preset.id}`)}
+              details={
+                <>
                   {preset.adults} {t('household.adults')}
                   {preset.children > 0 &&
                     `, ${preset.children} ${t('household.children')}`}
-                </p>
-              </div>
-            </Card>
+                </>
+              }
+            />
           ))}
 
-          <Card
-            variant={selectedPreset === 'custom' ? 'elevated' : 'outlined'}
-            padding="medium"
-            className={`${styles.presetCard} ${selectedPreset === 'custom' ? styles.selected : ''}`}
-            onClick={() =>
-              onSelectPreset({ id: 'custom', adults: 1, children: 0, pets: 0 })
-            }
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onSelectPreset({
-                  id: 'custom',
-                  adults: 1,
-                  children: 0,
-                  pets: 0,
-                });
-              }
-            }}
-            data-testid="preset-custom"
-          >
-            <div className={styles.presetContent}>
-              <h3 className={styles.presetTitle}>
-                {t('household.presets.custom')}
-              </h3>
-              <p className={styles.presetDetails}>
-                {t('household.customDescription')}
-              </p>
-            </div>
-          </Card>
+          <PresetCard
+            preset={CUSTOM_PRESET}
+            selected={selectedPreset === 'custom'}
+            onSelect={onSelectPreset}
+            title={t('household.presets.custom')}
+            details={t('household.customDescription')}
+          />
         </div>
 
         {onTryDemoData && (
