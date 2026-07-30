@@ -61,6 +61,28 @@ if [ "$TOOL_NAME" != "Read" ] || [ -z "$FILE_PATH" ]; then
     exit 0
 fi
 
+# Screenshot exemption.
+#
+# Claude Code renders images rather than dumping their bytes, so reading a
+# screenshot is how visual verification actually works (see /visual-verify).
+# The generic image block below would defeat that, and screenshots routinely
+# exceed MAX_SIZE_KB, so allow images through *only* from the directories
+# screenshots land in. Images anywhere else (public/, src/assets/, …) stay
+# blocked — this exemption is about verification artefacts, not app assets.
+SCREENSHOT_DIRS=(
+    "verification-sessions"
+    ".playwright-mcp"
+    "test-results"
+    "playwright-report"
+)
+if [[ "$FILE_PATH" =~ \.(png|jpe?g|gif|webp)$ ]]; then
+    for dir in "${SCREENSHOT_DIRS[@]}"; do
+        if [[ "$FILE_PATH" == *"/$dir/"* ]]; then
+            exit 0
+        fi
+    done
+fi
+
 # Check blocked extensions
 for ext in "${BLOCKED_EXTENSIONS[@]}"; do
     if [[ "$FILE_PATH" == *"$ext" ]]; then
