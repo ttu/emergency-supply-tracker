@@ -9,6 +9,27 @@ interface HelpTopic {
   answer: string;
 }
 
+function ContactLinks() {
+  const { t } = useTranslation();
+
+  return (
+    <div className={styles.contactLinks}>
+      <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link}>
+        {CONTACT_EMAIL}
+      </a>
+      <a
+        href="https://github.com/ttu/emergency-supply-tracker"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.link}
+      >
+        <GitHubIcon className={styles.githubIcon} />
+        {t('help.githubLink')}
+      </a>
+    </div>
+  );
+}
+
 export function Help() {
   const { t } = useTranslation();
 
@@ -107,20 +128,7 @@ export function Help() {
         <section className={styles.section} aria-labelledby="contact-heading">
           <h2 id="contact-heading">{t('help.contactTitle')}</h2>
           <p>{t('help.contactText')}</p>
-          <div className={styles.contactLinks}>
-            <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link}>
-              {CONTACT_EMAIL}
-            </a>
-            <a
-              href="https://github.com/ttu/emergency-supply-tracker"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.link}
-            >
-              <GitHubIcon className={styles.githubIcon} />
-              {t('help.githubLink')}
-            </a>
-          </div>
+          <ContactLinks />
         </section>
       </main>
     </div>

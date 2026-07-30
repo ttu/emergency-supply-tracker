@@ -25,6 +25,20 @@ export interface CategoryCardProps {
   hasRecommendations?: boolean;
 }
 
+interface StatItemProps {
+  label: string;
+  value: React.ReactNode;
+}
+
+function StatItem({ label, value }: StatItemProps) {
+  return (
+    <div className={styles.statItem}>
+      <span className={styles.statLabel}>{label}</span>
+      <span className={styles.statValue}>{value}</span>
+    </div>
+  );
+}
+
 const CategoryCardComponent = ({
   categoryId,
   itemCount,
@@ -116,28 +130,19 @@ const CategoryCardComponent = ({
         </div>
 
         <div className={styles.stats}>
-          <div className={styles.statItem}>
-            <span className={styles.statLabel}>
-              {t('dashboard.category.stocked')}
-            </span>
-            <span className={styles.statValue}>
-              {progressText || `${itemCount} ${t('dashboard.category.items')}`}
-            </span>
-          </div>
+          <StatItem
+            label={t('dashboard.category.stocked')}
+            value={
+              progressText || `${itemCount} ${t('dashboard.category.items')}`
+            }
+          />
           {showPercentage ? (
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>
-                {t('dashboard.category.completion')}
-              </span>
-              <span className={styles.statValue}>{completionPercentage}%</span>
-            </div>
+            <StatItem
+              label={t('dashboard.category.completion')}
+              value={`${completionPercentage}%`}
+            />
           ) : (
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>
-                {t('dashboard.category.items')}
-              </span>
-              <span className={styles.statValue}>{itemCount}</span>
-            </div>
+            <StatItem label={t('dashboard.category.items')} value={itemCount} />
           )}
         </div>
 

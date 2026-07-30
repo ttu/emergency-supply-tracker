@@ -9,6 +9,67 @@ export interface WelcomeScreenProps {
   onContinue: () => void;
 }
 
+/** Selling points shown on the landing screen, in display order. */
+const SELLING_POINTS: {
+  key: string;
+  icon: string;
+  comingSoon?: boolean;
+}[] = [
+  { key: 'noSignup', icon: '✓' },
+  { key: 'browserBased', icon: '🔒' },
+  { key: 'free', icon: '🎁' },
+  { key: 'worksOffline', icon: '🔌' },
+  { key: 'openSource', icon: '💻' },
+  { key: 'cloudSync', icon: '☁', comingSoon: true },
+];
+
+/** Feature highlights shown on the landing screen, in display order. */
+const FEATURES = ['track', 'alerts', 'prepared'] as const;
+
+interface SellingPointProps {
+  icon: string;
+  title: string;
+  description: string;
+  comingSoon?: boolean;
+}
+
+function SellingPoint({
+  icon,
+  title,
+  description,
+  comingSoon = false,
+}: SellingPointProps) {
+  const className = comingSoon
+    ? `${styles.sellingPoint} ${styles.comingSoon}`
+    : styles.sellingPoint;
+
+  return (
+    <div className={className}>
+      <span className={styles.sellingPointIcon} aria-hidden="true">
+        {icon}
+      </span>
+      <div>
+        <strong>{title}</strong>
+        <p>{description}</p>
+      </div>
+    </div>
+  );
+}
+
+interface FeatureProps {
+  title: string;
+  description: string;
+}
+
+function Feature({ title, description }: FeatureProps) {
+  return (
+    <div className={styles.feature}>
+      <h3>{title}</h3>
+      <p>{description}</p>
+    </div>
+  );
+}
+
 export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
   const { t, i18n } = useTranslation();
   const { settings, updateSettings } = useSettings();
@@ -64,78 +125,28 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
           className={styles.sellingPoints}
           aria-label={t('landing.sellingPoints')}
         >
-          <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon} aria-hidden="true">
-              &#10003;
-            </span>
-            <div>
-              <strong>{t('landing.noSignup.title')}</strong>
-              <p>{t('landing.noSignup.description')}</p>
-            </div>
-          </div>
-          <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon} aria-hidden="true">
-              &#128274;
-            </span>
-            <div>
-              <strong>{t('landing.browserBased.title')}</strong>
-              <p>{t('landing.browserBased.description')}</p>
-            </div>
-          </div>
-          <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon} aria-hidden="true">
-              &#127873;
-            </span>
-            <div>
-              <strong>{t('landing.free.title')}</strong>
-              <p>{t('landing.free.description')}</p>
-            </div>
-          </div>
-          <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon} aria-hidden="true">
-              &#128268;
-            </span>
-            <div>
-              <strong>{t('landing.worksOffline.title')}</strong>
-              <p>{t('landing.worksOffline.description')}</p>
-            </div>
-          </div>
-          <div className={styles.sellingPoint}>
-            <span className={styles.sellingPointIcon} aria-hidden="true">
-              &#128187;
-            </span>
-            <div>
-              <strong>{t('landing.openSource.title')}</strong>
-              <p>{t('landing.openSource.description')}</p>
-            </div>
-          </div>
-          <div className={`${styles.sellingPoint} ${styles.comingSoon}`}>
-            <span className={styles.sellingPointIcon} aria-hidden="true">
-              &#9729;
-            </span>
-            <div>
-              <strong>{t('landing.cloudSync.title')}</strong>
-              <p>{t('landing.cloudSync.description')}</p>
-            </div>
-          </div>
+          {SELLING_POINTS.map(({ key, icon, comingSoon }) => (
+            <SellingPoint
+              key={key}
+              icon={icon}
+              title={t(`landing.${key}.title`)}
+              description={t(`landing.${key}.description`)}
+              comingSoon={comingSoon}
+            />
+          ))}
         </section>
 
         <section className={styles.features} aria-labelledby="features-heading">
           <h2 id="features-heading" className="sr-only">
             {t('landing.features.title')}
           </h2>
-          <div className={styles.feature}>
-            <h3>{t('landing.features.track.title')}</h3>
-            <p>{t('landing.features.track.description')}</p>
-          </div>
-          <div className={styles.feature}>
-            <h3>{t('landing.features.alerts.title')}</h3>
-            <p>{t('landing.features.alerts.description')}</p>
-          </div>
-          <div className={styles.feature}>
-            <h3>{t('landing.features.prepared.title')}</h3>
-            <p>{t('landing.features.prepared.description')}</p>
-          </div>
+          {FEATURES.map((feature) => (
+            <Feature
+              key={feature}
+              title={t(`landing.features.${feature}.title`)}
+              description={t(`landing.features.${feature}.description`)}
+            />
+          ))}
         </section>
 
         <div className={styles.actions}>

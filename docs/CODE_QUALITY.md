@@ -1,7 +1,7 @@
 # Code Quality
 
 > **Version:** 1.0.0
-> **Last Updated:** 2025-12-28
+> **Last Updated:** 2026-07-30
 > **Source of Truth:** `eslint.config.js`, `.prettierrc.json`, `.github/workflows/`
 >
 > **Note:** SonarCloud configuration is managed externally via the [SonarCloud website](https://sonarcloud.io) and is not stored in this repository.
@@ -36,14 +36,20 @@ This document describes the code quality tools and CI/CD configuration.
 import storybook from 'eslint-plugin-storybook';
 import js from '@eslint/js';
 import globals from 'globals';
+import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist', 'storybook-static'] },
+  { ignores: ['dist', 'storybook-static', 'coverage'] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      react.configs.flat.recommended,
+      react.configs.flat['jsx-runtime'],
+    ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
@@ -53,8 +59,12 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
+    settings: {
+      react: { version: 'detect' },
+    },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      'react/jsx-max-depth': ['error', { max: 4 }],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
@@ -65,18 +75,36 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Test wrappers legitimately nest context providers deeply; depth there is
+    // structural rather than a readability problem.
+    files: ['**/*.test.{ts,tsx}'],
+    rules: {
+      'react/jsx-max-depth': 'off',
+    },
+  },
   storybook.configs['flat/recommended'],
 );
 ```
 
 ### Key Rules
 
-| Rule                                   | Setting | Purpose                                   |
-| -------------------------------------- | ------- | ----------------------------------------- |
-| `react-hooks/rules-of-hooks`           | error   | Enforce hooks rules                       |
-| `react-hooks/exhaustive-deps`          | warn    | Check effect dependencies                 |
-| `@typescript-eslint/no-unused-vars`    | error   | No unused variables (except `_` prefixed) |
-| `react-refresh/only-export-components` | warn    | Fast refresh compatibility                |
+| Rule                                   | Setting | Purpose                                       |
+| -------------------------------------- | ------- | --------------------------------------------- |
+| `react/*` (recommended)                | error   | React correctness (keys, props, JSX pitfalls) |
+| `react/jsx-max-depth`                  | error   | Max 4 levels of JSX nesting per component     |
+| `react-hooks/rules-of-hooks`           | error   | Enforce hooks rules                           |
+| `react-hooks/exhaustive-deps`          | warn    | Check effect dependencies                     |
+| `@typescript-eslint/no-unused-vars`    | error   | No unused variables (except `_` prefixed)     |
+| `react-refresh/only-export-components` | warn    | Fast refresh compatibility                    |
+
+**On `react/jsx-max-depth`:** when a component exceeds 4 levels of nesting,
+extract the inner block into a small local component rather than raising the
+limit. Repetitive sibling blocks are usually best driven from a module-level
+config array (see `WelcomeScreen.tsx`, `HouseholdForm.tsx`). Note the rule does
+not count depth inside `.map()` callbacks or `&&`/ternary branches, so it catches
+direct nesting only. The `jsx-runtime` config is included because React 19 needs
+no `React` import in scope.
 
 ---
 
@@ -148,16 +176,16 @@ export default tseslint.config(
                          └─────────┘    └────────┘
 ```
 
-| Job         | What It Does                                        |
-| ----------- | --------------------------------------------------- |
-| `lint`      | ESLint + Prettier check                             |
-| `type-check`| TypeScript type checking (all configs)              |
-| `test`      | Vitest unit/integration tests                       |
-| `storybook` | Storybook component tests                           |
-| `e2e`       | Playwright E2E tests (Chromium)                     |
-| `a11y`      | Playwright accessibility tests                      |
-| `visual`    | Visual regression tests (Docker, non-blocking)      |
-| `build`     | Production build (runs after all blocking jobs pass) |
+| Job          | What It Does                                         |
+| ------------ | ---------------------------------------------------- |
+| `lint`       | ESLint + Prettier check                              |
+| `type-check` | TypeScript type checking (all configs)               |
+| `test`       | Vitest unit/integration tests                        |
+| `storybook`  | Storybook component tests                            |
+| `e2e`        | Playwright E2E tests (Chromium)                      |
+| `a11y`       | Playwright accessibility tests                       |
+| `visual`     | Visual regression tests (Docker, non-blocking)       |
+| `build`      | Production build (runs after all blocking jobs pass) |
 
 ### Triggers
 
@@ -318,16 +346,16 @@ npm run validate:all   # validate + E2E tests
 
 ### CI Pipeline (On Push/PR)
 
-| Check      | Requirement               |
-| ---------- | ------------------------- |
-| Linting    | Zero ESLint warnings      |
-| Formatting | Prettier check passes     |
-| Tests      | All Vitest tests pass     |
-| Storybook  | Component tests pass      |
-| E2E        | Playwright tests pass     |
-| A11y       | Accessibility tests pass  |
+| Check      | Requirement                          |
+| ---------- | ------------------------------------ |
+| Linting    | Zero ESLint warnings                 |
+| Formatting | Prettier check passes                |
+| Tests      | All Vitest tests pass                |
+| Storybook  | Component tests pass                 |
+| E2E        | Playwright tests pass                |
+| A11y       | Accessibility tests pass             |
 | Visual     | Screenshot diffs pass (non-blocking) |
-| Build      | Production build succeeds |
+| Build      | Production build succeeds            |
 
 ### External Quality Gates (On Push/PR)
 

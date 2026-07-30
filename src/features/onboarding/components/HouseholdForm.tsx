@@ -24,6 +24,70 @@ export interface HouseholdFormProps {
   onBack?: () => void;
 }
 
+/** Numeric household fields, in display order. */
+const NUMBER_FIELDS: {
+  field: 'adults' | 'children' | 'pets' | 'supplyDays';
+  id?: string;
+  required?: boolean;
+  helperTextKey?: string;
+}[] = [
+  { field: 'adults', required: true },
+  { field: 'children' },
+  { field: 'pets', id: 'pets' },
+  {
+    field: 'supplyDays',
+    required: true,
+    helperTextKey: 'household.supplyDaysHelper',
+  },
+];
+
+interface HouseholdFieldsProps {
+  formData: HouseholdData;
+  errors: Partial<Record<keyof HouseholdData, string>>;
+  onChange: (field: keyof HouseholdData, value: number | boolean) => void;
+}
+
+function HouseholdFields({ formData, errors, onChange }: HouseholdFieldsProps) {
+  const { t } = useTranslation();
+
+  return (
+    <div className={styles.fields}>
+      {NUMBER_FIELDS.map(({ field, id, required, helperTextKey }) => (
+        <Input
+          key={field}
+          id={id}
+          label={t(`household.${field}`)}
+          type="number"
+          min={HOUSEHOLD_LIMITS[field].min}
+          max={HOUSEHOLD_LIMITS[field].max}
+          value={formData[field]}
+          onChange={(e) =>
+            onChange(
+              field,
+              parseIntOrDefault(e.target.value, HOUSEHOLD_DEFAULTS[field]),
+            )
+          }
+          error={errors[field]}
+          helperText={helperTextKey ? t(helperTextKey) : undefined}
+          required={required}
+        />
+      ))}
+
+      <div className={styles.checkboxField}>
+        <label className={styles.checkboxLabel}>
+          <input
+            type="checkbox"
+            checked={formData.useFreezer}
+            onChange={(e) => onChange('useFreezer', e.target.checked)}
+            className={styles.checkbox}
+          />
+          <span>{t('household.useFreezer')}</span>
+        </label>
+      </div>
+    </div>
+  );
+}
+
 export function HouseholdForm({
   initialData,
   onSubmit,
@@ -122,89 +186,11 @@ export function HouseholdForm({
           <h2 className={styles.title}>{t('household.title')}</h2>
           <p className={styles.subtitle}>{t('household.formSubtitle')}</p>
 
-          <div className={styles.fields}>
-            <Input
-              label={t('household.adults')}
-              type="number"
-              min={HOUSEHOLD_LIMITS.adults.min}
-              max={HOUSEHOLD_LIMITS.adults.max}
-              value={formData.adults}
-              onChange={(e) =>
-                handleChange(
-                  'adults',
-                  parseIntOrDefault(e.target.value, HOUSEHOLD_DEFAULTS.adults),
-                )
-              }
-              error={errors.adults}
-              required
-            />
-
-            <Input
-              label={t('household.children')}
-              type="number"
-              min={HOUSEHOLD_LIMITS.children.min}
-              max={HOUSEHOLD_LIMITS.children.max}
-              value={formData.children}
-              onChange={(e) =>
-                handleChange(
-                  'children',
-                  parseIntOrDefault(
-                    e.target.value,
-                    HOUSEHOLD_DEFAULTS.children,
-                  ),
-                )
-              }
-              error={errors.children}
-            />
-
-            <Input
-              id="pets"
-              label={t('household.pets')}
-              type="number"
-              min={HOUSEHOLD_LIMITS.pets.min}
-              max={HOUSEHOLD_LIMITS.pets.max}
-              value={formData.pets}
-              onChange={(e) =>
-                handleChange(
-                  'pets',
-                  parseIntOrDefault(e.target.value, HOUSEHOLD_DEFAULTS.pets),
-                )
-              }
-              error={errors.pets}
-            />
-
-            <Input
-              label={t('household.supplyDays')}
-              type="number"
-              min={HOUSEHOLD_LIMITS.supplyDays.min}
-              max={HOUSEHOLD_LIMITS.supplyDays.max}
-              value={formData.supplyDays}
-              onChange={(e) =>
-                handleChange(
-                  'supplyDays',
-                  parseIntOrDefault(
-                    e.target.value,
-                    HOUSEHOLD_DEFAULTS.supplyDays,
-                  ),
-                )
-              }
-              error={errors.supplyDays}
-              helperText={t('household.supplyDaysHelper')}
-              required
-            />
-
-            <div className={styles.checkboxField}>
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={formData.useFreezer}
-                  onChange={(e) => handleChange('useFreezer', e.target.checked)}
-                  className={styles.checkbox}
-                />
-                <span>{t('household.useFreezer')}</span>
-              </label>
-            </div>
-          </div>
+          <HouseholdFields
+            formData={formData}
+            errors={errors}
+            onChange={handleChange}
+          />
 
           <div className={styles.actions}>
             {onBack && (

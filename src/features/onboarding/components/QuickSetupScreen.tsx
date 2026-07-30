@@ -17,6 +17,36 @@ export interface QuickSetupScreenProps {
   onCreateExampleSet?: () => void;
 }
 
+interface SetupSummaryProps {
+  selectedCount: number;
+  totalCount: number;
+  supplyDurationDays: number;
+}
+
+function SetupSummary({
+  selectedCount,
+  totalCount,
+  supplyDurationDays,
+}: SetupSummaryProps) {
+  const { t } = useTranslation();
+  const entries = [
+    { value: selectedCount, label: t('quickSetup.selectedItems') },
+    { value: totalCount, label: t('quickSetup.itemsCount') },
+    { value: supplyDurationDays, label: t('quickSetup.days') },
+  ];
+
+  return (
+    <div className={styles.summary}>
+      {entries.map(({ value, label }) => (
+        <div key={label} className={styles.summaryItem}>
+          <div className={styles.summaryNumber}>{value}</div>
+          <div className={styles.summaryLabel}>{label}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export const QuickSetupScreen = ({
   household,
   onAddItems,
@@ -149,26 +179,11 @@ export const QuickSetupScreen = ({
         <p className={styles.subtitle}>{t('quickSetup.subtitle')}</p>
 
         <div className={styles.summaryCard}>
-          <div className={styles.summary}>
-            <div className={styles.summaryItem}>
-              <div className={styles.summaryNumber}>{selectedCount}</div>
-              <div className={styles.summaryLabel}>
-                {t('quickSetup.selectedItems')}
-              </div>
-            </div>
-            <div className={styles.summaryItem}>
-              <div className={styles.summaryNumber}>{itemsToAdd.length}</div>
-              <div className={styles.summaryLabel}>
-                {t('quickSetup.itemsCount')}
-              </div>
-            </div>
-            <div className={styles.summaryItem}>
-              <div className={styles.summaryNumber}>
-                {household.supplyDurationDays}
-              </div>
-              <div className={styles.summaryLabel}>{t('quickSetup.days')}</div>
-            </div>
-          </div>
+          <SetupSummary
+            selectedCount={selectedCount}
+            totalCount={itemsToAdd.length}
+            supplyDurationDays={household.supplyDurationDays}
+          />
 
           <button
             className={styles.toggleButton}
