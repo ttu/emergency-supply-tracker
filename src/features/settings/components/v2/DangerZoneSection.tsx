@@ -1,24 +1,26 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Panel } from '@/shared/components/design-v2/primitives';
+import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { ClearDataButton } from '@/features/settings';
 import { useInventory } from '@/features/inventory';
 import { Caption, SectionHeader } from './SettingsRows';
 
+/** Which destructive action is awaiting confirmation, if any. */
+type PendingReset = 'items' | 'recommendations' | null;
+
 export function DangerZoneSection() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { items, deleteItems, enableAllRecommendedItems } = useInventory();
+  const [pending, setPending] = useState<PendingReset>(null);
 
-  const handleResetItems = () => {
-    if (confirm(t(`v2.settings.danger.resetItemsConfirm.${themeKey}`))) {
-      deleteItems(items.map((i) => i.id));
-    }
-  };
-  const handleResetRecommendations = () => {
-    if (confirm(t(`v2.settings.danger.resetRecsConfirm.${themeKey}`))) {
-      enableAllRecommendedItems();
-    }
+  const cancelReset = () => setPending(null);
+  const confirmReset = () => {
+    if (pending === 'items') deleteItems(items.map((i) => i.id));
+    if (pending === 'recommendations') enableAllRecommendedItems();
+    setPending(null);
   };
 
   return (
@@ -42,13 +44,13 @@ export function DangerZoneSection() {
           title={t(`v2.settings.danger.resetItems.${themeKey}`)}
           detail={t(`v2.settings.danger.resetItemsDetail.${themeKey}`)}
           action={t(`v2.settings.danger.resetItemsBtn.${themeKey}`)}
-          onClick={handleResetItems}
+          onClick={() => setPending('items')}
         />
         <DangerRow
           title={t(`v2.settings.danger.resetRecs.${themeKey}`)}
           detail={t(`v2.settings.danger.resetRecsDetail.${themeKey}`)}
           action={t(`v2.settings.danger.resetRecsBtn.${themeKey}`)}
-          onClick={handleResetRecommendations}
+          onClick={() => setPending('recommendations')}
         />
         <div
           style={{
@@ -84,6 +86,28 @@ export function DangerZoneSection() {
           </div>
         </div>
       </Panel>
+
+      <ConfirmDialog
+        open={pending !== null}
+        title={t(
+          pending === 'recommendations'
+            ? `v2.settings.danger.resetRecs.${themeKey}`
+            : `v2.settings.danger.resetItems.${themeKey}`,
+        )}
+        message={t(
+          pending === 'recommendations'
+            ? `v2.settings.danger.resetRecsConfirm.${themeKey}`
+            : `v2.settings.danger.resetItemsConfirm.${themeKey}`,
+        )}
+        confirmLabel={t(
+          pending === 'recommendations'
+            ? `v2.settings.danger.resetRecsBtn.${themeKey}`
+            : `v2.settings.danger.resetItemsBtn.${themeKey}`,
+        )}
+        tone="danger"
+        onConfirm={confirmReset}
+        onCancel={cancelReset}
+      />
     </section>
   );
 }
