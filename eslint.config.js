@@ -45,7 +45,8 @@ export default tseslint.config(
       // Randomness in this app is only ever used for React keys, log/session
       // ids and seeded example data - never for anything security-sensitive.
       'sonarjs/pseudo-random': 'off',
-      // TODO comments are used deliberately to mark known follow-up work.
+      // Inline follow-up markers are used deliberately to flag known future
+      // work and are not treated as defects.
       'sonarjs/todo-tag': 'off',
       // Redundant with @typescript-eslint/no-unused-vars above, which is
       // type-aware and honours the `_` prefix convention.

@@ -78,7 +78,8 @@ export default tseslint.config(
       // Randomness in this app is only ever used for React keys, log/session
       // ids and seeded example data - never for anything security-sensitive.
       'sonarjs/pseudo-random': 'off',
-      // TODO comments are used deliberately to mark known follow-up work.
+      // Inline follow-up markers are used deliberately to flag known future
+      // work and are not treated as defects.
       'sonarjs/todo-tag': 'off',
       // Redundant with @typescript-eslint/no-unused-vars above, which is
       // type-aware and honours the `_` prefix convention.
@@ -137,14 +138,16 @@ export default tseslint.config(
 | `sonarjs/*` (recommended)              | error   | Bug patterns, duplication, complexity         |
 | `sonarjs/cognitive-complexity`         | error   | Max complexity 15 per function                |
 
-**On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`. A handful of
-rules are disabled with the reasoning inline in `eslint.config.js` above — the
-security-hotspot and test-style rules that do not fit this codebase. Two rules
-are scoped off for `e2e/**` (`no-fixed-wait-in-tests`, `no-skipped-tests`);
-both mark real E2E debt deferred to a dedicated pass, not rules to keep off
-permanently. Prefer fixing a violation over adding a disable; where a disable is
-genuinely right, put it inline with a one-line reason rather than widening the
-config.
+**On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`, with the
+reasoning for every exception inline in `eslint.config.js` above. Three rules are
+off everywhere (`pseudo-random`, `todo-tag`, `no-unused-vars`). Two more are off
+for all test code, which includes `e2e/**/*.ts` as well as `*.test.*` /
+`*.spec.*` (`parameterized-tests`, `super-linear-regex`). A final two are off for
+`e2e/**/*.ts` only (`no-fixed-wait-in-tests`, `no-skipped-tests`); unlike the
+others these mark real E2E debt deferred to a dedicated pass, not rules to keep
+off permanently. So four sonarjs rules are relaxed in `e2e/` in total. Prefer
+fixing a violation over adding a disable; where a disable is genuinely right, put
+it inline with a one-line reason rather than widening the config.
 
 **On `react/jsx-max-depth`:** when a component exceeds 4 levels of nesting,
 extract the inner block into a small local component rather than raising the
