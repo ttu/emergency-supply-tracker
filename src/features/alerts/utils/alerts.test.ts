@@ -867,7 +867,7 @@ describe('water shortage alerts', () => {
     expect(waterAlert).toBeUndefined();
   });
 
-  it('should not generate water shortage alert when no food requires water', () => {
+  it('should not generate water shortage alert when the product template requires no water', () => {
     // Create items that don't require water for preparation
     const items = [
       createMockInventoryItem({

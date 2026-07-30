@@ -899,7 +899,7 @@ describe('importFromJSON field defaults', () => {
     });
 
     const result = importFromJSON(json);
-    expect(result.items.length).toBe(1);
+    expect(result.items).toHaveLength(1);
     expect(result.version).toBe(CURRENT_SCHEMA_VERSION);
     expect(result.settings.onboardingCompleted).toBe(true);
   });

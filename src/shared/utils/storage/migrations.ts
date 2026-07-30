@@ -208,6 +208,9 @@ function findApplicableMigrations(fromVersion: string): Migration[] {
   const applicable: Migration[] = [];
   let currentVersion = fromVersion;
 
+  // MIGRATIONS is an intentionally empty registry until a schema change needs
+  // a data transformation; the traversal below is the extension point.
+  // eslint-disable-next-line sonarjs/no-empty-collection
   for (const migration of MIGRATIONS) {
     if (compareVersions(currentVersion, migration.fromVersion) === 0) {
       applicable.push(migration);
@@ -271,6 +274,8 @@ export function getMigrationPath(
   const path: { from: string; to: string }[] = [];
   let currentVersion = fromVersion;
 
+  // See findApplicableMigrations: MIGRATIONS is empty by design for now.
+  // eslint-disable-next-line sonarjs/no-empty-collection
   for (const migration of MIGRATIONS) {
     if (
       compareVersions(currentVersion, migration.fromVersion) === 0 &&

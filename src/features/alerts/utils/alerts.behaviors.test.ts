@@ -1092,7 +1092,7 @@ describe('hasEnough guard in generateCategoryStockAlerts', () => {
         (a.message.includes('stock') || a.message.includes('low')),
     );
     // May still have 0 if category has enough
-    expect(waterStockAlerts.length).toBe(0);
+    expect(waterStockAlerts).toHaveLength(0);
   });
 });
 

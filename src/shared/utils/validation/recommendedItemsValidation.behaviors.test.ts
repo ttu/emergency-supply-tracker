@@ -91,22 +91,20 @@ describe('recommendedItemsValidation mutation kills', () => {
       );
     });
 
-    it('rejects array as meta.description', () => {
+    it('rejects an array as meta.description', () => {
       const file = createValidFile();
       (file.meta as unknown as Record<string, unknown>).description = [
         'en',
         'fi',
       ];
-      validateRecommendedItemsFile(file);
 
-      // Arrays are objects but lack .en property check — actually arrays pass typeof === 'object'
-      // but the 'en' key check should still handle it. Let's verify it doesn't error OR errors.
-      // Actually line 55: `if (typeof value !== 'object') return false;` — arrays ARE objects,
-      // so they pass. Then line 58 checks en. An array without .en should pass since requiredNonEmpty=false.
-      // But the mutant changes L55 to always return false, meaning any non-string non-null value
-      // would return false. We need a case where L55 returning false changes the outcome.
-      // A boolean (not object, not string, not null) hits L55 directly.
-      // Already covered above.
+      const result = validateRecommendedItemsFile(file);
+
+      // An array passes `typeof value === 'object'` but has no `en` key, so it
+      // fails the localised-object check.
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ code: 'INVALID_META_DESCRIPTION' }),
+      );
     });
 
     it('rejects boolean as meta.name', () => {

@@ -96,10 +96,14 @@ describe('unitValidation', () => {
 
     it('should narrow type to Unit when true', () => {
       const input: string = 'pieces';
+
+      expect(isValidUnit(input)).toBe(true);
+
       if (isValidUnit(input)) {
-        // Type should be narrowed to Unit
+        // Compile-time check: this assignment only type-checks if the guard
+        // narrowed string to Unit.
         const unit: Unit = input;
-        expect(unit).toBe('pieces');
+        expect(VALID_UNITS).toContain(unit);
       }
     });
   });

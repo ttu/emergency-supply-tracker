@@ -23,10 +23,11 @@ vi.mock('react-i18next', () => ({
 // Mock the inventory hook
 const mockEnableCategory = vi.fn();
 const mockEnableAllCategories = vi.fn();
+let mockDisabledCategories: string[] = [];
 
 vi.mock('@/features/inventory', () => ({
   useInventory: () => ({
-    disabledCategories: ['water-beverages', 'food'],
+    disabledCategories: mockDisabledCategories,
     enableCategory: mockEnableCategory,
     enableAllCategories: mockEnableAllCategories,
   }),
@@ -36,6 +37,7 @@ describe('DisabledCategories', () => {
   beforeEach(() => {
     mockEnableCategory.mockClear();
     mockEnableAllCategories.mockClear();
+    mockDisabledCategories = ['water-beverages', 'food'];
   });
 
   it('should render list of disabled categories', () => {
@@ -92,21 +94,20 @@ describe('DisabledCategories', () => {
 
 describe('DisabledCategories with no disabled categories', () => {
   beforeEach(() => {
-    vi.resetModules();
+    mockDisabledCategories = [];
   });
 
   it('should show empty message when no categories are disabled', () => {
-    // Re-mock with empty array
-    vi.doMock('@/features/inventory', () => ({
-      useInventory: () => ({
-        disabledCategories: [],
-        enableCategory: vi.fn(),
-        enableAllCategories: vi.fn(),
-      }),
-    }));
+    render(<DisabledCategories />);
 
-    // We need to re-import the component after changing the mock
-    // For simplicity, we'll just verify the component handles empty state correctly
-    // by checking the implementation logic
+    expect(
+      screen.getByText('No categories have been disabled'),
+    ).toBeInTheDocument();
+  });
+
+  it('should not render an enable all button', () => {
+    render(<DisabledCategories />);
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 });

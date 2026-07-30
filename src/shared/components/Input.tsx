@@ -36,6 +36,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       .filter(Boolean)
       .join(' ');
 
+    let describedBy: string | undefined;
+    if (error) {
+      describedBy = `${inputId}-error`;
+    } else if (helperText) {
+      describedBy = `${inputId}-helper`;
+    }
+
     return (
       <div className={wrapperClassNames}>
         {label && (
@@ -50,13 +57,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={inputClassNames}
           required={required}
           aria-invalid={!!error}
-          aria-describedby={
-            error
-              ? `${inputId}-error`
-              : helperText
-                ? `${inputId}-helper`
-                : undefined
-          }
+          aria-describedby={describedBy}
           {...props}
         />
         {error && (

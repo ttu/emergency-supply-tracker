@@ -39,6 +39,12 @@ function StatItem({ label, value }: StatItemProps) {
   );
 }
 
+const PROGRESS_FILL_CLASSES: Record<ItemStatus, string> = {
+  ok: styles.progressOk,
+  warning: styles.progressWarning,
+  critical: styles.progressCritical,
+};
+
 const CategoryCardComponent = ({
   categoryId,
   itemCount,
@@ -149,7 +155,7 @@ const CategoryCardComponent = ({
         {showPercentage && (
           <div className={styles.progressBar}>
             <div
-              className={`${styles.progressFill} ${styles[`progress${status.charAt(0).toUpperCase()}${status.slice(1)}`]}`}
+              className={`${styles.progressFill} ${PROGRESS_FILL_CLASSES[status]}`}
               style={{ width: `${Math.min(completionPercentage, 100)}%` }}
             />
           </div>

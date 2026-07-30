@@ -8,6 +8,9 @@ import styles from './FilterBar.module.css';
 export const LOCATION_FILTER_ALL = '__all__';
 export const LOCATION_FILTER_NONE = '__none__';
 
+/** Fields the inventory list can be sorted by. */
+export type SortBy = 'name' | 'quantity' | 'expiration';
+
 /* NOSONAR S6564 - FilterBarProps is the component's public API contract */
 export interface FilterBarProps {
   searchQuery: string;
@@ -18,8 +21,8 @@ export interface FilterBarProps {
   locationFilter: string;
   onLocationFilterChange: (location: string) => void;
   locations: string[];
-  sortBy: 'name' | 'quantity' | 'expiration';
-  onSortByChange: (sortBy: 'name' | 'quantity' | 'expiration') => void;
+  sortBy: SortBy;
+  onSortByChange: (sortBy: SortBy) => void;
 }
 
 export const FilterBar = ({
@@ -85,9 +88,7 @@ export const FilterBar = ({
 
         <Select
           value={sortBy}
-          onChange={(e) =>
-            onSortByChange(e.target.value as 'name' | 'quantity' | 'expiration')
-          }
+          onChange={(e) => onSortByChange(e.target.value as SortBy)}
           options={sortOptions}
           label={t('inventory.sort.label')}
         />

@@ -45,6 +45,12 @@ export interface CategoryStatusSummaryProps {
   resolveItemName?: (itemId: string, i18nKey: string) => string | undefined;
 }
 
+const PROGRESS_FILL_CLASSES: Record<ItemStatus, string> = {
+  ok: styles.progressOk,
+  warning: styles.progressWarning,
+  critical: styles.progressCritical,
+};
+
 export const CategoryStatusSummary = ({
   categoryId,
   status,
@@ -201,7 +207,7 @@ export const CategoryStatusSummary = ({
         </div>
         <div className={styles.progressBar}>
           <div
-            className={`${styles.progressFill} ${styles[`progress${status.charAt(0).toUpperCase()}${status.slice(1)}`]}`}
+            className={`${styles.progressFill} ${PROGRESS_FILL_CLASSES[status]}`}
             style={{ width: `${Math.min(completionPercentage, 100)}%` }}
           />
         </div>

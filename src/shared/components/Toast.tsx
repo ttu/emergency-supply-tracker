@@ -10,6 +10,12 @@ export interface ToastProps {
   onClose: () => void;
 }
 
+const VARIANT_ICONS: Record<NonNullable<ToastProps['variant']>, string> = {
+  success: '✓',
+  error: '✕',
+  info: 'ℹ',
+};
+
 /**
  * Accessible toast notification component.
  * Uses role="status" with aria-live="polite" for screen reader announcements.
@@ -41,7 +47,7 @@ export function Toast({
 
   if (!isVisible) return null;
 
-  const icon = variant === 'success' ? '✓' : variant === 'error' ? '✕' : 'ℹ';
+  const icon = VARIANT_ICONS[variant];
 
   const toastContent = (
     <div

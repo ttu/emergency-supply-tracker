@@ -12,6 +12,7 @@ import {
   ItemForm,
   CategoryStatusSummary,
 } from '@/features/inventory';
+import type { SortBy } from '@/features/inventory';
 import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
@@ -27,6 +28,7 @@ import {
   createQuantity,
 } from '@/shared/types';
 import type {
+  HouseholdConfig,
   InventoryItem,
   ItemStatus,
   RecommendedItemDefinition,
@@ -38,8 +40,6 @@ import { useCategoryStatuses } from '@/features/dashboard/hooks/useCategoryStatu
 import { useCalculationOptions } from '@/features/dashboard/hooks/useCalculationOptions';
 import styles from './Inventory.module.css';
 
-type SortBy = 'name' | 'quantity' | 'expiration';
-
 export interface InventoryProps {
   openAddModal?: boolean;
   selectedCategoryId?: string;
@@ -50,6 +50,96 @@ export interface InventoryProps {
   onInitialItemHandled?: () => void;
 }
 
+/**
+ * Comparator for the inventory list. Items that never expire sort last when
+ * sorting by expiration.
+ */
+function compareItemsBy(
+  a: InventoryItem,
+  b: InventoryItem,
+  sortBy: SortBy,
+): number {
+  switch (sortBy) {
+    case 'name':
+      return a.name.localeCompare(b.name);
+    case 'quantity':
+      return b.quantity - a.quantity;
+    case 'expiration':
+      if (a.neverExpires && b.neverExpires) return 0;
+      if (a.neverExpires) return 1;
+      if (b.neverExpires) return -1;
+      // Compare date-only strings directly to avoid timezone issues
+      // Date-only strings (YYYY-MM-DD) can be compared lexicographically
+      return (a.expirationDate || '').localeCompare(b.expirationDate || '');
+    default:
+      return 0;
+  }
+}
+
+/** The active filter selections applied to the inventory list. */
+interface ItemFilters {
+  selectedCategoryId: string | undefined;
+  searchQuery: string;
+  statusFilter: ItemStatus | 'all';
+  locationFilter: string;
+  household: HouseholdConfig;
+  recommendedItems: RecommendedItemDefinition[];
+  childrenMultiplier: number | undefined;
+}
+
+/**
+ * Narrow the inventory down to the items matching every active filter.
+ */
+function applyItemFilters(
+  items: InventoryItem[],
+  filters: ItemFilters,
+): InventoryItem[] {
+  const {
+    selectedCategoryId,
+    searchQuery,
+    statusFilter,
+    locationFilter,
+    household,
+    recommendedItems,
+    childrenMultiplier,
+  } = filters;
+  let result = items;
+
+  if (selectedCategoryId) {
+    result = result.filter((item) => item.categoryId === selectedCategoryId);
+  }
+
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    result = result.filter((item) => item.name.toLowerCase().includes(query));
+  }
+
+  if (statusFilter !== 'all') {
+    result = result.filter((item) => {
+      const recommendedQuantity = getRecommendedQuantityForItem(
+        item,
+        household,
+        recommendedItems,
+        childrenMultiplier,
+      );
+      return calculateItemStatus(item, recommendedQuantity) === statusFilter;
+    });
+  }
+
+  if (locationFilter === LOCATION_FILTER_NONE) {
+    result = result.filter((item) => !item.location?.trim());
+  } else if (locationFilter !== LOCATION_FILTER_ALL) {
+    result = result.filter((item) => item.location?.trim() === locationFilter);
+  }
+
+  return result;
+}
+
+// This 900-line page component owns the item list, its filters and five
+// modals. The remaining complexity is spread thinly across conditional JSX
+// rather than concentrated in any one branch, so it can only come down by
+// splitting the page into sub-components - a UI refactor in its own right.
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export function Inventory({
   openAddModal = false,
   selectedCategoryId: controlledCategoryId,
@@ -194,61 +284,18 @@ export function Inventory({
 
   // Filter and sort items - memoized to prevent unnecessary re-renders
   const filteredItems = useMemo(() => {
-    let result = items;
-
-    // Filter by category
-    if (selectedCategoryId) {
-      result = result.filter((item) => item.categoryId === selectedCategoryId);
-    }
-
-    // Filter by search query
-    if (searchQuery) {
-      result = result.filter((item) =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    }
-
-    // Filter by status
-    if (statusFilter !== 'all') {
-      result = result.filter((item) => {
-        const recommendedQuantity = getRecommendedQuantityForItem(
-          item,
-          household,
-          recommendedItems,
-          calculationOptions.childrenMultiplier,
-        );
-        const status = calculateItemStatus(item, recommendedQuantity);
-        return status === statusFilter;
-      });
-    }
-
-    // Filter by location
-    if (locationFilter === LOCATION_FILTER_NONE) {
-      result = result.filter((item) => !item.location?.trim());
-    } else if (locationFilter !== LOCATION_FILTER_ALL) {
-      result = result.filter(
-        (item) => item.location?.trim() === locationFilter,
-      );
-    }
+    const result = applyItemFilters(items, {
+      selectedCategoryId,
+      searchQuery,
+      statusFilter,
+      locationFilter,
+      household,
+      recommendedItems,
+      childrenMultiplier: calculationOptions.childrenMultiplier,
+    });
 
     // Sort items
-    return [...result].sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return a.name.localeCompare(b.name);
-        case 'quantity':
-          return b.quantity - a.quantity;
-        case 'expiration':
-          if (a.neverExpires && b.neverExpires) return 0;
-          if (a.neverExpires) return 1;
-          if (b.neverExpires) return -1;
-          // Compare date-only strings directly to avoid timezone issues
-          // Date-only strings (YYYY-MM-DD) can be compared lexicographically
-          return (a.expirationDate || '').localeCompare(b.expirationDate || '');
-        default:
-          return 0;
-      }
-    });
+    return [...result].sort((a, b) => compareItemsBy(a, b, sortBy));
   }, [
     items,
     selectedCategoryId,

@@ -159,6 +159,117 @@ function validateMeta(meta: unknown, errors: ValidationError[]): void {
  * @param warnings - Array to push validation warnings onto (mutated as side effect)
  * @returns void
  */
+/** Whether an optional numeric field must be strictly positive or merely non-negative. */
+type NumericFieldKind = 'positive' | 'non-negative';
+
+/**
+ * Optional numeric item fields, in the order their warnings are reported.
+ */
+const OPTIONAL_NUMERIC_FIELDS: readonly (readonly [
+  field: string,
+  kind: NumericFieldKind,
+])[] = [
+  ['defaultExpirationMonths', 'positive'],
+  ['requiresWaterLiters', 'positive'],
+  ['caloriesPerUnit', 'non-negative'],
+  ['caloriesPer100g', 'non-negative'],
+  ['weightGramsPerUnit', 'positive'],
+  ['capacityMah', 'positive'],
+  ['capacityWh', 'positive'],
+];
+
+/**
+ * Checks a single optional numeric field, returning true when it is absent or valid.
+ */
+function isValidOptionalNumber(
+  value: unknown,
+  kind: NumericFieldKind,
+): boolean {
+  if (value === undefined) return true;
+  if (typeof value !== 'number' || !Number.isFinite(value)) return false;
+  return kind === 'positive' ? value > 0 : value >= 0;
+}
+
+/**
+ * Emits a warning for every optional numeric field that is present but invalid.
+ */
+function validateOptionalNumericFields(
+  i: Record<string, unknown>,
+  path: string,
+  warnings: ValidationWarning[],
+): void {
+  for (const [field, kind] of OPTIONAL_NUMERIC_FIELDS) {
+    if (!isValidOptionalNumber(i[field], kind)) {
+      warnings.push({
+        path: `${path}.${field}`,
+        message: `${field} should be a ${kind} finite number`,
+        code: 'INVALID_OPTIONAL',
+      });
+    }
+  }
+}
+
+/**
+ * Validates the item's naming: it must carry either an i18nKey or names.en.
+ */
+function validateItemNames(
+  i: Record<string, unknown>,
+  path: string,
+  errors: ValidationError[],
+  warnings: ValidationWarning[],
+): void {
+  const hasNames =
+    !!i.names && typeof i.names === 'object' && !Array.isArray(i.names);
+  const englishName = hasNames
+    ? (i.names as Record<string, unknown>).en
+    : undefined;
+  const hasEnglishName =
+    typeof englishName === 'string' && englishName.trim() !== '';
+
+  if (i.i18nKey === undefined && !hasEnglishName) {
+    errors.push({
+      path,
+      message: 'Item must have either i18nKey or names.en',
+      code: 'MISSING_NAME',
+    });
+  }
+
+  if (
+    i.i18nKey !== undefined &&
+    (typeof i.i18nKey !== 'string' || i.i18nKey.trim() === '')
+  ) {
+    errors.push({
+      path: `${path}.i18nKey`,
+      message: 'i18nKey must be a non-empty string',
+      code: 'INVALID_I18N_KEY',
+    });
+  }
+
+  if (i.names === undefined) return;
+
+  if (!hasNames) {
+    errors.push({
+      path: `${path}.names`,
+      message: 'names must be an object',
+      code: 'INVALID_NAMES',
+    });
+    return;
+  }
+
+  // Check that all values in names are non-empty strings
+  for (const [lang, value] of Object.entries(
+    i.names as Record<string, unknown>,
+  )) {
+    if (typeof value !== 'string' || value.trim() === '') {
+      warnings.push({
+        path: `${path}.names.${lang}`,
+        message: `names.${lang} should be a non-empty string`,
+        code: 'INVALID_NAME_VALUE',
+      });
+    }
+  }
+}
+
 function validateItem(
   item: unknown,
   index: number,
@@ -189,56 +300,7 @@ function validateItem(
   }
 
   // Required: either i18nKey or names with at least 'en' key
-  const hasI18nKey = i.i18nKey !== undefined;
-  const hasNames =
-    i.names && typeof i.names === 'object' && !Array.isArray(i.names);
-  const hasEnglishName =
-    hasNames &&
-    typeof (i.names as Record<string, unknown>).en === 'string' &&
-    ((i.names as Record<string, unknown>).en as string).trim() !== '';
-
-  if (!hasI18nKey && !hasEnglishName) {
-    errors.push({
-      path,
-      message: 'Item must have either i18nKey or names.en',
-      code: 'MISSING_NAME',
-    });
-  }
-
-  // Validate i18nKey if present
-  if (
-    i.i18nKey !== undefined &&
-    (typeof i.i18nKey !== 'string' || i.i18nKey.trim() === '')
-  ) {
-    errors.push({
-      path: `${path}.i18nKey`,
-      message: 'i18nKey must be a non-empty string',
-      code: 'INVALID_I18N_KEY',
-    });
-  }
-
-  // Validate names object if present
-  if (i.names !== undefined) {
-    if (!hasNames) {
-      errors.push({
-        path: `${path}.names`,
-        message: 'names must be an object',
-        code: 'INVALID_NAMES',
-      });
-    } else {
-      const names = i.names as Record<string, unknown>;
-      // Check that all values in names are non-empty strings
-      for (const [lang, value] of Object.entries(names)) {
-        if (typeof value !== 'string' || value.trim() === '') {
-          warnings.push({
-            path: `${path}.names.${lang}`,
-            message: `names.${lang} should be a non-empty string`,
-            code: 'INVALID_NAME_VALUE',
-          });
-        }
-      }
-    }
-  }
+  validateItemNames(i, path, errors, warnings);
 
   // Required: category (must be a standard category or defined in categories array)
   if (!isValidCategoryInSet(i.category, validCategoryIds)) {
@@ -301,105 +363,8 @@ function validateItem(
     });
   }
 
-  // Optional: defaultExpirationMonths (positive finite number)
-  if (i.defaultExpirationMonths !== undefined) {
-    if (
-      typeof i.defaultExpirationMonths !== 'number' ||
-      !Number.isFinite(i.defaultExpirationMonths) ||
-      i.defaultExpirationMonths <= 0
-    ) {
-      warnings.push({
-        path: `${path}.defaultExpirationMonths`,
-        message: 'defaultExpirationMonths should be a positive finite number',
-        code: 'INVALID_OPTIONAL',
-      });
-    }
-  }
-
-  // Optional: requiresWaterLiters (positive finite number)
-  if (i.requiresWaterLiters !== undefined) {
-    if (
-      typeof i.requiresWaterLiters !== 'number' ||
-      !Number.isFinite(i.requiresWaterLiters) ||
-      i.requiresWaterLiters <= 0
-    ) {
-      warnings.push({
-        path: `${path}.requiresWaterLiters`,
-        message: 'requiresWaterLiters should be a positive finite number',
-        code: 'INVALID_OPTIONAL',
-      });
-    }
-  }
-
-  // Optional: caloriesPerUnit (non-negative finite number)
-  if (
-    i.caloriesPerUnit !== undefined &&
-    (typeof i.caloriesPerUnit !== 'number' ||
-      !Number.isFinite(i.caloriesPerUnit) ||
-      i.caloriesPerUnit < 0)
-  ) {
-    warnings.push({
-      path: `${path}.caloriesPerUnit`,
-      message: 'caloriesPerUnit should be a non-negative finite number',
-      code: 'INVALID_OPTIONAL',
-    });
-  }
-
-  // Optional: caloriesPer100g (non-negative finite number)
-  if (
-    i.caloriesPer100g !== undefined &&
-    (typeof i.caloriesPer100g !== 'number' ||
-      !Number.isFinite(i.caloriesPer100g) ||
-      i.caloriesPer100g < 0)
-  ) {
-    warnings.push({
-      path: `${path}.caloriesPer100g`,
-      message: 'caloriesPer100g should be a non-negative finite number',
-      code: 'INVALID_OPTIONAL',
-    });
-  }
-
-  // Optional: weightGramsPerUnit (positive finite number)
-  if (
-    i.weightGramsPerUnit !== undefined &&
-    (typeof i.weightGramsPerUnit !== 'number' ||
-      !Number.isFinite(i.weightGramsPerUnit) ||
-      i.weightGramsPerUnit <= 0)
-  ) {
-    warnings.push({
-      path: `${path}.weightGramsPerUnit`,
-      message: 'weightGramsPerUnit should be a positive finite number',
-      code: 'INVALID_OPTIONAL',
-    });
-  }
-
-  // Optional: capacityMah (positive finite number, battery capacity in milliamp-hours)
-  if (
-    i.capacityMah !== undefined &&
-    (typeof i.capacityMah !== 'number' ||
-      !Number.isFinite(i.capacityMah) ||
-      i.capacityMah <= 0)
-  ) {
-    warnings.push({
-      path: `${path}.capacityMah`,
-      message: 'capacityMah should be a positive finite number',
-      code: 'INVALID_OPTIONAL',
-    });
-  }
-
-  // Optional: capacityWh (positive finite number, battery capacity in watt-hours)
-  if (
-    i.capacityWh !== undefined &&
-    (typeof i.capacityWh !== 'number' ||
-      !Number.isFinite(i.capacityWh) ||
-      i.capacityWh <= 0)
-  ) {
-    warnings.push({
-      path: `${path}.capacityWh`,
-      message: 'capacityWh should be a positive finite number',
-      code: 'INVALID_OPTIONAL',
-    });
-  }
+  // Optional numeric fields (expiration, water, calories, weight, capacity)
+  validateOptionalNumericFields(i, path, warnings);
 }
 
 /**

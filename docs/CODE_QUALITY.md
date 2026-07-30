@@ -39,6 +39,7 @@ import globals from 'globals';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import sonarjs from 'eslint-plugin-sonarjs';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -49,6 +50,7 @@ export default tseslint.config(
       ...tseslint.configs.recommended,
       react.configs.flat.recommended,
       react.configs.flat['jsx-runtime'],
+      sonarjs.configs.recommended,
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -73,6 +75,42 @@ export default tseslint.config(
         'error',
         { argsIgnorePattern: '^_' },
       ],
+      // Randomness in this app is only ever used for React keys, log/session
+      // ids and seeded example data - never for anything security-sensitive.
+      'sonarjs/pseudo-random': 'off',
+      // Inline follow-up markers are used deliberately to flag known future
+      // work and are not treated as defects.
+      'sonarjs/todo-tag': 'off',
+      // Redundant with @typescript-eslint/no-unused-vars above, which is
+      // type-aware and honours the `_` prefix convention.
+      'sonarjs/no-unused-vars': 'off',
+    },
+  },
+  {
+    // Tests are named per behaviour on purpose (see docs/TESTING_STRATEGY.md);
+    // collapsing them into it.each tables costs more in readability and failure
+    // reporting than it saves in lines.
+    files: ['**/*.{test,spec}.{ts,tsx}', 'e2e/**/*.ts'],
+    rules: {
+      'sonarjs/parameterized-tests': 'off',
+      // Assertion patterns match short literal fixtures, never untrusted
+      // input, so backtracking cost is irrelevant. The rule stays on for
+      // production code, where ReDoS actually matters.
+      'sonarjs/super-linear-regex': 'off',
+    },
+  },
+  {
+    // The e2e suite synchronises on a shared TIMEOUTS constant. Converting all
+    // of it to observable-condition waits is a worthwhile but separate
+    // refactor - doing it alongside a lint-config change risks flakiness.
+    files: ['e2e/**/*.ts'],
+    rules: {
+      'sonarjs/no-fixed-wait-in-tests': 'off',
+      // advanced-features.spec.ts guards its tests with conditional
+      // test.skip() when the UI under test is absent. That is real debt -
+      // those tests pass silently instead of failing - but resolving it needs
+      // the same E2E pass as the fixed waits above.
+      'sonarjs/no-skipped-tests': 'off',
     },
   },
   {
@@ -97,6 +135,19 @@ export default tseslint.config(
 | `react-hooks/exhaustive-deps`          | warn    | Check effect dependencies                     |
 | `@typescript-eslint/no-unused-vars`    | error   | No unused variables (except `_` prefixed)     |
 | `react-refresh/only-export-components` | warn    | Fast refresh compatibility                    |
+| `sonarjs/*` (recommended)              | error   | Bug patterns, duplication, complexity         |
+| `sonarjs/cognitive-complexity`         | error   | Max complexity 15 per function                |
+
+**On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`, with the
+reasoning for every exception inline in `eslint.config.js` above. Three rules are
+off everywhere (`pseudo-random`, `todo-tag`, `no-unused-vars`). Two more are off
+for all test code, which includes `e2e/**/*.ts` as well as `*.test.*` /
+`*.spec.*` (`parameterized-tests`, `super-linear-regex`). A final two are off for
+`e2e/**/*.ts` only (`no-fixed-wait-in-tests`, `no-skipped-tests`); unlike the
+others these mark real E2E debt deferred to a dedicated pass, not rules to keep
+off permanently. So four sonarjs rules are relaxed in `e2e/` in total. Prefer
+fixing a violation over adding a disable; where a disable is genuinely right, put
+it inline with a one-line reason rather than widening the config.
 
 **On `react/jsx-max-depth`:** when a component exceeds 4 levels of nesting,
 extract the inner block into a small local component rather than raising the

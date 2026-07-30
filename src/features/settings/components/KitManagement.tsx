@@ -33,9 +33,9 @@ function sanitizeFileName(name: string, fallback = 'recommendations'): string {
   // Collapse runs of hyphens/underscores into a single hyphen
   sanitized = sanitized.replaceAll(/[-_]+/g, '-');
 
-  // Remove leading/trailing hyphens after collapsing
-  // Group parts of the regex together to make the intended operator precedence explicit
-  sanitized = sanitized.replaceAll(/(^-+|-+$)/g, '');
+  // Remove leading/trailing hyphens. Runs were collapsed above, so at most one
+  // hyphen can sit at each end - no quantifier (and no backtracking) needed.
+  sanitized = sanitized.replaceAll(/^-|-$/g, '');
 
   // Fall back to provided fallback if empty
   return sanitized || fallback;

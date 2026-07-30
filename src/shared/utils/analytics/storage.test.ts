@@ -55,7 +55,7 @@ describe('analytics storage', () => {
       trackItemDeleted('Old Item', 'food');
 
       const events = getAnalyticsEvents();
-      expect(events.length).toBe(initialCount + 3);
+      expect(events).toHaveLength(initialCount + 3);
 
       const types = events.slice(-3).map((e) => e.type);
       expect(types).toContain('app_launch');
@@ -78,7 +78,7 @@ describe('analytics storage', () => {
 
       // Verify data was added
       expect(getAnalyticsStats().totalLaunches).toBe(1);
-      expect(getAnalyticsEvents().length).toBe(2);
+      expect(getAnalyticsEvents()).toHaveLength(2);
 
       // Clear and verify
       clearAnalyticsData();

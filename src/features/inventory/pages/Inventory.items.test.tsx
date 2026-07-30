@@ -215,8 +215,8 @@ describe('Inventory Page - Recommended Items Filtering', () => {
       return qty > 0;
     });
 
-    expect(petItems.length).toBe(10); // All 10 pet items exist
-    expect(applicablePetItems.length).toBe(0); // None should be applicable when pets = 0
+    expect(petItems).toHaveLength(10); // All 10 pet items exist
+    expect(applicablePetItems).toHaveLength(0); // None should be applicable when pets = 0
   });
 
   it('should verify that initialAppData properly sets localStorage with createMockAppData', () => {
@@ -271,7 +271,7 @@ describe('Inventory Page - Recommended Items Filtering', () => {
     const petItemsInFiltered = applicableRecommendedItems.filter(
       (item) => item.category === 'pets',
     );
-    expect(petItemsInFiltered.length).toBe(0);
+    expect(petItemsInFiltered).toHaveLength(0);
 
     // But non-pet items should still be present
     const nonPetItemsInFiltered = applicableRecommendedItems.filter(
