@@ -57,22 +57,10 @@ describe('appDataValidation – mutation killing', () => {
       expect(result.errors[0].interpolation?.value).toBe('null');
     });
 
-    it('safeStringify handles undefined correctly (kills L40 false)', () => {
-      // Set language to undefined but still trigger validation by having it in the object
-      // Actually, if language is undefined, the validation skips it (settings.language !== undefined check).
-      // We need a different path. The safeStringify is called in the interpolation.
-      // It's called when language IS present but invalid.
-      // Let's use a theme with undefined somehow...
-      // Actually, safeStringify(undefined) is called when the value IS undefined.
-      // But the validation guards check `!== undefined` first.
-      // The only way to hit safeStringify(undefined) is if the guard let it through.
-      // This means the undefined case in safeStringify may not be reachable through normal validation.
-      // Let's verify: the validation does `settings.language !== undefined && !VALID_LANGUAGES.includes(...)`.
-      // So undefined language skips validation entirely.
-      // The safeStringify undefined branch might only be hit if a validated field passes through somehow.
-      // This mutant might be unreachable through validateAppDataValues. Skip this test.
-      expect(true).toBe(true);
-    });
+    // Note: safeStringify's `undefined` branch is not reachable through
+    // validateAppDataValues - every field guard checks `!== undefined` before
+    // interpolating, so undefined values skip validation entirely. There is no
+    // behaviour to assert here, so no test covers that branch.
 
     it('safeStringify handles string type correctly (kills L43 string part -> false)', () => {
       const data = createValidAppData();

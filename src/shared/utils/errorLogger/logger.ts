@@ -65,7 +65,8 @@ function log(
 
   // Also log to console for development
   const consoleMethod = level === 'debug' ? 'log' : level;
-  const prefix = `[${level.toUpperCase()}]${options?.context ? ` [${options.context}]` : ''}`;
+  const contextTag = options?.context ? ` [${options.context}]` : '';
+  const prefix = `[${level.toUpperCase()}]${contextTag}`;
 
   if (options?.error) {
     console[consoleMethod](`${prefix} ${message}`, options.error);

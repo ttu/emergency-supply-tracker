@@ -286,7 +286,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
     );
 
     // bottled-water, long-life-milk, long-life-juice should all be in shortages
-    expect(resultWithAll.shortages.length).toBe(3);
+    expect(resultWithAll.shortages).toHaveLength(3);
     expect(resultWithAll.shortages.map((s) => s.itemId)).toContain(
       'bottled-water',
     );
@@ -307,7 +307,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
     );
 
     // Only long-life-milk and long-life-juice should be in shortages
-    expect(resultWithDisabled.shortages.length).toBe(2);
+    expect(resultWithDisabled.shortages).toHaveLength(2);
     expect(resultWithDisabled.shortages.map((s) => s.itemId)).not.toContain(
       'bottled-water',
     );
@@ -367,7 +367,7 @@ describe('calculateCategoryShortages with disabledRecommendedItems', () => {
     );
 
     // All 3 water-beverages items should still be there
-    expect(result.shortages.length).toBe(3);
+    expect(result.shortages).toHaveLength(3);
   });
 });
 
@@ -403,7 +403,7 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
     );
 
     // When milk and juice are disabled, only water matters, and we have enough
-    expect(resultWithDisabled.shortages.length).toBe(0);
+    expect(resultWithDisabled.shortages).toHaveLength(0);
     expect(resultWithDisabled.status).toBe('ok');
   });
 
@@ -435,7 +435,7 @@ describe('getCategoryDisplayStatus with disabledRecommendedItems', () => {
 
     // Even with all recommendations disabled, water category still calculates based on household
     // With enough water to meet household needs, status should be ok
-    expect(result.shortages.length).toBe(0);
+    expect(result.shortages).toHaveLength(0);
     expect(result.status).toBe('ok');
     expect(result.hasRecommendations).toBe(false);
   });
@@ -501,7 +501,7 @@ describe('calculateCategoryShortages - communication-info category', () => {
     // Should have 2 of 2 item types fulfilled
     expect(result.totalActual).toBe(2);
     expect(result.totalNeeded).toBe(2);
-    expect(result.shortages.length).toBe(0);
+    expect(result.shortages).toHaveLength(0);
   });
 
   it('should not count multiple of same item type as multiple fulfilled items', () => {

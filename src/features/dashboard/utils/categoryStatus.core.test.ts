@@ -631,7 +631,7 @@ describe('calculateCategoryShortages', () => {
       [],
     );
 
-    expect(result.shortages.length).toBe(0);
+    expect(result.shortages).toHaveLength(0);
   });
 
   it('should return empty for custom category with no recommendations', () => {

@@ -21,7 +21,7 @@ describe('isValidUnit – mutation killing tests for L22 guard', () => {
   it('should return exactly false for null (not falsy, strictly false)', () => {
     const result = isValidUnit(null as unknown as string);
     expect(result).toBe(false);
-    expect(result).not.toBe(undefined); // kills BlockStatement → {} (returns undefined)
+    expect(result).toBeDefined(); // kills BlockStatement → {} (returns undefined)
     expect(typeof result).toBe('boolean');
   });
 
@@ -30,7 +30,7 @@ describe('isValidUnit – mutation killing tests for L22 guard', () => {
   it('should return exactly false for undefined (not falsy, strictly false)', () => {
     const result = isValidUnit(undefined as unknown as string);
     expect(result).toBe(false);
-    expect(result).not.toBe(undefined); // kills BlockStatement → {}
+    expect(result).toBeDefined(); // kills BlockStatement → {}
     expect(typeof result).toBe('boolean');
   });
 

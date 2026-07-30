@@ -399,7 +399,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
       // Weighted fulfillment: 1.0 + 1.0 + 1.0 = 3.0
       expect(result.totalActual).toBe(3);
       expect(result.totalNeeded).toBe(3);
-      expect(result.shortages.length).toBe(0);
+      expect(result.shortages).toHaveLength(0);
     });
 
     it('should handle marked as enough correctly in weighted calculation', () => {
@@ -438,7 +438,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
       expect(result.totalActual).toBeCloseTo(2, 1);
       expect(result.totalNeeded).toBe(3);
       // Should not appear in shortages
-      expect(result.shortages.length).toBe(1); // Only contact-list should be in shortages
+      expect(result.shortages).toHaveLength(1); // Only contact-list should be in shortages
       expect(result.shortages[0].itemId).toBe('contact-list');
     });
 
@@ -479,7 +479,7 @@ describe('calculateCategoryShortages - mixed units (weighted fulfillment)', () =
       // Weighted fulfillment: 0.0 + 0.0 + 0.0 = 0.0
       expect(result.totalActual).toBe(0);
       expect(result.totalNeeded).toBe(3);
-      expect(result.shortages.length).toBe(3);
+      expect(result.shortages).toHaveLength(3);
     });
 
     it('should match getCategoryDisplayStatus percentage for mixed units', () => {
@@ -885,6 +885,6 @@ describe('getCategoryDisplayStatus - progress consistency for mixed units', () =
     expect(result.totalNeeded).toBe(3);
     expect(result.completionPercentage).toBe(100);
     expect(result.status).toBe('ok');
-    expect(result.shortages.length).toBe(0);
+    expect(result.shortages).toHaveLength(0);
   });
 });

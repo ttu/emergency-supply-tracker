@@ -25,10 +25,11 @@ vi.mock('react-i18next', () => ({
 // Mock the inventory hook
 const mockEnableRecommendedItem = vi.fn();
 const mockEnableAllRecommendedItems = vi.fn();
+let mockDisabledRecommendedItems: string[] = [];
 
 vi.mock('@/features/inventory', () => ({
   useInventory: () => ({
-    disabledRecommendedItems: ['bottled-water', 'long-life-milk'],
+    disabledRecommendedItems: mockDisabledRecommendedItems,
     enableRecommendedItem: mockEnableRecommendedItem,
     enableAllRecommendedItems: mockEnableAllRecommendedItems,
   }),
@@ -38,6 +39,7 @@ describe('DisabledRecommendations', () => {
   beforeEach(() => {
     mockEnableRecommendedItem.mockClear();
     mockEnableAllRecommendedItems.mockClear();
+    mockDisabledRecommendedItems = ['bottled-water', 'long-life-milk'];
   });
 
   it('should render list of disabled items', () => {
@@ -86,21 +88,18 @@ describe('DisabledRecommendations', () => {
 
 describe('DisabledRecommendations with no disabled items', () => {
   beforeEach(() => {
-    vi.resetModules();
+    mockDisabledRecommendedItems = [];
   });
 
   it('should show empty message when no items are disabled', () => {
-    // Re-mock with empty array
-    vi.doMock('@/features/inventory', () => ({
-      useInventory: () => ({
-        disabledRecommendedItems: [],
-        enableRecommendedItem: vi.fn(),
-        enableAllRecommendedItems: vi.fn(),
-      }),
-    }));
+    render(<DisabledRecommendations />);
 
-    // We need to re-import the component after changing the mock
-    // For simplicity, we'll just verify the component handles empty state correctly
-    // by checking the implementation logic
+    expect(screen.getByText('No disabled recommendations')).toBeInTheDocument();
+  });
+
+  it('should not render an enable all button', () => {
+    render(<DisabledRecommendations />);
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 });

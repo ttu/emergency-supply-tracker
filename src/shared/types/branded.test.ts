@@ -371,6 +371,9 @@ describe('branded types', () => {
 
     it('creates a Percentage for decimal values', () => {
       const pct = createPercentage(33.33);
+      // Exact equality is the point: createPercentage must return the value
+      // unchanged, not an approximation of it.
+      // eslint-disable-next-line sonarjs/no-floating-point-equality
       expect(pct).toBe(33.33);
     });
 

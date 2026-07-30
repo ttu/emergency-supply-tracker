@@ -156,7 +156,7 @@ describe('generateExampleInventory', () => {
         123,
       );
 
-      expect(result1.length).toBe(result2.length);
+      expect(result1).toHaveLength(result2.length);
       result1.forEach((item, idx) => {
         expect(item.itemType).toBe(result2[idx].itemType);
         expect(item.quantity).toBe(result2[idx].quantity);
@@ -663,7 +663,7 @@ describe('getStateForIndex', () => {
     // daysExpired = Math.floor(1 + 0.25 * 59) = Math.floor(15.75) = 15
     expect(expiredState.expirationOffsetDays).toBe(-15);
     // quantityMultiplier = 0.5 + 0.8 * 0.5 = 0.9
-    expect(expiredState.quantityMultiplier).toBe(0.9);
+    expect(expiredState.quantityMultiplier).toBeCloseTo(0.9, 10);
   });
 });
 
@@ -691,7 +691,7 @@ describe('quantity calculation details', () => {
     );
 
     // Full state: quantityMultiplier = 1.0, so quantity should be ceil(6 * 1) = 6
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     expect(result[0].quantity).toBe(6);
   });
 
@@ -717,7 +717,7 @@ describe('quantity calculation details', () => {
       1,
     );
 
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     expect(result[0].quantity).toBe(3);
   });
 
@@ -741,7 +741,7 @@ describe('quantity calculation details', () => {
     const household = { ...standardHousehold, pets: 2 };
     const result = generateExampleInventory(items, household, mockTranslate, 1);
 
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     expect(result[0].quantity).toBeGreaterThan(0);
   });
 
@@ -772,7 +772,7 @@ describe('quantity calculation details', () => {
       1,
     );
 
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     // The "custom." prefix should be stripped
     expect(translateCalls).toContain('my-custom');
     expect(result[0].name).toBe('Name: my-custom');
@@ -907,7 +907,7 @@ describe('pet scaling arithmetic', () => {
       mockTranslate,
       1,
     );
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     expect(result[0].quantity).toBe(18);
   });
 
@@ -925,7 +925,7 @@ describe('pet scaling arithmetic', () => {
       mockTranslate,
       1,
     );
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     expect(result[0].quantity).toBe(12);
   });
 
@@ -942,7 +942,7 @@ describe('pet scaling arithmetic', () => {
       mockTranslate,
       1,
     );
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     expect(result[0].quantity).toBe(5);
   });
 
@@ -1191,7 +1191,7 @@ describe('mutation-killers: generateExampleInventory.ts (issue #277)', () => {
     const recs = createTestRecommendedItems(10);
     const a = generateExampleInventory(recs, baseHousehold, t, 12345);
     const b = generateExampleInventory(recs, baseHousehold, t, 12345);
-    expect(a.length).toBe(b.length);
+    expect(a).toHaveLength(b.length);
     expect(a.map((i) => i.name)).toEqual(b.map((i) => i.name));
     expect(a.map((i) => i.quantity)).toEqual(b.map((i) => i.quantity));
   });

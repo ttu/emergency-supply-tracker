@@ -54,6 +54,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       .filter(Boolean)
       .join(' ');
 
+    let describedBy: string | undefined;
+    if (error) {
+      describedBy = `${selectId}-error`;
+    } else if (helperText) {
+      describedBy = `${selectId}-helper`;
+    }
+
     return (
       <div className={wrapperClassNames}>
         {label && (
@@ -69,13 +76,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           required={required}
           disabled={disabled}
           aria-invalid={!!error}
-          aria-describedby={
-            error
-              ? `${selectId}-error`
-              : helperText
-                ? `${selectId}-helper`
-                : undefined
-          }
+          aria-describedby={describedBy}
           {...props}
         >
           {options.map((option) => (

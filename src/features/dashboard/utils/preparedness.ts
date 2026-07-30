@@ -60,13 +60,10 @@ export function calculatePreparednessScore(
   recommendedItems: RecommendedItemDefinition[],
 ): number {
   // Get recommended items for this household
-  const recommendedForHousehold = recommendedItems.filter((item) => {
+  const recommendedForHousehold = recommendedItems.filter(
     // Skip frozen items if not using freezer
-    if (item.requiresFreezer && !household.useFreezer) {
-      return false;
-    }
-    return true;
-  });
+    (item) => !(item.requiresFreezer && !household.useFreezer),
+  );
 
   if (recommendedForHousehold.length === 0) {
     return 0;

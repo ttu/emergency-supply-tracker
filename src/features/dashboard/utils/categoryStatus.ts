@@ -190,6 +190,83 @@ function hasEnoughInventory(
 }
 
 /**
+ * Determine an item's status, treating items with no recommended quantity as
+ * critical only when nothing is stocked.
+ */
+function getItemStatusWithoutRecommendation(item: InventoryItem): ItemStatus {
+  return item.quantity === 0 ? 'critical' : 'ok';
+}
+
+/** Tally of category items grouped by their individual status. */
+interface ItemStatusCounts {
+  criticalCount: number;
+  warningCount: number;
+  okCount: number;
+}
+
+/**
+ * Count how many of the given items are critical, warning and ok.
+ */
+function countItemsByStatus(
+  categoryItems: InventoryItem[],
+  household: HouseholdConfig,
+  recommendedItems: RecommendedItemDefinition[],
+  options: CategoryCalculationOptions,
+): ItemStatusCounts {
+  const counts: ItemStatusCounts = {
+    criticalCount: 0,
+    warningCount: 0,
+    okCount: 0,
+  };
+
+  categoryItems.forEach((item) => {
+    const recommendedQuantity = getRecommendedQuantityForItem(
+      item,
+      household,
+      recommendedItems,
+      options.childrenMultiplier,
+    );
+    const status =
+      recommendedQuantity > 0
+        ? calculateItemStatus(item, recommendedQuantity)
+        : getItemStatusWithoutRecommendation(item);
+
+    if (status === 'critical') counts.criticalCount++;
+    else if (status === 'warning') counts.warningCount++;
+    else counts.okCount++;
+  });
+
+  return counts;
+}
+
+/**
+ * Roll the per-item tallies and the effective completion percentage up into a
+ * single status for the whole category.
+ */
+function determineCategoryStatus(
+  hasEnough: boolean,
+  counts: ItemStatusCounts,
+  effectivePercentage: number,
+): ItemStatus {
+  if (hasEnough) {
+    return 'ok';
+  }
+  if (
+    counts.criticalCount > 0 ||
+    effectivePercentage < CRITICAL_PERCENTAGE_THRESHOLD
+  ) {
+    return 'critical';
+  }
+  if (
+    counts.warningCount > 0 ||
+    effectivePercentage < WARNING_PERCENTAGE_THRESHOLD
+  ) {
+    return 'warning';
+  }
+  return 'ok';
+}
+
+/**
  * Calculate status summary for a category.
  */
 export function calculateCategoryStatus(
@@ -204,28 +281,13 @@ export function calculateCategoryStatus(
   const categoryItems = items.filter((item) => item.categoryId === category.id);
 
   // Count items by status
-  let criticalCount = 0;
-  let warningCount = 0;
-  let okCount = 0;
-
-  categoryItems.forEach((item) => {
-    // Calculate recommended quantity for status determination
-    const recommendedQuantity = getRecommendedQuantityForItem(
-      item,
-      household,
-      recommendedItems,
-      options.childrenMultiplier,
-    );
-    const status =
-      recommendedQuantity > 0
-        ? calculateItemStatus(item, recommendedQuantity)
-        : item.quantity === 0
-          ? 'critical'
-          : 'ok';
-    if (status === 'critical') criticalCount++;
-    else if (status === 'warning') warningCount++;
-    else okCount++;
-  });
+  const counts = countItemsByStatus(
+    categoryItems,
+    household,
+    recommendedItems,
+    options,
+  );
+  const { criticalCount, warningCount, okCount } = counts;
 
   // Calculate shortages using strategy
   const shortageInfo = calculateCategoryShortages(
@@ -268,22 +330,11 @@ export function calculateCategoryStatus(
   }
 
   // Determine overall category status
-  let categoryStatus: ItemStatus;
-  if (hasEnough) {
-    categoryStatus = 'ok';
-  } else if (
-    criticalCount > 0 ||
-    effectivePercentage < CRITICAL_PERCENTAGE_THRESHOLD
-  ) {
-    categoryStatus = 'critical';
-  } else if (
-    warningCount > 0 ||
-    effectivePercentage < WARNING_PERCENTAGE_THRESHOLD
-  ) {
-    categoryStatus = 'warning';
-  } else {
-    categoryStatus = 'ok';
-  }
+  const categoryStatus = determineCategoryStatus(
+    hasEnough,
+    counts,
+    effectivePercentage,
+  );
 
   // Cap percentage at 100: exact 100 when enough, otherwise capped
   const finalCompletionPercentage = hasEnough

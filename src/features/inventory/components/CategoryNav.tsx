@@ -34,7 +34,7 @@ export const CategoryNav = ({
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       const itemCount = allItems.length;
-      let newIndex = effectiveIndex;
+      let newIndex: number;
 
       switch (event.key) {
         case 'ArrowLeft':

@@ -245,6 +245,6 @@ describe('NotificationBar', () => {
     const wrappers = document.querySelectorAll(
       '[class*="notificationWrapper"]',
     );
-    expect(wrappers.length).toBe(3);
+    expect(wrappers).toHaveLength(3);
   });
 });

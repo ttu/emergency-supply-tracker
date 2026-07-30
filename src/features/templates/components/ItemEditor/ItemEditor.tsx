@@ -225,11 +225,13 @@ export function ItemEditor({
   const validate = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Validation depends on name type
-    if (nameType === 'builtin' && !selectedProductKey) {
-      newErrors.name = t('kitEditor.validation.nameRequired');
-    } else if (nameType === 'custom' && !nameEn.trim() && !nameFi.trim()) {
-      // At least one custom name is required
+    // Validation depends on name type: a built-in item needs a selected
+    // product, a custom item needs at least one of the two localised names.
+    const isMissingName =
+      nameType === 'builtin'
+        ? !selectedProductKey
+        : !nameEn.trim() && !nameFi.trim();
+    if (isMissingName) {
       newErrors.name = t('kitEditor.validation.nameRequired');
     }
 

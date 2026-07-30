@@ -147,7 +147,7 @@ describe('recommended-item lookup by category', () => {
       [],
     );
 
-    expect(result.shortages.length).toBe(3);
+    expect(result.shortages).toHaveLength(3);
     expect(result.shortages.map((s) => s.itemId)).toEqual(
       expect.arrayContaining([
         'bottled-water',
@@ -173,7 +173,7 @@ describe('recommended-item lookup by category', () => {
       [],
     );
 
-    expect(result.shortages.length).toBe(2);
+    expect(result.shortages).toHaveLength(2);
     result.shortages.forEach((s) => {
       expect(['battery-radio', 'hand-crank-radio']).toContain(s.itemId);
     });
@@ -297,7 +297,7 @@ describe('disabledRecommendedItems default behavior', () => {
       RECOMMENDED_ITEMS,
     );
 
-    expect(result.shortages.length).toBe(3);
+    expect(result.shortages).toHaveLength(3);
   });
 });
 
@@ -1101,7 +1101,7 @@ describe('getCategoryDisplayStatus return-shape guarantees', () => {
     );
 
     expect(result.shortages).toEqual([]);
-    expect(result.shortages.length).toBe(0);
+    expect(result.shortages).toHaveLength(0);
   });
 });
 

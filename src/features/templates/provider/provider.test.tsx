@@ -247,7 +247,7 @@ describe('RecommendedItemsProvider', () => {
     });
 
     expect(exportedFile!.meta.name).toBe('Custom Recommendations');
-    expect(exportedFile!.items.length).toBe(2);
+    expect(exportedFile!.items).toHaveLength(2);
   });
 
   it('should export built-in recommendations when not using custom', () => {
@@ -272,7 +272,7 @@ describe('RecommendedItemsProvider', () => {
       en: '72 Hours Standard Kit',
       fi: '72 tunnin varmuusvarasto',
     });
-    expect(exportedFile!.items.length).toBe(DEFAULT_KIT_ITEM_COUNT);
+    expect(exportedFile!.items).toHaveLength(DEFAULT_KIT_ITEM_COUNT);
   });
 
   it('should reset to default recommendations via selectKit', async () => {
@@ -596,7 +596,7 @@ describe('RecommendedItemsProvider', () => {
       const lastCall =
         mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
       expect(lastCall.uploadedRecommendationKits).toBeDefined();
-      expect(lastCall.uploadedRecommendationKits.length).toBe(0);
+      expect(lastCall.uploadedRecommendationKits).toHaveLength(0);
     });
 
     it('should switch to default kit when deleting the currently selected kit', async () => {
@@ -1158,7 +1158,7 @@ describe('RecommendedItemsProvider', () => {
       expect(lastCall.disabledCategories).toContain('water-beverages');
       expect(lastCall.disabledCategories).toContain('food');
       expect(lastCall.disabledCategories).toContain('pets');
-      expect(lastCall.disabledCategories.length).toBe(10);
+      expect(lastCall.disabledCategories).toHaveLength(10);
     });
 
     it('should apply custom categories when selecting a kit with them', async () => {
@@ -1197,7 +1197,7 @@ describe('RecommendedItemsProvider', () => {
 
       // Should have the custom categories from the kit
       expect(lastCall.customCategories).toBeDefined();
-      expect(lastCall.customCategories.length).toBe(2);
+      expect(lastCall.customCategories).toHaveLength(2);
 
       const cyclingTools = lastCall.customCategories.find(
         (c: { id: string }) => c.id === 'cycling-tools',
@@ -1258,7 +1258,7 @@ describe('RecommendedItemsProvider', () => {
         mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
 
       // Should have user category + 2 kit categories = 3 total
-      expect(lastCall.customCategories.length).toBe(3);
+      expect(lastCall.customCategories).toHaveLength(3);
 
       // User category should be preserved
       const userCat = lastCall.customCategories.find(

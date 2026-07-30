@@ -512,7 +512,7 @@ describe('example recommendation kits', () => {
 
     expect(file.categories).toBeDefined();
     expect(Array.isArray(file.categories)).toBe(true);
-    expect(file.categories!.length).toBe(2);
+    expect(file.categories!).toHaveLength(2);
 
     const categoryIds = file.categories!.map((c) => c.id);
     expect(categoryIds).toContain('garden-supplies');
@@ -535,7 +535,7 @@ describe('example recommendation kits', () => {
     // Has custom categories
     expect(file.categories).toBeDefined();
     expect(Array.isArray(file.categories)).toBe(true);
-    expect(file.categories!.length).toBe(5);
+    expect(file.categories!).toHaveLength(5);
 
     const categoryIds = file.categories!.map((c) => c.id);
     expect(categoryIds).toContain('cycling-tools');

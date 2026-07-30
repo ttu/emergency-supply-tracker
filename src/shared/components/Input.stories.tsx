@@ -36,7 +36,7 @@ export const Text: Story = {
   },
 };
 
-export const Number: Story = {
+export const NumberInput: Story = {
   args: {
     type: 'number',
     label: 'Quantity',
@@ -45,7 +45,7 @@ export const Number: Story = {
   },
 };
 
-export const Date: Story = {
+export const DateInput: Story = {
   args: {
     type: 'date',
     label: 'Expiration Date',

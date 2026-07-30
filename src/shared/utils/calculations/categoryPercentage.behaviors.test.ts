@@ -1299,7 +1299,7 @@ describe('calculateCategoryPercentage behaviors', () => {
         [],
       );
 
-      expect(result.totalActual).toBe(8.9);
+      expect(result.totalActual).toBeCloseTo(8.9, 10);
       expect(result.totalNeeded).toBe(9);
       expect(result.hasEnough).toBe(false);
     });

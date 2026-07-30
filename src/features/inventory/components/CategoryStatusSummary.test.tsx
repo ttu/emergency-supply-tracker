@@ -666,7 +666,7 @@ describe('CategoryStatusSummary', () => {
       const disableButtons = screen.queryAllByRole('button', {
         name: "Don't recommend this item",
       });
-      expect(disableButtons.length).toBe(0);
+      expect(disableButtons).toHaveLength(0);
     });
 
     it('shows only disable button when onDisableRecommended is provided', async () => {
@@ -700,7 +700,7 @@ describe('CategoryStatusSummary', () => {
       const addButtons = screen.queryAllByRole('button', {
         name: 'Add to inventory',
       });
-      expect(addButtons.length).toBe(0);
+      expect(addButtons).toHaveLength(0);
     });
 
     it('shows both buttons when both handlers are provided', async () => {

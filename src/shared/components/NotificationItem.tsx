@@ -9,6 +9,15 @@ export interface NotificationItemProps {
   readonly onClose: () => void;
 }
 
+const VARIANT_ICONS: Record<
+  NonNullable<NotificationItemProps['variant']>,
+  string
+> = {
+  success: '✓',
+  error: '✕',
+  info: 'ℹ',
+};
+
 /**
  * Notification item component for use in NotificationBar.
  * Similar to Toast but doesn't use portal, allowing proper stacking.
@@ -44,7 +53,7 @@ export function NotificationItem({
     };
   }, [duration]);
 
-  const icon = variant === 'success' ? '✓' : variant === 'error' ? '✕' : 'ℹ';
+  const icon = VARIANT_ICONS[variant];
 
   return (
     <output

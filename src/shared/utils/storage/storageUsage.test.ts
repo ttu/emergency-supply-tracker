@@ -92,6 +92,8 @@ describe('storageUsage', () => {
     });
 
     it('STORAGE_WARNING_RATIO is 0.8', () => {
+      // Pinning the exact constant - a tolerance would defeat the purpose.
+      // eslint-disable-next-line sonarjs/no-floating-point-equality
       expect(STORAGE_WARNING_RATIO).toBe(0.8);
     });
   });

@@ -48,7 +48,7 @@ describe('analytics tracking', () => {
       trackAppLaunch();
 
       const events = getAnalyticsEvents();
-      expect(events.length).toBe(initialCount + 1);
+      expect(events).toHaveLength(initialCount + 1);
       expect(events[events.length - 1].type).toBe('app_launch');
       expect(events[events.length - 1].timestamp).toBeDefined();
     });
@@ -70,7 +70,7 @@ describe('analytics tracking', () => {
       trackItemAdded('Water', 'water-beverages');
 
       const events = getAnalyticsEvents();
-      expect(events.length).toBe(initialCount + 1);
+      expect(events).toHaveLength(initialCount + 1);
 
       const lastEvent = events[events.length - 1];
       expect(lastEvent.type).toBe('item_added');
@@ -109,7 +109,7 @@ describe('analytics tracking', () => {
       trackItemDeleted('Old Water', 'water-beverages');
 
       const events = getAnalyticsEvents();
-      expect(events.length).toBe(initialCount + 1);
+      expect(events).toHaveLength(initialCount + 1);
 
       const lastEvent = events[events.length - 1];
       expect(lastEvent.type).toBe('item_deleted');
@@ -136,7 +136,7 @@ describe('analytics tracking', () => {
       trackItemsBulkAdded(10);
 
       const events = getAnalyticsEvents();
-      expect(events.length).toBe(initialCount + 1);
+      expect(events).toHaveLength(initialCount + 1);
 
       const lastEvent = events[events.length - 1];
       expect(lastEvent.type).toBe('items_bulk_added');

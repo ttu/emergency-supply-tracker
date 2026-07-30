@@ -15,7 +15,7 @@ export {
   LOCATION_FILTER_ALL,
   LOCATION_FILTER_NONE,
 } from './FilterBar';
-export type { FilterBarProps } from './FilterBar';
+export type { FilterBarProps, SortBy } from './FilterBar';
 
 export { CategoryStatusSummary } from './CategoryStatusSummary';
 export type {

@@ -426,7 +426,7 @@ describe('isValidLogEntry guard', () => {
 
     const result = getErrorLogData();
     // null entry should be filtered out
-    expect(result.logs.length).toBe(1);
+    expect(result.logs).toHaveLength(1);
     expect(result.logs[0].message).toBe('test');
     consoleSpy.mockRestore();
   });
@@ -451,7 +451,7 @@ describe('log level validation', () => {
 
     const result = getErrorLogData();
     // Entry with numeric level should be filtered out
-    expect(result.logs.length).toBe(1);
+    expect(result.logs).toHaveLength(1);
     expect(result.logs[0].message).toBe('valid');
     consoleSpy.mockRestore();
   });
@@ -522,7 +522,7 @@ describe('saveErrorLogData log trimming', () => {
     const stored = JSON.parse(
       localStorage.getItem(ERROR_LOG_STORAGE_KEY) || '{}',
     ) as ErrorLogData;
-    expect(stored.logs.length).toBe(1);
+    expect(stored.logs).toHaveLength(1);
     expect(stored.logs[0].message).toBe('test');
   });
 
@@ -548,7 +548,7 @@ describe('saveErrorLogData log trimming', () => {
     ) as ErrorLogData;
     // Exactly at limit: should NOT trim
     // If mutant changes > to >=, would trim at exactly 500
-    expect(stored.logs.length).toBe(500);
+    expect(stored.logs).toHaveLength(500);
   });
 });
 
