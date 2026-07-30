@@ -12,9 +12,9 @@ import {
 import { createDateOnly } from '../src/shared/types';
 
 /**
- * In design v2 the backup reminder surfaces on the Alerts page (via
- * useDashboardAlerts), not as a dashboard banner. Each test sets the
- * mock app data + navigates to v2-nav-alerts.
+ * In design v2 the backup reminder surfaces in the dashboard alert banner
+ * (via useDashboardAlerts). Each test sets the mock app data + navigates to
+ * v2-nav-home.
  */
 
 const v2Settings = {
@@ -34,6 +34,18 @@ const daysAgo = (n: number) => {
   d.setDate(d.getDate() - n);
   return d;
 };
+
+/**
+ * The backup reminder is one row among several in the dashboard alert
+ * banner. Scope to the row so the transient "Backup reminder dismissed"
+ * toast can't satisfy (or defeat) these assertions.
+ */
+function backupAlertRow(page: import('@playwright/test').Page) {
+  return page
+    .getByTestId('v2-alert-banner')
+    .getByTestId('v2-alert-row')
+    .filter({ hasText: /backup|varmuuskopio/i });
+}
 
 test.describe('Backup Reminder', () => {
   test('should show backup reminder after 30 days without backup', async ({
@@ -58,10 +70,8 @@ test.describe('Backup Reminder', () => {
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    await page.getByTestId('v2-nav-alerts').click();
-    await expect(
-      page.getByText(/backup|Backup|varmuuskopio/i).first(),
-    ).toBeVisible({ timeout: 5000 });
+    await page.getByTestId('v2-nav-home').click();
+    await expect(backupAlertRow(page)).toBeVisible({ timeout: 5000 });
   });
 
   test('should dismiss backup reminder', async ({ page }) => {
@@ -84,18 +94,14 @@ test.describe('Backup Reminder', () => {
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    await page.getByTestId('v2-nav-alerts').click();
-    const reminder = page.getByText(/backup|Backup|varmuuskopio/i).first();
+    await page.getByTestId('v2-nav-home').click();
+    const reminder = backupAlertRow(page);
     await expect(reminder).toBeVisible({ timeout: 5000 });
 
-    // v2 Alerts row has a "DISMISS" button (cockpit voice).
-    const dismiss = page
-      .getByRole('button', { name: /DISMISS|Dismiss/ })
-      .first();
-    await expect(dismiss).toBeVisible({ timeout: 5000 });
-    await dismiss.click();
+    // Each banner row has a "DISMISS" control (cockpit voice).
+    await reminder.getByRole('button', { name: /DISMISS|Dismiss/ }).click();
 
-    await expect(reminder).not.toBeVisible({ timeout: 3000 });
+    await expect(reminder).toHaveCount(0, { timeout: 3000 });
   });
 
   test('should not show reminder after dismissal until next month', async ({
@@ -127,10 +133,8 @@ test.describe('Backup Reminder', () => {
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    await page.getByTestId('v2-nav-alerts').click();
-    await expect(page.getByText(/backup|varmuuskopio/i)).not.toBeVisible({
-      timeout: 3000,
-    });
+    await page.getByTestId('v2-nav-home').click();
+    await expect(backupAlertRow(page)).toHaveCount(0, { timeout: 3000 });
   });
 
   test('should remove reminder when backup date is recorded', async ({
@@ -155,11 +159,9 @@ test.describe('Backup Reminder', () => {
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Reminder visible on Alerts page
-    await page.getByTestId('v2-nav-alerts').click();
-    await expect(
-      page.getByText(/backup|Backup|varmuuskopio/i).first(),
-    ).toBeVisible({ timeout: 5000 });
+    // Reminder visible in the dashboard alert banner
+    await page.getByTestId('v2-nav-home').click();
+    await expect(backupAlertRow(page)).toBeVisible({ timeout: 5000 });
 
     // Trigger an export (records lastBackupDate)
     await navigateToSettingsSection(page, 'data');
@@ -176,14 +178,12 @@ test.describe('Backup Reminder', () => {
     await page.waitForTimeout(500);
 
     // Back to alerts — reminder gone.
-    await page.getByTestId('v2-nav-alerts').click();
+    await page.getByTestId('v2-nav-home').click();
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText(/backup|varmuuskopio/i)).not.toBeVisible({
-      timeout: 3000,
-    });
+    await expect(backupAlertRow(page)).toHaveCount(0, { timeout: 3000 });
   });
 
-  test('should surface the reminder under the v2 Alerts page', async ({
+  test('should surface the reminder in the dashboard alert banner', async ({
     page,
   }) => {
     const old = daysAgo(35);
@@ -205,10 +205,8 @@ test.describe('Backup Reminder', () => {
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    await page.getByTestId('v2-nav-alerts').click();
-    await expect(page.getByText('ALERTS · LOG')).toBeVisible();
-    await expect(
-      page.getByText(/backup|Backup|varmuuskopio/i).first(),
-    ).toBeVisible({ timeout: 5000 });
+    await page.getByTestId('v2-nav-home').click();
+    await expect(page.getByTestId('v2-alert-banner')).toBeVisible();
+    await expect(backupAlertRow(page)).toBeVisible({ timeout: 5000 });
   });
 });

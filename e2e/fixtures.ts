@@ -150,14 +150,7 @@ export const test = base.extend<{
  * Design-v2 top-nav targets. The v2 shell uses a left rail (desktop) or
  * bottom tab bar (mobile); both expose the same data-testid per item.
  */
-export type V2NavId =
-  | 'home'
-  | 'inv'
-  | 'alerts'
-  | 'shop'
-  | 'plan'
-  | 'help'
-  | 'settings';
+export type V2NavId = 'home' | 'inv' | 'help' | 'settings';
 
 /** Click a top-level v2 nav item. Works on desktop rail + mobile tab bar. */
 export async function navigateV2(page: Page, id: V2NavId) {

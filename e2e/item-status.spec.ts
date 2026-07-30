@@ -117,9 +117,11 @@ test.describe('Item Status Indicators', () => {
     const itemCard = itemCardButton.locator('..');
     await expect(itemCard).toBeVisible();
 
-    // Critical items surface on the v2 Alerts page (not the dashboard).
-    await page.getByTestId('v2-nav-alerts').click();
-    await expect(page.getByText('ALERTS · LOG')).toBeVisible({ timeout: 5000 });
+    // Critical items surface in the dashboard alert banner.
+    await page.getByTestId('v2-nav-home').click();
+    await expect(page.getByTestId('v2-alert-banner')).toBeVisible({
+      timeout: 5000,
+    });
     await expect(page.getByText('Critical Status Item').first()).toBeVisible({
       timeout: 5000,
     });

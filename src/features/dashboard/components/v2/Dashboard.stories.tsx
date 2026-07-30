@@ -16,12 +16,17 @@ const meta = {
   argTypes: {
     onCategorySelect: { action: 'category selected' },
     onViewAllPriority: { action: 'view all priority' },
+    onItemSelect: { action: 'item selected' },
   },
 } satisfies Meta<typeof Dashboard>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const args = { onCategorySelect: () => {}, onViewAllPriority: () => {} };
+const args = {
+  onCategorySelect: () => {},
+  onViewAllPriority: () => {},
+  onItemSelect: () => {},
+};
 
 export const Cockpit: Story = { args };
 export const Civil: Story = {

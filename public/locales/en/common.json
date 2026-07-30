@@ -847,8 +847,16 @@
         "civil": "CRITICAL",
         "pantry": "Critical"
       },
-      "warning": { "cockpit": "WARN", "civil": "WARNING", "pantry": "Low" },
-      "ok": { "cockpit": "OK", "civil": "SUFFICIENT", "pantry": "Sufficient" },
+      "warning": {
+        "cockpit": "WARN",
+        "civil": "WARNING",
+        "pantry": "Low"
+      },
+      "ok": {
+        "cockpit": "OK",
+        "civil": "SUFFICIENT",
+        "pantry": "Sufficient"
+      },
       "home": {
         "cockpit": "OVERVIEW",
         "civil": "DASHBOARD",
@@ -859,14 +867,16 @@
         "civil": "INVENTORY",
         "pantry": "Inventory"
       },
-      "alerts": { "cockpit": "ALERTS", "civil": "ALERTS", "pantry": "Alerts" },
-      "shopping": {
-        "cockpit": "PROCUREMENT",
-        "civil": "PROCUREMENT",
-        "pantry": "Shopping list"
+      "alerts": {
+        "cockpit": "ALERTS",
+        "civil": "ALERTS",
+        "pantry": "Alerts"
       },
-      "plan": { "cockpit": "PLAN", "civil": "OBJECTIVES", "pantry": "Plan" },
-      "guide": { "cockpit": "GUIDE", "civil": "GUIDE", "pantry": "Guide" },
+      "guide": {
+        "cockpit": "GUIDE",
+        "civil": "GUIDE",
+        "pantry": "Guide"
+      },
       "settings": {
         "cockpit": "SETTINGS",
         "civil": "SETTINGS",
@@ -877,11 +887,31 @@
         "civil": "+ ADD ITEM",
         "pantry": "+ Add item"
       },
-      "save": { "cockpit": "SAVE", "civil": "SAVE", "pantry": "Save" },
-      "cancel": { "cockpit": "CANCEL", "civil": "CANCEL", "pantry": "Cancel" },
-      "delete": { "cockpit": "DELETE", "civil": "DELETE", "pantry": "Remove" },
-      "edit": { "cockpit": "EDIT", "civil": "EDIT", "pantry": "Edit" },
-      "back": { "cockpit": "BACK", "civil": "BACK", "pantry": "Back" },
+      "save": {
+        "cockpit": "SAVE",
+        "civil": "SAVE",
+        "pantry": "Save"
+      },
+      "cancel": {
+        "cockpit": "CANCEL",
+        "civil": "CANCEL",
+        "pantry": "Cancel"
+      },
+      "delete": {
+        "cockpit": "DELETE",
+        "civil": "DELETE",
+        "pantry": "Remove"
+      },
+      "edit": {
+        "cockpit": "EDIT",
+        "civil": "EDIT",
+        "pantry": "Edit"
+      },
+      "back": {
+        "cockpit": "BACK",
+        "civil": "BACK",
+        "pantry": "Back"
+      },
       "continueAction": {
         "cockpit": "CONTINUE →",
         "civil": "CONTINUE →",
@@ -902,7 +932,11 @@
         "civil": "IMPORT",
         "pantry": "Import"
       },
-      "qty": { "cockpit": "QTY", "civil": "QUANTITY", "pantry": "You have" },
+      "qty": {
+        "cockpit": "QTY",
+        "civil": "QUANTITY",
+        "pantry": "You have"
+      },
       "rec": {
         "cockpit": "REC",
         "civil": "RECOMMENDED",
@@ -913,18 +947,46 @@
         "civil": "EXPIRES",
         "pantry": "Best before"
       },
-      "location": { "cockpit": "LOC", "civil": "LOCATION", "pantry": "Where" },
-      "notes": { "cockpit": "NOTES", "civil": "NOTES", "pantry": "Notes" },
+      "location": {
+        "cockpit": "LOC",
+        "civil": "LOCATION",
+        "pantry": "Where"
+      },
+      "notes": {
+        "cockpit": "NOTES",
+        "civil": "NOTES",
+        "pantry": "Notes"
+      },
       "category": {
         "cockpit": "CAT",
         "civil": "CATEGORY",
         "pantry": "Category"
       },
-      "unit": { "cockpit": "UNIT", "civil": "UNIT", "pantry": "Unit" },
-      "statusOk": { "cockpit": "OK", "civil": "OK", "pantry": "OK" },
-      "statusWarn": { "cockpit": "WARN", "civil": "WARN", "pantry": "Low" },
-      "statusCrit": { "cockpit": "CRIT", "civil": "CRIT", "pantry": "Out" },
-      "statusInfo": { "cockpit": "INFO", "civil": "INFO", "pantry": "Info" },
+      "unit": {
+        "cockpit": "UNIT",
+        "civil": "UNIT",
+        "pantry": "Unit"
+      },
+      "statusOk": {
+        "cockpit": "OK",
+        "civil": "OK",
+        "pantry": "OK"
+      },
+      "statusWarn": {
+        "cockpit": "WARN",
+        "civil": "WARN",
+        "pantry": "Low"
+      },
+      "statusCrit": {
+        "cockpit": "CRIT",
+        "civil": "CRIT",
+        "pantry": "Out"
+      },
+      "statusInfo": {
+        "cockpit": "INFO",
+        "civil": "INFO",
+        "pantry": "Info"
+      },
       "onbWelcome": {
         "cockpit": "WELCOME · LANGUAGE",
         "civil": "WELCOME · LANGUAGE",
@@ -957,48 +1019,21 @@
       }
     },
     "alerts": {
-      "title": {
-        "cockpit": "ALERTS · LOG",
-        "civil": "ALERTS · LOG",
-        "pantry": "What needs attention"
-      },
-      "info": { "cockpit": "INFO", "civil": "INFO", "pantry": "Info" },
-      "eventStream": {
-        "cockpit": "EVENT STREAM · NEWEST FIRST",
-        "civil": "EVENT STREAM · NEWEST FIRST",
-        "pantry": "Latest first"
-      },
-      "dismissAll": {
-        "cockpit": "DISMISS ALL",
-        "civil": "DISMISS ALL",
-        "pantry": "Dismiss all"
-      },
       "dismiss": {
         "cockpit": "DISMISS",
         "civil": "DISMISS",
         "pantry": "Dismiss"
       },
-      "empty": {
-        "cockpit": "NOMINAL · ZERO ACTIVE ALERTS",
-        "civil": "NOMINAL · ZERO ACTIVE ALERTS",
-        "pantry": "All clear. Nothing to act on."
+      "showMore": {
+        "cockpit": "+ {{count}} MORE",
+        "civil": "+ {{count}} MORE",
+        "pantry": "Show {{count}} more"
       },
-      "emptyShort": {
-        "cockpit": "NOMINAL",
-        "civil": "NOMINAL",
-        "pantry": "All clear."
-      },
-      "hiddenCount": {
-        "cockpit": "{{count}} HIDDEN",
-        "civil": "{{count}} HIDDEN",
-        "pantry": "{{count}} hidden"
-      },
-      "restoreAll": {
-        "cockpit": "RESTORE ALL",
-        "civil": "RESTORE ALL",
-        "pantry": "Restore all"
-      },
-      "dismissAria": "Dismiss alert"
+      "showLess": {
+        "cockpit": "SHOW LESS",
+        "civil": "SHOW LESS",
+        "pantry": "Show less"
+      }
     },
     "dashboard": {
       "statusOk": "OK",
@@ -1061,10 +1096,26 @@
         "civil": "INVENTORY · ALL ITEMS",
         "pantry": "Everything you have"
       },
-      "filterAll": { "cockpit": "ALL", "civil": "ALL", "pantry": "All" },
-      "filterCrit": { "cockpit": "CRIT", "civil": "CRIT", "pantry": "Out" },
-      "filterWarn": { "cockpit": "WARN", "civil": "WARN", "pantry": "Low" },
-      "filterOk": { "cockpit": "OK", "civil": "OK", "pantry": "OK" },
+      "filterAll": {
+        "cockpit": "ALL",
+        "civil": "ALL",
+        "pantry": "All"
+      },
+      "filterCrit": {
+        "cockpit": "CRIT",
+        "civil": "CRIT",
+        "pantry": "Out"
+      },
+      "filterWarn": {
+        "cockpit": "WARN",
+        "civil": "WARN",
+        "pantry": "Low"
+      },
+      "filterOk": {
+        "cockpit": "OK",
+        "civil": "OK",
+        "pantry": "OK"
+      },
       "filterExp": {
         "cockpit": "EXP ≤30D",
         "civil": "EXP ≤30D",
@@ -1101,7 +1152,11 @@
         "pantry": "No items match."
       },
       "footerShowing": "Showing {{shown}} of {{total}}",
-      "newCatLabel": { "cockpit": "NEW", "civil": "NEW", "pantry": "New" }
+      "newCatLabel": {
+        "cockpit": "NEW",
+        "civil": "NEW",
+        "pantry": "New"
+      }
     },
     "itemDetail": {
       "captionNew": {
@@ -1189,55 +1244,6 @@
         "pantry": "Total capacity"
       }
     },
-    "shopping": {
-      "title": {
-        "cockpit": "PROCUREMENT QUEUE",
-        "civil": "PROCUREMENT QUEUE",
-        "pantry": "What to buy next"
-      },
-      "queueCaption": {
-        "cockpit": "QUEUE · {{open}} OPEN · {{done}} DONE",
-        "civil": "QUEUE · {{open}} OPEN · {{done}} DONE",
-        "pantry": "{{open}} open · {{done}} done"
-      },
-      "empty": {
-        "cockpit": "NIL · NO PROCUREMENT REQUIRED",
-        "civil": "NIL · NO PROCUREMENT REQUIRED",
-        "pantry": "Nothing on the list. We'll suggest items when stock runs low."
-      },
-      "emptyShort": {
-        "cockpit": "NIL",
-        "civil": "NIL",
-        "pantry": "Nothing on the list."
-      },
-      "labelNow": { "cockpit": "URGENT", "civil": "URGENT", "pantry": "Now" },
-      "labelSoon": { "cockpit": "SOON", "civil": "SOON", "pantry": "Soon" },
-      "labelWhen": { "cockpit": "WHEN", "civil": "WHEN", "pantry": "When" },
-      "labelNowShort": { "cockpit": "NOW", "civil": "NOW", "pantry": "Now" },
-      "addBtn": { "cockpit": "+ ADD", "civil": "+ ADD", "pantry": "+ Add" },
-      "addBtnAria": "Add {{need}} {{unit}} to {{name}}",
-      "addBtnAriaShort": "Add {{q}} to {{name}}",
-      "markDoneAria": "Mark {{name}} done",
-      "itemsToBuy": {
-        "cockpit": "OPEN ITEMS",
-        "civil": "OPEN ITEMS",
-        "pantry": "Items to buy"
-      },
-      "doneCount": {
-        "cockpit": "{{done}} CHECKED · {{total}} TOTAL",
-        "civil": "{{done}} CHECKED · {{total}} TOTAL",
-        "pantry": "{{done}} already done"
-      },
-      "tipsCaption": { "cockpit": "NOTES", "civil": "NOTES", "pantry": "Tips" },
-      "tipsBody": {
-        "cockpit": "CHECK ITEMS WHEN PROCURED. STATE PERSISTS LOCALLY UNTIL CLEARED.",
-        "civil": "CHECK ITEMS WHEN PROCURED. STATE PERSISTS LOCALLY UNTIL CLEARED.",
-        "pantry": "Check items off as you buy them — they stay checked until you reset the list."
-      },
-      "reset": { "cockpit": "RESET", "civil": "RESET", "pantry": "Reset list" },
-      "mobileOpen": { "cockpit": "OPEN", "civil": "OPEN", "pantry": "To buy" },
-      "mobileTotal": { "cockpit": "TOTAL", "civil": "TOTAL", "pantry": "items" }
-    },
     "onboarding": {
       "stepLabel": "STEP {{step}} / {{total}} · {{title}}",
       "footerNote": {
@@ -1257,8 +1263,16 @@
         "civil": "CHILDREN",
         "pantry": "Children"
       },
-      "labelDays": { "cockpit": "DAYS", "civil": "DAYS", "pantry": "Days" },
-      "labelPets": { "cockpit": "PETS", "civil": "PETS", "pantry": "Pets" },
+      "labelDays": {
+        "cockpit": "DAYS",
+        "civil": "DAYS",
+        "pantry": "Days"
+      },
+      "labelPets": {
+        "cockpit": "PETS",
+        "civil": "PETS",
+        "pantry": "Pets"
+      },
       "step01": {
         "leadTitlePantry": "Let's set up your kit.",
         "leadTitleCivil": "EMERGENCY SUPPLY TRACKER · INITIAL CONFIGURATION",
@@ -1395,7 +1409,11 @@
             "civil": "WATER & BEVERAGES",
             "pantry": "Water & beverages"
           },
-          "food": { "cockpit": "FOOD", "civil": "FOOD", "pantry": "Food" },
+          "food": {
+            "cockpit": "FOOD",
+            "civil": "FOOD",
+            "pantry": "Food"
+          },
           "cooking-heat": {
             "cockpit": "COOKING & HEAT",
             "civil": "COOKING & HEAT",
@@ -1431,7 +1449,11 @@
             "civil": "CASH & DOCUMENTS",
             "pantry": "Cash & documents"
           },
-          "pets": { "cockpit": "PETS", "civil": "PETS", "pantry": "Pets" }
+          "pets": {
+            "cockpit": "PETS",
+            "civil": "PETS",
+            "pantry": "Pets"
+          }
         }
       },
       "step06": {
@@ -1534,7 +1556,11 @@
           "civil": "DATA & BACKUP",
           "pantry": "Data & backup"
         },
-        "about": { "cockpit": "ABOUT", "civil": "ABOUT", "pantry": "About" },
+        "about": {
+          "cockpit": "ABOUT",
+          "civil": "ABOUT",
+          "pantry": "About"
+        },
         "danger": {
           "cockpit": "DANGER ZONE",
           "civil": "DANGER ZONE",
@@ -1626,7 +1652,11 @@
           "civil": "AGE < 14 · 0.75× SCALE",
           "pantry": "Under 14 — scaled to 75%"
         },
-        "pets": { "cockpit": "PETS", "civil": "PETS", "pantry": "Pets" },
+        "pets": {
+          "cockpit": "PETS",
+          "civil": "PETS",
+          "pantry": "Pets"
+        },
         "petsHint": {
           "cockpit": "ENABLES §PET CATEGORY",
           "civil": "ENABLES §PET CATEGORY",
@@ -1788,16 +1818,6 @@
           "civil": "SPLIT INTO DRINK / COOK / HYGIENE BUCKETS",
           "pantry": "Separate tracking for drinking, cooking, and hygiene water."
         },
-        "planView": {
-          "cockpit": "PLAN VIEW · BETA",
-          "civil": "PLAN VIEW · BETA",
-          "pantry": "Plan view (preview)"
-        },
-        "planViewHint": {
-          "cockpit": "OBJECTIVE-LEVEL TRACKING · v0.5",
-          "civil": "OBJECTIVE-LEVEL TRACKING · v0.5",
-          "pantry": "Track high-level preparedness goals, not just items."
-        },
         "sync": {
           "cockpit": "MULTI-DEVICE SYNC · ROADMAP",
           "civil": "MULTI-DEVICE SYNC · ROADMAP",
@@ -1890,7 +1910,11 @@
           "civil": "DISMISSED ALERTS",
           "pantry": "Hidden alerts"
         },
-        "hiddenNone": { "cockpit": "NONE", "civil": "NONE", "pantry": "None" },
+        "hiddenNone": {
+          "cockpit": "NONE",
+          "civil": "NONE",
+          "pantry": "None"
+        },
         "hiddenCount": {
           "cockpit": "{{count}} HIDDEN",
           "civil": "{{count}} HIDDEN",
@@ -2103,7 +2127,11 @@
         }
       },
       "about": {
-        "title": { "cockpit": "ABOUT", "civil": "ABOUT", "pantry": "About" },
+        "title": {
+          "cockpit": "ABOUT",
+          "civil": "ABOUT",
+          "pantry": "About"
+        },
         "appCaption": {
           "cockpit": "EMERGENCY SUPPLY TRACKER · EST",
           "civil": "EMERGENCY SUPPLY TRACKER · EST",
@@ -2272,70 +2300,6 @@
             "pantry": "Documents & cash"
           },
           "body": "Copies of ID, insurance, bank info. €500 in small bills. Both sealed in a waterproof container."
-        }
-      }
-    },
-    "plan": {
-      "title": {
-        "cockpit": "PREPAREDNESS OBJECTIVES",
-        "civil": "PREPAREDNESS OBJECTIVES",
-        "pantry": "Goals & milestones"
-      },
-      "overall": {
-        "cockpit": "OVERALL · 7-DAY TARGET",
-        "civil": "OVERALL · 7-DAY TARGET",
-        "pantry": "Overall"
-      },
-      "onTrack": {
-        "cockpit": "{{onTrack}} / {{total}} OBJECTIVES ON TRACK",
-        "civil": "{{onTrack}} / {{total}} OBJECTIVES ON TRACK",
-        "pantry": "{{onTrack}} of {{total}} goals on track"
-      },
-      "goalsCount": {
-        "cockpit": "OBJECTIVES · {{count}} TRACKED",
-        "civil": "OBJECTIVES · {{count}} TRACKED",
-        "pantry": "{{count}} goals"
-      },
-      "goals": {
-        "g01": {
-          "cockpit": "7-DAY WATER COVERAGE",
-          "civil": "7-DAY WATER COVERAGE",
-          "pantry": "One week of water"
-        },
-        "g02": {
-          "cockpit": "72H FOOD AUTONOMY",
-          "civil": "72H FOOD AUTONOMY",
-          "pantry": "Three days of food"
-        },
-        "g03": {
-          "cockpit": "OFF-GRID LIGHTING",
-          "civil": "OFF-GRID LIGHTING",
-          "pantry": "Light without power"
-        },
-        "g04": {
-          "cockpit": "FIRST-AID KIT FULL",
-          "civil": "FIRST-AID KIT FULL",
-          "pantry": "Basic first aid"
-        },
-        "g05": {
-          "cockpit": "OFF-GRID COOKING",
-          "civil": "OFF-GRID COOKING",
-          "pantry": "Cooking without electricity"
-        },
-        "g06": {
-          "cockpit": "COMMS REDUNDANCY",
-          "civil": "COMMS REDUNDANCY",
-          "pantry": "Information & comms"
-        },
-        "g07": {
-          "cockpit": "CASH RESERVE",
-          "civil": "CASH RESERVE",
-          "pantry": "Cash on hand"
-        },
-        "g08": {
-          "cockpit": "DOCS BACKUP",
-          "civil": "DOCS BACKUP",
-          "pantry": "Documents copy"
         }
       }
     }

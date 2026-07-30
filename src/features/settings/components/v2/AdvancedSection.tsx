@@ -2,14 +2,12 @@ import { useTranslation } from 'react-i18next';
 import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
-import { useDesignPrefs } from '@/features/settings/hooks/useDesignPref';
 import { SectionHeader, ToggleRow } from './SettingsRows';
 
 export function AdvancedSection() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
-  const [designPrefs, setDesignPref] = useDesignPrefs();
 
   const adv = settings.advancedFeatures ?? {
     calorieTracking: false,
@@ -44,12 +42,6 @@ export function AdvancedSection() {
           hint={t(`v2.settings.advanced.waterHint.${themeKey}`)}
           on={adv.waterTracking}
           onChange={setAdv('waterTracking')}
-        />
-        <ToggleRow
-          label={t(`v2.settings.advanced.planView.${themeKey}`)}
-          hint={t(`v2.settings.advanced.planViewHint.${themeKey}`)}
-          on={designPrefs.planViewBeta}
-          onChange={(v) => setDesignPref('planViewBeta', v)}
           last
         />
       </Panel>

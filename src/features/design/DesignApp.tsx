@@ -7,12 +7,10 @@ import {
   type DesignNavId,
 } from '@/shared/components/design-v2/Shell';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
-import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import type { DesignV2Theme } from '@/shared/types';
 import { Dashboard } from '@/features/dashboard/components/v2/Dashboard';
 import { MobileDashboard } from '@/features/dashboard/components/v2/MobileDashboard';
-import { Plan } from '@/features/dashboard/components/v2/Plan';
 import { Inventory } from '@/features/inventory/components/v2/Inventory';
 import { MobileInventory } from '@/features/inventory/components/v2/MobileInventory';
 import {
@@ -20,10 +18,6 @@ import {
   NEW_ITEM_ID,
 } from '@/features/inventory/components/v2/ItemDetail';
 import { MobileItemDetail } from '@/features/inventory/components/v2/MobileItemDetail';
-import { Shopping } from '@/features/inventory/components/v2/Shopping';
-import { MobileShopping } from '@/features/inventory/components/v2/MobileShopping';
-import { Alerts } from '@/features/alerts/components/v2/Alerts';
-import { MobileAlerts } from '@/features/alerts/components/v2/MobileAlerts';
 import { Guide } from '@/features/help/components/v2/Guide';
 import { SettingsFull } from '@/features/settings/components/v2/SettingsFull';
 
@@ -66,16 +60,26 @@ function renderItemDetail(
 }
 
 function renderHome(ctx: ViewContext): ReactNode {
-  const { isMobile, setSelectedCategoryId, setNav } = ctx;
+  const { isMobile, setSelectedCategoryId, setSelectedItemId, setNav } = ctx;
   const onCategorySelect = (id: string) => {
     setSelectedCategoryId(id);
     setNav('inv');
   };
+  // Alerts live on the dashboard, so resolving one has to land on the item
+  // detail view under Inventory.
+  const onItemSelect = (id: string) => {
+    setNav('inv');
+    setSelectedItemId(id);
+  };
   return isMobile ? (
-    <MobileDashboard onCategorySelect={onCategorySelect} />
+    <MobileDashboard
+      onCategorySelect={onCategorySelect}
+      onItemSelect={onItemSelect}
+    />
   ) : (
     <Dashboard
       onCategorySelect={onCategorySelect}
+      onItemSelect={onItemSelect}
       onViewAllPriority={() => setNav('inv')}
     />
   );
@@ -106,30 +110,11 @@ function renderInventory(ctx: ViewContext): ReactNode {
   );
 }
 
-function renderAlerts(ctx: ViewContext): ReactNode {
-  const { isMobile, setSelectedItemId, setSelectedCategoryId, setNav } = ctx;
-  const onCategorySelect = (id: string) => {
-    setSelectedCategoryId(id);
-    setNav('inv');
-  };
-  return isMobile ? (
-    <MobileAlerts
-      onItemSelect={setSelectedItemId}
-      onCategorySelect={onCategorySelect}
-    />
-  ) : (
-    <Alerts
-      onItemSelect={setSelectedItemId}
-      onCategorySelect={onCategorySelect}
-    />
-  );
-}
-
 function renderNav(
   nav: DesignNavId,
   ctx: ViewContext,
 ): { title: string; body: ReactNode } {
-  const { t, themeKey, isMobile } = ctx;
+  const { t, themeKey } = ctx;
   switch (nav) {
     case 'home':
       return { title: t(`v2.voice.home.${themeKey}`), body: renderHome(ctx) };
@@ -138,18 +123,6 @@ function renderNav(
         title: t(`v2.voice.inventory.${themeKey}`),
         body: renderInventory(ctx),
       };
-    case 'alerts':
-      return {
-        title: t(`v2.voice.alerts.${themeKey}`),
-        body: renderAlerts(ctx),
-      };
-    case 'shop':
-      return {
-        title: t(`v2.voice.shopping.${themeKey}`),
-        body: isMobile ? <MobileShopping /> : <Shopping />,
-      };
-    case 'plan':
-      return { title: t(`v2.voice.plan.${themeKey}`), body: <Plan /> };
     case 'help':
       return { title: t(`v2.voice.guide.${themeKey}`), body: <Guide /> };
     case 'settings':
@@ -171,9 +144,6 @@ export function DesignApp() {
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
     undefined,
   );
-  const data = useDesignData();
-  const alertCount = data.totals.crit + data.totals.warn;
-
   const goTo = useCallback((id: DesignNavId) => {
     setNav(id);
     setSelectedItemId(undefined);
@@ -205,7 +175,6 @@ export function DesignApp() {
       onNav={goTo}
       title={view.title}
       breadcrumb={view.breadcrumb}
-      alertCount={alertCount}
     >
       {view.body}
     </Shell>

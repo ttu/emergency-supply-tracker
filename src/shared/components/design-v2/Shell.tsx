@@ -4,14 +4,11 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { APP_VERSION } from '@/shared/utils/version';
 import { CAPS_STYLE, StatusBadge } from './primitives';
 
-export type DesignNavId =
-  | 'home'
-  | 'inv'
-  | 'alerts'
-  | 'shop'
-  | 'plan'
-  | 'help'
-  | 'settings';
+/**
+ * Navigation mirrors the real app: four pages only. Alerts live on the
+ * dashboard (banner); the shopping list is an export under Settings.
+ */
+export type DesignNavId = 'home' | 'inv' | 'help' | 'settings';
 
 interface NavDef {
   id: DesignNavId;
@@ -31,28 +28,9 @@ const NAV: NavDef[] = [
     label: { cockpit: 'INVENTORY', civil: 'INVENTORY', pantry: 'Inventory' },
   },
   {
-    id: 'alerts',
-    icon: '!',
-    label: { cockpit: 'ALERTS', civil: 'ALERTS', pantry: 'Alerts' },
-  },
-  {
-    id: 'shop',
-    icon: '+',
-    label: {
-      cockpit: 'SHOPPING',
-      civil: 'PROCUREMENT',
-      pantry: 'Shopping list',
-    },
-  },
-  {
-    id: 'plan',
-    icon: '◌',
-    label: { cockpit: 'PLAN', civil: 'PLAN', pantry: 'Plan' },
-  },
-  {
     id: 'help',
     icon: '?',
-    label: { cockpit: 'GUIDE', civil: 'GUIDE', pantry: 'Guide' },
+    label: { cockpit: 'HELP', civil: 'HELP', pantry: 'Help' },
   },
   {
     id: 'settings',
@@ -61,13 +39,10 @@ const NAV: NavDef[] = [
   },
 ];
 
-const MOBILE_NAV: DesignNavId[] = ['home', 'inv', 'alerts', 'shop', 'settings'];
-
 interface MobileShellProps {
   active: DesignNavId;
   onNav: (id: DesignNavId) => void;
   title: string;
-  alertCount?: number;
   children: ReactNode;
 }
 
@@ -80,7 +55,6 @@ export function DesktopShell({
   onNav,
   title,
   breadcrumb,
-  alertCount,
   children,
 }: Readonly<DesktopShellProps>) {
   const { t } = useTranslation();
@@ -138,8 +112,6 @@ export function DesktopShell({
         <nav aria-label="Main" style={{ padding: '12px 8px', flex: 1 }}>
           {NAV.map((n) => {
             const isActive = active === n.id;
-            const badge =
-              n.id === 'alerts' && alertCount ? alertCount : undefined;
             return (
               <button
                 key={n.id}
@@ -193,23 +165,6 @@ export function DesktopShell({
                 >
                   {n.label[themeKey]}
                 </span>
-                {badge !== undefined && (
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: 'var(--color-crit)',
-                      border:
-                        themeKey === 'cockpit'
-                          ? '1px solid var(--color-crit)'
-                          : 'none',
-                      padding: themeKey === 'cockpit' ? '1px 5px' : '0',
-                    }}
-                  >
-                    {badge}
-                  </span>
-                )}
               </button>
             );
           })}
@@ -288,7 +243,6 @@ export function MobileShell({
   active,
   onNav,
   title,
-  alertCount,
   children,
 }: Readonly<MobileShellProps>) {
   const { t } = useTranslation();
@@ -335,16 +289,15 @@ export function MobileShell({
         aria-label="Primary"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
+          gridTemplateColumns: `repeat(${NAV.length}, 1fr)`,
           borderTop: '1px solid var(--color-rule)',
           background: 'var(--color-bg-2)',
           paddingBottom: 16,
         }}
       >
-        {MOBILE_NAV.map((id) => {
-          const n = NAV.find((x) => x.id === id)!;
+        {NAV.map((n) => {
+          const id = n.id;
           const isActive = active === id;
-          const badge = id === 'alerts' && alertCount ? alertCount : undefined;
           return (
             <button
               key={id}
@@ -377,20 +330,6 @@ export function MobileShell({
                 aria-hidden
               >
                 {n.icon}
-                {badge !== undefined && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: -2,
-                      right: -10,
-                      fontSize: 8,
-                      color: 'var(--color-crit)',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {badge}
-                  </span>
-                )}
               </div>
               <div
                 style={{

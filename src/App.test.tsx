@@ -169,7 +169,7 @@ describe('App', () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'GUIDE' }));
+    fireEvent.click(screen.getByRole('button', { name: 'HELP' }));
 
     // v2 Guide renders §1–§6 sections; §1 is always present.
     await waitFor(() => {

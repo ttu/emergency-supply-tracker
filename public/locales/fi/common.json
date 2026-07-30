@@ -852,7 +852,11 @@
         "civil": "VAROITUS",
         "pantry": "Vähissä"
       },
-      "ok": { "cockpit": "OK", "civil": "RIITTÄVÄ", "pantry": "Riittävä" },
+      "ok": {
+        "cockpit": "OK",
+        "civil": "RIITTÄVÄ",
+        "pantry": "Riittävä"
+      },
       "home": {
         "cockpit": "YLEISKATSAUS",
         "civil": "YLEISKATSAUS",
@@ -868,17 +872,11 @@
         "civil": "HÄLYTYKSET",
         "pantry": "Hälytykset"
       },
-      "shopping": {
-        "cockpit": "HANKINTA",
-        "civil": "HANKINTA",
-        "pantry": "Ostoslista"
+      "guide": {
+        "cockpit": "OPAS",
+        "civil": "OPAS",
+        "pantry": "Opas"
       },
-      "plan": {
-        "cockpit": "SUUNNIT.",
-        "civil": "TAVOITTEET",
-        "pantry": "Suunnitelma"
-      },
-      "guide": { "cockpit": "OPAS", "civil": "OPAS", "pantry": "Opas" },
       "settings": {
         "cockpit": "ASETUKSET",
         "civil": "ASETUKSET",
@@ -899,8 +897,16 @@
         "civil": "PERUUTA",
         "pantry": "Peruuta"
       },
-      "delete": { "cockpit": "POISTA", "civil": "POISTA", "pantry": "Poista" },
-      "edit": { "cockpit": "MUOKKAA", "civil": "MUOKKAA", "pantry": "Muokkaa" },
+      "delete": {
+        "cockpit": "POISTA",
+        "civil": "POISTA",
+        "pantry": "Poista"
+      },
+      "edit": {
+        "cockpit": "MUOKKAA",
+        "civil": "MUOKKAA",
+        "pantry": "Muokkaa"
+      },
       "back": {
         "cockpit": "TAKAISIN",
         "civil": "TAKAISIN",
@@ -916,16 +922,36 @@
         "civil": "RATKAISE",
         "pantry": "Ratkaise"
       },
-      "exportAction": { "cockpit": "VIE", "civil": "VIE", "pantry": "Vie" },
-      "importAction": { "cockpit": "TUO", "civil": "TUO", "pantry": "Tuo" },
-      "qty": { "cockpit": "MÄÄRÄ", "civil": "MÄÄRÄ", "pantry": "Sinulla on" },
-      "rec": { "cockpit": "SUOS.", "civil": "SUOSITUS", "pantry": "Suositus" },
+      "exportAction": {
+        "cockpit": "VIE",
+        "civil": "VIE",
+        "pantry": "Vie"
+      },
+      "importAction": {
+        "cockpit": "TUO",
+        "civil": "TUO",
+        "pantry": "Tuo"
+      },
+      "qty": {
+        "cockpit": "MÄÄRÄ",
+        "civil": "MÄÄRÄ",
+        "pantry": "Sinulla on"
+      },
+      "rec": {
+        "cockpit": "SUOS.",
+        "civil": "SUOSITUS",
+        "pantry": "Suositus"
+      },
       "expires": {
         "cockpit": "VANHENEE",
         "civil": "VANHENEE",
         "pantry": "Parasta ennen"
       },
-      "location": { "cockpit": "SIJ.", "civil": "SIJAINTI", "pantry": "Missä" },
+      "location": {
+        "cockpit": "SIJ.",
+        "civil": "SIJAINTI",
+        "pantry": "Missä"
+      },
       "notes": {
         "cockpit": "MUIST.",
         "civil": "MUISTIINPANOT",
@@ -936,15 +962,31 @@
         "civil": "KATEGORIA",
         "pantry": "Kategoria"
       },
-      "unit": { "cockpit": "YKS.", "civil": "YKSIKKÖ", "pantry": "Yksikkö" },
-      "statusOk": { "cockpit": "OK", "civil": "OK", "pantry": "OK" },
-      "statusWarn": { "cockpit": "VARO", "civil": "VARO", "pantry": "Vähissä" },
+      "unit": {
+        "cockpit": "YKS.",
+        "civil": "YKSIKKÖ",
+        "pantry": "Yksikkö"
+      },
+      "statusOk": {
+        "cockpit": "OK",
+        "civil": "OK",
+        "pantry": "OK"
+      },
+      "statusWarn": {
+        "cockpit": "VARO",
+        "civil": "VARO",
+        "pantry": "Vähissä"
+      },
       "statusCrit": {
         "cockpit": "KRIIT.",
         "civil": "KRIIT.",
         "pantry": "Loppu"
       },
-      "statusInfo": { "cockpit": "INFO", "civil": "INFO", "pantry": "Info" },
+      "statusInfo": {
+        "cockpit": "INFO",
+        "civil": "INFO",
+        "pantry": "Info"
+      },
       "onbWelcome": {
         "cockpit": "TERVETULOA · KIELI",
         "civil": "TERVETULOA · KIELI",
@@ -977,44 +1019,21 @@
       }
     },
     "alerts": {
-      "title": {
-        "cockpit": "HÄLYTYKSET · LOKI",
-        "civil": "HÄLYTYKSET · LOKI",
-        "pantry": "Mitä vaatii huomiota"
+      "dismiss": {
+        "cockpit": "HYLKÄÄ",
+        "civil": "HYLKÄÄ",
+        "pantry": "Hylkää"
       },
-      "info": { "cockpit": "INFO", "civil": "INFO", "pantry": "Info" },
-      "eventStream": {
-        "cockpit": "TAPAHTUMAT · UUSIN ENSIN",
-        "civil": "TAPAHTUMAT · UUSIN ENSIN",
-        "pantry": "Uusin ensin"
+      "showMore": {
+        "cockpit": "+ {{count}} LISÄÄ",
+        "civil": "+ {{count}} LISÄÄ",
+        "pantry": "Näytä {{count}} lisää"
       },
-      "dismissAll": {
-        "cockpit": "HYLKÄÄ KAIKKI",
-        "civil": "HYLKÄÄ KAIKKI",
-        "pantry": "Hylkää kaikki"
-      },
-      "dismiss": { "cockpit": "HYLKÄÄ", "civil": "HYLKÄÄ", "pantry": "Hylkää" },
-      "empty": {
-        "cockpit": "NORMAALI · EI AKTIIVISIA HÄLYTYKSIÄ",
-        "civil": "NORMAALI · EI AKTIIVISIA HÄLYTYKSIÄ",
-        "pantry": "Kaikki kunnossa. Ei toimenpiteitä."
-      },
-      "emptyShort": {
-        "cockpit": "NORMAALI",
-        "civil": "NORMAALI",
-        "pantry": "Kaikki kunnossa."
-      },
-      "hiddenCount": {
-        "cockpit": "{{count}} PIILOTETTU",
-        "civil": "{{count}} PIILOTETTU",
-        "pantry": "{{count}} piilotettu"
-      },
-      "restoreAll": {
-        "cockpit": "PALAUTA KAIKKI",
-        "civil": "PALAUTA KAIKKI",
-        "pantry": "Palauta kaikki"
-      },
-      "dismissAria": "Hylkää hälytys"
+      "showLess": {
+        "cockpit": "NÄYTÄ VÄHEMMÄN",
+        "civil": "NÄYTÄ VÄHEMMÄN",
+        "pantry": "Näytä vähemmän"
+      }
     },
     "dashboard": {
       "statusOk": "OK",
@@ -1082,9 +1101,21 @@
         "civil": "KAIKKI",
         "pantry": "Kaikki"
       },
-      "filterCrit": { "cockpit": "KRIIT", "civil": "KRIIT", "pantry": "Loppu" },
-      "filterWarn": { "cockpit": "VARO", "civil": "VARO", "pantry": "Vähissä" },
-      "filterOk": { "cockpit": "OK", "civil": "OK", "pantry": "OK" },
+      "filterCrit": {
+        "cockpit": "KRIIT",
+        "civil": "KRIIT",
+        "pantry": "Loppu"
+      },
+      "filterWarn": {
+        "cockpit": "VARO",
+        "civil": "VARO",
+        "pantry": "Vähissä"
+      },
+      "filterOk": {
+        "cockpit": "OK",
+        "civil": "OK",
+        "pantry": "OK"
+      },
       "filterExp": {
         "cockpit": "VANH ≤30VRK",
         "civil": "VANH ≤30VRK",
@@ -1121,7 +1152,11 @@
         "pantry": "Ei osumia."
       },
       "footerShowing": "Näytetään {{shown}} / {{total}}",
-      "newCatLabel": { "cockpit": "UUSI", "civil": "UUSI", "pantry": "Uusi" }
+      "newCatLabel": {
+        "cockpit": "UUSI",
+        "civil": "UUSI",
+        "pantry": "Uusi"
+      }
     },
     "itemDetail": {
       "captionNew": {
@@ -1209,75 +1244,6 @@
         "pantry": "Kapasiteetti yhteensä"
       }
     },
-    "shopping": {
-      "title": {
-        "cockpit": "HANKINTAJONO",
-        "civil": "HANKINTAJONO",
-        "pantry": "Mitä ostaa seuraavaksi"
-      },
-      "queueCaption": {
-        "cockpit": "JONO · {{open}} AUKI · {{done}} VALMIS",
-        "civil": "JONO · {{open}} AUKI · {{done}} VALMIS",
-        "pantry": "{{open}} auki · {{done}} valmis"
-      },
-      "empty": {
-        "cockpit": "EI HANKINTOJA",
-        "civil": "EI HANKINTOJA",
-        "pantry": "Ei mitään listalla. Ehdotamme tuotteita kun varasto vähenee."
-      },
-      "emptyShort": {
-        "cockpit": "EI HANKINTOJA",
-        "civil": "EI HANKINTOJA",
-        "pantry": "Ei mitään listalla."
-      },
-      "labelNow": {
-        "cockpit": "KIIREELLINEN",
-        "civil": "KIIREELLINEN",
-        "pantry": "Nyt"
-      },
-      "labelSoon": { "cockpit": "PIAN", "civil": "PIAN", "pantry": "Pian" },
-      "labelWhen": { "cockpit": "KUN", "civil": "KUN", "pantry": "Joskus" },
-      "labelNowShort": { "cockpit": "NYT", "civil": "NYT", "pantry": "Nyt" },
-      "addBtn": {
-        "cockpit": "+ LISÄÄ",
-        "civil": "+ LISÄÄ",
-        "pantry": "+ Lisää"
-      },
-      "addBtnAria": "Lisää {{need}} {{unit}} tuotteeseen {{name}}",
-      "addBtnAriaShort": "Lisää {{q}} tuotteeseen {{name}}",
-      "markDoneAria": "Merkitse {{name}} valmiiksi",
-      "itemsToBuy": {
-        "cockpit": "AVOIMET",
-        "civil": "AVOIMET",
-        "pantry": "Tuotteita ostettavaksi"
-      },
-      "doneCount": {
-        "cockpit": "{{done}} VALMISTA · {{total}} YHT",
-        "civil": "{{done}} VALMISTA · {{total}} YHT",
-        "pantry": "{{done}} jo valmiina"
-      },
-      "tipsCaption": {
-        "cockpit": "MUIST.",
-        "civil": "MUIST.",
-        "pantry": "Vinkkejä"
-      },
-      "tipsBody": {
-        "cockpit": "MERKITSE TUOTTEET HANKITUIKSI. TILA SÄILYY PAIKALLISESTI KUNNES TYHJENNETÄÄN.",
-        "civil": "MERKITSE TUOTTEET HANKITUIKSI. TILA SÄILYY PAIKALLISESTI KUNNES TYHJENNETÄÄN.",
-        "pantry": "Merkitse tuotteet ostetuiksi — ne säilyvät listalla kunnes nollaat sen."
-      },
-      "reset": {
-        "cockpit": "NOLLAA",
-        "civil": "NOLLAA",
-        "pantry": "Nollaa lista"
-      },
-      "mobileOpen": {
-        "cockpit": "AUKI",
-        "civil": "AUKI",
-        "pantry": "Ostettavaa"
-      },
-      "mobileTotal": { "cockpit": "YHT", "civil": "YHT", "pantry": "tuotetta" }
-    },
     "onboarding": {
       "stepLabel": "VAIHE {{step}} / {{total}} · {{title}}",
       "footerNote": {
@@ -1297,7 +1263,11 @@
         "civil": "LAPSET",
         "pantry": "Lapset"
       },
-      "labelDays": { "cockpit": "VRK", "civil": "VRK", "pantry": "Päivää" },
+      "labelDays": {
+        "cockpit": "VRK",
+        "civil": "VRK",
+        "pantry": "Päivää"
+      },
       "labelPets": {
         "cockpit": "LEMMIKIT",
         "civil": "LEMMIKIT",
@@ -1439,7 +1409,11 @@
             "civil": "VESI & JUOMAT",
             "pantry": "Vesi & juomat"
           },
-          "food": { "cockpit": "RUOKA", "civil": "RUOKA", "pantry": "Ruoka" },
+          "food": {
+            "cockpit": "RUOKA",
+            "civil": "RUOKA",
+            "pantry": "Ruoka"
+          },
           "cooking-heat": {
             "cockpit": "RUOANLAITTO & LÄMPÖ",
             "civil": "RUOANLAITTO & LÄMPÖ",
@@ -1844,16 +1818,6 @@
           "civil": "JAA JUOMA / RUOANLAITTO / HYGIENIA -ÄMPÄREIHIN",
           "pantry": "Erillinen seuranta juoma-, ruoanlaitto- ja hygieniavedelle."
         },
-        "planView": {
-          "cockpit": "SUUNNITELMA · BETA",
-          "civil": "SUUNNITELMA · BETA",
-          "pantry": "Suunnitelmanäkymä (esikatselu)"
-        },
-        "planViewHint": {
-          "cockpit": "TAVOITETASOINEN SEURANTA · v0.5",
-          "civil": "TAVOITETASOINEN SEURANTA · v0.5",
-          "pantry": "Seuraa varautumistavoitteita yksittäisten tuotteiden lisäksi."
-        },
         "sync": {
           "cockpit": "MONILAITESYNK · TIEKARTALLA",
           "civil": "MONILAITESYNK · TIEKARTALLA",
@@ -2183,7 +2147,11 @@
           "civil": "LISENSSI",
           "pantry": "Lisenssi"
         },
-        "source": { "cockpit": "LÄHDE", "civil": "LÄHDE", "pantry": "Lähde" },
+        "source": {
+          "cockpit": "LÄHDE",
+          "civil": "LÄHDE",
+          "pantry": "Lähde"
+        },
         "linksHeader": {
           "cockpit": "ULKOISET",
           "civil": "ULKOISET",
@@ -2332,70 +2300,6 @@
             "pantry": "Asiakirjat & käteinen"
           },
           "body": "Henkilöllisyystodistuksen, vakuutusten ja pankkitietojen kopiot. 500 € pieninä seteleinä. Molemmat vedenpitävässä rasiassa."
-        }
-      }
-    },
-    "plan": {
-      "title": {
-        "cockpit": "VARAUTUMISEN TAVOITTEET",
-        "civil": "VARAUTUMISEN TAVOITTEET",
-        "pantry": "Tavoitteet ja virstanpylväät"
-      },
-      "overall": {
-        "cockpit": "KOKONAISUUS · 7-PÄIVÄN TAVOITE",
-        "civil": "KOKONAISUUS · 7-PÄIVÄN TAVOITE",
-        "pantry": "Kokonaisuus"
-      },
-      "onTrack": {
-        "cockpit": "{{onTrack}} / {{total}} TAVOITETTA AIKATAULUSSA",
-        "civil": "{{onTrack}} / {{total}} TAVOITETTA AIKATAULUSSA",
-        "pantry": "{{onTrack}} / {{total}} tavoitetta aikataulussa"
-      },
-      "goalsCount": {
-        "cockpit": "TAVOITTEET · {{count}} SEURANNASSA",
-        "civil": "TAVOITTEET · {{count}} SEURANNASSA",
-        "pantry": "{{count}} tavoitetta"
-      },
-      "goals": {
-        "g01": {
-          "cockpit": "7VRK VESIVARASTO",
-          "civil": "7VRK VESIVARASTO",
-          "pantry": "Viikon vesivarasto"
-        },
-        "g02": {
-          "cockpit": "72H RUOKAOMAVARAISUUS",
-          "civil": "72H RUOKAOMAVARAISUUS",
-          "pantry": "Kolme päivää ruokaa"
-        },
-        "g03": {
-          "cockpit": "VALAISTUS ILMAN SÄHKÖÄ",
-          "civil": "VALAISTUS ILMAN SÄHKÖÄ",
-          "pantry": "Valoa ilman sähköä"
-        },
-        "g04": {
-          "cockpit": "ENSIAPULAUKKU TÄYSI",
-          "civil": "ENSIAPULAUKKU TÄYSI",
-          "pantry": "Perusensiapu"
-        },
-        "g05": {
-          "cockpit": "RUOANLAITTO ILMAN SÄHKÖÄ",
-          "civil": "RUOANLAITTO ILMAN SÄHKÖÄ",
-          "pantry": "Ruoanlaitto ilman sähköä"
-        },
-        "g06": {
-          "cockpit": "VIESTINTÄVARMUUS",
-          "civil": "VIESTINTÄVARMUUS",
-          "pantry": "Tieto ja viestintä"
-        },
-        "g07": {
-          "cockpit": "KÄTEISVARANTO",
-          "civil": "KÄTEISVARANTO",
-          "pantry": "Käteistä"
-        },
-        "g08": {
-          "cockpit": "ASIAKIRJAVARMUUSKOPIO",
-          "civil": "ASIAKIRJAVARMUUSKOPIO",
-          "pantry": "Asiakirjakopiot"
         }
       }
     }

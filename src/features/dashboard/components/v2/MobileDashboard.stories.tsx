@@ -16,9 +16,14 @@ const meta = {
       </DesignV2Story>
     ),
   ],
-  argTypes: { onCategorySelect: { action: 'category selected' } },
+  argTypes: {
+    onCategorySelect: { action: 'category selected' },
+    onItemSelect: { action: 'item selected' },
+  },
 } satisfies Meta<typeof MobileDashboard>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Cockpit: Story = { args: { onCategorySelect: () => {} } };
+export const Cockpit: Story = {
+  args: { onCategorySelect: () => {}, onItemSelect: () => {} },
+};

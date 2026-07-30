@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Alerts } from './Alerts';
+import { AlertBanner } from './AlertBanner';
 import { DesignV2Story } from '@/shared/components/design-v2/storybook';
 
 const meta = {
-  title: 'Design V2/Alerts/Alerts',
-  component: Alerts,
+  title: 'Design V2/Alerts/AlertBanner',
+  component: AlertBanner,
   parameters: { layout: 'padded' },
   decorators: [
     (Story) => (
@@ -17,7 +17,7 @@ const meta = {
     onItemSelect: { action: 'item selected' },
     onCategorySelect: { action: 'category selected' },
   },
-} satisfies Meta<typeof Alerts>;
+} satisfies Meta<typeof AlertBanner>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

@@ -8,42 +8,16 @@ pending work, ordered by decision urgency.
 
 ## 🔴 Blocking — decide before release
 
-### 1. `dashboard/v2/Plan.tsx` — static placeholder goal data
-
-`GOAL_SEEDS` in `Plan.tsx` is a hand-authored array of eight "preparedness
-objectives" with hand-picked percentages (32 / 78 / 92 / 68 / 100 / 60 / 84 / 100) and free-text targets (`"€500 small bills"`, `"21 L/person · 84 L
-total"`, …). **Every user sees the same numbers regardless of their actual
-inventory or household.**
-
-The Plan view is currently gated behind the `Plan view (preview)` toggle in
-Settings → §5 Advanced, which is opt-in and ships labelled BETA. So it is
-**not exposed to users by default**.
-
-**Decision needed:**
-
-- ✅ **Recommended — keep the BETA gate, don't market the feature.** No
-  release-blocker as long as the toggle stays opt-in and the panel keeps the
-  BETA label. Replace the static data before promoting the toggle out of
-  beta.
-- Alternative — remove the Plan view, the BETA toggle, and the `v2.plan.*`
-  locale keys entirely; reintroduce when there is a real implementation.
-
-If we keep the gate, the `target` strings (`"21 L/person · 84 L total"`,
-etc.) inside `Plan.tsx` should also be localised — they are currently
-hard-coded English literals.
+_Nothing open._ The Plan-view question (static `GOAL_SEEDS` placeholder data)
+was settled by the design update: navigation collapsed to the app's four real
+pages, so the Plan view, its BETA toggle and its `v2.plan.*` locale keys were
+removed outright. See "Navigation reduced to four destinations" below.
 
 ---
 
 ## 🟡 Deferred — accepted as-is for v1.0, track for follow-up
 
-### 2. `alerts/v2/Alerts.tsx` — all alert rows show today's date
-
-`Alert` has no `createdAt` field, so the v2 "log" surface shows the current
-date on every row. Accepted: the visual reads as a status snapshot rather
-than falsified history. Production fix would be to add `createdAt` to
-`Alert` and persist it.
-
-### 3. `onboarding/v2/OnboardStep06Complete.tsx` — readiness hardcoded `0%`
+### 1. `onboarding/v2/OnboardStep06Complete.tsx` — readiness hardcoded `0%`
 
 The end-of-onboarding screen shows `0%` readiness because no items have been
 added yet. Literally accurate at that moment; could compute against the
@@ -83,6 +57,15 @@ on:
 
 (Summary for context — full detail in git log.)
 
+- **Navigation reduced to four destinations** — the design update aligned v2
+  with the real app: Overview, Inventory, Help, Settings. Alerts moved onto
+  the dashboard as a dismissable banner (`alerts/v2/AlertBanner.tsx`,
+  mirroring v1's `AlertBanner`); the shopping list is an export under
+  Settings → Data & backup; the Plan view is gone. The `Alerts`,
+  `MobileAlerts`, `Shopping`, `MobileShopping` and `Plan` page components,
+  the Plan BETA toggle, the `planViewBeta` design pref and the now-orphaned
+  `v2.plan.*` / `v2.shopping.*` / `v2.alerts.*` (except `dismiss`) /
+  `v2.voice.{plan,shopping}` locale keys were all deleted.
 - **Design-mindset stubs removed/wired** — Multi-device sync toggle (no
   implementation), Email digest panel (no backend), Recommendations Import
   button (dead-end alert) all removed. Notification preference toggles

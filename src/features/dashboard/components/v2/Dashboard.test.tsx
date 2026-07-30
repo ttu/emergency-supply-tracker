@@ -13,6 +13,7 @@ describe('Dashboard (v2)', () => {
       <Dashboard
         onCategorySelect={vi.fn()}
         onViewAllPriority={vi.fn()}
+        onItemSelect={vi.fn()}
         {...overrides}
       />,
       {

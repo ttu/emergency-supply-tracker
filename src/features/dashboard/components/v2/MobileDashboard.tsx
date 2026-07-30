@@ -11,9 +11,11 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { categoryCode } from '@/shared/i18n/voice';
+import { AlertBanner } from '@/features/alerts/components/v2/AlertBanner';
 
 interface MobileDashboardProps {
   onCategorySelect: (id: string) => void;
+  onItemSelect: (id: string) => void;
 }
 
 function mobileReadinessTone(readiness: number): 'ok' | 'warn' | 'crit' {
@@ -49,6 +51,7 @@ function mobileStatTone(s: {
 
 export function MobileDashboard({
   onCategorySelect,
+  onItemSelect,
 }: Readonly<MobileDashboardProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -77,6 +80,11 @@ export function MobileDashboard({
           {headline}
         </div>
       </div>
+
+      <AlertBanner
+        onItemSelect={onItemSelect}
+        onCategorySelect={onCategorySelect}
+      />
 
       <Panel padding={16}>
         <Caption>{t(`v2.voice.readiness.${themeKey}`)}</Caption>

@@ -7,13 +7,11 @@ const LEGACY_KEY = 'est:design:prefs';
 export interface DesignPrefs {
   reduceMotion: boolean;
   trackHygieneWaterSeparately: boolean;
-  planViewBeta: boolean;
 }
 
 const DEFAULTS: DesignPrefs = {
   reduceMotion: false,
   trackHygieneWaterSeparately: false,
-  planViewBeta: false,
 };
 
 function readFromKey(key: string): Partial<DesignPrefs> | undefined {

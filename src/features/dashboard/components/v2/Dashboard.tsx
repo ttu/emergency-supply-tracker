@@ -3,6 +3,7 @@ import type { TFunction } from 'i18next';
 import { Caption, Title } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
+import { AlertBanner } from '@/features/alerts/components/v2/AlertBanner';
 import { KpiRow } from './KpiRow';
 import { CoverageMatrix } from './CoverageMatrix';
 import { PriorityQueue } from './PriorityQueue';
@@ -10,6 +11,7 @@ import { PriorityQueue } from './PriorityQueue';
 interface DashboardProps {
   onCategorySelect: (categoryId: string) => void;
   onViewAllPriority: () => void;
+  onItemSelect: (id: string) => void;
 }
 
 function pantryReadinessTitle(readiness: number, t: TFunction): string {
@@ -31,6 +33,7 @@ function dashboardHeroTitle(
 export function Dashboard({
   onCategorySelect,
   onViewAllPriority,
+  onItemSelect,
 }: Readonly<DashboardProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -46,6 +49,10 @@ export function Dashboard({
           {heroTitle}
         </Title>
       </div>
+      <AlertBanner
+        onItemSelect={onItemSelect}
+        onCategorySelect={onCategorySelect}
+      />
       <KpiRow />
       <CoverageMatrix onCategorySelect={onCategorySelect} />
       <PriorityQueue onViewAll={onViewAllPriority} />

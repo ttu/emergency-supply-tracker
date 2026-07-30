@@ -49,29 +49,42 @@ async function seed(
   await page.reload({ waitUntil: 'domcontentloaded' });
 }
 
+/**
+ * The dashboard banner also carries app notifications and the backup
+ * reminder, so tests must target the row for their own seeded item rather
+ * than "the first DISMISS button on the page".
+ */
+function alertRow(page: import('@playwright/test').Page, itemName: string) {
+  return page
+    .getByTestId('v2-alert-banner')
+    .getByTestId('v2-alert-row')
+    .filter({ hasText: itemName });
+}
+
+async function dismissAlertRow(
+  page: import('@playwright/test').Page,
+  itemName: string,
+) {
+  await alertRow(page, itemName)
+    .getByRole('button', { name: /DISMISS|Dismiss/ })
+    .click();
+}
+
 test.describe('Hidden Alerts Management', () => {
-  test('should hide alert from the v2 Alerts page', async ({ page }) => {
+  test('should hide alert from the dashboard alert banner', async ({
+    page,
+  }) => {
     await seed(page, [makeExpired('Expired Item')]);
 
-    await page.getByTestId('v2-nav-alerts').click();
-    await expect(page.getByText('ALERTS · LOG')).toBeVisible();
-    await expect(page.getByText(/expired|vanhentunut/i).first()).toBeVisible({
-      timeout: 5000,
-    });
+    await page.getByTestId('v2-nav-home').click();
+    await expect(page.getByTestId('v2-alert-banner')).toBeVisible();
+    await expect(alertRow(page, 'Expired Item')).toBeVisible({ timeout: 5000 });
 
-    await page
-      .getByRole('button', { name: /DISMISS|Dismiss/ })
-      .first()
-      .click();
-    await page.waitForTimeout(300);
+    await dismissAlertRow(page, 'Expired Item');
 
-    // Alert no longer in the active list.
-    const stillVisible = await page
-      .getByText(/Expired Item/)
-      .first()
-      .isVisible()
-      .catch(() => false);
-    expect(stillVisible).toBe(false);
+    // Alert no longer in the active list. (The item itself still shows in
+    // the priority queue below — only the alert row goes away.)
+    await expect(alertRow(page, 'Expired Item')).toHaveCount(0);
   });
 
   test('dismissed alert appears in Settings → Notifications', async ({
@@ -79,12 +92,9 @@ test.describe('Hidden Alerts Management', () => {
   }) => {
     await seed(page, [makeExpired('Expired Item')]);
 
-    await page.getByTestId('v2-nav-alerts').click();
-    await page
-      .getByRole('button', { name: /DISMISS|Dismiss/ })
-      .first()
-      .click();
-    await page.waitForTimeout(500);
+    await page.getByTestId('v2-nav-home').click();
+    await dismissAlertRow(page, 'Expired Item');
+    await expect(alertRow(page, 'Expired Item')).toHaveCount(0);
 
     await navigateToSettingsSection(page, 'notifications');
     // The DISMISSED ALERTS ReadField swaps to a non-"NONE" value once any
@@ -103,27 +113,17 @@ test.describe('Hidden Alerts Management', () => {
       makeExpired('Expired Item 2'),
     ]);
 
-    await page.getByTestId('v2-nav-alerts').click();
-    // Dismiss every alert that has a DISMISS button on the page.
-    let count = await page
-      .getByRole('button', { name: /DISMISS|Dismiss/ })
-      .count();
-    while (count > 0) {
-      await page
-        .getByRole('button', { name: /DISMISS|Dismiss/ })
-        .first()
-        .click();
-      await page.waitForTimeout(200);
-      count = await page
-        .getByRole('button', { name: /DISMISS|Dismiss/ })
-        .count();
+    await page.getByTestId('v2-nav-home').click();
+    for (const name of ['Expired Item 1', 'Expired Item 2']) {
+      await dismissAlertRow(page, name);
+      await expect(alertRow(page, name)).toHaveCount(0);
     }
 
     await navigateToSettingsSection(page, 'notifications');
     await page.getByRole('button', { name: /RESTORE ALL|Restore all/ }).click();
 
-    await page.getByTestId('v2-nav-alerts').click();
-    await expect(page.getByText(/expired|vanhentunut/i).first()).toBeVisible({
+    await page.getByTestId('v2-nav-home').click();
+    await expect(alertRow(page, 'Expired Item 1')).toBeVisible({
       timeout: 5000,
     });
   });
@@ -131,12 +131,9 @@ test.describe('Hidden Alerts Management', () => {
   test('should persist hidden alerts after reload', async ({ page }) => {
     await seed(page, [makeExpired('Expired Item')]);
 
-    await page.getByTestId('v2-nav-alerts').click();
-    await page
-      .getByRole('button', { name: /DISMISS|Dismiss/ })
-      .first()
-      .click();
-    await page.waitForTimeout(1000);
+    await page.getByTestId('v2-nav-home').click();
+    await dismissAlertRow(page, 'Expired Item');
+    await expect(alertRow(page, 'Expired Item')).toHaveCount(0);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('networkidle');
