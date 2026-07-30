@@ -148,6 +148,19 @@ export const ItemForm = ({
     };
   });
 
+  // Keep the quantity field in step with the stored item when it changes from
+  // outside this form — the v2 item detail puts −1 / +1 / Consume quick-actions
+  // next to the form and those write straight to storage. Without this the
+  // field keeps its stale value and submitting silently reverts the
+  // adjustment. Adjusted during render (not in an effect) per the React
+  // "adjusting state when a prop changes" pattern, so there is no extra
+  // render pass or cascading-update lint violation.
+  const [syncedQuantity, setSyncedQuantity] = useState(item?.quantity);
+  if (item?.quantity !== undefined && item.quantity !== syncedQuantity) {
+    setSyncedQuantity(item.quantity);
+    setFormData((prev) => ({ ...prev, quantity: item.quantity.toString() }));
+  }
+
   const initialFormDataRef = useRef<FormData | null>(null);
   const hasCapturedInitialRef = useRef(false);
   useEffect(() => {
