@@ -66,14 +66,19 @@ test.describe('Inventory Management', () => {
     await page.waitForTimeout(2500);
 
     await page.getByRole('button', { name: /Delete Me/ }).click();
-    // ItemDetail confirms via window.confirm — accept it.
-    page.once('dialog', (d) => d.accept());
-    await page.getByRole('button', { name: 'DELETE', exact: true }).click();
 
-    await page.waitForTimeout(500);
+    // v2 confirms through the themed ConfirmDialog, not window.confirm.
+    await page.getByRole('button', { name: 'DELETE', exact: true }).click();
+    const confirm = page.getByRole('alertdialog');
+    await expect(confirm).toBeVisible();
+    await confirm.getByRole('button', { name: /^(DELETE|Remove)$/i }).click();
+
+    // Back on the list. Match the row exactly: the item detail's quantity
+    // steppers are also labelled with the item name ("Increase Delete Me by
+    // 1"), so a loose /Delete Me/ matches more than the row.
     await expect(
-      page.getByRole('button', { name: /Delete Me/ }),
-    ).not.toBeVisible();
+      page.getByRole('button', { name: /^Delete Me\b/ }),
+    ).toHaveCount(0);
   });
 
   test('should filter items by category', async ({ page }) => {

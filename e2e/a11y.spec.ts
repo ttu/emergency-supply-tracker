@@ -101,9 +101,8 @@ test.describe('Accessibility', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await setupApp();
     await page.getByTestId('v2-nav-inv').click();
-    await expect(
-      page.getByRole('button', { name: '+ ADD ITEM' }),
-    ).toBeVisible();
+    // Label is theme-dependent; cockpit (the default) renders "+ ADD".
+    await expect(page.getByRole('button', { name: /^\+ ADD/i })).toBeVisible();
     const results = await axe(page).analyze();
     expect(results.violations).toEqual([]);
   });

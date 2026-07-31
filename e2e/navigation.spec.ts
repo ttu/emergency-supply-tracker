@@ -78,9 +78,9 @@ test.describe('Navigation', () => {
     await setupApp();
 
     await page.getByTestId('v2-nav-inv').click();
-    await expect(
-      page.getByRole('button', { name: '+ ADD ITEM' }),
-    ).toBeVisible();
+    // Label is theme-dependent: "+ ADD" (cockpit), "+ ADD ITEM" (civil),
+    // "+ Add item" (pantry).
+    await expect(page.getByRole('button', { name: /^\+ ADD/i })).toBeVisible();
 
     await page.getByTestId('v2-nav-settings').click();
     await expect(page.getByText(/SYSTEM CONFIGURATION|Settings/)).toBeVisible();
