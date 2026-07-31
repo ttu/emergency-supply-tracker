@@ -102,12 +102,9 @@ export function ConfirmDialog({
 
   const dialogContent = (
     <div
-      onClick={onCancel}
-      role="presentation"
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0, 0, 0, 0.55)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -115,14 +112,31 @@ export function ConfirmDialog({
         padding: 16,
       }}
     >
+      {/* Click-outside-to-cancel as a real button rather than a click handler
+          on the scrim div: a non-interactive element with a mouse listener is
+          unreachable by keyboard. Labelled "dismiss" rather than "cancel" so
+          it does not present as a second control with the same name as the
+          dialog's own Cancel button. */}
+      <button
+        type="button"
+        onClick={onCancel}
+        aria-label={t('actions.dismiss')}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.55)',
+          border: 0,
+          padding: 0,
+          cursor: 'default',
+        }}
+      />
       <div
         ref={dialogRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={messageId}
-        onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 460, width: '100%' }}
+        style={{ position: 'relative', maxWidth: 460, width: '100%' }}
       >
         <Panel padding={24}>
           <h2
