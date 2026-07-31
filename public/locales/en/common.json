@@ -1156,6 +1156,21 @@
         "cockpit": "NEW",
         "civil": "NEW",
         "pantry": "New"
+      },
+      "filterMissing": {
+        "cockpit": "MISSING",
+        "civil": "NOT STOCKED",
+        "pantry": "Not stocked"
+      },
+      "missingEmpty": {
+        "cockpit": "NOMINAL · EVERY RECOMMENDED ITEM STOCKED",
+        "civil": "NOMINAL · EVERY RECOMMENDED ITEM STOCKED",
+        "pantry": "Nothing missing — you have some of everything recommended."
+      },
+      "missingAdd": {
+        "cockpit": "ADD",
+        "civil": "ADD",
+        "pantry": "Add"
       }
     },
     "itemDetail": {

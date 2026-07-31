@@ -251,6 +251,32 @@ test.describe('Inventory actions', () => {
     );
   });
 
+  test('a missing recommended item can be found and added', async ({
+    page,
+  }) => {
+    await boot(page);
+    await openInventory(page);
+
+    await page.getByRole('button', { name: /^MISSING/i }).click();
+    const rows = page.getByTestId('v2-missing-row');
+    await expect(rows.first()).toBeVisible();
+
+    const name = await rows.first().locator('span').nth(1).textContent();
+
+    // Adding pre-fills the form from the product template.
+    await rows.first().getByRole('button', { name: /^Add$/i }).click();
+    await expect(page.locator('#name')).toHaveValue(name!.trim());
+    await expect(page.locator('#unit')).not.toHaveValue('');
+
+    await page.locator('#quantity').fill('5');
+    await page.getByLabel(/never expires/i).check();
+    await page.locator('form button[type="submit"]').click();
+
+    await expectStoredItems(page, (items) =>
+      items.some((i) => i.name === name!.trim()),
+    );
+  });
+
   test('delete an item removes it', async ({ page }) => {
     await boot(page);
     await openInventory(page);

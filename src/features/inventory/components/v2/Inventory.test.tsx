@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Inventory } from './Inventory';
 import { renderWithProviders } from '@/test/render';
 import {
@@ -12,7 +12,7 @@ import { createCategoryId, createQuantity } from '@/shared/types';
 const WATER_ID = createCategoryId('water-beverages');
 const FOOD_ID = createCategoryId('food');
 
-const setup = () => {
+const setup = (props: { onAddItem?: (id?: string) => void } = {}) => {
   const items = [
     createMockInventoryItem({
       name: 'Bottled water',
@@ -29,7 +29,7 @@ const setup = () => {
     <Inventory
       onCategoryChange={vi.fn()}
       onItemSelect={vi.fn()}
-      onAddItem={vi.fn()}
+      onAddItem={props.onAddItem ?? vi.fn()}
     />,
     {
       initialAppData: createMockAppData({
@@ -110,5 +110,47 @@ describe('Inventory (v2)', () => {
       screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
     );
     expect(onAddItem).toHaveBeenCalled();
+  });
+
+  describe('missing recommended items', () => {
+    it('offers a filter for products the household has none of', async () => {
+      setup();
+      const chip = await screen.findByRole('button', {
+        name: /v2\.inventory\.filterMissing\.cockpit/,
+      });
+      expect(chip).toBeInTheDocument();
+    });
+
+    it('lists missing products with their target quantity', async () => {
+      setup();
+      fireEvent.click(
+        await screen.findByRole('button', {
+          name: /v2\.inventory\.filterMissing\.cockpit/,
+        }),
+      );
+
+      const rows = await screen.findAllByTestId('v2-missing-row');
+      expect(rows.length).toBeGreaterThan(0);
+    });
+
+    it('adding a missing product reports its template id', async () => {
+      const onAddItem = vi.fn();
+      setup({ onAddItem });
+      fireEvent.click(
+        await screen.findByRole('button', {
+          name: /v2\.inventory\.filterMissing\.cockpit/,
+        }),
+      );
+
+      const rows = await screen.findAllByTestId('v2-missing-row');
+      fireEvent.click(
+        within(rows[0]).getByRole('button', {
+          name: 'v2.inventory.missingAdd.cockpit',
+        }),
+      );
+
+      expect(onAddItem).toHaveBeenCalledTimes(1);
+      expect(typeof onAddItem.mock.calls[0][0]).toBe('string');
+    });
   });
 });

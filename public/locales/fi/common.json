@@ -1156,6 +1156,21 @@
         "cockpit": "UUSI",
         "civil": "UUSI",
         "pantry": "Uusi"
+      },
+      "filterMissing": {
+        "cockpit": "PUUTTUU",
+        "civil": "EI VARASTOSSA",
+        "pantry": "Ei varastossa"
+      },
+      "missingEmpty": {
+        "cockpit": "KUNNOSSA · KAIKKI SUOSITELLUT HANKITTU",
+        "civil": "KUNNOSSA · KAIKKI SUOSITELLUT HANKITTU",
+        "pantry": "Mitään ei puutu — sinulla on jotain kaikista suosituksista."
+      },
+      "missingAdd": {
+        "cockpit": "LISÄÄ",
+        "civil": "LISÄÄ",
+        "pantry": "Lisää"
       }
     },
     "itemDetail": {

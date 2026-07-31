@@ -10,6 +10,8 @@ import {
   useDesignData,
   type DesignItemRow,
 } from '@/shared/hooks/useDesignData';
+import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommendedItems';
+import { MissingItemsTable } from './MissingItemsTable';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 
@@ -17,9 +19,10 @@ interface MobileInventoryProps {
   onItemSelect: (id: string) => void;
   selectedCategoryId?: string;
   onCategoryChange: (id?: string) => void;
-  onAddItem: () => void;
+  /** `templateId` pre-fills the new item from that recommended product. */
+  onAddItem: (templateId?: string) => void;
 }
-type FilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp';
+type FilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp' | 'missing';
 
 export function MobileInventory({
   onItemSelect,
@@ -30,6 +33,7 @@ export function MobileInventory({
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
+  const allMissing = useMissingRecommendedItems();
   const [filter, setFilter] = useState<FilterKey>('all');
   const [search, setSearch] = useState('');
 
@@ -61,6 +65,14 @@ export function MobileInventory({
     });
   }, [rows, filter, search, selectedCategoryId]);
 
+  const missing = useMemo(
+    () =>
+      selectedCategoryId
+        ? allMissing.filter((m) => m.categoryId === selectedCategoryId)
+        : allMissing,
+    [allMissing, selectedCategoryId],
+  );
+
   const chips: Array<[FilterKey, string]> = useMemo(
     () => [
       ['all', t(`v2.inventory.filterAll.${themeKey}`)],
@@ -68,6 +80,7 @@ export function MobileInventory({
       ['warn', t(`v2.inventory.filterWarn.${themeKey}`)],
       ['ok', t(`v2.inventory.filterOk.${themeKey}`)],
       ['exp', t(`v2.inventory.filterExpShort.${themeKey}`)],
+      ['missing', t(`v2.inventory.filterMissing.${themeKey}`)],
     ],
     [t, themeKey],
   );
@@ -76,7 +89,7 @@ export function MobileInventory({
     <div
       style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
     >
-      <Button variant="primary" full onClick={onAddItem}>
+      <Button variant="primary" full onClick={() => onAddItem()}>
         {t(`v2.voice.addItem.${themeKey}`)}
       </Button>
       <input
@@ -147,7 +160,10 @@ export function MobileInventory({
         })}
       </div>
       <Panel padding={0}>
-        {filtered.length === 0 && (
+        {filter === 'missing' && (
+          <MissingItemsTable items={missing} onAdd={onAddItem} />
+        )}
+        {filter !== 'missing' && filtered.length === 0 && (
           <div
             style={{
               padding: 24,
@@ -158,14 +174,15 @@ export function MobileInventory({
             {t(`v2.inventory.empty.${themeKey}`)}
           </div>
         )}
-        {filtered.map((r, i) => (
-          <MobileInventoryRow
-            key={String(r.item.id)}
-            row={r}
-            isLast={i === filtered.length - 1}
-            onSelect={onItemSelect}
-          />
-        ))}
+        {filter !== 'missing' &&
+          filtered.map((r, i) => (
+            <MobileInventoryRow
+              key={String(r.item.id)}
+              row={r}
+              isLast={i === filtered.length - 1}
+              onSelect={onItemSelect}
+            />
+          ))}
       </Panel>
     </div>
   );

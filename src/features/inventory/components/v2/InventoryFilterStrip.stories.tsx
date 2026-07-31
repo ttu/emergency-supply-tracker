@@ -23,7 +23,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const counts = { all: 12, crit: 2, warn: 3, ok: 7, exp: 1 };
+const counts = { all: 12, crit: 2, warn: 3, ok: 7, exp: 1, missing: 4 };
 const categories = [
   createMockCategory({ name: 'Water' }),
   createMockCategory({ name: 'Food' }),

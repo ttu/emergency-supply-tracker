@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import {
@@ -6,10 +6,14 @@ import {
   type DesignItemRow,
 } from '@/shared/hooks/useDesignData';
 import { useInventory, useLocationSuggestions } from '@/features/inventory';
+import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
+import { useHousehold } from '@/features/household';
+import { useRecommendedItems } from '@/features/templates';
 import {
   createQuantity,
   type Category,
   type InventoryItem,
+  type RecommendedItemDefinition,
 } from '@/shared/types';
 import { statusOf, type DesignStatus } from '@/shared/utils/designStatus';
 
@@ -20,6 +24,10 @@ export const NEW_ITEM_ID = '__new__';
 
 export interface UseItemDetailStateResult {
   isNew: boolean;
+  /** Pre-filled new item when adding from a recommended product. */
+  draft?: InventoryItem;
+  /** The recommended product `draft` was built from, when there is one. */
+  template?: RecommendedItemDefinition;
   /** `undefined` when the lookup failed (the parent should render its
    *  not-found fallback). */
   row: DesignItemRow | undefined;
@@ -76,14 +84,34 @@ export interface UseItemDetailStateResult {
 export function useItemDetailState(
   itemId: string,
   onBack: () => void,
+  templateId?: string,
 ): UseItemDetailStateResult {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const { items, addItem, updateItem, deleteItem } = useInventory();
+  const { household } = useHousehold();
+  const { recommendedItems } = useRecommendedItems();
   const locationSuggestions = useLocationSuggestions(items);
 
   const isNew = itemId === NEW_ITEM_ID;
+
+  // Adding from a recommended product pre-fills the form the way v1's template
+  // picker does: a draft carries the template's unit, weight, calories and
+  // default expiry, and its empty id makes ItemForm treat it as new.
+  const template = templateId
+    ? recommendedItems.find((r) => String(r.id) === templateId)
+    : undefined;
+  const draft = useMemo(() => {
+    if (!isNew || !template) return undefined;
+    const name = t(template.i18nKey.replace('products.', ''), {
+      ns: 'products',
+    });
+    return InventoryItemFactory.createDraftFromTemplate(template, household, {
+      name,
+      quantity: createQuantity(0),
+    });
+  }, [isNew, template, household, t]);
   const row = isNew
     ? undefined
     : rows.find((r) => String(r.item.id) === itemId);
@@ -141,6 +169,8 @@ export function useItemDetailState(
     pct,
     locationSuggestions,
     categories,
+    draft,
+    template,
     handleSubmit,
     handleDelete,
     deleteConfirmOpen,

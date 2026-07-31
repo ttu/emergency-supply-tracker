@@ -8,6 +8,7 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
+import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommendedItems';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 import type { DateOnly } from '@/shared/types';
@@ -16,12 +17,14 @@ import {
   type InventoryFilterKey,
 } from './InventoryFilterStrip';
 import { InventoryTable } from './InventoryTable';
+import { MissingItemsTable } from './MissingItemsTable';
 
 interface InventoryProps {
   selectedCategoryId?: string;
   onCategoryChange: (id?: string) => void;
   onItemSelect: (id: string) => void;
-  onAddItem: () => void;
+  /** `templateId` pre-fills the new item from that recommended product. */
+  onAddItem: (templateId?: string) => void;
 }
 
 function isExpiringSoon(item: {
@@ -63,6 +66,7 @@ export function Inventory({
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
+  const allMissing = useMissingRecommendedItems();
   const [filter, setFilter] = useState<InventoryFilterKey>('all');
   const [search, setSearch] = useState('');
 
@@ -77,8 +81,23 @@ export function Inventory({
       else ok++;
       if (isExpiringSoon(r.item)) exp++;
     }
-    return { crit, warn, ok, exp, all: rows.length };
-  }, [rows]);
+    return {
+      crit,
+      warn,
+      ok,
+      exp,
+      all: rows.length,
+      missing: allMissing.length,
+    };
+  }, [rows, allMissing.length]);
+
+  const missing = useMemo(
+    () =>
+      selectedCategoryId
+        ? allMissing.filter((m) => m.categoryId === selectedCategoryId)
+        : allMissing,
+    [allMissing, selectedCategoryId],
+  );
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -109,7 +128,7 @@ export function Inventory({
           </Title>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <Button variant="primary" onClick={onAddItem}>
+          <Button variant="primary" onClick={() => onAddItem()}>
             {t(`v2.voice.addItem.${themeKey}`)}
           </Button>
         </div>
@@ -126,11 +145,15 @@ export function Inventory({
           search={search}
           onSearchChange={setSearch}
         />
-        <InventoryTable
-          rows={filtered}
-          totalRowCount={rows.length}
-          onItemSelect={onItemSelect}
-        />
+        {filter === 'missing' ? (
+          <MissingItemsTable items={missing} onAdd={onAddItem} />
+        ) : (
+          <InventoryTable
+            rows={filtered}
+            totalRowCount={rows.length}
+            onItemSelect={onItemSelect}
+          />
+        )}
       </Panel>
     </div>
   );

@@ -29,13 +29,22 @@ interface ViewContext {
   setSelectedCategoryId: (id: string | undefined) => void;
   setSelectedItemId: (id: string | undefined) => void;
   setNav: (id: DesignNavId) => void;
+  selectedTemplateId: string | undefined;
+  setSelectedTemplateId: (id: string | undefined) => void;
 }
 
 function renderItemDetail(
   selectedItemId: string,
   ctx: ViewContext,
 ): { title: string; breadcrumb: string; body: ReactNode } {
-  const { t, themeKey, isMobile, selectedCategoryId, setSelectedItemId } = ctx;
+  const {
+    t,
+    themeKey,
+    isMobile,
+    selectedCategoryId,
+    selectedTemplateId,
+    setSelectedItemId,
+  } = ctx;
   const breadcrumb =
     selectedItemId === NEW_ITEM_ID
       ? t(`v2.voice.addItem.${themeKey}`)
@@ -43,17 +52,21 @@ function renderItemDetail(
   const defaultCategoryId =
     selectedItemId === NEW_ITEM_ID ? selectedCategoryId : undefined;
   const onBack = () => setSelectedItemId(undefined);
+  const templateId =
+    selectedItemId === NEW_ITEM_ID ? selectedTemplateId : undefined;
   const body = isMobile ? (
     <MobileItemDetail
       itemId={selectedItemId}
       onBack={onBack}
       defaultCategoryId={defaultCategoryId}
+      templateId={templateId}
     />
   ) : (
     <ItemDetail
       itemId={selectedItemId}
       onBack={onBack}
       defaultCategoryId={defaultCategoryId}
+      templateId={templateId}
     />
   );
   return { title: t(`v2.voice.inventory.${themeKey}`), breadcrumb, body };
@@ -91,8 +104,12 @@ function renderInventory(ctx: ViewContext): ReactNode {
     selectedCategoryId,
     setSelectedCategoryId,
     setSelectedItemId,
+    setSelectedTemplateId,
   } = ctx;
-  const onAddItem = () => setSelectedItemId(NEW_ITEM_ID);
+  const onAddItem = (templateId?: string) => {
+    setSelectedTemplateId(templateId);
+    setSelectedItemId(NEW_ITEM_ID);
+  };
   return isMobile ? (
     <MobileInventory
       onItemSelect={setSelectedItemId}
@@ -144,9 +161,13 @@ export function DesignApp() {
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
     undefined,
   );
+  const [selectedTemplateId, setSelectedTemplateId] = useState<
+    string | undefined
+  >(undefined);
   const goTo = useCallback((id: DesignNavId) => {
     setNav(id);
     setSelectedItemId(undefined);
+    setSelectedTemplateId(undefined);
     if (id !== 'inv') setSelectedCategoryId(undefined);
   }, []);
 
@@ -162,6 +183,8 @@ export function DesignApp() {
     setSelectedCategoryId,
     setSelectedItemId,
     setNav,
+    selectedTemplateId,
+    setSelectedTemplateId,
   };
   const view: { title: string; body: ReactNode; breadcrumb?: string } =
     selectedItemId

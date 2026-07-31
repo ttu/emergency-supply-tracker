@@ -3,7 +3,13 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { CAPS_STYLE } from '@/shared/components/design-v2/primitives';
 import type { Category } from '@/shared/types';
 
-export type InventoryFilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp';
+export type InventoryFilterKey =
+  | 'all'
+  | 'crit'
+  | 'warn'
+  | 'ok'
+  | 'exp'
+  | 'missing';
 
 export interface InventoryFilterCounts {
   all: number;
@@ -11,6 +17,8 @@ export interface InventoryFilterCounts {
   warn: number;
   ok: number;
   exp: number;
+  /** Recommended products the household owns nothing of. */
+  missing: number;
 }
 
 interface InventoryFilterStripProps {
@@ -86,6 +94,11 @@ export function InventoryFilterStrip({
       {chip('warn', t(`v2.voice.statusWarn.${themeKey}`), counts.warn)}
       {chip('ok', t(`v2.voice.statusOk.${themeKey}`), counts.ok)}
       {chip('exp', t(`v2.inventory.filterExp.${themeKey}`), counts.exp)}
+      {chip(
+        'missing',
+        t(`v2.inventory.filterMissing.${themeKey}`),
+        counts.missing,
+      )}
       <div style={{ flex: 1 }} />
       <div
         style={{

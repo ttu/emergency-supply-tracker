@@ -7,7 +7,7 @@ import {
   createMockSettings,
 } from '@/shared/utils/test/factories';
 
-const baseCounts = { all: 12, crit: 2, warn: 3, ok: 7, exp: 1 };
+const baseCounts = { all: 12, crit: 2, warn: 3, ok: 7, exp: 1, missing: 4 };
 const cats = [
   createMockCategory({ name: 'Water' }),
   createMockCategory({ name: 'Food' }),

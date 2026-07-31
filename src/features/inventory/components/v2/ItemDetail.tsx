@@ -20,17 +20,22 @@ interface ItemDetailProps {
   onBack: () => void;
   /** When opening as a new-item view, an optional category to preselect. */
   defaultCategoryId?: string;
+  /** Recommended product to pre-fill a new item from. */
+  templateId?: string;
 }
 
 export function ItemDetail({
   itemId,
   onBack,
   defaultCategoryId,
+  templateId,
 }: Readonly<ItemDetailProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const {
     isNew,
+    draft,
+    template,
     row,
     item,
     category,
@@ -47,7 +52,7 @@ export function ItemDetail({
     confirmDelete,
     cancelDelete,
     adjust,
-  } = useItemDetailState(itemId, onBack);
+  } = useItemDetailState(itemId, onBack, templateId);
 
   if (!isNew && !row) {
     return <ItemNotFound onBack={onBack} />;
@@ -90,7 +95,10 @@ export function ItemDetail({
           </div>
           <div className="design-v2-embed" style={{ padding: 20 }}>
             <ItemForm
-              item={item}
+              item={item ?? draft}
+              templateWeightGramsPerUnit={template?.weightGramsPerUnit}
+              templateCaloriesPer100g={template?.caloriesPer100g}
+              templateRequiresWaterLiters={template?.requiresWaterLiters}
               categories={categories}
               defaultCategoryId={defaultCategoryId}
               locationSuggestions={locationSuggestions}

@@ -17,6 +17,8 @@ interface MobileItemDetailProps {
   itemId: string;
   onBack: () => void;
   defaultCategoryId?: string;
+  /** Recommended product to pre-fill a new item from. */
+  templateId?: string;
 }
 
 function mobileDetailTitle(
@@ -33,11 +35,14 @@ export function MobileItemDetail({
   itemId,
   onBack,
   defaultCategoryId,
+  templateId,
 }: Readonly<MobileItemDetailProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const {
     isNew,
+    draft,
+    template,
     row,
     item,
     status,
@@ -52,7 +57,7 @@ export function MobileItemDetail({
     deleteConfirmAction,
     confirmDelete,
     cancelDelete,
-  } = useItemDetailState(itemId, onBack);
+  } = useItemDetailState(itemId, onBack, templateId);
 
   if (!isNew && !row) {
     return <ItemNotFound onBack={onBack} padding={24} />;
@@ -119,7 +124,10 @@ export function MobileItemDetail({
       <Panel padding={0}>
         <div className="design-v2-embed" style={{ padding: 14 }}>
           <ItemForm
-            item={item}
+            item={item ?? draft}
+            templateWeightGramsPerUnit={template?.weightGramsPerUnit}
+            templateCaloriesPer100g={template?.caloriesPer100g}
+            templateRequiresWaterLiters={template?.requiresWaterLiters}
             categories={categories}
             defaultCategoryId={defaultCategoryId}
             locationSuggestions={locationSuggestions}
