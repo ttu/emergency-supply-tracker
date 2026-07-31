@@ -3,10 +3,7 @@ import { Caption, Panel } from '@/shared/components/design-v2/primitives';
 import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { ItemForm } from '@/features/inventory';
-import {
-  NEW_ITEM_ID,
-  useItemDetailState,
-} from '@/features/inventory/hooks/useItemDetailState';
+import { useItemDetailState } from '@/features/inventory/hooks/useItemDetailState';
 import { ItemDetailBreadcrumb } from './ItemDetailBreadcrumb';
 import { ItemDetailHeader } from './ItemDetailHeader';
 import { ItemNotFound } from './ItemNotFound';
@@ -16,7 +13,7 @@ import { ItemOpsPanel } from './ItemOpsPanel';
 
 // Re-exported so existing callers can keep `import { NEW_ITEM_ID } from
 // './ItemDetail'`; the canonical export lives on the shared hook.
-export { NEW_ITEM_ID };
+export { NEW_ITEM_ID } from '@/features/inventory/hooks/useItemDetailState';
 
 interface ItemDetailProps {
   itemId: string;
