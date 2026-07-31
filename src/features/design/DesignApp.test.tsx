@@ -1,0 +1,149 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { DesignApp } from './DesignApp';
+import { renderWithProviders } from '@/test/render';
+import {
+  createMockAppData,
+  createMockInventoryItem,
+  createMockSettings,
+} from '@/shared/utils/test/factories';
+import {
+  createCategoryId,
+  createProductTemplateId,
+  createQuantity,
+} from '@/shared/types';
+
+const soup = createMockInventoryItem({
+  name: 'Canned soup',
+  itemType: createProductTemplateId('canned-soup'),
+  categoryId: createCategoryId('food'),
+  quantity: createQuantity(12),
+  unit: 'cans',
+  neverExpires: true,
+});
+
+const setup = () =>
+  renderWithProviders(<DesignApp />, {
+    initialAppData: createMockAppData({
+      settings: createMockSettings({ theme: 'cockpit' }),
+      items: [soup],
+      customCategories: [],
+    }),
+  });
+
+const nav = (id: string) => screen.getByTestId(`v2-nav-${id}`);
+
+describe('DesignApp', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('opens on the dashboard', async () => {
+    setup();
+    expect(
+      await screen.findByText('v2.voice.readiness.cockpit'),
+    ).toBeInTheDocument();
+  });
+
+  it('exposes exactly the four destinations', () => {
+    setup();
+    for (const id of ['home', 'inv', 'help', 'settings']) {
+      expect(nav(id)).toBeInTheDocument();
+    }
+    for (const id of ['alerts', 'shop', 'plan']) {
+      expect(screen.queryByTestId(`v2-nav-${id}`)).not.toBeInTheDocument();
+    }
+  });
+
+  it('navigates to inventory and back to the overview', async () => {
+    setup();
+    await screen.findByText('v2.voice.readiness.cockpit');
+
+    fireEvent.click(nav('inv'));
+    expect(
+      await screen.findByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(nav('home'));
+    expect(
+      await screen.findByText('v2.voice.readiness.cockpit'),
+    ).toBeInTheDocument();
+  });
+
+  it('navigates to help and settings', async () => {
+    setup();
+    await screen.findByText('v2.voice.readiness.cockpit');
+
+    fireEvent.click(nav('help'));
+    expect(await screen.findByText('§1')).toBeInTheDocument();
+
+    fireEvent.click(nav('settings'));
+    expect(
+      await screen.findByText('v2.settings.railSections.cockpit'),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the add-item view from inventory and closes it again', async () => {
+    setup();
+    fireEvent.click(nav('inv'));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+    );
+
+    // The new-item form, not the list. Labels render as i18n keys under the
+    // test translator, so match the field by id.
+    await waitFor(() =>
+      expect(document.querySelector('#name')).toBeInTheDocument(),
+    );
+
+    // Re-selecting the destination clears the open item and shows the list.
+    fireEvent.click(nav('inv'));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it('selecting an item opens its record, and nav returns to the list', async () => {
+    setup();
+    fireEvent.click(nav('inv'));
+    fireEvent.click(await screen.findByText('Canned soup'));
+
+    await waitFor(() =>
+      expect(document.querySelector('#name')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(nav('inv'));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it('a dashboard category tile lands on inventory filtered to it', async () => {
+    setup();
+    fireEvent.click(await screen.findByTestId('v2-category-food'));
+
+    const select = await screen.findByLabelText(
+      'v2.inventory.categoryAria.cockpit',
+    );
+    expect((select as HTMLSelectElement).value).toBe('food');
+  });
+
+  it('leaving inventory clears the category filter', async () => {
+    setup();
+    fireEvent.click(await screen.findByTestId('v2-category-food'));
+    await screen.findByLabelText('v2.inventory.categoryAria.cockpit');
+
+    fireEvent.click(nav('home'));
+    await screen.findByText('v2.voice.readiness.cockpit');
+    fireEvent.click(nav('inv'));
+
+    const select = await screen.findByLabelText(
+      'v2.inventory.categoryAria.cockpit',
+    );
+    expect((select as HTMLSelectElement).value).toBe('');
+  });
+});
