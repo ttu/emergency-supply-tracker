@@ -33,9 +33,7 @@ describe('PriorityQueue (v2)', () => {
   it('clicking view-all invokes onViewAll', async () => {
     const onViewAll = vi.fn();
     setup([], onViewAll);
-    await waitFor(() =>
-      screen.getByRole('button', { name: 'v2.dashboard.priorityViewAll' }),
-    );
+    await screen.findByRole('button', { name: 'v2.dashboard.priorityViewAll' });
     fireEvent.click(
       screen.getByRole('button', { name: 'v2.dashboard.priorityViewAll' }),
     );

@@ -111,9 +111,7 @@ describe('ItemDetail (v2)', () => {
       },
     );
     // Header DELETE opens the dialog rather than firing window.confirm.
-    await waitFor(() =>
-      screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
-    );
+    await screen.findByRole('button', { name: 'v2.voice.delete.cockpit' });
     fireEvent.click(
       screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
     );

@@ -48,8 +48,7 @@ describe('CoverageMatrix (v2)', () => {
   it('clicking a tile calls onCategorySelect with the category id', async () => {
     const onCategorySelect = vi.fn();
     setup(onCategorySelect);
-    await waitFor(() => screen.getByTestId('v2-category-water-beverages'));
-    fireEvent.click(screen.getByTestId('v2-category-water-beverages'));
+    fireEvent.click(await screen.findByTestId('v2-category-water-beverages'));
     expect(onCategorySelect).toHaveBeenCalledWith('water-beverages');
   });
 });

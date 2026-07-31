@@ -57,9 +57,7 @@ describe('AlertBanner (v2)', () => {
 
     it('caps visible rows and offers to show the rest', async () => {
       setup(manyAlerts());
-      await waitFor(() =>
-        expect(screen.getByTestId('v2-alert-banner')).toBeInTheDocument(),
-      );
+      expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
 
       expect(screen.getAllByTestId('v2-alert-row')).toHaveLength(3);
       expect(screen.getByTestId('v2-alert-toggle')).toBeInTheDocument();
@@ -67,9 +65,7 @@ describe('AlertBanner (v2)', () => {
 
     it('reveals every alert when expanded, and re-collapses', async () => {
       setup(manyAlerts());
-      await waitFor(() =>
-        expect(screen.getByTestId('v2-alert-banner')).toBeInTheDocument(),
-      );
+      expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
 
       fireEvent.click(screen.getByTestId('v2-alert-toggle'));
       const expanded = screen.getAllByTestId('v2-alert-row').length;
@@ -81,9 +77,7 @@ describe('AlertBanner (v2)', () => {
 
     it('shows no toggle when everything already fits', async () => {
       setup([]);
-      await waitFor(() =>
-        expect(screen.getByTestId('v2-alert-banner')).toBeInTheDocument(),
-      );
+      expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
 
       // Dismiss down to under the limit.
       while (screen.getAllByTestId('v2-alert-row').length > 2) {
@@ -100,9 +94,7 @@ describe('AlertBanner (v2)', () => {
 
   it('renders nothing once every active alert has been dismissed', async () => {
     setup([]);
-    await waitFor(() =>
-      expect(screen.getByTestId('v2-alert-banner')).toBeInTheDocument(),
-    );
+    expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
 
     for (const button of screen.getAllByRole('button', {
       name: 'v2.alerts.dismiss.cockpit',
@@ -117,17 +109,13 @@ describe('AlertBanner (v2)', () => {
 
   it('renders a row per active alert', async () => {
     setup([missingWater()]);
-    await waitFor(() => {
-      expect(screen.getByTestId('v2-alert-banner')).toBeInTheDocument();
-    });
+    expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
     expect(screen.getAllByTestId('v2-alert-row').length).toBeGreaterThan(0);
   });
 
   it('dismisses an alert when its dismiss control is clicked', async () => {
     setup([missingWater()]);
-    await waitFor(() =>
-      expect(screen.getByTestId('v2-alert-banner')).toBeInTheDocument(),
-    );
+    expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
     const rowsBefore = screen.getAllByTestId('v2-alert-row').length;
 
     fireEvent.click(
@@ -144,9 +132,7 @@ describe('AlertBanner (v2)', () => {
   it('invokes onCategorySelect when a category alert row is activated', async () => {
     const onCategorySelect = vi.fn();
     setup([missingWater()], vi.fn(), onCategorySelect);
-    await waitFor(() =>
-      expect(screen.getByTestId('v2-alert-banner')).toBeInTheDocument(),
-    );
+    expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /water-beverages/ }));
 

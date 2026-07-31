@@ -105,9 +105,7 @@ describe('Inventory (v2)', () => {
         }),
       },
     );
-    await waitFor(() =>
-      screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
-    );
+    await screen.findByRole('button', { name: 'v2.voice.addItem.cockpit' });
     fireEvent.click(
       screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
     );
