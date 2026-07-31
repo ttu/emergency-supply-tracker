@@ -376,3 +376,29 @@
 
   color-scheme: light;
 }
+
+/* Template picker inside a v2 surface.
+ *
+ * The generic `.design-v2-embed button` rule above paints buttons as primary
+ * actions, which is right for the handful of buttons in an embedded form but
+ * wrong for TemplateSelector: its product cards are buttons too, and a list of
+ * eighty accent-filled blocks is unreadable. Render them as panel rows and
+ * leave only the explicit "custom item" button looking like an action. */
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='templateCard']:not([role='switch']):not([aria-pressed]) {
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='templateCard']:not([role='switch']):not([aria-pressed]):hover {
+  border-color: var(--color-accent);
+}

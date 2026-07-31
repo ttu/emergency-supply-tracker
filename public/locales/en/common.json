@@ -1257,6 +1257,11 @@
         "cockpit": "CAPACITY TOTAL",
         "civil": "CAPACITY TOTAL",
         "pantry": "Total capacity"
+      },
+      "pickTemplate": {
+        "cockpit": "SELECT PRODUCT · OR ADD CUSTOM",
+        "civil": "SELECT PRODUCT · OR ADD CUSTOM",
+        "pantry": "Pick a product, or add your own"
       }
     },
     "onboarding": {

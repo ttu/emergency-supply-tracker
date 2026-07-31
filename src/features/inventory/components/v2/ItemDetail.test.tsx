@@ -54,8 +54,18 @@ describe('ItemDetail (v2)', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders NEW ITEM header and hides side panels in new-item mode', async () => {
+  it('offers the product picker before the blank form', async () => {
     renderDetail(NEW_ITEM_ID, { defaultCategoryId: 'food' });
+    expect(
+      await screen.findByText('v2.itemDetail.pickTemplate.cockpit'),
+    ).toBeInTheDocument();
+    // The form itself is not shown until a product (or "custom") is chosen.
+    expect(document.querySelector('#name')).not.toBeInTheDocument();
+  });
+
+  it('renders NEW ITEM header and hides side panels once past the picker', async () => {
+    renderDetail(NEW_ITEM_ID, { defaultCategoryId: 'food' });
+    fireEvent.click(await screen.findByRole('button', { name: /custom/i }));
     await waitFor(() => {
       expect(
         screen.getByText('v2.itemDetail.titleNew.cockpit'),

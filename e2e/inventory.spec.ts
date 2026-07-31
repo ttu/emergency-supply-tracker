@@ -1,4 +1,9 @@
-import { test, expect, selectInventoryCategory } from './fixtures';
+import {
+  test,
+  expect,
+  selectInventoryCategory,
+  startAddCustomItem,
+} from './fixtures';
 
 /**
  * Design v2 simplified the inventory flow significantly:
@@ -25,7 +30,7 @@ test.describe('Inventory Management', () => {
     },
   ) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', overrides.name);
     if (overrides.category) {

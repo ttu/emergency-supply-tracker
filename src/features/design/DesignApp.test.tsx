@@ -90,8 +90,8 @@ describe('DesignApp', () => {
       await screen.findByRole('button', { name: 'v2.voice.addItem.cockpit' }),
     );
 
-    // The new-item form, not the list. Labels render as i18n keys under the
-    // test translator, so match the field by id.
+    // Adding now starts at the product picker; "custom" reaches the form.
+    fireEvent.click(await screen.findByRole('button', { name: /custom/i }));
     await waitFor(() =>
       expect(document.querySelector('#name')).toBeInTheDocument(),
     );

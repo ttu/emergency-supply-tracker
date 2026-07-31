@@ -5,6 +5,7 @@ import {
   expandRecommendedItems,
   ensureNoModals,
   selectInventoryCategory,
+  startAddCustomItem,
 } from './fixtures';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 import type { RootStorage } from '../src/shared/types';
@@ -121,7 +122,7 @@ async function testDashboardInteractions(page: Page) {
 }
 
 async function addItemFromTemplate(page: Page) {
-  await page.getByRole('button', { name: '+ ADD' }).click();
+  await startAddCustomItem(page);
   // Reset category filter to "All" before searching (may be pre-filtered from category navigation)
   const categoryFilter = page.getByTestId('template-category-select');
   if (await categoryFilter.isVisible().catch(() => false)) {
@@ -152,7 +153,7 @@ async function addItemFromTemplate(page: Page) {
 
 async function addCustomItem(page: Page) {
   await ensureNoModals(page);
-  await page.getByRole('button', { name: '+ ADD' }).click();
+  await startAddCustomItem(page);
   await expect(page.getByTestId('item-form')).toBeVisible();
 
   await page.fill('input[name="name"]', 'Custom Test Item');
@@ -262,7 +263,7 @@ async function testDashboardAlerts(page: Page) {
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
-  await page.getByRole('button', { name: '+ ADD' }).click();
+  await startAddCustomItem(page);
   await expect(page.getByTestId('item-form')).toBeVisible();
 
   const pastDate = new Date();

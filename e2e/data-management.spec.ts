@@ -4,6 +4,7 @@ import {
   expandRecommendedItems,
   navigateToSettingsSection,
   selectInventoryCategory,
+  startAddCustomItem,
 } from './fixtures';
 
 test.describe('Backup & Transfer', () => {
@@ -14,7 +15,7 @@ test.describe('Backup & Transfer', () => {
   test('should export data', async ({ page }) => {
     // Add some test data first
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Export Test Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -159,7 +160,7 @@ test.describe('Backup & Transfer', () => {
     // Add item that needs restocking (quantity 0 = definitely needs restocking)
     // Use a recommended item template so it matches a recommended item definition
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     // Search for rice (a recommended food item)
     await page.fill('input[placeholder*="Search"]', 'rice');
     await page.waitForTimeout(300); // Wait for search results
@@ -199,7 +200,7 @@ test.describe('Backup & Transfer', () => {
   test('should clear all data', async ({ page }) => {
     // Add some test data
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Item to Clear');
     await page.selectOption('select[name="category"]', 'food');

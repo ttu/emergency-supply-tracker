@@ -5,6 +5,7 @@ import {
   expandRecommendedItems,
   ensureNoModals,
   selectInventoryCategory,
+  startAddCustomItem,
 } from './fixtures';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 import type { RootStorage } from '../src/shared/types';
@@ -247,7 +248,7 @@ async function testDashboardAlertsQuickSetup(page: Page) {
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
-  await page.getByRole('button', { name: '+ ADD' }).click();
+  await startAddCustomItem(page);
   await expect(page.getByTestId('item-form')).toBeVisible();
 
   const pastDate = new Date();

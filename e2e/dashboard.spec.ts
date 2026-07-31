@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, startAddCustomItem } from './fixtures';
 
 test.describe('Dashboard', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -30,7 +30,7 @@ test.describe('Dashboard', () => {
   test('should update dashboard when items are added', async ({ page }) => {
     // Add an item from Inventory via the inline + ADD flow.
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Test Food Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -49,7 +49,7 @@ test.describe('Dashboard', () => {
   }) => {
     // Add an item with zero quantity — it becomes a critical-status row.
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Out of Stock Item');
     await page.selectOption('select[name="category"]', 'food');

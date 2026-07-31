@@ -1,4 +1,9 @@
-import { test, expect, toLocalDateString } from './fixtures';
+import {
+  test,
+  expect,
+  toLocalDateString,
+  startAddCustomItem,
+} from './fixtures';
 
 test.describe('Item Expiration Tracking', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -7,7 +12,7 @@ test.describe('Item Expiration Tracking', () => {
 
   test('should add item with expiration date', async ({ page }) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Fill form with expiration date
@@ -36,7 +41,7 @@ test.describe('Item Expiration Tracking', () => {
     page,
   }) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Calculate date 20 days from now (within 30-day threshold)
@@ -71,7 +76,7 @@ test.describe('Item Expiration Tracking', () => {
     page,
   }) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Calculate date 5 days ago (expired)
@@ -100,7 +105,7 @@ test.describe('Item Expiration Tracking', () => {
     page,
   }) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with neverExpires checked
@@ -134,7 +139,7 @@ test.describe('Item Expiration Tracking', () => {
   test('should update expiration date when editing item', async ({ page }) => {
     // Add item first
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Item to Update');
@@ -170,7 +175,7 @@ test.describe('Item Expiration Tracking', () => {
 
   test('should show expiration date on item card', async ({ page }) => {
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Item With Date');

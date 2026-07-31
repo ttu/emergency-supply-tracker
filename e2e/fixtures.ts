@@ -161,6 +161,17 @@ export async function navigateV2(page: Page, id: V2NavId) {
 }
 
 /**
+ * Start adding an item in the v2 shell.
+ *
+ * "+ ADD" opens the product picker first (recommended products, or a custom
+ * item). Specs that fill the blank form want the custom branch.
+ */
+export async function startAddCustomItem(page: Page) {
+  await page.getByRole('button', { name: '+ ADD' }).click();
+  await page.getByRole('button', { name: /custom item/i }).click();
+}
+
+/**
  * V2 settings section ids exposed by the SettingsRail. Pass these to
  * `navigateToSettingsSection`. Old v1 ids (e.g. 'backupTransfer') no
  * longer exist — use the v2 equivalents below.

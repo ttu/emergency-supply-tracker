@@ -1,4 +1,10 @@
-import { test, expect, navigateToSettingsSection, type Page } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  type Page,
+  startAddCustomItem,
+} from './fixtures';
 import AxeBuilder from '@axe-core/playwright';
 
 /**
@@ -113,7 +119,7 @@ test.describe('Accessibility', () => {
     // v2 has no template-selector modal — the inline ItemForm renders
     // directly via the + ADD button.
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await page.getByTestId('item-form').waitFor({ state: 'visible' });
 
     const results = await axe(page)

@@ -276,6 +276,8 @@ test.describe('Visual Regression - UI States', () => {
     const addButton = page.getByRole('button', { name: '+ ADD' });
     await expect(addButton).toBeVisible();
     await addButton.click();
+    // Adding opens the product picker; the blank form is the "custom" branch.
+    await page.getByRole('button', { name: /custom item/i }).click();
     await page.getByTestId('item-form').waitFor({ state: 'visible' });
     await disableAnimations(page);
 

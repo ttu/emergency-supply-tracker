@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, startAddCustomItem } from './fixtures';
 
 test.describe('Navigation', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -47,7 +47,7 @@ test.describe('Navigation', () => {
   test('should persist data across page navigation', async ({ page }) => {
     // Add an item from Inventory via the v2 + ADD button (inline detail view)
     await page.getByTestId('v2-nav-inv').click();
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Persistent Item');
     await page.selectOption('select[name="category"]', 'food');

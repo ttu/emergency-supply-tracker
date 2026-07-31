@@ -1,12 +1,16 @@
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Caption, Panel } from '@/shared/components/design-v2/primitives';
 import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { ItemForm } from '@/features/inventory';
+import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
+import type { ProductTemplate } from '@/shared/types';
 import { useItemDetailState } from '@/features/inventory/hooks/useItemDetailState';
 import { ItemDetailBreadcrumb } from './ItemDetailBreadcrumb';
 import { ItemDetailHeader } from './ItemDetailHeader';
 import { ItemNotFound } from './ItemNotFound';
+import { NewItemTemplateStep } from './NewItemTemplateStep';
 import { ItemStatusPanel } from './ItemStatusPanel';
 import { ItemTotalsPanel } from './ItemTotalsPanel';
 import { ItemOpsPanel } from './ItemOpsPanel';
@@ -32,6 +36,30 @@ export function ItemDetail({
 }: Readonly<ItemDetailProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
+  // The picker's outcome lives here rather than in the parent: it only
+  // matters while this add-view is mounted.
+  const [chosenTemplateId, setChosenTemplateId] = useState<string | undefined>(
+    undefined,
+  );
+  const [customTemplate, setCustomTemplate] = useState<
+    ProductTemplate | undefined
+  >(undefined);
+  const [skipTemplate, setSkipTemplate] = useState(false);
+  const effectiveTemplateId = templateId ?? chosenTemplateId;
+  const onTemplateChosen = (id: string) => setChosenTemplateId(id);
+  const onCustomTemplateChosen = (template: ProductTemplate) => {
+    setCustomTemplate(template);
+    setSkipTemplate(true);
+  };
+  const customDraft = useMemo(
+    () =>
+      customTemplate
+        ? InventoryItemFactory.createDraftFromCustomTemplate(customTemplate, {
+            quantity: 0,
+          })
+        : undefined,
+    [customTemplate],
+  );
   const {
     isNew,
     draft,
@@ -52,10 +80,23 @@ export function ItemDetail({
     confirmDelete,
     cancelDelete,
     adjust,
-  } = useItemDetailState(itemId, onBack, templateId);
+  } = useItemDetailState(itemId, onBack, effectiveTemplateId);
 
   if (!isNew && !row) {
     return <ItemNotFound onBack={onBack} />;
+  }
+
+  // Adding without a product chosen yet: offer the recommended list first, the
+  // way v1 does, instead of dropping the user straight into a blank form.
+  if (isNew && !effectiveTemplateId && !skipTemplate) {
+    return (
+      <NewItemTemplateStep
+        defaultCategoryId={defaultCategoryId}
+        onSelectTemplate={onTemplateChosen}
+        onSelectCustomTemplate={onCustomTemplateChosen}
+        onSelectCustom={() => setSkipTemplate(true)}
+      />
+    );
   }
 
   return (
@@ -95,7 +136,7 @@ export function ItemDetail({
           </div>
           <div className="design-v2-embed" style={{ padding: 20 }}>
             <ItemForm
-              item={item ?? draft}
+              item={item ?? draft ?? customDraft}
               templateWeightGramsPerUnit={template?.weightGramsPerUnit}
               templateCaloriesPer100g={template?.caloriesPer100g}
               templateRequiresWaterLiters={template?.requiresWaterLiters}

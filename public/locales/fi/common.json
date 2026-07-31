@@ -1257,6 +1257,11 @@
         "cockpit": "KAPASITEETTI YHT",
         "civil": "KAPASITEETTI YHT",
         "pantry": "Kapasiteetti yhteensä"
+      },
+      "pickTemplate": {
+        "cockpit": "VALITSE TUOTE · TAI LISÄÄ OMA",
+        "civil": "VALITSE TUOTE · TAI LISÄÄ OMA",
+        "pantry": "Valitse tuote tai lisää oma"
       }
     },
     "onboarding": {

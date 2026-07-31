@@ -1,4 +1,10 @@
-import { test, expect, setAppStorage, toLocalDateString } from './fixtures';
+import {
+  test,
+  expect,
+  setAppStorage,
+  toLocalDateString,
+  startAddCustomItem,
+} from './fixtures';
 import {
   createMockAppData,
   createMockInventoryItem,
@@ -202,7 +208,7 @@ test.describe('Inventory actions', () => {
     await boot(page);
     await openInventory(page);
 
-    await page.getByRole('button', { name: '+ ADD' }).click();
+    await startAddCustomItem(page);
     await page.locator('#name').fill('Sweep test item');
     await page.locator('#quantity').fill('7');
     await page.locator('#categoryId').selectOption('food');
