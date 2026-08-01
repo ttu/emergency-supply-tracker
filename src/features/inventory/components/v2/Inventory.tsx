@@ -21,6 +21,7 @@ import {
 } from './InventoryFilterStrip';
 import { InventoryTable } from './InventoryTable';
 import { MissingItemsTable } from './MissingItemsTable';
+import { CategorySummaryPanel } from './CategorySummaryPanel';
 
 interface InventoryProps {
   selectedCategoryId?: string;
@@ -98,6 +99,10 @@ export function Inventory({
     };
   }, [rows, allMissing.length]);
 
+  const selectedCategory = selectedCategoryId
+    ? categories.find((c) => String(c.id) === selectedCategoryId)
+    : undefined;
+
   const missing = useMemo(
     () =>
       selectedCategoryId
@@ -147,6 +152,13 @@ export function Inventory({
           </Button>
         </div>
       </div>
+
+      {selectedCategory && (
+        <CategorySummaryPanel
+          categoryId={selectedCategory.id as string}
+          categoryName={selectedCategory.name}
+        />
+      )}
 
       <Panel padding={0}>
         <InventoryFilterStrip

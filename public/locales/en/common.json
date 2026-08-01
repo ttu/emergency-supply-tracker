@@ -1186,6 +1186,26 @@
         "cockpit": "ALL LOCATIONS",
         "civil": "ALL LOCATIONS",
         "pantry": "All locations"
+      },
+      "waterDrinking": {
+        "cockpit": "DRINKING",
+        "civil": "DRINKING",
+        "pantry": "Drinking"
+      },
+      "waterPreparation": {
+        "cockpit": "COOKING & PREP",
+        "civil": "COOKING & PREP",
+        "pantry": "Cooking & prep"
+      },
+      "totalRequired": {
+        "cockpit": "TOTAL REQUIRED",
+        "civil": "TOTAL REQUIRED",
+        "pantry": "Total required"
+      },
+      "shortBy": {
+        "cockpit": "{{missing}} {{unit}} SHORT",
+        "civil": "{{missing}} {{unit}} SHORT",
+        "pantry": "{{missing}} {{unit}} short"
       }
     },
     "itemDetail": {

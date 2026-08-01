@@ -1186,6 +1186,26 @@
         "cockpit": "KAIKKI SIJAINNIT",
         "civil": "KAIKKI SIJAINNIT",
         "pantry": "Kaikki sijainnit"
+      },
+      "waterDrinking": {
+        "cockpit": "JUOMAVESI",
+        "civil": "JUOMAVESI",
+        "pantry": "Juomavesi"
+      },
+      "waterPreparation": {
+        "cockpit": "RUOANLAITTO",
+        "civil": "RUOANLAITTO",
+        "pantry": "Ruoanlaitto"
+      },
+      "totalRequired": {
+        "cockpit": "TARVE YHTEENSÄ",
+        "civil": "TARVE YHTEENSÄ",
+        "pantry": "Tarve yhteensä"
+      },
+      "shortBy": {
+        "cockpit": "PUUTTUU {{missing}} {{unit}}",
+        "civil": "PUUTTUU {{missing}} {{unit}}",
+        "pantry": "puuttuu {{missing}} {{unit}}"
       }
     },
     "itemDetail": {

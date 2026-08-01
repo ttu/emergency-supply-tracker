@@ -57,6 +57,14 @@ on:
 
 (Summary for context — full detail in git log.)
 
+- **v1 parity gaps closed** — an audit against the classic shell found five
+  things v2 could not do. Recommended items are now discoverable (a MISSING
+  filter listing what the household owns none of, scaled to it); adding starts
+  from a product template rather than a blank form; the inventory sorts by
+  name/quantity/expiration and filters by location; and selecting a category
+  shows what it requires, how the target is derived, and the per-item
+  shortfall. Plan: `docs/plans/2026-07-31-v2-parity-gaps.md`.
+
 - **Navigation reduced to four destinations** — the design update aligned v2
   with the real app: Overview, Inventory, Help, Settings. Alerts moved onto
   the dashboard as a dismissable banner (`alerts/v2/AlertBanner.tsx`,
