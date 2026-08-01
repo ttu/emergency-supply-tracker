@@ -153,4 +153,69 @@ describe('Inventory (v2)', () => {
       expect(typeof onAddItem.mock.calls[0][0]).toBe('string');
     });
   });
+
+  describe('sorting and location', () => {
+    it('sorts by name by default and can switch to quantity', async () => {
+      setup();
+      await screen.findByText('Bottled water');
+
+      const names = () =>
+        screen
+          .getAllByText(/Bottled water|Canned beans/)
+          .map((el) => el.textContent);
+      expect(names()).toEqual(['Bottled water', 'Canned beans']);
+
+      fireEvent.change(screen.getByLabelText('v2.inventory.sortAria.cockpit'), {
+        target: { value: 'quantity' },
+      });
+      // Canned beans has 20, bottled water 0.
+      expect(names()).toEqual(['Canned beans', 'Bottled water']);
+    });
+
+    it('offers no location select when nothing has a location', async () => {
+      setup();
+      await screen.findByText('Bottled water');
+      expect(
+        screen.queryByLabelText('v2.inventory.locationAria.cockpit'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('filters by location', async () => {
+      renderWithProviders(
+        <Inventory
+          onCategoryChange={vi.fn()}
+          onItemSelect={vi.fn()}
+          onAddItem={vi.fn()}
+        />,
+        {
+          initialAppData: createMockAppData({
+            settings: createMockSettings({ theme: 'cockpit', language: 'en' }),
+            items: [
+              createMockInventoryItem({
+                name: 'Pantry water',
+                categoryId: WATER_ID,
+                quantity: createQuantity(5),
+                location: 'Pantry',
+              }),
+              createMockInventoryItem({
+                name: 'Garage beans',
+                categoryId: FOOD_ID,
+                quantity: createQuantity(5),
+                location: 'Garage',
+              }),
+            ],
+          }),
+        },
+      );
+
+      await screen.findByText('Pantry water');
+      fireEvent.change(
+        screen.getByLabelText('v2.inventory.locationAria.cockpit'),
+        { target: { value: 'Garage' } },
+      );
+
+      expect(screen.getByText('Garage beans')).toBeInTheDocument();
+      expect(screen.queryByText('Pantry water')).not.toBeInTheDocument();
+    });
+  });
 });

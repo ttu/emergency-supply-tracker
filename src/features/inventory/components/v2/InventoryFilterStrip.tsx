@@ -1,7 +1,21 @@
+import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { CAPS_STYLE } from '@/shared/components/design-v2/primitives';
 import type { Category } from '@/shared/types';
+import type { SortBy } from '@/features/inventory';
+
+const SELECT_STYLE: CSSProperties = {
+  background: 'var(--color-panel-2)',
+  border: '1px solid var(--color-rule)',
+  color: 'var(--color-text)',
+  padding: '6px 10px',
+  fontFamily: 'var(--font-mono)',
+  fontSize: 11,
+  borderRadius: 'var(--radius-sm)',
+  outline: 'none',
+  cursor: 'pointer',
+};
 
 export type InventoryFilterKey =
   | 'all'
@@ -30,6 +44,12 @@ interface InventoryFilterStripProps {
   categories: Category[];
   search: string;
   onSearchChange: (q: string) => void;
+  locationFilter: string;
+  onLocationFilterChange: (location: string) => void;
+  /** Distinct locations across the inventory, for the location select. */
+  locations: string[];
+  sortBy: SortBy;
+  onSortByChange: (sortBy: SortBy) => void;
 }
 
 /** Top of the inventory panel: status chips + category select + search. */
@@ -42,6 +62,11 @@ export function InventoryFilterStrip({
   categories,
   search,
   onSearchChange,
+  locationFilter,
+  onLocationFilterChange,
+  locations,
+  sortBy,
+  onSortByChange,
 }: Readonly<InventoryFilterStripProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -108,21 +133,38 @@ export function InventoryFilterStrip({
           gap: 8,
         }}
       >
+        {locations.length > 0 && (
+          <select
+            value={locationFilter}
+            onChange={(e) => onLocationFilterChange(e.target.value)}
+            aria-label={t(`v2.inventory.locationAria.${themeKey}`)}
+            style={SELECT_STYLE}
+          >
+            <option value="all">
+              {t(`v2.inventory.allLocations.${themeKey}`)}
+            </option>
+            {locations.map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+        )}
+        <select
+          value={sortBy}
+          onChange={(e) => onSortByChange(e.target.value as SortBy)}
+          aria-label={t(`v2.inventory.sortAria.${themeKey}`)}
+          style={SELECT_STYLE}
+        >
+          <option value="name">{t('inventory.sort.name')}</option>
+          <option value="quantity">{t('inventory.sort.quantity')}</option>
+          <option value="expiration">{t('inventory.sort.expiration')}</option>
+        </select>
         <select
           value={selectedCategoryId ?? ''}
           onChange={(e) => onCategoryChange(e.target.value || undefined)}
           aria-label={t(`v2.inventory.categoryAria.${themeKey}`)}
-          style={{
-            background: 'var(--color-panel-2)',
-            border: '1px solid var(--color-rule)',
-            color: 'var(--color-text)',
-            padding: '6px 10px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            borderRadius: 'var(--radius-sm)',
-            outline: 'none',
-            cursor: 'pointer',
-          }}
+          style={SELECT_STYLE}
         >
           <option value="">
             {t(`v2.inventory.allCategories.${themeKey}`)}

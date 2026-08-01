@@ -8,6 +8,9 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
+import { useInventory, useLocationSuggestions } from '@/features/inventory';
+import { compareItemsBy } from '@/features/inventory/utils/sortItems';
+import type { SortBy } from '@/features/inventory';
 import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommendedItems';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
@@ -69,6 +72,10 @@ export function Inventory({
   const allMissing = useMissingRecommendedItems();
   const [filter, setFilter] = useState<InventoryFilterKey>('all');
   const [search, setSearch] = useState('');
+  const [locationFilter, setLocationFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<SortBy>('name');
+  const { items } = useInventory();
+  const locations = useLocationSuggestions(items);
 
   const counts = useMemo(() => {
     let crit = 0;
@@ -108,9 +115,16 @@ export function Inventory({
         return false;
       if (!matchesStatusFilter(r.status, filter)) return false;
       if (filter === 'exp' && !isExpiringSoon(r.item)) return false;
+      if (locationFilter !== 'all' && r.item.location !== locationFilter)
+        return false;
       return matchesSearch(r, search);
     });
-  }, [rows, filter, selectedCategoryId, search]);
+  }, [rows, filter, selectedCategoryId, search, locationFilter]);
+
+  const visible = useMemo(
+    () => [...filtered].sort((a, b) => compareItemsBy(a.item, b.item, sortBy)),
+    [filtered, sortBy],
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -144,12 +158,17 @@ export function Inventory({
           categories={categories}
           search={search}
           onSearchChange={setSearch}
+          locationFilter={locationFilter}
+          onLocationFilterChange={setLocationFilter}
+          locations={locations}
+          sortBy={sortBy}
+          onSortByChange={setSortBy}
         />
         {filter === 'missing' ? (
           <MissingItemsTable items={missing} onAdd={onAddItem} />
         ) : (
           <InventoryTable
-            rows={filtered}
+            rows={visible}
             totalRowCount={rows.length}
             onItemSelect={onItemSelect}
           />

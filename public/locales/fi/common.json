@@ -1171,6 +1171,21 @@
         "cockpit": "LISÄÄ",
         "civil": "LISÄÄ",
         "pantry": "Lisää"
+      },
+      "sortAria": {
+        "cockpit": "JÄRJESTÄ",
+        "civil": "JÄRJESTÄ",
+        "pantry": "Järjestä"
+      },
+      "locationAria": {
+        "cockpit": "SIJAINTI",
+        "civil": "SIJAINTI",
+        "pantry": "Sijainti"
+      },
+      "allLocations": {
+        "cockpit": "KAIKKI SIJAINNIT",
+        "civil": "KAIKKI SIJAINNIT",
+        "pantry": "Kaikki sijainnit"
       }
     },
     "itemDetail": {

@@ -25,6 +25,11 @@ const renderStrip = (
       categories={cats}
       search=""
       onSearchChange={vi.fn()}
+      locationFilter="all"
+      onLocationFilterChange={vi.fn()}
+      locations={['Pantry', 'Garage']}
+      sortBy="name"
+      onSortByChange={vi.fn()}
       {...overrides}
     />,
     { initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) } },
@@ -74,7 +79,10 @@ describe('InventoryFilterStrip (v2)', () => {
   it('renders categories in the dropdown and forwards changes', () => {
     const onCategoryChange = vi.fn();
     renderStrip({ onCategoryChange });
-    const select = screen.getByRole('combobox') as HTMLSelectElement;
+    // Three selects now (location, sort, category) — pick the category one.
+    const select = screen.getByLabelText(
+      'v2.inventory.categoryAria.cockpit',
+    ) as HTMLSelectElement;
     expect(
       screen.getByRole('option', {
         name: 'v2.inventory.allCategories.cockpit',
@@ -88,7 +96,10 @@ describe('InventoryFilterStrip (v2)', () => {
   it('clearing the category sends undefined', () => {
     const onCategoryChange = vi.fn();
     renderStrip({ selectedCategoryId: String(cats[0].id), onCategoryChange });
-    const select = screen.getByRole('combobox') as HTMLSelectElement;
+    // Three selects now (location, sort, category) — pick the category one.
+    const select = screen.getByLabelText(
+      'v2.inventory.categoryAria.cockpit',
+    ) as HTMLSelectElement;
     fireEvent.change(select, { target: { value: '' } });
     expect(onCategoryChange).toHaveBeenCalledWith(undefined);
   });

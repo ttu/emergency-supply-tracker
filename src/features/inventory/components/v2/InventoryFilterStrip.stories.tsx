@@ -38,6 +38,11 @@ export const All: Story = {
     categories,
     search: '',
     onSearchChange: () => {},
+    locationFilter: 'all',
+    onLocationFilterChange: () => {},
+    locations: ['Pantry', 'Garage'],
+    sortBy: 'name',
+    onSortByChange: () => {},
   },
 };
 export const CritFilter: Story = { args: { ...All.args!, filter: 'crit' } };

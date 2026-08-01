@@ -1171,6 +1171,21 @@
         "cockpit": "ADD",
         "civil": "ADD",
         "pantry": "Add"
+      },
+      "sortAria": {
+        "cockpit": "SORT BY",
+        "civil": "SORT BY",
+        "pantry": "Sort by"
+      },
+      "locationAria": {
+        "cockpit": "LOCATION",
+        "civil": "LOCATION",
+        "pantry": "Location"
+      },
+      "allLocations": {
+        "cockpit": "ALL LOCATIONS",
+        "civil": "ALL LOCATIONS",
+        "pantry": "All locations"
       }
     },
     "itemDetail": {

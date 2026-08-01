@@ -11,6 +11,9 @@ import {
   type DesignItemRow,
 } from '@/shared/hooks/useDesignData';
 import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommendedItems';
+import { useInventory, useLocationSuggestions } from '@/features/inventory';
+import { compareItemsBy } from '@/features/inventory/utils/sortItems';
+import type { SortBy } from '@/features/inventory';
 import { MissingItemsTable } from './MissingItemsTable';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
@@ -34,6 +37,10 @@ export function MobileInventory({
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const allMissing = useMissingRecommendedItems();
+  const { items } = useInventory();
+  const locations = useLocationSuggestions(items);
+  const [locationFilter, setLocationFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<SortBy>('name');
   const [filter, setFilter] = useState<FilterKey>('all');
   const [search, setSearch] = useState('');
 
@@ -61,9 +68,16 @@ export function MobileInventory({
       }
       if (search && !r.item.name.toLowerCase().includes(search.toLowerCase()))
         return false;
+      if (locationFilter !== 'all' && r.item.location !== locationFilter)
+        return false;
       return true;
     });
-  }, [rows, filter, search, selectedCategoryId]);
+  }, [rows, filter, search, selectedCategoryId, locationFilter]);
+
+  const visible = useMemo(
+    () => [...filtered].sort((a, b) => compareItemsBy(a.item, b.item, sortBy)),
+    [filtered, sortBy],
+  );
 
   const missing = useMemo(
     () =>
@@ -132,6 +146,35 @@ export function MobileInventory({
           </option>
         ))}
       </select>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {locations.length > 0 && (
+          <select
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+            aria-label={t(`v2.inventory.locationAria.${themeKey}`)}
+            style={MOBILE_SELECT_STYLE}
+          >
+            <option value="all">
+              {t(`v2.inventory.allLocations.${themeKey}`)}
+            </option>
+            {locations.map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+        )}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortBy)}
+          aria-label={t(`v2.inventory.sortAria.${themeKey}`)}
+          style={MOBILE_SELECT_STYLE}
+        >
+          <option value="name">{t('inventory.sort.name')}</option>
+          <option value="quantity">{t('inventory.sort.quantity')}</option>
+          <option value="expiration">{t('inventory.sort.expiration')}</option>
+        </select>
+      </div>
       <div style={{ display: 'flex', gap: 6, overflowX: 'auto' }}>
         {chips.map(([k, label]) => {
           const active = filter === k;
@@ -163,7 +206,7 @@ export function MobileInventory({
         {filter === 'missing' && (
           <MissingItemsTable items={missing} onAdd={onAddItem} />
         )}
-        {filter !== 'missing' && filtered.length === 0 && (
+        {filter !== 'missing' && visible.length === 0 && (
           <div
             style={{
               padding: 24,
@@ -175,11 +218,11 @@ export function MobileInventory({
           </div>
         )}
         {filter !== 'missing' &&
-          filtered.map((r, i) => (
+          visible.map((r, i) => (
             <MobileInventoryRow
               key={String(r.item.id)}
               row={r}
-              isLast={i === filtered.length - 1}
+              isLast={i === visible.length - 1}
               onSelect={onItemSelect}
             />
           ))}
@@ -187,6 +230,19 @@ export function MobileInventory({
     </div>
   );
 }
+
+const MOBILE_SELECT_STYLE: CSSProperties = {
+  background: 'var(--color-panel)',
+  border: '1px solid var(--color-rule)',
+  color: 'var(--color-text)',
+  padding: '10px 12px',
+  fontFamily: 'var(--font-mono)',
+  fontSize: 12,
+  borderRadius: 'var(--radius-sm)',
+  outline: 'none',
+  flex: 1,
+  minWidth: 0,
+};
 
 const ROW_BASE_STYLE: CSSProperties = {
   padding: '12px 14px',
