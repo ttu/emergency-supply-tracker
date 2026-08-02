@@ -7,13 +7,12 @@ import {
   Title,
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
-import { useRecommendedItems } from '@/features/templates';
-import { buildOnboardingItems } from './buildOnboardingItems';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 
-interface OnboardStep06Props {
+interface OnboardStep07Props {
   household: HouseholdConfig;
-  enabledCategories: Set<string>;
+  /** What quick setup produced — already built, not rebuilt here. */
+  items: InventoryItem[];
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;
 }
 
@@ -30,25 +29,19 @@ function SummaryStat({
   );
 }
 
-export function OnboardStep06Complete({
+export function OnboardStep07Complete({
   household,
-  enabledCategories,
+  items,
   onComplete,
-}: Readonly<OnboardStep06Props>) {
+}: Readonly<OnboardStep07Props>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const { recommendedItems } = useRecommendedItems();
 
-  // Finish with the picked categories' recommended items already on the list,
-  // the way v1's quick setup does — otherwise a new household lands on an
-  // empty inventory with nothing to work from.
-  const seedItems = () =>
-    buildOnboardingItems(
-      recommendedItems,
-      household,
-      enabledCategories,
-      (key) => t(key.replace('products.', ''), { ns: 'products' }),
-    );
+  const stocked = items.filter((i) => i.quantity > 0).length;
+  const readiness = items.length
+    ? Math.round((stocked / items.length) * 100)
+    : 0;
+
   return (
     <div
       style={{
@@ -86,7 +79,7 @@ export function OnboardStep06Complete({
           }}
         >
           {t(`v2.onboarding.step06.subtitle.${themeKey}`, {
-            count: enabledCategories.size,
+            count: items.length,
           })}
         </div>
         <div
@@ -102,16 +95,17 @@ export function OnboardStep06Complete({
           }}
         >
           <SummaryStat caption={t(`v2.voice.readiness.${themeKey}`)}>
-            <NumberDisplay value="0" suffix="%" size={36} tone="crit" />
+            <NumberDisplay
+              value={readiness}
+              suffix="%"
+              size={36}
+              tone={readiness === 0 ? 'crit' : 'warn'}
+            />
           </SummaryStat>
           <SummaryStat
-            caption={t(`v2.onboarding.step06.categoriesCaption.${themeKey}`)}
+            caption={t(`v2.onboarding.step06.itemsCaption.${themeKey}`)}
           >
-            <NumberDisplay
-              value={enabledCategories.size}
-              suffix="/10"
-              size={36}
-            />
+            <NumberDisplay value={items.length} size={36} />
           </SummaryStat>
           <SummaryStat
             caption={t(`v2.onboarding.step06.daysCaption.${themeKey}`)}
@@ -122,7 +116,7 @@ export function OnboardStep06Complete({
         <div style={{ marginTop: 32 }}>
           <Button
             variant="primary"
-            onClick={() => onComplete(household, seedItems())}
+            onClick={() => onComplete(household, items)}
           >
             {t(`v2.onboarding.step06.openDashboard.${themeKey}`)}
           </Button>

@@ -438,7 +438,8 @@
       "title": "Delete Kit",
       "message": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
       "confirm": "Delete"
-    }
+    },
+    "invalidJson": "not a valid kit file"
   },
   "errorBoundary": {
     "title": "Something went wrong",
@@ -1021,6 +1022,16 @@
         "cockpit": "COPY",
         "civil": "COPY",
         "pantry": "Duplicate"
+      },
+      "onbKit": {
+        "cockpit": "KIT · §5 RECOMMENDATIONS",
+        "civil": "RECOMMENDATION KIT · §5",
+        "pantry": "Recommendation kit"
+      },
+      "onbQuickSetup": {
+        "cockpit": "QUICK SETUP · §6 LINE ITEMS",
+        "civil": "QUICK SETUP · §6",
+        "pantry": "Quick setup"
       }
     },
     "alerts": {
@@ -1311,6 +1322,38 @@
         "pantry": "Pick a product, or add your own"
       }
     },
+    "picker": {
+      "categoryRail": {
+        "cockpit": "CATEGORY",
+        "civil": "CATEGORY",
+        "pantry": "Category"
+      },
+      "categoryCount": {
+        "cockpit": "{{count}} CATEGORIES",
+        "civil": "{{count}} CATEGORIES",
+        "pantry": "{{count}} categories"
+      },
+      "allProducts": {
+        "cockpit": "ALL PRODUCTS",
+        "civil": "ALL PRODUCTS",
+        "pantry": "All products"
+      },
+      "templateCount": {
+        "cockpit": "{{count}} TEMPLATES",
+        "civil": "{{count}} TEMPLATES",
+        "pantry": "{{count}} products"
+      },
+      "add": {
+        "cockpit": "ADD",
+        "civil": "ADD",
+        "pantry": "Add"
+      },
+      "empty": {
+        "cockpit": "NO TEMPLATES · TRY CUSTOM ITEM",
+        "civil": "NO TEMPLATES · TRY CUSTOM ITEM",
+        "pantry": "Nothing matches — try adding your own item."
+      }
+    },
     "onboarding": {
       "stepLabel": "STEP {{step}} / {{total}} · {{title}}",
       "footerNote": {
@@ -1345,9 +1388,9 @@
         "leadTitleCivil": "EMERGENCY SUPPLY TRACKER · INITIAL CONFIGURATION",
         "leadTitleCockpit": "INITIALIZE · HOUSEHOLD PROFILE",
         "leadSub": {
-          "cockpit": "FIVE-STEP PROVISIONING · NO ACCOUNT · NO CLOUD · ALL STATE LOCAL · ~90 SECONDS.",
-          "civil": "FIVE-STEP PROVISIONING · NO ACCOUNT · NO CLOUD · ALL STATE LOCAL · ~90 SECONDS.",
-          "pantry": "A short, five-step setup. We'll ask who lives with you and what you already have, then build a checklist based on civil-defense guidance."
+          "cockpit": "SIX-STEP PROVISIONING · NO ACCOUNT · NO CLOUD · ALL STATE LOCAL · ~90 SECONDS.",
+          "civil": "SIX-STEP PROVISIONING · NO ACCOUNT · NO CLOUD · ALL STATE LOCAL · ~90 SECONDS.",
+          "pantry": "A short, six-step setup. We'll ask who lives with you and what you already have, then build a checklist based on civil-defense guidance."
         },
         "outputsCaption": {
           "cockpit": "OUTPUTS",
@@ -1449,85 +1492,11 @@
           "pantry": "Target days"
         }
       },
-      "step05": {
-        "leadTitle": {
-          "cockpit": "INITIAL INVENTORY · OPTIONAL",
-          "civil": "INITIAL INVENTORY · OPTIONAL",
-          "pantry": "What categories should we track?"
-        },
-        "leadSub": {
-          "cockpit": "TOGGLE CATEGORIES. ALL TEN ENABLED BY DEFAULT.",
-          "civil": "TOGGLE CATEGORIES. ALL TEN ENABLED BY DEFAULT.",
-          "pantry": "Tick the categories that apply to your household. You can add or remove items inside each one later."
-        },
-        "primaryLabel": {
-          "cockpit": "COMMIT BASELINE →",
-          "civil": "COMMIT BASELINE →",
-          "pantry": "Finish setup"
-        },
-        "enabledCount": {
-          "cockpit": "CATEGORY ENABLEMENT · {{enabled}} / {{total}}",
-          "civil": "CATEGORY ENABLEMENT · {{enabled}} / {{total}}",
-          "pantry": "{{enabled}} of {{total}} enabled"
-        },
-        "cat": {
-          "water-beverages": {
-            "cockpit": "WATER & BEVERAGES",
-            "civil": "WATER & BEVERAGES",
-            "pantry": "Water & beverages"
-          },
-          "food": {
-            "cockpit": "FOOD",
-            "civil": "FOOD",
-            "pantry": "Food"
-          },
-          "cooking-heat": {
-            "cockpit": "COOKING & HEAT",
-            "civil": "COOKING & HEAT",
-            "pantry": "Cooking & heat"
-          },
-          "light-power": {
-            "cockpit": "LIGHT & POWER",
-            "civil": "LIGHT & POWER",
-            "pantry": "Light & power"
-          },
-          "communication-info": {
-            "cockpit": "COMMUNICATION",
-            "civil": "COMMUNICATION",
-            "pantry": "Communication"
-          },
-          "medical-health": {
-            "cockpit": "MEDICAL & HEALTH",
-            "civil": "MEDICAL & HEALTH",
-            "pantry": "Medical"
-          },
-          "hygiene-sanitation": {
-            "cockpit": "HYGIENE & SANITATION",
-            "civil": "HYGIENE & SANITATION",
-            "pantry": "Hygiene"
-          },
-          "tools-supplies": {
-            "cockpit": "TOOLS & SUPPLIES",
-            "civil": "TOOLS & SUPPLIES",
-            "pantry": "Tools"
-          },
-          "cash-documents": {
-            "cockpit": "CASH & DOCUMENTS",
-            "civil": "CASH & DOCUMENTS",
-            "pantry": "Cash & documents"
-          },
-          "pets": {
-            "cockpit": "PETS",
-            "civil": "PETS",
-            "pantry": "Pets"
-          }
-        }
-      },
       "step06": {
         "setupComplete": {
-          "cockpit": "SETUP COMPLETE · 05 / 05",
-          "civil": "SETUP COMPLETE · 05 / 05",
-          "pantry": "Setup complete · 5 / 5"
+          "cockpit": "SETUP COMPLETE · 06 / 06",
+          "civil": "SETUP COMPLETE · 06 / 06",
+          "pantry": "Setup complete · 6 / 6"
         },
         "title": {
           "cockpit": "PROVISIONING COMPLETE",
@@ -1535,14 +1504,9 @@
           "pantry": "You're set up."
         },
         "subtitle": {
-          "cockpit": "BASELINE PROVISIONED · {{count}} CATEGORIES ENABLED. EXPIRY MONITORING ACTIVE.",
-          "civil": "BASELINE PROVISIONED · {{count}} CATEGORIES ENABLED. EXPIRY MONITORING ACTIVE.",
-          "pantry": "Your starting kit is ready. We'll keep an eye on expiry dates and remind you when something runs low — open the dashboard to see what's next."
-        },
-        "categoriesCaption": {
-          "cockpit": "CATEGORIES",
-          "civil": "CATEGORIES",
-          "pantry": "Categories"
+          "cockpit": "BASELINE PROVISIONED · {{count}} LINE ITEMS TRACKED. EXPIRY MONITORING ACTIVE.",
+          "civil": "BASELINE PROVISIONED · {{count}} LINE ITEMS TRACKED. EXPIRY MONITORING ACTIVE.",
+          "pantry": "Your starting kit is ready — {{count}} items on the list. We'll keep an eye on expiry dates and remind you when something runs low."
         },
         "daysCaption": {
           "cockpit": "TARGET DAYS",
@@ -1553,6 +1517,140 @@
           "cockpit": "OPEN OVERVIEW →",
           "civil": "OPEN OVERVIEW →",
           "pantry": "Open dashboard →"
+        },
+        "itemsCaption": {
+          "cockpit": "ITEMS",
+          "civil": "ITEMS",
+          "pantry": "Items"
+        }
+      },
+      "kit": {
+        "leadTitle": {
+          "cockpit": "CHOOSE A RECOMMENDATION KIT",
+          "civil": "SELECT A RECOMMENDATION KIT",
+          "pantry": "Choose a recommendation kit."
+        },
+        "leadSub": {
+          "cockpit": "SELECT A PRE-CONFIGURED KIT OF RECOMMENDED ITEMS · OR UPLOAD A CUSTOM KIT (JSON).",
+          "civil": "SELECT A PRE-CONFIGURED KIT OF RECOMMENDED ITEMS · OR UPLOAD A CUSTOM KIT (JSON).",
+          "pantry": "A kit is the list of items we suggest tracking. Start from a built-in one, or upload your own."
+        },
+        "builtInCaption": {
+          "cockpit": "BUILT-IN KITS",
+          "civil": "BUILT-IN KITS",
+          "pantry": "Built-in kits"
+        },
+        "yourKitsCaption": {
+          "cockpit": "YOUR KITS",
+          "civil": "YOUR KITS",
+          "pantry": "Your kits"
+        },
+        "builtIn": {
+          "cockpit": "BUILT-IN",
+          "civil": "BUILT-IN",
+          "pantry": "Built-in"
+        },
+        "uploaded": {
+          "cockpit": "UPLOADED",
+          "civil": "UPLOADED",
+          "pantry": "Yours"
+        },
+        "items": {
+          "cockpit": "ITEMS",
+          "civil": "ITEMS",
+          "pantry": "items"
+        },
+        "uploadTitle": {
+          "cockpit": "UPLOAD KIT",
+          "civil": "UPLOAD KIT",
+          "pantry": "Upload a kit"
+        },
+        "uploadHint": {
+          "cockpit": "IMPORT A CUSTOM JSON KIT FILE",
+          "civil": "IMPORT A CUSTOM JSON KIT FILE",
+          "pantry": "Import a custom JSON kit file"
+        }
+      },
+      "quickSetup": {
+        "leadTitle": {
+          "cockpit": "QUICK SETUP",
+          "civil": "QUICK SETUP · KIT LINE ITEMS",
+          "pantry": "Your starting checklist."
+        },
+        "leadSub": {
+          "cockpit": "ITEMS FROM THE SELECTED KIT · SIZED TO HOUSEHOLD. TOGGLE PER LINE · MARK OWNED · OR ADD ALL.",
+          "civil": "ITEMS FROM THE SELECTED KIT · SIZED TO HOUSEHOLD. TOGGLE PER LINE · MARK OWNED · OR ADD ALL.",
+          "pantry": "These are the items from your kit, sized to your household. Untick anything you don't want, or mark what you already have."
+        },
+        "selectedCaption": {
+          "cockpit": "SELECTED",
+          "civil": "SELECTED",
+          "pantry": "Selected"
+        },
+        "ownedCaption": {
+          "cockpit": "OWNED",
+          "civil": "ALREADY HELD",
+          "pantry": "Already have"
+        },
+        "daysCaption": {
+          "cockpit": "DAYS",
+          "civil": "DAYS",
+          "pantry": "Days"
+        },
+        "itemsCaption": {
+          "cockpit": "{{count}} LINE ITEMS",
+          "civil": "{{count}} LINE ITEMS",
+          "pantry": "{{count}} items"
+        },
+        "showDetails": {
+          "cockpit": "SHOW DETAILS",
+          "civil": "SHOW DETAILS",
+          "pantry": "Show details"
+        },
+        "hideDetails": {
+          "cockpit": "HIDE DETAILS",
+          "civil": "HIDE DETAILS",
+          "pantry": "Hide details"
+        },
+        "selectAll": {
+          "cockpit": "SELECT ALL",
+          "civil": "SELECT ALL",
+          "pantry": "Select all"
+        },
+        "deselectAll": {
+          "cockpit": "DESELECT ALL",
+          "civil": "DESELECT ALL",
+          "pantry": "Deselect all"
+        },
+        "markOwned": {
+          "cockpit": "MARK OWNED",
+          "civil": "MARK OWNED",
+          "pantry": "I have this"
+        },
+        "owned": {
+          "cockpit": "OWNED",
+          "civil": "OWNED",
+          "pantry": "Have it"
+        },
+        "addAll": {
+          "cockpit": "ADD ALL ITEMS →",
+          "civil": "ADD ALL ITEMS →",
+          "pantry": "Add all items"
+        },
+        "addSelected": {
+          "cockpit": "ADD SELECTED →",
+          "civil": "ADD SELECTED →",
+          "pantry": "Add selected items"
+        },
+        "skip": {
+          "cockpit": "SKIP FOR NOW",
+          "civil": "SKIP FOR NOW",
+          "pantry": "Skip for now"
+        },
+        "tryDemo": {
+          "cockpit": "TRY DEMO DATA",
+          "civil": "TRY DEMO DATA",
+          "pantry": "Try with demo data"
         }
       }
     },
@@ -2368,38 +2466,6 @@
           },
           "body": "Copies of ID, insurance, bank info. €500 in small bills. Both sealed in a waterproof container."
         }
-      }
-    },
-    "picker": {
-      "categoryRail": {
-        "cockpit": "CATEGORY",
-        "civil": "CATEGORY",
-        "pantry": "Category"
-      },
-      "categoryCount": {
-        "cockpit": "{{count}} CATEGORIES",
-        "civil": "{{count}} CATEGORIES",
-        "pantry": "{{count}} categories"
-      },
-      "allProducts": {
-        "cockpit": "ALL PRODUCTS",
-        "civil": "ALL PRODUCTS",
-        "pantry": "All products"
-      },
-      "templateCount": {
-        "cockpit": "{{count}} TEMPLATES",
-        "civil": "{{count}} TEMPLATES",
-        "pantry": "{{count}} products"
-      },
-      "add": {
-        "cockpit": "ADD",
-        "civil": "ADD",
-        "pantry": "Add"
-      },
-      "empty": {
-        "cockpit": "NO TEMPLATES · TRY CUSTOM ITEM",
-        "civil": "NO TEMPLATES · TRY CUSTOM ITEM",
-        "pantry": "Nothing matches — try adding your own item."
       }
     }
   }

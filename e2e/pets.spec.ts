@@ -126,7 +126,14 @@ test.describe('Pet Support', () => {
       await inc.click();
       // The computed-targets aside re-renders; just verify we can continue.
       await page.getByRole('button', { name: /CONTINUE →/ }).click();
-      await expect(page.getByText(/STEP 05 \/ 05/)).toBeVisible();
+      await expect(page.getByText(/STEP 05 \/ 06/)).toBeVisible();
+
+      // With pets on the profile, the checklist now offers pet supplies.
+      await page.getByRole('button', { name: /CONTINUE →/ }).click();
+      await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+      await expect(
+        page.getByTestId(/^v2-quick-setup-item-pet-/).first(),
+      ).toBeVisible();
     });
   });
 });

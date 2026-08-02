@@ -1,17 +1,18 @@
 import { test, expect } from './fixtures';
 
 /**
- * Design v2 onboarding is a six-step flow:
+ * Design v2 onboarding is a six-step flow plus a completion screen:
  *   1 Welcome / Language
  *   2 Theme picker
  *   3 Preset (single / couple / family / custom)
  *   4 Household profile (steppers)
- *   5 Items (10-row category toggle)
- *   6 Complete
+ *   5 Recommendation kit
+ *   6 Quick setup (the starting checklist)
+ *   — Complete
  *
- * Each step renders the shared OnboardLayout — STEP NN / 05 header + a
- * "CONTINUE →" / "BACK" footer (cockpit voice). The last step shows
- * "OPEN OVERVIEW →" instead of CONTINUE.
+ * Each step renders the shared OnboardLayout — STEP NN / 06 header + a
+ * "CONTINUE →" / "BACK" footer (cockpit voice). Quick setup replaces CONTINUE
+ * with "ADD ALL ITEMS →", and the completion screen with "OPEN OVERVIEW →".
  */
 
 const clearAndReload = async (page: import('@playwright/test').Page) => {
@@ -20,61 +21,107 @@ const clearAndReload = async (page: import('@playwright/test').Page) => {
   await page.reload({ waitUntil: 'domcontentloaded' });
 };
 
+const continueButton = (page: import('@playwright/test').Page) =>
+  page.getByRole('button', { name: /CONTINUE →/ });
+
 test.describe('Onboarding Flow', () => {
   test('should show onboarding for first-time users', async ({ page }) => {
     await clearAndReload(page);
-    await expect(page.getByText(/STEP 01 \/ 05/)).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: /CONTINUE →/ }),
-    ).toBeVisible();
+    await expect(page.getByText(/STEP 01 \/ 06/)).toBeVisible();
+    await expect(continueButton(page)).toBeVisible();
   });
 
   test('should complete the full v2 onboarding flow', async ({ page }) => {
     await clearAndReload(page);
 
-    // Step 1 → 2
-    await page.getByRole('button', { name: /CONTINUE →/ }).click();
-    await expect(page.getByText(/STEP 02 \/ 05/)).toBeVisible();
-    // Step 2 → 3
-    await page.getByRole('button', { name: /CONTINUE →/ }).click();
-    await expect(page.getByText(/STEP 03 \/ 05/)).toBeVisible();
-    // Pick couple preset (P-02) then advance
-    await page.getByRole('button', { name: /P-02/ }).click();
-    await page.getByRole('button', { name: /CONTINUE →/ }).click();
-    await expect(page.getByText(/STEP 04 \/ 05/)).toBeVisible();
-    // Household → items
-    await page.getByRole('button', { name: /CONTINUE →/ }).click();
-    await expect(page.getByText(/STEP 05 \/ 05/)).toBeVisible();
-    // Commit baseline
-    await page.getByRole('button', { name: /COMMIT BASELINE →/ }).click();
+    await continueButton(page).click(); // 1 → 2
+    await expect(page.getByText(/STEP 02 \/ 06/)).toBeVisible();
+    await continueButton(page).click(); // 2 → 3
+    await expect(page.getByText(/STEP 03 \/ 06/)).toBeVisible();
+
+    await page.getByRole('button', { name: /P-02/ }).click(); // couple
+    await continueButton(page).click(); // 3 → 4
+    await expect(page.getByText(/STEP 04 \/ 06/)).toBeVisible();
+
+    await continueButton(page).click(); // 4 → 5
+    await expect(page.getByText(/STEP 05 \/ 06/)).toBeVisible();
+    await expect(page.getByTestId('v2-kit-72tuntia-standard')).toBeVisible();
+
+    await continueButton(page).click(); // 5 → 6
+    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+
+    await page.getByRole('button', { name: /ADD ALL ITEMS →/ }).click();
     await expect(page.getByText('PROVISIONING COMPLETE')).toBeVisible();
-    // Open dashboard
+
     await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
     await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible({
       timeout: 5000,
     });
   });
 
+  test('the finished inventory holds what quick setup offered', async ({
+    page,
+  }) => {
+    await clearAndReload(page);
+    for (let i = 0; i < 5; i++) await continueButton(page).click();
+
+    await page.getByRole('button', { name: /ADD ALL ITEMS →/ }).click();
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
+
+    const itemCount = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      );
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: unknown[];
+      }[];
+      return sets[0]?.items?.length ?? 0;
+    });
+    expect(itemCount).toBeGreaterThan(0);
+  });
+
+  test('skipping quick setup finishes with an empty inventory', async ({
+    page,
+  }) => {
+    await clearAndReload(page);
+    for (let i = 0; i < 5; i++) await continueButton(page).click();
+
+    await page.getByRole('button', { name: /SKIP FOR NOW/ }).click();
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
+
+    const itemCount = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      );
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: unknown[];
+      }[];
+      return sets[0]?.items?.length ?? 0;
+    });
+    expect(itemCount).toBe(0);
+  });
+
   test('should allow going back through onboarding steps', async ({ page }) => {
     await clearAndReload(page);
 
-    await page.getByRole('button', { name: /CONTINUE →/ }).click(); // → 2
-    await page.getByRole('button', { name: /CONTINUE →/ }).click(); // → 3
-    await expect(page.getByText(/STEP 03 \/ 05/)).toBeVisible();
+    await continueButton(page).click(); // → 2
+    await continueButton(page).click(); // → 3
+    await expect(page.getByText(/STEP 03 \/ 06/)).toBeVisible();
 
     await page.getByRole('button', { name: 'BACK' }).click();
-    await expect(page.getByText(/STEP 02 \/ 05/)).toBeVisible();
+    await expect(page.getByText(/STEP 02 \/ 06/)).toBeVisible();
   });
 
   test('should let user pick the family preset', async ({ page }) => {
     await clearAndReload(page);
-    await page.getByRole('button', { name: /CONTINUE →/ }).click(); // 1→2
-    await page.getByRole('button', { name: /CONTINUE →/ }).click(); // 2→3
+    await continueButton(page).click(); // 1→2
+    await continueButton(page).click(); // 2→3
 
     await page.getByRole('button', { name: /P-03/ }).click(); // family
-    await page.getByRole('button', { name: /CONTINUE →/ }).click(); // 3→4
+    await continueButton(page).click(); // 3→4
 
-    // Household step shows the family numbers (adults=2, children=2).
     await expect(
       page
         .getByText('PROFILE · §2.1')
@@ -82,21 +129,63 @@ test.describe('Onboarding Flow', () => {
     ).toBeVisible();
   });
 
-  test('should toggle categories at step 5', async ({ page }) => {
+  test('quick setup untick drops the product from the seeded inventory', async ({
+    page,
+  }) => {
     await clearAndReload(page);
-    // Skip 1→2→3→4→5
-    await page.getByRole('button', { name: /CONTINUE →/ }).click();
-    await page.getByRole('button', { name: /CONTINUE →/ }).click();
-    await page.getByRole('button', { name: /CONTINUE →/ }).click();
-    await page.getByRole('button', { name: /CONTINUE →/ }).click();
-    await expect(page.getByText(/STEP 05 \/ 05/)).toBeVisible();
+    for (let i = 0; i < 5; i++) await continueButton(page).click();
+    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
 
-    // 9 of 10 enabled by default (pets is opt-in).
-    await expect(page.getByText(/CATEGORY ENABLEMENT · 9 \/ 10/)).toBeVisible();
+    const bottledWater = page.getByTestId('v2-quick-setup-item-bottled-water');
+    await expect(bottledWater).toHaveAttribute('aria-checked', 'true');
+    await bottledWater.click();
+    await expect(bottledWater).toHaveAttribute('aria-checked', 'false');
 
-    // Toggle FUD off → count becomes 8.
-    await page.getByRole('button', { name: /FUD/ }).click();
-    await expect(page.getByText(/CATEGORY ENABLEMENT · 8 \/ 10/)).toBeVisible();
+    await page.getByRole('button', { name: /ADD SELECTED →/ }).click();
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
+
+    const hasWater = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      );
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: { itemType?: string }[];
+      }[];
+      return (sets[0]?.items ?? []).some((i) => i.itemType === 'bottled-water');
+    });
+    expect(hasWater).toBe(false);
+  });
+
+  test('marking a product owned seeds it stocked rather than at zero', async ({
+    page,
+  }) => {
+    await clearAndReload(page);
+    for (let i = 0; i < 5; i++) await continueButton(page).click();
+    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+
+    await page.getByTestId('v2-quick-setup-owned-bottled-water').click();
+    await page.getByRole('button', { name: /ADD ALL ITEMS →/ }).click();
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
+
+    const quantities = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      );
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: { itemType?: string; quantity?: number }[];
+      }[];
+      const items = sets[0]?.items ?? [];
+      return {
+        water: items.find((i) => i.itemType === 'bottled-water')?.quantity ?? 0,
+        others: items
+          .filter((i) => i.itemType !== 'bottled-water')
+          .every((i) => i.quantity === 0),
+      };
+    });
+    expect(quantities.water).toBeGreaterThan(0);
+    expect(quantities.others).toBe(true);
   });
 
   test('should not show onboarding for returning users', async ({
@@ -105,6 +194,6 @@ test.describe('Onboarding Flow', () => {
   }) => {
     await setupApp();
     await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
-    await expect(page.getByText(/STEP 01 \/ 05/)).not.toBeVisible();
+    await expect(page.getByText(/STEP 01 \/ 06/)).not.toBeVisible();
   });
 });

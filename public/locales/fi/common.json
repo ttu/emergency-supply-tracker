@@ -438,7 +438,8 @@
       "title": "Poista paketti",
       "message": "Haluatko varmasti poistaa paketin \"{{name}}\"? Tätä ei voi perua.",
       "confirm": "Poista"
-    }
+    },
+    "invalidJson": "ei kelvollinen pakettitiedosto"
   },
   "errorBoundary": {
     "title": "Jotain meni pieleen",
@@ -1021,6 +1022,16 @@
         "cockpit": "KOPIOI",
         "civil": "KOPIOI",
         "pantry": "Monista"
+      },
+      "onbKit": {
+        "cockpit": "PAKETTI · §5 SUOSITUKSET",
+        "civil": "SUOSITUSPAKETTI · §5",
+        "pantry": "Suosituspaketti"
+      },
+      "onbQuickSetup": {
+        "cockpit": "PIKA-ASETUS · §6 RIVIT",
+        "civil": "PIKA-ASETUS · §6",
+        "pantry": "Pika-asetus"
       }
     },
     "alerts": {
@@ -1311,6 +1322,38 @@
         "pantry": "Valitse tuote tai lisää oma"
       }
     },
+    "picker": {
+      "categoryRail": {
+        "cockpit": "LUOKKA",
+        "civil": "LUOKKA",
+        "pantry": "Luokka"
+      },
+      "categoryCount": {
+        "cockpit": "{{count}} LUOKKAA",
+        "civil": "{{count}} LUOKKAA",
+        "pantry": "{{count}} luokkaa"
+      },
+      "allProducts": {
+        "cockpit": "KAIKKI TUOTTEET",
+        "civil": "KAIKKI TUOTTEET",
+        "pantry": "Kaikki tuotteet"
+      },
+      "templateCount": {
+        "cockpit": "{{count}} MALLIA",
+        "civil": "{{count}} MALLIA",
+        "pantry": "{{count}} tuotetta"
+      },
+      "add": {
+        "cockpit": "LISÄÄ",
+        "civil": "LISÄÄ",
+        "pantry": "Lisää"
+      },
+      "empty": {
+        "cockpit": "EI MALLEJA · KOKEILE OMAA TUOTETTA",
+        "civil": "EI MALLEJA · KOKEILE OMAA TUOTETTA",
+        "pantry": "Ei osumia — lisää oma tuote."
+      }
+    },
     "onboarding": {
       "stepLabel": "VAIHE {{step}} / {{total}} · {{title}}",
       "footerNote": {
@@ -1345,9 +1388,9 @@
         "leadTitleCivil": "VALMIUSVARASTON SEURANTA · ALKUMÄÄRITYS",
         "leadTitleCockpit": "ALUSTUS · KOTITALOUDEN PROFIILI",
         "leadSub": {
-          "cockpit": "VIISIVAIHEINEN VALMISTELU · EI TILIÄ · EI PILVEÄ · KAIKKI TILA PAIKALLINEN · ~90 SEKUNTIA.",
-          "civil": "VIISIVAIHEINEN VALMISTELU · EI TILIÄ · EI PILVEÄ · KAIKKI TILA PAIKALLINEN · ~90 SEKUNTIA.",
-          "pantry": "Lyhyt, viisivaiheinen asennus. Kysymme ketä kanssasi asuu ja mitä sinulla jo on, ja rakennamme tarkistuslistan pelastusviranomaisten ohjeiden mukaan."
+          "cockpit": "KUUSIVAIHEINEN VALMISTELU · EI TILIÄ · EI PILVEÄ · KAIKKI TILA PAIKALLINEN · ~90 SEKUNTIA.",
+          "civil": "KUUSIVAIHEINEN VALMISTELU · EI TILIÄ · EI PILVEÄ · KAIKKI TILA PAIKALLINEN · ~90 SEKUNTIA.",
+          "pantry": "Lyhyt, kuusivaiheinen asennus. Kysymme ketä kanssasi asuu ja mitä sinulla jo on, ja rakennamme tarkistuslistan pelastusviranomaisten ohjeiden mukaan."
         },
         "outputsCaption": {
           "cockpit": "TUOTOKSET",
@@ -1449,85 +1492,11 @@
           "pantry": "Tavoitepäivät"
         }
       },
-      "step05": {
-        "leadTitle": {
-          "cockpit": "ALKUVARASTO · VALINNAINEN",
-          "civil": "ALKUVARASTO · VALINNAINEN",
-          "pantry": "Mitä kategorioita seuraamme?"
-        },
-        "leadSub": {
-          "cockpit": "KÄYTÄ KATEGORIOITA. KAIKKI KYMMENEN KÄYTÖSSÄ OLETUKSENA.",
-          "civil": "KÄYTÄ KATEGORIOITA. KAIKKI KYMMENEN KÄYTÖSSÄ OLETUKSENA.",
-          "pantry": "Valitse kotitaloudellesi sopivat kategoriat. Voit lisätä tai poistaa tuotteita kunkin sisältä myöhemmin."
-        },
-        "primaryLabel": {
-          "cockpit": "VAHVISTA PERUSTASO →",
-          "civil": "VAHVISTA PERUSTASO →",
-          "pantry": "Viimeistele asetus"
-        },
-        "enabledCount": {
-          "cockpit": "KATEGORIOIDEN KÄYTTÖ · {{enabled}} / {{total}}",
-          "civil": "KATEGORIOIDEN KÄYTTÖ · {{enabled}} / {{total}}",
-          "pantry": "{{enabled}} / {{total}} käytössä"
-        },
-        "cat": {
-          "water-beverages": {
-            "cockpit": "VESI & JUOMAT",
-            "civil": "VESI & JUOMAT",
-            "pantry": "Vesi & juomat"
-          },
-          "food": {
-            "cockpit": "RUOKA",
-            "civil": "RUOKA",
-            "pantry": "Ruoka"
-          },
-          "cooking-heat": {
-            "cockpit": "RUOANLAITTO & LÄMPÖ",
-            "civil": "RUOANLAITTO & LÄMPÖ",
-            "pantry": "Ruoanlaitto & lämpö"
-          },
-          "light-power": {
-            "cockpit": "VALO & VIRTA",
-            "civil": "VALO & VIRTA",
-            "pantry": "Valo & virta"
-          },
-          "communication-info": {
-            "cockpit": "VIESTINTÄ",
-            "civil": "VIESTINTÄ",
-            "pantry": "Viestintä"
-          },
-          "medical-health": {
-            "cockpit": "LÄÄKINTÄ & TERVEYS",
-            "civil": "LÄÄKINTÄ & TERVEYS",
-            "pantry": "Lääkintä"
-          },
-          "hygiene-sanitation": {
-            "cockpit": "HYGIENIA & SANITAATIO",
-            "civil": "HYGIENIA & SANITAATIO",
-            "pantry": "Hygienia"
-          },
-          "tools-supplies": {
-            "cockpit": "TYÖKALUT & TARVIKKEET",
-            "civil": "TYÖKALUT & TARVIKKEET",
-            "pantry": "Työkalut"
-          },
-          "cash-documents": {
-            "cockpit": "KÄTEINEN & ASIAKIRJAT",
-            "civil": "KÄTEINEN & ASIAKIRJAT",
-            "pantry": "Käteinen & asiakirjat"
-          },
-          "pets": {
-            "cockpit": "LEMMIKIT",
-            "civil": "LEMMIKIT",
-            "pantry": "Lemmikit"
-          }
-        }
-      },
       "step06": {
         "setupComplete": {
-          "cockpit": "ASETUS VALMIS · 05 / 05",
-          "civil": "ASETUS VALMIS · 05 / 05",
-          "pantry": "Asetus valmis · 5 / 5"
+          "cockpit": "ASETUS VALMIS · 06 / 06",
+          "civil": "ASETUS VALMIS · 06 / 06",
+          "pantry": "Asetus valmis · 6 / 6"
         },
         "title": {
           "cockpit": "VALMISTELU VALMIS",
@@ -1535,14 +1504,9 @@
           "pantry": "Olet valmis."
         },
         "subtitle": {
-          "cockpit": "PERUSTASO VALMIS · {{count}} KATEGORIAA KÄYTÖSSÄ. VANHENEMISEN VALVONTA AKTIIVINEN.",
-          "civil": "PERUSTASO VALMIS · {{count}} KATEGORIAA KÄYTÖSSÄ. VANHENEMISEN VALVONTA AKTIIVINEN.",
-          "pantry": "Aloituspakkauksesi on valmis. Pidämme silmällä vanhenemispäiviä ja muistutamme kun jokin vähenee — avaa etusivu nähdäksesi mitä seuraavaksi."
-        },
-        "categoriesCaption": {
-          "cockpit": "KATEGORIAT",
-          "civil": "KATEGORIAT",
-          "pantry": "Kategoriat"
+          "cockpit": "PERUSTASO VALMIS · {{count}} RIVIÄ SEURANNASSA. VANHENEMISEN VALVONTA AKTIIVINEN.",
+          "civil": "PERUSTASO VALMIS · {{count}} RIVIÄ SEURANNASSA. VANHENEMISEN VALVONTA AKTIIVINEN.",
+          "pantry": "Aloituslistasi on valmis — {{count}} tuotetta listalla. Pidämme silmällä vanhenemispäiviä ja muistutamme kun jokin vähenee."
         },
         "daysCaption": {
           "cockpit": "TAVOITEPÄIVÄT",
@@ -1553,6 +1517,140 @@
           "cockpit": "AVAA YLEISKATSAUS →",
           "civil": "AVAA YLEISKATSAUS →",
           "pantry": "Avaa etusivu →"
+        },
+        "itemsCaption": {
+          "cockpit": "TUOTTEITA",
+          "civil": "TUOTTEITA",
+          "pantry": "Tuotteita"
+        }
+      },
+      "kit": {
+        "leadTitle": {
+          "cockpit": "VALITSE SUOSITUSPAKETTI",
+          "civil": "VALITSE SUOSITUSPAKETTI",
+          "pantry": "Valitse suosituspaketti."
+        },
+        "leadSub": {
+          "cockpit": "VALITSE VALMIS SUOSITELTUJEN TUOTTEIDEN PAKETTI · TAI LATAA OMA (JSON).",
+          "civil": "VALITSE VALMIS SUOSITELTUJEN TUOTTEIDEN PAKETTI · TAI LATAA OMA (JSON).",
+          "pantry": "Paketti on lista tuotteista, joita suosittelemme seuraamaan. Aloita valmiista tai lataa oma."
+        },
+        "builtInCaption": {
+          "cockpit": "VALMIIT PAKETIT",
+          "civil": "VALMIIT PAKETIT",
+          "pantry": "Valmiit paketit"
+        },
+        "yourKitsCaption": {
+          "cockpit": "OMAT PAKETIT",
+          "civil": "OMAT PAKETIT",
+          "pantry": "Omat paketit"
+        },
+        "builtIn": {
+          "cockpit": "VALMIS",
+          "civil": "VALMIS",
+          "pantry": "Valmis"
+        },
+        "uploaded": {
+          "cockpit": "LADATTU",
+          "civil": "LADATTU",
+          "pantry": "Oma"
+        },
+        "items": {
+          "cockpit": "TUOTETTA",
+          "civil": "TUOTETTA",
+          "pantry": "tuotetta"
+        },
+        "uploadTitle": {
+          "cockpit": "LATAA PAKETTI",
+          "civil": "LATAA PAKETTI",
+          "pantry": "Lataa paketti"
+        },
+        "uploadHint": {
+          "cockpit": "TUO OMA JSON-PAKETTITIEDOSTO",
+          "civil": "TUO OMA JSON-PAKETTITIEDOSTO",
+          "pantry": "Tuo oma JSON-pakettitiedosto"
+        }
+      },
+      "quickSetup": {
+        "leadTitle": {
+          "cockpit": "PIKA-ASETUS",
+          "civil": "PIKA-ASETUS · PAKETIN RIVIT",
+          "pantry": "Aloituslistasi."
+        },
+        "leadSub": {
+          "cockpit": "VALITUN PAKETIN TUOTTEET · MITOITETTU TALOUDELLE. VALITSE RIVEITTÄIN · MERKITSE OMISTETUT · TAI LISÄÄ KAIKKI.",
+          "civil": "VALITUN PAKETIN TUOTTEET · MITOITETTU TALOUDELLE. VALITSE RIVEITTÄIN · MERKITSE OMISTETUT · TAI LISÄÄ KAIKKI.",
+          "pantry": "Nämä ovat paketin tuotteet mitoitettuna taloutesi kokoon. Poista rasti tarpeettomista tai merkitse ne, jotka sinulla jo on."
+        },
+        "selectedCaption": {
+          "cockpit": "VALITTU",
+          "civil": "VALITTU",
+          "pantry": "Valittu"
+        },
+        "ownedCaption": {
+          "cockpit": "OMISTETTU",
+          "civil": "JO HALLUSSA",
+          "pantry": "Jo hallussa"
+        },
+        "daysCaption": {
+          "cockpit": "PÄIVÄÄ",
+          "civil": "PÄIVÄÄ",
+          "pantry": "Päivää"
+        },
+        "itemsCaption": {
+          "cockpit": "{{count}} RIVIÄ",
+          "civil": "{{count}} RIVIÄ",
+          "pantry": "{{count}} tuotetta"
+        },
+        "showDetails": {
+          "cockpit": "NÄYTÄ TIEDOT",
+          "civil": "NÄYTÄ TIEDOT",
+          "pantry": "Näytä tiedot"
+        },
+        "hideDetails": {
+          "cockpit": "PIILOTA TIEDOT",
+          "civil": "PIILOTA TIEDOT",
+          "pantry": "Piilota tiedot"
+        },
+        "selectAll": {
+          "cockpit": "VALITSE KAIKKI",
+          "civil": "VALITSE KAIKKI",
+          "pantry": "Valitse kaikki"
+        },
+        "deselectAll": {
+          "cockpit": "POISTA VALINNAT",
+          "civil": "POISTA VALINNAT",
+          "pantry": "Poista valinnat"
+        },
+        "markOwned": {
+          "cockpit": "MERKITSE OMAKSI",
+          "civil": "MERKITSE OMAKSI",
+          "pantry": "Tämä minulla on"
+        },
+        "owned": {
+          "cockpit": "OMISTETTU",
+          "civil": "OMISTETTU",
+          "pantry": "On hallussa"
+        },
+        "addAll": {
+          "cockpit": "LISÄÄ KAIKKI →",
+          "civil": "LISÄÄ KAIKKI →",
+          "pantry": "Lisää kaikki tuotteet"
+        },
+        "addSelected": {
+          "cockpit": "LISÄÄ VALITUT →",
+          "civil": "LISÄÄ VALITUT →",
+          "pantry": "Lisää valitut tuotteet"
+        },
+        "skip": {
+          "cockpit": "OHITA TOISTAISEKSI",
+          "civil": "OHITA TOISTAISEKSI",
+          "pantry": "Ohita toistaiseksi"
+        },
+        "tryDemo": {
+          "cockpit": "KOKEILE DEMODATAA",
+          "civil": "KOKEILE DEMODATAA",
+          "pantry": "Kokeile demodatalla"
         }
       }
     },
@@ -2368,38 +2466,6 @@
           },
           "body": "Henkilöllisyystodistuksen, vakuutusten ja pankkitietojen kopiot. 500 € pieninä seteleinä. Molemmat vedenpitävässä rasiassa."
         }
-      }
-    },
-    "picker": {
-      "categoryRail": {
-        "cockpit": "LUOKKA",
-        "civil": "LUOKKA",
-        "pantry": "Luokka"
-      },
-      "categoryCount": {
-        "cockpit": "{{count}} LUOKKAA",
-        "civil": "{{count}} LUOKKAA",
-        "pantry": "{{count}} luokkaa"
-      },
-      "allProducts": {
-        "cockpit": "KAIKKI TUOTTEET",
-        "civil": "KAIKKI TUOTTEET",
-        "pantry": "Kaikki tuotteet"
-      },
-      "templateCount": {
-        "cockpit": "{{count}} MALLIA",
-        "civil": "{{count}} MALLIA",
-        "pantry": "{{count}} tuotetta"
-      },
-      "add": {
-        "cockpit": "LISÄÄ",
-        "civil": "LISÄÄ",
-        "pantry": "Lisää"
-      },
-      "empty": {
-        "cockpit": "EI MALLEJA · KOKEILE OMAA TUOTETTA",
-        "civil": "EI MALLEJA · KOKEILE OMAA TUOTETTA",
-        "pantry": "Ei osumia — lisää oma tuote."
       }
     }
   }

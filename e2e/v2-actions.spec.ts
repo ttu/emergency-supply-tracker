@@ -200,8 +200,11 @@ test.describe('Inventory actions', () => {
     await boot(page);
     await openInventory(page);
     await page.getByLabel(/CATEGORY/i).selectOption('food');
-    await expect(page.getByText('Canned soup')).toBeVisible();
-    await expect(page.getByText('Bottled water')).toHaveCount(0);
+    // Scoped to the table: picking a category also opens a summary panel that
+    // names shortfalls, so a bare getByText matches outside the list too.
+    const table = page.getByTestId('v2-inventory-table');
+    await expect(table.getByText('Canned soup')).toBeVisible();
+    await expect(table.getByText('Bottled water')).toHaveCount(0);
   });
 
   test('add an item and see it persisted', async ({ page }) => {

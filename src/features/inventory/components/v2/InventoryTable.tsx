@@ -60,7 +60,7 @@ export function InventoryTable({
   const { themeKey } = useDesignTheme();
 
   return (
-    <>
+    <div data-testid="v2-inventory-table">
       <div style={HEADER_STYLE}>
         <span>{t('v2.inventory.tableId')}</span>
         <span>{t('v2.inventory.tableItem')}</span>
@@ -97,6 +97,6 @@ export function InventoryTable({
           })}
         </span>
       </div>
-    </>
+    </div>
   );
 }

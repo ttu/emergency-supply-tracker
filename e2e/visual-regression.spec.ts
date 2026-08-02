@@ -214,7 +214,7 @@ test.describe('Visual Regression - Onboarding', () => {
     await disableAnimations(page);
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByText(/STEP 01 \/ 05/)).toBeVisible({
+    await expect(page.getByText(/STEP 01 \/ 06/)).toBeVisible({
       timeout: 10000,
     });
     await expect(page).toHaveScreenshot('onboarding-welcome.png', {

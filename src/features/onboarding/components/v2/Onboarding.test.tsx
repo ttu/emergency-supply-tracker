@@ -9,64 +9,99 @@ const renderFlow = (onComplete = vi.fn()) =>
     initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
   });
 
+const clickContinue = () =>
+  fireEvent.click(
+    screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
+  );
+
+/** Welcome → Theme → Preset → Household → Kit → Quick setup. */
+const advanceToQuickSetup = () => {
+  for (let i = 0; i < 5; i++) clickContinue();
+};
+
 describe('DesignOnboarding (v2 orchestrator)', () => {
   it('starts on step 1 (welcome)', () => {
     renderFlow();
-    expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
     expect(
       screen.getByText('v2.onboarding.step01.leadTitleCockpit'),
     ).toBeInTheDocument();
   });
 
-  it('advances through every step and finishes on the completion view', () => {
+  it('reaches the kit step before asking about items', () => {
+    renderFlow();
+    for (let i = 0; i < 4; i++) clickContinue();
+    expect(
+      screen.getByText('v2.onboarding.kit.leadTitle.cockpit'),
+    ).toBeInTheDocument();
+  });
+
+  it('seeds the inventory from the quick-setup selection', () => {
     const onComplete = vi.fn();
     renderFlow(onComplete);
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
-    ); // → 2
-    expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
-    ); // → 3
-    expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
-    ); // → 4
-    expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
-    ); // → 5
-    expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
+    advanceToQuickSetup();
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'v2.onboarding.step05.primaryLabel.cockpit',
+        name: 'v2.onboarding.quickSetup.addAll.cockpit',
       }),
-    ); // → 6
-    expect(
-      screen.getByText('v2.onboarding.step06.title.cockpit'),
-    ).toBeInTheDocument();
-
+    );
     fireEvent.click(
       screen.getByRole('button', {
         name: 'v2.onboarding.step06.openDashboard.cockpit',
       }),
     );
-    expect(onComplete).toHaveBeenCalled();
+
+    const [, items] = onComplete.mock.calls[0];
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.every((i: { quantity: number }) => i.quantity === 0)).toBe(
+      true,
+    );
+  });
+
+  it('finishes with an empty inventory when quick setup is skipped', () => {
+    const onComplete = vi.fn();
+    renderFlow(onComplete);
+    advanceToQuickSetup();
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'v2.onboarding.quickSetup.skip.cockpit',
+      }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'v2.onboarding.step06.openDashboard.cockpit',
+      }),
+    );
+
+    expect(onComplete.mock.calls[0][1]).toEqual([]);
+  });
+
+  it('demo data finishes the flow outright, with items already stocked', () => {
+    const onComplete = vi.fn();
+    renderFlow(onComplete);
+    advanceToQuickSetup();
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'v2.onboarding.quickSetup.tryDemo.cockpit',
+      }),
+    );
+
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    const [household, items] = onComplete.mock.calls[0];
+    expect(household.children).toBe(2);
+    expect(items.some((i: { quantity: number }) => i.quantity > 0)).toBe(true);
   });
 
   it('BACK from step 2 returns to step 1', () => {
     renderFlow();
-    fireEvent.click(
-      screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
-    );
+    clickContinue();
     fireEvent.click(
       screen.getByRole('button', { name: 'v2.voice.back.cockpit' }),
     );
-    expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
+    expect(
+      screen.getByText('v2.onboarding.step01.leadTitleCockpit'),
+    ).toBeInTheDocument();
   });
 });

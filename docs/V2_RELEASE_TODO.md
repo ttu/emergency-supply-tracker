@@ -17,11 +17,10 @@ removed outright. See "Navigation reduced to four destinations" below.
 
 ## 🟡 Deferred — accepted as-is for v1.0, track for follow-up
 
-### 1. `onboarding/v2/OnboardStep06Complete.tsx` — readiness hardcoded `0%`
-
-The end-of-onboarding screen shows `0%` readiness because no items have been
-added yet. Literally accurate at that moment; could compute against the
-empty inventory + selected categories for a less defeating zero. Cosmetic.
+_Nothing open._ The hardcoded `0%` readiness on the completion screen was
+resolved by the quick-setup step: `OnboardStep07Complete` now computes
+readiness from what was actually seeded, so marking items owned during setup
+shows a non-zero figure.
 
 ---
 
@@ -64,6 +63,21 @@ on:
   name/quantity/expiration and filters by location; and selecting a category
   shows what it requires, how the target is derived, and the per-item
   shortfall. Plan: `docs/plans/2026-07-31-v2-parity-gaps.md`.
+
+- **Onboarding reaches parity with v1** — the design update added the two
+  screens v2 was missing: a recommendation-kit chooser (`OnboardStep05Kit`,
+  built-in kits plus JSON upload, on the existing `useRecommendedItems` kit
+  API) and a quick-setup checklist (`OnboardStep06QuickSetup`) listing the
+  kit's products sized to the household, with per-line ticks, a "mark owned"
+  pill, skip and demo-data escapes. The old category-toggle step is gone —
+  per-item selection subsumes it. Seeding moved out of the completion screen
+  into `buildOnboardingItems`, driven by that selection: ticked products start
+  at 0, owned ones at their recommended quantity.
+
+- **Native v2 product picker** — the add-item flow no longer wraps v1's
+  `TemplateSelector` in `design-v2-embed`. `ProductPicker` draws the picker in
+  the v2 language: search, a category rail of code + name chips, product rows
+  with recommended amounts, and the custom-item escape.
 
 - **Navigation reduced to four destinations** — the design update aligned v2
   with the real app: Overview, Inventory, Help, Settings. Alerts moved onto

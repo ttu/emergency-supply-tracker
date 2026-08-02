@@ -33,8 +33,13 @@ export function StepBar({ step, total }: Readonly<StepBarProps>) {
   );
 }
 
+/** Numbered steps in the flow; the completion screen is not one of them. */
+export const ONBOARDING_STEP_COUNT = 6;
+
 export interface OnboardLayoutProps {
   step: number;
+  /** Numbered steps in the flow. */
+  total?: number;
   title: string;
   lead: { title: string; sub?: string };
   children?: ReactNode;
@@ -47,6 +52,7 @@ export interface OnboardLayoutProps {
 /** Shared chrome for every onboarding step: brand, step bar, lead, content, footer. */
 export function OnboardLayout({
   step,
+  total = ONBOARDING_STEP_COUNT,
   title,
   lead,
   children,
@@ -71,9 +77,12 @@ export function OnboardLayout({
     >
       <div
         style={{
-          padding: '48px 56px',
+          // 56px of side padding is over a quarter of a phone screen, which
+          // pushed every step into horizontal scroll.
+          padding: 'clamp(24px, 5vw, 48px) clamp(16px, 6vw, 56px)',
           display: 'flex',
           flexDirection: 'column',
+          minWidth: 0,
         }}
       >
         <div
@@ -108,12 +117,12 @@ export function OnboardLayout({
         >
           {t('v2.onboarding.stepLabel', {
             step: String(step).padStart(2, '0'),
-            total: '05',
+            total: String(total).padStart(2, '0'),
             title,
           })}
         </div>
         <div style={{ marginTop: 8 }}>
-          <StepBar step={step} total={5} />
+          <StepBar step={step} total={total} />
         </div>
         <div style={{ marginTop: 24 }}>
           <Title size={44}>{lead.title}</Title>

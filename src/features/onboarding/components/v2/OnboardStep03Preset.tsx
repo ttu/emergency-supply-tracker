@@ -50,7 +50,8 @@ export function OnboardStep03Preset({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+          // Two across where there is room, one on a phone.
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
           gap: 14,
         }}
       >

@@ -1,4 +1,5 @@
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
+import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { createQuantity } from '@/shared/types';
 import type {
   HouseholdConfig,
@@ -9,38 +10,56 @@ import type {
 /** Translator shape needed to name the seeded items. */
 type NameResolver = (i18nKey: string) => string;
 
+export interface OnboardingSelection {
+  /** Products the household chose to track. */
+  selectedIds: ReadonlySet<string>;
+  /** Of those, the ones it already has — seeded at the recommended amount. */
+  ownedIds: ReadonlySet<string>;
+}
+
 /**
- * The inventory a v2 household starts with, derived from the categories it
- * picked during onboarding.
+ * The inventory a v2 household starts with, from what it ticked in quick setup.
  *
- * v1's quick-setup step seeds real items from the recommendation set so a new
- * household lands on a stocked checklist rather than an empty page; v2 chose
- * categories but then completed with nothing. This restores that, keeping v1's
- * conventions:
+ * Selected products arrive at quantity 0 — they are on the list to acquire,
+ * not claimed to be in the cupboard. Products marked "owned" arrive at their
+ * recommended quantity instead, so the dashboard shows them as covered
+ * straight away.
  *
- * - Items are created at quantity 0 — they are on the list to acquire, not
- *   claimed to be in the cupboard. (v1 uses 0 when everything is selected,
- *   which is what picking a whole category means here.)
- * - Frozen items are skipped without a freezer, and pet supplies without pets,
- *   matching the filtering v1 applies before seeding.
+ * The caller is responsible for offering only products that apply to this
+ * household (no frozen goods without a freezer, no pet supplies without pets);
+ * this builds from whatever it was given.
  */
 export function buildOnboardingItems(
   recommendedItems: RecommendedItemDefinition[],
   household: HouseholdConfig,
-  enabledCategories: Set<string>,
+  { selectedIds, ownedIds }: OnboardingSelection,
   resolveName: NameResolver,
 ): InventoryItem[] {
   return recommendedItems
-    .filter((item) => {
-      if (!enabledCategories.has(String(item.category))) return false;
-      if (item.requiresFreezer && !household.useFreezer) return false;
-      if (item.scaleWithPets && household.pets === 0) return false;
-      return true;
-    })
+    .filter((item) => selectedIds.has(String(item.id)))
     .map((item) =>
       InventoryItemFactory.createFromTemplate(item, household, {
         name: resolveName(item.i18nKey),
-        quantity: createQuantity(0),
+        quantity: createQuantity(
+          ownedIds.has(String(item.id))
+            ? calculateRecommendedQuantity(item, household)
+            : 0,
+        ),
       }),
     );
+}
+
+/**
+ * The products worth offering a household: everything the kit recommends,
+ * minus what its circumstances rule out.
+ */
+export function offeredItems(
+  recommendedItems: RecommendedItemDefinition[],
+  household: HouseholdConfig,
+): RecommendedItemDefinition[] {
+  return recommendedItems.filter((item) => {
+    if (item.requiresFreezer && !household.useFreezer) return false;
+    if (item.scaleWithPets && household.pets === 0) return false;
+    return true;
+  });
 }
