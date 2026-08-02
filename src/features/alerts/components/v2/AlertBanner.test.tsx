@@ -27,6 +27,21 @@ const setup = (
     },
   );
 
+const manyAlertItems = () =>
+  [
+    'water-beverages',
+    'food',
+    'light-power',
+    'medical-health',
+    'hygiene-sanitation',
+  ].map((category, i) =>
+    createMockInventoryItem({
+      name: `Empty item ${i}`,
+      categoryId: createCategoryId(category),
+      quantity: createQuantity(0),
+    }),
+  );
+
 const missingWater = () =>
   createMockInventoryItem({
     name: 'Bottled water',
@@ -40,21 +55,7 @@ describe('AlertBanner (v2)', () => {
   describe('collapsing', () => {
     // Each under-stocked category raises its own "critically low" alert, so a
     // handful of empty categories pushes us past the visible limit.
-    const manyAlerts = () =>
-      [
-        'water-beverages',
-        'food',
-        'light-power',
-        'medical-health',
-        'hygiene-sanitation',
-      ].map((category, i) =>
-        createMockInventoryItem({
-          name: `Empty item ${i}`,
-          categoryId: createCategoryId(category),
-          quantity: createQuantity(0),
-        }),
-      );
-
+    const manyAlerts = () => manyAlertItems();
     it('caps visible rows and offers to show the rest', async () => {
       setup(manyAlerts());
       expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
@@ -137,5 +138,18 @@ describe('AlertBanner (v2)', () => {
     fireEvent.click(screen.getByRole('button', { name: /water-beverages/ }));
 
     expect(onCategorySelect).toHaveBeenCalledWith('water-beverages');
+  });
+
+  it('dismisses every alert at once', async () => {
+    setup(manyAlertItems());
+    expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.alerts.dismissAll.cockpit' }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('v2-alert-banner')).not.toBeInTheDocument();
+    });
   });
 });

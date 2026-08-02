@@ -1033,6 +1033,11 @@
         "cockpit": "NÄYTÄ VÄHEMMÄN",
         "civil": "NÄYTÄ VÄHEMMÄN",
         "pantry": "Näytä vähemmän"
+      },
+      "dismissAll": {
+        "cockpit": "HYLKÄÄ KAIKKI",
+        "civil": "HYLKÄÄ KAIKKI",
+        "pantry": "Hylkää kaikki"
       }
     },
     "dashboard": {

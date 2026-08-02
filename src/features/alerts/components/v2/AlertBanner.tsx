@@ -103,6 +103,7 @@ const ROW_STYLE: Record<AlertType, CSSProperties> = {
 const TOGGLE_ROW_STYLE: CSSProperties = {
   display: 'flex',
   justifyContent: 'flex-end',
+  gap: 16,
   paddingRight: 4,
 };
 
@@ -129,7 +130,8 @@ export function AlertBanner({
 }: Readonly<AlertBannerProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const { activeAlerts, handleDismissAlert } = useDashboardAlerts();
+  const { activeAlerts, handleDismissAlert, handleDismissAllAlerts } =
+    useDashboardAlerts();
   const [expanded, setExpanded] = useState(false);
 
   if (activeAlerts.length === 0) return null;
@@ -157,8 +159,8 @@ export function AlertBanner({
           dismissLabel={dismissLabel}
         />
       ))}
-      {isCollapsible && (
-        <div style={TOGGLE_ROW_STYLE}>
+      <div style={TOGGLE_ROW_STYLE}>
+        {isCollapsible && (
           <AccentTextButton
             onClick={() => setExpanded((v) => !v)}
             data-testid="v2-alert-toggle"
@@ -167,8 +169,14 @@ export function AlertBanner({
               ? t(`v2.alerts.showLess.${themeKey}`)
               : t(`v2.alerts.showMore.${themeKey}`, { count: overflowCount })}
           </AccentTextButton>
-        </div>
-      )}
+        )}
+        <AccentTextButton
+          onClick={handleDismissAllAlerts}
+          data-testid="v2-alert-dismiss-all"
+        >
+          {t(`v2.alerts.dismissAll.${themeKey}`)}
+        </AccentTextButton>
+      </div>
     </div>
   );
 }

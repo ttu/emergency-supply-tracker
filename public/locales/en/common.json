@@ -1033,6 +1033,11 @@
         "cockpit": "SHOW LESS",
         "civil": "SHOW LESS",
         "pantry": "Show less"
+      },
+      "dismissAll": {
+        "cockpit": "DISMISS ALL",
+        "civil": "DISMISS ALL",
+        "pantry": "Dismiss all"
       }
     },
     "dashboard": {
