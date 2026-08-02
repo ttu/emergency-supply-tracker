@@ -188,6 +188,42 @@ test.describe('Onboarding Flow', () => {
     expect(quantities.others).toBe(true);
   });
 
+  test('the quick-setup list is reachable on a phone', async ({ page }) => {
+    // The v2 themes lock document scrolling for the app shells; onboarding
+    // runs outside them, so it has to scroll itself or the 70-row checklist
+    // is unreachable below the fold.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await clearAndReload(page);
+    for (let i = 0; i < 5; i++) await continueButton(page).click();
+    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+
+    const layout = page.getByTestId('v2-onboard-layout');
+    const scrolled = await layout.evaluate((el) => {
+      el.scrollTop = 10_000;
+      return { top: el.scrollTop, max: el.scrollHeight - el.clientHeight };
+    });
+    expect(scrolled.max).toBeGreaterThan(0);
+    expect(scrolled.top).toBe(scrolled.max);
+
+    // …and nothing spills sideways.
+    const overflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    );
+    expect(overflow).toBe(0);
+  });
+
+  test('the side panel stacks into the flow on a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await clearAndReload(page);
+
+    // Step 1's OUTPUTS panel is a second column on a desktop; on a phone that
+    // column sat half off the screen.
+    await expect(page.locator('aside')).toHaveCount(0);
+    await expect(page.getByText('BASELINE PROCUREMENT LIST')).toBeVisible();
+  });
+
   test('should not show onboarding for returning users', async ({
     setupApp,
     page,

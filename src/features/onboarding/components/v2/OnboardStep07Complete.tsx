@@ -46,14 +46,17 @@ export function OnboardStep07Complete({
     <div
       style={{
         width: '100%',
-        minHeight: '100vh',
+        // Its own scroll container, for the same reason OnboardLayout is one:
+        // the v2 themes lock the document.
+        height: '100vh',
+        overflowY: 'auto',
         background: 'var(--color-bg)',
         color: 'var(--color-text)',
         fontFamily: 'var(--font-body)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 60,
+        padding: 'clamp(24px, 6vw, 60px)',
       }}
     >
       <div style={{ maxWidth: 720, textAlign: 'left' }}>

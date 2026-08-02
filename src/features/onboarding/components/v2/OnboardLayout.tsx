@@ -2,6 +2,7 @@ import { useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Title } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
 interface StepBarProps {
   step: number;
@@ -63,16 +64,32 @@ export function OnboardLayout({
 }: Readonly<OnboardLayoutProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
+  const isMobile = useIsMobile();
+
+  // The side panel is a second column only where there is room for one. On a
+  // phone it became a half-width column pushed off the edge of the screen, so
+  // it moves into the main flow instead — after the step's content, before the
+  // actions, which is also the order it should be read in.
+  const sideBeside = side && !isMobile;
+  const sideStacked = side && isMobile;
+
   return (
     <div
+      data-testid="v2-onboard-layout"
       style={{
         width: '100%',
-        minHeight: '100vh',
+        // The v2 themes lock document scrolling (design-themes.css) because
+        // the desktop/mobile shells own their inner scroll. Onboarding runs
+        // outside those shells, so it has to be its own scroll container —
+        // otherwise anything taller than the viewport is simply unreachable.
+        height: '100vh',
+        overflowY: 'auto',
         background: 'var(--color-bg)',
         color: 'var(--color-text)',
         fontFamily: 'var(--font-body)',
         display: 'grid',
-        gridTemplateColumns: side ? '1fr 1fr' : '1fr',
+        gridTemplateColumns: sideBeside ? '1fr 1fr' : '1fr',
+        alignContent: 'start',
       }}
     >
       <div
@@ -141,6 +158,17 @@ export function OnboardLayout({
           )}
         </div>
         <div style={{ marginTop: 28, flex: 1 }}>{children}</div>
+        {sideStacked && (
+          <div
+            style={{
+              marginTop: 28,
+              paddingTop: 24,
+              borderTop: '1px solid var(--color-rule)',
+            }}
+          >
+            {side}
+          </div>
+        )}
         <div
           style={{
             marginTop: 24,
@@ -173,13 +201,12 @@ export function OnboardLayout({
           </div>
         </div>
       </div>
-      {side && (
+      {sideBeside && (
         <aside
           style={{
             background: 'var(--color-bg-2)',
             borderLeft: '1px solid var(--color-rule)',
             padding: '48px 48px',
-            overflow: 'auto',
           }}
         >
           {side}
