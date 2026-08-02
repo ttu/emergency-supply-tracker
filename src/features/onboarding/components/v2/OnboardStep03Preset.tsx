@@ -33,8 +33,10 @@ export function OnboardStep03Preset({
       }}
       back={onBack}
       onContinue={() => {
-        const preset = ONBOARDING_PRESETS.find((p) => p.code === presetCode)!;
-        if (preset.code !== 'P-04') {
+        const preset = ONBOARDING_PRESETS.find((p) => p.code === presetCode);
+        // 'P-04' is the "start from scratch" preset, and an unrecognised code
+        // is treated the same way: continue without applying a household.
+        if (preset && preset.code !== 'P-04') {
           onApplyPreset({
             adults: preset.adults,
             children: preset.children,

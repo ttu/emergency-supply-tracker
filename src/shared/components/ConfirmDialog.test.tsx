@@ -86,15 +86,8 @@ describe('ConfirmDialog', () => {
     expect(document.activeElement).toBe(buttons[buttons.length - 1]);
   });
 
-  it('leaves focus alone for Tab in the middle of the dialog', () => {
-    setup();
-    const buttons = dialogButtons();
-    if (buttons.length > 2) {
-      buttons[1].focus();
-      fireEvent.keyDown(document, { key: 'Tab' });
-      expect(document.activeElement).toBe(buttons[1]);
-    }
-  });
+  // No "focus stays put mid-dialog" case: this dialog has exactly two
+  // focusable controls, so every Tab is a wrap.
 
   it('locks body scroll while open and restores it after', () => {
     const { unmount } = setup();

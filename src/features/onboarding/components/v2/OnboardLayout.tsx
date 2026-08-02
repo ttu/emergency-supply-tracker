@@ -10,8 +10,10 @@ interface StepBarProps {
 
 /** Five-segment progress indicator for the onboarding flow. */
 export function StepBar({ step, total }: Readonly<StepBarProps>) {
+  // The segments are a fixed-length, order-only list, so the index is the
+  // stable identity. Random ids bought nothing and needed crypto to exist.
   const segmentIds = useMemo(
-    () => Array.from({ length: total }, () => crypto.randomUUID()),
+    () => Array.from({ length: total }, (_, i) => `step-${i}`),
     [total],
   );
   return (

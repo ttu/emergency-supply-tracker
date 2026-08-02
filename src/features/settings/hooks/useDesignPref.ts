@@ -59,9 +59,13 @@ export function useDesignPrefs(): [
 ] {
   const [prefs, setPrefs] = useState<DesignPrefs>(load);
   const updatePref = (k: keyof DesignPrefs, v: boolean) => {
-    const next = { ...prefs, [k]: v };
-    setPrefs(next);
-    save(next);
+    // Functional update: two prefs changed in the same tick must both land,
+    // rather than the second overwriting the first from a stale render.
+    setPrefs((prev) => {
+      const next = { ...prev, [k]: v };
+      save(next);
+      return next;
+    });
   };
   return [prefs, updatePref];
 }

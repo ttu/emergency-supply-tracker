@@ -53,12 +53,14 @@ export function ConfirmDialog({
   // Focus management — store the previously-focused element on open and
   // restore it on close.
   useEffect(() => {
-    if (open) {
-      previousFocusRef.current = document.activeElement as HTMLElement;
-      dialogRef.current?.querySelector('button')?.focus();
-    } else if (previousFocusRef.current) {
-      previousFocusRef.current.focus();
-    }
+    if (!open) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    previousFocusRef.current = previouslyFocused;
+    dialogRef.current?.querySelector('button')?.focus();
+    // Restoring from cleanup covers unmounting as well as closing; the
+    // previous version only restored when the component stayed mounted and
+    // `open` flipped to false.
+    return () => previouslyFocused?.focus();
   }, [open]);
 
   // ESC to cancel + focus trap inside the dialog.
