@@ -1090,4 +1090,67 @@ describe('ItemForm', () => {
     // Water requirement should use the same step as continuous units (like liters)
     expect(waterRequirementInput).toHaveAttribute('step', '0.1');
   });
+
+  describe('external quantity changes', () => {
+    const renderWith = (item: ReturnType<typeof createMockInventoryItem>) =>
+      render(
+        <ItemForm
+          item={item}
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+    const anItem = (quantity: number) =>
+      createMockInventoryItem({
+        id: createItemId('fixed-id'),
+        name: 'Canned soup',
+        categoryId: createCategoryId('food'),
+        quantity: createQuantity(quantity),
+        unit: 'cans',
+        neverExpires: true,
+      });
+
+    const quantityField = () =>
+      document.querySelector('#quantity') as HTMLInputElement;
+
+    it('follows the item when its quantity changes outside the form', () => {
+      const { rerender } = renderWith(anItem(12));
+      expect(quantityField().value).toBe('12');
+
+      // The v2 detail view's -1/+1 quick-actions write straight to storage;
+      // the field has to follow or saving reverts the adjustment.
+      rerender(
+        <ItemForm
+          item={anItem(13)}
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      expect(quantityField().value).toBe('13');
+    });
+
+    it('leaves a quantity the user typed alone when nothing external changed', () => {
+      const item = anItem(12);
+      const { rerender } = renderWith(item);
+
+      fireEvent.change(quantityField(), { target: { value: '99' } });
+      expect(quantityField().value).toBe('99');
+
+      // Same item back again — no external change, so the edit survives.
+      rerender(
+        <ItemForm
+          item={item}
+          categories={STANDARD_CATEGORIES}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />,
+      );
+
+      expect(quantityField().value).toBe('99');
+    });
+  });
 });
