@@ -23,6 +23,10 @@ interface MobileItemDetailProps {
   defaultCategoryId?: string;
   /** Recommended product to pre-fill a new item from. */
   templateId?: string;
+  /** Existing item to duplicate into a new one. */
+  copySourceId?: string;
+  /** Start a duplicate of the item currently open. */
+  onCopy?: (itemId: string) => void;
 }
 
 function mobileDetailTitle(
@@ -40,6 +44,8 @@ export function MobileItemDetail({
   onBack,
   defaultCategoryId,
   templateId,
+  copySourceId,
+  onCopy,
 }: Readonly<MobileItemDetailProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -85,7 +91,7 @@ export function MobileItemDetail({
     deleteConfirmAction,
     confirmDelete,
     cancelDelete,
-  } = useItemDetailState(itemId, onBack, effectiveTemplateId);
+  } = useItemDetailState(itemId, onBack, effectiveTemplateId, copySourceId);
 
   if (!isNew && !row) {
     return <ItemNotFound onBack={onBack} padding={24} />;
@@ -93,7 +99,7 @@ export function MobileItemDetail({
 
   // Adding without a product chosen yet: offer the recommended list first, the
   // way v1 does, instead of dropping the user straight into a blank form.
-  if (isNew && !effectiveTemplateId && !skipTemplate) {
+  if (isNew && !effectiveTemplateId && !copySourceId && !skipTemplate) {
     return (
       <div style={{ padding: 16 }}>
         <NewItemTemplateStep
@@ -181,9 +187,20 @@ export function MobileItemDetail({
       </Panel>
 
       {!isNew && (
-        <Button variant="ghost" full onClick={handleDelete}>
-          {t(`v2.voice.delete.${themeKey}`)}
-        </Button>
+        <>
+          {onCopy && item && (
+            <Button
+              variant="secondary"
+              full
+              onClick={() => onCopy(String(item.id))}
+            >
+              {t(`v2.voice.copy.${themeKey}`)}
+            </Button>
+          )}
+          <Button variant="ghost" full onClick={handleDelete}>
+            {t(`v2.voice.delete.${themeKey}`)}
+          </Button>
+        </>
       )}
 
       <ConfirmDialog

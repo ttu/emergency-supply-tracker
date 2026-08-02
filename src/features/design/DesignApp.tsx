@@ -31,6 +31,8 @@ interface ViewContext {
   setNav: (id: DesignNavId) => void;
   selectedTemplateId: string | undefined;
   setSelectedTemplateId: (id: string | undefined) => void;
+  copySourceId: string | undefined;
+  setCopySourceId: (id: string | undefined) => void;
 }
 
 function renderItemDetail(
@@ -43,7 +45,10 @@ function renderItemDetail(
     isMobile,
     selectedCategoryId,
     selectedTemplateId,
+    copySourceId,
     setSelectedItemId,
+    setSelectedTemplateId,
+    setCopySourceId,
   } = ctx;
   const breadcrumb =
     selectedItemId === NEW_ITEM_ID
@@ -54,12 +59,21 @@ function renderItemDetail(
   const onBack = () => setSelectedItemId(undefined);
   const templateId =
     selectedItemId === NEW_ITEM_ID ? selectedTemplateId : undefined;
+  const copyFrom = selectedItemId === NEW_ITEM_ID ? copySourceId : undefined;
+  // Duplicating opens a fresh new-item view seeded from the source.
+  const onCopy = (sourceId: string) => {
+    setSelectedTemplateId(undefined);
+    setCopySourceId(sourceId);
+    setSelectedItemId(NEW_ITEM_ID);
+  };
   const body = isMobile ? (
     <MobileItemDetail
       itemId={selectedItemId}
       onBack={onBack}
       defaultCategoryId={defaultCategoryId}
       templateId={templateId}
+      copySourceId={copyFrom}
+      onCopy={onCopy}
     />
   ) : (
     <ItemDetail
@@ -67,6 +81,8 @@ function renderItemDetail(
       onBack={onBack}
       defaultCategoryId={defaultCategoryId}
       templateId={templateId}
+      copySourceId={copyFrom}
+      onCopy={onCopy}
     />
   );
   return { title: t(`v2.voice.inventory.${themeKey}`), breadcrumb, body };
@@ -105,9 +121,11 @@ function renderInventory(ctx: ViewContext): ReactNode {
     setSelectedCategoryId,
     setSelectedItemId,
     setSelectedTemplateId,
+    setCopySourceId,
   } = ctx;
   const onAddItem = (templateId?: string) => {
     setSelectedTemplateId(templateId);
+    setCopySourceId(undefined);
     setSelectedItemId(NEW_ITEM_ID);
   };
   return isMobile ? (
@@ -164,10 +182,14 @@ export function DesignApp() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<
     string | undefined
   >(undefined);
+  const [copySourceId, setCopySourceId] = useState<string | undefined>(
+    undefined,
+  );
   const goTo = useCallback((id: DesignNavId) => {
     setNav(id);
     setSelectedItemId(undefined);
     setSelectedTemplateId(undefined);
+    setCopySourceId(undefined);
     if (id !== 'inv') setSelectedCategoryId(undefined);
   }, []);
 
@@ -185,6 +207,8 @@ export function DesignApp() {
     setNav,
     selectedTemplateId,
     setSelectedTemplateId,
+    copySourceId,
+    setCopySourceId,
   };
   const view: { title: string; body: ReactNode; breadcrumb?: string } =
     selectedItemId

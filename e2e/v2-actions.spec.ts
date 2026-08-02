@@ -283,6 +283,24 @@ test.describe('Inventory actions', () => {
     );
   });
 
+  test('copy duplicates an item rather than editing it', async ({ page }) => {
+    await boot(page);
+    await openInventory(page);
+    await page.getByText('Canned soup').first().click();
+
+    await page.getByRole('button', { name: /^Copy$/i }).click();
+    // The values carry over and the product picker is skipped.
+    await expect(page.locator('#name')).toHaveValue('Canned soup');
+
+    await page.locator('#quantity').fill('9');
+    await page.locator('form button[type="submit"]').click();
+
+    await expectStoredItems(
+      page,
+      (items) => items.filter((i) => i.name === 'Canned soup').length === 2,
+    );
+  });
+
   test('delete an item removes it', async ({ page }) => {
     await boot(page);
     await openInventory(page);

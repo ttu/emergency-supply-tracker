@@ -14,6 +14,7 @@ interface ItemDetailHeaderProps {
   itemCategoryId?: string;
   categoryName?: string;
   onDelete?: () => void;
+  onCopy?: () => void;
 }
 
 function headerCaption(isNew: boolean, themeKey: string, t: TFunction): string {
@@ -38,6 +39,7 @@ export function ItemDetailHeader({
   itemCategoryId,
   categoryName,
   onDelete,
+  onCopy,
 }: Readonly<ItemDetailHeaderProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -68,10 +70,19 @@ export function ItemDetailHeader({
           </div>
         )}
       </div>
-      {!isNew && onDelete && (
-        <Button variant="secondary" onClick={onDelete}>
-          {t(`v2.voice.delete.${themeKey}`)}
-        </Button>
+      {!isNew && (onCopy || onDelete) && (
+        <div style={{ display: 'flex', gap: 8 }}>
+          {onCopy && (
+            <Button variant="secondary" onClick={onCopy}>
+              {t(`v2.voice.copy.${themeKey}`)}
+            </Button>
+          )}
+          {onDelete && (
+            <Button variant="secondary" onClick={onDelete}>
+              {t(`v2.voice.delete.${themeKey}`)}
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

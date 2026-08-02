@@ -26,6 +26,10 @@ interface ItemDetailProps {
   defaultCategoryId?: string;
   /** Recommended product to pre-fill a new item from. */
   templateId?: string;
+  /** Existing item to duplicate into a new one. */
+  copySourceId?: string;
+  /** Start a duplicate of the item currently open. */
+  onCopy?: (itemId: string) => void;
 }
 
 export function ItemDetail({
@@ -33,6 +37,8 @@ export function ItemDetail({
   onBack,
   defaultCategoryId,
   templateId,
+  copySourceId,
+  onCopy,
 }: Readonly<ItemDetailProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -80,7 +86,7 @@ export function ItemDetail({
     confirmDelete,
     cancelDelete,
     adjust,
-  } = useItemDetailState(itemId, onBack, effectiveTemplateId);
+  } = useItemDetailState(itemId, onBack, effectiveTemplateId, copySourceId);
 
   if (!isNew && !row) {
     return <ItemNotFound onBack={onBack} />;
@@ -88,7 +94,7 @@ export function ItemDetail({
 
   // Adding without a product chosen yet: offer the recommended list first, the
   // way v1 does, instead of dropping the user straight into a blank form.
-  if (isNew && !effectiveTemplateId && !skipTemplate) {
+  if (isNew && !effectiveTemplateId && !copySourceId && !skipTemplate) {
     return (
       <NewItemTemplateStep
         defaultCategoryId={defaultCategoryId}
@@ -120,6 +126,7 @@ export function ItemDetail({
         itemCategoryId={item ? String(item.categoryId) : undefined}
         categoryName={category?.name}
         onDelete={handleDelete}
+        onCopy={onCopy && item ? () => onCopy(String(item.id)) : undefined}
       />
 
       <div

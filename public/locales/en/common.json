@@ -1016,6 +1016,11 @@
         "cockpit": "PROVISIONING COMPLETE",
         "civil": "PROVISIONING COMPLETE",
         "pantry": "You're set up"
+      },
+      "copy": {
+        "cockpit": "COPY",
+        "civil": "COPY",
+        "pantry": "Duplicate"
       }
     },
     "alerts": {

@@ -10,6 +10,7 @@ import { InventoryItemFactory } from '@/features/inventory/factories/InventoryIt
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
 import {
+  createItemId,
   createQuantity,
   type Category,
   type InventoryItem,
@@ -85,6 +86,7 @@ export function useItemDetailState(
   itemId: string,
   onBack: () => void,
   templateId?: string,
+  copySourceId?: string,
 ): UseItemDetailStateResult {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -102,6 +104,22 @@ export function useItemDetailState(
   const template = templateId
     ? recommendedItems.find((r) => String(r.id) === templateId)
     : undefined;
+  // Duplicating an existing item: same values, no identity, so submitting
+  // adds a second item rather than updating the original. Mirrors v1's
+  // "Copy" action, which is how you record a second batch of the same
+  // product with its own expiry or location.
+  const copyDraft = useMemo(() => {
+    if (!isNew || !copySourceId) return undefined;
+    const source = items.find((i) => String(i.id) === copySourceId);
+    if (!source) return undefined;
+    return {
+      ...source,
+      id: createItemId(''),
+      createdAt: '',
+      updatedAt: '',
+    };
+  }, [isNew, copySourceId, items]);
+
   const draft = useMemo(() => {
     if (!isNew || !template) return undefined;
     const name = t(template.i18nKey.replace('products.', ''), {
@@ -169,7 +187,7 @@ export function useItemDetailState(
     pct,
     locationSuggestions,
     categories,
-    draft,
+    draft: draft ?? copyDraft,
     template,
     handleSubmit,
     handleDelete,

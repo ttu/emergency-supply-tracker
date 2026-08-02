@@ -1016,6 +1016,11 @@
         "cockpit": "VALMISTELU VALMIS",
         "civil": "VALMISTELU VALMIS",
         "pantry": "Olet valmis"
+      },
+      "copy": {
+        "cockpit": "KOPIOI",
+        "civil": "KOPIOI",
+        "pantry": "Monista"
       }
     },
     "alerts": {
