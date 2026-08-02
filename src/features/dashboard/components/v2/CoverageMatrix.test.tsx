@@ -51,4 +51,15 @@ describe('CoverageMatrix (v2)', () => {
     fireEvent.click(await screen.findByTestId('v2-category-water-beverages'));
     expect(onCategorySelect).toHaveBeenCalledWith('water-beverages');
   });
+
+  it('counts only fully covered categories in the ratio', async () => {
+    // The seeded inventory leaves most categories empty, so the covered
+    // count must come out below the total rather than mirroring it.
+    setup();
+
+    const ratio = await screen.findByText(/^\d+ \/ \d+$/);
+    const [covered, total] = ratio.textContent!.split('/').map((n) => +n);
+    expect(total).toBeGreaterThan(0);
+    expect(covered).toBeLessThan(total);
+  });
 });

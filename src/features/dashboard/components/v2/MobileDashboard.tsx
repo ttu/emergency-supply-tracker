@@ -59,6 +59,10 @@ export function MobileDashboard({
     useDesignData();
   const tone = mobileReadinessTone(readiness);
   const priority = [...rows].filter((r) => r.status !== 'ok').slice(0, 4);
+  // Borders come off the final row, whatever its size — the grid is two
+  // columns and the list can be shorter than the six it slices to.
+  const visibleStats = stats.slice(0, 6);
+  const lastRowStart = Math.floor((visibleStats.length - 1) / 2) * 2;
   const headline = mobileHeadline(themeKey, readiness, t);
 
   return (
@@ -214,7 +218,7 @@ export function MobileDashboard({
           <Caption>{t(`v2.dashboard.mobileCoverage.${themeKey}`)}</Caption>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-          {stats.slice(0, 6).map((s, i) => {
+          {visibleStats.map((s, i) => {
             const tn = mobileStatTone(s);
             return (
               <button
@@ -226,7 +230,9 @@ export function MobileDashboard({
                   borderRight:
                     i % 2 === 0 ? '1px solid var(--color-rule-soft)' : 'none',
                   borderBottom:
-                    i < 4 ? '1px solid var(--color-rule-soft)' : 'none',
+                    i < lastRowStart
+                      ? '1px solid var(--color-rule-soft)'
+                      : 'none',
                   background: 'transparent',
                   border: 0,
                   textAlign: 'left',

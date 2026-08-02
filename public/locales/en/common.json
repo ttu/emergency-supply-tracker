@@ -1093,7 +1093,9 @@
         "cockpit": "COVERAGE",
         "civil": "COVERAGE",
         "pantry": "Categories"
-      }
+      },
+      "priorityMeta": "{{code}} · {{quantity}} of {{recommended}} {{unit}}",
+      "priorityExpires": " · exp {{date}}"
     },
     "inventory": {
       "title": {

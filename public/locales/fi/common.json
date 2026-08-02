@@ -1093,7 +1093,9 @@
         "cockpit": "KATTAVUUS",
         "civil": "KATTAVUUS",
         "pantry": "Kategoriat"
-      }
+      },
+      "priorityMeta": "{{code}} · {{quantity}} / {{recommended}} {{unit}}",
+      "priorityExpires": " · vanhenee {{date}}"
     },
     "inventory": {
       "title": {

@@ -35,6 +35,15 @@ export function CoverageMatrix({
     return cat?.names?.[lang] ?? cat?.name ?? fallback;
   };
 
+  // The "covered" half of the ratio: categories holding something, with
+  // nothing critical or low. An empty category is not covered — it has no
+  // crit or warn items precisely because it holds no items at all. This
+  // previously rendered stats.length on both sides, so it always read
+  // "N / N" whatever the inventory looked like.
+  const fullyCovered = stats.filter(
+    (s) => s.total > 0 && s.crit === 0 && s.warn === 0,
+  ).length;
+
   return (
     <Panel padding={0}>
       <div
@@ -54,7 +63,7 @@ export function CoverageMatrix({
             color: 'var(--color-text-3)',
           }}
         >
-          {stats.length} / {stats.length}
+          {fullyCovered} / {stats.length}
         </span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
