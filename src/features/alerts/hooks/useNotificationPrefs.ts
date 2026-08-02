@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Per-category notification preferences. All default to `true` — turning a
@@ -30,7 +30,8 @@ function readFromKey(key: string): Partial<NotificationPrefs> | undefined {
   try {
     const raw = localStorage.getItem(key);
     return raw ? (JSON.parse(raw) as Partial<NotificationPrefs>) : undefined;
-  } catch {
+  } catch (error) {
+    console.warn(`Failed to read notification prefs from "${key}"`, error);
     return undefined;
   }
 }
@@ -46,8 +47,8 @@ function loadPrefs(): NotificationPrefs {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
       localStorage.removeItem(LEGACY_STORAGE_KEY);
-    } catch {
-      /* ignore */
+    } catch (error) {
+      console.warn('Failed to migrate legacy notification prefs', error);
     }
     return merged;
   }
@@ -58,8 +59,8 @@ function loadPrefs(): NotificationPrefs {
 function savePrefs(prefs: NotificationPrefs): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-  } catch {
-    /* ignore */
+  } catch (error) {
+    console.warn('Failed to persist notification prefs', error);
   }
 }
 
@@ -77,15 +78,26 @@ export function useNotificationPrefs(): readonly [
   (key: keyof NotificationPrefs, value: boolean) => void,
 ] {
   const [prefs, setPrefs] = useState<NotificationPrefs>(loadPrefs);
+
+  // Persist from an effect rather than inside the updater below. React may
+  // invoke an updater more than once for a commit (Strict Mode's double
+  // invoke, or an interrupted render being retried), and a write from inside
+  // it would run for renders that get discarded. Skip the first run so simply
+  // mounting the hook does not write the defaults back.
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+    savePrefs(prefs);
+  }, [prefs]);
+
   // Functional updater + empty dep array so `set` keeps a stable identity
   // (consumers can rely on referential equality for `memo`) and concurrent
   // updates within the same tick compose instead of overwriting each other.
   const set = useCallback((key: keyof NotificationPrefs, value: boolean) => {
-    setPrefs((prev) => {
-      const next = { ...prev, [key]: value };
-      savePrefs(next);
-      return next;
-    });
+    setPrefs((prev) => ({ ...prev, [key]: value }));
   }, []);
   return [prefs, set] as const;
 }

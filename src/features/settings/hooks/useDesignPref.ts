@@ -18,7 +18,8 @@ function readFromKey(key: string): Partial<DesignPrefs> | undefined {
   try {
     const raw = localStorage.getItem(key);
     return raw ? (JSON.parse(raw) as Partial<DesignPrefs>) : undefined;
-  } catch {
+  } catch (error) {
+    console.warn(`Failed to read design prefs from "${key}"`, error);
     return undefined;
   }
 }
@@ -34,8 +35,8 @@ function load(): DesignPrefs {
     try {
       localStorage.setItem(KEY, JSON.stringify(merged));
       localStorage.removeItem(LEGACY_KEY);
-    } catch {
-      /* ignore */
+    } catch (error) {
+      console.warn('Failed to migrate legacy design prefs', error);
     }
     return merged;
   }
@@ -46,8 +47,8 @@ function load(): DesignPrefs {
 function save(prefs: DesignPrefs) {
   try {
     localStorage.setItem(KEY, JSON.stringify(prefs));
-  } catch {
-    /* ignore */
+  } catch (error) {
+    console.warn('Failed to persist design prefs', error);
   }
 }
 
