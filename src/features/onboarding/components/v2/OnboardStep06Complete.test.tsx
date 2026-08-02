@@ -46,7 +46,7 @@ describe('OnboardStep06Complete (v2)', () => {
     expect(screen.getByText('7')).toBeInTheDocument(); // target days
   });
 
-  it('clicking the CTA calls onComplete with the household', () => {
+  it('clicking the CTA completes with the household and a seeded list', () => {
     const onComplete = vi.fn();
     renderStep(onComplete);
     fireEvent.click(
@@ -57,6 +57,11 @@ describe('OnboardStep06Complete (v2)', () => {
     expect(onComplete).toHaveBeenCalled();
     const [household, items] = onComplete.mock.calls[0];
     expect(household.adults).toBe(2);
-    expect(items).toEqual([]);
+    // The picked categories arrive as items to acquire, so the new household
+    // lands on a checklist rather than an empty inventory.
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.every((i: { quantity: number }) => i.quantity === 0)).toBe(
+      true,
+    );
   });
 });

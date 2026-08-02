@@ -7,6 +7,8 @@ import {
   Title,
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useRecommendedItems } from '@/features/templates';
+import { buildOnboardingItems } from './buildOnboardingItems';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 
 interface OnboardStep06Props {
@@ -35,6 +37,18 @@ export function OnboardStep06Complete({
 }: Readonly<OnboardStep06Props>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
+  const { recommendedItems } = useRecommendedItems();
+
+  // Finish with the picked categories' recommended items already on the list,
+  // the way v1's quick setup does — otherwise a new household lands on an
+  // empty inventory with nothing to work from.
+  const seedItems = () =>
+    buildOnboardingItems(
+      recommendedItems,
+      household,
+      enabledCategories,
+      (key) => t(key.replace('products.', ''), { ns: 'products' }),
+    );
   return (
     <div
       style={{
@@ -106,7 +120,10 @@ export function OnboardStep06Complete({
           </SummaryStat>
         </div>
         <div style={{ marginTop: 32 }}>
-          <Button variant="primary" onClick={() => onComplete(household, [])}>
+          <Button
+            variant="primary"
+            onClick={() => onComplete(household, seedItems())}
+          >
             {t(`v2.onboarding.step06.openDashboard.${themeKey}`)}
           </Button>
         </div>
