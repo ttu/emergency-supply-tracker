@@ -2369,6 +2369,38 @@
           "body": "Henkilöllisyystodistuksen, vakuutusten ja pankkitietojen kopiot. 500 € pieninä seteleinä. Molemmat vedenpitävässä rasiassa."
         }
       }
+    },
+    "picker": {
+      "categoryRail": {
+        "cockpit": "LUOKKA",
+        "civil": "LUOKKA",
+        "pantry": "Luokka"
+      },
+      "categoryCount": {
+        "cockpit": "{{count}} LUOKKAA",
+        "civil": "{{count}} LUOKKAA",
+        "pantry": "{{count}} luokkaa"
+      },
+      "allProducts": {
+        "cockpit": "KAIKKI TUOTTEET",
+        "civil": "KAIKKI TUOTTEET",
+        "pantry": "Kaikki tuotteet"
+      },
+      "templateCount": {
+        "cockpit": "{{count}} MALLIA",
+        "civil": "{{count}} MALLIA",
+        "pantry": "{{count}} tuotetta"
+      },
+      "add": {
+        "cockpit": "LISÄÄ",
+        "civil": "LISÄÄ",
+        "pantry": "Lisää"
+      },
+      "empty": {
+        "cockpit": "EI MALLEJA · KOKEILE OMAA TUOTETTA",
+        "civil": "EI MALLEJA · KOKEILE OMAA TUOTETTA",
+        "pantry": "Ei osumia — lisää oma tuote."
+      }
     }
   }
 }

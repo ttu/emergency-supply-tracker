@@ -4,7 +4,8 @@ import { Caption, Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useHousehold } from '@/features/household';
 import { useInventory } from '@/features/inventory';
-import { useRecommendedItems, TemplateSelector } from '@/features/templates';
+import { useRecommendedItems } from '@/features/templates';
+import { ProductPicker } from './ProductPicker';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import type {
@@ -25,9 +26,9 @@ interface NewItemTemplateStepProps {
  * product (which pre-fills unit, weight, calories and default expiry) or opt
  * out to a custom item.
  *
- * Wraps the classic `TemplateSelector` rather than restating its logic — the
- * `design-v2-embed` class re-skins its controls with the active theme tokens,
- * the same approach `InventorySetsSection` uses in v2 settings.
+ * The picker itself is `ProductPicker`, drawn natively in the v2 language —
+ * category rail, product rows, recommended amounts. This component's job is
+ * only to decide which products this household should be offered.
  */
 export function NewItemTemplateStep({
   defaultCategoryId,
@@ -67,8 +68,8 @@ export function NewItemTemplateStep({
       >
         <Caption>{t(`v2.itemDetail.pickTemplate.${themeKey}`)}</Caption>
       </div>
-      <div className="design-v2-embed" style={{ padding: 20 }}>
-        <TemplateSelector
+      <div style={{ padding: 20 }}>
+        <ProductPicker
           templates={applicable}
           categories={categories}
           initialCategoryId={defaultCategoryId ?? ''}

@@ -2369,6 +2369,38 @@
           "body": "Copies of ID, insurance, bank info. €500 in small bills. Both sealed in a waterproof container."
         }
       }
+    },
+    "picker": {
+      "categoryRail": {
+        "cockpit": "CATEGORY",
+        "civil": "CATEGORY",
+        "pantry": "Category"
+      },
+      "categoryCount": {
+        "cockpit": "{{count}} CATEGORIES",
+        "civil": "{{count}} CATEGORIES",
+        "pantry": "{{count}} categories"
+      },
+      "allProducts": {
+        "cockpit": "ALL PRODUCTS",
+        "civil": "ALL PRODUCTS",
+        "pantry": "All products"
+      },
+      "templateCount": {
+        "cockpit": "{{count}} TEMPLATES",
+        "civil": "{{count}} TEMPLATES",
+        "pantry": "{{count}} products"
+      },
+      "add": {
+        "cockpit": "ADD",
+        "civil": "ADD",
+        "pantry": "Add"
+      },
+      "empty": {
+        "cockpit": "NO TEMPLATES · TRY CUSTOM ITEM",
+        "civil": "NO TEMPLATES · TRY CUSTOM ITEM",
+        "pantry": "Nothing matches — try adding your own item."
+      }
     }
   }
 }
