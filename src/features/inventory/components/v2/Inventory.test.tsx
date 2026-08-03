@@ -31,6 +31,9 @@ const setup = (props: { onAddItem?: (id?: string) => void } = {}) => {
       initialAppData: createMockAppData({
         settings: createMockSettings({ theme: 'cockpit', language: 'en' }),
         items,
+        // Random custom categories add rows and counts of their own, which
+        // the assertions below would then be measuring against.
+        customCategories: [],
       }),
     },
   );

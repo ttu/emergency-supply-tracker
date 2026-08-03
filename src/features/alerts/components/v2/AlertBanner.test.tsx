@@ -23,6 +23,10 @@ const setup = (
       initialAppData: createMockAppData({
         settings: createMockSettings({ theme: 'cockpit' }),
         items,
+        // Random custom categories raise alerts of their own. Past the
+        // collapsed row limit, dismissing one only promotes the next, and the
+        // visible count stops describing what was dismissed.
+        customCategories: [],
       }),
     },
   );
