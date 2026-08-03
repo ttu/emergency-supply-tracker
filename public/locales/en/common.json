@@ -1239,6 +1239,27 @@
         "cockpit": "{{missing}} {{unit}} SHORT",
         "civil": "{{missing}} {{unit}} SHORT",
         "pantry": "{{missing}} {{unit}} short"
+      },
+      "moreShortages": {
+        "cockpit_one": "+{{count}} MORE ITEM SHORT",
+        "cockpit_other": "+{{count}} MORE ITEMS SHORT",
+        "civil_one": "+{{count}} MORE ITEM SHORT",
+        "civil_other": "+{{count}} MORE ITEMS SHORT",
+        "pantry_one": "+{{count}} more item short",
+        "pantry_other": "+{{count}} more items short"
+      },
+      "coverage": {
+        "cockpit": "COVERAGE",
+        "civil": "COVERAGE",
+        "pantry": "Stock coverage"
+      },
+      "itemsShort": {
+        "cockpit_one": "ITEM SHORT",
+        "cockpit_other": "ITEMS SHORT",
+        "civil_one": "ITEM SHORT",
+        "civil_other": "ITEMS SHORT",
+        "pantry_one": "item short",
+        "pantry_other": "items short"
       }
     },
     "itemDetail": {

@@ -1,32 +1,19 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Caption,
-  Panel,
-  StatusBar,
-  StatusPill,
-} from '@/shared/components/design-v2/primitives';
+import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useCategoryStatuses } from '@/features/dashboard';
-import { toDesignStatus } from '@/shared/utils/designStatus';
 import { isFoodCategory } from '@/shared/types';
 
 /** The water category drives the drinking/preparation split. */
 const WATER_CATEGORY_ID = 'water-beverages';
 
+/** Enough shortages to show the shape of the gap without a wall of rows. */
+const MAX_SHORTAGE_ROWS = 5;
+
 interface CategorySummaryPanelProps {
   categoryId: string;
-  categoryName: string;
 }
-
-const HEADER_STYLE: CSSProperties = {
-  padding: '14px 20px',
-  borderBottom: '1px solid var(--color-rule-soft)',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: 12,
-};
 
 const BODY_STYLE: CSSProperties = { padding: '16px 20px' };
 
@@ -70,10 +57,12 @@ const SHORTAGE_STYLE: CSSProperties = {
  * people: 60 L, total required: 80 L") and the per-item shortfall. This is
  * that panel in v2 dress; category enable/disable stays in Settings §8 rather
  * than being duplicated here.
+ *
+ * It renders directly below [CategoryStatusStrip], which already names the
+ * category and shows its status pill — so this panel is body only.
  */
 export function CategorySummaryPanel({
   categoryId,
-  categoryName,
 }: Readonly<CategorySummaryPanelProps>) {
   const { t } = useTranslation(['common', 'products', 'units']);
   const { themeKey } = useDesignTheme();
@@ -97,22 +86,13 @@ export function CategorySummaryPanel({
 
   return (
     <Panel padding={0}>
-      <div style={HEADER_STYLE}>
-        <Caption>{categoryName}</Caption>
-        <StatusPill status={toDesignStatus(summary.status)} />
-      </div>
       <div style={BODY_STYLE}>
+        {/* No bar here: the strip above already draws coverage, and a second
+            bar this close — one measuring litres, one counting item statuses —
+            reads as a contradiction rather than as two facts. The item split
+            stays one line further down, in the filter tabs' counts. */}
         <div style={TOTAL_STYLE}>
           {actual} / {needed} {unitLabel}
-        </div>
-        <div style={{ marginTop: 10 }}>
-          <StatusBar
-            ok={summary.okCount}
-            warn={summary.warningCount}
-            crit={summary.criticalCount}
-            total={Math.max(summary.itemCount, 1)}
-            height={5}
-          />
         </div>
 
         {(isWater || summary.shortages.length > 0) && (
@@ -133,7 +113,7 @@ export function CategorySummaryPanel({
                 </span>
               </div>
             )}
-            {summary.shortages.slice(0, 5).map((s) => (
+            {summary.shortages.slice(0, MAX_SHORTAGE_ROWS).map((s) => (
               <div key={s.itemId} style={SHORTAGE_STYLE}>
                 <span>
                   {t(s.itemName.replace('products.', ''), {
@@ -148,6 +128,17 @@ export function CategorySummaryPanel({
                 </span>
               </div>
             ))}
+            {/* The strip above states the total, so the list cannot just stop
+                at five and leave the arithmetic looking wrong. */}
+            {summary.shortages.length > MAX_SHORTAGE_ROWS && (
+              <div style={ROW_STYLE}>
+                <span>
+                  {t(`v2.inventory.moreShortages.${themeKey}`, {
+                    count: summary.shortages.length - MAX_SHORTAGE_ROWS,
+                  })}
+                </span>
+              </div>
+            )}
           </div>
         )}
 

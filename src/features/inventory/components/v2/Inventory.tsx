@@ -25,6 +25,8 @@ import { InventoryTable } from './InventoryTable';
 import { MissingItemsTable } from './MissingItemsTable';
 import { CategorySummaryPanel } from './CategorySummaryPanel';
 import { CategoryRail } from './CategoryRail';
+import { CategoryStatusStrip } from './CategoryStatusStrip';
+import { useCategoryCoverage } from './useCategoryCoverage';
 
 interface InventoryProps {
   onItemSelect: (id: string) => void;
@@ -124,17 +126,21 @@ export function Inventory({
     ? categories.find((c) => String(c.id) === selectedCategoryId)
     : undefined;
 
+  const coverage = useCategoryCoverage(selectedCategoryId);
+
+  const categoryLabel = selectedCategoryId
+    ? resolveCategoryLabel(
+        selectedCategory,
+        selectedCategoryId,
+        i18n.language || 'en',
+        t,
+      )
+    : t(`v2.inventory.allCategories.${themeKey}`);
+
   // With a category picked, the header says which one instead of repeating
   // "all items" — the rail's selection is otherwise the only place it shows.
   const title = selectedCategoryId
-    ? t(`v2.inventory.titleCategory.${themeKey}`, {
-        category: resolveCategoryLabel(
-          selectedCategory,
-          selectedCategoryId,
-          i18n.language || 'en',
-          t,
-        ),
-      })
+    ? t(`v2.inventory.titleCategory.${themeKey}`, { category: categoryLabel })
     : t(`v2.inventory.title.${themeKey}`);
 
   const filtered = useMemo(() => {
@@ -185,13 +191,6 @@ export function Inventory({
         </div>
       </div>
 
-      {selectedCategory && (
-        <CategorySummaryPanel
-          categoryId={selectedCategory.id as string}
-          categoryName={selectedCategory.name}
-        />
-      )}
-
       {/* This view only renders in the desktop shell — narrow screens get
           MobileInventory and its chip strip — so the rail keeps a fixed
           column and the table takes the rest. */}
@@ -210,29 +209,48 @@ export function Inventory({
           onCategoryChange={(categoryId) => setFilters({ categoryId })}
         />
 
-        <Panel padding={0} style={{ minWidth: 0 }}>
-          <InventoryFilterStrip
-            filter={filter}
-            onFilterChange={(status) => setFilters({ status })}
-            counts={counts}
-            search={search}
-            onSearchChange={(search) => setFilters({ search })}
-            locationFilter={locationFilter}
-            onLocationFilterChange={(location) => setFilters({ location })}
-            locations={locations}
-            sortBy={sortBy}
-            onSortByChange={(sortBy) => setFilters({ sortBy })}
-          />
-          {filter === 'missing' ? (
-            <MissingItemsTable items={missing} onAdd={onAddItem} />
-          ) : (
-            <InventoryTable
-              rows={visible}
-              totalRowCount={inCategory.length}
-              onItemSelect={onItemSelect}
-            />
+        {/* The summary sits in the table column, not above the whole grid, so
+            it lines up with the rows it describes and the rail stays beside
+            it. The strip is always mounted at a fixed height; the detailed
+            panel only has something to say once a category is picked. */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+            minWidth: 0,
+          }}
+        >
+          <CategoryStatusStrip label={categoryLabel} {...coverage} />
+
+          {selectedCategory && (
+            <CategorySummaryPanel categoryId={selectedCategory.id as string} />
           )}
-        </Panel>
+
+          <Panel padding={0} style={{ minWidth: 0 }}>
+            <InventoryFilterStrip
+              filter={filter}
+              onFilterChange={(status) => setFilters({ status })}
+              counts={counts}
+              search={search}
+              onSearchChange={(search) => setFilters({ search })}
+              locationFilter={locationFilter}
+              onLocationFilterChange={(location) => setFilters({ location })}
+              locations={locations}
+              sortBy={sortBy}
+              onSortByChange={(sortBy) => setFilters({ sortBy })}
+            />
+            {filter === 'missing' ? (
+              <MissingItemsTable items={missing} onAdd={onAddItem} />
+            ) : (
+              <InventoryTable
+                rows={visible}
+                totalRowCount={inCategory.length}
+                onItemSelect={onItemSelect}
+              />
+            )}
+          </Panel>
+        </div>
       </div>
     </div>
   );

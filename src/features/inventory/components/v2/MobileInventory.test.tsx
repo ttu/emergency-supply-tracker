@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, within } from '@testing-library/react';
 import { MobileInventory } from './MobileInventory';
 import { renderWithProviders } from '@/test/render';
 import {
@@ -151,6 +151,24 @@ describe('MobileInventory (v2)', () => {
 
     expect(
       await screen.findByText('v2.inventory.totalRequired.cockpit'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows the category status strip alongside the summary', async () => {
+    renderWithItems();
+    await screen.findByText('Bottled water');
+
+    expect(
+      screen.queryByTestId('v2-category-status-strip'),
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByTestId('v2-category-select'), {
+      target: { value: 'water-beverages' },
+    });
+
+    const strip = await screen.findByTestId('v2-category-status-strip');
+    expect(
+      within(strip).getByTestId('v2-category-strip-coverage'),
     ).toBeInTheDocument();
   });
 

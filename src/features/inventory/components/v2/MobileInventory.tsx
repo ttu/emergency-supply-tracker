@@ -17,7 +17,10 @@ import type { SortBy } from '@/features/inventory';
 import { useInventoryFilters } from '../../hooks/useInventoryFilters';
 import { MissingItemsTable } from './MissingItemsTable';
 import { CategorySelect } from './CategorySelect';
+import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { CategorySummaryPanel } from './CategorySummaryPanel';
+import { CategoryStatusStrip } from './CategoryStatusStrip';
+import { useCategoryCoverage } from './useCategoryCoverage';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 
@@ -32,7 +35,7 @@ export function MobileInventory({
   onItemSelect,
   onAddItem,
 }: Readonly<MobileInventoryProps>) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(['common', 'categories']);
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const allMissing = useMissingRecommendedItems();
@@ -94,6 +97,20 @@ export function MobileInventory({
     ? categories.find((c) => String(c.id) === selectedCategoryId)
     : undefined;
 
+  const coverage = useCategoryCoverage(selectedCategoryId);
+
+  // Resolved the same way the dropdown resolves its options, so the strip and
+  // the control that set it agree in every language.
+  const categoryLabel =
+    selectedCategory && selectedCategoryId
+      ? resolveCategoryLabel(
+          selectedCategory,
+          selectedCategoryId,
+          i18n.language || 'en',
+          t,
+        )
+      : '';
+
   const chips: Array<[FilterKey, string]> = useMemo(
     () => [
       ['all', t(`v2.inventory.filterAll.${themeKey}`)],
@@ -136,15 +153,6 @@ export function MobileInventory({
         selectedCategoryId={selectedCategoryId}
         onCategoryChange={(categoryId) => setFilters({ categoryId })}
       />
-      {/* Same summary the desktop inventory shows above its table: picking a
-          category should answer "how far off is this one?" on a phone too,
-          not only tell you which rows belong to it. */}
-      {selectedCategory && (
-        <CategorySummaryPanel
-          categoryId={selectedCategory.id as string}
-          categoryName={selectedCategory.name}
-        />
-      )}
       <div style={{ display: 'flex', gap: 8 }}>
         {locations.length > 0 && (
           <select
@@ -201,6 +209,15 @@ export function MobileInventory({
           );
         })}
       </div>
+      {/* Sits directly above the list, after the filters that decide what the
+          list holds: on a phone the summary reads as a header for the rows
+          below it, not as a second thing to scroll past before filtering. */}
+      {selectedCategory && (
+        <>
+          <CategoryStatusStrip label={categoryLabel} stacked {...coverage} />
+          <CategorySummaryPanel categoryId={selectedCategory.id as string} />
+        </>
+      )}
       <Panel padding={0}>
         {filter === 'missing' && (
           <MissingItemsTable items={missing} onAdd={onAddItem} />

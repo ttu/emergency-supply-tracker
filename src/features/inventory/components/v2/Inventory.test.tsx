@@ -86,6 +86,24 @@ describe('Inventory (v2)', () => {
     expect(screen.queryByText('INVENTORY · ALL ITEMS')).not.toBeInTheDocument();
   });
 
+  it('keeps the status strip mounted whether or not a category is picked', async () => {
+    setup();
+    const strip = await screen.findByTestId('v2-category-status-strip');
+    expect(
+      within(strip).getByText('v2.inventory.allCategories.cockpit'),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId(`v2-category-row-${WATER_ID}`));
+
+    await waitFor(() => {
+      expect(
+        within(screen.getByTestId('v2-category-status-strip')).getByText(
+          'Water & Beverages',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
   it('renders every item in the inventory by default', async () => {
     setup();
     await waitFor(() => {
