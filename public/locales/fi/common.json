@@ -1383,7 +1383,7 @@
         "civil": "LEMMIKIT",
         "pantry": "Lemmikit"
       },
-      "step01": {
+      "welcome": {
         "leadTitlePantry": "Asetetaan pakkauksesi.",
         "leadTitleCivil": "VALMIUSVARASTON SEURANTA · ALKUMÄÄRITYS",
         "leadTitleCockpit": "ALUSTUS · KOTITALOUDEN PROFIILI",
@@ -1423,7 +1423,7 @@
           "pantry": "Valmiuspisteet"
         }
       },
-      "step02": {
+      "theme": {
         "leadTitlePantry": "Valitse ulkoasu.",
         "leadTitleCivil": "VALITSE KÄYTTÖLIITTYMÄN TEEMA",
         "leadTitleCockpit": "VALITSE TEEMA",
@@ -1433,7 +1433,7 @@
           "pantry": "Kolme ulkoasua, sama sovellus. Voit vaihtaa milloin tahansa asetuksista — tiedot ja asettelu pysyvät samoina."
         }
       },
-      "step03": {
+      "preset": {
         "leadTitle": {
           "cockpit": "VALITSE KOTITALOUDEN ESIASETUS",
           "civil": "VALITSE KOTITALOUDEN ESIASETUS",
@@ -1445,7 +1445,7 @@
           "pantry": "Valitse lähin vastaava — voit hienosäätää seuraavaksi."
         }
       },
-      "step04": {
+      "household": {
         "leadTitle": {
           "cockpit": "VAHVISTA KOTITALOUDEN PARAMETRIT",
           "civil": "VAHVISTA KOTITALOUDEN PARAMETRIT",
@@ -1490,38 +1490,6 @@
           "cockpit": "KATTAVUUSTAVOITE",
           "civil": "KATTAVUUSTAVOITE",
           "pantry": "Tavoitepäivät"
-        }
-      },
-      "step06": {
-        "setupComplete": {
-          "cockpit": "ASETUS VALMIS · 06 / 06",
-          "civil": "ASETUS VALMIS · 06 / 06",
-          "pantry": "Asetus valmis · 6 / 6"
-        },
-        "title": {
-          "cockpit": "VALMISTELU VALMIS",
-          "civil": "VALMISTELU VALMIS",
-          "pantry": "Olet valmis."
-        },
-        "subtitle": {
-          "cockpit": "PERUSTASO VALMIS · {{count}} RIVIÄ SEURANNASSA. VANHENEMISEN VALVONTA AKTIIVINEN.",
-          "civil": "PERUSTASO VALMIS · {{count}} RIVIÄ SEURANNASSA. VANHENEMISEN VALVONTA AKTIIVINEN.",
-          "pantry": "Aloituslistasi on valmis — {{count}} tuotetta listalla. Pidämme silmällä vanhenemispäiviä ja muistutamme kun jokin vähenee."
-        },
-        "daysCaption": {
-          "cockpit": "TAVOITEPÄIVÄT",
-          "civil": "TAVOITEPÄIVÄT",
-          "pantry": "Tavoitepäivät"
-        },
-        "openDashboard": {
-          "cockpit": "AVAA YLEISKATSAUS →",
-          "civil": "AVAA YLEISKATSAUS →",
-          "pantry": "Avaa etusivu →"
-        },
-        "itemsCaption": {
-          "cockpit": "TUOTTEITA",
-          "civil": "TUOTTEITA",
-          "pantry": "Tuotteita"
         }
       },
       "kit": {
@@ -1651,6 +1619,38 @@
           "cockpit": "KOKEILE DEMODATAA",
           "civil": "KOKEILE DEMODATAA",
           "pantry": "Kokeile demodatalla"
+        }
+      },
+      "complete": {
+        "setupComplete": {
+          "cockpit": "ASETUS VALMIS · 06 / 06",
+          "civil": "ASETUS VALMIS · 06 / 06",
+          "pantry": "Asetus valmis · 6 / 6"
+        },
+        "title": {
+          "cockpit": "VALMISTELU VALMIS",
+          "civil": "VALMISTELU VALMIS",
+          "pantry": "Olet valmis."
+        },
+        "subtitle": {
+          "cockpit": "PERUSTASO VALMIS · {{count}} RIVIÄ SEURANNASSA. VANHENEMISEN VALVONTA AKTIIVINEN.",
+          "civil": "PERUSTASO VALMIS · {{count}} RIVIÄ SEURANNASSA. VANHENEMISEN VALVONTA AKTIIVINEN.",
+          "pantry": "Aloituslistasi on valmis — {{count}} tuotetta listalla. Pidämme silmällä vanhenemispäiviä ja muistutamme kun jokin vähenee."
+        },
+        "daysCaption": {
+          "cockpit": "TAVOITEPÄIVÄT",
+          "civil": "TAVOITEPÄIVÄT",
+          "pantry": "Tavoitepäivät"
+        },
+        "openDashboard": {
+          "cockpit": "AVAA YLEISKATSAUS →",
+          "civil": "AVAA YLEISKATSAUS →",
+          "pantry": "Avaa etusivu →"
+        },
+        "itemsCaption": {
+          "cockpit": "TUOTTEITA",
+          "civil": "TUOTTEITA",
+          "pantry": "Tuotteita"
         }
       }
     },

@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { OnboardStep01Welcome } from './OnboardStep01Welcome';
+import { OnboardWelcome } from './OnboardWelcome';
 import { DesignV2Story } from '@/shared/components/design-v2/storybook';
 
 const meta = {
-  title: 'Design V2/Onboarding/Step01Welcome',
-  component: OnboardStep01Welcome,
+  title: 'Design V2/Onboarding/Welcome',
+  component: OnboardWelcome,
   parameters: { layout: 'fullscreen' },
   decorators: [
     (Story) => (
@@ -14,7 +14,7 @@ const meta = {
     ),
   ],
   argTypes: { onNext: { action: 'next' } },
-} satisfies Meta<typeof OnboardStep01Welcome>;
+} satisfies Meta<typeof OnboardWelcome>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

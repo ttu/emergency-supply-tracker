@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
-import { OnboardStep06QuickSetup } from './OnboardStep06QuickSetup';
+import { OnboardQuickSetup } from './OnboardQuickSetup';
 import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
@@ -19,10 +19,10 @@ const firstItemId = String(
 );
 
 const renderStep = (
-  props: Partial<Parameters<typeof OnboardStep06QuickSetup>[0]> = {},
+  props: Partial<Parameters<typeof OnboardQuickSetup>[0]> = {},
 ) =>
   renderWithProviders(
-    <OnboardStep06QuickSetup
+    <OnboardQuickSetup
       household={household}
       onAddItems={vi.fn()}
       onSkip={vi.fn()}
@@ -33,7 +33,7 @@ const renderStep = (
     { initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) } },
   );
 
-describe('OnboardStep06QuickSetup', () => {
+describe('OnboardQuickSetup', () => {
   it('starts with everything ticked', () => {
     renderStep();
     expect(

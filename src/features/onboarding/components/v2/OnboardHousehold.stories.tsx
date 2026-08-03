@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { OnboardStep04Household } from './OnboardStep04Household';
+import { OnboardHousehold } from './OnboardHousehold';
 import { DesignV2Story } from '@/shared/components/design-v2/storybook';
 import { createMockHousehold } from '@/shared/utils/test/factories';
 
 const meta = {
-  title: 'Design V2/Onboarding/Step04Household',
-  component: OnboardStep04Household,
+  title: 'Design V2/Onboarding/Household',
+  component: OnboardHousehold,
   parameters: { layout: 'fullscreen' },
   decorators: [
     (Story) => (
@@ -19,7 +19,7 @@ const meta = {
     onNext: { action: 'next' },
     onBack: { action: 'back' },
   },
-} satisfies Meta<typeof OnboardStep04Household>;
+} satisfies Meta<typeof OnboardHousehold>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

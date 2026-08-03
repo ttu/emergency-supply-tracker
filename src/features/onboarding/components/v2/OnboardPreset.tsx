@@ -5,7 +5,7 @@ import type { HouseholdConfig } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
 import { ONBOARDING_PRESETS } from './onboardingPresets';
 
-interface OnboardStep03Props {
+interface OnboardPresetProps {
   presetCode: string;
   onPresetChange: (code: string) => void;
   onApplyPreset: (next: Partial<HouseholdConfig>) => void;
@@ -14,13 +14,13 @@ interface OnboardStep03Props {
 }
 
 /** Step 3: 4-card preset grid (single / couple / family / custom). */
-export function OnboardStep03Preset({
+export function OnboardPreset({
   presetCode,
   onPresetChange,
   onApplyPreset,
   onNext,
   onBack,
-}: Readonly<OnboardStep03Props>) {
+}: Readonly<OnboardPresetProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
@@ -28,8 +28,8 @@ export function OnboardStep03Preset({
       step={3}
       title={t(`v2.voice.onbPreset.${themeKey}`)}
       lead={{
-        title: t(`v2.onboarding.step03.leadTitle.${themeKey}`),
-        sub: t(`v2.onboarding.step03.leadSub.${themeKey}`),
+        title: t(`v2.onboarding.preset.leadTitle.${themeKey}`),
+        sub: t(`v2.onboarding.preset.leadSub.${themeKey}`),
       }}
       back={onBack}
       onContinue={() => {

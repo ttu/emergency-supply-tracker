@@ -1,19 +1,19 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
-import { OnboardStep02Theme } from './OnboardStep02Theme';
+import { OnboardTheme } from './OnboardTheme';
 import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
 
 const renderStep = (onNext = vi.fn(), onBack = vi.fn()) =>
-  renderWithProviders(<OnboardStep02Theme onNext={onNext} onBack={onBack} />, {
+  renderWithProviders(<OnboardTheme onNext={onNext} onBack={onBack} />, {
     initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
   });
 
-describe('OnboardStep02Theme (v2)', () => {
+describe('OnboardTheme (v2)', () => {
   it('renders the appearance lead', () => {
     renderStep();
     expect(
-      screen.getByText('v2.onboarding.step02.leadTitleCockpit'),
+      screen.getByText('v2.onboarding.theme.leadTitleCockpit'),
     ).toBeInTheDocument();
   });
 

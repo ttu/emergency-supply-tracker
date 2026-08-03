@@ -5,18 +5,18 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
 import { OnboardLayout } from './OnboardLayout';
 
-interface OnboardStep01Props {
+interface OnboardWelcomeProps {
   onNext: () => void;
 }
 
 /** Step 1: welcome / outputs preview / language picker. */
 function leadTitle(themeKey: string, t: TFunction): string {
-  if (themeKey === 'pantry') return t('v2.onboarding.step01.leadTitlePantry');
-  if (themeKey === 'civil') return t('v2.onboarding.step01.leadTitleCivil');
-  return t('v2.onboarding.step01.leadTitleCockpit');
+  if (themeKey === 'pantry') return t('v2.onboarding.welcome.leadTitlePantry');
+  if (themeKey === 'civil') return t('v2.onboarding.welcome.leadTitleCivil');
+  return t('v2.onboarding.welcome.leadTitleCockpit');
 }
 
-export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
+export function OnboardWelcome({ onNext }: Readonly<OnboardWelcomeProps>) {
   const { t, i18n } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
@@ -34,10 +34,10 @@ export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
   };
 
   const outputs: Array<[string, string]> = [
-    ['§1', t(`v2.onboarding.step01.o1.${themeKey}`)],
-    ['§2', t(`v2.onboarding.step01.o2.${themeKey}`)],
-    ['§3', t(`v2.onboarding.step01.o3.${themeKey}`)],
-    ['§4', t(`v2.onboarding.step01.o4.${themeKey}`)],
+    ['§1', t(`v2.onboarding.welcome.o1.${themeKey}`)],
+    ['§2', t(`v2.onboarding.welcome.o2.${themeKey}`)],
+    ['§3', t(`v2.onboarding.welcome.o3.${themeKey}`)],
+    ['§4', t(`v2.onboarding.welcome.o4.${themeKey}`)],
   ];
 
   return (
@@ -46,13 +46,13 @@ export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
       title={t(`v2.voice.onbWelcome.${themeKey}`)}
       lead={{
         title: leadTitle(themeKey, t),
-        sub: t(`v2.onboarding.step01.leadSub.${themeKey}`),
+        sub: t(`v2.onboarding.welcome.leadSub.${themeKey}`),
       }}
       onContinue={onNext}
       side={
         <div>
           <Caption>
-            {t(`v2.onboarding.step01.outputsCaption.${themeKey}`)}
+            {t(`v2.onboarding.welcome.outputsCaption.${themeKey}`)}
           </Caption>
           <div
             style={{
@@ -88,7 +88,7 @@ export function OnboardStep01Welcome({ onNext }: Readonly<OnboardStep01Props>) {
             ))}
           </div>
           <Caption style={{ marginTop: 32 }}>
-            {t(`v2.onboarding.step01.languageCaption.${themeKey}`)}
+            {t(`v2.onboarding.welcome.languageCaption.${themeKey}`)}
           </Caption>
           <div
             style={{

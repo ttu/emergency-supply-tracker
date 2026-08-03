@@ -5,16 +5,16 @@ import { useNotification } from '@/shared/hooks';
 import { HOUSEHOLD_DEFAULTS } from '@/features/household';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 import { generateExampleInventory } from '../../utils';
-import { OnboardStep01Welcome } from './OnboardStep01Welcome';
-import { OnboardStep02Theme } from './OnboardStep02Theme';
-import { OnboardStep03Preset } from './OnboardStep03Preset';
-import { OnboardStep04Household } from './OnboardStep04Household';
-import { OnboardStep05Kit } from './OnboardStep05Kit';
+import { OnboardWelcome } from './OnboardWelcome';
+import { OnboardTheme } from './OnboardTheme';
+import { OnboardPreset } from './OnboardPreset';
+import { OnboardHousehold } from './OnboardHousehold';
+import { OnboardKit } from './OnboardKit';
 import {
-  OnboardStep06QuickSetup,
+  OnboardQuickSetup,
   type QuickSetupSelection,
-} from './OnboardStep06QuickSetup';
-import { OnboardStep07Complete } from './OnboardStep07Complete';
+} from './OnboardQuickSetup';
+import { OnboardComplete } from './OnboardComplete';
 import { buildOnboardingItems } from './buildOnboardingItems';
 
 interface OnboardingProps {
@@ -82,11 +82,11 @@ export function DesignOnboarding({ onComplete }: Readonly<OnboardingProps>) {
     );
   };
 
-  if (step === 1) return <OnboardStep01Welcome onNext={next} />;
-  if (step === 2) return <OnboardStep02Theme onNext={next} onBack={back} />;
+  if (step === 1) return <OnboardWelcome onNext={next} />;
+  if (step === 2) return <OnboardTheme onNext={next} onBack={back} />;
   if (step === 3)
     return (
-      <OnboardStep03Preset
+      <OnboardPreset
         presetCode={presetCode}
         onPresetChange={setPresetCode}
         onApplyPreset={(update) => setHousehold((h) => ({ ...h, ...update }))}
@@ -96,17 +96,17 @@ export function DesignOnboarding({ onComplete }: Readonly<OnboardingProps>) {
     );
   if (step === 4)
     return (
-      <OnboardStep04Household
+      <OnboardHousehold
         household={household}
         onHouseholdChange={setHousehold}
         onNext={next}
         onBack={back}
       />
     );
-  if (step === 5) return <OnboardStep05Kit onNext={next} onBack={back} />;
+  if (step === 5) return <OnboardKit onNext={next} onBack={back} />;
   if (step === 6)
     return (
-      <OnboardStep06QuickSetup
+      <OnboardQuickSetup
         household={household}
         onAddItems={handleAddItems}
         onSkip={handleSkip}
@@ -115,7 +115,7 @@ export function DesignOnboarding({ onComplete }: Readonly<OnboardingProps>) {
       />
     );
   return (
-    <OnboardStep07Complete
+    <OnboardComplete
       household={household}
       items={seededItems}
       onComplete={onComplete}

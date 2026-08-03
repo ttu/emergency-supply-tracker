@@ -18,7 +18,7 @@ removed outright. See "Navigation reduced to four destinations" below.
 ## 🟡 Deferred — accepted as-is for v1.0, track for follow-up
 
 _Nothing open._ The hardcoded `0%` readiness on the completion screen was
-resolved by the quick-setup step: `OnboardStep07Complete` now computes
+resolved by the quick-setup step: `OnboardComplete` now computes
 readiness from what was actually seeded, so marking items owned during setup
 shows a non-zero figure.
 
@@ -65,9 +65,9 @@ on:
   shortfall. Plan: `docs/plans/2026-07-31-v2-parity-gaps.md`.
 
 - **Onboarding reaches parity with v1** — the design update added the two
-  screens v2 was missing: a recommendation-kit chooser (`OnboardStep05Kit`,
+  screens v2 was missing: a recommendation-kit chooser (`OnboardKit`,
   built-in kits plus JSON upload, on the existing `useRecommendedItems` kit
-  API) and a quick-setup checklist (`OnboardStep06QuickSetup`) listing the
+  API) and a quick-setup checklist (`OnboardQuickSetup`) listing the
   kit's products sized to the household, with per-line ticks, a "mark owned"
   pill, skip and demo-data escapes. The old category-toggle step is gone —
   per-item selection subsumes it. Seeding moved out of the completion screen
@@ -111,9 +111,9 @@ on:
   desktop/mobile, `ALERT_TYPE_TO_DESIGN_STATUS` consolidated.
 - **React-review fixes** — `useNotificationPrefs` functional updater (stale-
   closure fix), unhelpful `DesignApp` `useMemo`s dropped, `useShoppingList`
-  open/done counts memoised, `MobileInventory`/`OnboardStep05Items` chip
-  arrays memoised, `DataBackupSection` storage reads memoised on `items`
-  change.
+  open/done counts memoised, `MobileInventory` and the then-current onboarding
+  category step's chip arrays memoised, `DataBackupSection` storage reads
+  memoised on `items` change.
 - **`window.confirm` replaced with themed `ConfirmDialog`** — new
   `design-v2/ConfirmDialog.tsx` primitive (portal, `role="alertdialog"`,
   focus trap, ESC, focus restore on close, v2 Panel + Button + danger

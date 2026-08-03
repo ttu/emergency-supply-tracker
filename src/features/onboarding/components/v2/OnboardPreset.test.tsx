@@ -1,14 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
-import { OnboardStep03Preset } from './OnboardStep03Preset';
+import { OnboardPreset } from './OnboardPreset';
 import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
 
-const renderStep = (
-  props: Partial<Parameters<typeof OnboardStep03Preset>[0]> = {},
-) =>
+const renderStep = (props: Partial<Parameters<typeof OnboardPreset>[0]> = {}) =>
   renderWithProviders(
-    <OnboardStep03Preset
+    <OnboardPreset
       presetCode="P-02"
       onPresetChange={vi.fn()}
       onApplyPreset={vi.fn()}
@@ -19,7 +17,7 @@ const renderStep = (
     { initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) } },
   );
 
-describe('OnboardStep03Preset (v2)', () => {
+describe('OnboardPreset (v2)', () => {
   it('renders all four preset cards with their codes', () => {
     renderStep();
     for (const code of ['P-01', 'P-02', 'P-03', 'P-04']) {

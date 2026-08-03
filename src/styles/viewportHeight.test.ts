@@ -41,7 +41,7 @@ describe('design v2 full-viewport containers', () => {
   it.each([
     ['shared/components/design-v2/Shell.tsx', 2],
     ['features/onboarding/components/v2/OnboardLayout.tsx', 1],
-    ['features/onboarding/components/v2/OnboardStep07Complete.tsx', 1],
+    ['features/onboarding/components/v2/OnboardComplete.tsx', 1],
   ])('%s uses the class rather than an inline 100vh', (file, expected) => {
     const source = read(file);
     expect(source).not.toMatch(/height:\s*'100vh'/);

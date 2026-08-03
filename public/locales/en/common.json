@@ -1383,7 +1383,7 @@
         "civil": "PETS",
         "pantry": "Pets"
       },
-      "step01": {
+      "welcome": {
         "leadTitlePantry": "Let's set up your kit.",
         "leadTitleCivil": "EMERGENCY SUPPLY TRACKER · INITIAL CONFIGURATION",
         "leadTitleCockpit": "INITIALIZE · HOUSEHOLD PROFILE",
@@ -1423,7 +1423,7 @@
           "pantry": "A readiness score"
         }
       },
-      "step02": {
+      "theme": {
         "leadTitlePantry": "Pick a look.",
         "leadTitleCivil": "SELECT INTERFACE THEME",
         "leadTitleCockpit": "CHOOSE THEME",
@@ -1433,7 +1433,7 @@
           "pantry": "Three looks, same app. You can switch any time in settings — your data and layout stay identical."
         }
       },
-      "step03": {
+      "preset": {
         "leadTitle": {
           "cockpit": "SELECT HOUSEHOLD PRESET",
           "civil": "SELECT HOUSEHOLD PRESET",
@@ -1445,7 +1445,7 @@
           "pantry": "Pick the closest match — you can fine-tune next."
         }
       },
-      "step04": {
+      "household": {
         "leadTitle": {
           "cockpit": "CONFIRM HOUSEHOLD PARAMETERS",
           "civil": "CONFIRM HOUSEHOLD PARAMETERS",
@@ -1490,38 +1490,6 @@
           "cockpit": "COVERAGE TARGET",
           "civil": "COVERAGE TARGET",
           "pantry": "Target days"
-        }
-      },
-      "step06": {
-        "setupComplete": {
-          "cockpit": "SETUP COMPLETE · 06 / 06",
-          "civil": "SETUP COMPLETE · 06 / 06",
-          "pantry": "Setup complete · 6 / 6"
-        },
-        "title": {
-          "cockpit": "PROVISIONING COMPLETE",
-          "civil": "PROVISIONING COMPLETE",
-          "pantry": "You're set up."
-        },
-        "subtitle": {
-          "cockpit": "BASELINE PROVISIONED · {{count}} LINE ITEMS TRACKED. EXPIRY MONITORING ACTIVE.",
-          "civil": "BASELINE PROVISIONED · {{count}} LINE ITEMS TRACKED. EXPIRY MONITORING ACTIVE.",
-          "pantry": "Your starting kit is ready — {{count}} items on the list. We'll keep an eye on expiry dates and remind you when something runs low."
-        },
-        "daysCaption": {
-          "cockpit": "TARGET DAYS",
-          "civil": "TARGET DAYS",
-          "pantry": "Days target"
-        },
-        "openDashboard": {
-          "cockpit": "OPEN OVERVIEW →",
-          "civil": "OPEN OVERVIEW →",
-          "pantry": "Open dashboard →"
-        },
-        "itemsCaption": {
-          "cockpit": "ITEMS",
-          "civil": "ITEMS",
-          "pantry": "Items"
         }
       },
       "kit": {
@@ -1651,6 +1619,38 @@
           "cockpit": "TRY DEMO DATA",
           "civil": "TRY DEMO DATA",
           "pantry": "Try with demo data"
+        }
+      },
+      "complete": {
+        "setupComplete": {
+          "cockpit": "SETUP COMPLETE · 06 / 06",
+          "civil": "SETUP COMPLETE · 06 / 06",
+          "pantry": "Setup complete · 6 / 6"
+        },
+        "title": {
+          "cockpit": "PROVISIONING COMPLETE",
+          "civil": "PROVISIONING COMPLETE",
+          "pantry": "You're set up."
+        },
+        "subtitle": {
+          "cockpit": "BASELINE PROVISIONED · {{count}} LINE ITEMS TRACKED. EXPIRY MONITORING ACTIVE.",
+          "civil": "BASELINE PROVISIONED · {{count}} LINE ITEMS TRACKED. EXPIRY MONITORING ACTIVE.",
+          "pantry": "Your starting kit is ready — {{count}} items on the list. We'll keep an eye on expiry dates and remind you when something runs low."
+        },
+        "daysCaption": {
+          "cockpit": "TARGET DAYS",
+          "civil": "TARGET DAYS",
+          "pantry": "Days target"
+        },
+        "openDashboard": {
+          "cockpit": "OPEN OVERVIEW →",
+          "civil": "OPEN OVERVIEW →",
+          "pantry": "Open dashboard →"
+        },
+        "itemsCaption": {
+          "cockpit": "ITEMS",
+          "civil": "ITEMS",
+          "pantry": "Items"
         }
       }
     },

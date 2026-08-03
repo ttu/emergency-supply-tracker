@@ -10,7 +10,7 @@ import { useNotification } from '@/shared/hooks';
 import type { KitId, KitInfo, RecommendedItemsFile } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
 
-interface OnboardStep05KitProps {
+interface OnboardKitProps {
   onNext: () => void;
   onBack: () => void;
 }
@@ -22,10 +22,7 @@ interface OnboardStep05KitProps {
  * chosen before the item list is drawn up. Built-in kits sit alongside any
  * JSON kit the household uploads.
  */
-export function OnboardStep05Kit({
-  onNext,
-  onBack,
-}: Readonly<OnboardStep05KitProps>) {
+export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { showNotification } = useNotification();

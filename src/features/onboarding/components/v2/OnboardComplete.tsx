@@ -9,7 +9,7 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 
-interface OnboardStep07Props {
+interface OnboardCompleteProps {
   household: HouseholdConfig;
   /** What quick setup produced — already built, not rebuilt here. */
   items: InventoryItem[];
@@ -29,11 +29,11 @@ function SummaryStat({
   );
 }
 
-export function OnboardStep07Complete({
+export function OnboardComplete({
   household,
   items,
   onComplete,
-}: Readonly<OnboardStep07Props>) {
+}: Readonly<OnboardCompleteProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
 
@@ -68,10 +68,10 @@ export function OnboardStep07Complete({
             letterSpacing: '0.12em',
           }}
         >
-          ✓ {t(`v2.onboarding.step06.setupComplete.${themeKey}`)}
+          ✓ {t(`v2.onboarding.complete.setupComplete.${themeKey}`)}
         </div>
         <Title size={56} style={{ marginTop: 18 }}>
-          {t(`v2.onboarding.step06.title.${themeKey}`)}
+          {t(`v2.onboarding.complete.title.${themeKey}`)}
         </Title>
         <div
           style={{
@@ -81,7 +81,7 @@ export function OnboardStep07Complete({
             lineHeight: 1.6,
           }}
         >
-          {t(`v2.onboarding.step06.subtitle.${themeKey}`, {
+          {t(`v2.onboarding.complete.subtitle.${themeKey}`, {
             count: items.length,
           })}
         </div>
@@ -106,12 +106,12 @@ export function OnboardStep07Complete({
             />
           </SummaryStat>
           <SummaryStat
-            caption={t(`v2.onboarding.step06.itemsCaption.${themeKey}`)}
+            caption={t(`v2.onboarding.complete.itemsCaption.${themeKey}`)}
           >
             <NumberDisplay value={items.length} size={36} />
           </SummaryStat>
           <SummaryStat
-            caption={t(`v2.onboarding.step06.daysCaption.${themeKey}`)}
+            caption={t(`v2.onboarding.complete.daysCaption.${themeKey}`)}
           >
             <NumberDisplay value={household.supplyDurationDays} size={36} />
           </SummaryStat>
@@ -121,7 +121,7 @@ export function OnboardStep07Complete({
             variant="primary"
             onClick={() => onComplete(household, items)}
           >
-            {t(`v2.onboarding.step06.openDashboard.${themeKey}`)}
+            {t(`v2.onboarding.complete.openDashboard.${themeKey}`)}
           </Button>
         </div>
       </div>

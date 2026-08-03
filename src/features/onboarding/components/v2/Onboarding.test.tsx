@@ -23,7 +23,7 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
   it('starts on step 1 (welcome)', () => {
     renderFlow();
     expect(
-      screen.getByText('v2.onboarding.step01.leadTitleCockpit'),
+      screen.getByText('v2.onboarding.welcome.leadTitleCockpit'),
     ).toBeInTheDocument();
   });
 
@@ -47,7 +47,7 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
     );
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'v2.onboarding.step06.openDashboard.cockpit',
+        name: 'v2.onboarding.complete.openDashboard.cockpit',
       }),
     );
 
@@ -70,7 +70,7 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
     );
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'v2.onboarding.step06.openDashboard.cockpit',
+        name: 'v2.onboarding.complete.openDashboard.cockpit',
       }),
     );
 
@@ -101,7 +101,7 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
       screen.getByRole('button', { name: 'v2.voice.back.cockpit' }),
     );
     expect(
-      screen.getByText('v2.onboarding.step01.leadTitleCockpit'),
+      screen.getByText('v2.onboarding.welcome.leadTitleCockpit'),
     ).toBeInTheDocument();
   });
 });

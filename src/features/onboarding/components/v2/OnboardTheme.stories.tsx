@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { OnboardStep05Kit } from './OnboardStep05Kit';
+import { OnboardTheme } from './OnboardTheme';
 import { DesignV2Story } from '@/shared/components/design-v2/storybook';
 
 const meta = {
-  title: 'Design V2/Onboarding/Step05Kit',
-  component: OnboardStep05Kit,
+  title: 'Design V2/Onboarding/Theme',
+  component: OnboardTheme,
   parameters: { layout: 'fullscreen' },
   decorators: [
     (Story) => (
@@ -13,10 +13,9 @@ const meta = {
       </DesignV2Story>
     ),
   ],
-} satisfies Meta<typeof OnboardStep05Kit>;
+  argTypes: { onNext: { action: 'next' }, onBack: { action: 'back' } },
+} satisfies Meta<typeof OnboardTheme>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: { onNext: () => {}, onBack: () => {} },
-};
+export const Cockpit: Story = { args: { onNext: () => {}, onBack: () => {} } };

@@ -22,7 +22,7 @@ export interface QuickSetupSelection {
   ownedIds: Set<string>;
 }
 
-interface OnboardStep06QuickSetupProps {
+interface OnboardQuickSetupProps {
   household: HouseholdConfig;
   onAddItems: (selection: QuickSetupSelection) => void;
   onSkip: () => void;
@@ -169,13 +169,13 @@ function QuickSetupRow({
  * this". Untick what doesn't apply, and mark what's already in the cupboard so
  * it starts stocked rather than at zero.
  */
-export function OnboardStep06QuickSetup({
+export function OnboardQuickSetup({
   household,
   onAddItems,
   onSkip,
   onTryDemoData,
   onBack,
-}: Readonly<OnboardStep06QuickSetupProps>) {
+}: Readonly<OnboardQuickSetupProps>) {
   const { t } = useTranslation(['common', 'categories', 'products', 'units']);
   const { themeKey } = useDesignTheme();
   const { recommendedItems } = useRecommendedItems();

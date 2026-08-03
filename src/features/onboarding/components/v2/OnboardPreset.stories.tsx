@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { OnboardStep03Preset } from './OnboardStep03Preset';
+import { OnboardPreset } from './OnboardPreset';
 import { DesignV2Story } from '@/shared/components/design-v2/storybook';
 
 const meta = {
-  title: 'Design V2/Onboarding/Step03Preset',
-  component: OnboardStep03Preset,
+  title: 'Design V2/Onboarding/Preset',
+  component: OnboardPreset,
   parameters: { layout: 'fullscreen' },
   decorators: [
     (Story) => (
@@ -19,7 +19,7 @@ const meta = {
     onNext: { action: 'next' },
     onBack: { action: 'back' },
   },
-} satisfies Meta<typeof OnboardStep03Preset>;
+} satisfies Meta<typeof OnboardPreset>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

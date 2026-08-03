@@ -6,21 +6,18 @@ import { useSettings } from '@/features/settings';
 import type { Theme } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
 
-interface OnboardStep02Props {
+interface OnboardThemeProps {
   onNext: () => void;
   onBack: () => void;
 }
 
 function themeLeadTitle(themeKey: string, t: TFunction): string {
-  if (themeKey === 'pantry') return t('v2.onboarding.step02.leadTitlePantry');
-  if (themeKey === 'civil') return t('v2.onboarding.step02.leadTitleCivil');
-  return t('v2.onboarding.step02.leadTitleCockpit');
+  if (themeKey === 'pantry') return t('v2.onboarding.theme.leadTitlePantry');
+  if (themeKey === 'civil') return t('v2.onboarding.theme.leadTitleCivil');
+  return t('v2.onboarding.theme.leadTitleCockpit');
 }
 
-export function OnboardStep02Theme({
-  onNext,
-  onBack,
-}: Readonly<OnboardStep02Props>) {
+export function OnboardTheme({ onNext, onBack }: Readonly<OnboardThemeProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
@@ -30,7 +27,7 @@ export function OnboardStep02Theme({
       title={t(`v2.voice.onbTheme.${themeKey}`)}
       lead={{
         title: themeLeadTitle(themeKey, t),
-        sub: t(`v2.onboarding.step02.leadSub.${themeKey}`),
+        sub: t(`v2.onboarding.theme.leadSub.${themeKey}`),
       }}
       back={onBack}
       onContinue={onNext}

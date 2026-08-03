@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { OnboardStep06QuickSetup } from './OnboardStep06QuickSetup';
+import { OnboardQuickSetup } from './OnboardQuickSetup';
 import { DesignV2Story } from '@/shared/components/design-v2/storybook';
 
 const meta = {
-  title: 'Design V2/Onboarding/Step06QuickSetup',
-  component: OnboardStep06QuickSetup,
+  title: 'Design V2/Onboarding/QuickSetup',
+  component: OnboardQuickSetup,
   parameters: { layout: 'fullscreen' },
   decorators: [
     (Story) => (
@@ -13,7 +13,7 @@ const meta = {
       </DesignV2Story>
     ),
   ],
-} satisfies Meta<typeof OnboardStep06QuickSetup>;
+} satisfies Meta<typeof OnboardQuickSetup>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

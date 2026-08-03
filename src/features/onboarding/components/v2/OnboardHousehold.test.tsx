@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
-import { OnboardStep04Household } from './OnboardStep04Household';
+import { OnboardHousehold } from './OnboardHousehold';
 import { renderWithProviders } from '@/test/render';
 import {
   createMockHousehold,
@@ -8,10 +8,10 @@ import {
 } from '@/shared/utils/test/factories';
 
 const renderStep = (
-  overrides: Partial<Parameters<typeof OnboardStep04Household>[0]> = {},
+  overrides: Partial<Parameters<typeof OnboardHousehold>[0]> = {},
 ) =>
   renderWithProviders(
-    <OnboardStep04Household
+    <OnboardHousehold
       household={createMockHousehold({
         adults: 2,
         children: 0,
@@ -26,14 +26,14 @@ const renderStep = (
     { initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) } },
   );
 
-describe('OnboardStep04Household (v2)', () => {
+describe('OnboardHousehold (v2)', () => {
   it('renders the household lead and computed targets side panel', () => {
     renderStep();
     expect(
-      screen.getByText('v2.onboarding.step04.leadTitle.cockpit'),
+      screen.getByText('v2.onboarding.household.leadTitle.cockpit'),
     ).toBeInTheDocument();
     expect(
-      screen.getByText('v2.onboarding.step04.computedCaption.cockpit'),
+      screen.getByText('v2.onboarding.household.computedCaption.cockpit'),
     ).toBeInTheDocument();
   });
 

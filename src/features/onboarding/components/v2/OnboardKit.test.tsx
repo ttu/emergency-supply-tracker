@@ -1,19 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
-import { OnboardStep05Kit } from './OnboardStep05Kit';
+import { OnboardKit } from './OnboardKit';
 import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
 import { DEFAULT_KIT_ID } from '@/features/templates/kits';
 
-const renderStep = (
-  props: Partial<Parameters<typeof OnboardStep05Kit>[0]> = {},
-) =>
+const renderStep = (props: Partial<Parameters<typeof OnboardKit>[0]> = {}) =>
   renderWithProviders(
-    <OnboardStep05Kit onNext={vi.fn()} onBack={vi.fn()} {...props} />,
+    <OnboardKit onNext={vi.fn()} onBack={vi.fn()} {...props} />,
     { initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) } },
   );
 
-describe('OnboardStep05Kit', () => {
+describe('OnboardKit', () => {
   it('offers the built-in kits', () => {
     renderStep();
     expect(screen.getByTestId(`v2-kit-${DEFAULT_KIT_ID}`)).toBeVisible();

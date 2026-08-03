@@ -11,19 +11,19 @@ import type { HouseholdConfig } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
 import { computeOnboardingTargets } from './onboardingPresets';
 
-interface OnboardStep04Props {
+interface OnboardHouseholdProps {
   household: HouseholdConfig;
   onHouseholdChange: (update: (h: HouseholdConfig) => HouseholdConfig) => void;
   onNext: () => void;
   onBack: () => void;
 }
 
-export function OnboardStep04Household({
+export function OnboardHousehold({
   household,
   onHouseholdChange,
   onNext,
   onBack,
-}: Readonly<OnboardStep04Props>) {
+}: Readonly<OnboardHouseholdProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const targets = computeOnboardingTargets(household);
@@ -33,15 +33,15 @@ export function OnboardStep04Household({
       step={4}
       title={t(`v2.voice.onbHousehold.${themeKey}`)}
       lead={{
-        title: t(`v2.onboarding.step04.leadTitle.${themeKey}`),
-        sub: t(`v2.onboarding.step04.leadSub.${themeKey}`),
+        title: t(`v2.onboarding.household.leadTitle.${themeKey}`),
+        sub: t(`v2.onboarding.household.leadSub.${themeKey}`),
       }}
       back={onBack}
       onContinue={onNext}
       side={
         <div>
           <Caption>
-            {t(`v2.onboarding.step04.computedCaption.${themeKey}`)}
+            {t(`v2.onboarding.household.computedCaption.${themeKey}`)}
           </Caption>
           <div
             style={{
@@ -55,7 +55,7 @@ export function OnboardStep04Household({
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
               <NumberDisplay value={targets.water} size={48} />
               <span style={{ fontSize: 14, color: 'var(--color-text-2)' }}>
-                {t(`v2.onboarding.step04.waterLabel.${themeKey}`, {
+                {t(`v2.onboarding.household.waterLabel.${themeKey}`, {
                   days: household.supplyDurationDays,
                 })}
               </span>
@@ -92,7 +92,7 @@ export function OnboardStep04Household({
                 marginTop: 6,
               }}
             >
-              {t(`v2.onboarding.step04.kcalTotal.${themeKey}`)}
+              {t(`v2.onboarding.household.kcalTotal.${themeKey}`)}
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export function OnboardStep04Household({
       <Panel padding={0}>
         <OnboardStepperRow
           label={t(`v2.onboarding.labelAdults.${themeKey}`)}
-          hint={t(`v2.onboarding.step04.adultsHint.${themeKey}`)}
+          hint={t(`v2.onboarding.household.adultsHint.${themeKey}`)}
           value={household.adults}
           onChange={(v) => onHouseholdChange((h) => ({ ...h, adults: v }))}
           min={1}
@@ -109,14 +109,14 @@ export function OnboardStep04Household({
         />
         <OnboardStepperRow
           label={t(`v2.onboarding.labelChildren.${themeKey}`)}
-          hint={t(`v2.onboarding.step04.childrenHint.${themeKey}`)}
+          hint={t(`v2.onboarding.household.childrenHint.${themeKey}`)}
           value={household.children}
           onChange={(v) => onHouseholdChange((h) => ({ ...h, children: v }))}
           t={t}
         />
         <OnboardStepperRow
           label={t(`v2.onboarding.labelPets.${themeKey}`)}
-          hint={t(`v2.onboarding.step04.petsHint.${themeKey}`)}
+          hint={t(`v2.onboarding.household.petsHint.${themeKey}`)}
           value={household.pets}
           onChange={(v) => onHouseholdChange((h) => ({ ...h, pets: v }))}
           t={t}
@@ -124,7 +124,7 @@ export function OnboardStep04Household({
       </Panel>
       <div style={{ marginTop: 14 }}>
         <Caption>
-          {t(`v2.onboarding.step04.coverageTarget.${themeKey}`)}
+          {t(`v2.onboarding.household.coverageTarget.${themeKey}`)}
         </Caption>
         <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
           {[3, 7, 14, 30].map((n) => {
