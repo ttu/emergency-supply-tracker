@@ -1119,6 +1119,11 @@
         "civil": "VARASTO · KAIKKI TUOTTEET",
         "pantry": "Kaikki mitä sinulla on"
       },
+      "titleCategory": {
+        "cockpit": "VARASTO · {{category}}",
+        "civil": "VARASTO · {{category}}",
+        "pantry": "{{category}}"
+      },
       "filterAll": {
         "cockpit": "KAIKKI",
         "civil": "KAIKKI",

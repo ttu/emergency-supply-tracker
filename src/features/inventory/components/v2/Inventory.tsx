@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import {
   Button,
   Caption,
+  CAPS_STYLE,
   Panel,
   Title,
 } from '@/shared/components/design-v2/primitives';
+import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory, useLocationSuggestions } from '@/features/inventory';
@@ -64,7 +66,7 @@ export function Inventory({
   onItemSelect,
   onAddItem,
 }: Readonly<InventoryProps>) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(['common', 'categories']);
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const allMissing = useMissingRecommendedItems();
@@ -122,6 +124,19 @@ export function Inventory({
     ? categories.find((c) => String(c.id) === selectedCategoryId)
     : undefined;
 
+  // With a category picked, the header says which one instead of repeating
+  // "all items" — the rail's selection is otherwise the only place it shows.
+  const title = selectedCategoryId
+    ? t(`v2.inventory.titleCategory.${themeKey}`, {
+        category: resolveCategoryLabel(
+          selectedCategory,
+          selectedCategoryId,
+          i18n.language || 'en',
+          t,
+        ),
+      })
+    : t(`v2.inventory.title.${themeKey}`);
+
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (
@@ -153,8 +168,14 @@ export function Inventory({
       >
         <div>
           <Caption>{t(`v2.voice.inventory.${themeKey}`)}</Caption>
-          <Title size={32} style={{ marginTop: 4 }}>
-            {t(`v2.inventory.title.${themeKey}`)}
+          {/* The caps token keeps a category name in the header matching the
+              hardcoded caps of the cockpit/civil titles; pantry sets it to
+              `none`, so its title stays sentence case. */}
+          <Title
+            size={32}
+            style={{ marginTop: 4, textTransform: CAPS_STYLE.textTransform }}
+          >
+            {title}
           </Title>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>

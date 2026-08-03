@@ -1119,6 +1119,11 @@
         "civil": "INVENTORY · ALL ITEMS",
         "pantry": "Everything you have"
       },
+      "titleCategory": {
+        "cockpit": "INVENTORY · {{category}}",
+        "civil": "INVENTORY · {{category}}",
+        "pantry": "{{category}}"
+      },
       "filterAll": {
         "cockpit": "ALL",
         "civil": "ALL",

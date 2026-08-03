@@ -1,5 +1,19 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent, waitFor, within } from '@testing-library/react';
+
+// Only the two title keys resolve; every other key falls through to itself,
+// so the rest of the assertions below keep matching raw keys.
+vi.mock('react-i18next', async () => {
+  const { createI18nMock } = await import('@/test/i18n');
+  return createI18nMock({
+    translations: {
+      'v2.inventory.title.cockpit': 'INVENTORY · ALL ITEMS',
+      'v2.inventory.titleCategory.cockpit': 'INVENTORY · {{category}}',
+    },
+    namespaces: { categories: { 'water-beverages': 'Water & Beverages' } },
+  });
+});
+
 import { Inventory } from './Inventory';
 import { renderWithProviders } from '@/test/render';
 import {
@@ -51,13 +65,25 @@ describe('Inventory (v2)', () => {
   it('renders inventory title with cockpit voice and ADD button', async () => {
     setup();
     await waitFor(() => {
-      expect(
-        screen.getByText('v2.inventory.title.cockpit'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('INVENTORY · ALL ITEMS')).toBeInTheDocument();
     });
     expect(
       screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
     ).toBeInTheDocument();
+  });
+
+  it('names the selected category in the title instead of "all items"', async () => {
+    setup();
+    await screen.findByText('INVENTORY · ALL ITEMS');
+
+    fireEvent.click(screen.getByTestId(`v2-category-row-${WATER_ID}`));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('INVENTORY · Water & Beverages'),
+      ).toBeInTheDocument();
+    });
+    expect(screen.queryByText('INVENTORY · ALL ITEMS')).not.toBeInTheDocument();
   });
 
   it('renders every item in the inventory by default', async () => {
