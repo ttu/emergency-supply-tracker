@@ -2,7 +2,6 @@ import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { CAPS_STYLE } from '@/shared/components/design-v2/primitives';
-import type { Category } from '@/shared/types';
 import type { SortBy } from '@/features/inventory';
 
 const SELECT_STYLE: CSSProperties = {
@@ -39,9 +38,6 @@ interface InventoryFilterStripProps {
   filter: InventoryFilterKey;
   onFilterChange: (k: InventoryFilterKey) => void;
   counts: InventoryFilterCounts;
-  selectedCategoryId?: string;
-  onCategoryChange: (id?: string) => void;
-  categories: Category[];
   search: string;
   onSearchChange: (q: string) => void;
   locationFilter: string;
@@ -52,14 +48,16 @@ interface InventoryFilterStripProps {
   onSortByChange: (sortBy: SortBy) => void;
 }
 
-/** Top of the inventory panel: status chips + category select + search. */
+/**
+ * Top of the inventory panel: status chips, sort/location selects and search.
+ *
+ * Category is not here — it is the rail beside the table (`CategoryRail`), so
+ * the available categories and their counts stay visible.
+ */
 export function InventoryFilterStrip({
   filter,
   onFilterChange,
   counts,
-  selectedCategoryId,
-  onCategoryChange,
-  categories,
   search,
   onSearchChange,
   locationFilter,
@@ -76,12 +74,16 @@ export function InventoryFilterStrip({
       <button
         key={k}
         type="button"
+        aria-pressed={active}
+        data-testid={`v2-status-${k}`}
         onClick={() => onFilterChange(k)}
         style={{
           padding: '12px 20px',
           cursor: 'pointer',
           background: 'transparent',
-          border: 0,
+          borderTop: 0,
+          borderRight: 0,
+          borderLeft: 0,
           borderBottom: active
             ? '2px solid var(--color-accent)'
             : '2px solid transparent',
@@ -159,21 +161,6 @@ export function InventoryFilterStrip({
           <option value="name">{t('inventory.sort.name')}</option>
           <option value="quantity">{t('inventory.sort.quantity')}</option>
           <option value="expiration">{t('inventory.sort.expiration')}</option>
-        </select>
-        <select
-          value={selectedCategoryId ?? ''}
-          onChange={(e) => onCategoryChange(e.target.value || undefined)}
-          aria-label={t(`v2.inventory.categoryAria.${themeKey}`)}
-          style={SELECT_STYLE}
-        >
-          <option value="">
-            {t(`v2.inventory.allCategories.${themeKey}`)}
-          </option>
-          {categories.map((c) => (
-            <option key={String(c.id)} value={String(c.id)}>
-              {c.name}
-            </option>
-          ))}
         </select>
         <input
           value={search}

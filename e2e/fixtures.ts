@@ -227,12 +227,12 @@ export async function navigateToSettingsSection(
  */
 export async function selectInventoryCategory(page: Page, categoryId: string) {
   await navigateV2(page, 'inv');
-  // The filter strip uses a <select> with aria-label "CATEGORY" (cockpit/civil)
-  // or "Category" (pantry). "all" maps to the empty (no-filter) option.
-  const select = page.getByRole('combobox', { name: /category/i }).first();
-  await expect(select).toBeVisible({ timeout: 5000 });
-  await select.selectOption(categoryId === 'all' ? '' : categoryId);
-  await page.waitForTimeout(100);
+  // Category is picked from the rail beside the table (desktop) — the old
+  // dropdown is gone. "all" is the row that clears the filter.
+  const row = page.getByTestId(`v2-category-row-${categoryId}`);
+  await expect(row).toBeVisible({ timeout: 5000 });
+  await row.click();
+  await expect(row).toHaveAttribute('aria-current', 'true');
 }
 
 /**

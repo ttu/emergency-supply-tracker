@@ -15,6 +15,7 @@ import { useInventory, useLocationSuggestions } from '@/features/inventory';
 import { compareItemsBy } from '@/features/inventory/utils/sortItems';
 import type { SortBy } from '@/features/inventory';
 import { MissingItemsTable } from './MissingItemsTable';
+import { CategoryChips } from './CategoryChips';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 
@@ -123,29 +124,12 @@ export function MobileInventory({
           width: '100%',
         }}
       />
-      <select
-        value={selectedCategoryId ?? ''}
-        onChange={(e) => onCategoryChange(e.target.value || undefined)}
-        aria-label={t(`v2.inventory.categoryAria.${themeKey}`)}
-        style={{
-          background: 'var(--color-panel)',
-          border: '1px solid var(--color-rule)',
-          color: 'var(--color-text)',
-          padding: '10px 12px',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 12,
-          borderRadius: 'var(--radius-sm)',
-          outline: 'none',
-          width: '100%',
-        }}
-      >
-        <option value="">{t(`v2.inventory.allCategories.${themeKey}`)}</option>
-        {categories.map((c) => (
-          <option key={String(c.id)} value={String(c.id)}>
-            {c.name}
-          </option>
-        ))}
-      </select>
+      <CategoryChips
+        categories={categories}
+        rows={rows}
+        selectedCategoryId={selectedCategoryId}
+        onCategoryChange={onCategoryChange}
+      />
       <div style={{ display: 'flex', gap: 8 }}>
         {locations.length > 0 && (
           <select
@@ -251,7 +235,11 @@ const ROW_BASE_STYLE: CSSProperties = {
   gap: 10,
   alignItems: 'center',
   background: 'transparent',
-  border: 0,
+  // Longhands: the row adds its own `borderBottom`, and mixing the two makes
+  // React warn about conflicting properties.
+  borderTop: 0,
+  borderRight: 0,
+  borderLeft: 0,
   fontFamily: 'inherit',
   color: 'inherit',
   cursor: 'pointer',

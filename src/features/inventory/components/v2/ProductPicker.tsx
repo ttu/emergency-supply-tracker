@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { categoryCode } from '@/shared/i18n/voice';
+import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { formatBaseQuantityCompact } from '@/shared/utils/formatting/baseQuantity';
 import type {
   Category,
@@ -66,16 +67,13 @@ export function ProductPicker({
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState(initialCategoryId);
 
-  /**
-   * Custom categories carry their own names; standard ones are translated.
-   */
-  const categoryLabel = (id: string): string => {
-    const category = categories.find((c) => String(c.id) === id);
-    const own = category?.names?.[lang] ?? category?.names?.en;
-    if (own) return own;
-    if (category?.isCustom) return category.name;
-    return t(id, { ns: 'categories' });
-  };
+  const categoryLabel = (id: string): string =>
+    resolveCategoryLabel(
+      categories.find((c) => String(c.id) === id),
+      id,
+      lang,
+      t,
+    );
 
   const categoryIcon = (id: string) =>
     categories.find((c) => String(c.id) === id)?.icon;

@@ -52,9 +52,13 @@ function InventoryRowImpl({
       style={{
         ...cellStyles,
         cursor: 'pointer',
-        borderBottom: isLast ? 'none' : '1px solid var(--color-rule-soft)',
         background: 'transparent',
-        border: 0,
+        // Longhands only: a `border: 0` shorthand after this line silently
+        // won, so the row separators never drew.
+        borderTop: 0,
+        borderRight: 0,
+        borderLeft: 0,
+        borderBottom: isLast ? 'none' : '1px solid var(--color-rule-soft)',
         borderRadius: 0,
         fontFamily: 'inherit',
         color: 'inherit',

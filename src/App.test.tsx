@@ -226,10 +226,9 @@ describe('App', () => {
       ).toBeInTheDocument();
     });
 
-    // The category filter dropdown should be preselected to water-beverages.
-    const categorySelect = screen.getByLabelText(
-      'v2.inventory.categoryAria.cockpit',
-    );
-    expect((categorySelect as HTMLSelectElement).value).toBe('water-beverages');
+    // The category rail should arrive with water-beverages selected.
+    expect(
+      screen.getByTestId('v2-category-row-water-beverages'),
+    ).toHaveAttribute('aria-current', 'true');
   });
 });

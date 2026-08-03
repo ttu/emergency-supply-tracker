@@ -1159,6 +1159,11 @@
         "civil": "KAIKKI KATEGORIAT",
         "pantry": "Kaikki kategoriat"
       },
+      "categoryAll": {
+        "cockpit": "KAIKKI",
+        "civil": "KAIKKI",
+        "pantry": "Kaikki"
+      },
       "searchPlaceholder": {
         "cockpit": "HAKU",
         "civil": "HAKU",

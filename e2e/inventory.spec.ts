@@ -122,7 +122,7 @@ test.describe('Inventory Management', () => {
     await addItem(page, { name: 'Ok Item', category: 'food', quantity: '20' });
     await page.waitForTimeout(500);
 
-    await page.getByRole('button', { name: /^CRIT\s+\d+$/ }).click();
+    await page.getByTestId('v2-status-crit').click();
     await expect(
       page.getByRole('button', { name: /Critical Item/ }),
     ).toBeVisible();

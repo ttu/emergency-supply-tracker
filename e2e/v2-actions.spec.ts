@@ -152,8 +152,10 @@ test.describe('Overview actions', () => {
   }) => {
     await boot(page);
     await page.getByTestId('v2-category-food').click();
-    const select = page.getByLabel(/CATEGORY/i);
-    await expect(select).toHaveValue('food');
+    await expect(page.getByTestId('v2-category-row-food')).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
   });
 
   test('priority queue view-all goes to inventory', async ({ page }) => {
@@ -188,18 +190,18 @@ test.describe('Inventory actions', () => {
     await openInventory(page);
 
     // The expired item is the only CRIT one.
-    await page.getByRole('button', { name: /^CRIT/ }).click();
+    await page.getByTestId('v2-status-crit').click();
     await expect(page.getByText('Expired meds')).toBeVisible();
     await expect(page.getByText('Bottled water')).toHaveCount(0);
 
-    await page.getByRole('button', { name: /^ALL/ }).click();
+    await page.getByTestId('v2-status-all').click();
     await expect(page.getByText('Bottled water')).toBeVisible();
   });
 
   test('category filter narrows the list', async ({ page }) => {
     await boot(page);
     await openInventory(page);
-    await page.getByLabel(/CATEGORY/i).selectOption('food');
+    await page.getByTestId('v2-category-row-food').click();
     // Scoped to the table: picking a category also opens a summary panel that
     // names shortfalls, so a bare getByText matches outside the list too.
     const table = page.getByTestId('v2-inventory-table');
@@ -266,7 +268,7 @@ test.describe('Inventory actions', () => {
     await boot(page);
     await openInventory(page);
 
-    await page.getByRole('button', { name: /^MISSING/i }).click();
+    await page.getByTestId('v2-status-missing').click();
     const rows = page.getByTestId('v2-missing-row');
     await expect(rows.first()).toBeVisible();
 

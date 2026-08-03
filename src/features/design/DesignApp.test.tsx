@@ -126,24 +126,29 @@ describe('DesignApp', () => {
     setup();
     fireEvent.click(await screen.findByTestId('v2-category-food'));
 
-    const select = await screen.findByLabelText(
-      'v2.inventory.categoryAria.cockpit',
+    // The category rail replaced the dropdown; the arriving filter shows as
+    // the selected row.
+    expect(await screen.findByTestId('v2-category-row-food')).toHaveAttribute(
+      'aria-current',
+      'true',
     );
-    expect((select as HTMLSelectElement).value).toBe('food');
   });
 
   it('leaving inventory clears the category filter', async () => {
     setup();
     fireEvent.click(await screen.findByTestId('v2-category-food'));
-    await screen.findByLabelText('v2.inventory.categoryAria.cockpit');
+    await screen.findByTestId('v2-category-row-food');
 
     fireEvent.click(nav('home'));
     await screen.findByText('v2.voice.readiness.cockpit');
     fireEvent.click(nav('inv'));
 
-    const select = await screen.findByLabelText(
-      'v2.inventory.categoryAria.cockpit',
+    expect(await screen.findByTestId('v2-category-row-all')).toHaveAttribute(
+      'aria-current',
+      'true',
     );
-    expect((select as HTMLSelectElement).value).toBe('');
+    expect(screen.getByTestId('v2-category-row-food')).not.toHaveAttribute(
+      'aria-current',
+    );
   });
 });

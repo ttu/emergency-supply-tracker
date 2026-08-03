@@ -2,16 +2,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
 import { InventoryFilterStrip } from './InventoryFilterStrip';
 import { renderWithProviders } from '@/test/render';
-import {
-  createMockCategory,
-  createMockSettings,
-} from '@/shared/utils/test/factories';
+import { createMockSettings } from '@/shared/utils/test/factories';
 
 const baseCounts = { all: 12, crit: 2, warn: 3, ok: 7, exp: 1, missing: 4 };
-const cats = [
-  createMockCategory({ name: 'Water' }),
-  createMockCategory({ name: 'Food' }),
-];
 
 const renderStrip = (
   overrides: Partial<Parameters<typeof InventoryFilterStrip>[0]> = {},
@@ -21,8 +14,6 @@ const renderStrip = (
       filter="all"
       onFilterChange={vi.fn()}
       counts={baseCounts}
-      onCategoryChange={vi.fn()}
-      categories={cats}
       search=""
       onSearchChange={vi.fn()}
       locationFilter="all"
@@ -74,34 +65,6 @@ describe('InventoryFilterStrip (v2)', () => {
       }),
     );
     expect(onFilterChange).toHaveBeenCalledWith('crit');
-  });
-
-  it('renders categories in the dropdown and forwards changes', () => {
-    const onCategoryChange = vi.fn();
-    renderStrip({ onCategoryChange });
-    // Three selects now (location, sort, category) — pick the category one.
-    const select = screen.getByLabelText(
-      'v2.inventory.categoryAria.cockpit',
-    ) as HTMLSelectElement;
-    expect(
-      screen.getByRole('option', {
-        name: 'v2.inventory.allCategories.cockpit',
-      }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Water' })).toBeInTheDocument();
-    fireEvent.change(select, { target: { value: String(cats[0].id) } });
-    expect(onCategoryChange).toHaveBeenCalledWith(String(cats[0].id));
-  });
-
-  it('clearing the category sends undefined', () => {
-    const onCategoryChange = vi.fn();
-    renderStrip({ selectedCategoryId: String(cats[0].id), onCategoryChange });
-    // Three selects now (location, sort, category) — pick the category one.
-    const select = screen.getByLabelText(
-      'v2.inventory.categoryAria.cockpit',
-    ) as HTMLSelectElement;
-    fireEvent.change(select, { target: { value: '' } });
-    expect(onCategoryChange).toHaveBeenCalledWith(undefined);
   });
 
   it('forwards search input changes', () => {

@@ -73,10 +73,11 @@ test.describe('Dashboard', () => {
   }) => {
     await page.getByTestId('v2-category-food').click();
     await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
-    // The category select reflects the picked category.
-    await expect(
-      page.getByRole('combobox', { name: /category/i }).first(),
-    ).toHaveValue('food');
+    // The category rail arrives with the picked category selected.
+    await expect(page.getByTestId('v2-category-row-food')).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
   });
 
   test('VIEW ALL → on the priority queue navigates to inventory', async ({

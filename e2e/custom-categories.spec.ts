@@ -80,7 +80,10 @@ test.describe('Custom Categories', () => {
     await seed(page, { customCategories: [custom] });
 
     await page.getByTestId('v2-nav-inv').click();
-    await expect(page.getByRole('option', { name: 'Garden' })).toBeAttached();
+    // Custom categories get a rail row, alongside the ten standard ones.
+    const row = page.getByTestId('v2-category-row-garden');
+    await expect(row).toBeVisible();
+    await expect(row).toContainText('Garden');
   });
 
   test('items in a custom category show in inventory when filtered', async ({
@@ -100,10 +103,8 @@ test.describe('Custom Categories', () => {
     await seed(page, { customCategories: [custom], items: [item] });
 
     await page.getByTestId('v2-nav-inv').click();
-    await page
-      .getByRole('combobox', { name: /category/i })
-      .first()
-      .selectOption('garden');
+    // Custom categories get a rail row of their own.
+    await page.getByTestId('v2-category-row-garden').click();
     await expect(
       page.getByText('Seeds', { exact: true }).first(),
     ).toBeVisible();

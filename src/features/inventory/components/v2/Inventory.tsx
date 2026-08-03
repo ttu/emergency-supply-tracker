@@ -22,6 +22,7 @@ import {
 import { InventoryTable } from './InventoryTable';
 import { MissingItemsTable } from './MissingItemsTable';
 import { CategorySummaryPanel } from './CategorySummaryPanel';
+import { CategoryRail } from './CategoryRail';
 
 interface InventoryProps {
   selectedCategoryId?: string;
@@ -78,12 +79,30 @@ export function Inventory({
   const { items } = useInventory();
   const locations = useLocationSuggestions(items);
 
+  const missing = useMemo(
+    () =>
+      selectedCategoryId
+        ? allMissing.filter((m) => m.categoryId === selectedCategoryId)
+        : allMissing,
+    [allMissing, selectedCategoryId],
+  );
+
+  // Rows the category rail has left in play. The status tabs count within
+  // this, so their numbers describe what picking one would actually show.
+  const inCategory = useMemo(
+    () =>
+      selectedCategoryId
+        ? rows.filter((r) => String(r.item.categoryId) === selectedCategoryId)
+        : rows,
+    [rows, selectedCategoryId],
+  );
+
   const counts = useMemo(() => {
     let crit = 0;
     let warn = 0;
     let ok = 0;
     let exp = 0;
-    for (const r of rows) {
+    for (const r of inCategory) {
       if (r.status === 'crit') crit++;
       else if (r.status === 'warn') warn++;
       else ok++;
@@ -94,22 +113,14 @@ export function Inventory({
       warn,
       ok,
       exp,
-      all: rows.length,
-      missing: allMissing.length,
+      all: inCategory.length,
+      missing: missing.length,
     };
-  }, [rows, allMissing.length]);
+  }, [inCategory, missing.length]);
 
   const selectedCategory = selectedCategoryId
     ? categories.find((c) => String(c.id) === selectedCategoryId)
     : undefined;
-
-  const missing = useMemo(
-    () =>
-      selectedCategoryId
-        ? allMissing.filter((m) => m.categoryId === selectedCategoryId)
-        : allMissing,
-    [allMissing, selectedCategoryId],
-  );
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -160,32 +171,48 @@ export function Inventory({
         />
       )}
 
-      <Panel padding={0}>
-        <InventoryFilterStrip
-          filter={filter}
-          onFilterChange={setFilter}
-          counts={counts}
+      {/* This view only renders in the desktop shell — narrow screens get
+          MobileInventory and its chip strip — so the rail keeps a fixed
+          column and the table takes the rest. */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '232px minmax(0, 1fr)',
+          gap: 16,
+          alignItems: 'start',
+        }}
+      >
+        <CategoryRail
+          categories={categories}
+          rows={rows}
           selectedCategoryId={selectedCategoryId}
           onCategoryChange={onCategoryChange}
-          categories={categories}
-          search={search}
-          onSearchChange={setSearch}
-          locationFilter={locationFilter}
-          onLocationFilterChange={setLocationFilter}
-          locations={locations}
-          sortBy={sortBy}
-          onSortByChange={setSortBy}
         />
-        {filter === 'missing' ? (
-          <MissingItemsTable items={missing} onAdd={onAddItem} />
-        ) : (
-          <InventoryTable
-            rows={visible}
-            totalRowCount={rows.length}
-            onItemSelect={onItemSelect}
+
+        <Panel padding={0} style={{ minWidth: 0 }}>
+          <InventoryFilterStrip
+            filter={filter}
+            onFilterChange={setFilter}
+            counts={counts}
+            search={search}
+            onSearchChange={setSearch}
+            locationFilter={locationFilter}
+            onLocationFilterChange={setLocationFilter}
+            locations={locations}
+            sortBy={sortBy}
+            onSortByChange={setSortBy}
           />
-        )}
-      </Panel>
+          {filter === 'missing' ? (
+            <MissingItemsTable items={missing} onAdd={onAddItem} />
+          ) : (
+            <InventoryTable
+              rows={visible}
+              totalRowCount={inCategory.length}
+              onItemSelect={onItemSelect}
+            />
+          )}
+        </Panel>
+      </div>
     </div>
   );
 }

@@ -1159,6 +1159,11 @@
         "civil": "ALL CATEGORIES",
         "pantry": "All categories"
       },
+      "categoryAll": {
+        "cockpit": "ALL",
+        "civil": "ALL",
+        "pantry": "All"
+      },
       "searchPlaceholder": {
         "cockpit": "SEARCH",
         "civil": "SEARCH",
