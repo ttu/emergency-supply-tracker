@@ -88,7 +88,7 @@ describe('CategoryChips (v2 mobile)', () => {
 
   it('scrolls rather than wrapping — chips must not be squashed', () => {
     const { container } = renderChips();
-    const strip = container.querySelector('[role="group"]') as HTMLElement;
+    const strip = container.querySelector('fieldset') as HTMLElement;
     expect(strip.style.overflowX).toBe('auto');
     expect(strip.style.flexWrap).toBe('nowrap');
   });

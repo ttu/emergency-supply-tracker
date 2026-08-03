@@ -34,15 +34,15 @@ export const DEFAULT_INVENTORY_FILTERS: InventoryFilters = {
  */
 const STORAGE_KEY = 'emergencySupplyTracker_inventoryFilters';
 
-const STATUSES: InventoryStatusFilter[] = [
+const STATUSES = new Set<InventoryStatusFilter>([
   'all',
   'crit',
   'warn',
   'ok',
   'exp',
   'missing',
-];
-const SORTS: SortBy[] = ['name', 'quantity', 'expiration'];
+]);
+const SORTS = new Set<SortBy>(['name', 'quantity', 'expiration']);
 
 /**
  * Anything on disk is user-editable and may predate a rename, so every field
@@ -58,12 +58,12 @@ function parse(raw: string | null): InventoryFilters {
         typeof stored.categoryId === 'string' && stored.categoryId
           ? stored.categoryId
           : undefined,
-      status: STATUSES.includes(stored.status as InventoryStatusFilter)
+      status: STATUSES.has(stored.status as InventoryStatusFilter)
         ? (stored.status as InventoryStatusFilter)
         : 'all',
       search: typeof stored.search === 'string' ? stored.search : '',
       location: typeof stored.location === 'string' ? stored.location : 'all',
-      sortBy: SORTS.includes(stored.sortBy as SortBy)
+      sortBy: SORTS.has(stored.sortBy as SortBy)
         ? (stored.sortBy as SortBy)
         : 'name',
     };

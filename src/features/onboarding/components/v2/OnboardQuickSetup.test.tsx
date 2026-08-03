@@ -56,7 +56,7 @@ describe('OnboardQuickSetup', () => {
     openList();
     expect(
       screen.getByTestId(`v2-quick-setup-item-${firstItemId}`),
-    ).toHaveAttribute('aria-checked', 'true');
+    ).toBeChecked();
   });
 
   it('hands back every offered product when nothing was unticked', () => {
@@ -80,7 +80,7 @@ describe('OnboardQuickSetup', () => {
     fireEvent.click(screen.getByTestId(`v2-quick-setup-item-${firstItemId}`));
     expect(
       screen.getByTestId(`v2-quick-setup-item-${firstItemId}`),
-    ).toHaveAttribute('aria-checked', 'false');
+    ).not.toBeChecked();
 
     fireEvent.click(
       screen.getByRole('button', {
@@ -123,12 +123,12 @@ describe('OnboardQuickSetup', () => {
     fireEvent.click(toggle());
     expect(
       screen.getByTestId(`v2-quick-setup-item-${firstItemId}`),
-    ).toHaveAttribute('aria-checked', 'false');
+    ).not.toBeChecked();
 
     fireEvent.click(toggle());
     expect(
       screen.getByTestId(`v2-quick-setup-item-${firstItemId}`),
-    ).toHaveAttribute('aria-checked', 'true');
+    ).toBeChecked();
   });
 
   it('reopening and reclosing the list does not lose the selection', () => {

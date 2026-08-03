@@ -27,8 +27,7 @@ export function CategoryChips({
   const filterRows = useCategoryFilterRows(categories, rows);
 
   return (
-    <div
-      role="group"
+    <fieldset
       aria-label={t(`v2.inventory.categoryAria.${themeKey}`)}
       style={{
         display: 'flex',
@@ -36,6 +35,12 @@ export function CategoryChips({
         overflowX: 'auto',
         // Chips must not be squashed to fit; the strip scrolls instead.
         flexWrap: 'nowrap',
+        // A fieldset sizes to min-content by default, which would defeat the
+        // horizontal scroll above.
+        minWidth: 0,
+        border: 0,
+        margin: 0,
+        padding: 0,
         paddingBottom: 2,
       }}
     >
@@ -79,6 +84,6 @@ export function CategoryChips({
           </button>
         );
       })}
-    </div>
+    </fieldset>
   );
 }

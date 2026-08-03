@@ -142,9 +142,9 @@ test.describe('Onboarding Flow', () => {
 
     await openChecklist(page);
     const bottledWater = page.getByTestId('v2-quick-setup-item-bottled-water');
-    await expect(bottledWater).toHaveAttribute('aria-checked', 'true');
-    await bottledWater.click();
-    await expect(bottledWater).toHaveAttribute('aria-checked', 'false');
+    await expect(bottledWater).toBeChecked();
+    await bottledWater.uncheck();
+    await expect(bottledWater).not.toBeChecked();
 
     await page.getByRole('button', { name: /ADD SELECTED →/ }).click();
     await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();

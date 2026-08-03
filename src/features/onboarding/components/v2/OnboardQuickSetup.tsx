@@ -75,26 +75,33 @@ function QuickSetupRow({
         opacity: selected ? 1 : 0.5,
       }}
     >
-      <button
-        type="button"
-        role="checkbox"
-        aria-checked={selected}
-        data-testid={`v2-quick-setup-item-${id}`}
-        onClick={onToggleSelected}
+      <label
         style={{
+          position: 'relative',
           display: 'grid',
           gridTemplateColumns: '20px 1fr',
           gap: 14,
           alignItems: 'center',
-          background: 'transparent',
-          border: 0,
-          padding: 0,
           cursor: 'pointer',
           textAlign: 'left',
-          fontFamily: 'inherit',
-          color: 'inherit',
         }}
       >
+        {/* A real checkbox carries the state and keyboard handling; the square
+            below is only its picture, so the input is hidden without being
+            removed from the accessibility tree. */}
+        <input
+          type="checkbox"
+          checked={selected}
+          data-testid={`v2-quick-setup-item-${id}`}
+          onChange={onToggleSelected}
+          style={{
+            position: 'absolute',
+            width: 1,
+            height: 1,
+            opacity: 0,
+            margin: 0,
+          }}
+        />
         <span
           aria-hidden
           style={{
@@ -117,7 +124,7 @@ function QuickSetupRow({
         >
           {t(productKey(item.i18nKey), { ns: 'products' })}
         </span>
-      </button>
+      </label>
       <button
         type="button"
         aria-pressed={owned}

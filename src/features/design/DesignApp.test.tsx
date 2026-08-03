@@ -98,11 +98,9 @@ describe('DesignApp', () => {
 
     // Re-selecting the destination clears the open item and shows the list.
     fireEvent.click(nav('inv'));
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
-      ).toBeInTheDocument(),
-    );
+    expect(
+      await screen.findByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+    ).toBeInTheDocument();
   });
 
   it('selecting an item opens its record, and nav returns to the list', async () => {
@@ -115,11 +113,9 @@ describe('DesignApp', () => {
     );
 
     fireEvent.click(nav('inv'));
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
-      ).toBeInTheDocument(),
-    );
+    expect(
+      await screen.findByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+    ).toBeInTheDocument();
   });
 
   it('a dashboard category tile lands on inventory filtered to it', async () => {
@@ -149,5 +145,41 @@ describe('DesignApp', () => {
       'aria-current',
       'true',
     );
+  });
+
+  it('the back link leaves an open item without changing destination', async () => {
+    setup();
+    fireEvent.click(nav('inv'));
+    fireEvent.click(await screen.findByText('Canned soup'));
+    await waitFor(() =>
+      expect(document.querySelector('#name')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /v2\.voice\.inventory\.cockpit/ }),
+    );
+
+    expect(
+      await screen.findByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+    ).toBeInTheDocument();
+  });
+
+  it('copying an item opens a fresh record seeded from it', async () => {
+    setup();
+    fireEvent.click(nav('inv'));
+    fireEvent.click(await screen.findByText('Canned soup'));
+    await waitFor(() =>
+      expect(document.querySelector('#name')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'v2.voice.copy.cockpit' }),
+    );
+
+    // A copy is a new item, so the header says so rather than naming the
+    // source — otherwise there is no telling the two records apart.
+    expect(
+      await screen.findByText('v2.itemDetail.captionNew.cockpit'),
+    ).toBeInTheDocument();
   });
 });

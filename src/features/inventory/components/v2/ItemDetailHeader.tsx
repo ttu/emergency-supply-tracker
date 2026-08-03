@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
 import {
   Button,
   Caption,
@@ -17,22 +16,6 @@ interface ItemDetailHeaderProps {
   onCopy?: () => void;
 }
 
-function headerCaption(isNew: boolean, themeKey: string, t: TFunction): string {
-  return isNew
-    ? t(`v2.itemDetail.captionNew.${themeKey}`)
-    : t(`v2.itemDetail.captionExisting.${themeKey}`);
-}
-
-function headerTitle(
-  isNew: boolean,
-  themeKey: string,
-  itemName: string | undefined,
-  t: TFunction,
-): string | undefined {
-  if (!isNew) return itemName;
-  return t(`v2.itemDetail.titleNew.${themeKey}`);
-}
-
 export function ItemDetailHeader({
   isNew,
   itemName,
@@ -43,6 +26,14 @@ export function ItemDetailHeader({
 }: Readonly<ItemDetailHeaderProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
+
+  // A brand-new item has no name of its own yet, so the header stands in for
+  // one and the copy/delete actions have nothing to act on.
+  const caption = isNew
+    ? t(`v2.itemDetail.captionNew.${themeKey}`)
+    : t(`v2.itemDetail.captionExisting.${themeKey}`);
+  const title = isNew ? t(`v2.itemDetail.titleNew.${themeKey}`) : itemName;
+
   return (
     <div
       style={{
@@ -52,9 +43,9 @@ export function ItemDetailHeader({
       }}
     >
       <div>
-        <Caption>{headerCaption(isNew, themeKey, t)}</Caption>
+        <Caption>{caption}</Caption>
         <Title size={32} style={{ marginTop: 4 }}>
-          {headerTitle(isNew, themeKey, itemName, t)}
+          {title}
         </Title>
         {itemCategoryId && (
           <div
