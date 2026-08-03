@@ -13,16 +13,24 @@ const WATER_ID = createCategoryId('water-beverages');
 const FOOD_ID = createCategoryId('food');
 
 const setup = (props: { onAddItem?: (id?: string) => void } = {}) => {
+  // `neverExpires` is pinned because expiry outranks quantity in
+  // getItemStatus: the factory hands out a future expiry half the time, and
+  // when it lands inside the expiring-soon window the empty item reads warn
+  // rather than crit, so the CRIT chip below stops matching it.
   const items = [
     createMockInventoryItem({
       name: 'Bottled water',
       categoryId: WATER_ID,
       quantity: createQuantity(0),
+      neverExpires: true,
+      expirationDate: undefined,
     }),
     createMockInventoryItem({
       name: 'Canned beans',
       categoryId: FOOD_ID,
       quantity: createQuantity(20),
+      neverExpires: true,
+      expirationDate: undefined,
     }),
   ];
   return renderWithProviders(

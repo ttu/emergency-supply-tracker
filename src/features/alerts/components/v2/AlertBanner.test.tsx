@@ -31,6 +31,14 @@ const setup = (
     },
   );
 
+/**
+ * Expiry outranks quantity in getItemStatus, and the factory hands out a
+ * future expiry half the time. When one lands inside the expiring-soon window
+ * an empty item raises a warning instead of a critical alert, changing which
+ * alerts appear at all.
+ */
+const NO_EXPIRY = { neverExpires: true, expirationDate: undefined } as const;
+
 const manyAlertItems = () =>
   [
     'water-beverages',
@@ -43,6 +51,7 @@ const manyAlertItems = () =>
       name: `Empty item ${i}`,
       categoryId: createCategoryId(category),
       quantity: createQuantity(0),
+      ...NO_EXPIRY,
     }),
   );
 
@@ -51,6 +60,7 @@ const missingWater = () =>
     name: 'Bottled water',
     categoryId: createCategoryId('water-beverages'),
     quantity: createQuantity(0),
+    ...NO_EXPIRY,
   });
 
 describe('AlertBanner (v2)', () => {
