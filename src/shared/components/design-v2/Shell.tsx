@@ -61,10 +61,10 @@ export function DesktopShell({
   const { themeKey } = useDesignTheme();
   return (
     <div
+      className="v2-viewport-height"
       style={{
         display: 'grid',
         gridTemplateColumns: '232px 1fr',
-        height: '100vh',
         background: 'var(--color-bg)',
         color: 'var(--color-text)',
         fontFamily: 'var(--font-body)',
@@ -249,10 +249,10 @@ export function MobileShell({
   const { themeKey } = useDesignTheme();
   return (
     <div
+      className="v2-viewport-height"
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
         background: 'var(--color-bg)',
         color: 'var(--color-text)',
         fontFamily: 'var(--font-body)',

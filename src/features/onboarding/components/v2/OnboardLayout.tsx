@@ -76,13 +76,16 @@ export function OnboardLayout({
   return (
     <div
       data-testid="v2-onboard-layout"
+      // Height comes from `.v2-viewport-height` (100dvh, falling back to
+      // 100vh) — an inline height cannot carry the fallback declaration, and
+      // on iOS a plain 100vh hides the footer behind the browser chrome.
+      className="v2-viewport-height"
       style={{
         width: '100%',
         // The v2 themes lock document scrolling (design-themes.css) because
         // the desktop/mobile shells own their inner scroll. Onboarding runs
         // outside those shells, so it has to be its own scroll container —
         // otherwise anything taller than the viewport is simply unreachable.
-        height: '100vh',
         overflowY: 'auto',
         background: 'var(--color-bg)',
         color: 'var(--color-text)',

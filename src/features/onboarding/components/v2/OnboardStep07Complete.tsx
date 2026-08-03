@@ -44,11 +44,11 @@ export function OnboardStep07Complete({
 
   return (
     <div
+      className="v2-viewport-height"
       style={{
         width: '100%',
         // Its own scroll container, for the same reason OnboardLayout is one:
         // the v2 themes lock the document.
-        height: '100vh',
         overflowY: 'auto',
         background: 'var(--color-bg)',
         color: 'var(--color-text)',

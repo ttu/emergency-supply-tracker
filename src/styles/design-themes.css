@@ -18,6 +18,22 @@
 ) {
   overflow: hidden;
   height: 100vh;
+  height: 100dvh;
+}
+
+/* Full-viewport containers under design v2 (the two shells, the onboarding
+ * layout, the completion screen).
+ *
+ * iOS Safari resolves 100vh to the viewport with its browser chrome
+ * *collapsed*, which is taller than what you can actually see. A container
+ * fixed at 100vh therefore runs behind the bottom toolbar and hides its last
+ * row — onboarding's CONTINUE button, the mobile shell's nav. Dragging
+ * collapses the chrome and reveals it; letting go brings the chrome back and
+ * hides it again. 100dvh tracks the visible viewport as it changes, with the
+ * 100vh declaration left above it as the fallback for older browsers. */
+.v2-viewport-height {
+  height: 100vh;
+  height: 100dvh;
 }
 [data-theme='cockpit'],
 [data-theme='civil'],

@@ -87,7 +87,11 @@ describe('OnboardLayout (v2)', () => {
     renderLayout();
     const root = screen.getByTestId('v2-onboard-layout');
     expect(root.style.overflowY).toBe('auto');
-    expect(root.style.height).toBe('100vh');
+    // Height comes from the shared class so it can carry a 100dvh/100vh
+    // fallback pair; an inline style can only hold one of the two, and the
+    // 100vh half hides the footer behind iOS Safari's chrome.
+    expect(root).toHaveClass('v2-viewport-height');
+    expect(root.style.height).toBe('');
   });
 
   describe('narrow viewports', () => {
