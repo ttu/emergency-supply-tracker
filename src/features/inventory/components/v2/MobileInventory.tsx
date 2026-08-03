@@ -17,6 +17,7 @@ import type { SortBy } from '@/features/inventory';
 import { useInventoryFilters } from '../../hooks/useInventoryFilters';
 import { MissingItemsTable } from './MissingItemsTable';
 import { CategoryChips } from './CategoryChips';
+import { CategorySummaryPanel } from './CategorySummaryPanel';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 
@@ -89,6 +90,10 @@ export function MobileInventory({
     [allMissing, selectedCategoryId],
   );
 
+  const selectedCategory = selectedCategoryId
+    ? categories.find((c) => String(c.id) === selectedCategoryId)
+    : undefined;
+
   const chips: Array<[FilterKey, string]> = useMemo(
     () => [
       ['all', t(`v2.inventory.filterAll.${themeKey}`)],
@@ -131,6 +136,15 @@ export function MobileInventory({
         selectedCategoryId={selectedCategoryId}
         onCategoryChange={(categoryId) => setFilters({ categoryId })}
       />
+      {/* Same summary the desktop inventory shows above its table: picking a
+          category should answer "how far off is this one?" on a phone too,
+          not only tell you which rows belong to it. */}
+      {selectedCategory && (
+        <CategorySummaryPanel
+          categoryId={selectedCategory.id as string}
+          categoryName={selectedCategory.name}
+        />
+      )}
       <div style={{ display: 'flex', gap: 8 }}>
         {locations.length > 0 && (
           <select

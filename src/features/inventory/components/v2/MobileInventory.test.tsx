@@ -11,6 +11,7 @@ import {
   createCategoryId,
   createProductTemplateId,
   createQuantity,
+  type DateOnly,
 } from '@/shared/types';
 
 const renderInv = (onAddItem = vi.fn()) =>
@@ -130,6 +131,80 @@ describe('MobileInventory (v2)', () => {
     fireEvent.click(screen.getByTestId('v2-category-chip-food'));
 
     expect(await screen.findByText('Canned soup')).toBeInTheDocument();
+    expect(screen.queryByText('Bottled water')).not.toBeInTheDocument();
+  });
+
+  it('shows the category summary only once a category is picked', async () => {
+    renderWithItems();
+    await screen.findByText('Bottled water');
+
+    // Across every category there is no single requirement to report.
+    expect(
+      screen.queryByText('v2.inventory.totalRequired.cockpit'),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('v2-category-chip-water-beverages'));
+
+    expect(
+      await screen.findByText('v2.inventory.totalRequired.cockpit'),
+    ).toBeInTheDocument();
+  });
+
+  it('the location select keeps only what is stored there', async () => {
+    renderWithProviders(
+      <MobileInventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
+      {
+        initialAppData: createMockAppData({
+          settings: createMockSettings({ theme: 'cockpit' }),
+          items: [
+            { ...water, location: 'Garage' },
+            { ...emptySoup, location: 'Pantry' },
+          ],
+          customCategories: [],
+        }),
+      },
+    );
+    await screen.findByText('Bottled water');
+
+    fireEvent.change(
+      screen.getByLabelText('v2.inventory.locationAria.cockpit'),
+      { target: { value: 'Garage' } },
+    );
+
+    expect(screen.getByText('Bottled water')).toBeInTheDocument();
+    expect(screen.queryByText('Canned soup')).not.toBeInTheDocument();
+  });
+
+  it('the EXP filter keeps only what expires soon', async () => {
+    const soon = new Date();
+    soon.setDate(soon.getDate() + 5);
+    renderWithProviders(
+      <MobileInventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
+      {
+        initialAppData: createMockAppData({
+          settings: createMockSettings({ theme: 'cockpit' }),
+          items: [
+            water,
+            {
+              ...emptySoup,
+              neverExpires: false,
+              expirationDate: soon.toISOString().slice(0, 10) as DateOnly,
+            },
+          ],
+          customCategories: [],
+        }),
+      },
+    );
+    await screen.findByText('Bottled water');
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'v2.inventory.filterExpShort.cockpit',
+      }),
+    );
+
+    expect(screen.getByText('Canned soup')).toBeInTheDocument();
+    // Never-expiring stock has no date to be near, so it drops out entirely.
     expect(screen.queryByText('Bottled water')).not.toBeInTheDocument();
   });
 
