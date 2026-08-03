@@ -134,7 +134,7 @@ describe('DesignApp', () => {
     );
   });
 
-  it('leaving inventory clears the category filter', async () => {
+  it('leaving inventory and returning finds the filter as it was left', async () => {
     setup();
     fireEvent.click(await screen.findByTestId('v2-category-food'));
     await screen.findByTestId('v2-category-row-food');
@@ -143,12 +143,11 @@ describe('DesignApp', () => {
     await screen.findByText('v2.voice.readiness.cockpit');
     fireEvent.click(nav('inv'));
 
-    expect(await screen.findByTestId('v2-category-row-all')).toHaveAttribute(
+    // Filters persist: a round trip to an item or the dashboard should not
+    // mean setting the list back up again.
+    expect(await screen.findByTestId('v2-category-row-food')).toHaveAttribute(
       'aria-current',
       'true',
-    );
-    expect(screen.getByTestId('v2-category-row-food')).not.toHaveAttribute(
-      'aria-current',
     );
   });
 });

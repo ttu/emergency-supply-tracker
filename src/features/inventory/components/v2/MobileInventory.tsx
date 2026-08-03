@@ -1,4 +1,4 @@
-import { memo, useMemo, useState, type CSSProperties } from 'react';
+import { memo, useMemo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -14,6 +14,7 @@ import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommended
 import { useInventory, useLocationSuggestions } from '@/features/inventory';
 import { compareItemsBy } from '@/features/inventory/utils/sortItems';
 import type { SortBy } from '@/features/inventory';
+import { useInventoryFilters } from '../../hooks/useInventoryFilters';
 import { MissingItemsTable } from './MissingItemsTable';
 import { CategoryChips } from './CategoryChips';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
@@ -21,8 +22,6 @@ import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 
 interface MobileInventoryProps {
   onItemSelect: (id: string) => void;
-  selectedCategoryId?: string;
-  onCategoryChange: (id?: string) => void;
   /** `templateId` pre-fills the new item from that recommended product. */
   onAddItem: (templateId?: string) => void;
 }
@@ -30,8 +29,6 @@ type FilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp' | 'missing';
 
 export function MobileInventory({
   onItemSelect,
-  selectedCategoryId,
-  onCategoryChange,
   onAddItem,
 }: Readonly<MobileInventoryProps>) {
   const { t } = useTranslation();
@@ -40,10 +37,14 @@ export function MobileInventory({
   const allMissing = useMissingRecommendedItems();
   const { items } = useInventory();
   const locations = useLocationSuggestions(items);
-  const [locationFilter, setLocationFilter] = useState('all');
-  const [sortBy, setSortBy] = useState<SortBy>('name');
-  const [filter, setFilter] = useState<FilterKey>('all');
-  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useInventoryFilters();
+  const {
+    categoryId: selectedCategoryId,
+    status: filter,
+    search,
+    location: locationFilter,
+    sortBy,
+  } = filters;
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -109,7 +110,7 @@ export function MobileInventory({
       </Button>
       <input
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => setFilters({ search: e.target.value })}
         placeholder={t(`v2.inventory.searchPlaceholder.${themeKey}`)}
         aria-label={t('v2.inventory.searchAria')}
         style={{
@@ -128,13 +129,13 @@ export function MobileInventory({
         categories={categories}
         rows={rows}
         selectedCategoryId={selectedCategoryId}
-        onCategoryChange={onCategoryChange}
+        onCategoryChange={(categoryId) => setFilters({ categoryId })}
       />
       <div style={{ display: 'flex', gap: 8 }}>
         {locations.length > 0 && (
           <select
             value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
+            onChange={(e) => setFilters({ location: e.target.value })}
             aria-label={t(`v2.inventory.locationAria.${themeKey}`)}
             style={MOBILE_SELECT_STYLE}
           >
@@ -150,7 +151,7 @@ export function MobileInventory({
         )}
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortBy)}
+          onChange={(e) => setFilters({ sortBy: e.target.value as SortBy })}
           aria-label={t(`v2.inventory.sortAria.${themeKey}`)}
           style={MOBILE_SELECT_STYLE}
         >
@@ -166,7 +167,7 @@ export function MobileInventory({
             <button
               key={k}
               type="button"
-              onClick={() => setFilter(k)}
+              onClick={() => setFilters({ status: k })}
               style={{
                 padding: '6px 12px',
                 fontFamily: 'var(--font-mono)',

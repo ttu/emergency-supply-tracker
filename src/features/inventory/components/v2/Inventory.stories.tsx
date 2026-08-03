@@ -14,7 +14,6 @@ const meta = {
     ),
   ],
   argTypes: {
-    onCategoryChange: { action: 'category changed' },
     onItemSelect: { action: 'item selected' },
     onAddItem: { action: 'add item' },
   },
@@ -23,7 +22,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const args = {
-  onCategoryChange: () => {},
   onItemSelect: () => {},
   onAddItem: () => {},
 };

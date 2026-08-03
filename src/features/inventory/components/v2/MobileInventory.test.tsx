@@ -15,11 +15,7 @@ import {
 
 const renderInv = (onAddItem = vi.fn()) =>
   renderWithProviders(
-    <MobileInventory
-      onItemSelect={vi.fn()}
-      onCategoryChange={vi.fn()}
-      onAddItem={onAddItem}
-    />,
+    <MobileInventory onItemSelect={vi.fn()} onAddItem={onAddItem} />,
     {
       initialAppData: createMockAppData({
         settings: createMockSettings({ theme: 'cockpit' }),
@@ -48,12 +44,7 @@ const renderWithItems = (
   props: Partial<Parameters<typeof MobileInventory>[0]> = {},
 ) =>
   renderWithProviders(
-    <MobileInventory
-      onItemSelect={vi.fn()}
-      onCategoryChange={vi.fn()}
-      onAddItem={vi.fn()}
-      {...props}
-    />,
+    <MobileInventory onItemSelect={vi.fn()} onAddItem={vi.fn()} {...props} />,
     {
       initialAppData: createMockAppData({
         settings: createMockSettings({ theme: 'cockpit' }),
@@ -132,8 +123,12 @@ describe('MobileInventory (v2)', () => {
     expect(onItemSelect).toHaveBeenCalledWith(String(emptySoup.id));
   });
 
-  it('honours a category filter supplied by the parent', async () => {
-    renderWithItems({ selectedCategoryId: 'food' });
+  it('narrows to a category picked from the chip strip', async () => {
+    renderWithItems();
+    await screen.findByText('Bottled water');
+
+    fireEvent.click(screen.getByTestId('v2-category-chip-food'));
+
     expect(await screen.findByText('Canned soup')).toBeInTheDocument();
     expect(screen.queryByText('Bottled water')).not.toBeInTheDocument();
   });

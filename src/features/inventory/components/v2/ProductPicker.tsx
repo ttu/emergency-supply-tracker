@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { categoryCode } from '@/shared/i18n/voice';
+import { CategoryIcon } from '@/shared/components/design-v2/CategoryIcon';
 import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { formatBaseQuantityCompact } from '@/shared/utils/formatting/baseQuantity';
 import type {
@@ -75,7 +76,7 @@ export function ProductPicker({
       t,
     );
 
-  const categoryIcon = (id: string) =>
+  const categoryEmoji = (id: string) =>
     categories.find((c) => String(c.id) === id)?.icon;
 
   const query = search.trim().toLowerCase();
@@ -121,7 +122,7 @@ export function ProductPicker({
   const row = (
     key: string,
     testId: string,
-    icon: string | undefined,
+    iconCategoryId: string,
     name: string,
     category: string,
     recommended: string | undefined,
@@ -135,7 +136,11 @@ export function ProductPicker({
       onClick={onClick}
     >
       <span className={styles.badge} aria-hidden="true">
-        {icon}
+        <CategoryIcon
+          categoryId={iconCategoryId}
+          size={26}
+          fallback={categoryEmoji(iconCategoryId)}
+        />
       </span>
       <span className={styles.info}>
         <span className={styles.productName}>{name}</span>
@@ -215,7 +220,7 @@ export function ProductPicker({
               onClick={() => toggleCategory(id)}
             >
               <span className={styles.chipIcon} aria-hidden="true">
-                {c.icon}
+                <CategoryIcon categoryId={id} size={17} fallback={c.icon} />
               </span>
               <span className={styles.chipMeta}>
                 <span className={styles.chipCode}>{categoryCode(id)}</span>
@@ -259,7 +264,7 @@ export function ProductPicker({
           row(
             String(item.id),
             `custom-template-card-${String(item.id)}`,
-            categoryIcon(String(item.category)),
+            String(item.category),
             name,
             categoryLabel(String(item.category)),
             undefined,
@@ -276,7 +281,7 @@ export function ProductPicker({
           row(
             String(item.id),
             `template-card-${String(item.id)}`,
-            categoryIcon(String(item.category)),
+            String(item.category),
             name,
             categoryLabel(String(item.category)),
             formatBaseQuantityCompact(

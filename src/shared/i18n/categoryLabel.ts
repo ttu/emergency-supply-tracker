@@ -18,6 +18,14 @@ export function resolveCategoryLabel(
 ): string {
   const own = category?.names?.[lang] ?? category?.names?.en;
   if (own) return own;
-  if (category?.isCustom) return category.name;
-  return t(categoryId, { ns: 'categories' });
+
+  // Not `isCustom`: that flag says where a category came from, not whether it
+  // has a translation, and a category can be stored without it. What decides
+  // the label is whether the namespace has an entry — i18next hands back the
+  // key when it does not, which would otherwise render a raw id like
+  // "garden" in place of "Garden".
+  const translated = t(categoryId, { ns: 'categories' });
+  if (translated !== categoryId) return translated;
+
+  return category?.name ?? categoryId;
 }

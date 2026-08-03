@@ -209,6 +209,37 @@ test.describe('Inventory actions', () => {
     await expect(table.getByText('Bottled water')).toHaveCount(0);
   });
 
+  test('filters survive leaving the list and reloading', async ({ page }) => {
+    await boot(page);
+    await openInventory(page);
+
+    await page.getByTestId('v2-category-row-food').click();
+    await page.getByTestId('v2-status-warn').click();
+    await page.getByPlaceholder(/SEARCH/i).fill('soup');
+
+    // Round trip through the dashboard…
+    await page.getByTestId('v2-nav-home').click();
+    await openInventory(page);
+    await expect(page.getByTestId('v2-category-row-food')).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
+    await expect(page.getByPlaceholder(/SEARCH/i)).toHaveValue('soup');
+
+    // …and through a full reload.
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await openInventory(page);
+    await expect(page.getByTestId('v2-category-row-food')).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
+    await expect(page.getByTestId('v2-status-warn')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(page.getByPlaceholder(/SEARCH/i)).toHaveValue('soup');
+  });
+
   test('add an item and see it persisted', async ({ page }) => {
     await boot(page);
     await openInventory(page);

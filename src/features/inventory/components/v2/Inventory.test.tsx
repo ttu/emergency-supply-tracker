@@ -26,11 +26,7 @@ const setup = (props: { onAddItem?: (id?: string) => void } = {}) => {
     }),
   ];
   return renderWithProviders(
-    <Inventory
-      onCategoryChange={vi.fn()}
-      onItemSelect={vi.fn()}
-      onAddItem={props.onAddItem ?? vi.fn()}
-    />,
+    <Inventory onItemSelect={vi.fn()} onAddItem={props.onAddItem ?? vi.fn()} />,
     {
       initialAppData: createMockAppData({
         settings: createMockSettings({ theme: 'cockpit', language: 'en' }),
@@ -94,11 +90,7 @@ describe('Inventory (v2)', () => {
   it('clicking ADD button calls onAddItem', async () => {
     const onAddItem = vi.fn();
     renderWithProviders(
-      <Inventory
-        onCategoryChange={vi.fn()}
-        onItemSelect={vi.fn()}
-        onAddItem={onAddItem}
-      />,
+      <Inventory onItemSelect={vi.fn()} onAddItem={onAddItem} />,
       {
         initialAppData: createMockAppData({
           settings: createMockSettings({ theme: 'cockpit' }),
@@ -182,11 +174,7 @@ describe('Inventory (v2)', () => {
 
     it('filters by location', async () => {
       renderWithProviders(
-        <Inventory
-          onCategoryChange={vi.fn()}
-          onItemSelect={vi.fn()}
-          onAddItem={vi.fn()}
-        />,
+        <Inventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
         {
           initialAppData: createMockAppData({
             settings: createMockSettings({ theme: 'cockpit', language: 'en' }),

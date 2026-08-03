@@ -20,6 +20,7 @@ import {
 import { MobileItemDetail } from '@/features/inventory/components/v2/MobileItemDetail';
 import { Guide } from '@/features/help/components/v2/Guide';
 import { SettingsFull } from '@/features/settings/components/v2/SettingsFull';
+import { useInventoryFilters } from '@/features/inventory/hooks/useInventoryFilters';
 
 interface ViewContext {
   t: TFunction;
@@ -117,8 +118,6 @@ function renderHome(ctx: ViewContext): ReactNode {
 function renderInventory(ctx: ViewContext): ReactNode {
   const {
     isMobile,
-    selectedCategoryId,
-    setSelectedCategoryId,
     setSelectedItemId,
     setSelectedTemplateId,
     setCopySourceId,
@@ -129,19 +128,9 @@ function renderInventory(ctx: ViewContext): ReactNode {
     setSelectedItemId(NEW_ITEM_ID);
   };
   return isMobile ? (
-    <MobileInventory
-      onItemSelect={setSelectedItemId}
-      selectedCategoryId={selectedCategoryId}
-      onCategoryChange={setSelectedCategoryId}
-      onAddItem={onAddItem}
-    />
+    <MobileInventory onItemSelect={setSelectedItemId} onAddItem={onAddItem} />
   ) : (
-    <Inventory
-      selectedCategoryId={selectedCategoryId}
-      onCategoryChange={setSelectedCategoryId}
-      onItemSelect={setSelectedItemId}
-      onAddItem={onAddItem}
-    />
+    <Inventory onItemSelect={setSelectedItemId} onAddItem={onAddItem} />
   );
 }
 
@@ -173,9 +162,12 @@ export function DesignApp() {
   const { themeKey } = useDesignTheme();
   const isMobile = useIsMobile();
   const [nav, setNav] = useState<DesignNavId>('home');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<
-    string | undefined
-  >(undefined);
+  const [{ categoryId: selectedCategoryId }, setFilters] =
+    useInventoryFilters();
+  const setSelectedCategoryId = useCallback(
+    (categoryId: string | undefined) => setFilters({ categoryId }),
+    [setFilters],
+  );
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
     undefined,
   );
@@ -190,7 +182,8 @@ export function DesignApp() {
     setSelectedItemId(undefined);
     setSelectedTemplateId(undefined);
     setCopySourceId(undefined);
-    if (id !== 'inv') setSelectedCategoryId(undefined);
+    // The category filter is deliberately *not* cleared here — inventory
+    // filters persist, so returning to the list finds it as it was left.
   }, []);
 
   // renderNav / renderItemDetail are cheap pure helpers that return JSX

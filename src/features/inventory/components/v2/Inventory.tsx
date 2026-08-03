@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -10,8 +10,8 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory, useLocationSuggestions } from '@/features/inventory';
 import { compareItemsBy } from '@/features/inventory/utils/sortItems';
-import type { SortBy } from '@/features/inventory';
 import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommendedItems';
+import { useInventoryFilters } from '../../hooks/useInventoryFilters';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 import type { DateOnly } from '@/shared/types';
@@ -25,8 +25,6 @@ import { CategorySummaryPanel } from './CategorySummaryPanel';
 import { CategoryRail } from './CategoryRail';
 
 interface InventoryProps {
-  selectedCategoryId?: string;
-  onCategoryChange: (id?: string) => void;
   onItemSelect: (id: string) => void;
   /** `templateId` pre-fills the new item from that recommended product. */
   onAddItem: (templateId?: string) => void;
@@ -63,8 +61,6 @@ function matchesSearch(
 }
 
 export function Inventory({
-  selectedCategoryId,
-  onCategoryChange,
   onItemSelect,
   onAddItem,
 }: Readonly<InventoryProps>) {
@@ -72,10 +68,14 @@ export function Inventory({
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const allMissing = useMissingRecommendedItems();
-  const [filter, setFilter] = useState<InventoryFilterKey>('all');
-  const [search, setSearch] = useState('');
-  const [locationFilter, setLocationFilter] = useState('all');
-  const [sortBy, setSortBy] = useState<SortBy>('name');
+  const [filters, setFilters] = useInventoryFilters();
+  const {
+    categoryId: selectedCategoryId,
+    status: filter,
+    search,
+    location: locationFilter,
+    sortBy,
+  } = filters;
   const { items } = useInventory();
   const locations = useLocationSuggestions(items);
 
@@ -186,21 +186,21 @@ export function Inventory({
           categories={categories}
           rows={rows}
           selectedCategoryId={selectedCategoryId}
-          onCategoryChange={onCategoryChange}
+          onCategoryChange={(categoryId) => setFilters({ categoryId })}
         />
 
         <Panel padding={0} style={{ minWidth: 0 }}>
           <InventoryFilterStrip
             filter={filter}
-            onFilterChange={setFilter}
+            onFilterChange={(status) => setFilters({ status })}
             counts={counts}
             search={search}
-            onSearchChange={setSearch}
+            onSearchChange={(search) => setFilters({ search })}
             locationFilter={locationFilter}
-            onLocationFilterChange={setLocationFilter}
+            onLocationFilterChange={(location) => setFilters({ location })}
             locations={locations}
             sortBy={sortBy}
-            onSortByChange={setSortBy}
+            onSortByChange={(sortBy) => setFilters({ sortBy })}
           />
           {filter === 'missing' ? (
             <MissingItemsTable items={missing} onAdd={onAddItem} />

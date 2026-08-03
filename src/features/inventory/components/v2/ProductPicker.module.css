@@ -148,6 +148,17 @@
   color: var(--color-text);
 }
 
+/* The selected chip inverts its glyph tile, per the design. A CSS rule beats
+   the `stroke` presentation attribute the icon carries. */
+.categoryChip[aria-pressed='true'] .chipIcon {
+  background: var(--color-accent);
+  box-shadow: none;
+}
+
+.categoryChip[aria-pressed='true'] .chipIcon svg {
+  stroke: var(--color-accent-ink);
+}
+
 .customButton {
   margin: 22px 0 8px;
   width: 100%;

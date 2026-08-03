@@ -18,7 +18,6 @@ const meta = {
   ],
   argTypes: {
     onItemSelect: { action: 'item selected' },
-    onCategoryChange: { action: 'category changed' },
     onAddItem: { action: 'add item' },
   },
 } satisfies Meta<typeof MobileInventory>;
@@ -28,7 +27,6 @@ type Story = StoryObj<typeof meta>;
 export const Cockpit: Story = {
   args: {
     onItemSelect: () => {},
-    onCategoryChange: () => {},
     onAddItem: () => {},
   },
 };
