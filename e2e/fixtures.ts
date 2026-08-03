@@ -25,6 +25,46 @@ export async function setAppStorage(
   );
 }
 
+/**
+ * Wait until every notification toast has dismissed itself.
+ *
+ * Saving, deleting and importing all raise a toast that overlays the top of
+ * the page, and it intercepts clicks on whatever sits underneath. Waiting on
+ * the toasts being gone is the observable condition; sleeping for "about as
+ * long as a toast lasts" is both slower and flakier.
+ */
+export async function waitForToastsToClear(page: Page): Promise<void> {
+  await expect(page.locator('[data-testid^="notification-item-"]')).toHaveCount(
+    0,
+    { timeout: 10_000 },
+  );
+}
+
+/**
+ * Wait until the app has written a change through to localStorage.
+ *
+ * A setting only survives a reload once it is on disk, and the write lands an
+ * effect after the render that shows it — so asserting on the rendered value
+ * is not the same condition as "safe to reload now".
+ */
+export async function waitForStoredData(
+  page: Page,
+  matches: (raw: string) => boolean,
+): Promise<void> {
+  await expect
+    .poll(
+      async () =>
+        matches(
+          await page.evaluate(
+            (key) => localStorage.getItem(key) ?? '',
+            STORAGE_KEY,
+          ),
+        ),
+      { timeout: 5000 },
+    )
+    .toBe(true);
+}
+
 // Helper to wait for element count to change
 export async function waitForCountChange(
   locator: Locator,

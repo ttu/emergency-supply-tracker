@@ -1,4 +1,9 @@
-import { test, expect, startAddCustomItem } from './fixtures';
+import {
+  test,
+  expect,
+  startAddCustomItem,
+  waitForToastsToClear,
+} from './fixtures';
 
 test.describe('Dashboard', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -61,8 +66,8 @@ test.describe('Dashboard', () => {
     await page.getByTestId('v2-nav-home').click();
     // Dashboard's PriorityQueue lists non-OK items.
     await expect(page.getByText(/PRIORITY QUEUE/)).toBeVisible();
-    // Wait past the notification toast so only the PriorityQueue row remains.
-    await page.waitForTimeout(3000);
+    // Wait out the notification toast so only the PriorityQueue row remains.
+    await waitForToastsToClear(page);
     await expect(
       page.getByText('Out of Stock Item', { exact: true }),
     ).toBeVisible();

@@ -538,6 +538,9 @@ async function verifyFinalDashboardQuickSetup(page: Page) {
  * the entire application works end-to-end.
  */
 test.describe('Smoke Test - Quick Setup Flow', () => {
+  // Skipped: v2 rebuilt quick setup as a collapsible onboarding checklist, so
+  // the v1 selectors this test drives no longer exist. Covered for v2 by
+  // onboarding.spec.ts.
   test.skip('should test quick setup workflow [v1 flow gone in v2]: add recommended items → edit quantities → full features', async ({
     page,
   }) => {

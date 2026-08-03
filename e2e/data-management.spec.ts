@@ -59,6 +59,9 @@ test.describe('Backup & Transfer', () => {
     expect(dialogs).not.toContain('No data to export');
   });
 
+  // Skipped: the v2 import flow replaced the inventory-set selector and the
+  // import-data-file-input this test drives. Rewrite against v2 before
+  // re-enabling.
   test.skip('should import data: v2 inventory-set selector + import-data-file-input flow changed', async ({
     page,
   }) => {
@@ -154,6 +157,8 @@ test.describe('Backup & Transfer', () => {
     ).toBeVisible();
   });
 
+  // Skipped: shopping-list export moved to Settings in v2 and is covered end
+  // to end by shopping-list-export.spec.ts, so this duplicate is redundant.
   test.skip('should export shopping list: covered by shopping-list-export.spec', async ({
     page,
   }) => {
@@ -383,6 +388,8 @@ test.describe('Backup & Transfer', () => {
     });
   });
 
+  // Skipped: v2's inventory has no "Recommended" expand panel, so there is no
+  // longer a surface on which custom recommendation names appear.
   test.skip('should display custom recommendation names: v2 inventory has no Recommended expand panel', async ({
     page,
   }) => {

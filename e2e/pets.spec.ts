@@ -4,6 +4,7 @@ import {
   setAppStorage,
   navigateToSettingsSection,
   selectInventoryCategory,
+  waitForStoredData,
 } from './fixtures';
 import {
   createMockAppData,
@@ -50,7 +51,7 @@ test.describe('Pet Support', () => {
       const inc = page.getByRole('button', { name: /Increase PETS/ });
       await inc.click(); // 0 → 1
       await inc.click(); // 1 → 2
-      await page.waitForTimeout(300);
+      await waitForStoredData(page, (raw) => raw.includes('"pets":2'));
 
       await page.reload({ waitUntil: 'domcontentloaded' });
       await navigateToSettingsSection(page, 'household');

@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  waitForStoredData,
+} from './fixtures';
 
 /**
  * The v2 Settings page exposes 11 sectioned panels driven by the
@@ -33,8 +38,6 @@ test.describe('Settings', () => {
     await navigateToSettingsSection(page, 'appearance');
     // v2 language picker is two role="button" cards (EN / FI), not a select.
     await page.getByRole('button', { name: 'FI Suomi' }).click();
-    // Storage updates the language; nav buttons re-render via i18n.
-    await page.waitForTimeout(500);
     // After switching to FI, the SETTINGS nav button keeps its cockpit label
     // (voice strings are theme-driven, not i18n keys), so just verify the
     // language card is now aria-pressed.
@@ -50,7 +53,7 @@ test.describe('Settings', () => {
     await expect(page.getByText('PROFILE · §2.1')).toBeVisible();
     const inc = page.getByRole('button', { name: /Increase ADULTS/ });
     await inc.click(); // 2 → 3
-    await page.waitForTimeout(300);
+    await waitForStoredData(page, (raw) => raw.includes('"adults":3'));
 
     await page.getByTestId('v2-nav-home').click();
     await navigateToSettingsSection(page, 'household');
@@ -89,7 +92,6 @@ test.describe('Settings', () => {
     await page.getByTestId('v2-nav-settings').click();
     const data = page.getByTestId('v2-settings-section-data');
     await data.click();
-    await page.waitForTimeout(300);
     // Active section gets aria-current="true"
     await expect(data).toHaveAttribute('aria-current', 'true');
   });

@@ -3,6 +3,7 @@ import {
   expect,
   selectInventoryCategory,
   startAddCustomItem,
+  waitForToastsToClear,
 } from './fixtures';
 
 /**
@@ -45,7 +46,7 @@ test.describe('Inventory Management', () => {
 
   test('should add a custom item', async ({ page }) => {
     await addItem(page, { name: 'Trail Mix', category: 'food' });
-    await page.waitForTimeout(2500); // let the toast clear
+    await waitForToastsToClear(page);
     await expect(
       page.getByText('Trail Mix', { exact: true }).first(),
     ).toBeVisible();
@@ -53,14 +54,14 @@ test.describe('Inventory Management', () => {
 
   test('should edit an existing item', async ({ page }) => {
     await addItem(page, { name: 'Original Name', category: 'food' });
-    await page.waitForTimeout(2500);
+    await waitForToastsToClear(page);
 
     await page.getByRole('button', { name: /Original Name/ }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Updated Name');
     await page.getByTestId('save-item-button').click();
 
-    await page.waitForTimeout(2500);
+    await waitForToastsToClear(page);
     await expect(
       page.getByRole('button', { name: /Updated Name/ }),
     ).toBeVisible();
@@ -68,7 +69,7 @@ test.describe('Inventory Management', () => {
 
   test('should delete an item', async ({ page }) => {
     await addItem(page, { name: 'Delete Me', category: 'food' });
-    await page.waitForTimeout(2500);
+    await waitForToastsToClear(page);
 
     await page.getByRole('button', { name: /Delete Me/ }).click();
 
@@ -88,9 +89,9 @@ test.describe('Inventory Management', () => {
 
   test('should filter items by category', async ({ page }) => {
     await addItem(page, { name: 'Food Item', category: 'food' });
-    await page.waitForTimeout(500);
+    await waitForToastsToClear(page);
     await addItem(page, { name: 'Water Item', category: 'water-beverages' });
-    await page.waitForTimeout(500);
+    await waitForToastsToClear(page);
 
     await selectInventoryCategory(page, 'food');
     await expect(page.getByRole('button', { name: /Food Item/ })).toBeVisible();
@@ -101,9 +102,9 @@ test.describe('Inventory Management', () => {
 
   test('should search items by name', async ({ page }) => {
     await addItem(page, { name: 'Apple', category: 'food' });
-    await page.waitForTimeout(500);
+    await waitForToastsToClear(page);
     await addItem(page, { name: 'Banana', category: 'food' });
-    await page.waitForTimeout(500);
+    await waitForToastsToClear(page);
 
     await page.getByLabel('Search inventory').fill('apple');
     await expect(page.getByRole('button', { name: /Apple/ })).toBeVisible();
@@ -118,9 +119,9 @@ test.describe('Inventory Management', () => {
       category: 'food',
       quantity: '0',
     });
-    await page.waitForTimeout(500);
+    await waitForToastsToClear(page);
     await addItem(page, { name: 'Ok Item', category: 'food', quantity: '20' });
-    await page.waitForTimeout(500);
+    await waitForToastsToClear(page);
 
     await page.getByTestId('v2-status-crit').click();
     await expect(
@@ -132,7 +133,7 @@ test.describe('Inventory Management', () => {
     page,
   }) => {
     await addItem(page, { name: 'Original', category: 'food' });
-    await page.waitForTimeout(2500);
+    await waitForToastsToClear(page);
 
     await page.getByRole('button', { name: /Original/ }).click();
     await expect(page.getByTestId('item-form')).toBeVisible();

@@ -665,6 +665,9 @@ async function runManualEntryWorkflow(page: Page) {
 }
 
 test.describe('Smoke Test - Manual Entry Flow', () => {
+  // Skipped: this walks the v1 manual-entry flow (template modal, recommended
+  // expand panel), none of which exists in v2. A v2 equivalent is covered by
+  // inventory.spec.ts.
   test.skip('should test manual entry workflow [v1 flow gone in v2]: skip quick setup → manually add items → full features', async ({
     page,
   }) => {
@@ -672,6 +675,7 @@ test.describe('Smoke Test - Manual Entry Flow', () => {
     await runManualEntryWorkflow(page);
   });
 
+  // Skipped: same v1-only flow as above, on a mobile viewport.
   test.skip('should test manual entry workflow on mobile [v1 flow gone in v2]: skip quick setup → manually add items → full features', async ({
     page,
   }) => {
