@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CategoryChips } from './CategoryChips';
+import { CategorySelect } from './CategorySelect';
 import { DesignV2Story } from '@/shared/components/design-v2/storybook';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
@@ -7,8 +7,8 @@ import { createCategoryId } from '@/shared/types';
 import type { DesignItemRow } from '@/shared/hooks/useDesignData';
 
 const meta = {
-  title: 'Design V2/Inventory/CategoryChips',
-  component: CategoryChips,
+  title: 'Design V2/Inventory/CategorySelect',
+  component: CategorySelect,
   parameters: { layout: 'padded' },
   decorators: [
     (Story) => (
@@ -20,7 +20,7 @@ const meta = {
     ),
   ],
   argTypes: { onCategoryChange: { action: 'category changed' } },
-} satisfies Meta<typeof CategoryChips>;
+} satisfies Meta<typeof CategorySelect>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

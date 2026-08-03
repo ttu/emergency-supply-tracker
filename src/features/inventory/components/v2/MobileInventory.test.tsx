@@ -124,11 +124,13 @@ describe('MobileInventory (v2)', () => {
     expect(onItemSelect).toHaveBeenCalledWith(String(emptySoup.id));
   });
 
-  it('narrows to a category picked from the chip strip', async () => {
+  it('narrows to a category picked from the dropdown', async () => {
     renderWithItems();
     await screen.findByText('Bottled water');
 
-    fireEvent.click(screen.getByTestId('v2-category-chip-food'));
+    fireEvent.change(screen.getByTestId('v2-category-select'), {
+      target: { value: 'food' },
+    });
 
     expect(await screen.findByText('Canned soup')).toBeInTheDocument();
     expect(screen.queryByText('Bottled water')).not.toBeInTheDocument();
@@ -143,7 +145,9 @@ describe('MobileInventory (v2)', () => {
       screen.queryByText('v2.inventory.totalRequired.cockpit'),
     ).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId('v2-category-chip-water-beverages'));
+    fireEvent.change(screen.getByTestId('v2-category-select'), {
+      target: { value: 'water-beverages' },
+    });
 
     expect(
       await screen.findByText('v2.inventory.totalRequired.cockpit'),

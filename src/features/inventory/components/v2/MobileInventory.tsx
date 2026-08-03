@@ -16,7 +16,7 @@ import { compareItemsBy } from '@/features/inventory/utils/sortItems';
 import type { SortBy } from '@/features/inventory';
 import { useInventoryFilters } from '../../hooks/useInventoryFilters';
 import { MissingItemsTable } from './MissingItemsTable';
-import { CategoryChips } from './CategoryChips';
+import { CategorySelect } from './CategorySelect';
 import { CategorySummaryPanel } from './CategorySummaryPanel';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
@@ -130,7 +130,7 @@ export function MobileInventory({
           width: '100%',
         }}
       />
-      <CategoryChips
+      <CategorySelect
         categories={categories}
         rows={rows}
         selectedCategoryId={selectedCategoryId}
