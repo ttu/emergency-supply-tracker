@@ -5,9 +5,15 @@ import { renderWithProviders } from '@/test/render';
 import {
   createMockAppData,
   createMockInventoryItem,
+  createMockProductTemplate,
   createMockSettings,
 } from '@/shared/utils/test/factories';
-import { createCategoryId, createItemId, createQuantity } from '@/shared/types';
+import {
+  createCategoryId,
+  createItemId,
+  createProductTemplateId,
+  createQuantity,
+} from '@/shared/types';
 
 const ITEM_ID = createItemId('item-1');
 
@@ -137,5 +143,65 @@ describe('ItemDetail (v2)', () => {
     );
     expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
     expect(onBack).not.toHaveBeenCalled();
+  });
+
+  it('picking a recommended product seeds the form from it', async () => {
+    renderWithProviders(<ItemDetail itemId={NEW_ITEM_ID} onBack={vi.fn()} />, {
+      initialAppData: createMockAppData({
+        settings: createMockSettings({ theme: 'cockpit' }),
+        items: [],
+      }),
+    });
+
+    fireEvent.click(await screen.findByTestId('template-card-bottled-water'));
+
+    expect(document.querySelector('#name')).toBeInTheDocument();
+  });
+
+  it("picking one of the household's own templates reaches the form", async () => {
+    const template = createMockProductTemplate({
+      id: createProductTemplateId('rye-crispbread'),
+      name: 'Rye crispbread',
+      category: createCategoryId('food'),
+      isBuiltIn: false,
+      isCustom: true,
+    });
+    renderWithProviders(<ItemDetail itemId={NEW_ITEM_ID} onBack={vi.fn()} />, {
+      initialAppData: createMockAppData({
+        settings: createMockSettings({ theme: 'cockpit' }),
+        items: [],
+        customTemplates: [template],
+      }),
+    });
+
+    fireEvent.click(
+      await screen.findByTestId('custom-template-card-rye-crispbread'),
+    );
+
+    expect(document.querySelector('#name')).toBeInTheDocument();
+  });
+
+  it('offers copy on an existing item and reports its id', async () => {
+    const onCopy = vi.fn();
+    const item = createMockInventoryItem({
+      id: ITEM_ID,
+      name: 'Bottled water',
+      categoryId: createCategoryId('water-beverages'),
+      quantity: createQuantity(2),
+    });
+    renderWithProviders(
+      <ItemDetail itemId={String(ITEM_ID)} onBack={vi.fn()} onCopy={onCopy} />,
+      {
+        initialAppData: createMockAppData({
+          settings: createMockSettings({ theme: 'cockpit' }),
+          items: [item],
+        }),
+      },
+    );
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'v2.voice.copy.cockpit' }),
+    );
+    expect(onCopy).toHaveBeenCalledWith(String(ITEM_ID));
   });
 });

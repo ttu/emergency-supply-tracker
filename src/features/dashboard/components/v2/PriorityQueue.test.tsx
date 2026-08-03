@@ -7,7 +7,11 @@ import {
   createMockInventoryItem,
   createMockSettings,
 } from '@/shared/utils/test/factories';
-import { createCategoryId, createQuantity } from '@/shared/types';
+import {
+  createCategoryId,
+  createProductTemplateId,
+  createQuantity,
+} from '@/shared/types';
 
 const setup = (
   items: ReturnType<typeof createMockInventoryItem>[],
@@ -60,5 +64,31 @@ describe('PriorityQueue (v2)', () => {
     await waitFor(() => {
       expect(screen.getByText('Bottled water')).toBeInTheDocument();
     });
+  });
+
+  it('puts critical items above the merely low ones', async () => {
+    setup([
+      createMockInventoryItem({
+        name: 'Low soup',
+        itemType: createProductTemplateId('canned-soup'),
+        categoryId: createCategoryId('food'),
+        quantity: createQuantity(1),
+        unit: 'cans',
+        neverExpires: true,
+      }),
+      createMockInventoryItem({
+        name: 'No water',
+        itemType: createProductTemplateId('bottled-water'),
+        categoryId: createCategoryId('water-beverages'),
+        quantity: createQuantity(0),
+        unit: 'liters',
+        neverExpires: true,
+      }),
+    ]);
+
+    // Listed after the low item, but it is the empty one that needs doing
+    // first, so the queue must reorder them.
+    const rows = await screen.findAllByText(/^(Low soup|No water)$/);
+    expect(rows.map((n) => n.textContent)).toEqual(['No water', 'Low soup']);
   });
 });

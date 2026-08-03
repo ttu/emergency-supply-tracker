@@ -8,7 +8,10 @@ import {
 } from '@/shared/utils/test/factories';
 
 describe('Dashboard (v2)', () => {
-  const setup = (overrides: Partial<Parameters<typeof Dashboard>[0]> = {}) =>
+  const setup = (
+    overrides: Partial<Parameters<typeof Dashboard>[0]> = {},
+    theme: 'cockpit' | 'civil' | 'pantry' = 'cockpit',
+  ) =>
     renderWithProviders(
       <Dashboard
         onCategorySelect={vi.fn()}
@@ -18,7 +21,11 @@ describe('Dashboard (v2)', () => {
       />,
       {
         initialAppData: createMockAppData({
-          settings: createMockSettings({ theme: 'cockpit' }),
+          settings: createMockSettings({ theme }),
+          // Left to the factory these are random, and readiness — which the
+          // pantry hero title is chosen from — would vary with the faker seed.
+          items: [],
+          customCategories: [],
         }),
       },
     );
@@ -54,5 +61,19 @@ describe('Dashboard (v2)', () => {
       screen.getByRole('button', { name: 'v2.dashboard.priorityViewAll' }),
     );
     expect(onViewAllPriority).toHaveBeenCalled();
+  });
+
+  it('uses the civil hero title under the civil theme', async () => {
+    setup({}, 'civil');
+    expect(
+      await screen.findByText('v2.dashboard.heroCivil'),
+    ).toBeInTheDocument();
+  });
+
+  it('an empty pantry gets the work-to-do hero, not the ready one', async () => {
+    setup({}, 'pantry');
+    expect(
+      await screen.findByText('v2.dashboard.heroPantryWork'),
+    ).toBeInTheDocument();
   });
 });

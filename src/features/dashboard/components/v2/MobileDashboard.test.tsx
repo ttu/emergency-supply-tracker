@@ -32,7 +32,11 @@ const missing = createMockInventoryItem({
 
 const setup = (
   items: ReturnType<typeof createMockInventoryItem>[] = [],
-  props: { onCategorySelect?: () => void; onItemSelect?: () => void } = {},
+  props: {
+    onCategorySelect?: () => void;
+    onItemSelect?: () => void;
+    theme?: 'cockpit' | 'civil' | 'pantry';
+  } = {},
 ) =>
   renderWithProviders(
     <MobileDashboard
@@ -41,7 +45,7 @@ const setup = (
     />,
     {
       initialAppData: createMockAppData({
-        settings: createMockSettings({ theme: 'cockpit' }),
+        settings: createMockSettings({ theme: props.theme ?? 'cockpit' }),
         items,
         customCategories: [],
       }),
@@ -85,5 +89,19 @@ describe('MobileDashboard (v2)', () => {
   it('surfaces the alert banner above the KPIs', async () => {
     setup([missing]);
     expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
+  });
+
+  it('speaks the civil headline under the civil theme', () => {
+    setup([], { theme: 'civil' });
+    expect(
+      screen.getByText('v2.dashboard.mobileHeadlineCivil'),
+    ).toBeInTheDocument();
+  });
+
+  it('an empty pantry is told it needs attention, not that it is ready', () => {
+    setup([], { theme: 'pantry' });
+    expect(
+      screen.getByText('v2.dashboard.mobileHeadlinePantryAttention'),
+    ).toBeInTheDocument();
   });
 });
