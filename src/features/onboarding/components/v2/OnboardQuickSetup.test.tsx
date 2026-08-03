@@ -33,9 +33,27 @@ const renderStep = (
     { initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) } },
   );
 
+/** The checklist ships collapsed; the per-line controls need it opened. */
+const openList = () =>
+  fireEvent.click(screen.getByTestId('v2-quick-setup-details'));
+
 describe('OnboardQuickSetup', () => {
+  it('keeps the checklist collapsed until asked', () => {
+    renderStep();
+    expect(screen.getByTestId('v2-quick-setup-details')).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    expect(
+      screen.queryByTestId(`v2-quick-setup-item-${firstItemId}`),
+    ).toBeNull();
+    // Nothing to select or deselect while it is shut.
+    expect(screen.queryByTestId('v2-quick-setup-select-all')).toBeNull();
+  });
+
   it('starts with everything ticked', () => {
     renderStep();
+    openList();
     expect(
       screen.getByTestId(`v2-quick-setup-item-${firstItemId}`),
     ).toHaveAttribute('aria-checked', 'true');
@@ -57,6 +75,7 @@ describe('OnboardQuickSetup', () => {
   it('drops an unticked product from the selection', () => {
     const onAddItems = vi.fn();
     renderStep({ onAddItems });
+    openList();
 
     fireEvent.click(screen.getByTestId(`v2-quick-setup-item-${firstItemId}`));
     expect(
@@ -76,6 +95,7 @@ describe('OnboardQuickSetup', () => {
   it('carries what the household already has', () => {
     const onAddItems = vi.fn();
     renderStep({ onAddItems });
+    openList();
 
     fireEvent.click(screen.getByTestId(`v2-quick-setup-owned-${firstItemId}`));
     fireEvent.click(
@@ -88,6 +108,7 @@ describe('OnboardQuickSetup', () => {
 
   it('cannot mark an unticked product as owned', () => {
     renderStep();
+    openList();
     fireEvent.click(screen.getByTestId(`v2-quick-setup-item-${firstItemId}`));
     expect(
       screen.getByTestId(`v2-quick-setup-owned-${firstItemId}`),
@@ -96,6 +117,7 @@ describe('OnboardQuickSetup', () => {
 
   it('deselect all clears every tick, and selecting all restores them', () => {
     renderStep();
+    openList();
     const toggle = () => screen.getByTestId('v2-quick-setup-select-all');
 
     fireEvent.click(toggle());
@@ -109,25 +131,30 @@ describe('OnboardQuickSetup', () => {
     ).toHaveAttribute('aria-checked', 'true');
   });
 
-  it('collapses the line items without losing the selection', () => {
+  it('reopening and reclosing the list does not lose the selection', () => {
     const onAddItems = vi.fn();
     renderStep({ onAddItems });
 
-    fireEvent.click(screen.getByTestId('v2-quick-setup-details'));
+    openList();
+    fireEvent.click(screen.getByTestId(`v2-quick-setup-item-${firstItemId}`));
+    openList(); // shut again
     expect(
       screen.queryByTestId(`v2-quick-setup-item-${firstItemId}`),
     ).toBeNull();
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'v2.onboarding.quickSetup.addAll.cockpit',
+        name: 'v2.onboarding.quickSetup.addSelected.cockpit',
       }),
     );
-    expect(onAddItems.mock.calls[0][0].selectedIds.size).toBeGreaterThan(0);
+    const { selectedIds } = onAddItems.mock.calls[0][0];
+    expect(selectedIds.size).toBeGreaterThan(0);
+    expect(selectedIds.has(firstItemId)).toBe(false);
   });
 
   it('withholds pet supplies from a household with no pets', () => {
     renderStep();
+    openList();
     const petItem = RECOMMENDED_ITEMS.find((i) => i.scaleWithPets);
     expect(petItem).toBeDefined();
     expect(

@@ -27,6 +27,7 @@ const args = {
   presetCode: 'P-02',
   onPresetChange: () => {},
   onApplyPreset: () => {},
+  onTryDemoData: () => {},
   onNext: () => {},
   onBack: () => {},
 };

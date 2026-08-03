@@ -131,6 +131,7 @@ test.describe('Pet Support', () => {
       // With pets on the profile, the checklist now offers pet supplies.
       await page.getByRole('button', { name: /CONTINUE →/ }).click();
       await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+      await page.getByTestId('v2-quick-setup-details').click();
       await expect(
         page.getByTestId(/^v2-quick-setup-item-pet-/).first(),
       ).toBeVisible();

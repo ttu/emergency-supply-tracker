@@ -1565,10 +1565,10 @@
           "civil": "DAYS",
           "pantry": "Days"
         },
-        "itemsCaption": {
-          "cockpit": "{{count}} LINE ITEMS",
-          "civil": "{{count}} LINE ITEMS",
-          "pantry": "{{count}} items"
+        "kitCaption": {
+          "cockpit": "KIT · {{kit}} · {{count}} ITEMS",
+          "civil": "KIT · {{kit}} · {{count}} ITEMS",
+          "pantry": "Kit: {{kit}} · {{count}} items"
         },
         "showDetails": {
           "cockpit": "SHOW DETAILS",

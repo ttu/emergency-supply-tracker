@@ -166,8 +166,10 @@ function QuickSetupRow({
  * household.
  *
  * Everything is ticked to begin with: the common case is "yes, track all of
- * this". Untick what doesn't apply, and mark what's already in the cupboard so
- * it starts stocked rather than at zero.
+ * this", so the list starts collapsed behind its kit name and count — 70-odd
+ * rows of things already agreed to is a wall to scroll past, not a decision.
+ * Opening it reveals the per-line controls: untick what doesn't apply, and
+ * mark what's already in the cupboard so it starts stocked rather than at zero.
  */
 export function OnboardQuickSetup({
   household,
@@ -178,16 +180,20 @@ export function OnboardQuickSetup({
 }: Readonly<OnboardQuickSetupProps>) {
   const { t } = useTranslation(['common', 'categories', 'products', 'units']);
   const { themeKey } = useDesignTheme();
-  const { recommendedItems } = useRecommendedItems();
+  const { recommendedItems, availableKits, selectedKitId } =
+    useRecommendedItems();
 
   const offered = useMemo(
     () => offeredItems(recommendedItems, household),
     [recommendedItems, household],
   );
 
+  const kitName =
+    availableKits.find((k) => k.id === selectedKitId)?.name ?? '—';
+
   const [deselected, setDeselected] = useState<Set<string>>(new Set());
   const [ownedIds, setOwnedIds] = useState<Set<string>>(new Set());
-  const [showDetails, setShowDetails] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
 
   /**
    * Selection is tracked as the *exclusions*, so products arriving later (a
@@ -285,7 +291,8 @@ export function OnboardQuickSetup({
           }}
         >
           <Caption>
-            {t(`v2.onboarding.quickSetup.itemsCaption.${themeKey}`, {
+            {t(`v2.onboarding.quickSetup.kitCaption.${themeKey}`, {
+              kit: kitName,
               count: offered.length,
             })}
           </Caption>
@@ -302,7 +309,7 @@ export function OnboardQuickSetup({
                 fontFamily: 'var(--font-mono)',
                 fontSize: 10,
                 letterSpacing: '0.06em',
-                color: 'var(--color-text-2)',
+                color: 'var(--color-accent)',
               }}
             >
               {t(
@@ -311,32 +318,35 @@ export function OnboardQuickSetup({
                   : `v2.onboarding.quickSetup.showDetails.${themeKey}`,
               )}
             </button>
-            <button
-              type="button"
-              onClick={() =>
-                setDeselected(
+            {/* Nothing to select or deselect while the list is closed. */}
+            {showDetails && (
+              <button
+                type="button"
+                onClick={() =>
+                  setDeselected(
+                    allSelected
+                      ? new Set(offered.map((i) => String(i.id)))
+                      : new Set(),
+                  )
+                }
+                data-testid="v2-quick-setup-select-all"
+                style={{
+                  background: 'transparent',
+                  border: 0,
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 10,
+                  letterSpacing: '0.06em',
+                  color: 'var(--color-text-2)',
+                }}
+              >
+                {t(
                   allSelected
-                    ? new Set(offered.map((i) => String(i.id)))
-                    : new Set(),
-                )
-              }
-              data-testid="v2-quick-setup-select-all"
-              style={{
-                background: 'transparent',
-                border: 0,
-                cursor: 'pointer',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                letterSpacing: '0.06em',
-                color: 'var(--color-accent)',
-              }}
-            >
-              {t(
-                allSelected
-                  ? `v2.onboarding.quickSetup.deselectAll.${themeKey}`
-                  : `v2.onboarding.quickSetup.selectAll.${themeKey}`,
-              )}
-            </button>
+                    ? `v2.onboarding.quickSetup.deselectAll.${themeKey}`
+                    : `v2.onboarding.quickSetup.selectAll.${themeKey}`,
+                )}
+              </button>
+            )}
           </div>
         </div>
 

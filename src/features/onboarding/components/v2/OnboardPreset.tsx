@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Caption } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useImportData } from '@/shared/hooks';
 import type { HouseholdConfig } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
 import { ONBOARDING_PRESETS } from './onboardingPresets';
@@ -9,20 +10,45 @@ interface OnboardPresetProps {
   presetCode: string;
   onPresetChange: (code: string) => void;
   onApplyPreset: (next: Partial<HouseholdConfig>) => void;
+  onTryDemoData: () => void;
   onNext: () => void;
   onBack: () => void;
 }
 
-/** Step 3: 4-card preset grid (single / couple / family / custom). */
+/**
+ * Step 3: 4-card preset grid (single / couple / family / custom), plus the two
+ * ways past the questionnaire entirely — demo data to look around with, and a
+ * backup file for someone who already has one.
+ */
 export function OnboardPreset({
   presetCode,
   onPresetChange,
   onApplyPreset,
+  onTryDemoData,
   onNext,
   onBack,
 }: Readonly<OnboardPresetProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
+  // There is nothing to overwrite this early, so importing does not stop to
+  // ask — the same call v1's preset screen makes.
+  const { fileInputRef, handleFileChange, triggerFileInput } = useImportData({
+    skipConfirmation: true,
+  });
+
+  const linkStyle = {
+    background: 'transparent',
+    border: 0,
+    padding: 0,
+    fontFamily: 'var(--font-mono)',
+    fontSize: 12,
+    fontWeight: 700,
+    color: 'var(--color-accent)',
+    letterSpacing: '0.06em',
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  } as const;
+
   return (
     <OnboardLayout
       step={3}
@@ -146,6 +172,58 @@ export function OnboardPreset({
             </button>
           );
         })}
+      </div>
+
+      <div
+        style={{
+          marginTop: 18,
+          paddingTop: 16,
+          borderTop: '1px solid var(--color-rule-soft)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: 20,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div>
+          <button
+            type="button"
+            onClick={onTryDemoData}
+            style={linkStyle}
+            data-testid="v2-try-demo-data"
+          >
+            {t('onboarding.tryDemoData.link')}
+          </button>
+          <div
+            style={{
+              marginTop: 6,
+              fontSize: 12,
+              color: 'var(--color-text-2)',
+              lineHeight: 1.45,
+              maxWidth: 360,
+            }}
+          >
+            {t('onboarding.tryDemoData.hint')}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={triggerFileInput}
+          style={{ ...linkStyle, whiteSpace: 'nowrap' }}
+          data-testid="v2-import-backup"
+        >
+          {t('onboarding.import.link')}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          onChange={handleFileChange}
+          hidden
+          aria-label={t('onboarding.import.button')}
+          data-testid="v2-import-file-input"
+        />
       </div>
     </OnboardLayout>
   );

@@ -1565,10 +1565,10 @@
           "civil": "PÄIVÄÄ",
           "pantry": "Päivää"
         },
-        "itemsCaption": {
-          "cockpit": "{{count}} RIVIÄ",
-          "civil": "{{count}} RIVIÄ",
-          "pantry": "{{count}} tuotetta"
+        "kitCaption": {
+          "cockpit": "PAKETTI · {{kit}} · {{count}} TUOTETTA",
+          "civil": "PAKETTI · {{kit}} · {{count}} TUOTETTA",
+          "pantry": "Paketti: {{kit}} · {{count}} tuotetta"
         },
         "showDetails": {
           "cockpit": "NÄYTÄ TIEDOT",

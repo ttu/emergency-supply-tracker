@@ -24,6 +24,10 @@ const clearAndReload = async (page: import('@playwright/test').Page) => {
 const continueButton = (page: import('@playwright/test').Page) =>
   page.getByRole('button', { name: /CONTINUE →/ });
 
+/** Quick setup ships collapsed; the per-line controls need it opened. */
+const openChecklist = (page: import('@playwright/test').Page) =>
+  page.getByTestId('v2-quick-setup-details').click();
+
 test.describe('Onboarding Flow', () => {
   test('should show onboarding for first-time users', async ({ page }) => {
     await clearAndReload(page);
@@ -110,7 +114,7 @@ test.describe('Onboarding Flow', () => {
     await continueButton(page).click(); // → 3
     await expect(page.getByText(/STEP 03 \/ 06/)).toBeVisible();
 
-    await page.getByRole('button', { name: 'BACK' }).click();
+    await page.getByRole('button', { name: 'BACK', exact: true }).click();
     await expect(page.getByText(/STEP 02 \/ 06/)).toBeVisible();
   });
 
@@ -136,6 +140,7 @@ test.describe('Onboarding Flow', () => {
     for (let i = 0; i < 5; i++) await continueButton(page).click();
     await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
 
+    await openChecklist(page);
     const bottledWater = page.getByTestId('v2-quick-setup-item-bottled-water');
     await expect(bottledWater).toHaveAttribute('aria-checked', 'true');
     await bottledWater.click();
@@ -164,6 +169,7 @@ test.describe('Onboarding Flow', () => {
     for (let i = 0; i < 5; i++) await continueButton(page).click();
     await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
 
+    await openChecklist(page);
     await page.getByTestId('v2-quick-setup-owned-bottled-water').click();
     await page.getByRole('button', { name: /ADD ALL ITEMS →/ }).click();
     await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
@@ -188,6 +194,65 @@ test.describe('Onboarding Flow', () => {
     expect(quantities.others).toBe(true);
   });
 
+  test('the checklist stays collapsed until asked', async ({ page }) => {
+    await clearAndReload(page);
+    for (let i = 0; i < 5; i++) await continueButton(page).click();
+    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+
+    // 70-odd rows of things already agreed to is a wall to scroll past.
+    await expect(
+      page.getByTestId('v2-quick-setup-item-bottled-water'),
+    ).toHaveCount(0);
+    await expect(page.getByTestId('v2-quick-setup-select-all')).toHaveCount(0);
+
+    await openChecklist(page);
+    await expect(
+      page.getByTestId('v2-quick-setup-item-bottled-water'),
+    ).toBeVisible();
+    await expect(page.getByTestId('v2-quick-setup-select-all')).toBeVisible();
+  });
+
+  test('demo data can be taken from the preset step', async ({ page }) => {
+    await clearAndReload(page);
+    await continueButton(page).click(); // → theme
+    await continueButton(page).click(); // → preset
+
+    await page.getByTestId('v2-try-demo-data').click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible({
+      timeout: 5000,
+    });
+
+    const demo = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      );
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: { quantity?: number }[];
+        household?: { children?: number };
+      }[];
+      return {
+        children: sets[0]?.household?.children,
+        stocked: (sets[0]?.items ?? []).some((i) => (i.quantity ?? 0) > 0),
+      };
+    });
+    expect(demo.children).toBe(2);
+    expect(demo.stocked).toBe(true);
+  });
+
+  test('the preset step offers a backup import', async ({ page }) => {
+    await clearAndReload(page);
+    await continueButton(page).click();
+    await continueButton(page).click();
+
+    // Someone who already has a backup should not have to answer the
+    // questionnaire first.
+    await expect(page.getByTestId('v2-import-backup')).toBeVisible();
+    await expect(page.getByTestId('v2-import-file-input')).toHaveAttribute(
+      'accept',
+      '.json',
+    );
+  });
+
   test('the quick-setup list is reachable on a phone', async ({ page }) => {
     // The v2 themes lock document scrolling for the app shells; onboarding
     // runs outside them, so it has to scroll itself or the 70-row checklist
@@ -196,6 +261,9 @@ test.describe('Onboarding Flow', () => {
     await clearAndReload(page);
     for (let i = 0; i < 5; i++) await continueButton(page).click();
     await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+    // Open the checklist — collapsed it fits on screen and has nothing to
+    // scroll, which is not what this test is about.
+    await openChecklist(page);
 
     const layout = page.getByTestId('v2-onboard-layout');
     const scrolled = await layout.evaluate((el) => {

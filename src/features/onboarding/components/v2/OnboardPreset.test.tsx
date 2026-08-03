@@ -10,6 +10,7 @@ const renderStep = (props: Partial<Parameters<typeof OnboardPreset>[0]> = {}) =>
       presetCode="P-02"
       onPresetChange={vi.fn()}
       onApplyPreset={vi.fn()}
+      onTryDemoData={vi.fn()}
       onNext={vi.fn()}
       onBack={vi.fn()}
       {...props}
@@ -55,5 +56,29 @@ describe('OnboardPreset (v2)', () => {
       screen.getByRole('button', { name: 'v2.voice.continueAction.cockpit' }),
     );
     expect(onApplyPreset).not.toHaveBeenCalled();
+  });
+
+  describe('ways past the questionnaire', () => {
+    it('offers demo data, with a note on how to get rid of it', () => {
+      const onTryDemoData = vi.fn();
+      renderStep({ onTryDemoData });
+
+      fireEvent.click(screen.getByTestId('v2-try-demo-data'));
+      expect(onTryDemoData).toHaveBeenCalledTimes(1);
+      expect(
+        screen.getByText('onboarding.tryDemoData.hint'),
+      ).toBeInTheDocument();
+    });
+
+    it('offers a backup import for someone who already has data', () => {
+      renderStep();
+      const input = screen.getByTestId('v2-import-file-input');
+      expect(input).toHaveAttribute('accept', '.json');
+
+      // The visible control is a link; the file input behind it is hidden.
+      const click = vi.spyOn(input as HTMLInputElement, 'click');
+      fireEvent.click(screen.getByTestId('v2-import-backup'));
+      expect(click).toHaveBeenCalled();
+    });
   });
 });

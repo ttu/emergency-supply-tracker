@@ -90,6 +90,7 @@ export function DesignOnboarding({ onComplete }: Readonly<OnboardingProps>) {
         presetCode={presetCode}
         onPresetChange={setPresetCode}
         onApplyPreset={(update) => setHousehold((h) => ({ ...h, ...update }))}
+        onTryDemoData={handleTryDemoData}
         onNext={next}
         onBack={back}
       />
