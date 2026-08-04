@@ -5,19 +5,6 @@ import {
   getDaysUntilExpiration,
 } from '@/shared/utils/calculations/itemStatus';
 
-// Re-export the canonical status core so existing inventory consumers keep
-// their import path. The single source of truth lives in
-// @/shared/utils/calculations/itemStatus.
-export {
-  getDaysUntilExpiration,
-  isItemExpired,
-  getItemStatus,
-  calculateItemStatus,
-  getStatusFromPercentage,
-  getStatusFromScore,
-  getStatusVariant,
-} from '@/shared/utils/calculations/itemStatus';
-
 /**
  * Whether an item is expired or expiring soon.
  * Expiration takes precedence over quantity shortages in the missing-quantity
