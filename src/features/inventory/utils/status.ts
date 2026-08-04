@@ -6,6 +6,22 @@ import {
 } from '@/shared/utils/calculations/itemStatus';
 
 /**
+ * Whether an item is expired or expiring soon.
+ * Expiration takes precedence over quantity shortages in the missing-quantity
+ * calculations below.
+ */
+function hasExpirationIssue(item: InventoryItem): boolean {
+  const expired = isItemExpired(item.expirationDate, item.neverExpires);
+  const daysUntil = getDaysUntilExpiration(
+    item.expirationDate,
+    item.neverExpires,
+  );
+  const isExpiringSoon =
+    daysUntil !== undefined && daysUntil <= EXPIRING_SOON_DAYS_THRESHOLD;
+  return expired || isExpiringSoon;
+}
+
+/**
  * Calculate missing quantity for an inventory item.
  * Returns the amount missing when quantity is less than recommended (not expiration).
  *
@@ -35,14 +51,6 @@ export function calculateMissingQuantity(
   item: InventoryItem,
   recommendedQuantity: number,
 ): number {
-  const expired = isItemExpired(item.expirationDate, item.neverExpires);
-  const daysUntil = getDaysUntilExpiration(
-    item.expirationDate,
-    item.neverExpires,
-  );
-  const isExpiringSoon =
-    daysUntil !== undefined && daysUntil <= EXPIRING_SOON_DAYS_THRESHOLD;
-
   // Only show missing quantity if:
   // 1. Quantity is less than recommended (actual shortage)
   // 2. Not expired or expiring soon (so it's a quantity issue, not expiration)
@@ -51,8 +59,7 @@ export function calculateMissingQuantity(
   const hasShortage = item.quantity < recommendedQuantity;
   const isQuantityIssue =
     hasShortage &&
-    !expired &&
-    !isExpiringSoon &&
+    !hasExpirationIssue(item) &&
     !item.markedAsEnough &&
     recommendedQuantity > 0;
 
@@ -123,16 +130,10 @@ export function calculateTotalMissingQuantity(
   // A shortage exists if:
   // 1. Total quantity < recommendedQuantity (actual shortage)
   // 2. None of the matching items are expired or expiring soon (expiration takes precedence)
-  const hasExpirationIssue = matchingItems.some((i) => {
-    const expired = isItemExpired(i.expirationDate, i.neverExpires);
-    const daysUntil = getDaysUntilExpiration(i.expirationDate, i.neverExpires);
-    const isExpiringSoon =
-      daysUntil !== undefined && daysUntil <= EXPIRING_SOON_DAYS_THRESHOLD;
-    return expired || isExpiringSoon;
-  });
+  const anyExpirationIssue = matchingItems.some(hasExpirationIssue);
 
   // If there's an expiration issue, don't show quantity missing
-  if (hasExpirationIssue) {
+  if (anyExpirationIssue) {
     return 0;
   }
 

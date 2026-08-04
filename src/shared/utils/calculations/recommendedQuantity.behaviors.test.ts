@@ -6,6 +6,7 @@
  *   NOTE: adults * ADULT_REQUIREMENT_MULTIPLIER (1.0) is equivalent for * vs /
  * - L42 ArithmeticOperator: division vs multiplication (qty *= peopleMultiplier)
  * - L48 ArithmeticOperator: division vs multiplication (pets * PET_REQUIREMENT_MULTIPLIER)
+ * - L48 ArithmeticOperator: division vs multiplication (qty *= supplyDurationDays)
  */
 import { describe, it, expect } from 'vitest';
 import {
@@ -123,6 +124,51 @@ describe('recommendedQuantity mutation killers', () => {
 
       const result = calculateRecommendedQuantity(item, household);
       expect(result).toBe(5);
+    });
+  });
+
+  describe('supplyDurationDays multiplication in calculateRecommendedQuantity', () => {
+    it('scales quantity by supplyDurationDays when scaleWithDays is true', () => {
+      const item = createMockRecommendedItem({
+        baseQuantity: createQuantity(3),
+        scaleWithPeople: false,
+        scaleWithDays: true,
+        scaleWithPets: false,
+      });
+      const household = createMockHousehold({
+        adults: 1,
+        children: 0,
+        pets: 0,
+        supplyDurationDays: 7,
+      });
+
+      const result = calculateRecommendedQuantity(item, household);
+      // Correct: 3 * 7 = 21
+      // Division mutant: 3 / 7 = 0.43 -> ceil = 1
+      expect(result).toBe(21);
+    });
+
+    it('uses multiplication throughout when scaling by people and days', () => {
+      const item = createMockRecommendedItem({
+        baseQuantity: createQuantity(3),
+        scaleWithPeople: true,
+        scaleWithDays: true,
+        scaleWithPets: false,
+      });
+      const household = createMockHousehold({
+        adults: 2,
+        children: 2,
+        pets: 0,
+        supplyDurationDays: 3,
+      });
+
+      const result = calculateRecommendedQuantity(item, household);
+      // peopleMultiplier = 2*1.0 + 2*0.75 = 3.5
+      // qty = 3 * 3.5 * 3 = 31.5 -> ceil = 32
+      const people =
+        2 * ADULT_REQUIREMENT_MULTIPLIER + 2 * CHILDREN_REQUIREMENT_MULTIPLIER;
+      expect(result).toBe(Math.ceil(3 * people * 3));
+      expect(result).toBe(32);
     });
   });
 

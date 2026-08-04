@@ -194,14 +194,14 @@ no `React` import in scope.
 
 [jscpd](https://github.com/kucherenko/jscpd) is a copy-paste detector. It tokenizes the source and reports clones — blocks that are structurally identical even when identifiers differ.
 
-| Setting                 | Value                                        | Why                                                           |
-| ----------------------- | -------------------------------------------- | ------------------------------------------------------------- |
-| `threshold`             | `1.75` (%)                                   | Fails the run above this duplication ratio; ratchet downwards |
-| `minLines` / `minToken` | `8` / `60`                                   | Ignores short, incidental repetition                          |
-| `format`                | `typescript`, `tsx`                          | Source only — CSS Modules and JSON are not analyzed           |
-| `ignore`                | tests, stories, `e2e/`, `scripts/`, `*.d.ts` | Test and story files repeat setup by design                   |
+| Setting                  | Value                                        | Why                                                           |
+| ------------------------ | -------------------------------------------- | ------------------------------------------------------------- |
+| `threshold`              | `1.75` (%)                                   | Fails the run above this duplication ratio; ratchet downwards |
+| `minLines` / `minTokens` | `8` / `60`                                   | Ignores short, incidental repetition                          |
+| `format`                 | `typescript`, `tsx`                          | Source only — CSS Modules and JSON are not analyzed           |
+| `ignore`                 | tests, stories, `e2e/`, `scripts/`, `*.d.ts` | Test and story files repeat setup by design                   |
 
-The threshold is a **ratchet**: it sits just below the current duplication level, so new duplication fails CI. When duplication is refactored away, lower `threshold` in `.jscpd.json` to lock in the improvement.
+The threshold is an **upper limit**, not a freeze: duplication may grow up to `threshold`, and CI only fails once it exceeds that value. Use it as a **ratchet** — when duplication is refactored away, lower `threshold` in `.jscpd.json` to lock in the improvement.
 
 Runs in the `lint` CI job and as part of `npm run validate`.
 
