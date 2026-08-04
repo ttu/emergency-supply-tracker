@@ -92,7 +92,13 @@ export function OnboardLayout({
         fontFamily: 'var(--font-body)',
         display: 'grid',
         gridTemplateColumns: sideBeside ? '1fr 1fr' : '1fr',
-        alignContent: 'start',
+        // Stretch, not `start`: the row has to fill the viewport so the
+        // footer sits at the bottom and the side panel's border runs the
+        // full height. `start` sized the row to its content, which left a
+        // short step — welcome, theme — floating above a band of dead
+        // background. Stretch only distributes *spare* height, so a step
+        // taller than the viewport still overflows and scrolls.
+        alignContent: 'stretch',
       }}
     >
       <div

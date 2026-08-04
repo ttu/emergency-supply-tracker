@@ -94,6 +94,16 @@ describe('OnboardLayout (v2)', () => {
     expect(root.style.height).toBe('');
   });
 
+  it('fills the viewport so the footer sits at the bottom', () => {
+    renderLayout();
+    const root = screen.getByTestId('v2-onboard-layout');
+    // `start` here sizes the grid row to its content, which leaves a short
+    // step floating above a band of dead background and lifts the footer up
+    // under the lead text. Stretch only hands out spare height, so it does
+    // not undo the scrolling asserted above.
+    expect(root.style.alignContent).toBe('stretch');
+  });
+
   describe('narrow viewports', () => {
     afterEach(() => {
       vi.unstubAllGlobals();
