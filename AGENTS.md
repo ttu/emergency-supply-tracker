@@ -129,6 +129,7 @@ npm run build                      # production build
 npm run preview                    # preview build
 npm run lint                       # ESLint
 npm run lint:fix                   # ESLint fix
+npm run duplication                # jscpd duplicate-code check
 npm run format                     # Prettier write
 npm run format:check               # Prettier check
 npm run type-check                 # TS (source)

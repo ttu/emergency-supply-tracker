@@ -1,0 +1,20 @@
+{
+  "threshold": 2.5,
+  "minLines": 8,
+  "minTokens": 60,
+  "format": ["typescript", "tsx"],
+  "gitignore": true,
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.tsx",
+    "**/*.spec.ts",
+    "**/*.d.ts",
+    "e2e/**",
+    "scripts/**"
+  ],
+  "reporters": ["console"]
+}
