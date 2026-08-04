@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  waitForStoredData,
+} from './fixtures';
 
 /**
  * v2 NutritionSection uses StepperRow controls (− value +) instead of
@@ -34,6 +39,9 @@ test.describe('Nutrition Settings', () => {
     // Step is 50 kcal. Click + twice → value increases.
     await inc.click();
     await inc.click();
+    // The write is debounced, so reloading straight away can drop the second
+    // click and leave the assertion racing the save.
+    await waitForStoredData(page, (raw) => raw.includes('2100'));
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await navigateToSettingsSection(page, 'nutrition');

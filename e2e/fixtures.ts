@@ -34,10 +34,17 @@ export async function setAppStorage(
  * long as a toast lasts" is both slower and flakier.
  */
 export async function waitForToastsToClear(page: Page): Promise<void> {
-  await expect(page.locator('[data-testid^="notification-item-"]')).toHaveCount(
-    0,
-    { timeout: 10_000 },
-  );
+  const toasts = page.locator('[data-testid^="notification-item-"]');
+  // The toast raised by the action just performed may not have rendered yet.
+  // Asserting the count is zero straight away then passes against a page the
+  // toast is about to cover, which is the race this helper exists to avoid.
+  // A toast that already came and went simply never appears here, and the
+  // clear-check below passes immediately — hence the tolerant catch.
+  await toasts
+    .first()
+    .waitFor({ state: 'visible', timeout: 2000 })
+    .catch(() => {});
+  await expect(toasts).toHaveCount(0, { timeout: 10_000 });
 }
 
 /**

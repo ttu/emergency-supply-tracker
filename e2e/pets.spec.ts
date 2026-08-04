@@ -55,7 +55,12 @@ test.describe('Pet Support', () => {
 
       await page.reload({ waitUntil: 'domcontentloaded' });
       await navigateToSettingsSection(page, 'household');
-      await expect(page.getByText('2').first()).toBeVisible();
+      // Scoped to the PETS row: a page-wide getByText('2') also matches the
+      // default ADULTS value, so it passed whether or not pets persisted.
+      const petsValue = page
+        .getByRole('button', { name: /Decrease PETS/ })
+        .locator('xpath=following-sibling::span[1]');
+      await expect(petsValue).toHaveText(/2/);
     });
   });
 

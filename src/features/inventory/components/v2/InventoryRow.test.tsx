@@ -8,7 +8,7 @@ import {
   createMockCategory,
   createMockSettings,
 } from '@/shared/utils/test/factories';
-import { createDateOnly, createQuantity } from '@/shared/types';
+import { createDateOnly, createItemId, createQuantity } from '@/shared/types';
 
 const renderRow = (row: DesignItemRow, onSelect = vi.fn()) =>
   renderWithProviders(
@@ -35,6 +35,10 @@ const makeRow = (overrides?: Partial<DesignItemRow>): DesignItemRow => {
     quantity: createQuantity(3),
     location: 'Pantry',
     expirationDate: createDateOnly('2027-01-01'),
+    // The row prints a short id, and the factory's random uuid can contain the
+    // recommended quantity as a substring — which made the assertion below
+    // match two elements on unlucky faker seeds.
+    id: createItemId('itm-fixed'),
   });
   return {
     item,
@@ -52,7 +56,7 @@ describe('InventoryRow (v2)', () => {
     expect(screen.getByText('Bottled water')).toBeInTheDocument();
     expect(screen.getByText('H2O')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
-    expect(screen.getByText(/10/)).toBeInTheDocument();
+    expect(screen.getByText('/ 10')).toBeInTheDocument();
     expect(screen.getByText('2027-01-01')).toBeInTheDocument();
     expect(screen.getByText('Pantry')).toBeInTheDocument();
   });

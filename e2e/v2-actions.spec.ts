@@ -4,6 +4,7 @@ import {
   setAppStorage,
   toLocalDateString,
   startAddCustomItem,
+  waitForStoredData,
 } from './fixtures';
 import {
   createMockAppData,
@@ -122,6 +123,9 @@ test.describe('Overview actions', () => {
       .filter({ hasText: /expired/i })
       .getByRole('button', { name: /DISMISS/i })
       .click();
+    // The dismissal has to reach localStorage before the reload, or the test
+    // races the write and the alert can come back for reasons of timing.
+    await waitForStoredData(page, (raw) => raw.includes('dismissedAlertIds'));
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('v2-nav-home')).toBeVisible();

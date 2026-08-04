@@ -81,17 +81,12 @@ describe('ProductPicker (v2)', () => {
     expect(screen.getByTestId('template-card-bottled-water')).toBeVisible();
   });
 
-  it('keeps the rail and the select in step', () => {
+  it('offers the category rail as the only category control', () => {
     renderPicker();
-    const select = screen.getByTestId(
-      'template-category-select',
-    ) as HTMLSelectElement;
-    fireEvent.change(select, { target: { value: 'food' } });
-    expect(screen.getByTestId('picker-category-chip-food')).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
-    expect(screen.queryByTestId('template-card-bottled-water')).toBeNull();
+    // The rail and a dropdown used to sit on the same screen, both bound to
+    // the same filter — two controls for one choice.
+    expect(screen.queryByTestId('template-category-select')).toBeNull();
+    expect(screen.getByTestId('picker-category-chip-food')).toBeVisible();
   });
 
   it('starts on the category the user arrived from', () => {

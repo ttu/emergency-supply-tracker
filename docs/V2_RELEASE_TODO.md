@@ -17,10 +17,31 @@ removed outright. See "Navigation reduced to four destinations" below.
 
 ## 🟡 Deferred — accepted as-is for v1.0, track for follow-up
 
-_Nothing open._ The hardcoded `0%` readiness on the completion screen was
-resolved by the quick-setup step: `OnboardComplete` now computes
-readiness from what was actually seeded, so marking items owned during setup
-shows a non-zero figure.
+The hardcoded `0%` readiness on the completion screen was resolved by the
+quick-setup step: `OnboardComplete` now computes readiness from what was
+actually seeded, so marking items owned during setup shows a non-zero figure.
+
+### E2E findings from the CodeRabbit review (2026-08-04)
+
+The review's test-correctness findings were fixed; these three groups were
+judged too large to bolt onto this branch and are deliberately left open:
+
+- **Five disabled axe rules** in `e2e/a11y.spec.ts` — `color-contrast`,
+  `heading-order`, `region`, `scrollable-region-focusable` and
+  `page-has-heading-one`. Enforcing them means changing v2 theme contrast,
+  the heading hierarchy, landmark structure and the MobileShell page title,
+  i.e. app code rather than tests. Worth its own PR.
+- **Three skipped suites** — the import round-trip in `data-management.spec.ts`
+  and the manual workflows in `smoke-quick-setup.spec.ts` /
+  `smoke-manual-entry.spec.ts`. All were written against v1 flows and need V2
+  replacements rather than un-skipping.
+- **Mobile-viewport coverage** — `item-expiration`, `item-status`,
+  `custom-categories`, `inventory` and `v2-actions` cover desktop only; the
+  review asked for mobile variants of each.
+
+Two DRY refactors were also suggested and skipped: extracting a
+`seedStaleBackup` helper in `backup-reminder.spec.ts`, and moving the
+duplicated `v2Settings` / `seedApp` definitions into `e2e/fixtures.ts`.
 
 ---
 

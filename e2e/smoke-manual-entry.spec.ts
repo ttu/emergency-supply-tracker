@@ -123,10 +123,19 @@ async function testDashboardInteractions(page: Page) {
 
 async function addItemFromTemplate(page: Page) {
   await startAddCustomItem(page);
-  // Reset category filter to "All" before searching (may be pre-filtered from category navigation)
-  const categoryFilter = page.getByTestId('template-category-select');
-  if (await categoryFilter.isVisible().catch(() => false)) {
-    await categoryFilter.selectOption('');
+  // Reset category filter to "All" before searching (may be pre-filtered from
+  // category navigation). The rail is the only category control: an active
+  // chip clears back to all products when clicked again.
+  const activeChip = page.locator(
+    '[data-testid^="picker-category-chip-"][aria-pressed="true"]',
+  );
+  if (
+    await activeChip
+      .first()
+      .isVisible()
+      .catch(() => false)
+  ) {
+    await activeChip.first().click();
   }
 
   await page.getByTestId('template-search-input').fill('water');

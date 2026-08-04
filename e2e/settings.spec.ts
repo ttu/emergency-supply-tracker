@@ -57,8 +57,12 @@ test.describe('Settings', () => {
 
     await page.getByTestId('v2-nav-home').click();
     await navigateToSettingsSection(page, 'household');
-    // Stepper persists the value
-    await expect(page.getByText('3').first()).toBeVisible();
+    // Scoped to the ADULTS row: a page-wide getByText('3') also matches the
+    // other stepper values, so it passed whether or not adults persisted.
+    const adultsValue = page
+      .getByRole('button', { name: /Decrease ADULTS/ })
+      .locator('xpath=following-sibling::span[1]');
+    await expect(adultsValue).toHaveText(/3/);
   });
 
   test('should expose GitHub + bug-tracker links in About section', async ({

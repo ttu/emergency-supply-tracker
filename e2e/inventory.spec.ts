@@ -127,6 +127,9 @@ test.describe('Inventory Management', () => {
     await expect(
       page.getByRole('button', { name: /Critical Item/ }),
     ).toBeVisible();
+    // Without the negative case the test passes even when the filter does
+    // nothing at all — the critical row is visible either way.
+    await expect(page.getByRole('button', { name: /Ok Item/ })).toBeHidden();
   });
 
   test('cancel button on edit returns to list without saving', async ({

@@ -179,22 +179,6 @@ export function ProductPicker({
             data-testid="template-search-input"
           />
         </div>
-        <div className={styles.field}>
-          <select
-            className={styles.categorySelect}
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            aria-label={t('templateSelector.categoryLabel')}
-            data-testid="template-category-select"
-          >
-            <option value="">{t('inventory.allCategories')}</option>
-            {categories.map((c) => (
-              <option key={String(c.id)} value={String(c.id)}>
-                {categoryLabel(String(c.id))}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
       <div className={styles.railHead}>
