@@ -103,6 +103,26 @@ describe('ConfirmDialog (v2)', () => {
     expect(document.body.style.overflow).not.toBe('hidden');
   });
 
+  it('traps tab on a link inside the message, not only on the buttons', () => {
+    setup({
+      message: (
+        <span>
+          Read the <a href="https://example.test">backup guide</a> first.
+        </span>
+      ),
+    });
+    const link = screen.getByRole('link', { name: 'backup guide' });
+    const dialog = screen.getByRole('alertdialog');
+
+    // The link is the first thing that can hold focus, so shift+tab from it
+    // has to wrap to the end of the dialog rather than escaping behind it.
+    link.focus();
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+
+    const buttons = within(dialog).getAllByRole('button');
+    expect(document.activeElement).toBe(buttons[buttons.length - 1]);
+  });
+
   it('paints the confirm button as destructive in danger tone', () => {
     setup({ tone: 'danger', confirmLabel: 'Delete' });
     expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();

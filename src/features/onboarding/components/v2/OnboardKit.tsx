@@ -29,20 +29,30 @@ export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
   const { availableKits, selectedKitId, selectKit, uploadKit } =
     useRecommendedItems();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  /** Sequence number of the most recent file pick; see `handleFile`. */
+  const latestUploadRef = useRef(0);
 
   const reportUploadError = (error: string) =>
     showNotification(t('kits.uploadError', { error }), 'error', 6000);
 
   const handleFile = async (file: File) => {
+    // Reading the file is async, so picking a second file before the first has
+    // been read would otherwise let the earlier one land last — storing its kit
+    // and selecting it over the household's actual choice.
+    const request = ++latestUploadRef.current;
+    const isStale = () => request !== latestUploadRef.current;
+
     let parsed: RecommendedItemsFile;
     try {
       parsed = JSON.parse(await file.text()) as RecommendedItemsFile;
     } catch {
+      if (isStale()) return;
       // A file that isn't JSON at all never reaches the upload validator, so
       // it has to be reported from this side.
       reportUploadError(t('kits.invalidJson'));
       return;
     }
+    if (isStale()) return;
     const result = uploadKit(parsed);
     if (result.kitId) {
       selectKit(result.kitId);
@@ -67,8 +77,14 @@ export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
           background: selected ? 'var(--color-panel)' : 'transparent',
           borderRadius: 'var(--radius-lg)',
           cursor: 'pointer',
-          outline: selected ? '1px solid var(--color-accent)' : 'none',
-          outlineOffset: -3,
+          // The selected ring is an inset shadow rather than an outline: an
+          // inline outline (in either state) overrides the :focus-visible ring
+          // from global.css, leaving keyboard users with no focus indicator.
+          // Unselected leaves the property unset rather than 'none', or the
+          // inline value would in turn suppress that ring's halo.
+          boxShadow: selected
+            ? 'inset 0 0 0 1px var(--color-accent)'
+            : undefined,
           textAlign: 'left',
           fontFamily: 'inherit',
           color: 'inherit',

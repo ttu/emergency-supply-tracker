@@ -154,19 +154,29 @@ export function useItemDetailState(
     [isNew, item, addItem, updateItem, onBack],
   );
 
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  // The id the prompt was opened for, not just "a prompt is open". The detail
+  // view can swap to another item underneath an open dialog (deep link, list
+  // navigation), and confirming must never delete whatever happens to be on
+  // screen at that moment.
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(
+    undefined,
+  );
+  const deleteConfirmOpen = pendingDeleteId !== undefined;
   const handleDelete = useCallback(() => {
     if (!item) return;
-    setDeleteConfirmOpen(true);
+    setPendingDeleteId(String(item.id));
   }, [item]);
   const confirmDelete = useCallback(() => {
-    if (!item) return;
-    setDeleteConfirmOpen(false);
+    const target = pendingDeleteId;
+    setPendingDeleteId(undefined);
+    // Item changed under the open dialog — close without deleting rather than
+    // acting on a target the household is no longer looking at.
+    if (!item || target !== String(item.id)) return;
     deleteItem(item.id);
     onBack();
-  }, [item, deleteItem, onBack]);
+  }, [item, pendingDeleteId, deleteItem, onBack]);
   const cancelDelete = useCallback(() => {
-    setDeleteConfirmOpen(false);
+    setPendingDeleteId(undefined);
   }, []);
 
   const adjust = useCallback(

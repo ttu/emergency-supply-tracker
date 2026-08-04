@@ -133,6 +133,9 @@ export function OnboardHousehold({
               <button
                 key={n}
                 type="button"
+                // Colour alone carries the choice otherwise, which neither a
+                // screen reader nor a colour-blind reader can pick up.
+                aria-pressed={sel}
                 onClick={() =>
                   onHouseholdChange((h) => ({ ...h, supplyDurationDays: n }))
                 }
@@ -210,11 +213,32 @@ function OnboardStepperRow({
           type="button"
           aria-label={t('v2.onboarding.stepperDecreaseAria', { label })}
           onClick={() => onChange(Math.max(min, value - 1))}
-          style={buttonStyle}
+          // At the floor the button does nothing; saying so beats letting
+          // someone press it and wonder why the count will not move.
+          disabled={value <= min}
+          style={{ ...buttonStyle, opacity: value <= min ? 0.4 : 1 }}
         >
           −
         </button>
+        {/* The count is the control's value, not decoration beside two
+            buttons: as a plain number it is unreachable and unannounced.
+            Spinbutton semantics give it the value, the floor and the arrow
+            keys that assistive tech expects of a stepper. */}
         <div
+          role="spinbutton"
+          tabIndex={0}
+          aria-label={label}
+          aria-valuenow={value}
+          aria-valuemin={min}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              onChange(value + 1);
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              onChange(Math.max(min, value - 1));
+            }
+          }}
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: 28,

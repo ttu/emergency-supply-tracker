@@ -82,6 +82,22 @@ describe('useSettingsScrollSpy', () => {
     expect(result.current.activeSection).toBe('household');
   });
 
+  it('falls back to a still-visible section when the active one scrolls out', () => {
+    const observer = stubIntersectionObserver();
+    const { result } = renderHook(() => useSettingsScrollSpy(SECTIONS, true));
+
+    act(() =>
+      observer.callback?.([entry('sec-household', 80), entry('sec-data', 300)]),
+    );
+    expect(result.current.activeSection).toBe('household');
+
+    // Only the section that left the viewport is reported. The one below it is
+    // still on screen and should take over.
+    act(() => observer.callback?.([entry('sec-household', -40, false)]));
+
+    expect(result.current.activeSection).toBe('data');
+  });
+
   it('ignores sections that are not intersecting', () => {
     const observer = stubIntersectionObserver();
     const { result } = renderHook(() => useSettingsScrollSpy(SECTIONS, true));

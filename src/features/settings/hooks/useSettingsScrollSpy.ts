@@ -22,15 +22,21 @@ export function useSettingsScrollSpy(
       .filter((el): el is HTMLElement => el !== null);
     if (targets.length === 0) return;
     if (typeof IntersectionObserver === 'undefined') return;
+    // A callback only reports the sections whose visibility *changed*, so the
+    // topmost of one batch is not the topmost on screen. Scrolling the active
+    // section out of view typically reports it alone; without the running set
+    // the highlight would stay on a section that is no longer visible.
+    const visible = new Map<string, number>();
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort(
-            (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
-          )[0];
-        if (visible) {
-          setActiveSection(visible.target.id.replace(/^sec-/, ''));
+        entries.forEach((e) => {
+          const id = e.target.id;
+          if (e.isIntersecting) visible.set(id, e.boundingClientRect.top);
+          else visible.delete(id);
+        });
+        const topmost = [...visible.entries()].sort((a, b) => a[1] - b[1])[0];
+        if (topmost) {
+          setActiveSection(topmost[0].replace(/^sec-/, ''));
         }
       },
       { rootMargin: '-20% 0px -70% 0px', threshold: 0 },

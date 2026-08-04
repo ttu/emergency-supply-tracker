@@ -12,6 +12,7 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { categoryCode } from '@/shared/i18n/voice';
 import { AlertBanner } from '@/features/alerts/components/v2/AlertBanner';
+import { selectPriorityRows } from '../../utils/priorityRows';
 
 interface MobileDashboardProps {
   onCategorySelect: (id: string) => void;
@@ -58,7 +59,9 @@ export function MobileDashboard({
   const { totals, readiness, stats, expiringCount, criticalCount, rows } =
     useDesignData();
   const tone = mobileReadinessTone(readiness);
-  const priority = [...rows].filter((r) => r.status !== 'ok').slice(0, 4);
+  // Same selection as the desktop PriorityQueue: sorted critical-first before
+  // the slice, so a critical item further down the rows is not cut.
+  const priority = selectPriorityRows(rows, 4);
   // Borders come off the final row, whatever its size — the grid is two
   // columns and the list can be shorter than the six it slices to.
   const visibleStats = stats.slice(0, 6);

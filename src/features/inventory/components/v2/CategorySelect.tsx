@@ -23,7 +23,6 @@ const SELECT_STYLE: CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: 12,
   borderRadius: 'var(--radius-sm)',
-  outline: 'none',
   width: '100%',
 };
 

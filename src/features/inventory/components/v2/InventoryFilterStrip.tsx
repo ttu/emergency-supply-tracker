@@ -12,7 +12,6 @@ const SELECT_STYLE: CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: 11,
   borderRadius: 'var(--radius-sm)',
-  outline: 'none',
   cursor: 'pointer',
 };
 
@@ -40,8 +39,9 @@ interface InventoryFilterStripProps {
   counts: InventoryFilterCounts;
   search: string;
   onSearchChange: (q: string) => void;
-  locationFilter: string;
-  onLocationFilterChange: (location: string) => void;
+  /** `undefined` means every location. */
+  locationFilter?: string;
+  onLocationFilterChange: (location: string | undefined) => void;
   /** Distinct locations across the inventory, for the location select. */
   locations: string[];
   sortBy: SortBy;
@@ -148,12 +148,17 @@ export function InventoryFilterStrip({
       >
         {locations.length > 0 && (
           <select
-            value={locationFilter}
-            onChange={(e) => onLocationFilterChange(e.target.value)}
+            // The every-location choice is the empty option rather than a
+            // magic string, so a location actually named "all" stays
+            // selectable.
+            value={locationFilter ?? ''}
+            onChange={(e) =>
+              onLocationFilterChange(e.target.value || undefined)
+            }
             aria-label={t(`v2.inventory.locationAria.${themeKey}`)}
             style={SELECT_STYLE}
           >
-            <option value="all">
+            <option value="">
               {t(`v2.inventory.allLocations.${themeKey}`)}
             </option>
             {locations.map((l) => (
@@ -191,7 +196,6 @@ export function InventoryFilterStrip({
             flex: '1 1 200px',
             minWidth: 90,
             maxWidth: 200,
-            outline: 'none',
           }}
         />
       </div>

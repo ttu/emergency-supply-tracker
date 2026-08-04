@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecommendedItems } from '@/features/templates';
 import { useNotification } from '@/shared/hooks';
@@ -47,6 +47,20 @@ export function DesignOnboarding({ onComplete }: Readonly<OnboardingProps>) {
   const next = () => setStep((s) => Math.min(7, s + 1) as StepIndex);
   const back = () => setStep((s) => Math.max(1, s - 1) as StepIndex);
 
+  // Finishing seeds the household and the inventory, so a second activation —
+  // an impatient double click, or demo data followed by the final screen —
+  // would seed both twice. A ref, not state, because the guard has to hold
+  // within a single render pass.
+  const completed = useRef(false);
+  const completeOnce = (
+    finalHousehold: HouseholdConfig,
+    items: InventoryItem[],
+  ) => {
+    if (completed.current) return;
+    completed.current = true;
+    onComplete(finalHousehold, items);
+  };
+
   const resolveName = (key: string) =>
     t(key.replace('products.', ''), { ns: 'products' });
 
@@ -76,7 +90,7 @@ export function DesignOnboarding({ onComplete }: Readonly<OnboardingProps>) {
       useFreezer: true,
     };
     showNotification(t('onboarding.tryDemoData.notification'), 'info', 0);
-    onComplete(
+    completeOnce(
       demoHousehold,
       generateExampleInventory(recommendedItems, demoHousehold, resolveName),
     );
@@ -119,7 +133,7 @@ export function DesignOnboarding({ onComplete }: Readonly<OnboardingProps>) {
     <OnboardComplete
       household={household}
       items={seededItems}
-      onComplete={onComplete}
+      onComplete={completeOnce}
     />
   );
 }

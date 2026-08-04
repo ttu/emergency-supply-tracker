@@ -152,7 +152,7 @@ export function Inventory({
         return false;
       if (!matchesStatusFilter(r.status, filter)) return false;
       if (filter === 'exp' && !isExpiringSoon(r.item)) return false;
-      if (locationFilter !== 'all' && r.item.location !== locationFilter)
+      if (locationFilter !== undefined && r.item.location !== locationFilter)
         return false;
       return matchesSearch(r, search);
     });

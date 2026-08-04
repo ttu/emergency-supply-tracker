@@ -439,7 +439,8 @@
       "message": "Haluatko varmasti poistaa paketin \"{{name}}\"? Tätä ei voi perua.",
       "confirm": "Poista"
     },
-    "invalidJson": "ei kelvollinen pakettitiedosto"
+    "invalidJson": "ei kelvollinen pakettitiedosto",
+    "uploadKitAria": "Lataa suositustiedosto (JSON)"
   },
   "errorBoundary": {
     "title": "Jotain meni pieleen",
@@ -1032,7 +1033,31 @@
         "cockpit": "PIKA-ASETUS · §6 RIVIT",
         "civil": "PIKA-ASETUS · §6",
         "pantry": "Pika-asetus"
-      }
+      },
+      "navHome": {
+        "cockpit": "YLEISKATSAUS",
+        "civil": "KOJELAUTA",
+        "pantry": "Yleiskatsaus"
+      },
+      "navInventory": {
+        "cockpit": "VARASTO",
+        "civil": "VARASTO",
+        "pantry": "Varasto"
+      },
+      "navHelp": {
+        "cockpit": "OHJE",
+        "civil": "OHJE",
+        "pantry": "Ohje"
+      },
+      "navSettings": {
+        "cockpit": "ASETUKSET",
+        "civil": "ASETUKSET",
+        "pantry": "Asetukset"
+      },
+      "navPrimaryAria": "Päänavigaatio",
+      "navMainAria": "Päävalikko",
+      "storageLocal": "PAIKALLINEN",
+      "statusLive": "LIVE"
     },
     "alerts": {
       "dismiss": {

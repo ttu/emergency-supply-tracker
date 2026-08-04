@@ -94,6 +94,20 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
     expect(items.some((i: { quantity: number }) => i.quantity > 0)).toBe(true);
   });
 
+  it('completes once however fast the finishing action is activated', () => {
+    const onComplete = vi.fn();
+    renderFlow(onComplete);
+    advanceToQuickSetup();
+
+    const demo = screen.getByRole('button', {
+      name: 'v2.onboarding.quickSetup.tryDemo.cockpit',
+    });
+    fireEvent.click(demo);
+    fireEvent.click(demo);
+
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
   it('BACK from step 2 returns to step 1', () => {
     renderFlow();
     clickContinue();

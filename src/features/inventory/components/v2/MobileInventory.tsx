@@ -74,7 +74,7 @@ export function MobileInventory({
       }
       if (search && !r.item.name.toLowerCase().includes(search.toLowerCase()))
         return false;
-      if (locationFilter !== 'all' && r.item.location !== locationFilter)
+      if (locationFilter !== undefined && r.item.location !== locationFilter)
         return false;
       return true;
     });
@@ -143,7 +143,6 @@ export function MobileInventory({
           fontFamily: 'var(--font-mono)',
           fontSize: 12,
           borderRadius: 'var(--radius-sm)',
-          outline: 'none',
           width: '100%',
         }}
       />
@@ -156,12 +155,16 @@ export function MobileInventory({
       <div style={{ display: 'flex', gap: 8 }}>
         {locations.length > 0 && (
           <select
-            value={locationFilter}
-            onChange={(e) => setFilters({ location: e.target.value })}
+            // Empty option, not a magic "all", so a location named "all"
+            // remains selectable. See InventoryFilters.location.
+            value={locationFilter ?? ''}
+            onChange={(e) =>
+              setFilters({ location: e.target.value || undefined })
+            }
             aria-label={t(`v2.inventory.locationAria.${themeKey}`)}
             style={MOBILE_SELECT_STYLE}
           >
-            <option value="all">
+            <option value="">
               {t(`v2.inventory.allLocations.${themeKey}`)}
             </option>
             {locations.map((l) => (
@@ -255,7 +258,6 @@ const MOBILE_SELECT_STYLE: CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: 12,
   borderRadius: 'var(--radius-sm)',
-  outline: 'none',
   flex: 1,
   minWidth: 0,
 };

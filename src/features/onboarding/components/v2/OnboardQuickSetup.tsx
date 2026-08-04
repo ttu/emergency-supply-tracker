@@ -91,6 +91,7 @@ function QuickSetupRow({
             removed from the accessibility tree. */}
         <input
           type="checkbox"
+          className="proxied-checkbox"
           checked={selected}
           data-testid={`v2-quick-setup-item-${id}`}
           onChange={onToggleSelected}
@@ -104,6 +105,7 @@ function QuickSetupRow({
         />
         <span
           aria-hidden
+          className="checkbox-proxy"
           style={{
             width: 18,
             height: 18,

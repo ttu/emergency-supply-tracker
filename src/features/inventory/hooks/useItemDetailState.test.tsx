@@ -45,16 +45,26 @@ function Wrapper({ children }: Readonly<{ children: ReactNode }>) {
   );
 }
 
-const setup = (itemId: string, onBack = vi.fn()) => {
+const water = createMockInventoryItem({
+  name: 'Bottled water',
+  itemType: createProductTemplateId('bottled-water'),
+  categoryId: createCategoryId('water'),
+  quantity: createQuantity(6),
+  unit: 'liters',
+  neverExpires: true,
+});
+
+const setup = (itemId: string, onBack = vi.fn(), items = [soup]) => {
   saveAppData(
     createMockAppData({
       settings: createMockSettings({ theme: 'cockpit' }),
-      items: [soup],
+      items,
     }),
   );
-  const view = renderHook(() => useItemDetailState(itemId, onBack), {
-    wrapper: Wrapper,
-  });
+  const view = renderHook(
+    ({ id }: { id: string }) => useItemDetailState(id, onBack),
+    { wrapper: Wrapper, initialProps: { id: itemId } },
+  );
   return { ...view, onBack };
 };
 
@@ -119,6 +129,29 @@ describe('useItemDetailState', () => {
 
     await waitFor(() => expect(onBack).toHaveBeenCalled());
     expect(result.current.deleteConfirmOpen).toBe(false);
+  });
+
+  it('never deletes an item the confirmation was not opened for', async () => {
+    const { result, rerender } = setup(String(soup.id), vi.fn(), [soup, water]);
+    await waitFor(() => expect(result.current.item?.name).toBe('Canned soup'));
+
+    act(() => result.current.handleDelete());
+    expect(result.current.deleteConfirmOpen).toBe(true);
+
+    // The detail view swaps to another item while the prompt is still open.
+    rerender({ id: String(water.id) });
+    await waitFor(() =>
+      expect(result.current.item?.name).toBe('Bottled water'),
+    );
+
+    act(() => result.current.confirmDelete());
+
+    // Neither item is gone: the captured target is no longer on screen, and
+    // the item on screen was never the one confirmed.
+    await waitFor(() => expect(result.current.deleteConfirmOpen).toBe(false));
+    expect(result.current.item?.name).toBe('Bottled water');
+    rerender({ id: String(soup.id) });
+    await waitFor(() => expect(result.current.item?.name).toBe('Canned soup'));
   });
 
   it('submitting an edit updates the item and navigates back', async () => {

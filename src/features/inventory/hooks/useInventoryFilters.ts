@@ -14,8 +14,9 @@ export interface InventoryFilters {
   categoryId?: string;
   status: InventoryStatusFilter;
   search: string;
-  /** `'all'` means every location. */
-  location: string;
+  /** `undefined` means every location — a location can legitimately be
+   *  named "all", so the filter cannot use a string sentinel. */
+  location?: string;
   sortBy: SortBy;
 }
 
@@ -23,7 +24,7 @@ export const DEFAULT_INVENTORY_FILTERS: InventoryFilters = {
   categoryId: undefined,
   status: 'all',
   search: '',
-  location: 'all',
+  location: undefined,
   sortBy: 'name',
 };
 
@@ -62,7 +63,10 @@ function parse(raw: string | null): InventoryFilters {
         ? (stored.status as InventoryStatusFilter)
         : 'all',
       search: typeof stored.search === 'string' ? stored.search : '',
-      location: typeof stored.location === 'string' ? stored.location : 'all',
+      location:
+        typeof stored.location === 'string' && stored.location
+          ? stored.location
+          : undefined,
       sortBy: SORTS.has(stored.sortBy as SortBy)
         ? (stored.sortBy as SortBy)
         : 'name',

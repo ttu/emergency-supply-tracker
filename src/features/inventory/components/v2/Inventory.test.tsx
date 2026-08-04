@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 
 // Only the two title keys resolve; every other key falls through to itself,
@@ -22,6 +22,7 @@ import {
   createMockSettings,
 } from '@/shared/utils/test/factories';
 import { createCategoryId, createQuantity } from '@/shared/types';
+import { reloadInventoryFilters } from '@/features/inventory/hooks/useInventoryFilters';
 
 const WATER_ID = createCategoryId('water-beverages');
 const FOOD_ID = createCategoryId('food');
@@ -62,6 +63,14 @@ const setup = (props: { onAddItem?: (id?: string) => void } = {}) => {
 };
 
 describe('Inventory (v2)', () => {
+  // The filter store is module-level and survives between cases, so clearing
+  // storage alone would leave the previous test's category or location in the
+  // in-memory snapshot. This re-reads the (now empty) storage into it.
+  beforeEach(() => {
+    localStorage.clear();
+    reloadInventoryFilters();
+  });
+
   it('renders inventory title with cockpit voice and ADD button', async () => {
     setup();
     await waitFor(() => {
@@ -259,6 +268,40 @@ describe('Inventory (v2)', () => {
 
       expect(screen.getByText('Garage beans')).toBeInTheDocument();
       expect(screen.queryByText('Pantry water')).not.toBeInTheDocument();
+    });
+
+    it('can filter to a location that is itself named "all"', async () => {
+      renderWithProviders(
+        <Inventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
+        {
+          initialAppData: createMockAppData({
+            settings: createMockSettings({ theme: 'cockpit', language: 'en' }),
+            items: [
+              createMockInventoryItem({
+                name: 'Hall water',
+                categoryId: WATER_ID,
+                quantity: createQuantity(5),
+                location: 'all',
+              }),
+              createMockInventoryItem({
+                name: 'Garage beans',
+                categoryId: FOOD_ID,
+                quantity: createQuantity(5),
+                location: 'Garage',
+              }),
+            ],
+          }),
+        },
+      );
+
+      await screen.findByText('Hall water');
+      fireEvent.change(
+        screen.getByLabelText('v2.inventory.locationAria.cockpit'),
+        { target: { value: 'all' } },
+      );
+
+      expect(screen.getByText('Hall water')).toBeInTheDocument();
+      expect(screen.queryByText('Garage beans')).not.toBeInTheDocument();
     });
   });
 });

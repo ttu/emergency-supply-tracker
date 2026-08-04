@@ -7,22 +7,12 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
+import { selectPriorityRows } from '../../utils/priorityRows';
 
 interface PriorityQueueProps {
   onViewAll: () => void;
   /** How many priority rows to show. Defaults to 5. */
   limit?: number;
-}
-
-/** Top-N items needing action — non-OK status sorted critical-first. */
-function critFirst(a: { status: string }, b: { status: string }): number {
-  // Equal statuses must compare 0, or the comparator is inconsistent
-  // (compare(a,b) and compare(b,a) both returning -1) and the sort order
-  // among criticals becomes implementation-defined.
-  if (a.status === b.status) return 0;
-  if (a.status === 'crit') return -1;
-  if (b.status === 'crit') return 1;
-  return 0;
 }
 
 export function PriorityQueue({
@@ -32,10 +22,7 @@ export function PriorityQueue({
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
-  const priority = [...rows]
-    .filter((r) => r.status !== 'ok')
-    .sort(critFirst)
-    .slice(0, limit);
+  const priority = selectPriorityRows(rows, limit);
 
   return (
     <Panel padding={0}>

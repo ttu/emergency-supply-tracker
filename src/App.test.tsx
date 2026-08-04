@@ -61,15 +61,15 @@ describe('App', () => {
   it('renders navigation', () => {
     renderApp();
 
-    // Design v2 cockpit shell uses uppercase voice strings, not i18n keys.
+    // The mocked t() echoes the key back, so the nav reads as its voice keys.
     expect(
-      screen.getByRole('button', { name: 'OVERVIEW' }),
+      screen.getByRole('button', { name: 'v2.voice.navHome.cockpit' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'INVENTORY' }),
+      screen.getByRole('button', { name: 'v2.voice.navInventory.cockpit' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'SETTINGS' }),
+      screen.getByRole('button', { name: 'v2.voice.navSettings.cockpit' }),
     ).toBeInTheDocument();
   });
 
@@ -93,7 +93,9 @@ describe('App', () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'INVENTORY' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navInventory.cockpit' }),
+    );
 
     // v2 Inventory shows the "+ ADD" primary button and an "ALL" filter chip.
     await waitFor(() => {
@@ -115,7 +117,9 @@ describe('App', () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'SETTINGS' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navSettings.cockpit' }),
+    );
 
     // v2 Settings has a sub-nav rail captioned "SECTIONS".
     await waitFor(() => {
@@ -138,21 +142,27 @@ describe('App', () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'SETTINGS' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navSettings.cockpit' }),
+    );
     await waitFor(() => {
       expect(
         screen.getByText('v2.settings.railSections.cockpit'),
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'INVENTORY' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navInventory.cockpit' }),
+    );
     await waitFor(() => {
       expect(
         screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'OVERVIEW' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navHome.cockpit' }),
+    );
     await waitFor(() => {
       expect(
         screen.getByText('v2.voice.readiness.cockpit'),
@@ -169,7 +179,9 @@ describe('App', () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'HELP' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navHelp.cockpit' }),
+    );
 
     // v2 Guide renders §1–§6 sections; §1 is always present.
     await waitFor(() => {

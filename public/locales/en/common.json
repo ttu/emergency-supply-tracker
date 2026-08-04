@@ -439,7 +439,8 @@
       "message": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
       "confirm": "Delete"
     },
-    "invalidJson": "not a valid kit file"
+    "invalidJson": "not a valid kit file",
+    "uploadKitAria": "Upload recommendation kit JSON"
   },
   "errorBoundary": {
     "title": "Something went wrong",
@@ -1032,7 +1033,31 @@
         "cockpit": "QUICK SETUP · §6 LINE ITEMS",
         "civil": "QUICK SETUP · §6",
         "pantry": "Quick setup"
-      }
+      },
+      "navHome": {
+        "cockpit": "OVERVIEW",
+        "civil": "DASHBOARD",
+        "pantry": "Overview"
+      },
+      "navInventory": {
+        "cockpit": "INVENTORY",
+        "civil": "INVENTORY",
+        "pantry": "Inventory"
+      },
+      "navHelp": {
+        "cockpit": "HELP",
+        "civil": "HELP",
+        "pantry": "Help"
+      },
+      "navSettings": {
+        "cockpit": "SETTINGS",
+        "civil": "SETTINGS",
+        "pantry": "Settings"
+      },
+      "navPrimaryAria": "Primary navigation",
+      "navMainAria": "Main navigation",
+      "storageLocal": "LOCAL",
+      "statusLive": "LIVE"
     },
     "alerts": {
       "dismiss": {

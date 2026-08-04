@@ -13,30 +13,15 @@ export type DesignNavId = 'home' | 'inv' | 'help' | 'settings';
 interface NavDef {
   id: DesignNavId;
   icon: string;
-  label: { cockpit: string; civil: string; pantry: string };
+  /** Voice key under `v2.voice`; the theme picks the wording. */
+  labelKey: string;
 }
 
 const NAV: NavDef[] = [
-  {
-    id: 'home',
-    icon: '◇',
-    label: { cockpit: 'OVERVIEW', civil: 'DASHBOARD', pantry: 'Overview' },
-  },
-  {
-    id: 'inv',
-    icon: '▦',
-    label: { cockpit: 'INVENTORY', civil: 'INVENTORY', pantry: 'Inventory' },
-  },
-  {
-    id: 'help',
-    icon: '?',
-    label: { cockpit: 'HELP', civil: 'HELP', pantry: 'Help' },
-  },
-  {
-    id: 'settings',
-    icon: '⚙',
-    label: { cockpit: 'SETTINGS', civil: 'SETTINGS', pantry: 'Settings' },
-  },
+  { id: 'home', icon: '◇', labelKey: 'navHome' },
+  { id: 'inv', icon: '▦', labelKey: 'navInventory' },
+  { id: 'help', icon: '?', labelKey: 'navHelp' },
+  { id: 'settings', icon: '⚙', labelKey: 'navSettings' },
 ];
 
 interface MobileShellProps {
@@ -72,7 +57,7 @@ export function DesktopShell({
       }}
     >
       <aside
-        aria-label="Primary"
+        aria-label={t('v2.voice.navPrimaryAria')}
         style={{
           background: 'var(--color-bg-2)',
           borderRight: '1px solid var(--color-rule)',
@@ -109,7 +94,10 @@ export function DesktopShell({
             {t(`v2.voice.tagline.${themeKey}`)}
           </div>
         </div>
-        <nav aria-label="Main" style={{ padding: '12px 8px', flex: 1 }}>
+        <nav
+          aria-label={t('v2.voice.navMainAria')}
+          style={{ padding: '12px 8px', flex: 1 }}
+        >
           {NAV.map((n) => {
             const isActive = active === n.id;
             return (
@@ -163,7 +151,7 @@ export function DesktopShell({
                     ...CAPS_STYLE,
                   }}
                 >
-                  {n.label[themeKey]}
+                  {t(`v2.voice.${n.labelKey}.${themeKey}`)}
                 </span>
               </button>
             );
@@ -182,7 +170,9 @@ export function DesktopShell({
           }}
         >
           <span>{APP_VERSION}</span>
-          <span style={{ color: 'var(--color-ok)' }}>● LOCAL</span>
+          <span style={{ color: 'var(--color-ok)' }}>
+            ● {t('v2.voice.storageLocal')}
+          </span>
         </div>
       </aside>
 
@@ -225,7 +215,7 @@ export function DesktopShell({
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <StatusBadge>LOCAL</StatusBadge>
+            <StatusBadge>{t('v2.voice.storageLocal')}</StatusBadge>
           </div>
         </header>
         <main
@@ -279,14 +269,14 @@ export function MobileShell({
           {title || t(`v2.voice.appName.${themeKey}`)}
         </div>
         <StatusBadge fontSize={9} padding="2px 5px">
-          LIVE
+          {t('v2.voice.statusLive')}
         </StatusBadge>
       </header>
       <main id="main-content" style={{ flex: 1, overflow: 'auto' }}>
         {children}
       </main>
       <nav
-        aria-label="Primary"
+        aria-label={t('v2.voice.navPrimaryAria')}
         style={{
           display: 'grid',
           gridTemplateColumns: `repeat(${NAV.length}, 1fr)`,
@@ -340,7 +330,7 @@ export function MobileShell({
                   fontWeight: 600,
                 }}
               >
-                {n.label[themeKey]}
+                {t(`v2.voice.${n.labelKey}.${themeKey}`)}
               </div>
             </button>
           );

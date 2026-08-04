@@ -73,8 +73,18 @@ export function ConfirmDialog({
         return;
       }
       if (e.key !== 'Tab' || !dialogRef.current) return;
+      // `message` is a ReactNode, so the dialog can hold links and form
+      // controls as well as its own two buttons. Trapping on buttons alone let
+      // Tab walk out of the dialog and behind the scrim.
       const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        [
+          'button:not([disabled])',
+          'a[href]',
+          'input:not([disabled])',
+          'select:not([disabled])',
+          'textarea:not([disabled])',
+          '[tabindex]:not([tabindex="-1"])',
+        ].join(', '),
       );
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
@@ -155,18 +165,19 @@ export function ConfirmDialog({
           >
             {title}
           </h2>
-          <p
+          {/* A div, not a p: `message` is a ReactNode and callers pass lists
+              and paragraphs, which cannot legally nest inside one. */}
+          <div
             id={messageId}
             style={{
               marginTop: 12,
-              marginBottom: 0,
               fontSize: 14,
               color: 'var(--color-text-2)',
               lineHeight: 1.55,
             }}
           >
             {message}
-          </p>
+          </div>
           <div
             style={{
               marginTop: 24,

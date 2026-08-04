@@ -132,7 +132,7 @@ export function KitSelector({
         onChange={handleFileChange}
         className={styles.hiddenInput}
         data-testid="kit-file-input"
-        aria-label="Upload recommendation kit JSON"
+        aria-label={t('kits.uploadKitAria')}
       />
     </div>
   );

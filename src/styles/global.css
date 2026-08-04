@@ -158,6 +158,17 @@ a:focus-visible,
   border-width: 0;
 }
 
+/* Visually hidden checkbox with a drawn stand-in.
+ *
+ * The input keeps the state and the keyboard handling, so focus lands on an
+ * element nobody can see. The ring has to be painted on the square that stands
+ * in for it, which only a sibling selector can do — inline styles cannot
+ * express :focus-visible. */
+.proxied-checkbox:focus-visible + .checkbox-proxy {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
 /* Skip Link - Hidden until focused */
 .skip-link {
   position: absolute;
