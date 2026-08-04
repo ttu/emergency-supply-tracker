@@ -78,7 +78,8 @@ export function InventoryFilterStrip({
         data-testid={`v2-status-${k}`}
         onClick={() => onFilterChange(k)}
         style={{
-          padding: '12px 20px',
+          padding: '12px 14px',
+          whiteSpace: 'nowrap',
           cursor: 'pointer',
           background: 'transparent',
           borderTop: 0,
@@ -110,9 +111,14 @@ export function InventoryFilterStrip({
   };
 
   return (
+    // Six chips plus three controls do not fit beside the category rail at
+    // 1280px. Wrapping puts the controls on their own line there rather than
+    // pushing the search box off the panel's right edge.
     <div
       style={{
         display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
         borderBottom: '1px solid var(--color-rule-soft)',
       }}
     >
@@ -126,13 +132,18 @@ export function InventoryFilterStrip({
         t(`v2.inventory.filterMissing.${themeKey}`),
         counts.missing,
       )}
-      <div style={{ flex: 1 }} />
       <div
         style={{
           padding: '10px 16px',
           display: 'flex',
           alignItems: 'center',
           gap: 8,
+          // Right-aligned when it shares the row with the chips, full width
+          // when it has wrapped onto its own.
+          marginLeft: 'auto',
+          flex: '1 1 auto',
+          justifyContent: 'flex-end',
+          minWidth: 0,
         }}
       >
         {locations.length > 0 && (
@@ -175,7 +186,11 @@ export function InventoryFilterStrip({
             fontFamily: 'var(--font-mono)',
             fontSize: 11,
             borderRadius: 'var(--radius-sm)',
-            width: 200,
+            // Shrinks before it clips: the panel is not always wide enough
+            // for a fixed 200px box after the selects.
+            flex: '1 1 200px',
+            minWidth: 90,
+            maxWidth: 200,
             outline: 'none',
           }}
         />

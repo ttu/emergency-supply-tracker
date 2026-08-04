@@ -17,12 +17,31 @@ const codeStyle: CSSProperties = {
   fontSize: 10,
   color: 'var(--color-text-3)',
 };
+// `minWidth: 0` on both this and the label: a grid item defaults to
+// `min-width: auto`, so without it a long product name widens the whole
+// column past the panel instead of ellipsing.
 const nameStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   gap: 8,
+  minWidth: 0,
   color: 'var(--color-text)',
   fontWeight: 500,
+};
+const nameLabelStyle: CSSProperties = {
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+const locationStyle: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 11,
+  color: 'var(--color-text-2)',
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 };
 const categoryStyle: CSSProperties = {
   fontFamily: 'var(--font-mono)',
@@ -67,9 +86,9 @@ function InventoryRowImpl({
       }}
     >
       <span style={codeStyle}>{String(r.item.id).slice(0, 10)}</span>
-      <span style={nameStyle}>
+      <span style={nameStyle} title={r.item.name}>
         <StatusDot status={r.status} size={6} />
-        {r.item.name}
+        <span style={nameLabelStyle}>{r.item.name}</span>
       </span>
       <span style={categoryStyle}>{r.categoryCode}</span>
       <span style={qtyCellStyle}>
@@ -97,13 +116,7 @@ function InventoryRowImpl({
       >
         {r.item.expirationDate ?? '—'}
       </span>
-      <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-2)',
-        }}
-      >
+      <span style={locationStyle} title={r.item.location ?? undefined}>
         {r.item.location ?? '—'}
       </span>
       <StatusPill status={r.status} />

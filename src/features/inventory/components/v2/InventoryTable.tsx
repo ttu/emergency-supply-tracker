@@ -11,19 +11,27 @@ interface InventoryTableProps {
   onItemSelect: (id: string) => void;
 }
 
+/**
+ * Sized to fit the panel beside the 232px category rail at 1280px — the
+ * narrowest viewport that gets this desktop layout. The previous minimums
+ * added up to more than the panel is wide, so the status pills and the
+ * location column were clipped off the right edge with no way to reach them.
+ * Everything except the item name is monospace of known length, so these are
+ * the measured worst cases plus a little air.
+ */
 const CELL_STYLES: CSSProperties = {
   display: 'grid',
   gridTemplateColumns:
-    '80px minmax(160px, 1fr) 70px 110px 100px minmax(80px, 110px) 80px',
-  columnGap: 12,
-  padding: '12px 20px',
+    '70px minmax(140px, 1fr) 56px 96px 88px minmax(72px, 110px) 72px',
+  columnGap: 10,
+  padding: '12px 16px',
   alignItems: 'center',
   fontSize: 13,
 };
 
 const HEADER_STYLE: CSSProperties = {
   ...CELL_STYLES,
-  padding: '10px 20px',
+  padding: '10px 16px',
   fontFamily: 'var(--font-mono)',
   fontSize: 10,
   ...CAPS_STYLE,
@@ -42,7 +50,7 @@ const EMPTY_STATE_STYLE: CSSProperties = {
 };
 
 const FOOTER_STYLE: CSSProperties = {
-  padding: '12px 20px',
+  padding: '12px 16px',
   display: 'flex',
   justifyContent: 'space-between',
   fontFamily: 'var(--font-mono)',
