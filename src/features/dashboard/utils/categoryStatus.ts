@@ -16,9 +16,11 @@ import type {
   RecommendedItemDefinition,
 } from '@/shared/types';
 import { isFoodCategory } from '@/shared/types';
-import { getStatusFromPercentage } from '@/shared/utils/calculations/itemStatus';
+import {
+  getStatusFromPercentage,
+  calculateItemStatus,
+} from '@/shared/utils/calculations/itemStatus';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
-import { calculateItemStatus } from '@/features/inventory/utils/status';
 import { calculateCategoryPercentage } from '@/shared/utils/calculations/categoryPercentage';
 import { findMatchingItems } from '@/shared/utils/calculations/itemMatching';
 import { RECOMMENDED_ITEMS } from '@/features/templates';

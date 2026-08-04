@@ -129,6 +129,7 @@ npm run build                      # production build
 npm run preview                    # preview build
 npm run lint                       # ESLint
 npm run lint:fix                   # ESLint fix
+npm run duplication                # jscpd duplicate-code check
 npm run format                     # Prettier write
 npm run format:check               # Prettier check
 npm run type-check                 # TS (source)
@@ -155,7 +156,7 @@ npm run test:e2e:visual:docker       # Visual regression in Docker
 npm run test:e2e:visual:docker:update # Update Docker baselines
 npm run test:storybook              # Vitest storybook
 npm run test:all                    # Vitest all projects
-npm run validate                    # format + type + lint + test + build
+npm run validate                    # format + type + lint + duplication + test + build
 npm run validate:all                # validate + storybook + e2e
 npm run validate:i18n               # i18n keys
 npm run generate:og-image           # generate OG image
@@ -164,7 +165,7 @@ npm run storybook                   # Storybook dev
 npm run build-storybook             # Storybook build
 ```
 
-**Before commit:** `npm run validate:all` (format + type + lint + test + build + storybook + e2e).
+**Before commit:** `npm run validate:all` (format + type + lint + duplication + test + build + storybook + e2e).
 
 **Slash commands (Claude/Cursor):** `/verify` (lint, type-check, tests, build); `/visual-verify` (screenshot-based UI/UX verification); `/docs-sync` (validate docs vs codebase); `/docs-sync quick` (types, items, categories only); `/pr-create`; `/pr-fix` (CodeRabbit, reviewers, CI); `/issue-implement <number>`; `/issue-refine <number|text>`; `/handoff` (HANDOFF.md).
 

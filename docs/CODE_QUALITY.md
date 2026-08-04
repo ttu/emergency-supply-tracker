@@ -19,6 +19,7 @@ This document describes the code quality tools and CI/CD configuration.
 | TypeScript           | Type checking                          | `tsconfig.json`                                    |
 | Husky                | Git hooks                              | `.husky/`                                          |
 | lint-staged          | Pre-commit checks                      | `package.json`                                     |
+| jscpd                | Copy-paste (duplicate code) detection  | `.jscpd.json`                                      |
 | vitest-axe           | Accessibility testing (Vitest/axe)     | `vite.config.ts` (Vitest configuration)            |
 | @axe-core/playwright | Accessibility testing (Playwright/axe) | `playwright.config.ts` (or `playwright.config.js`) |
 | SonarCloud           | Code quality analysis                  | Configured via SonarCloud website                  |
@@ -187,6 +188,31 @@ no `React` import in scope.
 
 ---
 
+## Duplicate Code Detection (jscpd)
+
+**File:** `.jscpd.json` · **Command:** `npm run duplication`
+
+[jscpd](https://github.com/kucherenko/jscpd) is a copy-paste detector. It tokenizes the source and reports clones — blocks that are structurally identical even when identifiers differ.
+
+| Setting                  | Value                                        | Why                                                           |
+| ------------------------ | -------------------------------------------- | ------------------------------------------------------------- |
+| `threshold`              | `1.75` (%)                                   | Fails the run above this duplication ratio; ratchet downwards |
+| `minLines` / `minTokens` | `8` / `60`                                   | Ignores short, incidental repetition                          |
+| `format`                 | `typescript`, `tsx`                          | Source only — CSS Modules and JSON are not analyzed           |
+| `ignore`                 | tests, stories, `e2e/`, `scripts/`, `*.d.ts` | Test and story files repeat setup by design                   |
+
+The threshold is an **upper limit**, not a freeze: duplication may grow up to `threshold`, and CI only fails once it exceeds that value. Use it as a **ratchet** — when duplication is refactored away, lower `threshold` in `.jscpd.json` to lock in the improvement.
+
+Runs in the `lint` CI job and as part of `npm run validate`.
+
+**Relationship to `sonarjs`:** `sonarjs/no-identical-functions` catches whole
+functions with identical bodies, one file at a time. jscpd works at block level
+across the whole codebase, so it catches partial duplication and copies split
+between files — for example a feature-local util that repeats half of a shared
+one. The two overlap but neither subsumes the other; keep both.
+
+---
+
 ## Git Hooks (Husky + lint-staged)
 
 **Pre-commit hook** runs automatically before each commit:
@@ -229,7 +255,7 @@ no `React` import in scope.
 
 | Job          | What It Does                                         |
 | ------------ | ---------------------------------------------------- |
-| `lint`       | ESLint + Prettier check                              |
+| `lint`       | ESLint + Prettier check + jscpd duplication + i18n   |
 | `type-check` | TypeScript type checking (all configs)               |
 | `test`       | Vitest unit/integration tests                        |
 | `storybook`  | Storybook component tests                            |
