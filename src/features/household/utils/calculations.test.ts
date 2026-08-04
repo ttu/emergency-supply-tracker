@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   calculateHouseholdMultiplier,
   calculateRecommendedQuantity,
-} from './calculations';
+} from '@/shared/utils/calculations/recommendedQuantity';
 import {
   createMockHousehold,
   createMockRecommendedItem,
