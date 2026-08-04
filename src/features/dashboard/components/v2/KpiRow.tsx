@@ -4,9 +4,23 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { KpiTile } from './KpiTile';
 
+/** Below this share of the target, coverage reads as a warning rather than a gap. */
+const DAYS_COVERED_WARN_RATIO = 0.6;
+
 function readinessTone(readiness: number): 'ok' | 'warn' | 'crit' {
   if (readiness >= 80) return 'ok';
   if (readiness >= 60) return 'warn';
+  return 'crit';
+}
+
+/** Days covered is judged against the household's own target, not a fixed scale. */
+function daysCoveredTone(
+  days: number,
+  targetDays: number,
+): 'ok' | 'warn' | 'crit' {
+  if (targetDays <= 0) return 'crit';
+  if (days >= targetDays) return 'ok';
+  if (days >= targetDays * DAYS_COVERED_WARN_RATIO) return 'warn';
   return 'crit';
 }
 
@@ -17,9 +31,20 @@ function readinessTone(readiness: number): 'ok' | 'warn' | 'crit' {
 export function KpiRow() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
-  const { totals, readiness, expiringCount, criticalCount, daysCovered } =
-    useDesignData();
+  const {
+    totals,
+    readiness,
+    expiringCount,
+    criticalCount,
+    daysCovered,
+    daysCoveredDetail,
+    targetDays,
+  } = useDesignData();
   const tone = readinessTone(readiness);
+  // Naming the resource that runs out first is the actionable half of the
+  // number, but only while there is a gap to act on.
+  const limitedBy =
+    daysCovered < targetDays ? daysCoveredDetail.limitedBy : undefined;
 
   return (
     <div
@@ -68,12 +93,25 @@ export function KpiRow() {
       <KpiTile
         label={t(`v2.voice.daysCovered.${themeKey}`)}
         value={daysCovered.toFixed(1)}
+        tone={daysCoveredTone(daysCovered, targetDays)}
       >
         <div
           style={{ marginTop: 8, fontSize: 11, color: 'var(--color-text-2)' }}
         >
-          {t(`v2.dashboard.kpiTarget.${themeKey}`)}
+          {t(`v2.dashboard.kpiTarget.${themeKey}`, { days: targetDays })}
         </div>
+        {limitedBy && (
+          // Grey like every other tile's detail line: the value's own tone
+          // already carries the severity, so a second colour here only breaks
+          // the rhythm of the row.
+          <div
+            style={{ marginTop: 4, fontSize: 11, color: 'var(--color-text-2)' }}
+          >
+            {t(`v2.dashboard.kpiLimitedBy.${themeKey}`, {
+              resource: t(`v2.dashboard.limit.${limitedBy}.${themeKey}`),
+            })}
+          </div>
+        )}
       </KpiTile>
 
       <KpiTile

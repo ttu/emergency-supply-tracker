@@ -2,6 +2,11 @@ import { useMemo } from 'react';
 import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
+import { useCategoryStatuses } from '@/features/dashboard';
+import {
+  calculateDaysCovered,
+  type DaysCoveredResult,
+} from '@/shared/utils/calculations/daysCovered';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
@@ -33,13 +38,19 @@ export interface DesignData {
   totals: { total: number; ok: number; warn: number; crit: number };
   expiringCount: number;
   criticalCount: number;
+  /** Days of water and food on hand — see {@link calculateDaysCovered}. */
   daysCovered: number;
+  /** The same figure with both legs and the limiting resource. */
+  daysCoveredDetail: DaysCoveredResult;
+  /** The household's target duration, for comparison against `daysCovered`. */
+  targetDays: number;
 }
 
 export function useDesignData(): DesignData {
   const { items, categories } = useInventory();
   const { household } = useHousehold();
   const { recommendedItems } = useRecommendedItems();
+  const { categoryStatuses } = useCategoryStatuses();
 
   return useMemo(() => {
     const recommendedByTemplate = new Map<string, number>();
@@ -85,10 +96,10 @@ export function useDesignData(): DesignData {
       );
     }).length;
     const criticalCount = totals.crit;
-    const okRatio = totals.total > 0 ? totals.ok / totals.total : 0;
-    const daysCovered = household.supplyDurationDays
-      ? Math.round(okRatio * household.supplyDurationDays * 10) / 10
-      : 0;
+    const daysCoveredDetail = calculateDaysCovered(
+      categoryStatuses,
+      household.supplyDurationDays,
+    );
     return {
       categories,
       items,
@@ -99,7 +110,9 @@ export function useDesignData(): DesignData {
       totals,
       expiringCount,
       criticalCount,
-      daysCovered,
+      daysCovered: daysCoveredDetail.days,
+      daysCoveredDetail,
+      targetDays: household.supplyDurationDays,
     };
-  }, [items, categories, household, recommendedItems]);
+  }, [items, categories, household, recommendedItems, categoryStatuses]);
 }

@@ -4,9 +4,7 @@ import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useCategoryStatuses } from '@/features/dashboard';
 import { isFoodCategory } from '@/shared/types';
-
-/** The water category drives the drinking/preparation split. */
-const WATER_CATEGORY_ID = 'water-beverages';
+import { WATER_CATEGORY_ID } from '@/shared/utils/constants';
 
 /** Enough shortages to show the shape of the gap without a wall of rows. */
 const MAX_SHORTAGE_ROWS = 5;

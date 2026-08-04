@@ -1086,9 +1086,26 @@
       "statusWarn": "VARO",
       "statusCrit": "KRIIT",
       "kpiTarget": {
-        "cockpit": "TAVOITE: 7VRK",
-        "civil": "TAVOITE: 7VRK",
-        "pantry": "Tavoite: 7 päivää"
+        "cockpit": "TAVOITE: {{days}}VRK",
+        "civil": "TAVOITE: {{days}}VRK",
+        "pantry": "Tavoite: {{days}} päivää"
+      },
+      "kpiLimitedBy": {
+        "cockpit": "RAJOITTAA: {{resource}}",
+        "civil": "RAJOITTAA: {{resource}}",
+        "pantry": "Rajoittavana tekijänä {{resource}}"
+      },
+      "limit": {
+        "food": {
+          "cockpit": "RUOKA",
+          "civil": "RUOKA",
+          "pantry": "ruoka"
+        },
+        "water": {
+          "cockpit": "VESI",
+          "civil": "VESI",
+          "pantry": "vesi"
+        }
       },
       "kpiNext30": {
         "cockpit": "SEUR. 30 PÄIVÄÄ",
@@ -1285,6 +1302,39 @@
         "civil_other": "TUOTETTA VAJAA",
         "pantry_one": "tuote vajaa",
         "pantry_other": "tuotetta vajaa"
+      },
+      "recommendedHeading": {
+        "cockpit_one": "SUOSITELTU · {{count}} TÄYDENNETTÄVÄ",
+        "cockpit_other": "SUOSITELTU · {{count}} TÄYDENNETTÄVÄÄ",
+        "civil_one": "SUOSITELTU · {{count}} TÄYDENNETTÄVÄ",
+        "civil_other": "SUOSITELTU · {{count}} TÄYDENNETTÄVÄÄ",
+        "pantry_one": "Suositeltu · {{count}} täydennettävä",
+        "pantry_other": "Suositeltu · {{count}} täydennettävää"
+      },
+      "showMore": {
+        "cockpit": "NÄYTÄ LISÄÄ",
+        "civil": "NÄYTÄ LISÄÄ",
+        "pantry": "Näytä lisää"
+      },
+      "showLess": {
+        "cockpit": "NÄYTÄ VÄHEMMÄN",
+        "civil": "NÄYTÄ VÄHEMMÄN",
+        "pantry": "Näytä vähemmän"
+      },
+      "markEnough": {
+        "cockpit": "MERKITSE RIITTÄVÄKSI",
+        "civil": "MERKITSE RIITTÄVÄKSI",
+        "pantry": "Merkitse riittäväksi"
+      },
+      "addToInventory": {
+        "cockpit": "LISÄÄ VARASTOON",
+        "civil": "LISÄÄ VARASTOON",
+        "pantry": "Lisää varastoon"
+      },
+      "dontRecommend": {
+        "cockpit": "ÄLÄ SUOSITTELE",
+        "civil": "ÄLÄ SUOSITTELE",
+        "pantry": "Älä suosittele tätä tuotetta"
       }
     },
     "itemDetail": {

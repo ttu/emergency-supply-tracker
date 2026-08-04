@@ -1086,9 +1086,26 @@
       "statusWarn": "WARN",
       "statusCrit": "CRIT",
       "kpiTarget": {
-        "cockpit": "TARGET: 7D",
-        "civil": "TARGET: 7D",
-        "pantry": "Goal: 7 days"
+        "cockpit": "TARGET: {{days}}D",
+        "civil": "TARGET: {{days}}D",
+        "pantry": "Goal: {{days}} days"
+      },
+      "kpiLimitedBy": {
+        "cockpit": "LIMITED BY: {{resource}}",
+        "civil": "LIMITED BY: {{resource}}",
+        "pantry": "Limited by {{resource}}"
+      },
+      "limit": {
+        "food": {
+          "cockpit": "FOOD",
+          "civil": "FOOD",
+          "pantry": "food"
+        },
+        "water": {
+          "cockpit": "WATER",
+          "civil": "WATER",
+          "pantry": "water"
+        }
       },
       "kpiNext30": {
         "cockpit": "NEXT 30 DAYS",
@@ -1285,6 +1302,39 @@
         "civil_other": "ITEMS SHORT",
         "pantry_one": "item short",
         "pantry_other": "items short"
+      },
+      "recommendedHeading": {
+        "cockpit_one": "RECOMMENDED · {{count}} TO RESTOCK",
+        "cockpit_other": "RECOMMENDED · {{count}} TO RESTOCK",
+        "civil_one": "RECOMMENDED · {{count}} TO RESTOCK",
+        "civil_other": "RECOMMENDED · {{count}} TO RESTOCK",
+        "pantry_one": "Recommended · {{count}} to restock",
+        "pantry_other": "Recommended · {{count}} to restock"
+      },
+      "showMore": {
+        "cockpit": "SHOW MORE",
+        "civil": "SHOW MORE",
+        "pantry": "Show more"
+      },
+      "showLess": {
+        "cockpit": "SHOW LESS",
+        "civil": "SHOW LESS",
+        "pantry": "Show less"
+      },
+      "markEnough": {
+        "cockpit": "MARK AS ENOUGH",
+        "civil": "MARK AS ENOUGH",
+        "pantry": "Mark as enough"
+      },
+      "addToInventory": {
+        "cockpit": "ADD TO INVENTORY",
+        "civil": "ADD TO INVENTORY",
+        "pantry": "Add to inventory"
+      },
+      "dontRecommend": {
+        "cockpit": "DON'T RECOMMEND",
+        "civil": "DON'T RECOMMEND",
+        "pantry": "Don't recommend this item"
       }
     },
     "itemDetail": {
