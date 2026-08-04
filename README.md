@@ -52,6 +52,81 @@ cd emergency-supply-tracker
 npm install
 ```
 
+### Dev Container (optional)
+
+The repo ships a [dev container](.devcontainer/devcontainer.json) with Node 20, Playwright, and the
+Claude Code CLI preinstalled. Open the folder in VS Code and choose **Reopen in Container** — `npm ci`,
+the Playwright browsers, and a guardrail self-check all run automatically.
+
+It is based on `mcr.microsoft.com/playwright:v1.57.0-noble` — the same image
+`npm run test:e2e:visual:docker` uses — so **visual regression tests run natively inside the container
+and match the committed `*-chromium-linux.png` baselines**. Node is pinned to 20 to match CI, even
+though that image ships Node 24. When bumping Playwright, bump the image tag in
+`.devcontainer/docker-compose.yml` too.
+
+Ports 5173 (dev server), 4173 (preview), 6006 (Storybook), and 9323 (Playwright report) are forwarded
+to the host.
+
+### Git guardrail for AI agents
+
+[`.claude/hooks/block-dangerous-git.sh`](.claude/hooks/block-dangerous-git.sh) is a `PreToolUse` hook
+that limits what Claude's Bash tool may do with git. The line is **reversible vs. not**, rather than
+read vs. write — agents can do normal development work, but not damage:
+
+| Allowed                                                                | Blocked                                                                                 |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `git commit`, `git push` to a feature branch, `rebase`, `merge`, `tag` | `push --force` / `--force-with-lease`, push to `main`/`master`, `push --delete`         |
+| `gh pr create`, `gh pr edit`, `gh issue create`                        | `gh pr merge` / `close`, `gh release`, `gh repo delete`, `gh secret`, `gh workflow run` |
+| all read-only `git` / `gh` commands                                    | `reset --hard`, `clean -f`, `checkout .`, `restore .`, `branch -D`, `filter-branch`     |
+
+GitHub branch protection on `main` is the real backstop; this hook stops an agent from getting that
+far by accident. It only gates the agent — you can run anything yourself.
+
+**Inside the dev container, the agent is confined to the branch the container was created on.**
+`post-create.sh` records that branch, and on top of the rules above the container additionally blocks:
+
+- pushing any other branch — the explicit target if the command names one, otherwise the current
+  branch, so switching branches first does not get around it;
+- leaving that branch (`git checkout <ref>`, `git switch`, `-b`/`-c`), while `git checkout -- <file>`
+  and path arguments still work;
+- rewriting other branches locally — `git branch -f/-m/-c`, `git fetch|pull <remote> main:main`
+  (a refspec writes local refs directly), `git worktree add`, `git symbolic-ref`;
+- repointing remotes (`git remote set-url`).
+
+None of this exists on the host, so normal multi-branch work there is unaffected. Anything the
+container refuses can be done from the host.
+
+Two implementation details worth knowing:
+
+- **It fails closed.** Unparseable input is blocked, not allowed. It prefers `jq` and falls back to
+  `node`, because the base image ships neither `jq` nor any guarantee of it — the upstream script this
+  came from silently allowed _everything_ when `jq` was missing.
+- **It normalizes before matching**, so quoting and shell nesting can't smuggle a command past it
+  (`bash -c "git push --force"`, `$(git push --force)`, `eval '…'`), and matching is
+  case-insensitive.
+
+`.devcontainer/post-create.sh` self-tests the hook during container creation, so **setup fails loudly
+if the guardrail is not working**.
+
+To let `gh` read issues and open PRs, forward a token before opening the container
+(`gh` keeps its own credentials in the OS keychain, which the container cannot reach):
+
+```bash
+export GITHUB_TOKEN=$(gh auth token)
+export CLAUDE_CODE_OAUTH_TOKEN=...   # optional: reuse your host Claude Code login
+```
+
+Because the container is isolated and destructive git operations are blocked, you can also skip
+Claude Code's permission prompts by adding this to `.claude/settings.local.json` (gitignored, so it
+stays per-developer):
+
+```json
+{ "permissions": { "defaultMode": "bypassPermissions" } }
+```
+
+Note that this file is bind-mounted from the repo, so the setting applies on the host too — only set
+it if you're comfortable with that.
+
 ### Development
 
 ```bash

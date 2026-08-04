@@ -1,0 +1,24 @@
+services:
+  app:
+    # Pinned to match @playwright/test (^1.57.0) in package.json. This is the
+    # same image `npm run test:e2e:visual:docker` uses, so visual-regression
+    # runs inside the container match the committed *-chromium-linux.png
+    # baselines. Bump both together when upgrading Playwright.
+    image: mcr.microsoft.com/playwright:v1.57.0-noble
+    volumes:
+      - ..:/workspaces/emergency-supply-tracker:cached
+      # node_modules on a native volume, not the macOS bind mount: npm's
+      # rename/rmdir churn triggers ESTALE (-116) / ENOTEMPTY on VirtioFS.
+      - node-modules:/workspaces/emergency-supply-tracker/node_modules
+      # Browsers are baked into the image here; a named volume is seeded from
+      # the image on first use, so this persists extra builds (e.g. the one
+      # @playwright/mcp pins) across rebuilds instead of re-downloading.
+      - playwright-browsers:/ms-playwright
+    command: sleep infinity
+    # Chromium hard-crashes on Docker's default 64MB /dev/shm, which `npm run
+    # test:e2e` (--workers=4) reliably hits.
+    shm_size: '1gb'
+
+volumes:
+  node-modules:
+  playwright-browsers:

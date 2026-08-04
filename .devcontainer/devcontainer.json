@@ -1,0 +1,77 @@
+{
+  "name": "Emergency Supply Tracker",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/emergency-supply-tracker",
+  "features": {
+    // Adds sudo + shell niceties to the base image's existing `ubuntu` user.
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "username": "ubuntu",
+      "installZsh": false,
+      "upgradePackages": false
+    },
+    // The Playwright image ships Node 24; CI runs Node 20, so pin to 20.
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "mounts": [
+    "source=claude-code-config-${devcontainerId},target=/home/ubuntu/.claude,type=volume"
+  ],
+  "forwardPorts": [5173, 4173, 6006, 9323],
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite dev server",
+      "onAutoForward": "notify"
+    },
+    "4173": {
+      "label": "Vite preview",
+      "onAutoForward": "silent"
+    },
+    "6006": {
+      "label": "Storybook",
+      "onAutoForward": "silent"
+    },
+    "9323": {
+      "label": "Playwright report",
+      "onAutoForward": "silent"
+    }
+  },
+  // updateContentCommand runs before postCreateCommand and already does npm ci.
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "updateContentCommand": "sudo chown ubuntu:ubuntu /workspaces/emergency-supply-tracker/node_modules && npm ci",
+  // Always pull the newest Claude Code CLI on every container start (best-effort;
+  // skipped gracefully if the npm registry is unreachable).
+  "postStartCommand": "sudo npm install -g @anthropic-ai/claude-code@latest || true",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-playwright.playwright",
+        "vitest.explorer"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  },
+  "containerEnv": {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "DISABLE_AUTOUPDATER": "1",
+    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
+    // Token for gh (issue/PR reads plus `gh pr create`). Pushing uses the
+    // SSH agent that VS Code forwards into the container, since `origin` is an
+    // SSH remote. What the agent may actually do with these is enforced by
+    // .claude/hooks/block-dangerous-git.sh: commits and feature-branch pushes
+    // are allowed; force-pushes, pushes to main, and history rewrites are not.
+    // main is branch-protected on GitHub as the backstop.
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
+    // Never hang waiting on an interactive credential prompt.
+    "GIT_TERMINAL_PROMPT": "0"
+  },
+  "remoteUser": "ubuntu"
+}
