@@ -34,11 +34,10 @@ sudo chown -R "$(id -u):$(id -g)" "${PLAYWRIGHT_BROWSERS_PATH:-/ms-playwright}"
 # pinned to the same Playwright version as package.json, so the browser is
 # already present. No --with-deps either; the image has the OS-level deps.
 ./node_modules/.bin/playwright install chromium
-# @playwright/mcp is deliberately NOT pre-fetched here: .mcp.json resolves it as
-# `@latest` at runtime, so pre-installing would mean executing an unpinned
-# package's lifecycle scripts during container build. It downloads whatever
-# browser build it needs on first use. Pin the version in .mcp.json if you want
-# that to be deterministic.
+# @playwright/mcp is deliberately NOT pre-fetched here: pre-installing would
+# mean executing its lifecycle scripts during container build. .mcp.json pins
+# the version so `npx` resolves a reviewed release rather than whatever is
+# newest; it downloads whatever browser build it needs on first use.
 
 echo "==> Verifying git works (worktrees need the mounts from initialize.sh)"
 if ! git -C "$WORKSPACE" rev-parse --git-dir >/dev/null 2>&1; then
@@ -85,12 +84,18 @@ if [[ ! -x "$GUARD" ]]; then
   echo "FAIL: $GUARD missing or not executable" >&2
   exit 1
 fi
+# Derive a branch name guaranteed to differ from the pinned branch, and encode
+# it with jq so the self-test can't break on branch names with special chars.
+OFF_BRANCH="${CONTAINER_BRANCH}__guardrail_off_branch_test"
+OFF_BRANCH_INPUT=$(jq -cn --arg branch "$OFF_BRANCH" \
+  '{tool_input:{command:("git push origin " + $branch)}}')
+
 set +e
 # Must block a force-push...
 printf '%s' '{"tool_input":{"command":"git push --force"}}' | bash "$GUARD" >/dev/null 2>&1
 blocked=$?
 # ...must block a push to a branch this container is not pinned to...
-printf '%s' '{"tool_input":{"command":"git push origin some-other-branch"}}' | bash "$GUARD" >/dev/null 2>&1
+printf '%s' "$OFF_BRANCH_INPUT" | bash "$GUARD" >/dev/null 2>&1
 off_branch=$?
 # ...and must still allow ordinary read-only work.
 printf '%s' '{"tool_input":{"command":"git status"}}' | bash "$GUARD" >/dev/null 2>&1

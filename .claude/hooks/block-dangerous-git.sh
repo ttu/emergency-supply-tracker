@@ -2,9 +2,9 @@
 # PreToolUse(Bash) guardrail for Claude's Bash tool.
 #
 # Policy: the agent may do normal, reversible development work — commit, push a
-# feature branch, rebase, open a PR. It may not do things that are destructive
-# or hard to undo: force-pushing, pushing to main, discarding working-tree
-# state, rewriting history, merging or releasing.
+# feature branch, rebase, merge, open a PR. It may not do things that are
+# destructive or hard to undo: force-pushing, pushing to main, discarding
+# working-tree state, rewriting history, or releasing.
 #
 # This gates the agent only. Humans are unaffected and can run anything.
 #
