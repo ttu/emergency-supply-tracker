@@ -18,6 +18,13 @@ if ! command -v jq >/dev/null 2>&1; then
   sudo apt-get update -qq && sudo apt-get install -y -qq jq
 fi
 
+echo "==> GitHub CLI (gh)"
+# devcontainer.json forwards GITHUB_TOKEN specifically so `gh` can read/create
+# PRs and issues; install it here since no devcontainer feature provides it.
+if ! command -v gh >/dev/null 2>&1; then
+  sudo apt-get update -qq && sudo apt-get install -y -qq gh
+fi
+
 echo "==> Playwright browsers"
 # The base image ships browsers at $PLAYWRIGHT_BROWSERS_PATH (/ms-playwright).
 # It is a named volume, so make it writable in case a browser is added later.
