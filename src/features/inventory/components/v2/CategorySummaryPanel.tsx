@@ -6,9 +6,6 @@ import { useCategoryStatuses } from '@/features/dashboard';
 import { isFoodCategory } from '@/shared/types';
 import { WATER_CATEGORY_ID } from '@/shared/utils/constants';
 
-/** Enough shortages to show the shape of the gap without a wall of rows. */
-const MAX_SHORTAGE_ROWS = 5;
-
 interface CategorySummaryPanelProps {
   categoryId: string;
 }
@@ -42,22 +39,19 @@ const ROW_STYLE: CSSProperties = {
 
 const ROW_VALUE_STYLE: CSSProperties = { color: 'var(--color-text)' };
 
-const SHORTAGE_STYLE: CSSProperties = {
-  ...ROW_STYLE,
-  color: 'var(--color-warn)',
-};
-
 /**
  * What the selected category actually requires, and how far off it is.
  *
  * v2's coverage matrix reports ok/total counts, which says nothing about *how
  * much* is missing — v1's category summary showed the derivation ("water for
- * people: 60 L, total required: 80 L") and the per-item shortfall. This is
- * that panel in v2 dress; category enable/disable stays in Settings §8 rather
- * than being duplicated here.
+ * people: 60 L, total required: 80 L"). This is that derivation in v2 dress;
+ * category enable/disable stays in Settings §8 rather than being duplicated
+ * here.
  *
- * It renders directly below [CategoryStatusStrip], which already names the
- * category and shows its status pill — so this panel is body only.
+ * It sits between [CategoryStatusStrip], which already names the category and
+ * shows its status pill — so this panel is body only — and
+ * [CategoryRecommendedPanel], which owns the per-item shortfalls and the
+ * actions that clear them.
  */
 export function CategorySummaryPanel({
   categoryId,
@@ -93,9 +87,13 @@ export function CategorySummaryPanel({
           {actual} / {needed} {unitLabel}
         </div>
 
-        {(isWater || summary.shortages.length > 0) && (
+        {/* Per-item shortfalls live in [CategoryRecommendedPanel] directly
+            below, where each one comes with the actions that clear it —
+            listing them here too would state the same gap twice, once
+            actionable and once not. */}
+        {isWater && (
           <div style={BREAKDOWN_STYLE}>
-            {isWater && !!summary.drinkingWaterNeeded && (
+            {!!summary.drinkingWaterNeeded && (
               <div style={ROW_STYLE}>
                 <span>{t(`v2.inventory.waterDrinking.${themeKey}`)}</span>
                 <span style={ROW_VALUE_STYLE}>
@@ -103,37 +101,11 @@ export function CategorySummaryPanel({
                 </span>
               </div>
             )}
-            {isWater && !!summary.preparationWaterNeeded && (
+            {!!summary.preparationWaterNeeded && (
               <div style={ROW_STYLE}>
                 <span>{t(`v2.inventory.waterPreparation.${themeKey}`)}</span>
                 <span style={ROW_VALUE_STYLE}>
                   {Math.round(summary.preparationWaterNeeded)} {unitLabel}
-                </span>
-              </div>
-            )}
-            {summary.shortages.slice(0, MAX_SHORTAGE_ROWS).map((s) => (
-              <div key={s.itemId} style={SHORTAGE_STYLE}>
-                <span>
-                  {t(s.itemName.replace('products.', ''), {
-                    ns: 'products',
-                  })}
-                </span>
-                <span>
-                  {t(`v2.inventory.shortBy.${themeKey}`, {
-                    missing: s.missing,
-                    unit: t(s.unit, { ns: 'units' }),
-                  })}
-                </span>
-              </div>
-            ))}
-            {/* The strip above states the total, so the list cannot just stop
-                at five and leave the arithmetic looking wrong. */}
-            {summary.shortages.length > MAX_SHORTAGE_ROWS && (
-              <div style={ROW_STYLE}>
-                <span>
-                  {t(`v2.inventory.moreShortages.${themeKey}`, {
-                    count: summary.shortages.length - MAX_SHORTAGE_ROWS,
-                  })}
                 </span>
               </div>
             )}

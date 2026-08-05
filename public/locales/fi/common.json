@@ -1282,14 +1282,6 @@
         "civil": "PUUTTUU {{missing}} {{unit}}",
         "pantry": "puuttuu {{missing}} {{unit}}"
       },
-      "moreShortages": {
-        "cockpit_one": "+{{count}} MUU TUOTE VAJAA",
-        "cockpit_other": "+{{count}} MUUTA TUOTETTA VAJAA",
-        "civil_one": "+{{count}} MUU TUOTE VAJAA",
-        "civil_other": "+{{count}} MUUTA TUOTETTA VAJAA",
-        "pantry_one": "+{{count}} muu tuote vajaa",
-        "pantry_other": "+{{count}} muuta tuotetta vajaa"
-      },
       "coverage": {
         "cockpit": "KATTAVUUS",
         "civil": "KATTAVUUS",

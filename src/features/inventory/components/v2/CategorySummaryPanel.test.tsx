@@ -81,21 +81,14 @@ describe('CategorySummaryPanel (v2)', () => {
     ).not.toBeInTheDocument();
   });
 
-  // The strip above reports the full shortage count, so a truncated list has
-  // to say how much it is hiding.
-  it('accounts for shortages beyond the five it lists', async () => {
+  // Per-item shortfalls belong to CategoryRecommendedPanel below, where each
+  // comes with the actions that clear it. Listing them here as well would
+  // state the same gap twice, once actionable and once not.
+  it('leaves the per-item shortfalls to the recommended panel', async () => {
     setup('food');
     await screen.findByText('v2.inventory.totalRequired.cockpit');
     expect(
-      screen.getByText('v2.inventory.moreShortages.cockpit'),
-    ).toBeInTheDocument();
-  });
-
-  it('lists every shortage when there are five or fewer', async () => {
-    setup('water-beverages', [someWater()]);
-    await screen.findByText('v2.inventory.totalRequired.cockpit');
-    expect(
-      screen.queryByText('v2.inventory.moreShortages.cockpit'),
+      screen.queryByText('v2.inventory.shortBy.cockpit'),
     ).not.toBeInTheDocument();
   });
 

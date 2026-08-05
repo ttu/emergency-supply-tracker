@@ -24,6 +24,7 @@ import {
 import { InventoryTable } from './InventoryTable';
 import { MissingItemsTable } from './MissingItemsTable';
 import { CategorySummaryPanel } from './CategorySummaryPanel';
+import { CategoryRecommendedPanel } from './CategoryRecommendedPanel';
 import { CategoryRail } from './CategoryRail';
 import { CategoryStatusStrip } from './CategoryStatusStrip';
 import { useCategoryCoverage } from './useCategoryCoverage';
@@ -223,8 +224,20 @@ export function Inventory({
         >
           <CategoryStatusStrip label={categoryLabel} {...coverage} />
 
+          {/* Both only have something to say once a category is picked: the
+              summary derives that category's requirement, the recommended
+              panel lists which of its items fall short and offers the actions
+              that clear them. */}
           {selectedCategory && (
-            <CategorySummaryPanel categoryId={selectedCategory.id as string} />
+            <>
+              <CategorySummaryPanel
+                categoryId={selectedCategory.id as string}
+              />
+              <CategoryRecommendedPanel
+                categoryId={selectedCategory.id as string}
+                onAdd={onAddItem}
+              />
+            </>
           )}
 
           <Panel padding={0} style={{ minWidth: 0 }}>

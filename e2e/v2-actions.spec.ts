@@ -323,6 +323,62 @@ test.describe('Inventory actions', () => {
     );
   });
 
+  test('the recommended panel expands and its dismissal persists', async ({
+    page,
+  }) => {
+    await boot(page);
+    // Pin the household: boot leaves it to faker, and how many recommended
+    // items a category falls short of is derived from it.
+    await setAppStorage(
+      page,
+      createMockAppData({
+        settings,
+        household: {
+          adults: 2,
+          children: 1,
+          pets: 0,
+          supplyDurationDays: 3,
+          useFreezer: false,
+        },
+        items: [...items],
+        customCategories: [],
+      }),
+    );
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await openInventory(page);
+    await page.getByTestId('v2-category-row-water-beverages').click();
+
+    // Collapsed by default: the header states the count, nothing more.
+    const toggle = page.getByTestId('v2-recommended-toggle');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.getByTestId('v2-recommended-row')).toHaveCount(0);
+
+    await toggle.click();
+    const rows = page.getByTestId('v2-recommended-row');
+    const before = await rows.count();
+    expect(before).toBeGreaterThan(0);
+
+    // Dismissing writes through to the disabled-recommendations list, so the
+    // shortage has to stay gone across a reload — the whole point of the
+    // action, and the part a jsdom test cannot observe.
+    await rows
+      .first()
+      .getByRole('button', { name: /don't recommend/i })
+      .click();
+    await expect(rows).toHaveCount(before - 1);
+
+    await expect
+      .poll(async () => (await activeSet(page)).disabledRecommendedItems ?? [])
+      .not.toHaveLength(0);
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await openInventory(page);
+    await page.getByTestId('v2-recommended-toggle').click();
+    await expect(page.getByTestId('v2-recommended-row')).toHaveCount(
+      before - 1,
+    );
+  });
+
   test('copy duplicates an item rather than editing it', async ({ page }) => {
     await boot(page);
     await openInventory(page);

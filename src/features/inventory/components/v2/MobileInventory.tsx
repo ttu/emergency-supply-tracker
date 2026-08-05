@@ -20,6 +20,7 @@ import { CategorySelect } from './CategorySelect';
 import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { CategorySummaryPanel } from './CategorySummaryPanel';
 import { CategoryStatusStrip } from './CategoryStatusStrip';
+import { CategoryRecommendedPanel } from './CategoryRecommendedPanel';
 import { useCategoryCoverage } from './useCategoryCoverage';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
@@ -219,6 +220,11 @@ export function MobileInventory({
         <>
           <CategoryStatusStrip label={categoryLabel} stacked {...coverage} />
           <CategorySummaryPanel categoryId={selectedCategory.id as string} />
+          <CategoryRecommendedPanel
+            categoryId={selectedCategory.id as string}
+            onAdd={onAddItem}
+            stacked
+          />
         </>
       )}
       <Panel padding={0}>
