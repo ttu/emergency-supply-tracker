@@ -58,7 +58,14 @@
       ],
       "settings": {
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        // JS Debug's auto-attach injects NODE_OPTIONS=--require .../bootloader.js
+        // into every integrated terminal. That workspaceStorage path goes stale
+        // on container rebuilds/window reloads, and already-open terminals (plus
+        // anything spawned from them, like husky's Node hooks) then crash with
+        // "Cannot find module .../bootloader.js". Disabled here since it's not
+        // needed for this project's workflow.
+        "debug.javascript.autoAttachFilter": "disabled"
       }
     }
   },
