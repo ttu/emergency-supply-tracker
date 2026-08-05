@@ -10,9 +10,12 @@
       "installZsh": false,
       "upgradePackages": false
     },
-    // The Playwright image ships Node 24; CI runs Node 20, so pin to 20.
+    // CI still runs Node 20 (to be updated separately). Dev container is
+    // pinned to 24 (current Node LTS) instead, since Claude Code requires
+    // engines.node >=22 and floating on "latest" would also track
+    // non-LTS/odd-numbered releases.
     "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
+      "version": "24"
     },
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
@@ -46,8 +49,12 @@
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "updateContentCommand": "sudo chown ubuntu:ubuntu /workspaces/emergency-supply-tracker/node_modules && npm ci",
   // Always pull the newest Claude Code CLI on every container start (best-effort;
-  // skipped gracefully if the npm registry is unreachable).
-  "postStartCommand": "sudo npm install -g @anthropic-ai/claude-code@latest || true",
+  // skipped gracefully if the npm registry is unreachable). `sudo` alone would
+  // reset PATH to its secure_path and run the system npm (Node 24 at /usr/bin)
+  // instead of nvm's npm, silently updating a `claude` binary that's never on
+  // PATH while the real one (nvm, Node 20) stays stale. Preserve PATH so sudo
+  // still uses nvm's npm, which is what `claude` actually resolves to.
+  "postStartCommand": "sudo env \"PATH=$PATH\" npm install -g @anthropic-ai/claude-code@latest || true",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -70,7 +77,10 @@
     }
   },
   "containerEnv": {
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    // CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC was previously set here to cut
+    // container network overhead, but it also suppresses the feature-flag
+    // check that Remote Control (/remote-control) needs, hiding the command
+    // entirely. Left unset so Remote Control works inside the container.
     "DISABLE_AUTOUPDATER": "1",
     "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
     // Token for gh (issue/PR reads plus `gh pr create`). Pushing uses the
