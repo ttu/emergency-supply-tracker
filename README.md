@@ -67,6 +67,36 @@ though that image ships Node 24. When bumping Playwright, bump the image tag in
 Ports 5173 (dev server), 4173 (preview), 6006 (Storybook), and 9323 (Playwright report) are forwarded
 to the host.
 
+#### Using it with git worktrees
+
+One container per worktree — which pairs neatly with the branch confinement below, since each
+container is then inherently a single branch:
+
+```bash
+./new-worktree.sh --container feat-my-thing   # --container skips the host npm install
+code .worktrees/feat-my-thing                 # then: Reopen in Container
+```
+
+A worktree's `.git` is a _file_ holding an absolute path into the main repo's `.git`, which would not
+exist inside a container — git is simply broken there without help. So `initializeCommand` runs
+`.devcontainer/initialize.sh` on the host, which records two paths in `.devcontainer/.env`
+(gitignored) for docker-compose to bind-mount **at their original absolute paths**:
+
+- `GIT_COMMON_DIR` — the shared `.git`, so the worktree's `gitdir:` pointer resolves.
+- `LOCAL_WORKSPACE_FOLDER` — the worktree itself. The main repo records this path, and if it is not
+  visible git marks the worktree _prunable_; a `git gc` would then delete the shared admin directory
+  and break the worktree **on the host too**.
+
+Nothing in your host repo is modified, so `new-worktree.sh` and existing worktrees keep working.
+
+The repo's _other_ worktrees are deliberately not mounted, so inside the container they do look
+prunable. Automatic gc is therefore disabled (`gc.auto=0`, set via `GIT_CONFIG_*` env so no shared
+config file is touched), and `git gc` / `git worktree prune` are blocked outright by the guardrail
+hook. Run those from the host.
+
+Playwright browsers live in a shared `est-playwright-browsers` volume so each new worktree does not
+re-download ~500MB; `node_modules` stays per-worktree, since branches diverge in dependencies.
+
 ### Git guardrail for AI agents
 
 [`.claude/hooks/block-dangerous-git.sh`](.claude/hooks/block-dangerous-git.sh) is a `PreToolUse` hook
@@ -78,6 +108,7 @@ read vs. write — agents can do normal development work, but not damage:
 | `git commit`, `git push` to a feature branch, `rebase`, `merge`, `tag` | `push --force` / `--force-with-lease`, push to `main`/`master`, `push --delete`         |
 | `gh pr create`, `gh pr edit`, `gh issue create`                        | `gh pr merge` / `close`, `gh release`, `gh repo delete`, `gh secret`, `gh workflow run` |
 | all read-only `git` / `gh` commands                                    | `reset --hard`, `clean -f`, `checkout .`, `restore .`, `branch -D`, `filter-branch`     |
+| —                                                                      | `git gc`, `git worktree prune` (would corrupt the repo's other worktrees — see above)   |
 
 GitHub branch protection on `main` is the real backstop; this hook stops an agent from getting that
 far by accident. It only gates the agent — you can run anything yourself.

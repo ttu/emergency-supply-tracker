@@ -33,6 +33,34 @@ sudo chown -R "$(id -u):$(id -g)" "${PLAYWRIGHT_BROWSERS_PATH:-/ms-playwright}"
 # browser build it needs on first use. Pin the version in .mcp.json if you want
 # that to be deterministic.
 
+echo "==> Verifying git works (worktrees need the mounts from initialize.sh)"
+if ! git -C "$WORKSPACE" rev-parse --git-dir >/dev/null 2>&1; then
+  echo "FAIL: git is not usable inside the container." >&2
+  echo "      If this workspace is a git worktree, its .git file points at a host" >&2
+  echo "      path that must be bind-mounted. Check that .devcontainer/.env exists" >&2
+  echo "      and rebuild the container so initialize.sh runs." >&2
+  exit 1
+fi
+# If this checkout is a worktree, the main repo records a back-pointer to its
+# host path. When that path is not visible here git treats the worktree as
+# prunable, and a gc would delete the shared admin dir — breaking it on the host
+# too. Check only THIS worktree: the repo's other worktrees are legitimately not
+# mounted, which is why gc is disabled via GIT_CONFIG_* in devcontainer.json.
+ADMIN_DIR=$(git -C "$WORKSPACE" rev-parse --absolute-git-dir)
+if [[ -f "$ADMIN_DIR/gitdir" ]]; then
+  BACK_POINTER=$(cat "$ADMIN_DIR/gitdir")
+  if [[ ! -e "$BACK_POINTER" ]]; then
+    echo "FAIL: this worktree is not visible at its recorded path:" >&2
+    echo "        $BACK_POINTER" >&2
+    echo "      The LOCAL_WORKSPACE_FOLDER bind mount is missing, so git would treat" >&2
+    echo "      this worktree as prunable and a gc could corrupt it on the host." >&2
+    echo "      Check .devcontainer/.env and rebuild the container." >&2
+    exit 1
+  fi
+  echo "    worktree back-pointer OK"
+fi
+echo "    git OK ($(git -C "$WORKSPACE" rev-parse --git-common-dir))"
+
 echo "==> Pinning container to its own branch"
 # The guardrail hook reads this file and refuses to touch any other branch.
 # It only exists inside the container, so host work is unaffected.

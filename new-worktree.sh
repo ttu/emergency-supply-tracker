@@ -1,17 +1,55 @@
 #!/bin/bash
 
 # Create a new git worktree with the given branch name
-# Usage: ./new-worktree.sh <branch-name>
+# Usage: ./new-worktree.sh [--container] <branch-name>
 
 set -e
 
-if [ -z "$1" ]; then
-  echo "Usage: $0 <branch-name>"
+usage() {
+  echo "Usage: $0 [--container] <branch-name>"
   echo "Example: $0 fix-store-selected-language"
+  echo "         $0 --container feat-new-thing"
+  echo ""
+  echo "  --container  Skip the host npm install. The dev container installs"
+  echo "               dependencies into its own volume, which shadows any"
+  echo "               node_modules created here, so installing twice is waste."
+}
+
+USE_CONTAINER=false
+BRANCH_NAME=""
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --container)
+      USE_CONTAINER=true
+      shift
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    -*)
+      echo "Unknown option: $1"
+      usage
+      exit 1
+      ;;
+    *)
+      if [ -n "$BRANCH_NAME" ]; then
+        echo "Unexpected argument: $1"
+        usage
+        exit 1
+      fi
+      BRANCH_NAME="$1"
+      shift
+      ;;
+  esac
+done
+
+if [ -z "$BRANCH_NAME" ]; then
+  usage
   exit 1
 fi
 
-BRANCH_NAME="$1"
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 WORKTREE_DIR="${REPO_DIR}/.worktrees/${BRANCH_NAME}"
 
@@ -41,10 +79,19 @@ if [ -d "${REPO_DIR}/.cursor" ]; then
   cp -r "${REPO_DIR}/.cursor" "${WORKTREE_DIR}/.cursor"
 fi
 
-# Install dependencies
-echo "Installing dependencies..."
-cd "${WORKTREE_DIR}" && npm install
+# Install dependencies (the dev container does its own install into a volume)
+if [ "$USE_CONTAINER" = true ]; then
+  echo "Skipping host npm install (--container)."
+else
+  echo "Installing dependencies..."
+  cd "${WORKTREE_DIR}" && npm install
+fi
 
 echo ""
 echo "Done! Worktree created at: ${WORKTREE_DIR}"
-echo "To switch to it: cd ${WORKTREE_DIR}"
+if [ "$USE_CONTAINER" = true ]; then
+  echo "To open it in the dev container:"
+  echo "  code ${WORKTREE_DIR}   # then: Reopen in Container"
+else
+  echo "To switch to it: cd ${WORKTREE_DIR}"
+fi

@@ -50,6 +50,12 @@ DANGEROUS_PATTERNS=(
   'git[[:space:]]+filter-branch'
   'git[[:space:]]+reflog[[:space:]]+(delete|expire)'
   'git[[:space:]]+worktree[[:space:]]+remove'
+  # In a worktree-based container only the current worktree is mounted at its
+  # host path, so every OTHER worktree looks prunable. Pruning or gc'ing here
+  # would delete their admin dirs and break them on the host.
+  'git[[:space:]]+worktree[[:space:]]+prune'
+  'git[[:space:]]+gc([[:space:]]|$)'
+  'git[[:space:]]+prune([[:space:]]|$)'
 
   # --- Publishing that is hard to undo ---
   # Force-push in any spelling.

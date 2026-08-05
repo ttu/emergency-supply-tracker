@@ -39,6 +39,9 @@
       "onAutoForward": "silent"
     }
   },
+  // Runs on the host first: records the git paths this workspace needs mounted
+  // (so opening a git worktree works) and creates the shared browser volume.
+  "initializeCommand": "bash .devcontainer/initialize.sh",
   // updateContentCommand runs before postCreateCommand and already does npm ci.
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "updateContentCommand": "sudo chown ubuntu:ubuntu /workspaces/emergency-supply-tracker/node_modules && npm ci",
@@ -71,7 +74,16 @@
     // main is branch-protected on GitHub as the backstop.
     "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
     // Never hang waiting on an interactive credential prompt.
-    "GIT_TERMINAL_PROMPT": "0"
+    "GIT_TERMINAL_PROMPT": "0",
+    // Disable automatic gc for every git command in the container, without
+    // writing to the shared config. Auto-gc runs `git worktree prune`, and in a
+    // worktree-based container the repo's OTHER worktrees are not mounted, so
+    // they look prunable — gc here would delete their admin dirs and break them
+    // on the host. Explicit `git gc` / `worktree prune` are blocked by
+    // .claude/hooks/block-dangerous-git.sh as well.
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "gc.auto",
+    "GIT_CONFIG_VALUE_0": "0"
   },
   "remoteUser": "ubuntu"
 }
