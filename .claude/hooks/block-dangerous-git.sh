@@ -133,7 +133,13 @@ if [[ -f "$BRANCH_PIN_FILE" ]]; then
   # their values, drop the remote, keep what's left. Empty means a bare
   # `git push`, which targets the current branch.
   if printf '%s' "$NORMALIZED" | grep -qEi '(^|[[:space:]])git[[:space:]]+push([[:space:]]|$)'; then
-    TARGET=$(printf '%s' "$NORMALIZED" | awk '
+    # Strip redirections (2>&1, >/dev/null, <file, ...) before extracting the
+    # target. NORMALIZED already turned their operators into spaces, so a
+    # trailing `2>&1` would otherwise look like two extra push arguments and
+    # get mistaken for the remote/branch (e.g. target parsed as "1").
+    PUSH_SOURCE=$(printf '%s' "$COMMAND" | sed -E 's/[0-9]*(>>?&?[0-9]*|<)[^[:space:]]*//g')
+    PUSH_NORMALIZED=$(printf '%s' "$PUSH_SOURCE" | tr -d '"'"'"'`' | tr '(){};&|<>' '          ')
+    TARGET=$(printf '%s' "$PUSH_NORMALIZED" | awk '
       { for (i = 1; i <= NF; i++) if ($i == "push") { start = i + 1; break } }
       start {
         n = 0
