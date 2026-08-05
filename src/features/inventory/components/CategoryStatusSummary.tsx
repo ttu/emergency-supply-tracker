@@ -4,11 +4,7 @@ import { Badge } from '@/shared/components/Badge';
 import type { ItemStatus, Unit, InventoryItem } from '@/shared/types';
 import { isFoodCategory } from '@/shared/types';
 import { getStatusVariant } from '@/shared/utils/calculations/itemStatus';
-import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
-import { useHousehold } from '@/features/household';
-import { useRecommendedItems } from '@/features/templates';
-import { useSettings } from '@/features/settings';
-import { CHILDREN_REQUIREMENT_MULTIPLIER } from '@/shared/utils/constants';
+import { useMarkableItems } from '../hooks/useMarkableItems';
 import styles from './CategoryStatusSummary.module.css';
 
 export interface CategoryShortage {
@@ -71,13 +67,7 @@ export const CategoryStatusSummary = ({
   resolveItemName,
 }: CategoryStatusSummaryProps) => {
   const { t } = useTranslation(['common', 'categories', 'units', 'products']);
-  const { household } = useHousehold();
-  const { recommendedItems } = useRecommendedItems();
-  const { settings } = useSettings();
-
-  const childrenMultiplier = settings.childrenRequirementPercentage
-    ? settings.childrenRequirementPercentage / 100
-    : CHILDREN_REQUIREMENT_MULTIPLIER;
+  const findMarkableItems = useMarkableItems();
 
   const categoryName = t(categoryId, { ns: 'categories' });
   const isFood = isFoodCategory(categoryId);
@@ -154,44 +144,8 @@ export const CategoryStatusSummary = ({
     return [];
   };
 
-  // Find matching inventory items for a shortage that can be marked as enough
-  const findMarkableItems = (shortage: CategoryShortage): InventoryItem[] => {
-    if (!onMarkAsEnough || !items.length) return [];
-
-    const shortageItemId = shortage.itemId.toLowerCase();
-    return items.filter((item) => {
-      // Match by itemType or normalized name
-      // Note: Custom items (itemType === 'custom') should NOT match by name to avoid
-      // false matches with recommended items
-      const itemType = item.itemType?.toLowerCase() || '';
-
-      const isCustomItem = item.itemType === 'custom';
-      const normalizedName = isCustomItem
-        ? ''
-        : item.name.toLowerCase().split(' ').join('-');
-      const matches =
-        itemType === shortageItemId ||
-        (!isCustomItem && normalizedName === shortageItemId);
-
-      if (!matches) return false;
-
-      // Calculate recommended quantity for this item
-      const recommendedQuantity = getRecommendedQuantityForItem(
-        item,
-        household,
-        recommendedItems,
-        childrenMultiplier,
-      );
-
-      // Can be marked as enough if: not already marked, has quantity > 0, quantity < recommendedQuantity
-      return (
-        !item.markedAsEnough &&
-        item.quantity > 0 &&
-        recommendedQuantity > 0 &&
-        item.quantity < recommendedQuantity
-      );
-    });
-  };
+  const markableItemsFor = (shortage: CategoryShortage): InventoryItem[] =>
+    onMarkAsEnough ? findMarkableItems(shortage.itemId, items) : [];
 
   return (
     <div className={styles.summary}>
@@ -218,7 +172,7 @@ export const CategoryStatusSummary = ({
             </div>
             <ul className={styles.missingList}>
               {getVisibleShortages().map((shortage) => {
-                const markableItems = findMarkableItems(shortage);
+                const markableItems = markableItemsFor(shortage);
                 const hasMarkableItems = markableItems.length > 0;
 
                 return (
