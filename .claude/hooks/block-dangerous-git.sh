@@ -27,7 +27,7 @@ else
 fi
 
 # Empty command means the payload shape changed or parsing failed -> fail closed.
-if [ -z "$COMMAND" ]; then
+if [[ -z "$COMMAND" ]]; then
   echo "BLOCKED: git guardrail could not read the command; refusing to run it." >&2
   exit 2
 fi
@@ -80,7 +80,7 @@ DANGEROUS_PATTERNS=(
 # created on. post-create.sh writes this file; on the host it does not exist and
 # this whole block is skipped, so normal multi-branch work is unaffected.
 BRANCH_PIN_FILE="${DEVCONTAINER_BRANCH_PIN:-$HOME/.devcontainer-allowed-branch}"
-if [ -f "$BRANCH_PIN_FILE" ]; then
+if [[ -f "$BRANCH_PIN_FILE" ]]; then
   PINNED=$(tr -d '[:space:]' < "$BRANCH_PIN_FILE")
   REPO="${CLAUDE_PROJECT_DIR:-$PWD}"
 
@@ -114,13 +114,12 @@ if [ -f "$BRANCH_PIN_FILE" ]; then
     REF=$(printf '%s' "$NORMALIZED" | awk '
       { for (i = 1; i <= NF; i++) if ($i == "checkout" || $i == "switch") { start = i + 1; break } }
       start { for (i = start; i <= NF; i++) { if ($i == "--") exit; if ($i ~ /^-/) continue; print $i; exit } }')
-    if [ -n "$REF" ] && [ "$REF" != "$PINNED" ]; then
-      # A ref that is not also an existing path means a real branch switch.
-      if git -C "$REPO" rev-parse --verify --quiet "${REF}^{commit}" >/dev/null 2>&1 &&
-         [ ! -e "$REPO/$REF" ]; then
-        echo "BLOCKED: switching to '$REF' is not allowed; this dev container is confined to '$PINNED'." >&2
-        exit 2
-      fi
+    # A ref that resolves to a commit and is not also an existing path means a
+    # real branch switch, rather than `git checkout <file>`.
+    if [[ -n "$REF" && "$REF" != "$PINNED" && ! -e "$REPO/$REF" ]] &&
+       git -C "$REPO" rev-parse --verify --quiet "${REF}^{commit}" >/dev/null 2>&1; then
+      echo "BLOCKED: switching to '$REF' is not allowed; this dev container is confined to '$PINNED'." >&2
+      exit 2
     fi
   fi
 
@@ -128,28 +127,32 @@ if [ -f "$BRANCH_PIN_FILE" ]; then
   # their values, drop the remote, keep what's left. Empty means a bare
   # `git push`, which targets the current branch.
   if printf '%s' "$NORMALIZED" | grep -qEi '(^|[[:space:]])git[[:space:]]+push([[:space:]]|$)'; then
-  TARGET=$(printf '%s' "$NORMALIZED" | awk '
-    { for (i = 1; i <= NF; i++) if ($i == "push") { start = i + 1; break } }
-    start {
-      n = 0
-      for (i = start; i <= NF; i++) {
-        if ($i ~ /^-/) { if ($i == "-u" || $i == "--set-upstream" || $i == "-o") continue; else continue }
-        n++
-        if (n == 1) continue        # remote name
-        print $i; exit
-      }
-    }')
-  # Refspec form (HEAD:branch, src:dst) -> the destination is what matters.
-  case "$TARGET" in *:*) TARGET=${TARGET##*:} ;; esac
-  if [ -z "$TARGET" ] || [ "$TARGET" = "HEAD" ]; then
-    TARGET=$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null)
-  fi
+    TARGET=$(printf '%s' "$NORMALIZED" | awk '
+      { for (i = 1; i <= NF; i++) if ($i == "push") { start = i + 1; break } }
+      start {
+        n = 0
+        for (i = start; i <= NF; i++) {
+          if ($i ~ /^-/) continue   # flags and their values are irrelevant here
+          n++
+          if (n == 1) continue      # remote name
+          print $i; exit
+        }
+      }')
+    case "$TARGET" in
+      # Refspec form (HEAD:branch, src:dst) -> the destination is what matters.
+      *:*) TARGET=${TARGET##*:} ;;
+      # Plain branch name, or empty for a bare `git push`; handled below.
+      *) ;;
+    esac
+    if [[ -z "$TARGET" || "$TARGET" == "HEAD" ]]; then
+      TARGET=$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null)
+    fi
 
-    if [ -z "$TARGET" ]; then
+    if [[ -z "$TARGET" ]]; then
       echo "BLOCKED: could not determine the push target branch; refusing (dev container is pinned to '$PINNED')." >&2
       exit 2
     fi
-    if [ "$TARGET" != "$PINNED" ]; then
+    if [[ "$TARGET" != "$PINNED" ]]; then
       echo "BLOCKED: this dev container may only push to '$PINNED', but the command targets '$TARGET'." >&2
       echo "Ask the user to push other branches from the host." >&2
       exit 2
