@@ -1,0 +1,113 @@
+{
+  "name": "Emergency Supply Tracker",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/emergency-supply-tracker",
+  "features": {
+    // Adds sudo + shell niceties to the base image's existing `ubuntu` user.
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "username": "ubuntu",
+      "installZsh": false,
+      "upgradePackages": false
+    },
+    // CI still runs Node 20 (to be updated separately). Dev container is
+    // pinned to 24 (current Node LTS) instead, since Claude Code requires
+    // engines.node >=22 and floating on "latest" would also track
+    // non-LTS/odd-numbered releases.
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "mounts": [
+    "source=claude-code-config-${devcontainerId},target=/home/ubuntu/.claude,type=volume"
+  ],
+  "forwardPorts": [5173, 4173, 6006, 9323],
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite dev server",
+      "onAutoForward": "notify"
+    },
+    "4173": {
+      "label": "Vite preview",
+      "onAutoForward": "silent"
+    },
+    "6006": {
+      "label": "Storybook",
+      "onAutoForward": "silent"
+    },
+    "9323": {
+      "label": "Playwright report",
+      "onAutoForward": "silent"
+    }
+  },
+  // Runs on the host first: records the git paths this workspace needs mounted
+  // (so opening a git worktree works) and creates the shared browser volume.
+  "initializeCommand": "bash .devcontainer/initialize.sh",
+  // updateContentCommand runs before postCreateCommand and already does npm ci.
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "updateContentCommand": "sudo chown ubuntu:ubuntu /workspaces/emergency-supply-tracker/node_modules && npm ci",
+  // Always pull the newest Claude Code CLI on every container start (best-effort;
+  // skipped gracefully if the npm registry is unreachable). `sudo` alone would
+  // reset PATH to its secure_path and run the system npm (Node 24 at /usr/bin)
+  // instead of nvm's npm, silently updating a `claude` binary that's never on
+  // PATH while the real one (nvm, Node 20) stays stale. Preserve PATH so sudo
+  // still uses nvm's npm, which is what `claude` actually resolves to.
+  "postStartCommand": "sudo env \"PATH=$PATH\" npm install -g @anthropic-ai/claude-code@latest || true",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-playwright.playwright",
+        "vitest.explorer"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        // JS Debug's auto-attach injects NODE_OPTIONS=--require .../bootloader.js
+        // into every integrated terminal. That workspaceStorage path goes stale
+        // on container rebuilds/window reloads, and already-open terminals (plus
+        // anything spawned from them, like husky's Node hooks) then crash with
+        // "Cannot find module .../bootloader.js". Disabled here since it's not
+        // needed for this project's workflow.
+        "debug.javascript.autoAttachFilter": "disabled"
+      }
+    }
+  },
+  "containerEnv": {
+    // CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC was previously set here to cut
+    // container network overhead, but it also suppresses the feature-flag
+    // check that Remote Control (/remote-control) needs, hiding the command
+    // entirely. Left unset so Remote Control works inside the container.
+    "DISABLE_AUTOUPDATER": "1",
+    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
+    // Token for gh (issue/PR reads plus `gh pr create`) AND for git itself:
+    // post-create.sh rewrites the SSH remote to HTTPS and sets `gh` as git's
+    // credential helper, so push/fetch also authenticate with this token
+    // instead of the SSH agent VS Code would otherwise forward — the
+    // container never touches your SSH key. Use a fine-grained PAT scoped to
+    // only this repo (see README), not a broad host credential. Named
+    // GH_EST_TOKEN (not the `gh`-recognized GH_TOKEN) so it can't collide
+    // with tokens forwarded for other repos' devcontainers on the same host;
+    // post-create.sh re-exports it as GH_TOKEN so `gh`/git pick it up. What
+    // the agent may actually do with it is enforced by
+    // .claude/hooks/block-dangerous-git.sh: commits and feature-branch pushes
+    // are allowed; force-pushes, pushes to main, and history rewrites are not.
+    // main is branch-protected on GitHub as the backstop.
+    "GH_EST_TOKEN": "${localEnv:GH_EST_TOKEN}",
+    // Never hang waiting on an interactive credential prompt.
+    "GIT_TERMINAL_PROMPT": "0",
+    // Disable automatic gc for every git command in the container, without
+    // writing to the shared config. Auto-gc runs `git worktree prune`, and in a
+    // worktree-based container the repo's OTHER worktrees are not mounted, so
+    // they look prunable — gc here would delete their admin dirs and break them
+    // on the host. Explicit `git gc` / `worktree prune` are blocked by
+    // .claude/hooks/block-dangerous-git.sh as well.
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "gc.auto",
+    "GIT_CONFIG_VALUE_0": "0"
+  },
+  "remoteUser": "ubuntu"
+}

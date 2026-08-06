@@ -1,0 +1,40 @@
+services:
+  app:
+    # Pinned to match @playwright/test (^1.57.0) in package.json. This is the
+    # same image `npm run test:e2e:visual:docker` uses, so visual-regression
+    # runs inside the container match the committed *-chromium-linux.png
+    # baselines. Bump both together when upgrading Playwright.
+    image: mcr.microsoft.com/playwright:v1.57.0-noble
+    volumes:
+      - ..:/workspaces/emergency-supply-tracker:cached
+      # node_modules on a native volume, not the macOS bind mount: npm's
+      # rename/rmdir churn triggers ESTALE (-116) / ENOTEMPTY on VirtioFS.
+      - node-modules:/workspaces/emergency-supply-tracker/node_modules
+      - playwright-browsers:/ms-playwright
+      # --- git worktree support (paths written by initialize.sh) ---
+      # The shared .git, mounted at its original host path so the absolute
+      # `gitdir:` in a worktree's .git file resolves inside the container.
+      - ${GIT_COMMON_DIR:-/tmp/est-devcontainer-no-git}:${GIT_COMMON_DIR:-/tmp/est-devcontainer-no-git}
+      # The workspace at its original host path too. Without this the main repo
+      # cannot find the worktree, marks it prunable, and `git gc` deletes the
+      # shared admin dir — corrupting the worktree on the host as well.
+      - ${LOCAL_WORKSPACE_FOLDER:-/tmp/est-devcontainer-no-ws}:${LOCAL_WORKSPACE_FOLDER:-/tmp/est-devcontainer-no-ws}
+    # Host commit identity (captured by initialize.sh into .env, since
+    # ~/.gitconfig itself isn't mounted). post-create.sh seeds the container's
+    # own gitconfig from these once; safe to leave unset if the host has none.
+    environment:
+      - HOST_GIT_USER_NAME=${HOST_GIT_USER_NAME:-}
+      - HOST_GIT_USER_EMAIL=${HOST_GIT_USER_EMAIL:-}
+    command: sleep infinity
+    # Chromium hard-crashes on Docker's default 64MB /dev/shm, which `npm run
+    # test:e2e` (--workers=4) reliably hits.
+    shm_size: '1gb'
+
+volumes:
+  # Per-worktree: branches diverge in dependencies.
+  node-modules:
+  # Shared across every container for this repo — browsers are large and
+  # identical. Created by initialize.sh.
+  playwright-browsers:
+    external: true
+    name: est-playwright-browsers
