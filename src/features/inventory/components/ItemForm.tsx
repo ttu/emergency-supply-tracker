@@ -348,7 +348,15 @@ export const ItemForm = ({
     'boxes',
   ] as const;
 
-  const unitOptions = COMMON_UNITS.map((unit) => ({
+  // An item may already carry a unit the curated list leaves out — kit
+  // templates use rolls, grams and days. Without its own unit among the
+  // options the select falls back to the first one, so the form shows a unit
+  // the item does not have and one careless change silently rewrites it.
+  const offeredUnits: Unit[] = COMMON_UNITS.includes(formData.unit as Unit)
+    ? COMMON_UNITS
+    : [...COMMON_UNITS, formData.unit as Unit];
+
+  const unitOptions = offeredUnits.map((unit) => ({
     value: unit,
     label: t(unit, { ns: 'units' }),
   }));

@@ -7,7 +7,7 @@ import { useInventory } from '@/features/inventory';
 import { useRecommendedItems } from '@/features/templates';
 import { ProductPicker } from './ProductPicker';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
-import { STANDARD_CATEGORIES } from '@/features/categories';
+import { offerableTemplates } from '@/features/templates/utils/offerableTemplates';
 import type {
   ProductTemplate,
   RecommendedItemDefinition,
@@ -39,24 +39,26 @@ export function NewItemTemplateStep({
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { household } = useHousehold();
-  const { customTemplates, customCategories } = useInventory();
+  // `categories` is the provider's enabled set — standard categories the
+  // household has not switched off, plus its own.
+  const { customTemplates, categories, disabledRecommendedItems } =
+    useInventory();
   const { recommendedItems } = useRecommendedItems();
 
   // Products that scale to nothing for this household (pet supplies with no
-  // pets, freezer items with no freezer) are not offered.
-  const applicable = useMemo(
-    () =>
-      recommendedItems.filter(
-        (item: RecommendedItemDefinition) =>
-          calculateRecommendedQuantity(item, household) > 0,
-      ),
-    [recommendedItems, household],
-  );
-
-  const categories = useMemo(
-    () => [...STANDARD_CATEGORIES, ...customCategories],
-    [customCategories],
-  );
+  // pets, freezer items with no freezer) are not offered, nor are the ones
+  // the household has switched off.
+  const applicable = useMemo(() => {
+    const needed = recommendedItems.filter(
+      (item: RecommendedItemDefinition) =>
+        calculateRecommendedQuantity(item, household) > 0,
+    );
+    return offerableTemplates(
+      needed,
+      disabledRecommendedItems,
+      categories.map((c) => String(c.id)),
+    );
+  }, [recommendedItems, household, disabledRecommendedItems, categories]);
 
   return (
     <Panel padding={0}>
