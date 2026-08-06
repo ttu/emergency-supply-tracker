@@ -9,13 +9,15 @@ export const HOUSEHOLD_DEFAULTS = {
   useFreezer: false,
 } as const;
 
-// Default household for new inventory sets
+// Default household for new inventory sets. Derived from the form defaults
+// rather than restated, so a new set and a fresh onboarding always start the
+// same household — they drifted to "2 adults, 3 children" here otherwise.
 export const DEFAULT_HOUSEHOLD: HouseholdConfig = {
-  adults: 2,
-  children: 3,
-  pets: 0,
-  supplyDurationDays: 3,
-  useFreezer: false,
+  adults: HOUSEHOLD_DEFAULTS.adults,
+  children: HOUSEHOLD_DEFAULTS.children,
+  pets: HOUSEHOLD_DEFAULTS.pets,
+  supplyDurationDays: HOUSEHOLD_DEFAULTS.supplyDays,
+  useFreezer: HOUSEHOLD_DEFAULTS.useFreezer,
 };
 
 // Validation limits for household configuration
