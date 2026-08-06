@@ -36,12 +36,8 @@
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 15px;
-  padding: 15px 16px;
+  padding: 15px 16px 15px 44px;
   outline: none;
-}
-
-.search {
-  padding-left: 44px;
 }
 
 .search::placeholder {

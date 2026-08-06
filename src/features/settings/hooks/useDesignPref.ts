@@ -58,10 +58,9 @@ function save(prefs: DesignPrefs) {
  * and `global.css` does the rest.
  */
 function applyToDocument(prefs: DesignPrefs) {
-  document.documentElement.setAttribute(
-    'data-reduce-motion',
-    prefs.reduceMotion ? 'true' : 'false',
-  );
+  document.documentElement.dataset.reduceMotion = prefs.reduceMotion
+    ? 'true'
+    : 'false';
 }
 
 /** Local-only design v2 prefs that don't have backing in UserSettings. */

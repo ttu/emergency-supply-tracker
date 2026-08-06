@@ -171,7 +171,7 @@ export function DesignApp({
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const isMobile = useIsMobile();
-  const [nav, setNavState] = useState<DesignNavId>(initialNav);
+  const [navState, setNavState] = useState<DesignNavId>(initialNav);
   const setNav = useCallback(
     (id: DesignNavId) => {
       setNavState(id);
@@ -226,12 +226,12 @@ export function DesignApp({
   const view: { title: string; body: ReactNode; breadcrumb?: string } =
     selectedItemId
       ? renderItemDetail(selectedItemId, ctx)
-      : renderNav(nav, ctx);
+      : renderNav(navState, ctx);
 
   const Shell = isMobile ? MobileShell : DesktopShell;
   return (
     <Shell
-      active={nav}
+      active={navState}
       onNav={goTo}
       title={view.title}
       breadcrumb={view.breadcrumb}

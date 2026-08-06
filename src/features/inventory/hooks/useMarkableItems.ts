@@ -50,7 +50,7 @@ export function useMarkableItems(): FindMarkableItems {
         const matchesTemplate = item.itemType?.toLowerCase() === wanted;
         const matchesName =
           !isCustomItem &&
-          item.name.toLowerCase().split(' ').join('-') === wanted;
+          item.name.toLowerCase().replaceAll(' ', '-') === wanted;
 
         if (!matchesTemplate && !matchesName) return false;
 
