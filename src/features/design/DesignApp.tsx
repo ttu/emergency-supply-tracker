@@ -157,11 +157,28 @@ function renderNav(
   }
 }
 
-export function DesignApp() {
+interface DesignAppProps {
+  /** Where to open. Carries the classic shell's page across a theme switch. */
+  initialNav?: DesignNavId;
+  /** Told whenever the destination changes, so the classic shell can follow. */
+  onNavChange?: (nav: DesignNavId) => void;
+}
+
+export function DesignApp({
+  initialNav = 'home',
+  onNavChange,
+}: Readonly<DesignAppProps> = {}) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const isMobile = useIsMobile();
-  const [nav, setNav] = useState<DesignNavId>('home');
+  const [nav, setNavState] = useState<DesignNavId>(initialNav);
+  const setNav = useCallback(
+    (id: DesignNavId) => {
+      setNavState(id);
+      onNavChange?.(id);
+    },
+    [onNavChange],
+  );
   const [{ categoryId: selectedCategoryId }, setFilters] =
     useInventoryFilters();
   const setSelectedCategoryId = useCallback(
@@ -177,14 +194,17 @@ export function DesignApp() {
   const [copySourceId, setCopySourceId] = useState<string | undefined>(
     undefined,
   );
-  const goTo = useCallback((id: DesignNavId) => {
-    setNav(id);
-    setSelectedItemId(undefined);
-    setSelectedTemplateId(undefined);
-    setCopySourceId(undefined);
-    // The category filter is deliberately *not* cleared here — inventory
-    // filters persist, so returning to the list finds it as it was left.
-  }, []);
+  const goTo = useCallback(
+    (id: DesignNavId) => {
+      setNav(id);
+      setSelectedItemId(undefined);
+      setSelectedTemplateId(undefined);
+      setCopySourceId(undefined);
+      // The category filter is deliberately *not* cleared here — inventory
+      // filters persist, so returning to the list finds it as it was left.
+    },
+    [setNav],
+  );
 
   // renderNav / renderItemDetail are cheap pure helpers that return JSX
   // trees React then reconciles — there is no benefit to memoising `view`
