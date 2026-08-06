@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useSettings } from '@/features/settings';
 import { useDesignPrefs } from '@/features/settings/hooks/useDesignPref';
 import type { Theme } from '@/shared/types';
@@ -10,11 +11,20 @@ import { PanelHeader, SectionHeader, ToggleRow } from './SettingsRows';
 
 /** §1 Appearance: theme picker, classic switcher, language, a11y toggles. */
 export function AppearanceSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
   const [designPrefs, setDesignPref] = useDesignPrefs();
+  const { readiness, daysCovered, expiringCount } = useDesignData();
   const setTheme = (k: Theme) => updateSettings({ theme: k });
+  // Storing the choice is only half of it — i18next has to be told to load
+  // the other bundle, or the UI stays in the old language until a reload.
+  const setLanguage = (language: 'en' | 'fi') => {
+    updateSettings({ language });
+    i18n.changeLanguage(language).catch((error) => {
+      console.error('Failed to change language', error);
+    });
+  };
 
   return (
     <section id="sec-appearance" style={{ scrollMarginTop: 16 }}>
@@ -27,7 +37,11 @@ export function AppearanceSection() {
           {t(`v2.settings.appearance.themeHeader.${themeKey}`)}
         </PanelHeader>
         <div style={{ padding: 20 }}>
-          <ThemePicker value={settings.theme} onChange={setTheme} />
+          <ThemePicker
+            value={settings.theme}
+            onChange={setTheme}
+            preview={{ readiness, daysCovered, expiringCount }}
+          />
         </div>
         <div
           style={{
@@ -58,9 +72,7 @@ export function AppearanceSection() {
                 <button
                   key={l.code}
                   type="button"
-                  onClick={() =>
-                    updateSettings({ language: l.code as 'en' | 'fi' })
-                  }
+                  onClick={() => setLanguage(l.code as 'en' | 'fi')}
                   aria-pressed={sel}
                   style={{
                     padding: '12px 14px',

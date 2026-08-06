@@ -293,7 +293,9 @@
       "defaultName": "Inventory Set",
       "active": "Active",
       "confirmDeleteTitle": "Delete inventory set?",
-      "confirmDeleteMessage": "This inventory set and its inventory will be removed. You cannot undo this."
+      "confirmDeleteMessage": "This inventory set and its inventory will be removed. You cannot undo this.",
+      "switch": "Switch",
+      "switchLabel": "Switch to this inventory set"
     },
     "language": {
       "label": "Language",
@@ -1865,6 +1867,16 @@
           "cockpit": "DISABLES TRANSITIONS · RESPECTS prefers-reduced-motion",
           "civil": "DISABLES TRANSITIONS · RESPECTS prefers-reduced-motion",
           "pantry": "Disables non-essential animations."
+        },
+        "themePreview": {
+          "cockpit": "READINESS · {{readiness}}% · {{days}}D · {{expiring}} EXP",
+          "civil": "READINESS {{readiness}}% · {{days}} DAYS · {{expiring}} EXPIRING",
+          "pantry": "Readiness {{readiness}}% · {{days}} days · {{expiring}} expiring"
+        },
+        "themeDesc": {
+          "cockpit": "DARK OPERATIONAL CONSOLE",
+          "civil": "OFFICIAL DOCUMENT",
+          "pantry": "Calm, Nordic"
         }
       },
       "classic": {
@@ -1964,7 +1976,9 @@
           "cockpit": "INVENTORY ITEMS",
           "civil": "INVENTORY ITEMS",
           "pantry": "Items tracked"
-        }
+        },
+        "waterFormula": "= {{water}} L × {{people}} people × {{days}} d",
+        "foodFormula": "= {{calories}} kcal × {{people}} people × {{days}} d"
       },
       "inventorySets": {
         "title": {
@@ -2029,16 +2043,7 @@
           "civil": "WARN ≤ N DAYS BEFORE EXPIRY",
           "pantry": "fixed"
         },
-        "hygiene": {
-          "cockpit": "TRACK HYGIENE WATER SEPARATELY",
-          "civil": "TRACK HYGIENE WATER SEPARATELY",
-          "pantry": "Track hygiene water separately"
-        },
-        "hygieneHint": {
-          "cockpit": "ADDS 3 L/PERSON/DAY · ADV WATER MODE",
-          "civil": "ADDS 3 L/PERSON/DAY · ADV WATER MODE",
-          "pantry": "Add 3 L/person/day for hygiene"
-        }
+        "expiryWindowValue": "{{days}} days"
       },
       "advanced": {
         "title": {

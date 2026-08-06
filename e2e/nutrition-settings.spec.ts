@@ -71,15 +71,13 @@ test.describe('Nutrition Settings', () => {
     await expect(page.getByText('70').first()).toBeVisible();
   });
 
-  test('hygiene-water toggle flips state', async ({ page }) => {
+  test('offers no control that changes nothing', async ({ page }) => {
+    // "Track hygiene water separately" promised 3 L/person/day and no
+    // calculation ever read it, so the switch is gone rather than lying.
     await navigateToSettingsSection(page, 'nutrition');
-    const toggle = page.getByRole('switch', {
-      name: /TRACK HYGIENE WATER SEPARATELY/i,
-    });
-    const initial = (await toggle.getAttribute('aria-checked')) === 'true';
-    await toggle.click();
-    const next = (await toggle.getAttribute('aria-checked')) === 'true';
-    expect(next).toBe(!initial);
+    await expect(
+      page.getByRole('switch', { name: /TRACK HYGIENE WATER SEPARATELY/i }),
+    ).toHaveCount(0);
   });
 
   test('persists kcal change after reload', async ({ page }) => {

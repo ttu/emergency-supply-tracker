@@ -149,6 +149,10 @@ export function HouseholdSection() {
     const ppl = household.adults + household.children * (childPct / 100);
     const days = household.supplyDurationDays;
     return {
+      // Children count at their own multiplier, so the figure is per
+      // "person-equivalent" rather than per head. The formula below has to
+      // quote the same number or it contradicts the value it explains.
+      people: Number.isInteger(ppl) ? String(ppl) : ppl.toFixed(1),
       water: Math.ceil(water * ppl * days),
       kcal: Math.ceil(cal * ppl * days),
       itemCount: items.length,
@@ -216,7 +220,11 @@ export function HouseholdSection() {
             size={40}
             unitSize={13}
             unit={`L · ${waterForLabel}`}
-            formula={`= ${water} L × ${household.adults} ADULTS × ${household.supplyDurationDays} D`}
+            formula={t('v2.settings.household.waterFormula', {
+              water,
+              people: computed.people,
+              days: household.supplyDurationDays,
+            })}
           />
           <ComputedFigure
             marginTop={18}
@@ -224,7 +232,11 @@ export function HouseholdSection() {
             size={28}
             unitSize={12}
             unit={`kcal · ${totalFoodLabel}`}
-            formula={`= ${cal} × ${household.adults} × ${household.supplyDurationDays} D`}
+            formula={t('v2.settings.household.foodFormula', {
+              calories: cal,
+              people: computed.people,
+              days: household.supplyDurationDays,
+            })}
           />
           <ItemsTracked
             caption={t(`v2.settings.household.itemsTracked.${themeKey}`)}

@@ -131,4 +131,51 @@ test.describe('Theme Switching', () => {
       ).toBe('civil');
     }
   });
+  test('high contrast changes the palette on every theme', async ({ page }) => {
+    // The high-contrast block only overrode the base :root values, so any
+    // theme that set the same variables won it back on equal specificity —
+    // the toggle did nothing on every theme except light and dark.
+    const themes = [
+      'light',
+      'dark',
+      'midnight',
+      'ocean',
+      'sunset',
+      'forest',
+      'lavender',
+      'minimal',
+      'cockpit',
+      'civil',
+      'pantry',
+    ];
+
+    const inert = await page.evaluate((themeList) => {
+      const root = document.documentElement;
+      const probe = () => {
+        const cs = getComputedStyle(root);
+        return [
+          '--color-text',
+          '--color-border',
+          '--color-critical',
+          '--color-crit',
+          '--color-panel',
+          '--color-rule',
+        ]
+          .map((name) => cs.getPropertyValue(name).trim())
+          .join('|');
+      };
+      const failures: string[] = [];
+      for (const theme of themeList) {
+        root.setAttribute('data-theme', theme);
+        root.setAttribute('data-high-contrast', 'true');
+        const on = probe();
+        root.setAttribute('data-high-contrast', 'false');
+        const off = probe();
+        if (on === off) failures.push(theme);
+      }
+      return failures;
+    }, themes);
+
+    expect(inert).toEqual([]);
+  });
 });

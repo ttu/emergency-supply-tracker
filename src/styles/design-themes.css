@@ -418,3 +418,75 @@
   button[class*='templateCard']:not([role='switch']):not([aria-pressed]):hover {
   border-color: var(--color-accent);
 }
+
+/* ========== HIGH CONTRAST ==========
+ *
+ * The v2 themes carry their own token vocabulary (--color-panel, --color-rule,
+ * --color-text-2/3, --color-crit …), none of which the classic high-contrast
+ * block in variables.css touches. Without these rules the toggle in §1
+ * Appearance changed nothing at all on cockpit, civil or pantry, while its
+ * own hint promised contrast above WCAG AA.
+ *
+ * The :root prefix and the two attributes put these at specificity (0,3,0),
+ * above both the theme blocks above and the classic high-contrast rules. */
+:root[data-theme='civil'][data-high-contrast='true'],
+:root[data-theme='pantry'][data-high-contrast='true'] {
+  --color-bg: #ffffff;
+  --color-bg-2: #ffffff;
+  --color-panel: #ffffff;
+  --color-panel-2: #f0f0f0;
+  --color-rule: #000000;
+  --color-rule-soft: #000000;
+
+  --color-text: #000000;
+  --color-text-2: #1a1a1a;
+  --color-text-3: #1a1a1a;
+
+  --color-ok: #006400;
+  --color-warn: #6b3d00;
+  --color-crit: #8b0000;
+  --color-accent: #0000cc;
+  --color-accent-ink: #ffffff;
+
+  --shadow-card: none;
+}
+
+:root[data-theme='cockpit'][data-high-contrast='true'] {
+  --color-bg: #000000;
+  --color-bg-2: #000000;
+  --color-panel: #0a0a0a;
+  --color-panel-2: #1a1a1a;
+  --color-rule: #ffffff;
+  --color-rule-soft: #ffffff;
+
+  --color-text: #ffffff;
+  --color-text-2: #e0e0e0;
+  --color-text-3: #e0e0e0;
+
+  --color-ok: #00ff00;
+  --color-warn: #ffff00;
+  --color-crit: #ff4444;
+  --color-accent: #66b3ff;
+  --color-accent-ink: #000000;
+
+  --shadow-card: none;
+}
+
+/* The bridge tokens the shared v1 components read when mounted inside a v2
+ * shell (see each theme block above) have to follow, or an embedded classic
+ * control keeps its normal-contrast surface inside a high-contrast page. */
+:root[data-theme='cockpit'][data-high-contrast='true'],
+:root[data-theme='civil'][data-high-contrast='true'],
+:root[data-theme='pantry'][data-high-contrast='true'] {
+  --color-background: var(--color-bg);
+  --color-background-secondary: var(--color-bg-2);
+  --color-background-tertiary: var(--color-panel-2);
+  --color-surface: var(--color-panel);
+  --color-surface-hover: var(--color-panel-2);
+  --color-surface-active: var(--color-panel-2);
+  --color-surface-secondary: var(--color-panel-2);
+  --color-border: var(--color-rule);
+  --color-text-secondary: var(--color-text-2);
+  --color-critical: var(--color-crit);
+  --color-warning: var(--color-warn);
+}

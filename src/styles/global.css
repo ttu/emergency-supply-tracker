@@ -210,3 +210,31 @@ a:focus-visible,
 .status-critical {
   color: var(--color-error);
 }
+
+/* Reduce motion.
+ *
+ * Set from the §1 Appearance toggle (see useDesignPref), and honoured for
+ * anyone whose system already asks for less motion. Durations go to a hair
+ * above zero rather than to `none` so transitionend/animationend listeners
+ * still fire and nothing waits forever on a callback that never comes. */
+:root[data-reduce-motion='true'],
+:root[data-reduce-motion='true'] *,
+:root[data-reduce-motion='true'] *::before,
+:root[data-reduce-motion='true'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

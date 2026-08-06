@@ -241,4 +241,50 @@ describe('InventorySetSection', () => {
     });
     expect(deleteButtons).toHaveLength(2);
   });
+  it('switches the active inventory set from the list', async () => {
+    // Without this the only switcher lives in the classic settings header,
+    // so design v2 — which embeds this component on its own — can create
+    // sets it can never activate, stranding the household on whichever set
+    // happened to be active.
+    const user = userEvent.setup();
+    renderInventorySetSection();
+
+    await user.type(
+      screen.getByLabelText('settings.inventorySets.newNamePlaceholder'),
+      'Cabin',
+    );
+    await user.click(
+      screen.getByRole('button', {
+        name: 'settings.inventorySets.addInventorySet',
+      }),
+    );
+
+    await user.click(
+      within(screen.getByText('Cabin').closest('li')!).getByRole('button', {
+        name: 'settings.inventorySets.switchLabel',
+      }),
+    );
+
+    // Re-query the row each time: React replaces the list item on re-render,
+    // so a node captured before the click goes stale.
+    await waitFor(() => {
+      expect(
+        within(screen.getByText('Cabin').closest('li')!).getByText(
+          'settings.inventorySets.active',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('offers no switch control on the set already active', async () => {
+    renderInventorySetSection();
+    const activeRow = screen
+      .getByText('settings.inventorySets.active')
+      .closest('li')!;
+    expect(
+      within(activeRow).queryByRole('button', {
+        name: 'settings.inventorySets.switchLabel',
+      }),
+    ).not.toBeInTheDocument();
+  });
 });

@@ -293,7 +293,9 @@
       "defaultName": "Varastosetti",
       "active": "Aktiivinen",
       "confirmDeleteTitle": "Poistetaanko varastosetti?",
-      "confirmDeleteMessage": "Tämä varastosetti ja sen varasto poistetaan. Toimintoa ei voi perua."
+      "confirmDeleteMessage": "Tämä varastosetti ja sen varasto poistetaan. Toimintoa ei voi perua.",
+      "switch": "Vaihda",
+      "switchLabel": "Vaihda tähän varastosarjaan"
     },
     "language": {
       "label": "Kieli",
@@ -1865,6 +1867,16 @@
           "cockpit": "POISTAA SIIRTYMÄT · KUNNIOITTAA prefers-reduced-motion",
           "civil": "POISTAA SIIRTYMÄT · KUNNIOITTAA prefers-reduced-motion",
           "pantry": "Poistaa ei-välttämättömät animaatiot."
+        },
+        "themePreview": {
+          "cockpit": "VALMIUS · {{readiness}}% · {{days}}VRK · {{expiring}} VANH",
+          "civil": "VALMIUS {{readiness}}% · {{days}} PÄIVÄÄ · {{expiring}} VANHENEE",
+          "pantry": "Valmius {{readiness}}% · {{days}} päivää · {{expiring}} vanhenee"
+        },
+        "themeDesc": {
+          "cockpit": "TUMMA OPERATIIVINEN KONSOLI",
+          "civil": "VIRALLINEN ASIAKIRJA",
+          "pantry": "Rauhallinen, pohjoismainen"
         }
       },
       "classic": {
@@ -1964,7 +1976,9 @@
           "cockpit": "VARASTON TUOTTEET",
           "civil": "VARASTON TUOTTEET",
           "pantry": "Seurattavat tuotteet"
-        }
+        },
+        "waterFormula": "= {{water}} l × {{people}} henkilöä × {{days}} vrk",
+        "foodFormula": "= {{calories}} kcal × {{people}} henkilöä × {{days}} vrk"
       },
       "inventorySets": {
         "title": {
@@ -2029,16 +2043,7 @@
           "civil": "VAROITA ≤ N PÄIVÄÄ ENNEN VANHENEMISTA",
           "pantry": "kiinteä"
         },
-        "hygiene": {
-          "cockpit": "SEURAA HYGIENIAVETTÄ ERIKSEEN",
-          "civil": "SEURAA HYGIENIAVETTÄ ERIKSEEN",
-          "pantry": "Seuraa hygieniavettä erikseen"
-        },
-        "hygieneHint": {
-          "cockpit": "LISÄÄ 3 L/HLÖ/VRK · ADV-VESITILA",
-          "civil": "LISÄÄ 3 L/HLÖ/VRK · ADV-VESITILA",
-          "pantry": "Lisää 3 l/hlö/vrk hygieniaan"
-        }
+        "expiryWindowValue": "{{days}} päivää"
       },
       "advanced": {
         "title": {

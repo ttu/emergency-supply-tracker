@@ -4,13 +4,13 @@ import {
   type DesignV2Theme,
   type Theme,
 } from '@/shared/types';
+import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 
 const PREVIEWS: Record<
   DesignV2Theme,
   {
     name: string;
-    description: string;
     bg: string;
     text: string;
     text3: string;
@@ -30,7 +30,6 @@ const PREVIEWS: Record<
 > = {
   cockpit: {
     name: 'Cockpit',
-    description: 'Dark operational console',
     bg: '#0d141a',
     text: '#e6ecf0',
     text3: '#5a6975',
@@ -49,7 +48,6 @@ const PREVIEWS: Record<
   },
   civil: {
     name: 'Civil Defense',
-    description: 'Official document',
     bg: '#f4f1ea',
     text: '#0b1d2a',
     text3: '#5b6b62',
@@ -68,7 +66,6 @@ const PREVIEWS: Record<
   },
   pantry: {
     name: 'Pantry',
-    description: 'Calm, Nordic',
     bg: '#eef0ea',
     text: '#1a2620',
     text3: '#6c7a72',
@@ -87,17 +84,32 @@ const PREVIEWS: Record<
   },
 };
 
+/** The household's own headline figures, shown in each theme's own voice. */
+export interface ThemePreviewStats {
+  readiness: number;
+  daysCovered: number;
+  expiringCount: number;
+}
+
 interface ThemePickerProps {
   value: Theme;
   onChange: (key: Theme) => void;
   layout?: 'grid' | 'list';
+  /**
+   * Real figures to render on each card. Omitted where there is no inventory
+   * to describe yet — onboarding, chiefly — in which case the line is left
+   * out rather than filled with numbers the household does not have.
+   */
+  preview?: ThemePreviewStats;
 }
 
 export function ThemePicker({
   value,
   onChange,
   layout = 'grid',
+  preview,
 }: Readonly<ThemePickerProps>) {
+  const { t: translate } = useTranslation();
   const { themeKey: activeKey } = useDesignTheme();
   const isList = layout === 'list';
   const containerStyle: CSSProperties = isList
@@ -167,18 +179,22 @@ export function ThemePicker({
                   ),
                 )}
               </div>
-              <div
-                style={{
-                  fontFamily: t.fontMono,
-                  fontSize: 9,
-                  color: t.text3,
-                  letterSpacing: '0.06em',
-                }}
-              >
-                {t.caps
-                  ? 'READINESS · 76% · 4.2D · 11 EXP'
-                  : 'Readiness · 76% · 4.2d'}
-              </div>
+              {preview && (
+                <div
+                  style={{
+                    fontFamily: t.fontMono,
+                    fontSize: 9,
+                    color: t.text3,
+                    letterSpacing: '0.06em',
+                  }}
+                >
+                  {translate(`v2.settings.appearance.themePreview.${key}`, {
+                    readiness: preview.readiness,
+                    days: preview.daysCovered.toFixed(1),
+                    expiring: preview.expiringCount,
+                  })}
+                </div>
+              )}
               <div
                 style={{
                   display: 'flex',
@@ -223,7 +239,7 @@ export function ThemePicker({
                     letterSpacing: '0.06em',
                   }}
                 >
-                  {t.description.toUpperCase()}
+                  {translate(`v2.settings.appearance.themeDesc.${key}`)}
                 </div>
               </div>
               <span

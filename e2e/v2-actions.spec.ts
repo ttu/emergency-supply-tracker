@@ -482,7 +482,9 @@ test.describe('Settings', () => {
 
     const switches = page.locator('main [role="switch"]');
     const count = await switches.count();
-    expect(count).toBeGreaterThanOrEqual(11);
+    // Floor, not an inventory: enough to prove the settings page rendered its
+    // controls. Dropped from 11 when the dead hygiene-water switch was cut.
+    expect(count).toBeGreaterThanOrEqual(10);
 
     for (let i = 0; i < count; i++) {
       const sw = switches.nth(i);

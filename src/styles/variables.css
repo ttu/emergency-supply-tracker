@@ -192,8 +192,14 @@
   --focus-ring-offset: 2px;
 }
 
-/* High Contrast Mode - Light */
-[data-high-contrast='true'] {
+/* High Contrast Mode - Light
+ *
+ * `:root` prefix is load-bearing. A plain [data-high-contrast='true'] carries
+ * the same specificity as the [data-theme='…'] blocks, so every theme
+ * declared after it in the cascade — midnight through minimal here, and all
+ * of design-themes.css — simply won its variables back and the toggle did
+ * nothing outside light and dark. */
+:root[data-high-contrast='true'] {
   --color-text: #000000;
   --color-text-secondary: #1a1a1a;
   --color-background: #ffffff;
@@ -218,8 +224,12 @@
   --focus-ring-offset: 3px;
 }
 
-/* High Contrast Mode - Dark */
-[data-theme='dark'][data-high-contrast='true'] {
+/* High Contrast Mode - Dark. Applies to every theme with a dark canvas, so
+ * high contrast does not paint white-on-white over one of them. */
+:root[data-theme='dark'][data-high-contrast='true'],
+:root[data-theme='midnight'][data-high-contrast='true'],
+:root[data-theme='ocean'][data-high-contrast='true'],
+:root[data-theme='forest'][data-high-contrast='true'] {
   --color-text: #ffffff;
   --color-text-secondary: #e0e0e0;
   --color-background: #000000;

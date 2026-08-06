@@ -2,25 +2,19 @@ import { useTranslation } from 'react-i18next';
 import { Panel } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
-import { useDesignPrefs } from '@/features/settings/hooks/useDesignPref';
 import {
   DAILY_CALORIES_PER_PERSON,
   DAILY_WATER_PER_PERSON,
   CHILDREN_REQUIREMENT_MULTIPLIER,
+  EXPIRING_SOON_DAYS_THRESHOLD,
 } from '@/shared/utils/constants';
 import { createPercentage } from '@/shared/types';
-import {
-  ReadField,
-  SectionHeader,
-  StepperRow,
-  ToggleRow,
-} from './SettingsRows';
+import { ReadField, SectionHeader, StepperRow } from './SettingsRows';
 
 export function NutritionSection() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { settings, updateSettings } = useSettings();
-  const [designPrefs, setDesignPref] = useDesignPrefs();
 
   const cal = settings.dailyCaloriesPerPerson ?? DAILY_CALORIES_PER_PERSON;
   const water = settings.dailyWaterPerPerson ?? DAILY_WATER_PER_PERSON;
@@ -81,14 +75,10 @@ export function NutritionSection() {
         />
         <ReadField
           label={t(`v2.settings.nutrition.expiryWindow.${themeKey}`)}
-          value="30 days"
+          value={t('v2.settings.nutrition.expiryWindowValue', {
+            days: EXPIRING_SOON_DAYS_THRESHOLD,
+          })}
           hint={t(`v2.settings.nutrition.expiryWindowHint.${themeKey}`)}
-        />
-        <ToggleRow
-          label={t(`v2.settings.nutrition.hygiene.${themeKey}`)}
-          hint={t(`v2.settings.nutrition.hygieneHint.${themeKey}`)}
-          on={designPrefs.trackHygieneWaterSeparately}
-          onChange={(v) => setDesignPref('trackHygieneWaterSeparately', v)}
           last
         />
       </Panel>

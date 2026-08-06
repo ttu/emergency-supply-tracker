@@ -15,17 +15,13 @@ describe('useDesignPrefs', () => {
 
   it('defaults both prefs to off', () => {
     const { result } = renderHook(() => useDesignPrefs());
-    expect(result.current[0]).toEqual({
-      reduceMotion: false,
-      trackHygieneWaterSeparately: false,
-    });
+    expect(result.current[0]).toEqual({ reduceMotion: false });
   });
 
   it('merges a partial stored value over the defaults', () => {
     localStorage.setItem(KEY, JSON.stringify({ reduceMotion: true }));
     const { result } = renderHook(() => useDesignPrefs());
     expect(result.current[0].reduceMotion).toBe(true);
-    expect(result.current[0].trackHygieneWaterSeparately).toBe(false);
   });
 
   it('falls back to defaults when the stored value is unparseable', () => {
@@ -67,8 +63,33 @@ describe('useDesignPrefs', () => {
     const { result } = renderHook(() => useDesignPrefs());
 
     expect(() =>
-      act(() => result.current[1]('trackHygieneWaterSeparately', true)),
+      act(() => result.current[1]('reduceMotion', true)),
     ).not.toThrow();
-    expect(result.current[0].trackHygieneWaterSeparately).toBe(true);
+    expect(result.current[0].reduceMotion).toBe(true);
+  });
+
+  describe('reduce motion', () => {
+    it('marks the document so the stylesheet can stop animating', () => {
+      // The pref was stored and read back to render its own switch, and
+      // nothing else ever looked at it — the toggle disabled no transition.
+      const { result } = renderHook(() => useDesignPrefs());
+
+      act(() => result.current[1]('reduceMotion', true));
+
+      expect(document.documentElement.dataset.reduceMotion).toBe('true');
+    });
+
+    it('marks the document on mount from what was already stored', () => {
+      localStorage.setItem(KEY, JSON.stringify({ reduceMotion: true }));
+      renderHook(() => useDesignPrefs());
+      expect(document.documentElement.dataset.reduceMotion).toBe('true');
+    });
+
+    it('clears the mark when switched back off', () => {
+      const { result } = renderHook(() => useDesignPrefs());
+      act(() => result.current[1]('reduceMotion', true));
+      act(() => result.current[1]('reduceMotion', false));
+      expect(document.documentElement.dataset.reduceMotion).toBe('false');
+    });
   });
 });

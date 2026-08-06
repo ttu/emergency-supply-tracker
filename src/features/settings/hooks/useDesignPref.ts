@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const KEY = 'est:design-prefs';
 // Pre-1.0 key used while v2 was an exploration. Migrated on first read.
@@ -6,12 +6,10 @@ const LEGACY_KEY = 'est:design:prefs';
 
 export interface DesignPrefs {
   reduceMotion: boolean;
-  trackHygieneWaterSeparately: boolean;
 }
 
 const DEFAULTS: DesignPrefs = {
   reduceMotion: false,
-  trackHygieneWaterSeparately: false,
 };
 
 function readFromKey(key: string): Partial<DesignPrefs> | undefined {
@@ -52,12 +50,30 @@ function save(prefs: DesignPrefs) {
   }
 }
 
+/**
+ * Reflect the prefs the stylesheet acts on onto the document element.
+ *
+ * `reduceMotion` is a CSS concern — there is no React state to thread it
+ * through to every transition on the page — so the root element carries it
+ * and `global.css` does the rest.
+ */
+function applyToDocument(prefs: DesignPrefs) {
+  document.documentElement.setAttribute(
+    'data-reduce-motion',
+    prefs.reduceMotion ? 'true' : 'false',
+  );
+}
+
 /** Local-only design v2 prefs that don't have backing in UserSettings. */
 export function useDesignPrefs(): [
   DesignPrefs,
   (k: keyof DesignPrefs, v: boolean) => void,
 ] {
   const [prefs, setPrefs] = useState<DesignPrefs>(load);
+
+  useEffect(() => {
+    applyToDocument(prefs);
+  }, [prefs]);
   const updatePref = (k: keyof DesignPrefs, v: boolean) => {
     // Functional update: two prefs changed in the same tick must both land,
     // rather than the second overwriting the first from a stale render.
