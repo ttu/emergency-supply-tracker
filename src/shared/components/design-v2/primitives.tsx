@@ -349,6 +349,11 @@ export function Button({
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         width: full ? '100%' : 'auto',
+        // Without this, letter-spacing on bold caps labels (e.g. "CONTINUE
+        // →") can push the shrink-to-fit width calculation just past a line
+        // break even with ample room in the flex row beside it, wrapping
+        // the button onto two lines.
+        whiteSpace: 'nowrap',
         ...style,
       }}
     >
