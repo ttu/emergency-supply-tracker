@@ -89,7 +89,9 @@ describe('StepperRow (v2)', () => {
   it('clamps decrement at min and disables the − button', () => {
     const onChange = vi.fn();
     render(<StepperRow label="Adults" value={1} min={1} onChange={onChange} />);
-    const dec = screen.getByRole('button', { name: 'Decrease Adults' });
+    const dec = screen.getByRole('button', {
+      name: 'v2.settings.stepperDecreaseAria',
+    });
     expect(dec).toBeDisabled();
     fireEvent.click(dec);
     expect(onChange).not.toHaveBeenCalled();
@@ -98,7 +100,9 @@ describe('StepperRow (v2)', () => {
   it('+ button increments by step', () => {
     const onChange = vi.fn();
     render(<StepperRow label="Days" value={5} step={2} onChange={onChange} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Increase Days' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.settings.stepperIncreaseAria' }),
+    );
     expect(onChange).toHaveBeenCalledWith(7);
   });
 

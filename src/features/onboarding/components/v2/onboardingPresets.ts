@@ -1,6 +1,7 @@
 export interface PresetDef {
   code: string;
-  name: { cockpit: string; civil: string; pantry: string };
+  /** Key into `v2.onboarding.preset.presetNames.<nameKey>.<themeKey>`. */
+  nameKey: 'single' | 'couple' | 'family' | 'custom';
   adults: number;
   children: number;
   days: number;
@@ -10,7 +11,7 @@ export interface PresetDef {
 export const ONBOARDING_PRESETS: PresetDef[] = [
   {
     code: 'P-01',
-    name: { cockpit: 'SINGLE', civil: 'SINGLE', pantry: 'Single person' },
+    nameKey: 'single',
     adults: 1,
     children: 0,
     days: 7,
@@ -18,7 +19,7 @@ export const ONBOARDING_PRESETS: PresetDef[] = [
   },
   {
     code: 'P-02',
-    name: { cockpit: 'COUPLE', civil: 'COUPLE', pantry: 'Couple' },
+    nameKey: 'couple',
     adults: 2,
     children: 0,
     days: 7,
@@ -26,11 +27,7 @@ export const ONBOARDING_PRESETS: PresetDef[] = [
   },
   {
     code: 'P-03',
-    name: {
-      cockpit: 'FAMILY · WITH MINORS',
-      civil: 'FAMILY · WITH MINORS',
-      pantry: 'Family with children',
-    },
+    nameKey: 'family',
     adults: 2,
     children: 2,
     days: 7,
@@ -38,11 +35,7 @@ export const ONBOARDING_PRESETS: PresetDef[] = [
   },
   {
     code: 'P-04',
-    name: {
-      cockpit: 'CUSTOM CONFIG',
-      civil: 'CUSTOM CONFIG',
-      pantry: 'Custom',
-    },
+    nameKey: 'custom',
     adults: 2,
     children: 0,
     days: 7,

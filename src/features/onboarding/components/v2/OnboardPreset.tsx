@@ -144,7 +144,7 @@ export function OnboardPreset({
                   letterSpacing: '-0.015em',
                 }}
               >
-                {p.name[themeKey]}
+                {t(`v2.onboarding.preset.presetNames.${p.nameKey}.${themeKey}`)}
               </div>
               <div
                 style={{

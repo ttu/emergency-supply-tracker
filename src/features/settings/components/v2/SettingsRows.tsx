@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Caption, Title } from '@/shared/components/design-v2/primitives';
 
 // Re-export so existing imports from './SettingsRows' keep working.
@@ -182,6 +183,7 @@ export function StepperRow({
   decimals = 0,
   last,
 }: Readonly<StepperRowProps>) {
+  const { t } = useTranslation();
   const clamp = (v: number) => Math.min(max, Math.max(min, v));
   const display =
     decimals > 0 ? value.toFixed(decimals) : value.toLocaleString();
@@ -209,7 +211,7 @@ export function StepperRow({
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <button
           type="button"
-          aria-label={`Decrease ${label}`}
+          aria-label={t('v2.settings.stepperDecreaseAria', { label })}
           onClick={() => onChange(clamp(value - step))}
           disabled={value <= min}
           style={stepperButtonStyle(false)}
@@ -242,7 +244,7 @@ export function StepperRow({
         </span>
         <button
           type="button"
-          aria-label={`Increase ${label}`}
+          aria-label={t('v2.settings.stepperIncreaseAria', { label })}
           onClick={() => onChange(clamp(value + step))}
           disabled={value >= max}
           style={stepperButtonStyle(true)}

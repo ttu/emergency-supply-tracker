@@ -102,7 +102,7 @@ export function PriorityQueue({
                 code: r.categoryCode,
                 quantity: r.item.quantity,
                 recommended: r.recommended || '—',
-                unit: r.item.unit,
+                unit: t(r.item.unit, { ns: 'units' }),
               })}
               {r.item.expirationDate
                 ? t('v2.dashboard.priorityExpires', {

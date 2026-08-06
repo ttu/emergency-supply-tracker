@@ -1543,6 +1543,28 @@
           "cockpit": "ESIASETUKSET ESITÄYTTÄVÄT SEURAAVAN OSION.",
           "civil": "ESIASETUKSET ESITÄYTTÄVÄT SEURAAVAN OSION.",
           "pantry": "Valitse lähin vastaava — voit hienosäätää seuraavaksi."
+        },
+        "presetNames": {
+          "single": {
+            "cockpit": "YKSIN",
+            "civil": "YKSIN",
+            "pantry": "Yksin asuva"
+          },
+          "couple": {
+            "cockpit": "PARISKUNTA",
+            "civil": "PARISKUNTA",
+            "pantry": "Pariskunta"
+          },
+          "family": {
+            "cockpit": "PERHE · ALAIKÄISIÄ",
+            "civil": "PERHE · ALAIKÄISIÄ",
+            "pantry": "Perhe, jossa lapsia"
+          },
+          "custom": {
+            "cockpit": "MUKAUTETTU",
+            "civil": "MUKAUTETTU",
+            "pantry": "Mukautettu"
+          }
         }
       },
       "household": {
@@ -1770,6 +1792,8 @@
         "civil": "YLÖS",
         "pantry": "Takaisin ylös"
       },
+      "stepperDecreaseAria": "Vähennä {{label}}",
+      "stepperIncreaseAria": "Lisää {{label}}",
       "railSections": {
         "cockpit": "OSIOT",
         "civil": "OSIOT",

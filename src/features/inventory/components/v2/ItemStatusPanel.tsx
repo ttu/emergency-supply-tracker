@@ -49,7 +49,7 @@ export function ItemStatusPanel({
         >
           {t(`v2.itemDetail.statusOfRecommended.${themeKey}`)}
           <br />
-          {quantity} / {recommended || '—'} {unit}
+          {quantity} / {recommended || '—'} {t(unit, { ns: 'units' })}
         </div>
       </div>
       <div style={{ marginTop: 16 }}>

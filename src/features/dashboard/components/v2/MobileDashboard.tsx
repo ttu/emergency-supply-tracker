@@ -210,7 +210,8 @@ export function MobileDashboard({
                     marginTop: 1,
                   }}
                 >
-                  {r.item.quantity}/{r.recommended || '—'} {r.item.unit}
+                  {r.item.quantity}/{r.recommended || '—'}{' '}
+                  {t(r.item.unit, { ns: 'units' })}
                 </div>
               </div>
               <StatusPill status={r.status} />

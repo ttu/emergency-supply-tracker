@@ -41,6 +41,8 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
 
   if (!hasTotals) return null;
 
+  const unitLabel = t(item.unit, { ns: 'units' });
+
   return (
     <Panel padding={20}>
       <Caption>{t(`v2.itemDetail.totalsCaption.${themeKey}`)}</Caption>
@@ -57,7 +59,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
             label={t(`v2.itemDetail.totalsKcal.${themeKey}`)}
             value={totalCalories.toLocaleString()}
             suffix="kcal"
-            detail={`${item.caloriesPerUnit} kcal × ${item.quantity} ${item.unit}`}
+            detail={`${item.caloriesPerUnit} kcal × ${item.quantity} ${unitLabel}`}
           />
         )}
         {totalWeightG !== undefined && (
@@ -69,7 +71,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
                 : String(totalWeightG)
             }
             suffix={totalWeightG >= 1000 ? 'kg' : 'g'}
-            detail={`${item.weightGrams} g × ${item.quantity} ${item.unit}`}
+            detail={`${item.weightGrams} g × ${item.quantity} ${unitLabel}`}
           />
         )}
         {totalWaterL !== undefined && (
@@ -77,7 +79,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
             label={t(`v2.itemDetail.totalsWaterPrep.${themeKey}`)}
             value={totalWaterL.toFixed(1)}
             suffix="L"
-            detail={`${item.requiresWaterLiters} L × ${item.quantity} ${item.unit}`}
+            detail={`${item.requiresWaterLiters} L × ${item.quantity} ${unitLabel}`}
           />
         )}
         {totalCapacityWh !== undefined && (
@@ -85,7 +87,7 @@ export function ItemTotalsPanel({ item }: Readonly<ItemTotalsPanelProps>) {
             label={t(`v2.itemDetail.totalsCapacity.${themeKey}`)}
             value={totalCapacityWh.toLocaleString()}
             suffix="Wh"
-            detail={`${item.capacityWh} Wh × ${item.quantity} ${item.unit}`}
+            detail={`${item.capacityWh} Wh × ${item.quantity} ${unitLabel}`}
           />
         )}
       </div>

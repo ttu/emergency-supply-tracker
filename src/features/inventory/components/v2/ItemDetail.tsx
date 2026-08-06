@@ -7,6 +7,7 @@ import { ItemForm } from '@/features/inventory';
 import { InventoryItemFactory } from '@/features/inventory/factories/InventoryItemFactory';
 import type { ProductTemplate } from '@/shared/types';
 import { useItemDetailState } from '@/features/inventory/hooks/useItemDetailState';
+import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { ItemDetailBreadcrumb } from './ItemDetailBreadcrumb';
 import { ItemDetailHeader } from './ItemDetailHeader';
 import { ItemNotFound } from './ItemNotFound';
@@ -40,7 +41,7 @@ export function ItemDetail({
   copySourceId,
   onCopy,
 }: Readonly<ItemDetailProps>) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { themeKey } = useDesignTheme();
   // The picker's outcome lives here rather than in the parent: it only
   // matters while this add-view is mounted.
@@ -124,7 +125,16 @@ export function ItemDetail({
         isNew={isNew}
         itemName={item?.name}
         itemCategoryId={item ? String(item.categoryId) : undefined}
-        categoryName={category?.name}
+        categoryName={
+          item
+            ? resolveCategoryLabel(
+                category,
+                String(item.categoryId),
+                i18n.language || 'en',
+                t,
+              )
+            : undefined
+        }
         onDelete={handleDelete}
         onCopy={onCopy && item ? () => onCopy(String(item.id)) : undefined}
       />

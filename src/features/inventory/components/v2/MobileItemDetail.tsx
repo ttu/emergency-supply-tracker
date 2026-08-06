@@ -164,7 +164,8 @@ export function MobileItemDetail({
                 marginLeft: 'auto',
               }}
             >
-              {item.quantity}/{row?.recommended || '—'} {item.unit}
+              {item.quantity}/{row?.recommended || '—'}{' '}
+              {t(item.unit, { ns: 'units' })}
             </span>
           </div>
         </Panel>

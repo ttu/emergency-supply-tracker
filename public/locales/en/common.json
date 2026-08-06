@@ -1543,6 +1543,28 @@
           "cockpit": "PRESETS PRE-FILL THE NEXT SECTION.",
           "civil": "PRESETS PRE-FILL THE NEXT SECTION.",
           "pantry": "Pick the closest match — you can fine-tune next."
+        },
+        "presetNames": {
+          "single": {
+            "cockpit": "SINGLE",
+            "civil": "SINGLE",
+            "pantry": "Single person"
+          },
+          "couple": {
+            "cockpit": "COUPLE",
+            "civil": "COUPLE",
+            "pantry": "Couple"
+          },
+          "family": {
+            "cockpit": "FAMILY · WITH MINORS",
+            "civil": "FAMILY · WITH MINORS",
+            "pantry": "Family with children"
+          },
+          "custom": {
+            "cockpit": "CUSTOM CONFIG",
+            "civil": "CUSTOM CONFIG",
+            "pantry": "Custom"
+          }
         }
       },
       "household": {
@@ -1770,6 +1792,8 @@
         "civil": "BACK TO TOP",
         "pantry": "Back to top"
       },
+      "stepperDecreaseAria": "Decrease {{label}}",
+      "stepperIncreaseAria": "Increase {{label}}",
       "railSections": {
         "cockpit": "SECTIONS",
         "civil": "SECTIONS",

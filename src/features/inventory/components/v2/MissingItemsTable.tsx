@@ -139,7 +139,7 @@ function MissingItemRowImpl({
       <span style={CODE_STYLE}>{missing.categoryCode}</span>
       <span style={NAME_STYLE}>{name}</span>
       <span style={TARGET_STYLE}>
-        {missing.recommended} {missing.definition.unit}
+        {missing.recommended} {t(missing.definition.unit, { ns: 'units' })}
       </span>
       <button type="button" onClick={() => onAdd(id)} style={ADD_BUTTON_STYLE}>
         {addLabel}

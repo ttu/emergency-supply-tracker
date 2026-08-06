@@ -14,11 +14,10 @@ describe('ONBOARDING_PRESETS', () => {
     ]);
   });
 
-  it('every preset has names for all three themes', () => {
+  it('every preset has a name key, resolved via translations at render time', () => {
+    const validKeys = ['single', 'couple', 'family', 'custom'];
     for (const p of ONBOARDING_PRESETS) {
-      expect(p.name.cockpit).toBeTruthy();
-      expect(p.name.civil).toBeTruthy();
-      expect(p.name.pantry).toBeTruthy();
+      expect(validKeys).toContain(p.nameKey);
     }
   });
 });
