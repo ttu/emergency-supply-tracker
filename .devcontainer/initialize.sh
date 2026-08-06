@@ -20,6 +20,13 @@ fi
 # Absolute path of the shared .git (for a worktree this is the MAIN repo's).
 GIT_COMMON_DIR="$(cd "$(git -C "$WORKSPACE" rev-parse --git-common-dir)" && pwd)"
 
+# The host's effective commit identity (usually from ~/.gitconfig, which is
+# NOT mounted into the container — see post-create.sh for why). Forwarded so
+# post-create.sh can seed the container's own gitconfig with it once; empty if
+# the host has none configured, which post-create.sh treats as a no-op.
+HOST_GIT_USER_NAME="$(git -C "$WORKSPACE" config --get user.name || true)"
+HOST_GIT_USER_EMAIL="$(git -C "$WORKSPACE" config --get user.email || true)"
+
 # The worktree also has to be visible at its original host path: the main repo
 # records that path in .git/worktrees/<name>/gitdir, and if it cannot be found
 # git treats the worktree as prunable — `git gc` would then delete the shared
@@ -27,6 +34,8 @@ GIT_COMMON_DIR="$(cd "$(git -C "$WORKSPACE" rev-parse --git-common-dir)" && pwd)
 {
   printf 'GIT_COMMON_DIR=%s\n' "$GIT_COMMON_DIR"
   printf 'LOCAL_WORKSPACE_FOLDER=%s\n' "$WORKSPACE"
+  printf 'HOST_GIT_USER_NAME=%s\n' "$HOST_GIT_USER_NAME"
+  printf 'HOST_GIT_USER_EMAIL=%s\n' "$HOST_GIT_USER_EMAIL"
 } > "$HERE/.env"
 
 # Browsers are shared across every container for this repo, so a new worktree

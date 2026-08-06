@@ -19,8 +19,8 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 echo "==> GitHub CLI (gh)"
-# devcontainer.json forwards GH_TOKEN specifically so `gh` can read/create PRs
-# and issues; install it here since no devcontainer feature provides it.
+# devcontainer.json forwards GH_EST_TOKEN specifically so `gh` can read/create
+# PRs and issues; install it here since no devcontainer feature provides it.
 if ! command -v gh >/dev/null 2>&1; then
   sudo apt-get update -qq && sudo apt-get install -y -qq gh
 fi
@@ -67,7 +67,26 @@ if [[ -f "$ADMIN_DIR/gitdir" ]]; then
 fi
 echo "    git OK ($(git -C "$WORKSPACE" rev-parse --git-common-dir))"
 
-echo "==> Git authentication (HTTPS via GH_TOKEN, container-local only)"
+echo "==> Git identity (seeded from host, container-local only)"
+# ~/.gitconfig isn't mounted into the container (see the note below on why git
+# config here stays container-local), so commit identity would otherwise be
+# unset. initialize.sh captured the host's effective user.name/email into
+# .env; seed the container's own gitconfig from them once. Skipped if the
+# container already has an identity (e.g. set manually after a rebuild) or if
+# the host had none configured either.
+if [[ -z "$(git config --global user.name 2>/dev/null || true)" && -n "${HOST_GIT_USER_NAME:-}" ]]; then
+  git config --global user.name "$HOST_GIT_USER_NAME"
+fi
+if [[ -z "$(git config --global user.email 2>/dev/null || true)" && -n "${HOST_GIT_USER_EMAIL:-}" ]]; then
+  git config --global user.email "$HOST_GIT_USER_EMAIL"
+fi
+if git config --global user.name >/dev/null 2>&1; then
+  echo "    $(git config --global user.name) <$(git config --global user.email)>"
+else
+  echo "    no identity on host or in container; commits will fail until 'git config --global user.name/user.email' is set"
+fi
+
+echo "==> Git authentication (HTTPS via GH_EST_TOKEN, container-local only)"
 # Route all github.com git traffic through HTTPS instead of the SSH agent VS
 # Code would otherwise forward, so a token scoped to just this repo — not your
 # SSH key's access to every repo you can reach — is what push/fetch actually
@@ -76,6 +95,13 @@ echo "==> Git authentication (HTTPS via GH_TOKEN, container-local only)"
 # untouched (unlike the shared .git this workspace mounts for worktrees).
 git config --global --add url."https://github.com/".insteadOf "git@github.com:"
 git config --global --add url."https://github.com/".insteadOf "ssh://git@github.com/"
+# `gh`/its git credential helper only recognize the env var names GH_TOKEN or
+# GITHUB_TOKEN — GH_EST_TOKEN is this repo's own name (chosen so it can't
+# collide with another repo's devcontainer token on the same host), so bridge
+# it into the name `gh` actually looks for.
+if [[ -n "${GH_EST_TOKEN:-}" ]]; then
+  export GH_TOKEN="$GH_EST_TOKEN"
+fi
 if command -v gh >/dev/null 2>&1 && [[ -n "${GH_TOKEN:-}" ]]; then
   gh auth setup-git
   # `ls-remote` would pass even with an invalid token, since this repo is
@@ -84,14 +110,14 @@ if command -v gh >/dev/null 2>&1 && [[ -n "${GH_TOKEN:-}" ]]; then
   # under-scoped token is caught here instead of at the first real push.
   if git -C "$WORKSPACE" push --dry-run origin \
       "HEAD:refs/heads/__devcontainer_auth_check__" >/dev/null 2>&1; then
-    echo "    git authenticates via GH_TOKEN (gh credential helper) — verified"
+    echo "    git authenticates via GH_EST_TOKEN (gh credential helper) — verified"
   else
-    echo "FAIL: GH_TOKEN is set but git could not authenticate to 'origin' over HTTPS." >&2
+    echo "FAIL: GH_EST_TOKEN is set but git could not authenticate to 'origin' over HTTPS." >&2
     echo "      Check the token has at least Contents: Read and write access to this repo." >&2
     exit 1
   fi
 else
-  echo "    GH_TOKEN not set: git push/fetch to GitHub will fail until it is provided"
+  echo "    GH_EST_TOKEN not set: git push/fetch to GitHub will fail until it is provided"
 fi
 
 echo "==> Pinning container to its own branch"

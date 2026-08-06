@@ -88,12 +88,15 @@
     // credential helper, so push/fetch also authenticate with this token
     // instead of the SSH agent VS Code would otherwise forward — the
     // container never touches your SSH key. Use a fine-grained PAT scoped to
-    // only this repo (see README), not a broad host credential. What the
-    // agent may actually do with it is enforced by
+    // only this repo (see README), not a broad host credential. Named
+    // GH_EST_TOKEN (not the `gh`-recognized GH_TOKEN) so it can't collide
+    // with tokens forwarded for other repos' devcontainers on the same host;
+    // post-create.sh re-exports it as GH_TOKEN so `gh`/git pick it up. What
+    // the agent may actually do with it is enforced by
     // .claude/hooks/block-dangerous-git.sh: commits and feature-branch pushes
     // are allowed; force-pushes, pushes to main, and history rewrites are not.
     // main is branch-protected on GitHub as the backstop.
-    "GH_TOKEN": "${localEnv:GH_TOKEN}",
+    "GH_EST_TOKEN": "${localEnv:GH_EST_TOKEN}",
     // Never hang waiting on an interactive credential prompt.
     "GIT_TERMINAL_PROMPT": "0",
     // Disable automatic gc for every git command in the container, without

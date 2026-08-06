@@ -143,15 +143,18 @@ To let `gh` — and git itself — read and write against GitHub, forward a toke
 container (`gh` keeps its own credentials in the OS keychain, which the container cannot reach):
 
 ```bash
-export GH_TOKEN=$(gh auth token)
+export GH_EST_TOKEN=$(gh auth token)
 export CLAUDE_CODE_OAUTH_TOKEN=...   # optional: reuse your host Claude Code login
 ```
 
-`GH_TOKEN` is used for both `gh` and git itself. `origin` is an SSH remote, but
-`post-create.sh` rewrites SSH URLs to HTTPS and runs `gh auth setup-git` so `gh` becomes git's
-credential helper — `git push`/`fetch` authenticate with this token instead of the SSH agent VS
-Code would otherwise forward, and the container never touches your SSH key. If `GH_TOKEN` is not
-set, `git push`/`fetch` to GitHub simply fail (local commits still work).
+`GH_EST_TOKEN` is named for this repo (Emergency Supply Tracker) rather than the generic
+`GH_TOKEN` so it can't collide with a token you forward for another repo's devcontainer on the
+same host. It's used for both `gh` and git itself: `origin` is an SSH remote, but
+`post-create.sh` rewrites SSH URLs to HTTPS, re-exports `GH_EST_TOKEN` as `GH_TOKEN` (the only
+name `gh` itself recognizes), and runs `gh auth setup-git` so `gh` becomes git's credential
+helper — `git push`/`fetch` authenticate with this token instead of the SSH agent VS Code would
+otherwise forward, and the container never touches your SSH key. If `GH_EST_TOKEN` is not set,
+`git push`/`fetch` to GitHub simply fail (local commits still work).
 
 Scope it to only this repo, not a broad host credential. Prefer a fine-grained
 [personal access token](https://github.com/settings/personal-access-tokens) limited to this

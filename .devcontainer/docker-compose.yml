@@ -19,6 +19,12 @@ services:
       # cannot find the worktree, marks it prunable, and `git gc` deletes the
       # shared admin dir — corrupting the worktree on the host as well.
       - ${LOCAL_WORKSPACE_FOLDER:-/tmp/est-devcontainer-no-ws}:${LOCAL_WORKSPACE_FOLDER:-/tmp/est-devcontainer-no-ws}
+    # Host commit identity (captured by initialize.sh into .env, since
+    # ~/.gitconfig itself isn't mounted). post-create.sh seeds the container's
+    # own gitconfig from these once; safe to leave unset if the host has none.
+    environment:
+      - HOST_GIT_USER_NAME=${HOST_GIT_USER_NAME:-}
+      - HOST_GIT_USER_EMAIL=${HOST_GIT_USER_EMAIL:-}
     command: sleep infinity
     # Chromium hard-crashes on Docker's default 64MB /dev/shm, which `npm run
     # test:e2e` (--workers=4) reliably hits.
