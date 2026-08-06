@@ -145,7 +145,11 @@ export function ThemePicker({
           >
             <div
               style={{
-                height: 110,
+                // min, not a fixed height: the preview line's translated
+                // text varies in length across languages and themes, and a
+                // fixed box let a wrapped line spill into the info panel
+                // below rather than growing to fit it.
+                minHeight: 110,
                 padding: 14,
                 display: 'flex',
                 flexDirection: 'column',
