@@ -143,9 +143,17 @@ To let `gh` read issues and open PRs, forward a token before opening the contain
 (`gh` keeps its own credentials in the OS keychain, which the container cannot reach):
 
 ```bash
-export GITHUB_TOKEN=$(gh auth token)
+export GH_TOKEN=$(gh auth token)
 export CLAUDE_CODE_OAUTH_TOKEN=...   # optional: reuse your host Claude Code login
 ```
+
+`GH_TOKEN` should be scoped to only this repo and only to pull request / issue
+permissions — the container only ever needs `gh pr create`, `gh pr edit`, and
+`gh issue create` (see the guardrail table above). Prefer a fine-grained
+[personal access token](https://github.com/settings/personal-access-tokens) limited to this
+repository with **Contents: Read**, **Issues: Read and write**, and **Pull requests: Read and
+write**, rather than `gh auth token`, which inherits your host `gh` login's full scope across
+every repo you can access.
 
 Because the container is isolated and destructive git operations are blocked, you can also skip
 Claude Code's permission prompts by adding this to `.claude/settings.local.json` (gitignored, so it

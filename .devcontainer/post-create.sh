@@ -19,8 +19,8 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 echo "==> GitHub CLI (gh)"
-# devcontainer.json forwards GITHUB_TOKEN specifically so `gh` can read/create
-# PRs and issues; install it here since no devcontainer feature provides it.
+# devcontainer.json forwards GH_TOKEN specifically so `gh` can read/create PRs
+# and issues; install it here since no devcontainer feature provides it.
 if ! command -v gh >/dev/null 2>&1; then
   sudo apt-get update -qq && sudo apt-get install -y -qq gh
 fi
