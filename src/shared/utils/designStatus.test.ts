@@ -3,7 +3,7 @@ import {
   toDesignStatus,
   statusOf,
   categoryStats,
-  readinessPercent,
+  coverageCounts,
   ALERT_TYPE_TO_DESIGN_STATUS,
   type CategoryStats,
 } from './designStatus';
@@ -68,7 +68,7 @@ describe('categoryStats', () => {
     const category = createMockCategory({ id: FOOD });
     const items = [stocked('beans', FOOD), stocked('bottles', WATER)];
 
-    const stats = categoryStats(category, items, new Map());
+    const stats = categoryStats(category, items, new Map(), 'ok');
 
     expect(stats.category).toBe(category);
     expect(stats.total).toBe(1);
@@ -86,7 +86,12 @@ describe('categoryStats', () => {
       [String(empty.id), 10],
     ]);
 
-    const stats = categoryStats(category, [full, half, empty], recommended);
+    const stats = categoryStats(
+      category,
+      [full, half, empty],
+      recommended,
+      'crit',
+    );
 
     expect(stats.total).toBe(3);
     expect(stats.ok).toBe(1);
@@ -99,26 +104,36 @@ describe('categoryStats', () => {
       createMockCategory({ id: FOOD }),
       [],
       new Map(),
+      'crit',
     );
     expect(stats).toMatchObject({ total: 0, ok: 0, warn: 0, crit: 0 });
   });
 });
 
-describe('readinessPercent', () => {
-  const stats = (total: number, ok: number): CategoryStats =>
-    ({ total, ok }) as CategoryStats;
+describe('coverageCounts', () => {
+  const stat = (
+    coverage: 'ok' | 'warn' | 'crit',
+    applicable = true,
+  ): CategoryStats => ({ coverage, applicable }) as CategoryStats;
 
-  it('is the share of ok items across every category, rounded', () => {
-    expect(readinessPercent([stats(4, 1), stats(2, 2)])).toBe(50);
-    expect(readinessPercent([stats(3, 1)])).toBe(33);
+  it('counts the categories by how they stand against their recommendations', () => {
+    const counts = coverageCounts([
+      stat('ok'),
+      stat('ok'),
+      stat('warn'),
+      stat('crit'),
+    ]);
+    expect(counts).toEqual({ total: 4, ok: 2, warn: 1, crit: 1 });
   });
 
-  it('is 100 when everything is stocked', () => {
-    expect(readinessPercent([stats(2, 2), stats(3, 3)])).toBe(100);
+  it('leaves out categories with nothing to meet', () => {
+    // Pets with no pets in the household: neither a gap nor an achievement,
+    // so counting it either way would misstate readiness.
+    const counts = coverageCounts([stat('ok'), stat('ok', false)]);
+    expect(counts).toEqual({ total: 1, ok: 1, warn: 0, crit: 0 });
   });
 
-  it('is 0 rather than NaN with nothing in the inventory', () => {
-    expect(readinessPercent([])).toBe(0);
-    expect(readinessPercent([stats(0, 0)])).toBe(0);
+  it('is all zeroes with nothing applicable', () => {
+    expect(coverageCounts([])).toEqual({ total: 0, ok: 0, warn: 0, crit: 0 });
   });
 });

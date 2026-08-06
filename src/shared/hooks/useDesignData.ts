@@ -12,11 +12,13 @@ import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 import {
   categoryStats,
-  readinessPercent,
+  coverageCounts,
   statusOf,
+  toDesignStatus,
   type CategoryStats,
   type DesignStatus,
 } from '@/shared/utils/designStatus';
+import { calculatePreparednessScoreFromCategoryStatuses } from '@/features/dashboard/utils/preparedness';
 import { categoryCode } from '@/shared/i18n/voice';
 import type { Category, InventoryItem } from '@/shared/types';
 
@@ -34,8 +36,16 @@ export interface DesignData {
   rows: DesignItemRow[];
   recommendedByItem: Map<string, number>;
   stats: CategoryStats[];
+  /**
+   * Share of the categories that are covered, as a percentage — the same
+   * figure the classic dashboard reports, so switching design does not move
+   * the headline number while the supplies stay put.
+   */
   readiness: number;
+  /** Item-level status counts across the whole inventory. */
   totals: { total: number; ok: number; warn: number; crit: number };
+  /** Category-level coverage counts, the breakdown behind `readiness`. */
+  coverageTotals: { total: number; ok: number; warn: number; crit: number };
   expiringCount: number;
   criticalCount: number;
   /** Days of water and food on hand — see {@link calculateDaysCovered}. */
@@ -76,10 +86,25 @@ export function useDesignData(): DesignData {
         status: statusOf(item, recommended),
       };
     });
-    const stats = categories.map((c) =>
-      categoryStats(c, items, recommendedByItem),
+    // v1 already judges each category against its recommendations; reusing
+    // that verdict is what keeps the two designs from disagreeing about which
+    // categories are gaps.
+    const summaryByCategory = new Map(
+      categoryStatuses.map((s) => [String(s.categoryId), s]),
     );
-    const readiness = readinessPercent(stats);
+    const stats = categories.map((c) => {
+      const summary = summaryByCategory.get(String(c.id));
+      return categoryStats(
+        c,
+        items,
+        recommendedByItem,
+        summary ? toDesignStatus(summary.status) : 'ok',
+        (summary?.totalNeeded ?? 0) > 0,
+      );
+    });
+    const readiness =
+      calculatePreparednessScoreFromCategoryStatuses(categoryStatuses);
+    const coverageTotals = coverageCounts(stats);
     const totals = stats.reduce(
       (acc, s) => ({
         total: acc.total + s.total,
@@ -108,6 +133,7 @@ export function useDesignData(): DesignData {
       stats,
       readiness,
       totals,
+      coverageTotals,
       expiringCount,
       criticalCount,
       daysCovered: daysCoveredDetail.days,

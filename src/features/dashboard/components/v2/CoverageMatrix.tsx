@@ -9,40 +9,37 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { categoryCode } from '@/shared/i18n/voice';
+import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import type { CategoryId } from '@/shared/types';
 
 interface CoverageMatrixProps {
   onCategorySelect: (categoryId: string) => void;
 }
 
-/** 5-col grid of category tiles showing OK/WARN/CRIT distribution per category. */
-function statTone(s: { crit: number; warn: number }): 'crit' | 'warn' | 'ok' {
-  if (s.crit > 0) return 'crit';
-  if (s.warn > 0) return 'warn';
-  return 'ok';
-}
+/** 5-col grid of category tiles showing coverage against recommendations. */
 
 export function CoverageMatrix({
   onCategorySelect,
 }: Readonly<CoverageMatrixProps>) {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['common', 'categories']);
   const { themeKey } = useDesignTheme();
   const { stats, categories } = useDesignData();
   const lang = i18n.language || 'en';
 
-  const categoryName = (id: CategoryId, fallback: string) => {
-    const cat = categories.find((c) => c.id === id);
-    return cat?.names?.[lang] ?? cat?.name ?? fallback;
-  };
+  const categoryName = (id: CategoryId) =>
+    resolveCategoryLabel(
+      categories.find((c) => c.id === id),
+      String(id),
+      lang,
+      t,
+    );
 
-  // The "covered" half of the ratio: categories holding something, with
-  // nothing critical or low. An empty category is not covered — it has no
-  // crit or warn items precisely because it holds no items at all. This
+  // The "covered" half of the ratio: categories with nothing outstanding
+  // against their recommendations. An empty category is not covered — it has
+  // no crit or warn items precisely because it holds no items at all. This
   // previously rendered stats.length on both sides, so it always read
   // "N / N" whatever the inventory looked like.
-  const fullyCovered = stats.filter(
-    (s) => s.total > 0 && s.crit === 0 && s.warn === 0,
-  ).length;
+  const fullyCovered = stats.filter((s) => s.coverage === 'ok').length;
 
   return (
     <Panel padding={0}>
@@ -68,7 +65,7 @@ export function CoverageMatrix({
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
         {stats.map((s, i) => {
-          const tone = statTone(s);
+          const tone = s.coverage;
           const isLastInRow = (i + 1) % 5 === 0;
           const isInLastRow = i >= Math.floor((stats.length - 1) / 5) * 5;
           const cellStyle: CSSProperties = {
@@ -91,6 +88,7 @@ export function CoverageMatrix({
               key={String(s.category.id)}
               type="button"
               data-testid={`v2-category-${String(s.category.id)}`}
+              data-status={tone}
               onClick={() => onCategorySelect(String(s.category.id))}
               style={cellStyle}
             >
@@ -121,7 +119,7 @@ export function CoverageMatrix({
                   fontFamily: 'var(--font-display)',
                 }}
               >
-                {categoryName(s.category.id, s.category.name)}
+                {categoryName(s.category.id)}
               </div>
               <div style={{ marginTop: 10 }}>
                 <span

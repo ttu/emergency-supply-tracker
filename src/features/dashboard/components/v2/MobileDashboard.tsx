@@ -11,8 +11,10 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { categoryCode } from '@/shared/i18n/voice';
+import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { AlertBanner } from '@/features/alerts/components/v2/AlertBanner';
 import { selectPriorityRows } from '../../utils/priorityRows';
+import type { CategoryId } from '@/shared/types';
 
 interface MobileDashboardProps {
   onCategorySelect: (id: string) => void;
@@ -41,23 +43,29 @@ function mobileHeadline(
   return t('v2.dashboard.mobileHeadlineCockpit');
 }
 
-function mobileStatTone(s: {
-  crit: number;
-  warn: number;
-}): 'crit' | 'warn' | 'ok' {
-  if (s.crit > 0) return 'crit';
-  if (s.warn > 0) return 'warn';
-  return 'ok';
-}
-
 export function MobileDashboard({
   onCategorySelect,
   onItemSelect,
 }: Readonly<MobileDashboardProps>) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(['common', 'categories']);
   const { themeKey } = useDesignTheme();
-  const { totals, readiness, stats, expiringCount, criticalCount, rows } =
-    useDesignData();
+  const {
+    categories,
+    coverageTotals,
+    readiness,
+    stats,
+    expiringCount,
+    criticalCount,
+    rows,
+  } = useDesignData();
+  const lang = i18n.language || 'en';
+  const categoryName = (id: CategoryId) =>
+    resolveCategoryLabel(
+      categories.find((c) => c.id === id),
+      String(id),
+      lang,
+      t,
+    );
   const tone = mobileReadinessTone(readiness);
   // Same selection as the desktop PriorityQueue: sorted critical-first before
   // the slice, so a critical item further down the rows is not cut.
@@ -107,10 +115,10 @@ export function MobileDashboard({
         </div>
         <div style={{ marginTop: 12 }}>
           <StatusBar
-            ok={totals.ok}
-            warn={totals.warn}
-            crit={totals.crit}
-            total={Math.max(totals.total, 1)}
+            ok={coverageTotals.ok}
+            warn={coverageTotals.warn}
+            crit={coverageTotals.crit}
+            total={Math.max(coverageTotals.total, 1)}
             height={5}
           />
         </div>
@@ -124,13 +132,13 @@ export function MobileDashboard({
           }}
         >
           <span style={{ color: 'var(--color-ok)' }}>
-            {totals.ok} {t(`v2.voice.statusOk.${themeKey}`)}
+            {coverageTotals.ok} {t(`v2.voice.statusOk.${themeKey}`)}
           </span>
           <span style={{ color: 'var(--color-warn)' }}>
-            {totals.warn} {t(`v2.voice.statusWarn.${themeKey}`)}
+            {coverageTotals.warn} {t(`v2.voice.statusWarn.${themeKey}`)}
           </span>
           <span style={{ color: 'var(--color-crit)' }}>
-            {totals.crit} {t(`v2.voice.statusCrit.${themeKey}`)}
+            {coverageTotals.crit} {t(`v2.voice.statusCrit.${themeKey}`)}
           </span>
         </div>
       </Panel>
@@ -222,7 +230,7 @@ export function MobileDashboard({
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
           {visibleStats.map((s, i) => {
-            const tn = mobileStatTone(s);
+            const tn = s.coverage;
             return (
               <button
                 key={String(s.category.id)}
@@ -266,7 +274,7 @@ export function MobileDashboard({
                     color: 'var(--color-text)',
                   }}
                 >
-                  {s.category.name}
+                  {categoryName(s.category.id)}
                 </div>
                 <div
                   style={{

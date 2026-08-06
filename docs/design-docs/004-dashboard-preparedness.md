@@ -70,6 +70,30 @@ Users need a quick overview of their emergency preparedness status without navig
 
 **Note:** The preparedness calculation uses a simplified approach for `scaleWithPeople` items, using `totalPeople` (adults + children) directly instead of the peopleMultiplier formula (adults × 1.0 + children × 0.75). This provides a simpler calculation while still being reasonably accurate for preparedness scoring.
 
+### Readiness and the Coverage Matrix (v2)
+
+The v2 Readiness KPI is the **same figure the classic dashboard reports** —
+`calculatePreparednessScoreFromCategoryStatuses`, the share of applicable categories
+whose status is `ok`. A household that switches design must not see its headline
+number move while its supplies stay put.
+
+The breakdown under the number, and the dot on each Coverage Matrix tile, come from
+the same per-category verdicts (`CategoryStats.coverage`, mapped from the v1
+`CategoryStatusSummary.status` in `useDesignData`). Categories with nothing to meet —
+pets with no pets, or anything the active kit makes no recommendation for — are
+marked `applicable: false` and left out of both halves of the count, matching how the
+v1 score filters `totalNeeded === 0`.
+
+**History:** Until 2026-08-05 Readiness was `readinessPercent()`, the share of _owned
+items_ with `ok` status. That could not see a gap: a category the household owned
+nothing in contributed no `crit` and no `warn`, so it scored as covered and its tile
+showed a green dot. A migrating household read 0% in v1 and 67% in v2 on identical
+data, with Cooking & Heat green in v2 while v1 called it critical.
+
+**Location:** `src/shared/utils/designStatus.ts` (`categoryStats`, `coverageCounts`),
+`src/shared/hooks/useDesignData.ts`, rendered by `KpiRow`, `MobileDashboard` and
+`CoverageMatrix`.
+
 ### Days Covered (v2 KPI)
 
 Distinct from the preparedness score above: preparedness counts how many recommended

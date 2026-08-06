@@ -32,7 +32,7 @@ export function KpiRow() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const {
-    totals,
+    coverageTotals,
     readiness,
     expiringCount,
     criticalCount,
@@ -62,10 +62,10 @@ export function KpiRow() {
       >
         <div style={{ marginTop: 12 }}>
           <StatusBar
-            ok={totals.ok}
-            warn={totals.warn}
-            crit={totals.crit}
-            total={Math.max(totals.total, 1)}
+            ok={coverageTotals.ok}
+            warn={coverageTotals.warn}
+            crit={coverageTotals.crit}
+            total={Math.max(coverageTotals.total, 1)}
             height={6}
           />
         </div>
@@ -79,13 +79,13 @@ export function KpiRow() {
           }}
         >
           <span style={{ color: 'var(--color-ok)' }}>
-            {totals.ok} {t('v2.dashboard.statusOk')}
+            {coverageTotals.ok} {t('v2.dashboard.statusOk')}
           </span>
           <span style={{ color: 'var(--color-warn)' }}>
-            {totals.warn} {t('v2.dashboard.statusWarn')}
+            {coverageTotals.warn} {t('v2.dashboard.statusWarn')}
           </span>
           <span style={{ color: 'var(--color-crit)' }}>
-            {totals.crit} {t('v2.dashboard.statusCrit')}
+            {coverageTotals.crit} {t('v2.dashboard.statusCrit')}
           </span>
         </div>
       </KpiTile>
