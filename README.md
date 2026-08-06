@@ -139,21 +139,25 @@ Two implementation details worth knowing:
 `.devcontainer/post-create.sh` self-tests the hook during container creation, so **setup fails loudly
 if the guardrail is not working**.
 
-To let `gh` read issues and open PRs, forward a token before opening the container
-(`gh` keeps its own credentials in the OS keychain, which the container cannot reach):
+To let `gh` — and git itself — read and write against GitHub, forward a token before opening the
+container (`gh` keeps its own credentials in the OS keychain, which the container cannot reach):
 
 ```bash
 export GH_TOKEN=$(gh auth token)
 export CLAUDE_CODE_OAUTH_TOKEN=...   # optional: reuse your host Claude Code login
 ```
 
-`GH_TOKEN` should be scoped to only this repo and only to pull request / issue
-permissions — the container only ever needs `gh pr create`, `gh pr edit`, and
-`gh issue create` (see the guardrail table above). Prefer a fine-grained
+`GH_TOKEN` is used for both `gh` and git itself. `origin` is an SSH remote, but
+`post-create.sh` rewrites SSH URLs to HTTPS and runs `gh auth setup-git` so `gh` becomes git's
+credential helper — `git push`/`fetch` authenticate with this token instead of the SSH agent VS
+Code would otherwise forward, and the container never touches your SSH key. If `GH_TOKEN` is not
+set, `git push`/`fetch` to GitHub simply fail (local commits still work).
+
+Scope it to only this repo, not a broad host credential. Prefer a fine-grained
 [personal access token](https://github.com/settings/personal-access-tokens) limited to this
-repository with **Contents: Read**, **Issues: Read and write**, and **Pull requests: Read and
-write**, rather than `gh auth token`, which inherits your host `gh` login's full scope across
-every repo you can access.
+repository with **Contents: Read and write** (git push/fetch), **Issues: Read and write**, and
+**Pull requests: Read and write** (`gh issue create`, `gh pr create`/`edit`) — rather than `gh auth
+token`, which inherits your host `gh` login's full scope across every repo you can access.
 
 Because the container is isolated and destructive git operations are blocked, you can also skip
 Claude Code's permission prompts by adding this to `.claude/settings.local.json` (gitignored, so it

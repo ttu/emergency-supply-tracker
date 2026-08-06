@@ -83,9 +83,13 @@
     // entirely. Left unset so Remote Control works inside the container.
     "DISABLE_AUTOUPDATER": "1",
     "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
-    // Token for gh (issue/PR reads plus `gh pr create`). Pushing uses the
-    // SSH agent that VS Code forwards into the container, since `origin` is an
-    // SSH remote. What the agent may actually do with these is enforced by
+    // Token for gh (issue/PR reads plus `gh pr create`) AND for git itself:
+    // post-create.sh rewrites the SSH remote to HTTPS and sets `gh` as git's
+    // credential helper, so push/fetch also authenticate with this token
+    // instead of the SSH agent VS Code would otherwise forward — the
+    // container never touches your SSH key. Use a fine-grained PAT scoped to
+    // only this repo (see README), not a broad host credential. What the
+    // agent may actually do with it is enforced by
     // .claude/hooks/block-dangerous-git.sh: commits and feature-branch pushes
     // are allowed; force-pushes, pushes to main, and history rewrites are not.
     // main is branch-protected on GitHub as the backstop.

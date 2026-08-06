@@ -67,6 +67,33 @@ if [[ -f "$ADMIN_DIR/gitdir" ]]; then
 fi
 echo "    git OK ($(git -C "$WORKSPACE" rev-parse --git-common-dir))"
 
+echo "==> Git authentication (HTTPS via GH_TOKEN, container-local only)"
+# Route all github.com git traffic through HTTPS instead of the SSH agent VS
+# Code would otherwise forward, so a token scoped to just this repo — not your
+# SSH key's access to every repo you can reach — is what push/fetch actually
+# use. `--global` writes to this container's own $HOME/.gitconfig, which is
+# not bind-mounted anywhere, so the host's git config and remote stay
+# untouched (unlike the shared .git this workspace mounts for worktrees).
+git config --global --add url."https://github.com/".insteadOf "git@github.com:"
+git config --global --add url."https://github.com/".insteadOf "ssh://git@github.com/"
+if command -v gh >/dev/null 2>&1 && [[ -n "${GH_TOKEN:-}" ]]; then
+  gh auth setup-git
+  # `ls-remote` would pass even with an invalid token, since this repo is
+  # public and allows anonymous HTTPS reads. `push --dry-run` forces GitHub to
+  # actually authenticate the token while still writing nothing, so a bad or
+  # under-scoped token is caught here instead of at the first real push.
+  if git -C "$WORKSPACE" push --dry-run origin \
+      "HEAD:refs/heads/__devcontainer_auth_check__" >/dev/null 2>&1; then
+    echo "    git authenticates via GH_TOKEN (gh credential helper) — verified"
+  else
+    echo "FAIL: GH_TOKEN is set but git could not authenticate to 'origin' over HTTPS." >&2
+    echo "      Check the token has at least Contents: Read and write access to this repo." >&2
+    exit 1
+  fi
+else
+  echo "    GH_TOKEN not set: git push/fetch to GitHub will fail until it is provided"
+fi
+
 echo "==> Pinning container to its own branch"
 # The guardrail hook reads this file and refuses to touch any other branch.
 # It only exists inside the container, so host work is unaffected.
