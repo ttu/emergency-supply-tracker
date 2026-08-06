@@ -68,8 +68,17 @@ export function OnboardHousehold({
                 marginTop: 6,
               }}
             >
-              = 3 L × {household.adults} ADULTS × {household.supplyDurationDays}{' '}
-              DAYS
+              = 3 L × {household.adults}{' '}
+              {t(`v2.onboarding.labelAdults.${themeKey}`)}
+              {household.children > 0 && (
+                <>
+                  {' '}
+                  + {household.children}{' '}
+                  {t(`v2.onboarding.labelChildren.${themeKey}`)} × 0.75
+                </>
+              )}{' '}
+              × {household.supplyDurationDays}{' '}
+              {t(`v2.onboarding.labelDays.${themeKey}`)}
             </div>
           </div>
           <div
