@@ -67,6 +67,7 @@ DANGEROUS_PATTERNS=(
   'push[[:space:]].*:(main|master)([[:space:]]|$)'
   # Deleting a remote branch.
   'git[[:space:]]+push[[:space:]].*--delete'
+  'git[[:space:]]+push[[:space:]].*[[:space:]]-[a-zA-Z]*d([[:space:]]|$)'
   'git[[:space:]]+push[[:space:]].*[[:space:]]:[^[:space:]]'
 
   # --- gh: irreversible, or bypasses review ---
@@ -76,10 +77,10 @@ DANGEROUS_PATTERNS=(
   'gh[[:space:]]+workflow[[:space:]]+(run|disable|enable)'
   'gh[[:space:]]+secret[[:space:]]'
   'gh[[:space:]]+auth[[:space:]]+(login|logout|refresh)'
-  # Generic API escape hatch: any mutating method, and the -f/-F/--field forms
-  # which make `gh api` POST implicitly. `gh api /path` (GET) stays allowed.
+  # Generic API escape hatch: any mutating method, and the -f/-F/--field/--input
+  # forms which make `gh api` POST implicitly. `gh api /path` (GET) stays allowed.
   'gh[[:space:]]+api[[:space:]].*(-X|--method)[[:space:]=]*(POST|PUT|PATCH|DELETE)'
-  'gh[[:space:]]+api[[:space:]].*[[:space:]](-f|-F|--field|--raw-field)[[:space:]=]'
+  'gh[[:space:]]+api[[:space:]].*[[:space:]](-f|-F|--field|--raw-field|--input)[[:space:]=]'
 )
 
 # --- Dev container only: confine the agent to the branch the container was
