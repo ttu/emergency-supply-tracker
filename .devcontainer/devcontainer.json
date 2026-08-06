@@ -89,7 +89,7 @@
     // .claude/hooks/block-dangerous-git.sh: commits and feature-branch pushes
     // are allowed; force-pushes, pushes to main, and history rewrites are not.
     // main is branch-protected on GitHub as the backstop.
-    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
+    "GH_TOKEN": "${localEnv:GH_TOKEN}",
     // Never hang waiting on an interactive credential prompt.
     "GIT_TERMINAL_PROMPT": "0",
     // Disable automatic gc for every git command in the container, without
