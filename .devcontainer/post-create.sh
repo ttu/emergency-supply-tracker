@@ -32,7 +32,7 @@ if ! command -v coderabbit >/dev/null 2>&1; then
   # CI=1 skips the installer's interactive "sign in now?" prompt (there's no
   # TTY in a non-interactive postCreateCommand); auth is handled explicitly
   # below instead, via the forwarded API key.
-  CI=1 curl -fsSL https://cli.coderabbit.ai/install.sh | sh
+  CI=1 curl --proto '=https' --tlsv1.2 -fsSL https://cli.coderabbit.ai/install.sh | sh
 fi
 if [[ -n "${CODERABBIT_API_KEY:-}" ]]; then
   if coderabbit auth login --api-key "$CODERABBIT_API_KEY" >/dev/null 2>&1; then
