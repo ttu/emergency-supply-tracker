@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.disconnected {
+  background-color: var(--color-text-secondary);
+}
+
+.connected {
+  background-color: var(--color-success);
+}
+
+.syncing {
+  background-color: var(--color-warning);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.error {
+  background-color: var(--color-error);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.statusText {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.provider {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.lastSync {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.errorMessage {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.875rem;
+}
