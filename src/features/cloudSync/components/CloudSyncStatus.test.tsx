@@ -151,7 +151,7 @@ describe('CloudSyncStatus', () => {
       const errorElements = document.querySelectorAll(
         '[class*="errorMessage"]',
       );
-      expect(errorElements.length).toBe(0);
+      expect(errorElements).toHaveLength(0);
     });
 
     it('should show error message when error exists', () => {
