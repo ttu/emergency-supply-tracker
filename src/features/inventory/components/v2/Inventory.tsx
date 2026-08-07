@@ -11,6 +11,7 @@ import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory, useLocationSuggestions } from '@/features/inventory';
+import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { compareItemsBy } from '@/features/inventory/utils/sortItems';
 import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommendedItems';
 import { useInventoryFilters } from '../../hooks/useInventoryFilters';
@@ -28,6 +29,7 @@ import { CategoryRecommendedPanel } from './CategoryRecommendedPanel';
 import { CategoryRail } from './CategoryRail';
 import { CategoryStatusStrip } from './CategoryStatusStrip';
 import { useCategoryCoverage } from './useCategoryCoverage';
+import { useRemoveEmptyItems } from './useRemoveEmptyItems';
 
 interface InventoryProps {
   onItemSelect: (id: string) => void;
@@ -128,6 +130,7 @@ export function Inventory({
     : undefined;
 
   const coverage = useCategoryCoverage(selectedCategoryId);
+  const removeEmpty = useRemoveEmptyItems(selectedCategoryId);
 
   const categoryLabel = selectedCategoryId
     ? resolveCategoryLabel(
@@ -186,6 +189,11 @@ export function Inventory({
           </Title>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
+          {removeEmpty.count > 0 && (
+            <Button variant="secondary" onClick={removeEmpty.handleOpen}>
+              {removeEmpty.buttonLabel}
+            </Button>
+          )}
           <Button variant="primary" onClick={() => onAddItem()}>
             {t(`v2.voice.addItem.${themeKey}`)}
           </Button>
@@ -265,6 +273,16 @@ export function Inventory({
           </Panel>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={removeEmpty.confirmOpen}
+        title={removeEmpty.confirmTitle}
+        message={removeEmpty.confirmMessage}
+        confirmLabel={removeEmpty.confirmLabel}
+        tone="danger"
+        onConfirm={removeEmpty.handleConfirm}
+        onCancel={removeEmpty.handleCancel}
+      />
     </div>
   );
 }

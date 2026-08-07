@@ -22,6 +22,8 @@ import { CategorySummaryPanel } from './CategorySummaryPanel';
 import { CategoryStatusStrip } from './CategoryStatusStrip';
 import { CategoryRecommendedPanel } from './CategoryRecommendedPanel';
 import { useCategoryCoverage } from './useCategoryCoverage';
+import { useRemoveEmptyItems } from './useRemoveEmptyItems';
+import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
 
@@ -99,6 +101,7 @@ export function MobileInventory({
     : undefined;
 
   const coverage = useCategoryCoverage(selectedCategoryId);
+  const removeEmpty = useRemoveEmptyItems(selectedCategoryId);
 
   // Resolved the same way the dropdown resolves its options, so the strip and
   // the control that set it agree in every language.
@@ -131,6 +134,11 @@ export function MobileInventory({
       <Button variant="primary" full onClick={() => onAddItem()}>
         {t(`v2.voice.addItem.${themeKey}`)}
       </Button>
+      {removeEmpty.count > 0 && (
+        <Button variant="secondary" full onClick={removeEmpty.handleOpen}>
+          {removeEmpty.buttonLabel}
+        </Button>
+      )}
       <input
         value={search}
         onChange={(e) => setFilters({ search: e.target.value })}
@@ -252,6 +260,16 @@ export function MobileInventory({
             />
           ))}
       </Panel>
+
+      <ConfirmDialog
+        open={removeEmpty.confirmOpen}
+        title={removeEmpty.confirmTitle}
+        message={removeEmpty.confirmMessage}
+        confirmLabel={removeEmpty.confirmLabel}
+        tone="danger"
+        onConfirm={removeEmpty.handleConfirm}
+        onCancel={removeEmpty.handleCancel}
+      />
     </div>
   );
 }

@@ -1329,6 +1329,24 @@
         "cockpit": "DON'T RECOMMEND",
         "civil": "DON'T RECOMMEND",
         "pantry": "Don't recommend this item"
+      },
+      "removeEmptyItems": {
+        "cockpit": "CLEAR EMPTY",
+        "civil": "CLEAR EMPTY",
+        "pantry": "Remove empty items"
+      },
+      "confirmRemoveEmpty": {
+        "cockpit_one": "CLEAR {{count}} EMPTY ITEM?",
+        "cockpit_other": "CLEAR {{count}} EMPTY ITEMS?",
+        "civil_one": "CLEAR {{count}} EMPTY ITEM?",
+        "civil_other": "CLEAR {{count}} EMPTY ITEMS?",
+        "pantry_one": "Remove {{count}} empty item?",
+        "pantry_other": "Remove {{count}} empty items?"
+      },
+      "confirmRemoveEmptyBody": {
+        "cockpit": "ITEMS WITH 0 QUANTITY WILL BE PURGED FROM INVENTORY.",
+        "civil": "ITEMS WITH 0 QUANTITY WILL BE PURGED FROM INVENTORY.",
+        "pantry": "Items with 0 quantity will be removed from your inventory."
       }
     },
     "itemDetail": {

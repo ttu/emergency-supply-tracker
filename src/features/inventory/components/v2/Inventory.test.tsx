@@ -304,4 +304,120 @@ describe('Inventory (v2)', () => {
       expect(screen.queryByText('Garage beans')).not.toBeInTheDocument();
     });
   });
+
+  describe('remove empty items', () => {
+    it('hides the button when nothing has 0 quantity', async () => {
+      renderWithProviders(
+        <Inventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
+        {
+          initialAppData: createMockAppData({
+            settings: createMockSettings({ theme: 'cockpit', language: 'en' }),
+            items: [
+              createMockInventoryItem({
+                name: 'Canned beans',
+                categoryId: FOOD_ID,
+                quantity: createQuantity(20),
+              }),
+            ],
+          }),
+        },
+      );
+      await screen.findByText('Canned beans');
+      expect(
+        screen.queryByRole('button', {
+          name: 'v2.inventory.removeEmptyItems.cockpit',
+        }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows a confirmation dialog and removes 0-quantity items when confirmed', async () => {
+      setup();
+      await screen.findByText('Bottled water');
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'v2.inventory.removeEmptyItems.cockpit',
+        }),
+      );
+      expect(
+        screen.getByText('v2.inventory.confirmRemoveEmpty.cockpit'),
+      ).toBeInTheDocument();
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText('Bottled water')).not.toBeInTheDocument();
+      });
+      expect(screen.getByText('Canned beans')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', {
+          name: 'v2.inventory.removeEmptyItems.cockpit',
+        }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('keeps 0-quantity items when the dialog is cancelled', async () => {
+      setup();
+      await screen.findByText('Bottled water');
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'v2.inventory.removeEmptyItems.cockpit',
+        }),
+      );
+      fireEvent.click(
+        screen.getByRole('button', { name: 'v2.voice.cancel.cockpit' }),
+      );
+
+      expect(screen.getByText('Bottled water')).toBeInTheDocument();
+    });
+
+    it('only removes 0-quantity items in the selected category', async () => {
+      renderWithProviders(
+        <Inventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
+        {
+          initialAppData: createMockAppData({
+            settings: createMockSettings({ theme: 'cockpit', language: 'en' }),
+            items: [
+              createMockInventoryItem({
+                name: 'Empty water',
+                categoryId: WATER_ID,
+                quantity: createQuantity(0),
+                neverExpires: true,
+                expirationDate: undefined,
+              }),
+              createMockInventoryItem({
+                name: 'Empty beans',
+                categoryId: FOOD_ID,
+                quantity: createQuantity(0),
+                neverExpires: true,
+                expirationDate: undefined,
+              }),
+            ],
+            customCategories: [],
+          }),
+        },
+      );
+      await screen.findByText('Empty water');
+
+      fireEvent.click(screen.getByTestId(`v2-category-row-${FOOD_ID}`));
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'v2.inventory.removeEmptyItems.cockpit',
+        }),
+      );
+      fireEvent.click(
+        screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText('Empty beans')).not.toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByTestId('v2-category-row-all'));
+      expect(screen.getByText('Empty water')).toBeInTheDocument();
+    });
+  });
 });

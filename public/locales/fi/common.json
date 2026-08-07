@@ -1329,6 +1329,24 @@
         "cockpit": "ÄLÄ SUOSITTELE",
         "civil": "ÄLÄ SUOSITTELE",
         "pantry": "Älä suosittele tätä tuotetta"
+      },
+      "removeEmptyItems": {
+        "cockpit": "TYHJENNÄ TYHJÄT",
+        "civil": "TYHJENNÄ TYHJÄT",
+        "pantry": "Poista tyhjät tuotteet"
+      },
+      "confirmRemoveEmpty": {
+        "cockpit_one": "TYHJENNÄ {{count}} TYHJÄ TUOTE?",
+        "cockpit_other": "TYHJENNÄ {{count}} TYHJÄÄ TUOTETTA?",
+        "civil_one": "TYHJENNÄ {{count}} TYHJÄ TUOTE?",
+        "civil_other": "TYHJENNÄ {{count}} TYHJÄÄ TUOTETTA?",
+        "pantry_one": "Poistetaanko {{count}} tyhjä tuote?",
+        "pantry_other": "Poistetaanko {{count}} tyhjää tuotetta?"
+      },
+      "confirmRemoveEmptyBody": {
+        "cockpit": "TUOTTEET, JOIDEN MÄÄRÄ ON 0, POISTETAAN VARASTOSTA.",
+        "civil": "TUOTTEET, JOIDEN MÄÄRÄ ON 0, POISTETAAN VARASTOSTA.",
+        "pantry": "Tuotteet, joiden määrä on 0, poistetaan varastostasi."
       }
     },
     "itemDetail": {
