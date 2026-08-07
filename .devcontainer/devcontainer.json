@@ -10,10 +10,8 @@
       "installZsh": false,
       "upgradePackages": false
     },
-    // CI still runs Node 20 (to be updated separately). Dev container is
-    // pinned to 24 (current Node LTS) instead, since Claude Code requires
-    // engines.node >=22 and floating on "latest" would also track
-    // non-LTS/odd-numbered releases.
+    // Pinned to 24 (current Node LTS, matches CI) rather than "latest",
+    // which would also track non-LTS/odd-numbered releases.
     "ghcr.io/devcontainers/features/node:1": {
       "version": "24"
     },
