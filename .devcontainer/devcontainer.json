@@ -95,6 +95,10 @@
     // are allowed; force-pushes, pushes to main, and history rewrites are not.
     // main is branch-protected on GitHub as the backstop.
     "GH_EST_TOKEN": "${localEnv:GH_EST_TOKEN}",
+    // Lets post-create.sh authenticate the CodeRabbit CLI non-interactively.
+    // The CLI itself isn't part of the base image or a devcontainer feature,
+    // so post-create.sh installs it from the official install script.
+    "CODERABBIT_API_KEY": "${localEnv:CODERABBIT_API_KEY}",
     // Never hang waiting on an interactive credential prompt.
     "GIT_TERMINAL_PROMPT": "0",
     // Disable automatic gc for every git command in the container, without

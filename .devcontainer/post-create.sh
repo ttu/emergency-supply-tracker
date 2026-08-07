@@ -25,6 +25,27 @@ if ! command -v gh >/dev/null 2>&1; then
   sudo apt-get update -qq && sudo apt-get install -y -qq gh
 fi
 
+echo "==> CodeRabbit CLI"
+# Not a devcontainer feature; the official installer drops the binary (and its
+# `cr` alias) into ~/.local/bin, which the base image already puts on PATH.
+if ! command -v coderabbit >/dev/null 2>&1; then
+  # CI=1 skips the installer's interactive "sign in now?" prompt (there's no
+  # TTY in a non-interactive postCreateCommand); auth is handled explicitly
+  # below instead, via the forwarded API key.
+  CI=1 curl --proto '=https' --tlsv1.2 -fsSL https://cli.coderabbit.ai/install.sh | sh
+fi
+if [[ -n "${CODERABBIT_API_KEY:-}" ]]; then
+  if coderabbit auth login --api-key "$CODERABBIT_API_KEY" >/dev/null 2>&1; then
+    echo "    authenticated via CODERABBIT_API_KEY"
+  else
+    echo "FAIL: CODERABBIT_API_KEY is set but the CodeRabbit CLI rejected it." >&2
+    echo "      Generate a fresh key at https://app.coderabbit.ai and re-export it." >&2
+    exit 1
+  fi
+else
+  echo "    CODERABBIT_API_KEY not set: 'coderabbit review' will prompt to sign in"
+fi
+
 echo "==> Playwright browsers"
 # The base image ships browsers at $PLAYWRIGHT_BROWSERS_PATH (/ms-playwright).
 # It is a named volume, so make it writable in case a browser is added later.
