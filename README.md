@@ -145,6 +145,7 @@ container (`gh` keeps its own credentials in the OS keychain, which the containe
 ```bash
 export GH_EST_TOKEN=$(gh auth token)
 export CLAUDE_CODE_OAUTH_TOKEN=...   # optional: reuse your host Claude Code login
+export CODERABBIT_API_KEY=...        # optional: authenticate the CodeRabbit CLI (`coderabbit review`)
 ```
 
 `GH_EST_TOKEN` is named for this repo (Emergency Supply Tracker) rather than the generic
@@ -161,6 +162,14 @@ Scope it to only this repo, not a broad host credential. Prefer a fine-grained
 repository with **Contents: Read and write** (git push/fetch), **Issues: Read and write**, and
 **Pull requests: Read and write** (`gh issue create`, `gh pr create`/`edit`) — rather than `gh auth
 token`, which inherits your host `gh` login's full scope across every repo you can access.
+
+`CODERABBIT_API_KEY` authenticates the [CodeRabbit CLI](https://www.coderabbit.ai/cli) (`coderabbit
+review` / `cr review`) — this is separate from the `coderabbitai[bot]` GitHub reviewer `/pr-fix`
+already reads comments from, and isn't installed by any devcontainer feature. `post-create.sh`
+installs it from the official installer and, if the key is set, runs `coderabbit auth login
+--api-key` non-interactively — a browser-based `coderabbit auth login` won't work inside the
+container. Generate a key at [app.coderabbit.ai](https://app.coderabbit.ai) (Settings → API Keys).
+If unset, the CLI installs but stays signed out until you run `coderabbit auth login` yourself.
 
 Because the container is isolated and destructive git operations are blocked, you can also skip
 Claude Code's permission prompts by adding this to `.claude/settings.local.json` (gitignored, so it
