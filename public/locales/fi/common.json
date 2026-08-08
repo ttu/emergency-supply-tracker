@@ -1155,7 +1155,17 @@
         "pantry": "Kategoriat"
       },
       "priorityMeta": "{{code}} · {{quantity}} / {{recommended}} {{unit}}",
-      "priorityExpires": " · vanhenee {{date}}"
+      "priorityExpires": " · vanhenee {{date}}",
+      "quickViewInventory": {
+        "cockpit": "NÄYTÄ VARASTO",
+        "civil": "NÄYTÄ VARASTO",
+        "pantry": "Näytä varasto"
+      },
+      "quickExportShoppingList": {
+        "cockpit": "VIE OSTOSLISTA",
+        "civil": "VIE OSTOSLISTA",
+        "pantry": "Vie ostoslista"
+      }
     },
     "inventory": {
       "title": {
@@ -1263,6 +1273,11 @@
         "cockpit": "KAIKKI SIJAINNIT",
         "civil": "KAIKKI SIJAINNIT",
         "pantry": "Kaikki sijainnit"
+      },
+      "noLocation": {
+        "cockpit": "EI SIJAINTIA",
+        "civil": "EI SIJAINTIA",
+        "pantry": "Ei sijaintia"
       },
       "waterDrinking": {
         "cockpit": "JUOMAVESI",
@@ -2610,7 +2625,36 @@
             "pantry": "Asiakirjat & käteinen"
           },
           "body": "Henkilöllisyystodistuksen, vakuutusten ja pankkitietojen kopiot. 500 € pieninä seteleinä. Molemmat vedenpitävässä rasiassa."
+        },
+        "s7": {
+          "title": {
+            "cockpit": "DATA & VARMUUSKOPIOT",
+            "civil": "DATA & VARMUUSKOPIOT",
+            "pantry": "Tietosi, varmuuskopioituna"
+          },
+          "body": "Kaikki tiedot tallentuvat tämän selaimen paikalliseen tallennustilaan — mitään ei lähetetä palvelimelle. Selaimen tietojen tyhjentäminen poistaa ne, joten varmuuskopioi säännöllisesti: Asetukset → Data & Backup → Vie tiedot lataa JSON-tiedoston, jonka voit tuoda takaisin tällä tai toisella laitteella."
+        },
+        "s8": {
+          "title": {
+            "cockpit": "OSTOSLISTAN VIENTI",
+            "civil": "OSTOSLISTAN VIENTI",
+            "pantry": "Ostoslista"
+          },
+          "body": "Asetukset → Data & Backup → Vie ostoslista luo tekstitiedoston kaikista tavoitteen alittavista tuotteista kategorioittain ryhmiteltynä, nykyiset ja suositellut määrät mukaan lukien — valmiina kauppareissulle."
+        },
+        "s9": {
+          "title": {
+            "cockpit": "VALMIUSASTE",
+            "civil": "VALMIUSASTE",
+            "pantry": "Miten valmiusaste lasketaan"
+          },
+          "body": "Valmiusaste on niiden suositeltujen tuotteiden osuus, joita on riittävä määrä varastossa, painotettuna vanhenemistilanteella. 80 % tai enemmän tarkoittaa yleensä hyvää valmiutta."
         }
+      },
+      "supportTitle": {
+        "cockpit": "TUKI",
+        "civil": "TUKI",
+        "pantry": "Tarvitsetko lisää apua?"
       }
     }
   }

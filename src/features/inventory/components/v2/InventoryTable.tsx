@@ -9,6 +9,7 @@ interface InventoryTableProps {
   rows: DesignItemRow[];
   totalRowCount: number;
   onItemSelect: (id: string) => void;
+  onQuantityChange: (id: string, quantity: number) => void;
 }
 
 /**
@@ -63,6 +64,7 @@ export function InventoryTable({
   rows,
   totalRowCount,
   onItemSelect,
+  onQuantityChange,
 }: Readonly<InventoryTableProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -94,6 +96,7 @@ export function InventoryTable({
           cellStyles={CELL_STYLES}
           isLast={i === rows.length - 1}
           onSelect={onItemSelect}
+          onQuantityChange={onQuantityChange}
         />
       ))}
 

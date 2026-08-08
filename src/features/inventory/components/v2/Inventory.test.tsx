@@ -23,6 +23,7 @@ import {
 } from '@/shared/utils/test/factories';
 import { createCategoryId, createQuantity } from '@/shared/types';
 import { reloadInventoryFilters } from '@/features/inventory/hooks/useInventoryFilters';
+import { LOCATION_FILTER_NONE } from '@/features/inventory';
 
 const WATER_ID = createCategoryId('water-beverages');
 const FOOD_ID = createCategoryId('food');
@@ -301,6 +302,40 @@ describe('Inventory (v2)', () => {
       );
 
       expect(screen.getByText('Hall water')).toBeInTheDocument();
+      expect(screen.queryByText('Garage beans')).not.toBeInTheDocument();
+    });
+
+    it('offers a "no location" option that isolates items without one', async () => {
+      renderWithProviders(
+        <Inventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
+        {
+          initialAppData: createMockAppData({
+            settings: createMockSettings({ theme: 'cockpit', language: 'en' }),
+            items: [
+              createMockInventoryItem({
+                name: 'Garage beans',
+                categoryId: FOOD_ID,
+                quantity: createQuantity(5),
+                location: 'Garage',
+              }),
+              createMockInventoryItem({
+                name: 'Unplaced water',
+                categoryId: WATER_ID,
+                quantity: createQuantity(5),
+                location: '',
+              }),
+            ],
+          }),
+        },
+      );
+
+      await screen.findByText('Garage beans');
+      fireEvent.change(
+        screen.getByLabelText('v2.inventory.locationAria.cockpit'),
+        { target: { value: LOCATION_FILTER_NONE } },
+      );
+
+      expect(screen.getByText('Unplaced water')).toBeInTheDocument();
       expect(screen.queryByText('Garage beans')).not.toBeInTheDocument();
     });
   });

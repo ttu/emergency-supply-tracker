@@ -1,4 +1,5 @@
-import { memo, type CSSProperties } from 'react';
+import { memo, type CSSProperties, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   StatusDot,
   StatusPill,
@@ -10,6 +11,8 @@ interface InventoryRowProps {
   cellStyles: CSSProperties;
   isLast: boolean;
   onSelect: (id: string) => void;
+  /** Adjusts quantity directly from the list — no detail-page round trip. */
+  onQuantityChange: (id: string, quantity: number) => void;
 }
 
 const codeStyle: CSSProperties = {
@@ -49,25 +52,77 @@ const categoryStyle: CSSProperties = {
   color: 'var(--color-text-2)',
 };
 const qtyCellStyle: CSSProperties = {
-  textAlign: 'right',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+  gap: 2,
   fontFamily: 'var(--font-mono)',
   whiteSpace: 'nowrap',
 };
+const stepperStyle: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 3,
+};
 const recPartStyle: CSSProperties = { color: 'var(--color-text-3)' };
+
+function stepperButtonStyle(disabled: boolean): CSSProperties {
+  return {
+    width: 16,
+    height: 16,
+    lineHeight: 1,
+    padding: 0,
+    fontSize: 10,
+    fontFamily: 'inherit',
+    border: '1px solid var(--color-rule)',
+    borderRadius: 3,
+    background: 'transparent',
+    color: disabled ? 'var(--color-text-3)' : 'var(--color-text)',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+  };
+}
 
 /** A single row in the inventory grid table. Memoized so the table can render
  *  hundreds of items without re-rendering every row on unrelated parent state
- *  changes. Shares `cellStyles` with the header. */
+ *  changes. Shares `cellStyles` with the header.
+ *
+ * The row itself is a `div[role="button"]`, not a `<button>` — it hosts the
+ * quantity stepper's own buttons, and nesting `<button>` inside `<button>` is
+ * invalid HTML (v1's `ItemCard` documents the same fix for the same reason). */
 function InventoryRowImpl({
   row: r,
   cellStyles,
   isLast,
   onSelect,
+  onQuantityChange,
 }: Readonly<InventoryRowProps>) {
+  const { t } = useTranslation();
+  const id = String(r.item.id);
+  const select = () => onSelect(id);
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    // Ignore bubbled keyboard events from inner controls (the stepper
+    // buttons) — only the row itself, when focused, opens the item.
+    if (e.target !== e.currentTarget) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      select();
+    }
+  };
+  const atMin = r.item.quantity <= 0;
+  const decreaseLabel = t('v2.itemDetail.opsDecreaseAria', {
+    name: r.item.name,
+  });
+  const increaseLabel = t('v2.itemDetail.opsIncreaseAria', {
+    name: r.item.name,
+  });
+
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(String(r.item.id))}
+    <div
+      role="button"
+      tabIndex={0}
+      data-testid={`v2-inventory-row-${id}`}
+      onClick={select}
+      onKeyDown={handleKeyDown}
       style={{
         ...cellStyles,
         cursor: 'pointer',
@@ -92,16 +147,45 @@ function InventoryRowImpl({
       </span>
       <span style={categoryStyle}>{r.categoryCode}</span>
       <span style={qtyCellStyle}>
-        <span
-          style={{
-            color:
-              r.item.quantity === 0 ? 'var(--color-crit)' : 'var(--color-text)',
-          }}
-        >
-          {r.item.quantity}
+        <span style={stepperStyle}>
+          <button
+            type="button"
+            aria-label={decreaseLabel}
+            disabled={atMin}
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuantityChange(id, r.item.quantity - 1);
+            }}
+            style={stepperButtonStyle(atMin)}
+          >
+            −
+          </button>
+          <span
+            style={{
+              minWidth: 16,
+              textAlign: 'center',
+              color:
+                r.item.quantity === 0
+                  ? 'var(--color-crit)'
+                  : 'var(--color-text)',
+            }}
+          >
+            {r.item.quantity}
+          </span>
+          <button
+            type="button"
+            aria-label={increaseLabel}
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuantityChange(id, r.item.quantity + 1);
+            }}
+            style={stepperButtonStyle(false)}
+          >
+            +
+          </button>
         </span>
         <span style={recPartStyle}>
-          {' / '}
+          {'/ '}
           {r.recommended || '—'}
         </span>
       </span>
@@ -120,7 +204,7 @@ function InventoryRowImpl({
         {r.item.location ?? '—'}
       </span>
       <StatusPill status={r.status} />
-    </button>
+    </div>
   );
 }
 

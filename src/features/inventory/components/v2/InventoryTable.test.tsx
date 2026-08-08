@@ -24,6 +24,7 @@ const renderTable = (rows: DesignItemRow[], totalRowCount = rows.length) =>
       rows={rows}
       totalRowCount={totalRowCount}
       onItemSelect={vi.fn()}
+      onQuantityChange={vi.fn()}
     />,
     { initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) } },
   );
@@ -68,6 +69,7 @@ describe('InventoryTable (v2)', () => {
         rows={[r1]}
         totalRowCount={1}
         onItemSelect={onItemSelect}
+        onQuantityChange={vi.fn()}
       />,
       {
         initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },

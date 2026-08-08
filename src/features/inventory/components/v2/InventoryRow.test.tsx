@@ -10,13 +10,18 @@ import {
 } from '@/shared/utils/test/factories';
 import { createDateOnly, createItemId, createQuantity } from '@/shared/types';
 
-const renderRow = (row: DesignItemRow, onSelect = vi.fn()) =>
+const renderRow = (
+  row: DesignItemRow,
+  onSelect = vi.fn(),
+  onQuantityChange = vi.fn(),
+) =>
   renderWithProviders(
     <InventoryRow
       row={row}
       cellStyles={{}}
       isLast={false}
       onSelect={onSelect}
+      onQuantityChange={onQuantityChange}
     />,
     {
       providers: {
@@ -80,11 +85,73 @@ describe('InventoryRow (v2)', () => {
     expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('calls onSelect with item id when clicked', () => {
+  it('calls onSelect with item id when the row is clicked', () => {
     const onSelect = vi.fn();
     const row = makeRow();
     renderRow(row, onSelect);
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByText(row.item.name));
     expect(onSelect).toHaveBeenCalledWith(String(row.item.id));
+  });
+
+  it('activates onSelect on Enter/Space when the row itself is focused', () => {
+    const onSelect = vi.fn();
+    const row = makeRow();
+    renderRow(row, onSelect);
+    const rowEl = screen.getByTestId(`v2-inventory-row-${row.item.id}`);
+    fireEvent.keyDown(rowEl, { key: 'Enter' });
+    expect(onSelect).toHaveBeenCalledWith(String(row.item.id));
+  });
+
+  describe('inline quantity stepper', () => {
+    it('renders decrease/increase controls for the row quantity', () => {
+      renderRow(makeRow());
+      expect(
+        screen.getByRole('button', { name: 'v2.itemDetail.opsDecreaseAria' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'v2.itemDetail.opsIncreaseAria' }),
+      ).toBeInTheDocument();
+    });
+
+    it('clicking increase calls onQuantityChange with quantity + 1, not onSelect', () => {
+      const onSelect = vi.fn();
+      const onQuantityChange = vi.fn();
+      const row = makeRow();
+      renderRow(row, onSelect, onQuantityChange);
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'v2.itemDetail.opsIncreaseAria' }),
+      );
+
+      expect(onQuantityChange).toHaveBeenCalledWith(String(row.item.id), 4);
+      expect(onSelect).not.toHaveBeenCalled();
+    });
+
+    it('clicking decrease calls onQuantityChange with quantity - 1, not onSelect', () => {
+      const onSelect = vi.fn();
+      const onQuantityChange = vi.fn();
+      const row = makeRow();
+      renderRow(row, onSelect, onQuantityChange);
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'v2.itemDetail.opsDecreaseAria' }),
+      );
+
+      expect(onQuantityChange).toHaveBeenCalledWith(String(row.item.id), 2);
+      expect(onSelect).not.toHaveBeenCalled();
+    });
+
+    it('disables decrease at zero quantity and never goes negative', () => {
+      const row = makeRow({
+        item: createMockInventoryItem({
+          name: 'Empty item',
+          quantity: createQuantity(0),
+        }),
+      });
+      renderRow(row);
+      expect(
+        screen.getByRole('button', { name: 'v2.itemDetail.opsDecreaseAria' }),
+      ).toBeDisabled();
+    });
   });
 });

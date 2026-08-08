@@ -19,7 +19,10 @@ const meta = {
       </DesignV2Story>
     ),
   ],
-  argTypes: { onSelect: { action: 'select' } },
+  argTypes: {
+    onSelect: { action: 'select' },
+    onQuantityChange: { action: 'quantity change' },
+  },
 } satisfies Meta<typeof InventoryRow>;
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -54,6 +57,7 @@ export const OkStatus: Story = {
     cellStyles,
     isLast: false,
     onSelect: () => {},
+    onQuantityChange: () => {},
   },
 };
 export const WarnStatus: Story = {
@@ -62,6 +66,7 @@ export const WarnStatus: Story = {
     cellStyles,
     isLast: false,
     onSelect: () => {},
+    onQuantityChange: () => {},
   },
 };
 export const CritStatus: Story = {
@@ -76,5 +81,6 @@ export const CritStatus: Story = {
     cellStyles,
     isLast: true,
     onSelect: () => {},
+    onQuantityChange: () => {},
   },
 };

@@ -13,11 +13,12 @@ import { useDesignData } from '@/shared/hooks/useDesignData';
 import { useInventory, useLocationSuggestions } from '@/features/inventory';
 import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { compareItemsBy } from '@/features/inventory/utils/sortItems';
+import { matchesLocationFilter } from '@/features/inventory/utils/locationFilter';
 import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommendedItems';
 import { useInventoryFilters } from '../../hooks/useInventoryFilters';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
-import type { DateOnly } from '@/shared/types';
+import { createItemId, createQuantity, type DateOnly } from '@/shared/types';
 import {
   InventoryFilterStrip,
   type InventoryFilterKey,
@@ -83,7 +84,11 @@ export function Inventory({
     location: locationFilter,
     sortBy,
   } = filters;
-  const { items } = useInventory();
+  const { items, updateItem } = useInventory();
+  const handleQuantityChange = (id: string, quantity: number) =>
+    updateItem(createItemId(id), {
+      quantity: createQuantity(Math.max(0, quantity)),
+    });
   const locations = useLocationSuggestions(items);
 
   const missing = useMemo(
@@ -156,8 +161,7 @@ export function Inventory({
         return false;
       if (!matchesStatusFilter(r.status, filter)) return false;
       if (filter === 'exp' && !isExpiringSoon(r.item)) return false;
-      if (locationFilter !== undefined && r.item.location !== locationFilter)
-        return false;
+      if (!matchesLocationFilter(r.item.location, locationFilter)) return false;
       return matchesSearch(r, search);
     });
   }, [rows, filter, selectedCategoryId, search, locationFilter]);
@@ -268,6 +272,7 @@ export function Inventory({
                 rows={visible}
                 totalRowCount={inCategory.length}
                 onItemSelect={onItemSelect}
+                onQuantityChange={handleQuantityChange}
               />
             )}
           </Panel>

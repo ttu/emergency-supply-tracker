@@ -1,4 +1,4 @@
-import { memo, useMemo, type CSSProperties } from 'react';
+import { memo, useMemo, type CSSProperties, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -11,8 +11,13 @@ import {
   type DesignItemRow,
 } from '@/shared/hooks/useDesignData';
 import { useMissingRecommendedItems } from '@/shared/hooks/useMissingRecommendedItems';
-import { useInventory, useLocationSuggestions } from '@/features/inventory';
+import {
+  LOCATION_FILTER_NONE,
+  useInventory,
+  useLocationSuggestions,
+} from '@/features/inventory';
 import { compareItemsBy } from '@/features/inventory/utils/sortItems';
+import { matchesLocationFilter } from '@/features/inventory/utils/locationFilter';
 import type { SortBy } from '@/features/inventory';
 import { useInventoryFilters } from '../../hooks/useInventoryFilters';
 import { MissingItemsTable } from './MissingItemsTable';
@@ -26,6 +31,7 @@ import { useRemoveEmptyItems } from './useRemoveEmptyItems';
 import { ConfirmDialog } from '@/shared/components/design-v2/ConfirmDialog';
 import { getDaysUntilExpiration } from '@/shared/utils/calculations/itemStatus';
 import { EXPIRING_SOON_DAYS_THRESHOLD } from '@/shared/utils/constants';
+import { createItemId, createQuantity } from '@/shared/types';
 
 interface MobileInventoryProps {
   onItemSelect: (id: string) => void;
@@ -42,8 +48,12 @@ export function MobileInventory({
   const { themeKey } = useDesignTheme();
   const { rows, categories } = useDesignData();
   const allMissing = useMissingRecommendedItems();
-  const { items } = useInventory();
+  const { items, updateItem } = useInventory();
   const locations = useLocationSuggestions(items);
+  const handleQuantityChange = (id: string, quantity: number) =>
+    updateItem(createItemId(id), {
+      quantity: createQuantity(Math.max(0, quantity)),
+    });
   const [filters, setFilters] = useInventoryFilters();
   const {
     categoryId: selectedCategoryId,
@@ -77,8 +87,7 @@ export function MobileInventory({
       }
       if (search && !r.item.name.toLowerCase().includes(search.toLowerCase()))
         return false;
-      if (locationFilter !== undefined && r.item.location !== locationFilter)
-        return false;
+      if (!matchesLocationFilter(r.item.location, locationFilter)) return false;
       return true;
     });
   }, [rows, filter, search, selectedCategoryId, locationFilter]);
@@ -176,6 +185,9 @@ export function MobileInventory({
             <option value="">
               {t(`v2.inventory.allLocations.${themeKey}`)}
             </option>
+            <option value={LOCATION_FILTER_NONE}>
+              {t(`v2.inventory.noLocation.${themeKey}`)}
+            </option>
             {locations.map((l) => (
               <option key={l} value={l}>
                 {l}
@@ -257,6 +269,7 @@ export function MobileInventory({
               row={r}
               isLast={i === visible.length - 1}
               onSelect={onItemSelect}
+              onQuantityChange={handleQuantityChange}
             />
           ))}
       </Panel>
@@ -332,18 +345,56 @@ const ROW_EXP_STYLE: CSSProperties = {
   color: 'var(--color-text-3)',
   marginTop: 1,
 };
+const ROW_STEPPER_STYLE: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  gap: 4,
+};
+
+function mobileStepperButtonStyle(disabled: boolean): CSSProperties {
+  return {
+    width: 22,
+    height: 22,
+    lineHeight: 1,
+    padding: 0,
+    fontSize: 13,
+    fontFamily: 'inherit',
+    border: '1px solid var(--color-rule)',
+    borderRadius: 'var(--radius-sm)',
+    background: 'transparent',
+    color: disabled ? 'var(--color-text-3)' : 'var(--color-text)',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+  };
+}
 
 interface MobileInventoryRowProps {
   row: DesignItemRow;
   isLast: boolean;
   onSelect: (id: string) => void;
+  /** Adjusts quantity directly from the list — no detail-page round trip. */
+  onQuantityChange: (id: string, quantity: number) => void;
 }
 
 function MobileInventoryRowImpl({
   row: r,
   isLast,
   onSelect,
+  onQuantityChange,
 }: Readonly<MobileInventoryRowProps>) {
+  const { t } = useTranslation();
+  const id = String(r.item.id);
+  const select = () => onSelect(id);
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    // Ignore bubbled keyboard events from the stepper buttons — only the row
+    // itself, when focused, opens the item.
+    if (e.target !== e.currentTarget) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      select();
+    }
+  };
+  const atMin = r.item.quantity <= 0;
   const rowStyle: CSSProperties = {
     ...ROW_BASE_STYLE,
     borderBottom: isLast ? 'none' : '1px solid var(--color-rule-soft)',
@@ -353,9 +404,11 @@ function MobileInventoryRowImpl({
     color: r.item.quantity === 0 ? 'var(--color-crit)' : 'var(--color-text)',
   };
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(String(r.item.id))}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={select}
+      onKeyDown={handleKeyDown}
       style={rowStyle}
     >
       <div>
@@ -368,12 +421,41 @@ function MobileInventoryRowImpl({
         </div>
       </div>
       <div style={ROW_RIGHT_WRAP_STYLE}>
-        <div style={qtyStyle}>
-          {r.item.quantity}/{r.recommended || '—'}
+        <div style={ROW_STEPPER_STYLE}>
+          <button
+            type="button"
+            aria-label={t('v2.itemDetail.opsDecreaseAria', {
+              name: r.item.name,
+            })}
+            disabled={atMin}
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuantityChange(id, r.item.quantity - 1);
+            }}
+            style={mobileStepperButtonStyle(atMin)}
+          >
+            −
+          </button>
+          <div style={qtyStyle}>
+            {r.item.quantity}/{r.recommended || '—'}
+          </div>
+          <button
+            type="button"
+            aria-label={t('v2.itemDetail.opsIncreaseAria', {
+              name: r.item.name,
+            })}
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuantityChange(id, r.item.quantity + 1);
+            }}
+            style={mobileStepperButtonStyle(false)}
+          >
+            +
+          </button>
         </div>
         <div style={ROW_EXP_STYLE}>{r.item.expirationDate ?? '—'}</div>
       </div>
-    </button>
+    </div>
   );
 }
 

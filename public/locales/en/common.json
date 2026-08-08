@@ -1155,7 +1155,17 @@
         "pantry": "Categories"
       },
       "priorityMeta": "{{code}} · {{quantity}} of {{recommended}} {{unit}}",
-      "priorityExpires": " · exp {{date}}"
+      "priorityExpires": " · exp {{date}}",
+      "quickViewInventory": {
+        "cockpit": "VIEW INVENTORY",
+        "civil": "VIEW INVENTORY",
+        "pantry": "View inventory"
+      },
+      "quickExportShoppingList": {
+        "cockpit": "EXPORT SHOPPING LIST",
+        "civil": "EXPORT SHOPPING LIST",
+        "pantry": "Export shopping list"
+      }
     },
     "inventory": {
       "title": {
@@ -1263,6 +1273,11 @@
         "cockpit": "ALL LOCATIONS",
         "civil": "ALL LOCATIONS",
         "pantry": "All locations"
+      },
+      "noLocation": {
+        "cockpit": "NO LOCATION",
+        "civil": "NO LOCATION",
+        "pantry": "No location"
       },
       "waterDrinking": {
         "cockpit": "DRINKING",
@@ -2610,7 +2625,36 @@
             "pantry": "Documents & cash"
           },
           "body": "Copies of ID, insurance, bank info. €500 in small bills. Both sealed in a waterproof container."
+        },
+        "s7": {
+          "title": {
+            "cockpit": "DATA & BACKUP",
+            "civil": "DATA & BACKUP",
+            "pantry": "Your data, backed up"
+          },
+          "body": "Everything lives in this browser's local storage — nothing is sent to a server. Clearing browser data deletes it, so back it up regularly: Settings → Data & Backup → Export Data downloads a JSON file you can re-import on this or another device."
+        },
+        "s8": {
+          "title": {
+            "cockpit": "SHOPPING LIST EXPORT",
+            "civil": "SHOPPING LIST EXPORT",
+            "pantry": "Shopping list"
+          },
+          "body": "Settings → Data & Backup → Export Shopping List generates a text file of everything below target, grouped by category with current vs. recommended quantities — ready to take to the store."
+        },
+        "s9": {
+          "title": {
+            "cockpit": "READINESS SCORE",
+            "civil": "READINESS SCORE",
+            "pantry": "How readiness is scored"
+          },
+          "body": "Readiness is the share of recommended items stocked in adequate quantity, weighted by expiration status. 80% or higher is generally considered well-prepared."
         }
+      },
+      "supportTitle": {
+        "cockpit": "SUPPORT",
+        "civil": "SUPPORT",
+        "pantry": "Need more help?"
       }
     }
   }

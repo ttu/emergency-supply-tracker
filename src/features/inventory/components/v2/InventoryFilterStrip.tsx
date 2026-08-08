@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { CAPS_STYLE } from '@/shared/components/design-v2/primitives';
-import type { SortBy } from '@/features/inventory';
+import { LOCATION_FILTER_NONE, type SortBy } from '@/features/inventory';
 
 const SELECT_STYLE: CSSProperties = {
   background: 'var(--color-panel-2)',
@@ -160,6 +160,9 @@ export function InventoryFilterStrip({
           >
             <option value="">
               {t(`v2.inventory.allLocations.${themeKey}`)}
+            </option>
+            <option value={LOCATION_FILTER_NONE}>
+              {t(`v2.inventory.noLocation.${themeKey}`)}
             </option>
             {locations.map((l) => (
               <option key={l} value={l}>

@@ -13,6 +13,7 @@ import {
   createQuantity,
   type DateOnly,
 } from '@/shared/types';
+import { LOCATION_FILTER_NONE } from '@/features/inventory';
 
 const renderInv = (onAddItem = vi.fn()) =>
   renderWithProviders(
@@ -197,6 +198,31 @@ describe('MobileInventory (v2)', () => {
     expect(screen.queryByText('Canned soup')).not.toBeInTheDocument();
   });
 
+  it('offers a "no location" option that isolates items without one', async () => {
+    renderWithProviders(
+      <MobileInventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
+      {
+        initialAppData: createMockAppData({
+          settings: createMockSettings({ theme: 'cockpit' }),
+          items: [
+            { ...water, location: 'Garage' },
+            { ...emptySoup, location: '' },
+          ],
+          customCategories: [],
+        }),
+      },
+    );
+    await screen.findByText('Bottled water');
+
+    fireEvent.change(
+      screen.getByLabelText('v2.inventory.locationAria.cockpit'),
+      { target: { value: LOCATION_FILTER_NONE } },
+    );
+
+    expect(screen.getByText('Canned soup')).toBeInTheDocument();
+    expect(screen.queryByText('Bottled water')).not.toBeInTheDocument();
+  });
+
   it('the EXP filter keeps only what expires soon', async () => {
     const soon = new Date();
     soon.setDate(soon.getDate() + 5);
@@ -241,6 +267,33 @@ describe('MobileInventory (v2)', () => {
 
     expect(screen.queryByText('Canned soup')).not.toBeInTheDocument();
     expect(screen.queryByText('Bottled water')).not.toBeInTheDocument();
+  });
+
+  describe('inline quantity stepper', () => {
+    it('adjusts quantity from the list without opening the item', async () => {
+      const onItemSelect = vi.fn();
+      renderWithItems({ onItemSelect });
+      await screen.findByText('Bottled water');
+
+      const increaseButtons = screen.getAllByRole('button', {
+        name: 'v2.itemDetail.opsIncreaseAria',
+      });
+      fireEvent.click(increaseButtons[0]);
+
+      expect(await screen.findByText(/^21\//)).toBeInTheDocument();
+      expect(onItemSelect).not.toHaveBeenCalled();
+    });
+
+    it('disables decrease at zero quantity', async () => {
+      renderWithItems();
+      await screen.findByText('Canned soup');
+
+      const decreaseButtons = screen.getAllByRole('button', {
+        name: 'v2.itemDetail.opsDecreaseAria',
+      });
+      // emptySoup sorts after water alphabetically ("Bottled water" < "Canned soup").
+      expect(decreaseButtons[1]).toBeDisabled();
+    });
   });
 
   describe('remove empty items', () => {

@@ -19,7 +19,10 @@ const meta = {
       </DesignV2Story>
     ),
   ],
-  argTypes: { onItemSelect: { action: 'item selected' } },
+  argTypes: {
+    onItemSelect: { action: 'item selected' },
+    onQuantityChange: { action: 'quantity change' },
+  },
 } satisfies Meta<typeof InventoryTable>;
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -45,8 +48,14 @@ export const WithRows: Story = {
     ],
     totalRowCount: 3,
     onItemSelect: () => {},
+    onQuantityChange: () => {},
   },
 };
 export const Empty: Story = {
-  args: { rows: [], totalRowCount: 0, onItemSelect: () => {} },
+  args: {
+    rows: [],
+    totalRowCount: 0,
+    onItemSelect: () => {},
+    onQuantityChange: () => {},
+  },
 };
