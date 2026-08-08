@@ -98,9 +98,9 @@ export default tseslint.config(
       // Type-aware rules, introduced at warn with a ratcheting
       // --max-warnings ceiling (see package.json) rather than error, since
       // the codebase predates type-aware linting and has existing
-      // violations to fix incrementally. Promote to 'error' once a rule's
+      // violations to fix incrementally. Promoted to 'error' once a rule's
       // count reaches zero.
-      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'warn',
       '@typescript-eslint/switch-exhaustiveness-check': 'warn',
       '@typescript-eslint/strict-boolean-expressions': 'warn',
@@ -162,7 +162,7 @@ export default tseslint.config(
 | `react-refresh/only-export-components` | warn    | Fast refresh compatibility                    |
 | `sonarjs/*` (recommended)              | error   | Bug patterns, duplication, complexity         |
 | `sonarjs/cognitive-complexity`         | error   | Max complexity 15 per function                |
-| `@typescript-eslint/no-floating-promises` | warn (ratchet) | Catch unhandled promise rejections    |
+| `@typescript-eslint/no-floating-promises` | error   | Catch unhandled promise rejections            |
 | `@typescript-eslint/no-misused-promises`  | warn (ratchet) | Catch async handlers used where a sync callback is expected |
 | `@typescript-eslint/switch-exhaustiveness-check` | warn (ratchet) | Require every union case be handled in a `switch` |
 | `@typescript-eslint/strict-boolean-expressions` | warn (ratchet) | Disallow implicit truthy/falsy checks on nullable/non-boolean values |

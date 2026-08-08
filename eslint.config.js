@@ -64,9 +64,9 @@ export default tseslint.config(
       // Type-aware rules, introduced at warn with a ratcheting
       // --max-warnings ceiling (see package.json) rather than error, since
       // the codebase predates type-aware linting and has existing
-      // violations to fix incrementally. Promote to 'error' once a rule's
+      // violations to fix incrementally. Promoted to 'error' once a rule's
       // count reaches zero. See docs/CODE_QUALITY.md.
-      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'warn',
       '@typescript-eslint/switch-exhaustiveness-check': 'warn',
       '@typescript-eslint/strict-boolean-expressions': 'warn',
