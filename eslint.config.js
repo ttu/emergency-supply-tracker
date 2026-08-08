@@ -68,7 +68,7 @@ export default tseslint.config(
       // count reaches zero. See docs/CODE_QUALITY.md.
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/switch-exhaustiveness-check': 'warn',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@typescript-eslint/strict-boolean-expressions': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',

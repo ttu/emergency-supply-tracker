@@ -102,7 +102,7 @@ export default tseslint.config(
       // count reaches zero.
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/switch-exhaustiveness-check': 'warn',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@typescript-eslint/strict-boolean-expressions': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
@@ -164,7 +164,7 @@ export default tseslint.config(
 | `sonarjs/cognitive-complexity`         | error   | Max complexity 15 per function                |
 | `@typescript-eslint/no-floating-promises` | error   | Catch unhandled promise rejections            |
 | `@typescript-eslint/no-misused-promises`  | error   | Catch async handlers used where a sync callback is expected |
-| `@typescript-eslint/switch-exhaustiveness-check` | warn (ratchet) | Require every union case be handled in a `switch` |
+| `@typescript-eslint/switch-exhaustiveness-check` | error   | Require every union case be handled in a `switch` |
 | `@typescript-eslint/strict-boolean-expressions` | warn (ratchet) | Disallow implicit truthy/falsy checks on nullable/non-boolean values |
 | `@typescript-eslint/no-unsafe-*`       | warn (ratchet) | Catch `any`-typed assignment/call/member-access/return/argument |
 
@@ -231,8 +231,9 @@ They're introduced at `warn` with a ratcheting `--max-warnings` ceiling in
 `package.json`'s `lint` script instead: the ceiling is set to the current
 warning count, lowered whenever a PR fixes some of them, and a rule
 graduates to `error` once its count reaches zero -
-`no-floating-promises` and `no-misused-promises` have already done so; the
-remaining seven are still ratcheting down. `lint-staged` does not set
+`no-floating-promises`, `no-misused-promises` and
+`switch-exhaustiveness-check` have already done so; the remaining six are
+still ratcheting down. `lint-staged` does not set
 `--max-warnings` (unlike `npm run lint`), so committing a file that still has
 pre-existing ratchet warnings isn't blocked - only the full `npm run lint` in
 CI enforces the ceiling.
