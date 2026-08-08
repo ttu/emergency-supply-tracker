@@ -109,16 +109,16 @@ function InventoryRowImpl({
     }
   };
   const atMin = r.item.quantity <= 0;
-  const decreaseLabel = t('v2.itemDetail.opsDecreaseAria', {
-    name: r.item.name,
-  });
-  const increaseLabel = t('v2.itemDetail.opsIncreaseAria', {
-    name: r.item.name,
-  });
+  // Deliberately generic, not "Decrease {name} by 1": the row's own
+  // accessible name already contains the item name, so an item-name-scoped
+  // label here makes any `getByRole('button', { name: /itemName/ })` query
+  // elsewhere on the page ambiguous between the row and this button.
+  const decreaseLabel = t('inventory.quantityStepper.decrease');
+  const increaseLabel = t('inventory.quantityStepper.increase');
 
   return (
     <div
-      role="button"
+      role="button" /* NOSONAR S6819 - hosts the nested stepper <button>s; <button> can't contain <button> */
       tabIndex={0}
       data-testid={`v2-inventory-row-${id}`}
       onClick={select}

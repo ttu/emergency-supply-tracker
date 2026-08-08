@@ -276,7 +276,7 @@ describe('MobileInventory (v2)', () => {
       await screen.findByText('Bottled water');
 
       const increaseButtons = screen.getAllByRole('button', {
-        name: 'v2.itemDetail.opsIncreaseAria',
+        name: 'inventory.quantityStepper.increase',
       });
       fireEvent.click(increaseButtons[0]);
 
@@ -289,7 +289,7 @@ describe('MobileInventory (v2)', () => {
       await screen.findByText('Canned soup');
 
       const decreaseButtons = screen.getAllByRole('button', {
-        name: 'v2.itemDetail.opsDecreaseAria',
+        name: 'inventory.quantityStepper.decrease',
       });
       // emptySoup sorts after water alphabetically ("Bottled water" < "Canned soup").
       expect(decreaseButtons[1]).toBeDisabled();

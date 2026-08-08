@@ -106,10 +106,14 @@ describe('InventoryRow (v2)', () => {
     it('renders decrease/increase controls for the row quantity', () => {
       renderRow(makeRow());
       expect(
-        screen.getByRole('button', { name: 'v2.itemDetail.opsDecreaseAria' }),
+        screen.getByRole('button', {
+          name: 'inventory.quantityStepper.decrease',
+        }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: 'v2.itemDetail.opsIncreaseAria' }),
+        screen.getByRole('button', {
+          name: 'inventory.quantityStepper.increase',
+        }),
       ).toBeInTheDocument();
     });
 
@@ -120,7 +124,9 @@ describe('InventoryRow (v2)', () => {
       renderRow(row, onSelect, onQuantityChange);
 
       fireEvent.click(
-        screen.getByRole('button', { name: 'v2.itemDetail.opsIncreaseAria' }),
+        screen.getByRole('button', {
+          name: 'inventory.quantityStepper.increase',
+        }),
       );
 
       expect(onQuantityChange).toHaveBeenCalledWith(String(row.item.id), 4);
@@ -134,7 +140,9 @@ describe('InventoryRow (v2)', () => {
       renderRow(row, onSelect, onQuantityChange);
 
       fireEvent.click(
-        screen.getByRole('button', { name: 'v2.itemDetail.opsDecreaseAria' }),
+        screen.getByRole('button', {
+          name: 'inventory.quantityStepper.decrease',
+        }),
       );
 
       expect(onQuantityChange).toHaveBeenCalledWith(String(row.item.id), 2);
@@ -150,7 +158,9 @@ describe('InventoryRow (v2)', () => {
       });
       renderRow(row);
       expect(
-        screen.getByRole('button', { name: 'v2.itemDetail.opsDecreaseAria' }),
+        screen.getByRole('button', {
+          name: 'inventory.quantityStepper.decrease',
+        }),
       ).toBeDisabled();
     });
   });

@@ -405,7 +405,7 @@ function MobileInventoryRowImpl({
   };
   return (
     <div
-      role="button"
+      role="button" /* NOSONAR S6819 - hosts the nested stepper <button>s; <button> can't contain <button> */
       tabIndex={0}
       onClick={select}
       onKeyDown={handleKeyDown}
@@ -424,9 +424,12 @@ function MobileInventoryRowImpl({
         <div style={ROW_STEPPER_STYLE}>
           <button
             type="button"
-            aria-label={t('v2.itemDetail.opsDecreaseAria', {
-              name: r.item.name,
-            })}
+            // Deliberately generic, not item-name-scoped: the row's own
+            // accessible name already contains the item name, so a
+            // name-scoped label here makes any page-level
+            // getByRole('button', { name: /itemName/ }) query ambiguous
+            // between the row and this button.
+            aria-label={t('inventory.quantityStepper.decrease')}
             disabled={atMin}
             onClick={(e) => {
               e.stopPropagation();
@@ -441,9 +444,7 @@ function MobileInventoryRowImpl({
           </div>
           <button
             type="button"
-            aria-label={t('v2.itemDetail.opsIncreaseAria', {
-              name: r.item.name,
-            })}
+            aria-label={t('inventory.quantityStepper.increase')}
             onClick={(e) => {
               e.stopPropagation();
               onQuantityChange(id, r.item.quantity + 1);
