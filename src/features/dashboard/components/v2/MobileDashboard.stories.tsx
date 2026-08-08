@@ -19,11 +19,18 @@ const meta = {
   argTypes: {
     onCategorySelect: { action: 'category selected' },
     onItemSelect: { action: 'item selected' },
+    onAddItem: { action: 'add item' },
+    onViewInventory: { action: 'view inventory' },
   },
 } satisfies Meta<typeof MobileDashboard>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Cockpit: Story = {
-  args: { onCategorySelect: () => {}, onItemSelect: () => {} },
+  args: {
+    onCategorySelect: () => {},
+    onItemSelect: () => {},
+    onAddItem: () => {},
+    onViewInventory: () => {},
+  },
 };

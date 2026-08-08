@@ -1,9 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { Caption, Title } from '@/shared/components/design-v2/primitives';
+import {
+  Button,
+  Caption,
+  Title,
+} from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { AlertBanner } from '@/features/alerts/components/v2/AlertBanner';
+import { useShoppingListExport } from '@/features/settings/hooks/useShoppingListExport';
 import { KpiRow } from './KpiRow';
 import { CoverageMatrix } from './CoverageMatrix';
 import { PriorityQueue } from './PriorityQueue';
@@ -12,6 +17,9 @@ interface DashboardProps {
   onCategorySelect: (categoryId: string) => void;
   onViewAllPriority: () => void;
   onItemSelect: (id: string) => void;
+  /** Jumps straight to a blank add-item flow. */
+  onAddItem: () => void;
+  onViewInventory: () => void;
 }
 
 function pantryReadinessTitle(readiness: number, t: TFunction): string {
@@ -34,10 +42,13 @@ export function Dashboard({
   onCategorySelect,
   onViewAllPriority,
   onItemSelect,
+  onAddItem,
+  onViewInventory,
 }: Readonly<DashboardProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { readiness } = useDesignData();
+  const { itemsToRestock, handleExport } = useShoppingListExport();
 
   const heroTitle = dashboardHeroTitle(themeKey, readiness, t);
 
@@ -53,6 +64,21 @@ export function Dashboard({
         onItemSelect={onItemSelect}
         onCategorySelect={onCategorySelect}
       />
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <Button variant="primary" onClick={() => onAddItem()}>
+          {t(`v2.voice.addItem.${themeKey}`)}
+        </Button>
+        <Button variant="secondary" onClick={() => onViewInventory()}>
+          {t(`v2.dashboard.quickViewInventory.${themeKey}`)}
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => handleExport()}
+          disabled={itemsToRestock.length === 0}
+        >
+          {t(`v2.dashboard.quickExportShoppingList.${themeKey}`)}
+        </Button>
+      </div>
       <KpiRow />
       <CoverageMatrix onCategorySelect={onCategorySelect} />
       <PriorityQueue onViewAll={onViewAllPriority} />

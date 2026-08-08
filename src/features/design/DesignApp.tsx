@@ -89,6 +89,19 @@ function renderItemDetail(
   return { title: t(`v2.voice.inventory.${themeKey}`), breadcrumb, body };
 }
 
+/** Shared by the dashboard's and the inventory's "add" entry points — both
+ *  land on the same blank (or template-prefilled) new-item flow. */
+function makeOnAddItem(ctx: ViewContext) {
+  const { setSelectedItemId, setSelectedTemplateId, setCopySourceId, setNav } =
+    ctx;
+  return (templateId?: string) => {
+    setNav('inv');
+    setSelectedTemplateId(templateId);
+    setCopySourceId(undefined);
+    setSelectedItemId(NEW_ITEM_ID);
+  };
+}
+
 function renderHome(ctx: ViewContext): ReactNode {
   const { isMobile, setSelectedCategoryId, setSelectedItemId, setNav } = ctx;
   const onCategorySelect = (id: string) => {
@@ -101,32 +114,29 @@ function renderHome(ctx: ViewContext): ReactNode {
     setNav('inv');
     setSelectedItemId(id);
   };
+  const onAddItem = () => makeOnAddItem(ctx)();
+  const onViewInventory = () => setNav('inv');
   return isMobile ? (
     <MobileDashboard
       onCategorySelect={onCategorySelect}
       onItemSelect={onItemSelect}
+      onAddItem={onAddItem}
+      onViewInventory={onViewInventory}
     />
   ) : (
     <Dashboard
       onCategorySelect={onCategorySelect}
       onItemSelect={onItemSelect}
       onViewAllPriority={() => setNav('inv')}
+      onAddItem={onAddItem}
+      onViewInventory={onViewInventory}
     />
   );
 }
 
 function renderInventory(ctx: ViewContext): ReactNode {
-  const {
-    isMobile,
-    setSelectedItemId,
-    setSelectedTemplateId,
-    setCopySourceId,
-  } = ctx;
-  const onAddItem = (templateId?: string) => {
-    setSelectedTemplateId(templateId);
-    setCopySourceId(undefined);
-    setSelectedItemId(NEW_ITEM_ID);
-  };
+  const { isMobile, setSelectedItemId } = ctx;
+  const onAddItem = makeOnAddItem(ctx);
   return isMobile ? (
     <MobileInventory onItemSelect={setSelectedItemId} onAddItem={onAddItem} />
   ) : (

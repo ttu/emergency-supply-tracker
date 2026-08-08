@@ -6,17 +6,21 @@ import {
   createMockAppData,
   createMockSettings,
 } from '@/shared/utils/test/factories';
+import type { InventoryItem } from '@/shared/types';
 
 describe('Dashboard (v2)', () => {
   const setup = (
     overrides: Partial<Parameters<typeof Dashboard>[0]> = {},
     theme: 'cockpit' | 'civil' | 'pantry' = 'cockpit',
+    items: InventoryItem[] = [],
   ) =>
     renderWithProviders(
       <Dashboard
         onCategorySelect={vi.fn()}
         onViewAllPriority={vi.fn()}
         onItemSelect={vi.fn()}
+        onAddItem={vi.fn()}
+        onViewInventory={vi.fn()}
         {...overrides}
       />,
       {
@@ -24,7 +28,7 @@ describe('Dashboard (v2)', () => {
           settings: createMockSettings({ theme }),
           // Left to the factory these are random, and readiness — which the
           // pantry hero title is chosen from — would vary with the faker seed.
-          items: [],
+          items,
           customCategories: [],
         }),
       },
@@ -75,5 +79,35 @@ describe('Dashboard (v2)', () => {
     expect(
       await screen.findByText('v2.dashboard.heroPantryWork'),
     ).toBeInTheDocument();
+  });
+
+  describe('quick actions', () => {
+    it('clicking + ADD calls onAddItem with no template', async () => {
+      const onAddItem = vi.fn();
+      setup({ onAddItem });
+      fireEvent.click(
+        await screen.findByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      );
+      expect(onAddItem).toHaveBeenCalledWith();
+    });
+
+    it('clicking VIEW INVENTORY calls onViewInventory', async () => {
+      const onViewInventory = vi.fn();
+      setup({ onViewInventory });
+      fireEvent.click(
+        await screen.findByRole('button', {
+          name: 'v2.dashboard.quickViewInventory.cockpit',
+        }),
+      );
+      expect(onViewInventory).toHaveBeenCalled();
+    });
+
+    it('disables EXPORT SHOPPING LIST when nothing needs restocking', async () => {
+      setup({}, 'cockpit', []);
+      const button = await screen.findByRole('button', {
+        name: 'v2.dashboard.quickExportShoppingList.cockpit',
+      });
+      expect(button).toBeDisabled();
+    });
   });
 });

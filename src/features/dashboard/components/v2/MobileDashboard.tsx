@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
+  Button,
   Caption,
   NumberDisplay,
   Panel,
@@ -13,12 +14,16 @@ import { useDesignData } from '@/shared/hooks/useDesignData';
 import { categoryCode } from '@/shared/i18n/voice';
 import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
 import { AlertBanner } from '@/features/alerts/components/v2/AlertBanner';
+import { useShoppingListExport } from '@/features/settings/hooks/useShoppingListExport';
 import { selectPriorityRows } from '../../utils/priorityRows';
 import type { CategoryId } from '@/shared/types';
 
 interface MobileDashboardProps {
   onCategorySelect: (id: string) => void;
   onItemSelect: (id: string) => void;
+  /** Jumps straight to a blank add-item flow. */
+  onAddItem: () => void;
+  onViewInventory: () => void;
 }
 
 function mobileReadinessTone(readiness: number): 'ok' | 'warn' | 'crit' {
@@ -46,9 +51,12 @@ function mobileHeadline(
 export function MobileDashboard({
   onCategorySelect,
   onItemSelect,
+  onAddItem,
+  onViewInventory,
 }: Readonly<MobileDashboardProps>) {
   const { t, i18n } = useTranslation(['common', 'categories']);
   const { themeKey } = useDesignTheme();
+  const { itemsToRestock, handleExport } = useShoppingListExport();
   const {
     categories,
     coverageTotals,
@@ -100,6 +108,24 @@ export function MobileDashboard({
         onItemSelect={onItemSelect}
         onCategorySelect={onCategorySelect}
       />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <Button variant="primary" full onClick={() => onAddItem()}>
+          {t(`v2.voice.addItem.${themeKey}`)}
+        </Button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="secondary" onClick={() => onViewInventory()}>
+            {t(`v2.dashboard.quickViewInventory.${themeKey}`)}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => handleExport()}
+            disabled={itemsToRestock.length === 0}
+          >
+            {t(`v2.dashboard.quickExportShoppingList.${themeKey}`)}
+          </Button>
+        </div>
+      </div>
 
       <Panel padding={16}>
         <Caption>{t(`v2.voice.readiness.${themeKey}`)}</Caption>

@@ -17,6 +17,8 @@ const meta = {
     onCategorySelect: { action: 'category selected' },
     onViewAllPriority: { action: 'view all priority' },
     onItemSelect: { action: 'item selected' },
+    onAddItem: { action: 'add item' },
+    onViewInventory: { action: 'view inventory' },
   },
 } satisfies Meta<typeof Dashboard>;
 export default meta;
@@ -26,6 +28,8 @@ const args = {
   onCategorySelect: () => {},
   onViewAllPriority: () => {},
   onItemSelect: () => {},
+  onAddItem: () => {},
+  onViewInventory: () => {},
 };
 
 export const Cockpit: Story = { args };

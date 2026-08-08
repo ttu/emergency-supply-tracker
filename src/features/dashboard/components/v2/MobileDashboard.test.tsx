@@ -35,6 +35,8 @@ const setup = (
   props: {
     onCategorySelect?: () => void;
     onItemSelect?: () => void;
+    onAddItem?: () => void;
+    onViewInventory?: () => void;
     theme?: 'cockpit' | 'civil' | 'pantry';
   } = {},
 ) =>
@@ -42,6 +44,8 @@ const setup = (
     <MobileDashboard
       onCategorySelect={props.onCategorySelect ?? vi.fn()}
       onItemSelect={props.onItemSelect ?? vi.fn()}
+      onAddItem={props.onAddItem ?? vi.fn()}
+      onViewInventory={props.onViewInventory ?? vi.fn()}
     />,
     {
       initialAppData: createMockAppData({
@@ -103,5 +107,35 @@ describe('MobileDashboard (v2)', () => {
     expect(
       screen.getByText('v2.dashboard.mobileHeadlinePantryAttention'),
     ).toBeInTheDocument();
+  });
+
+  describe('quick actions', () => {
+    it('clicking + ADD calls onAddItem', () => {
+      const onAddItem = vi.fn();
+      setup([], { onAddItem });
+      fireEvent.click(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      );
+      expect(onAddItem).toHaveBeenCalled();
+    });
+
+    it('clicking VIEW INVENTORY calls onViewInventory', () => {
+      const onViewInventory = vi.fn();
+      setup([], { onViewInventory });
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'v2.dashboard.quickViewInventory.cockpit',
+        }),
+      );
+      expect(onViewInventory).toHaveBeenCalled();
+    });
+
+    it('disables EXPORT SHOPPING LIST when nothing needs restocking', () => {
+      setup([]);
+      const button = screen.getByRole('button', {
+        name: 'v2.dashboard.quickExportShoppingList.cockpit',
+      });
+      expect(button).toBeDisabled();
+    });
   });
 });
