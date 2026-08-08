@@ -33,11 +33,15 @@ export function register(config?: ServiceWorkerConfig): void {
         // Running on localhost - check if service worker still exists
         checkValidServiceWorker(swUrl, config);
 
-        navigator.serviceWorker.ready.then(() => {
-          console.log(
-            'This web app is being served cache-first by a service worker.',
-          );
-        });
+        navigator.serviceWorker.ready
+          .then(() => {
+            console.log(
+              'This web app is being served cache-first by a service worker.',
+            );
+          })
+          .catch((error: unknown) => {
+            console.error('Error waiting for service worker readiness:', error);
+          });
       } else {
         // Not localhost - just register service worker
         registerValidSW(swUrl, config);
@@ -102,11 +106,11 @@ function checkValidServiceWorker(
         (contentType != null && contentType.indexOf('javascript') === -1)
       ) {
         // No service worker found - probably a different app
-        navigator.serviceWorker.ready.then((registration) => {
+        return navigator.serviceWorker.ready.then((registration) =>
           registration.unregister().then(() => {
             window.location.reload();
-          });
-        });
+          }),
+        );
       } else {
         // Service worker found - proceed as normal
         registerValidSW(swUrl, config);
@@ -122,9 +126,7 @@ function checkValidServiceWorker(
 export function unregister(): void {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready
-      .then((registration) => {
-        registration.unregister();
-      })
+      .then((registration) => registration.unregister())
       .catch((error) => {
         console.error(error.message);
       });

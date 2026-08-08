@@ -13,7 +13,7 @@ vi.mock('react-i18next', async () => {
 import { ErrorBoundary } from './ErrorBoundary';
 
 // Initialize i18n for tests
-i18n.use(initReactI18next).init({
+void i18n.use(initReactI18next).init({
   lng: 'en',
   resources: {
     en: {

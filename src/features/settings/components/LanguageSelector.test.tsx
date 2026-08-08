@@ -4,7 +4,7 @@ import { LanguageSelector } from './LanguageSelector';
 import { SettingsProvider } from '@/features/settings';
 
 // Mock i18next
-const mockChangeLanguage = vi.fn();
+const mockChangeLanguage = vi.fn().mockResolvedValue(undefined);
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
