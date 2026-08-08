@@ -234,7 +234,7 @@ function OnboardStepperRow({
             Spinbutton semantics give it the value, the floor and the arrow
             keys that assistive tech expects of a stepper. */}
         <div
-          role="spinbutton"
+          role="spinbutton" /* NOSONAR S6819 - composite value+arrow-key stepper, see comment above */
           tabIndex={0}
           aria-label={label}
           aria-valuenow={value}
