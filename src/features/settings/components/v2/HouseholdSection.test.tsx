@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { screen } from '@testing-library/react';
+import { screen, fireEvent, within } from '@testing-library/react';
 import { HouseholdSection } from './HouseholdSection';
 import { renderWithProviders } from '@/test/render';
 import {
@@ -72,5 +72,69 @@ describe('HouseholdSection (v2)', () => {
     expect(
       screen.getByText('v2.settings.household.waterFormula'),
     ).toBeInTheDocument();
+  });
+
+  describe('presets', () => {
+    const row = (label: string) =>
+      screen.getByText(label).parentElement!.parentElement as HTMLElement;
+
+    it('offers Single/Couple/Family presets that overwrite the household', () => {
+      renderWithProviders(<HouseholdSection />, {
+        initialAppData: createMockAppData({
+          settings: createMockSettings({ theme: 'cockpit' }),
+          household: {
+            adults: 4,
+            children: 3,
+            pets: 2,
+            supplyDurationDays: 30,
+            useFreezer: true,
+          },
+        }),
+      });
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'v2.onboarding.preset.presetNames.single.cockpit',
+        }),
+      );
+
+      expect(
+        within(row('v2.settings.household.adults.cockpit')).getByText('1'),
+      ).toBeInTheDocument();
+      expect(
+        within(row('v2.settings.household.children.cockpit')).getByText('0'),
+      ).toBeInTheDocument();
+      expect(
+        within(row('v2.settings.household.days.cockpit')).getByText('3'),
+      ).toBeInTheDocument();
+    });
+
+    it('the Family preset sets two adults and two children', () => {
+      renderWithProviders(<HouseholdSection />, {
+        initialAppData: createMockAppData({
+          settings: createMockSettings({ theme: 'cockpit' }),
+          household: {
+            adults: 1,
+            children: 0,
+            pets: 0,
+            supplyDurationDays: 3,
+            useFreezer: false,
+          },
+        }),
+      });
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'v2.onboarding.preset.presetNames.family.cockpit',
+        }),
+      );
+
+      expect(
+        within(row('v2.settings.household.adults.cockpit')).getByText('2'),
+      ).toBeInTheDocument();
+      expect(
+        within(row('v2.settings.household.children.cockpit')).getByText('2'),
+      ).toBeInTheDocument();
+    });
   });
 });

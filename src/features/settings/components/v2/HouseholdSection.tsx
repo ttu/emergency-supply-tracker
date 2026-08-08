@@ -2,10 +2,12 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
+  Button,
   Caption,
   NumberDisplay,
   Panel,
 } from '@/shared/components/design-v2/primitives';
+import type { HouseholdPreset } from '@/features/household/presets';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { useHousehold } from '@/features/household';
@@ -124,7 +126,7 @@ export function HouseholdSection() {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const isMobile = useIsMobile();
-  const { household, updateHousehold } = useHousehold();
+  const { household, updateHousehold, setPreset } = useHousehold();
   const { items } = useInventory();
   const { settings } = useSettings();
 
@@ -165,6 +167,24 @@ export function HouseholdSection() {
         code="§2"
         title={t(`v2.settings.household.title.${themeKey}`)}
       />
+      <div
+        style={{
+          display: 'flex',
+          gap: 8,
+          marginBottom: 14,
+          flexWrap: 'wrap',
+        }}
+      >
+        {(['single', 'couple', 'family'] as HouseholdPreset[]).map((preset) => (
+          <Button
+            key={preset}
+            variant="secondary"
+            onClick={() => setPreset(preset)}
+          >
+            {t(`v2.onboarding.preset.presetNames.${preset}.${themeKey}`)}
+          </Button>
+        ))}
+      </div>
       <div
         style={{
           display: 'grid',
