@@ -67,7 +67,7 @@ export default tseslint.config(
       // violations to fix incrementally. Promoted to 'error' once a rule's
       // count reaches zero. See docs/CODE_QUALITY.md.
       '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'warn',
+      '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'warn',
       '@typescript-eslint/strict-boolean-expressions': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'warn',

@@ -33,7 +33,7 @@ export function useImportData(
   const { showNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = useCallback(
+  const processFileChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -68,6 +68,15 @@ export function useImportData(
       }
     },
     [t, onImportSuccess, skipConfirmation, showNotification],
+  );
+
+  // Sync wrapper so the type React event handlers expect (void return) matches
+  // reality - the async work is intentionally not awaited by the caller.
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      void processFileChange(e);
+    },
+    [processFileChange],
   );
 
   const triggerFileInput = useCallback(() => {

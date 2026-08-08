@@ -101,7 +101,7 @@ export default tseslint.config(
       // violations to fix incrementally. Promoted to 'error' once a rule's
       // count reaches zero.
       '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'warn',
+      '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'warn',
       '@typescript-eslint/strict-boolean-expressions': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
@@ -163,7 +163,7 @@ export default tseslint.config(
 | `sonarjs/*` (recommended)              | error   | Bug patterns, duplication, complexity         |
 | `sonarjs/cognitive-complexity`         | error   | Max complexity 15 per function                |
 | `@typescript-eslint/no-floating-promises` | error   | Catch unhandled promise rejections            |
-| `@typescript-eslint/no-misused-promises`  | warn (ratchet) | Catch async handlers used where a sync callback is expected |
+| `@typescript-eslint/no-misused-promises`  | error   | Catch async handlers used where a sync callback is expected |
 | `@typescript-eslint/switch-exhaustiveness-check` | warn (ratchet) | Require every union case be handled in a `switch` |
 | `@typescript-eslint/strict-boolean-expressions` | warn (ratchet) | Disallow implicit truthy/falsy checks on nullable/non-boolean values |
 | `@typescript-eslint/no-unsafe-*`       | warn (ratchet) | Catch `any`-typed assignment/call/member-access/return/argument |
