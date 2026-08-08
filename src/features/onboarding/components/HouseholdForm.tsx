@@ -47,7 +47,11 @@ interface HouseholdFieldsProps {
   onChange: (field: keyof HouseholdData, value: number | boolean) => void;
 }
 
-function HouseholdFields({ formData, errors, onChange }: HouseholdFieldsProps) {
+function HouseholdFields({
+  formData,
+  errors,
+  onChange,
+}: Readonly<HouseholdFieldsProps>) {
   const { t } = useTranslation();
 
   return (
@@ -92,7 +96,7 @@ export function HouseholdForm({
   initialData,
   onSubmit,
   onBack,
-}: HouseholdFormProps) {
+}: Readonly<HouseholdFormProps>) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<HouseholdData>({
     adults: initialData?.adults ?? HOUSEHOLD_DEFAULTS.adults,

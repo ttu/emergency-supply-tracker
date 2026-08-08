@@ -30,7 +30,7 @@ interface StatItemProps {
   value: React.ReactNode;
 }
 
-function StatItem({ label, value }: StatItemProps) {
+function StatItem({ label, value }: Readonly<StatItemProps>) {
   return (
     <div className={styles.statItem}>
       <span className={styles.statLabel}>{label}</span>

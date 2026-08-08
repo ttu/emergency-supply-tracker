@@ -57,7 +57,7 @@ export function SideMenu({
   const drawerId = useId();
 
   // Flatten groups to items for keyboard navigation
-  const allItems = useMemo(() => {
+  const allItems = useMemo((): readonly SideMenuItem[] => {
     if (groups) {
       const flatItems = groups.flatMap((group) => group.items);
       return showAllOption ? [showAllOption, ...flatItems] : flatItems;

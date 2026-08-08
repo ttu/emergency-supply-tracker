@@ -357,7 +357,6 @@ describe('urlLanguage', () => {
       globalThis.history.replaceState({}, '', '/');
 
       expect(getInitialLanguage()).toBe('en');
-      expect(getInitialLanguage(undefined)).toBe('en');
     });
 
     it('returns default "en" for unsupported URL lang', () => {

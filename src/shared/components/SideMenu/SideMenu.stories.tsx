@@ -46,12 +46,12 @@ function SideMenuInteractive({
   showAllOption,
   ariaLabel = 'Navigation',
   initialSelected,
-}: {
+}: Readonly<{
   items: SideMenuItem[];
   showAllOption?: { id: string; label: string; icon?: string };
   ariaLabel?: string;
   initialSelected?: string;
-}) {
+}>) {
   const [selected, setSelected] = useState(
     initialSelected || (showAllOption ? showAllOption.id : items[0]?.id || ''),
   );

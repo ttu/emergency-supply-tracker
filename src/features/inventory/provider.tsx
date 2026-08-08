@@ -31,7 +31,9 @@ import {
 import { InventoryItemFactory } from './factories/InventoryItemFactory';
 import { useNotification } from '@/shared/hooks/useNotification';
 
-export function InventoryProvider({ children }: { children: ReactNode }) {
+export function InventoryProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const { t } = useTranslation();
   // Call useNotification unconditionally at top level (Rules of Hooks)
   const notification = useNotification();

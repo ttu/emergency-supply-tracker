@@ -48,9 +48,9 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
 // Test component that uses the context
 function TestComponent({
   onContextReady,
-}: {
+}: Readonly<{
   onContextReady?: (ctx: ReturnType<typeof useRecommendedItems>) => void;
-}) {
+}>) {
   const context = useRecommendedItems();
 
   if (onContextReady) {
@@ -61,10 +61,16 @@ function TestComponent({
     <div>
       <div data-testid="items-count">{context.recommendedItems.length}</div>
       <div data-testid="is-custom">
-        {context.isUsingCustomRecommendations ? 'true' : 'false'}
+        {
+          // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
+          context.isUsingCustomRecommendations ? 'true' : 'false'
+        }
       </div>
       <div data-testid="custom-info">
-        {context.customRecommendationsInfo?.name || 'none'}
+        {
+          // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
+          context.customRecommendationsInfo?.name || 'none'
+        }
       </div>
       <div data-testid="selected-kit">{context.selectedKitId || 'none'}</div>
       <div data-testid="available-kits-count">
@@ -482,12 +488,13 @@ describe('RecommendedItemsProvider', () => {
 
     let info!: ReturnType<
       typeof useRecommendedItems
-    >['customRecommendationsInfo'];
+    >['customRecommendationsInfo']; // eslint-disable-line sonarjs/deprecation -- testing the legacy backward-compat shim
 
     render(
       <RecommendedItemsProvider>
         <TestComponent
           onContextReady={(ctx) => {
+            // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
             info = ctx.customRecommendationsInfo;
           }}
         />
@@ -916,12 +923,13 @@ describe('RecommendedItemsProvider', () => {
     it('should import and auto-select via importRecommendedItems', async () => {
       let importFn!: ReturnType<
         typeof useRecommendedItems
-      >['importRecommendedItems'];
+      >['importRecommendedItems']; // eslint-disable-line sonarjs/deprecation -- testing the legacy backward-compat shim
 
       render(
         <RecommendedItemsProvider>
           <TestComponent
             onContextReady={(ctx) => {
+              // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
               importFn = ctx.importRecommendedItems;
             }}
           />
@@ -948,12 +956,13 @@ describe('RecommendedItemsProvider', () => {
 
       let resetFn!: ReturnType<
         typeof useRecommendedItems
-      >['resetToDefaultRecommendations'];
+      >['resetToDefaultRecommendations']; // eslint-disable-line sonarjs/deprecation -- testing the legacy backward-compat shim
 
       render(
         <RecommendedItemsProvider>
           <TestComponent
             onContextReady={(ctx) => {
+              // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
               resetFn = ctx.resetToDefaultRecommendations;
             }}
           />

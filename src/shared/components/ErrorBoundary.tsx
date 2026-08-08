@@ -79,6 +79,7 @@ class ErrorBoundaryComponent extends Component<
     }
   };
 
+  /** @returns The fallback UI when an error was caught, otherwise the children. */
   render(): ReactNode {
     const { t } = this.props;
 

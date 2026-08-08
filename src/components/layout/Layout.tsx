@@ -10,7 +10,12 @@ export interface LayoutProps {
   className?: string;
 }
 
-export function Layout({ children, header, footer, className }: LayoutProps) {
+export function Layout({
+  children,
+  header,
+  footer,
+  className,
+}: Readonly<LayoutProps>) {
   const containerClass = [styles.layout, className].filter(Boolean).join(' ');
 
   return (

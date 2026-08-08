@@ -95,9 +95,9 @@ function convertImportedCategories(
 
 export function RecommendedItemsProvider({
   children,
-}: {
+}: Readonly<{
   children: ReactNode;
-}) {
+}>) {
   const { i18n } = useTranslation('common');
 
   // Initialize both kit states together to avoid stale references

@@ -116,6 +116,24 @@ function normalizeItems(
   }));
 }
 
+/**
+ * Migrates a legacy `null` expirationDate (pre-dating the undefined-only
+ * convention, see docs/CODE_QUALITY.md) to undefined and sets neverExpires
+ * accordingly. Imported JSON is untrusted and may still contain null despite
+ * InventoryItem's type no longer allowing it.
+ */
+function migrateLegacyExpirationDate(item: InventoryItem): InventoryItem {
+  const legacyExpirationDate = item.expirationDate as
+    | InventoryItem['expirationDate']
+    | null;
+  return {
+    ...item,
+    expirationDate:
+      legacyExpirationDate === null ? undefined : legacyExpirationDate,
+    neverExpires: legacyExpirationDate === null ? true : item.neverExpires,
+  };
+}
+
 /** Build default inventory set data (for new inventory set or first load) */
 function createDefaultInventorySetData(
   id: InventorySetId,
@@ -542,14 +560,7 @@ export function importFromJSON(json: string): AppData {
     data.items = normalizeItems(data.items as InventoryItem[]);
 
     // Then handle neverExpires normalization and migrate null to undefined
-    data.items = data.items?.map((item) => ({
-      ...item,
-      // Migrate legacy null to undefined
-      expirationDate:
-        item.expirationDate === null ? undefined : item.expirationDate,
-      // If expirationDate was null (legacy), set neverExpires to true
-      neverExpires: item.expirationDate === null ? true : item.neverExpires,
-    }));
+    data.items = data.items?.map(migrateLegacyExpirationDate);
   }
 
   // When importing data, always skip onboarding since user has configured data
@@ -661,14 +672,7 @@ export function parseImportJSON(json: string): PartialExportData {
  */
 function mergeItemsSection(imported: PartialExportData): InventoryItem[] {
   const normalizedItems = normalizeItems(imported.items ?? []);
-  return (
-    normalizedItems?.map((item) => ({
-      ...item,
-      expirationDate:
-        item.expirationDate === null ? undefined : item.expirationDate,
-      neverExpires: item.expirationDate === null ? true : item.neverExpires,
-    })) ?? []
-  );
+  return normalizedItems?.map(migrateLegacyExpirationDate) ?? [];
 }
 
 /**
@@ -922,15 +926,9 @@ function buildInventorySetFromImport(
         : { ...DEFAULT_HOUSEHOLD },
     items:
       sections.includes('items') && imported.items
-        ? (normalizeItems(imported.items) ?? []).map((item) => ({
-            ...item,
-            // Migrate legacy null to undefined
-            expirationDate:
-              item.expirationDate === null ? undefined : item.expirationDate,
-            // If expirationDate was null (legacy), set neverExpires to true
-            neverExpires:
-              item.expirationDate === null ? true : item.neverExpires,
-          }))
+        ? (normalizeItems(imported.items) ?? []).map(
+            migrateLegacyExpirationDate,
+          )
         : [],
     customCategories:
       sections.includes('customCategories') && imported.customCategories

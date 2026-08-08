@@ -15,7 +15,7 @@ export function Button({
   className,
   children,
   ...props
-}: ButtonProps) {
+}: Readonly<ButtonProps>) {
   const classNames = [
     styles.button,
     styles[variant],

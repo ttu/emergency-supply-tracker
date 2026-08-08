@@ -578,7 +578,6 @@ describe('optional field validation', () => {
     // Non-string sessionId should fail validation -> fresh data
     expect(result.logs).toEqual([]);
     expect(typeof result.sessionId).toBe('string');
-    expect(result.sessionId).not.toBe(42);
   });
 });
 

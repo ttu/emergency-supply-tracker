@@ -70,9 +70,9 @@ Object.defineProperty(globalThis, 'crypto', {
 // Test component that uses the context
 function TestComponent({
   onContextReady,
-}: {
+}: Readonly<{
   onContextReady?: (ctx: ReturnType<typeof useInventory>) => void;
-}) {
+}>) {
   const context = useInventory();
 
   if (onContextReady) {

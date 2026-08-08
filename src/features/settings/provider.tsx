@@ -8,7 +8,9 @@ import {
 } from '@/shared/utils/urlLanguage';
 import { UserSettingsFactory } from './factories/UserSettingsFactory';
 
-export function SettingsProvider({ children }: { children: ReactNode }) {
+export function SettingsProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const [settings, setSettings] = useLocalStorageSync('settings', (data) => {
     // Merge stored settings with defaults using factory to handle new fields
     const storedSettings = UserSettingsFactory.create(data?.settings || {});

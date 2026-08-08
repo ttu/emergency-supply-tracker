@@ -5,7 +5,9 @@ import { HouseholdContext } from './context';
 import { HOUSEHOLD_PRESETS } from './presets';
 import { DEFAULT_HOUSEHOLD } from './constants';
 
-export function HouseholdProvider({ children }: { children: ReactNode }) {
+export function HouseholdProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const [household, setHousehold] = useLocalStorageSync(
     'household',
     DEFAULT_HOUSEHOLD,

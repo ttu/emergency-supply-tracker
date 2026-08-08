@@ -20,11 +20,11 @@ function ModalWrapper({
   title,
   children,
   size,
-}: {
+}: Readonly<{
   title?: string;
   children: React.ReactNode;
   size?: 'small' | 'medium' | 'large';
-}) {
+}>) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

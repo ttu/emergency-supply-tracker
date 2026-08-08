@@ -7,7 +7,7 @@ export interface HeaderProps {
   actions?: ReactNode;
 }
 
-export function Header({ logo, navigation, actions }: HeaderProps) {
+export function Header({ logo, navigation, actions }: Readonly<HeaderProps>) {
   return (
     <header className={styles.header}>
       <div className={styles.container}>

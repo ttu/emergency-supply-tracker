@@ -54,7 +54,7 @@ i18n.use(initReactI18next).init({
 });
 
 // Component that throws an error
-function ThrowError({ shouldThrow }: { shouldThrow: boolean }) {
+function ThrowError({ shouldThrow }: Readonly<{ shouldThrow: boolean }>) {
   if (shouldThrow) {
     throw new Error('Test error');
   }

@@ -32,6 +32,7 @@ import { faker } from '@faker-js/faker';
 describe('water calculations', () => {
   describe('validateWaterRequirement', () => {
     it('returns undefined for undefined value', () => {
+      // eslint-disable-next-line sonarjs/no-undefined-argument -- explicit undefined is the case under test
       expect(validateWaterRequirement(undefined)).toBeUndefined();
     });
 

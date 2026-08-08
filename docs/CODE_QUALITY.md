@@ -57,6 +57,16 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        project: [
+          './tsconfig.json',
+          './tsconfig.node.json',
+          './tsconfig.test.json',
+          './tsconfig.storybook.json',
+          './tsconfig.e2e.json',
+        ],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -85,6 +95,20 @@ export default tseslint.config(
       // Redundant with @typescript-eslint/no-unused-vars above, which is
       // type-aware and honours the `_` prefix convention.
       'sonarjs/no-unused-vars': 'off',
+      // Type-aware rules, introduced at warn with a ratcheting
+      // --max-warnings ceiling (see package.json) rather than error, since
+      // the codebase predates type-aware linting and has existing
+      // violations to fix incrementally. Promote to 'error' once a rule's
+      // count reaches zero.
+      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-misused-promises': 'warn',
+      '@typescript-eslint/switch-exhaustiveness-check': 'warn',
+      '@typescript-eslint/strict-boolean-expressions': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
     },
   },
   {
@@ -138,6 +162,11 @@ export default tseslint.config(
 | `react-refresh/only-export-components` | warn    | Fast refresh compatibility                    |
 | `sonarjs/*` (recommended)              | error   | Bug patterns, duplication, complexity         |
 | `sonarjs/cognitive-complexity`         | error   | Max complexity 15 per function                |
+| `@typescript-eslint/no-floating-promises` | warn (ratchet) | Catch unhandled promise rejections    |
+| `@typescript-eslint/no-misused-promises`  | warn (ratchet) | Catch async handlers used where a sync callback is expected |
+| `@typescript-eslint/switch-exhaustiveness-check` | warn (ratchet) | Require every union case be handled in a `switch` |
+| `@typescript-eslint/strict-boolean-expressions` | warn (ratchet) | Disallow implicit truthy/falsy checks on nullable/non-boolean values |
+| `@typescript-eslint/no-unsafe-*`       | warn (ratchet) | Catch `any`-typed assignment/call/member-access/return/argument |
 
 **On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`, with the
 reasoning for every exception inline in `eslint.config.js` above. Three rules are
@@ -157,6 +186,53 @@ config array (see `WelcomeScreen.tsx`, `HouseholdForm.tsx`). Note the rule does
 not count depth inside `.map()` callbacks or `&&`/ternary branches, so it catches
 direct nesting only. The `jsx-runtime` config is included because React 19 needs
 no `React` import in scope.
+
+### Type-Aware Linting
+
+ESLint parses with full TypeScript type information (`parserOptions.project`
+listing all five `tsconfig*.json` files, `tsconfigRootDir` set to the repo
+root) rather than `typescript-eslint`'s syntax-only `recommended` config alone.
+This enables rules that need to know a value's actual type, not just its
+syntax:
+
+- `no-floating-promises` / `no-misused-promises` — catch unhandled promise
+  rejections and async callbacks passed where a sync one is expected (e.g.
+  `onClick={async () => …}`).
+- `switch-exhaustiveness-check` — a `switch` over a union type must handle
+  every member, turning "we added a new status" into a compile-time-adjacent
+  lint error instead of a silent fallthrough.
+- `strict-boolean-expressions` — disallows implicit truthy/falsy checks on
+  values that aren't already `boolean` (nullable strings/numbers/objects),
+  forcing an explicit `!= null` / `.length > 0` / etc.
+- `no-unsafe-assignment` / `no-unsafe-call` / `no-unsafe-member-access` /
+  `no-unsafe-return` / `no-unsafe-argument` — catch `any` leaking into typed
+  code from an untyped source (JSON.parse, external libs, etc.).
+
+**Multi-tsconfig setup:** the repo has five tsconfig files (main `src`, node
+tooling, tests, Storybook, e2e) with different `include`/`exclude` and no
+project-references between them. `parserOptions.project` (the classic,
+non-`projectService` mode) accepts an array and resolves each linted file
+against whichever listed tsconfig's `include` covers it — this is what makes
+type-aware linting work correctly across all five without solution-style
+references. `tsconfig.node.json` was widened to include the previously
+uncovered root tooling scripts (`vite.config.ts`, `playwright.config.ts`,
+`scripts/**/*.ts`, `.storybook/**/*.ts`, `vitest.config.stryker.ts`,
+`src/test/fakerSeed.ts`, `src/test/globalSetup.ts`) so every linted file
+resolves to a project — these files also weren't covered by any
+`type-check*` npm script before.
+
+**Why `warn` instead of `error`:** turning on type info also activates
+type-aware `sonarjs` rules that were already configured at `error` in this
+file but had never actually run (they silently no-op without type info) -
+fixed as part of introducing this. The six rules above are new, though, and
+enabling them at `error` would have surfaced ~800 pre-existing violations in
+one PR. They're introduced at `warn` with a ratcheting `--max-warnings`
+ceiling in `package.json`'s `lint` script instead: the ceiling is set to the
+current warning count, lowered whenever a PR fixes some of them, and a rule
+graduates to `error` once its count reaches zero. `lint-staged` does not set
+`--max-warnings` (unlike `npm run lint`), so committing a file that still has
+pre-existing ratchet warnings isn't blocked - only the full `npm run lint` in
+CI enforces the ceiling.
 
 ---
 
@@ -425,7 +501,7 @@ npm run validate:all   # validate + E2E tests
 
 | Check      | Requirement                          |
 | ---------- | ------------------------------------ |
-| Linting    | Zero ESLint warnings                 |
+| Linting    | Zero ESLint errors; warnings capped at the ratcheting `--max-warnings` ceiling (see [Type-Aware Linting](#type-aware-linting)) |
 | Formatting | Prettier check passes                |
 | Tests      | All Vitest tests pass                |
 | Storybook  | Component tests pass                 |

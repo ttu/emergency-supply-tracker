@@ -50,7 +50,7 @@ function PresetCard({
   onSelect,
   title,
   details,
-}: PresetCardProps) {
+}: Readonly<PresetCardProps>) {
   return (
     <Card
       variant={selected ? 'elevated' : 'outlined'}
@@ -80,7 +80,7 @@ export function HouseholdPresetSelector({
   onSelectPreset,
   onBack,
   onTryDemoData,
-}: HouseholdPresetSelectorProps) {
+}: Readonly<HouseholdPresetSelectorProps>) {
   const { t } = useTranslation();
   const { fileInputRef, handleFileChange, triggerFileInput } = useImportData({
     skipConfirmation: true,

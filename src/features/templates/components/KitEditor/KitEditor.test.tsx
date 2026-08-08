@@ -171,7 +171,7 @@ describe('KitEditor', () => {
 
   it('should filter items based on search query', () => {
     mockContext.getItemName.mockImplementation(
-      (item: RecommendedItemDefinition) => {
+      (item: RecommendedItemDefinition): string => {
         if (item.id === 'water') return 'Water';
         if (item.id === 'rice') return 'Rice';
         return item.id;

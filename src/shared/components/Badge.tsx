@@ -13,7 +13,7 @@ export function Badge({
   className,
   children,
   ...props
-}: BadgeProps) {
+}: Readonly<BadgeProps>) {
   const classNames = [styles.badge, styles[variant], styles[size], className]
     .filter(Boolean)
     .join(' ');
