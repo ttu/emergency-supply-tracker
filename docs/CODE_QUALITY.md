@@ -224,12 +224,15 @@ resolves to a project — these files also weren't covered by any
 **Why `warn` instead of `error`:** turning on type info also activates
 type-aware `sonarjs` rules that were already configured at `error` in this
 file but had never actually run (they silently no-op without type info) -
-fixed as part of introducing this. The six rules above are new, though, and
-enabling them at `error` would have surfaced ~800 pre-existing violations in
-one PR. They're introduced at `warn` with a ratcheting `--max-warnings`
-ceiling in `package.json`'s `lint` script instead: the ceiling is set to the
-current warning count, lowered whenever a PR fixes some of them, and a rule
-graduates to `error` once its count reaches zero. `lint-staged` does not set
+fixed as part of introducing this. The nine individual rules above (five of
+them grouped under `no-unsafe-*`) are new, though, and enabling all of them
+at `error` would have surfaced ~800 pre-existing violations in one PR.
+They're introduced at `warn` with a ratcheting `--max-warnings` ceiling in
+`package.json`'s `lint` script instead: the ceiling is set to the current
+warning count, lowered whenever a PR fixes some of them, and a rule
+graduates to `error` once its count reaches zero -
+`no-floating-promises` and `no-misused-promises` have already done so; the
+remaining seven are still ratcheting down. `lint-staged` does not set
 `--max-warnings` (unlike `npm run lint`), so committing a file that still has
 pre-existing ratchet warnings isn't blocked - only the full `npm run lint` in
 CI enforces the ceiling.

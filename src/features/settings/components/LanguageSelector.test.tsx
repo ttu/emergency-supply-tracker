@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LanguageSelector } from './LanguageSelector';
-import { SettingsProvider } from '@/features/settings';
 
 // Mock i18next
 const mockChangeLanguage = vi.fn().mockResolvedValue(undefined);
@@ -21,24 +20,31 @@ vi.mock('react-i18next', () => ({
   withTranslation: () => (Component: unknown) => Component,
 }));
 
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(<SettingsProvider>{component}</SettingsProvider>);
-};
+// Mock settings so persistence can be asserted directly, independent of
+// whether a re-render happened to reflect it in the DOM.
+const mockUpdateSettings = vi.fn();
+vi.mock('@/features/settings', () => ({
+  useSettings: () => ({
+    settings: { language: 'en' },
+    updateSettings: mockUpdateSettings,
+  }),
+}));
 
 describe('LanguageSelector', () => {
   beforeEach(() => {
     mockChangeLanguage.mockClear();
+    mockUpdateSettings.mockClear();
   });
 
   it('should render language selector', () => {
-    renderWithProviders(<LanguageSelector />);
+    render(<LanguageSelector />);
 
     expect(screen.getByText('settings.language.label')).toBeInTheDocument();
     expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 
   it('should show language options', () => {
-    renderWithProviders(<LanguageSelector />);
+    render(<LanguageSelector />);
 
     const select = screen.getByRole('combobox');
     expect(select).toBeInTheDocument();
@@ -51,11 +57,44 @@ describe('LanguageSelector', () => {
   });
 
   it('should change language when option selected', () => {
-    renderWithProviders(<LanguageSelector />);
+    render(<LanguageSelector />);
 
     const select = screen.getByRole('combobox') as HTMLSelectElement;
     fireEvent.change(select, { target: { value: 'fi' } });
 
     expect(mockChangeLanguage).toHaveBeenCalledWith('fi');
+  });
+
+  it('should persist the selected language once changeLanguage resolves', async () => {
+    render(<LanguageSelector />);
+
+    const select = screen.getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: 'fi' } });
+
+    await vi.waitFor(() => {
+      expect(mockUpdateSettings).toHaveBeenCalledWith({ language: 'fi' });
+    });
+  });
+
+  it('should not persist the selected language when changeLanguage rejects', async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+    mockChangeLanguage.mockRejectedValueOnce(new Error('network error'));
+
+    render(<LanguageSelector />);
+
+    const select = screen.getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: 'fi' } });
+
+    await vi.waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Failed to change language:',
+        expect.any(Error),
+      );
+    });
+    expect(mockUpdateSettings).not.toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
   });
 });
