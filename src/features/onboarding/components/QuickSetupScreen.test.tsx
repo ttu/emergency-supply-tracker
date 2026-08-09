@@ -526,7 +526,7 @@ describe('QuickSetupScreen', () => {
     await user.click(addButton);
 
     expect(onAddItems).toHaveBeenCalledTimes(1);
-    const [selectedIds] = onAddItems.mock.calls[0];
+    const [selectedIds] = onAddItems.mock.calls[0] as [Set<string>];
     expect(selectedIds).toBeInstanceOf(Set);
     expect(selectedIds.size).toBeGreaterThan(0);
   });

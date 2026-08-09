@@ -21,6 +21,7 @@ import {
   DEFAULT_INVENTORY_SET_ID,
   STORAGE_KEY,
 } from './localStorage';
+import type { ExportData } from './localStorage';
 import type {
   AppData,
   InventoryItem,
@@ -37,6 +38,7 @@ import {
 import type {
   MultiInventoryExportData,
   MultiInventoryImportSelection,
+  PartialExportData,
 } from '@/shared/types/exportImport';
 import {
   createMockAppData,
@@ -406,7 +408,9 @@ describe('setActiveInventorySetId guards against missing target', () => {
 
     setActiveInventorySetId(createInventorySetId('nonexistent'));
 
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const stored = JSON.parse(
+      localStorage.getItem(STORAGE_KEY) || '{}',
+    ) as RootStorage;
     expect(stored.activeInventorySetId).toBe('default');
   });
 });
@@ -448,7 +452,7 @@ describe('exportToJSON metadata counts', () => {
     const mockData = createMockAppData();
     (mockData as unknown as Record<string, unknown>).items = undefined;
     const json = exportToJSON(mockData);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as ExportData;
 
     expect(parsed.exportMetadata.itemCount).toBe(0);
   });
@@ -481,7 +485,7 @@ describe('exportToJSON metadata counts', () => {
       ],
     });
     const json = exportToJSON(mockData);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as ExportData;
 
     expect(parsed.exportMetadata.itemCount).toBe(2);
   });
@@ -497,7 +501,7 @@ describe('exportToJSON metadata counts', () => {
       ],
     });
     const json = exportToJSON(mockData);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as ExportData;
 
     expect(parsed.exportMetadata.categoryCount).toBe(
       STANDARD_CATEGORIES.length + 1,
@@ -509,7 +513,7 @@ describe('exportToJSON metadata counts', () => {
     (mockData as unknown as Record<string, unknown>).customCategories =
       undefined;
     const json = exportToJSON(mockData);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as ExportData;
 
     expect(parsed.exportMetadata.categoryCount).toBe(
       STANDARD_CATEGORIES.length,
@@ -519,7 +523,7 @@ describe('exportToJSON metadata counts', () => {
   it('appVersion is set from APP_VERSION constant', () => {
     const mockData = createMockAppData();
     const json = exportToJSON(mockData);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as ExportData;
 
     expect(parsed.exportMetadata.appVersion).toBe(APP_VERSION);
     expect(typeof parsed.exportMetadata.appVersion).toBe('string');
@@ -535,7 +539,7 @@ describe('exportToJSONSelective section-driven counts', () => {
     const mockData = createMockAppData();
     (mockData as unknown as Record<string, unknown>).items = undefined;
     const json = exportToJSONSelective(mockData, ['items']);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as PartialExportData;
 
     expect(parsed.exportMetadata.itemCount).toBe(0);
   });
@@ -545,7 +549,7 @@ describe('exportToJSONSelective section-driven counts', () => {
     (mockData as unknown as Record<string, unknown>).customCategories =
       undefined;
     const json = exportToJSONSelective(mockData, ['customCategories']);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as PartialExportData;
 
     expect(parsed.exportMetadata.categoryCount).toBe(
       STANDARD_CATEGORIES.length,
@@ -573,7 +577,7 @@ describe('exportToJSONSelective section-driven counts', () => {
       ],
     });
     const json = exportToJSONSelective(mockData, ['items', 'customCategories']);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as PartialExportData;
 
     expect(parsed.exportMetadata.itemCount).toBe(1);
     expect(parsed.exportMetadata.categoryCount).toBe(
@@ -589,7 +593,7 @@ describe('exportToJSONSelective section-driven counts', () => {
     });
 
     const json = exportToJSONSelective(mockData, ['customCategories']);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as PartialExportData;
 
     expect(parsed.exportMetadata.categoryCount).toBe(
       STANDARD_CATEGORIES.length + 1,
@@ -604,7 +608,7 @@ describe('exportToJSONSelective section-driven counts', () => {
     });
 
     const json = exportToJSONSelective(mockData, ['items']);
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as PartialExportData;
 
     expect(parsed.exportMetadata.categoryCount).toBe(
       STANDARD_CATEGORIES.length,
@@ -1410,7 +1414,7 @@ describe('exportMultiInventory payload shape', () => {
       includeSettings: false,
       inventorySets: [{ id: DEFAULT_INVENTORY_SET_ID, sections: [] }],
     });
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as MultiInventoryExportData;
 
     expect(parsed.inventorySets[0].data.id).toBe(inventorySet.id);
     expect(parsed.inventorySets[0].data.name).toBe(inventorySet.name);
@@ -1431,7 +1435,7 @@ describe('exportMultiInventory payload shape', () => {
         { id: DEFAULT_INVENTORY_SET_ID, sections: ['disabledCategories'] },
       ],
     });
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as MultiInventoryExportData;
 
     expect(parsed.inventorySets[0].data.disabledCategories).toEqual(['food']);
   });
@@ -1444,7 +1448,7 @@ describe('exportMultiInventory payload shape', () => {
       includeSettings: false,
       inventorySets: [{ id: DEFAULT_INVENTORY_SET_ID, sections: [] }],
     });
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as MultiInventoryExportData;
 
     expect(parsed.appVersion).toBe(APP_VERSION);
     expect(parsed.appVersion.length).toBeGreaterThan(0);
@@ -1458,7 +1462,7 @@ describe('exportMultiInventory payload shape', () => {
       includeSettings: false,
       inventorySets: [],
     });
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json) as MultiInventoryExportData;
 
     expect(parsed.exportedAt).toBeDefined();
     const date = new Date(parsed.exportedAt);

@@ -777,7 +777,7 @@ describe('useShoppingListExport', () => {
 
       const blobArg = (
         globalThis.URL.createObjectURL as ReturnType<typeof vi.fn>
-      ).mock.calls[0][0];
+      ).mock.calls[0][0] as Blob;
       expect(blobArg).toBeInstanceOf(Blob);
       expect(blobArg.type).toBe('text/plain;charset=utf-8');
     });

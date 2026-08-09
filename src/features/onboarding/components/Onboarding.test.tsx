@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { Onboarding } from './Onboarding';
 import { SettingsProvider } from '@/features/settings';
 import { RecommendedItemsProvider } from '@/features/templates';
+import type { HouseholdConfig, InventoryItem } from '@/shared/types';
 
 vi.mock('@/shared/hooks/useNotification', () => ({
   useNotification: () => ({ showNotification: vi.fn() }),
@@ -285,10 +286,10 @@ describe('Onboarding', () => {
 
     expect(onComplete).toHaveBeenCalledWith(
       expect.objectContaining({
-        adults: expect.any(Number),
-        children: expect.any(Number),
-        supplyDurationDays: expect.any(Number),
-        useFreezer: expect.any(Boolean),
+        adults: expect.any(Number) as number,
+        children: expect.any(Number) as number,
+        supplyDurationDays: expect.any(Number) as number,
+        useFreezer: expect.any(Boolean) as boolean,
       }),
       [],
     );
@@ -341,16 +342,16 @@ describe('Onboarding', () => {
 
     expect(onComplete).toHaveBeenCalledWith(
       expect.objectContaining({
-        adults: expect.any(Number),
-        children: expect.any(Number),
-        supplyDurationDays: expect.any(Number),
-        useFreezer: expect.any(Boolean),
+        adults: expect.any(Number) as number,
+        children: expect.any(Number) as number,
+        supplyDurationDays: expect.any(Number) as number,
+        useFreezer: expect.any(Boolean) as boolean,
       }),
       expect.arrayContaining([
         expect.objectContaining({
-          id: expect.any(String),
-          categoryId: expect.any(String),
-          quantity: expect.any(Number),
+          id: expect.any(String) as string,
+          categoryId: expect.any(String) as string,
+          quantity: expect.any(Number) as number,
         }),
       ]),
     );
@@ -415,7 +416,10 @@ describe('Onboarding', () => {
 
     // Verify items were added with quantity 1
     expect(onComplete).toHaveBeenCalled();
-    const [, items] = onComplete.mock.calls[0];
+    const [, items] = onComplete.mock.calls[0] as [
+      HouseholdConfig,
+      InventoryItem[],
+    ];
     expect(items.length).toBeGreaterThan(0);
     items.forEach((item: { quantity: number }) => {
       expect(item.quantity).toBe(1);
@@ -469,7 +473,10 @@ describe('Onboarding', () => {
 
     // Verify items were added with quantity 0
     expect(onComplete).toHaveBeenCalled();
-    const [, items] = onComplete.mock.calls[0];
+    const [, items] = onComplete.mock.calls[0] as [
+      HouseholdConfig,
+      InventoryItem[],
+    ];
     expect(items.length).toBeGreaterThan(0);
     items.forEach((item: { quantity: number }) => {
       expect(item.quantity).toBe(0);

@@ -7,6 +7,7 @@ import {
   selectInventoryCategory,
 } from './fixtures';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
+import type { RootStorage } from '../src/shared/types';
 
 // Get base URL - use environment variable for deployed sites
 const getBaseURL = () =>
@@ -123,7 +124,7 @@ async function verifyRecommendedItemsAdded(page: Page) {
     const data = localStorage.getItem(key);
     if (!data) return false;
     try {
-      const root = JSON.parse(data);
+      const root = JSON.parse(data) as RootStorage;
       const ws = root.inventorySets?.[root.activeInventorySetId];
       return ws?.items && ws.items.length > 0;
     } catch {
@@ -356,7 +357,7 @@ async function testSettingsFeaturesQuickSetup(page: Page) {
       const data = localStorage.getItem(key);
       if (!data) return false;
       try {
-        const root = JSON.parse(data);
+        const root = JSON.parse(data) as RootStorage;
         return root.settings?.theme === 'dark';
       } catch {
         return false;
@@ -454,9 +455,9 @@ async function testPersistenceQuickSetup(page: Page) {
     const data = localStorage.getItem(key);
     if (!data) return { persisted: false, items: [] };
     try {
-      const root = JSON.parse(data);
+      const root = JSON.parse(data) as RootStorage;
       const ws = root.inventorySets?.[root.activeInventorySetId];
-      const items = ws?.items || [];
+      const items = ws?.items ?? [];
       return {
         persisted: true,
         items,

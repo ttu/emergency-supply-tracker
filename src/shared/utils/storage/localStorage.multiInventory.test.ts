@@ -16,6 +16,7 @@ import {
   createProductTemplateId,
   createAlertId,
 } from '@/shared/types';
+import type { RootStorage } from '@/shared/types';
 
 describe('localStorage utilities', () => {
   beforeEach(() => {
@@ -71,7 +72,7 @@ describe('localStorage utilities', () => {
             { id: DEFAULT_INVENTORY_SET_ID, sections: ['items', 'household'] },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(parsed.version).toBeDefined();
         expect(parsed.exportedAt).toBeDefined();
@@ -95,7 +96,7 @@ describe('localStorage utilities', () => {
             { id: DEFAULT_INVENTORY_SET_ID, sections: ['items'] },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(parsed.settings).toBeUndefined();
       });
@@ -110,7 +111,7 @@ describe('localStorage utilities', () => {
             { id: DEFAULT_INVENTORY_SET_ID, sections: ['household'] },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(parsed.inventorySets[0].data.household).toBeDefined();
         expect(parsed.inventorySets[0].data.items).toBeUndefined();
@@ -129,7 +130,7 @@ describe('localStorage utilities', () => {
             },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(parsed.inventorySets).toHaveLength(0);
       });
@@ -149,7 +150,7 @@ describe('localStorage utilities', () => {
             { id: DEFAULT_INVENTORY_SET_ID, sections: ['customCategories'] },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(parsed.inventorySets[0].data.customCategories).toHaveLength(1);
       });
@@ -174,7 +175,7 @@ describe('localStorage utilities', () => {
             { id: DEFAULT_INVENTORY_SET_ID, sections: ['customTemplates'] },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(parsed.inventorySets[0].data.customTemplates).toHaveLength(1);
       });
@@ -192,7 +193,7 @@ describe('localStorage utilities', () => {
             { id: DEFAULT_INVENTORY_SET_ID, sections: ['dismissedAlertIds'] },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(parsed.inventorySets[0].data.dismissedAlertIds).toHaveLength(1);
       });
@@ -213,7 +214,7 @@ describe('localStorage utilities', () => {
             },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(
           parsed.inventorySets[0].data.disabledRecommendedItems,
@@ -239,7 +240,7 @@ describe('localStorage utilities', () => {
             },
           ],
         });
-        const parsed = JSON.parse(json);
+        const parsed = JSON.parse(json) as MultiInventoryExportData;
 
         expect(
           parsed.inventorySets[0].data.customRecommendedItems,
@@ -678,7 +679,7 @@ describe('localStorage utilities', () => {
 
         const stored = localStorage.getItem(STORAGE_KEY);
         expect(stored).toBeDefined();
-        const parsed = JSON.parse(stored!);
+        const parsed = JSON.parse(stored!) as RootStorage;
         expect(parsed.inventorySets).toBeDefined();
       });
 

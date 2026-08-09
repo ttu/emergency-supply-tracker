@@ -61,7 +61,10 @@ export function useDocumentMetadata(): void {
     );
     if (jsonLdScript) {
       try {
-        const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
+        const jsonLd = JSON.parse(jsonLdScript.textContent || '{}') as Record<
+          string,
+          unknown
+        >;
         if (jsonLd.description) {
           jsonLd.description = t('metadata.description');
           jsonLdScript.textContent = JSON.stringify(jsonLd);

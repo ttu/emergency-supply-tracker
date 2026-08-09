@@ -2,7 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ImportSelectionModal } from './ImportSelectionModal';
-import type { MultiInventoryExportData } from '@/shared/types/exportImport';
+import type {
+  MultiInventoryExportData,
+  MultiInventoryImportSelection,
+} from '@/shared/types/exportImport';
 import { LEGACY_IMPORT_SET_NAME } from '@/shared/types/exportImport';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 import {
@@ -137,7 +140,7 @@ describe('ImportSelectionModal', () => {
             index: 0,
             originalName: 'Home',
           }),
-        ]),
+        ]) as MultiInventoryImportSelection['inventorySets'],
       }),
     );
   });

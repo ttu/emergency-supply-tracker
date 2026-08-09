@@ -212,7 +212,8 @@ describe('ShoppingListExport', () => {
     const button = screen.getByText('settings.shoppingList.button');
     fireEvent.click(button);
 
-    const blobCall = (globalThis.URL.createObjectURL as Mock).mock.calls[0][0];
+    const blobCall = (globalThis.URL.createObjectURL as Mock).mock
+      .calls[0][0] as Blob;
     expect(blobCall).toBeInstanceOf(Blob);
     expect(blobCall.type).toBe('text/plain;charset=utf-8');
   });

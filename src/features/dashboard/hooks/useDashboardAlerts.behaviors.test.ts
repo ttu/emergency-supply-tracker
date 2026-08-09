@@ -223,7 +223,7 @@ describe('useDashboardAlerts behaviors', () => {
         'success',
       );
       // Ensure the message is NOT empty
-      const calledMessage = mockShowNotification.mock.calls[0][0];
+      const calledMessage = mockShowNotification.mock.calls[0][0] as string;
       expect(calledMessage).not.toBe('');
       expect(calledMessage.length).toBeGreaterThan(0);
     });

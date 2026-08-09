@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --max-warnings=407",
+    "lint": "eslint . --max-warnings=53",
     "lint:fix": "eslint . --fix",
     "duplication": "jscpd .",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css,md}\"",

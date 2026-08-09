@@ -9,6 +9,7 @@ import {
   createMockProductTemplate,
 } from '../src/shared/utils/test/factories';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
+import type { RootStorage } from '../src/shared/types';
 
 test.describe('Custom Product Templates', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -152,15 +153,15 @@ test.describe('Custom Product Templates', () => {
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
       if (!data) return null;
-      const root = JSON.parse(data);
+      const root = JSON.parse(data) as RootStorage;
       const ws = root.inventorySets?.[root.activeInventorySetId];
       return ws ?? null;
     }, STORAGE_KEY);
 
     expect(storedData).toBeTruthy();
-    expect(storedData.customTemplates).toBeDefined();
-    expect(storedData.customTemplates.length).toBeGreaterThan(0);
-    expect(storedData.customTemplates[0].name).toBe('Persistent Template');
+    expect(storedData!.customTemplates).toBeDefined();
+    expect(storedData!.customTemplates.length).toBeGreaterThan(0);
+    expect(storedData!.customTemplates[0].name).toBe('Persistent Template');
   });
 
   test('should allow creating custom template from item using Save as Template', async ({

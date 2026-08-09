@@ -1,6 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
-import { SideMenu, SideMenuItem, SideMenuGroup } from './SideMenu';
+import {
+  SideMenu,
+  SideMenuItem,
+  SideMenuGroup,
+  HamburgerButtonProps,
+} from './SideMenu';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -345,7 +350,7 @@ describe('SideMenu', () => {
 
   it('renders custom hamburger button when renderHamburgerButton is provided', () => {
     const onSelect = vi.fn();
-    const renderHamburgerButton = vi.fn(({ onClick }) => (
+    const renderHamburgerButton = vi.fn(({ onClick }: HamburgerButtonProps) => (
       <button data-testid="custom-hamburger" onClick={onClick}>
         Custom Menu
       </button>

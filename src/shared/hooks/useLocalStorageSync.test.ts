@@ -239,7 +239,7 @@ describe('useLocalStorageSync', () => {
       expect(localStorage.saveAppData).toHaveBeenCalledWith(
         expect.objectContaining({
           household: updatedHousehold,
-          lastModified: expect.any(String),
+          lastModified: expect.any(String) as string,
         }),
       );
     });
@@ -301,7 +301,9 @@ describe('useLocalStorageSync', () => {
       expect(result.current[0].adults).toBe(3);
       expect(localStorage.saveAppData).toHaveBeenCalledWith(
         expect.objectContaining({
-          household: expect.objectContaining({ adults: 3 }),
+          household: expect.objectContaining({
+            adults: 3,
+          }) as Partial<HouseholdConfig>,
         }),
       );
     });
@@ -330,7 +332,7 @@ describe('useLocalStorageSync', () => {
 
       expect(localStorage.saveAppData).toHaveBeenCalledWith(
         expect.objectContaining({
-          lastModified: expect.not.stringMatching(initialTimestamp),
+          lastModified: expect.not.stringMatching(initialTimestamp) as string,
         }),
       );
     });
@@ -364,7 +366,9 @@ describe('useLocalStorageSync', () => {
 
       expect(localStorage.saveAppData).toHaveBeenCalledWith(
         expect.objectContaining({
-          household: expect.objectContaining({ adults: 3 }),
+          household: expect.objectContaining({
+            adults: 3,
+          }) as Partial<HouseholdConfig>,
         }),
       );
     });

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ItemEditor } from './ItemEditor';
@@ -16,7 +16,7 @@ vi.mock('react-i18next', () => ({
 }));
 
 describe('ItemEditor', () => {
-  const mockOnSave = vi.fn();
+  const mockOnSave = vi.fn() as Mock<(item: ImportedRecommendedItem) => void>;
   const mockOnCancel = vi.fn();
 
   const mockItem: ImportedRecommendedItem = {
