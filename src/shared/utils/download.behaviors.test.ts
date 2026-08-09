@@ -4,11 +4,19 @@
  * Target: ArrayDeclaration L19 [] — new Blob([content], ...)
  * If mutated to new Blob([], ...), the blob would be empty instead of containing content.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  type MockInstance,
+} from 'vitest';
 import { downloadFile } from './download';
 
 describe('downloadFile mutation tests — Blob content array', () => {
-  let createObjectURLSpy: ReturnType<typeof vi.spyOn>;
+  let createObjectURLSpy: MockInstance<typeof URL.createObjectURL>;
 
   beforeEach(() => {
     createObjectURLSpy = vi

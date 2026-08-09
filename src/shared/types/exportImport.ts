@@ -296,16 +296,14 @@ export function getInventorySetSectionsWithData(
  * Check if export data is in the new multi-inventory format
  */
 export function isMultiInventoryExport(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any,
+  data: unknown,
 ): data is MultiInventoryExportData {
+  if (typeof data !== 'object' || data === null) return false;
+  const d = data as Record<string, unknown>;
   return (
-    data &&
-    typeof data === 'object' &&
-    Array.isArray(data.inventorySets) &&
-    (data.inventorySets.length > 0 ||
-      (typeof data.exportedAt === 'string' &&
-        typeof data.appVersion === 'string'))
+    Array.isArray(d.inventorySets) &&
+    (d.inventorySets.length > 0 ||
+      (typeof d.exportedAt === 'string' && typeof d.appVersion === 'string'))
   );
 }
 

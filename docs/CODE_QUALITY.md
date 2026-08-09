@@ -110,7 +110,7 @@ export default tseslint.config(
       '@typescript-eslint/strict-boolean-expressions': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
-      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
     },
@@ -172,7 +172,8 @@ export default tseslint.config(
 | `@typescript-eslint/strict-boolean-expressions` | off     | Disallow implicit truthy/falsy checks on nullable/non-boolean values |
 | `@typescript-eslint/no-unsafe-assignment` | error   | Catch `any` assigned into a typed binding             |
 | `@typescript-eslint/no-unsafe-call`   | error   | Catch calling an `any`-typed value as a function       |
-| `@typescript-eslint/no-unsafe-member-access` / `-return` / `-argument` | warn (ratchet) | Catch `any` accessed/returned/passed as an argument |
+| `@typescript-eslint/no-unsafe-member-access` | error   | Catch property access on an `any`-typed value          |
+| `@typescript-eslint/no-unsafe-return` / `-argument` | warn (ratchet) | Catch `any` returned or passed as an argument |
 
 **On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`, with the
 reasoning for every exception inline in `eslint.config.js` above. Three rules are
@@ -243,10 +244,10 @@ They're introduced at `warn` with a ratcheting `--max-warnings` ceiling in
 `package.json`'s `lint` script instead: the ceiling is set to the current
 warning count, lowered whenever a PR fixes some of them, and a rule
 graduates to `error` once its count reaches zero -
-`no-floating-promises`, `no-misused-promises`, `switch-exhaustiveness-check`
-`no-unsafe-assignment` and `no-unsafe-call` have already done so; the
-remaining three (`no-unsafe-member-access` / `-return` / `-argument`) are still
-ratcheting down. `lint-staged` does not set
+`no-floating-promises`, `no-misused-promises`, `switch-exhaustiveness-check`,
+`no-unsafe-assignment`, `no-unsafe-call` and `no-unsafe-member-access` have
+already done so; the remaining two (`no-unsafe-return` / `-argument`) are
+still ratcheting down. `lint-staged` does not set
 `--max-warnings` (unlike `npm run lint`), so committing a file that still has
 pre-existing ratchet warnings isn't blocked - only the full `npm run lint` in
 CI enforces the ceiling.
