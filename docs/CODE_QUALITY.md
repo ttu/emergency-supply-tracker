@@ -103,7 +103,11 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
-      '@typescript-eslint/strict-boolean-expressions': 'warn',
+      // Off rather than warn/error: at 384 warnings across 116 files, the
+      // fix-per-callsite cost (each requires judgment about presence vs.
+      // empty-string vs. zero-as-unset intent) outweighs the value here.
+      // Revisit if the codebase wants to take this on deliberately.
+      '@typescript-eslint/strict-boolean-expressions': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
@@ -165,7 +169,7 @@ export default tseslint.config(
 | `@typescript-eslint/no-floating-promises` | error   | Catch unhandled promise rejections            |
 | `@typescript-eslint/no-misused-promises`  | error   | Catch async handlers used where a sync callback is expected |
 | `@typescript-eslint/switch-exhaustiveness-check` | error   | Require every union case be handled in a `switch` |
-| `@typescript-eslint/strict-boolean-expressions` | warn (ratchet) | Disallow implicit truthy/falsy checks on nullable/non-boolean values |
+| `@typescript-eslint/strict-boolean-expressions` | off     | Disallow implicit truthy/falsy checks on nullable/non-boolean values |
 | `@typescript-eslint/no-unsafe-*`       | warn (ratchet) | Catch `any`-typed assignment/call/member-access/return/argument |
 
 **On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`, with the
@@ -201,12 +205,15 @@ syntax:
 - `switch-exhaustiveness-check` — a `switch` over a union type must handle
   every member, turning "we added a new status" into a compile-time-adjacent
   lint error instead of a silent fallthrough.
-- `strict-boolean-expressions` — disallows implicit truthy/falsy checks on
-  values that aren't already `boolean` (nullable strings/numbers/objects),
-  forcing an explicit `!= null` / `.length > 0` / etc.
 - `no-unsafe-assignment` / `no-unsafe-call` / `no-unsafe-member-access` /
   `no-unsafe-return` / `no-unsafe-argument` — catch `any` leaking into typed
   code from an untyped source (JSON.parse, external libs, etc.).
+
+`strict-boolean-expressions` (disallows implicit truthy/falsy checks on
+values that aren't already `boolean`) was evaluated and left `off`: at 384
+warnings across 116 files, most requiring a judgment call about
+presence-vs-empty-string-vs-zero intent per callsite, the fix cost outweighed
+the value here.
 
 **Multi-tsconfig setup:** the repo has five tsconfig files (main `src`, node
 tooling, tests, Storybook, e2e) with different `include`/`exclude` and no
@@ -224,7 +231,7 @@ resolves to a project — these files also weren't covered by any
 **Why `warn` instead of `error`:** turning on type info also activates
 type-aware `sonarjs` rules that were already configured at `error` in this
 file but had never actually run (they silently no-op without type info) -
-fixed as part of introducing this. The nine individual rules above (five of
+fixed as part of introducing this. The eight individual rules above (five of
 them grouped under `no-unsafe-*`) are new, though, and enabling all of them
 at `error` would have surfaced ~800 pre-existing violations in one PR.
 They're introduced at `warn` with a ratcheting `--max-warnings` ceiling in
@@ -232,8 +239,8 @@ They're introduced at `warn` with a ratcheting `--max-warnings` ceiling in
 warning count, lowered whenever a PR fixes some of them, and a rule
 graduates to `error` once its count reaches zero -
 `no-floating-promises`, `no-misused-promises` and
-`switch-exhaustiveness-check` have already done so; the remaining six are
-still ratcheting down. `lint-staged` does not set
+`switch-exhaustiveness-check` have already done so; the remaining five
+(`no-unsafe-*`) are still ratcheting down. `lint-staged` does not set
 `--max-warnings` (unlike `npm run lint`), so committing a file that still has
 pre-existing ratchet warnings isn't blocked - only the full `npm run lint` in
 CI enforces the ceiling.

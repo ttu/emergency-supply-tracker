@@ -69,7 +69,11 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
-      '@typescript-eslint/strict-boolean-expressions': 'warn',
+      // Off rather than warn/error: at 384 warnings across 116 files, the
+      // fix-per-callsite cost (each requires judgment about presence vs.
+      // empty-string vs. zero-as-unset intent) outweighs the value here.
+      // Revisit if the codebase wants to take this on deliberately.
+      '@typescript-eslint/strict-boolean-expressions': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
