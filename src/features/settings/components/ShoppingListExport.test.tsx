@@ -6,6 +6,7 @@ import {
   afterEach,
   vi,
   type Mock,
+  type MockInstance,
 } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
 import { ShoppingListExport } from './ShoppingListExport';
@@ -19,7 +20,7 @@ import {
 } from '@/shared/types';
 
 describe('ShoppingListExport', () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance<typeof document.createElement>;
 
   beforeEach(() => {
     vi.clearAllMocks();

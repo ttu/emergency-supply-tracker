@@ -29,6 +29,7 @@
     "scripts/**/*.ts",
     ".storybook/**/*.ts",
     "src/test/fakerSeed.ts",
-    "src/test/globalSetup.ts"
+    "src/test/globalSetup.ts",
+    "src/types/vitest.d.ts"
   ]
 }

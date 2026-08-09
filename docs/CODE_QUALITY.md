@@ -109,7 +109,7 @@ export default tseslint.config(
       // Revisit if the codebase wants to take this on deliberately.
       '@typescript-eslint/strict-boolean-expressions': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'error',
-      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
@@ -171,7 +171,8 @@ export default tseslint.config(
 | `@typescript-eslint/switch-exhaustiveness-check` | error   | Require every union case be handled in a `switch` |
 | `@typescript-eslint/strict-boolean-expressions` | off     | Disallow implicit truthy/falsy checks on nullable/non-boolean values |
 | `@typescript-eslint/no-unsafe-assignment` | error   | Catch `any` assigned into a typed binding             |
-| `@typescript-eslint/no-unsafe-call` / `-member-access` / `-return` / `-argument` | warn (ratchet) | Catch `any` called/accessed/returned/passed as an argument |
+| `@typescript-eslint/no-unsafe-call`   | error   | Catch calling an `any`-typed value as a function       |
+| `@typescript-eslint/no-unsafe-member-access` / `-return` / `-argument` | warn (ratchet) | Catch `any` accessed/returned/passed as an argument |
 
 **On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`, with the
 reasoning for every exception inline in `eslint.config.js` above. Three rules are
@@ -227,7 +228,10 @@ uncovered root tooling scripts (`vite.config.ts`, `playwright.config.ts`,
 `scripts/**/*.ts`, `.storybook/**/*.ts`, `vitest.config.stryker.ts`,
 `src/test/fakerSeed.ts`, `src/test/globalSetup.ts`) so every linted file
 resolves to a project — these files also weren't covered by any
-`type-check*` npm script before.
+`type-check*` npm script before. `src/types/vitest.d.ts` (the `provide`/
+`ProvidedContext` module augmentation used by `globalSetup.ts`) is also
+included, since an ambient `.d.ts` only takes effect for files compiled in
+the same program.
 
 **Why `warn` instead of `error`:** turning on type info also activates
 type-aware `sonarjs` rules that were already configured at `error` in this
@@ -240,8 +244,8 @@ They're introduced at `warn` with a ratcheting `--max-warnings` ceiling in
 warning count, lowered whenever a PR fixes some of them, and a rule
 graduates to `error` once its count reaches zero -
 `no-floating-promises`, `no-misused-promises`, `switch-exhaustiveness-check`
-and `no-unsafe-assignment` have already done so; the remaining four
-(`no-unsafe-call` / `-member-access` / `-return` / `-argument`) are still
+`no-unsafe-assignment` and `no-unsafe-call` have already done so; the
+remaining three (`no-unsafe-member-access` / `-return` / `-argument`) are still
 ratcheting down. `lint-staged` does not set
 `--max-warnings` (unlike `npm run lint`), so committing a file that still has
 pre-existing ratchet warnings isn't blocked - only the full `npm run lint` in

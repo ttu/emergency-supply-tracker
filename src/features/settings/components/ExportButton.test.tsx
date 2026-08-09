@@ -6,6 +6,7 @@ import {
   afterEach,
   vi,
   type Mock,
+  type MockInstance,
 } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -71,7 +72,7 @@ function createMockInventorySetExportInfo(
 }
 
 describe('ExportButton', () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance<typeof document.createElement>;
 
   beforeEach(() => {
     vi.clearAllMocks();
