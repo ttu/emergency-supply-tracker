@@ -95,11 +95,10 @@ export default tseslint.config(
       // Redundant with @typescript-eslint/no-unused-vars above, which is
       // type-aware and honours the `_` prefix convention.
       'sonarjs/no-unused-vars': 'off',
-      // Type-aware rules, introduced at warn with a ratcheting
-      // --max-warnings ceiling (see package.json) rather than error, since
-      // the codebase predates type-aware linting and has existing
-      // violations to fix incrementally. Promoted to 'error' once a rule's
-      // count reaches zero.
+      // Type-aware rules. Introduced at warn with a ratcheting
+      // --max-warnings ceiling and promoted to 'error' as each rule's
+      // count reached zero - all eight have now graduated. See
+      // docs/CODE_QUALITY.md for how the ratchet worked.
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
@@ -111,8 +110,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-unsafe-member-access': 'error',
-      '@typescript-eslint/no-unsafe-return': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
     },
   },
   {
@@ -173,7 +172,8 @@ export default tseslint.config(
 | `@typescript-eslint/no-unsafe-assignment` | error   | Catch `any` assigned into a typed binding             |
 | `@typescript-eslint/no-unsafe-call`   | error   | Catch calling an `any`-typed value as a function       |
 | `@typescript-eslint/no-unsafe-member-access` | error   | Catch property access on an `any`-typed value          |
-| `@typescript-eslint/no-unsafe-return` / `-argument` | warn (ratchet) | Catch `any` returned or passed as an argument |
+| `@typescript-eslint/no-unsafe-return`  | error   | Catch a function returning an `any`-typed value        |
+| `@typescript-eslint/no-unsafe-argument` | error   | Catch passing an `any`-typed value as an argument      |
 
 **On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`, with the
 reasoning for every exception inline in `eslint.config.js` above. Three rules are
@@ -234,23 +234,26 @@ resolves to a project — these files also weren't covered by any
 included, since an ambient `.d.ts` only takes effect for files compiled in
 the same program.
 
-**Why `warn` instead of `error`:** turning on type info also activates
+**The ratchet (now paid off):** turning on type info also activates
 type-aware `sonarjs` rules that were already configured at `error` in this
 file but had never actually run (they silently no-op without type info) -
 fixed as part of introducing this. The eight individual rules above (five of
-them grouped under `no-unsafe-*`) are new, though, and enabling all of them
-at `error` would have surfaced ~800 pre-existing violations in one PR.
-They're introduced at `warn` with a ratcheting `--max-warnings` ceiling in
-`package.json`'s `lint` script instead: the ceiling is set to the current
-warning count, lowered whenever a PR fixes some of them, and a rule
-graduates to `error` once its count reaches zero -
-`no-floating-promises`, `no-misused-promises`, `switch-exhaustiveness-check`,
-`no-unsafe-assignment`, `no-unsafe-call` and `no-unsafe-member-access` have
-already done so; the remaining two (`no-unsafe-return` / `-argument`) are
-still ratcheting down. `lint-staged` does not set
-`--max-warnings` (unlike `npm run lint`), so committing a file that still has
-pre-existing ratchet warnings isn't blocked - only the full `npm run lint` in
-CI enforces the ceiling.
+them grouped under `no-unsafe-*`) were new, though, and enabling all of them
+at `error` immediately would have surfaced ~800 pre-existing violations in
+one PR. They were introduced at `warn` with a ratcheting `--max-warnings`
+ceiling in `package.json`'s `lint` script instead: the ceiling started at the
+current warning count and was lowered as each PR fixed some of them, with a
+rule promoted to `error` once its count reached zero -
+`no-floating-promises` first, then `no-misused-promises`,
+`switch-exhaustiveness-check`, `no-unsafe-assignment`, `no-unsafe-call`,
+`no-unsafe-member-access`, and finally `no-unsafe-return` /
+`no-unsafe-argument` together. All eight are now `error` with the ceiling
+back at 0, same as every other rule in this file. If a new type-aware rule
+is added later and starts with a large existing backlog, repeat this
+pattern rather than enabling it at `error` outright: introduce at `warn`
+with the current count as the ceiling, ratchet down PR by PR, promote once
+clean. `lint-staged` mirrors `npm run lint`'s `--max-warnings=0` again now
+that there's no ratchet debt left to avoid blocking on.
 
 ---
 
@@ -519,7 +522,7 @@ npm run validate:all   # validate + E2E tests
 
 | Check      | Requirement                          |
 | ---------- | ------------------------------------ |
-| Linting    | Zero ESLint errors; warnings capped at the ratcheting `--max-warnings` ceiling (see [Type-Aware Linting](#type-aware-linting)) |
+| Linting    | Zero ESLint errors and warnings (`--max-warnings=0`)   |
 | Formatting | Prettier check passes                |
 | Tests      | All Vitest tests pass                |
 | Storybook  | Component tests pass                 |

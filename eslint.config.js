@@ -61,11 +61,10 @@ export default tseslint.config(
       // Redundant with @typescript-eslint/no-unused-vars above, which is
       // type-aware and honours the `_` prefix convention.
       'sonarjs/no-unused-vars': 'off',
-      // Type-aware rules, introduced at warn with a ratcheting
-      // --max-warnings ceiling (see package.json) rather than error, since
-      // the codebase predates type-aware linting and has existing
-      // violations to fix incrementally. Promoted to 'error' once a rule's
-      // count reaches zero. See docs/CODE_QUALITY.md.
+      // Type-aware rules. Introduced at warn with a ratcheting
+      // --max-warnings ceiling and promoted to 'error' as each rule's
+      // count reached zero - all eight have now graduated. See
+      // docs/CODE_QUALITY.md for how the ratchet worked.
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
@@ -77,8 +76,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-unsafe-member-access': 'error',
-      '@typescript-eslint/no-unsafe-return': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
     },
   },
   {

@@ -475,11 +475,11 @@ describe('water calculations', () => {
 
   describe('validateWaterRequirement - mutation killing', () => {
     it('returns error for non-number type', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- testing invalid input from an untyped/JS caller
       expect(validateWaterRequirement('not a number' as any)).toBe(
         'Water requirement must be a number',
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- testing invalid input from an untyped/JS caller
       expect(validateWaterRequirement(true as any)).toBe(
         'Water requirement must be a number',
       );

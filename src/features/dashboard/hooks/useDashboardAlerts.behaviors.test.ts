@@ -25,8 +25,8 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
   getAppData: vi.fn(),
 }));
 
-const mockIsLocalStorageNearLimit = vi.fn();
-const mockGetLocalStorageUsageMB = vi.fn();
+const mockIsLocalStorageNearLimit = vi.fn<() => boolean>();
+const mockGetLocalStorageUsageMB = vi.fn<() => number>();
 vi.mock('@/shared/utils/storage/storageUsage', () => ({
   getLocalStorageUsageMB: () => mockGetLocalStorageUsageMB(),
   isLocalStorageNearLimit: () => mockIsLocalStorageNearLimit(),
