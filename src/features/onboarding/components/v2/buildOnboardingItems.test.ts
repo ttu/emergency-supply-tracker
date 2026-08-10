@@ -38,9 +38,9 @@ describe('buildOnboardingItems', () => {
   it('seeds exactly what was selected', () => {
     const ids = idsIn('water-beverages');
     const items = build(ids);
-    expect(items.map((i) => String(i.itemType)).sort()).toEqual(
-      [...ids].sort(),
-    );
+    expect(
+      items.map((i) => String(i.itemType)).sort((x, y) => x.localeCompare(y)),
+    ).toEqual([...ids].sort((x, y) => x.localeCompare(y)));
   });
 
   it('starts selections at zero — a list to acquire, not a claim of stock', () => {

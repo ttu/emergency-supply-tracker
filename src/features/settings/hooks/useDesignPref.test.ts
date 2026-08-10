@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { useDesignPrefs } from './useDesignPref';
+import { useDesignPrefs, type DesignPrefs } from './useDesignPref';
 
 const KEY = 'est:design-prefs';
 const LEGACY_KEY = 'est:design:prefs';
@@ -36,7 +36,9 @@ describe('useDesignPrefs', () => {
     act(() => result.current[1]('reduceMotion', true));
 
     expect(result.current[0].reduceMotion).toBe(true);
-    expect(JSON.parse(localStorage.getItem(KEY)!).reduceMotion).toBe(true);
+    expect(
+      (JSON.parse(localStorage.getItem(KEY)!) as DesignPrefs).reduceMotion,
+    ).toBe(true);
   });
 
   it('migrates the pre-1.0 key once, then clears it', () => {
@@ -46,7 +48,9 @@ describe('useDesignPrefs', () => {
 
     expect(result.current[0].reduceMotion).toBe(true);
     expect(localStorage.getItem(LEGACY_KEY)).toBeNull();
-    expect(JSON.parse(localStorage.getItem(KEY)!).reduceMotion).toBe(true);
+    expect(
+      (JSON.parse(localStorage.getItem(KEY)!) as DesignPrefs).reduceMotion,
+    ).toBe(true);
   });
 
   it('prefers the current key over a stale legacy one', () => {

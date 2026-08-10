@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import type { RootStorage } from '../src/shared/types';
 
 /**
  * Design v2 onboarding is a six-step flow plus a completion screen:
@@ -76,7 +77,7 @@ test.describe('Onboarding Flow', () => {
     const itemCount = await page.evaluate(() => {
       const root = JSON.parse(
         localStorage.getItem('emergencySupplyTracker') ?? '{}',
-      );
+      ) as Partial<RootStorage>;
       const sets = Object.values(root.inventorySets ?? {}) as {
         items?: unknown[];
       }[];
@@ -98,7 +99,7 @@ test.describe('Onboarding Flow', () => {
     const itemCount = await page.evaluate(() => {
       const root = JSON.parse(
         localStorage.getItem('emergencySupplyTracker') ?? '{}',
-      );
+      ) as Partial<RootStorage>;
       const sets = Object.values(root.inventorySets ?? {}) as {
         items?: unknown[];
       }[];
@@ -153,7 +154,7 @@ test.describe('Onboarding Flow', () => {
     const hasWater = await page.evaluate(() => {
       const root = JSON.parse(
         localStorage.getItem('emergencySupplyTracker') ?? '{}',
-      );
+      ) as Partial<RootStorage>;
       const sets = Object.values(root.inventorySets ?? {}) as {
         items?: { itemType?: string }[];
       }[];
@@ -178,7 +179,7 @@ test.describe('Onboarding Flow', () => {
     const quantities = await page.evaluate(() => {
       const root = JSON.parse(
         localStorage.getItem('emergencySupplyTracker') ?? '{}',
-      );
+      ) as Partial<RootStorage>;
       const sets = Object.values(root.inventorySets ?? {}) as {
         items?: { itemType?: string; quantity?: number }[];
       }[];
@@ -225,7 +226,7 @@ test.describe('Onboarding Flow', () => {
     const demo = await page.evaluate(() => {
       const root = JSON.parse(
         localStorage.getItem('emergencySupplyTracker') ?? '{}',
-      );
+      ) as Partial<RootStorage>;
       const sets = Object.values(root.inventorySets ?? {}) as {
         items?: { quantity?: number }[];
         household?: { children?: number };

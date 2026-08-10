@@ -17,6 +17,7 @@ import {
   createProductTemplateId,
 } from '../src/shared/types';
 import type { Page } from '@playwright/test';
+import type { RootStorage } from '../src/shared/types';
 
 const settings = {
   onboardingCompleted: true as const,
@@ -82,13 +83,16 @@ async function boot(page: Page, viewport: 'desktop' | 'mobile' = 'desktop') {
 }
 
 const storage = (page: Page) =>
-  page.evaluate(() =>
-    JSON.parse(localStorage.getItem('emergencySupplyTracker') ?? '{}'),
+  page.evaluate(
+    () =>
+      JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      ) as RootStorage,
   );
 
 const activeSet = async (page: Page) => {
   const root = await storage(page);
-  return root.inventorySets?.[root.activeInventorySetId ?? 'default'] ?? {};
+  return root.inventorySets[root.activeInventorySetId];
 };
 
 /** Poll stored items until `predicate` holds — persistence is asynchronous. */
@@ -512,8 +516,7 @@ test.describe('Settings', () => {
     await plus.click();
 
     const root = await storage(page);
-    const household =
-      root.inventorySets[root.activeInventorySetId ?? 'default'].household;
+    const household = root.inventorySets[root.activeInventorySetId].household;
     expect(household.adults).toBeGreaterThanOrEqual(1);
   });
 

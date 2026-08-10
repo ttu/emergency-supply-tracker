@@ -3,6 +3,12 @@ import { screen, fireEvent } from '@testing-library/react';
 import { DesignOnboarding } from './Onboarding';
 import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
+import type { HouseholdConfig, InventoryItem } from '@/shared/types';
+
+type OnCompleteMock = (
+  household: HouseholdConfig,
+  items: InventoryItem[],
+) => void;
 
 const renderFlow = (onComplete = vi.fn()) =>
   renderWithProviders(<DesignOnboarding onComplete={onComplete} />, {
@@ -36,7 +42,7 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
   });
 
   it('seeds the inventory from the quick-setup selection', () => {
-    const onComplete = vi.fn();
+    const onComplete = vi.fn<OnCompleteMock>();
     renderFlow(onComplete);
     advanceToQuickSetup();
 
@@ -59,7 +65,7 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
   });
 
   it('finishes with an empty inventory when quick setup is skipped', () => {
-    const onComplete = vi.fn();
+    const onComplete = vi.fn<OnCompleteMock>();
     renderFlow(onComplete);
     advanceToQuickSetup();
 
@@ -78,7 +84,7 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
   });
 
   it('demo data finishes the flow outright, with items already stocked', () => {
-    const onComplete = vi.fn();
+    const onComplete = vi.fn<OnCompleteMock>();
     renderFlow(onComplete);
     advanceToQuickSetup();
 
@@ -95,7 +101,7 @@ describe('DesignOnboarding (v2 orchestrator)', () => {
   });
 
   it('completes once however fast the finishing action is activated', () => {
-    const onComplete = vi.fn();
+    const onComplete = vi.fn<OnCompleteMock>();
     renderFlow(onComplete);
     advanceToQuickSetup();
 

@@ -4,7 +4,7 @@ const MOBILE_BREAKPOINT = 768;
 
 /** Defensive read so we don't crash in SSR / jsdom where matchMedia is missing. */
 function readMobile(): boolean {
-  if (globalThis.window === undefined) return false;
+  if (typeof window === 'undefined') return false;
   if (typeof globalThis.matchMedia !== 'function') return false;
   return globalThis.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
 }
@@ -12,7 +12,7 @@ function readMobile(): boolean {
 export function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(readMobile);
   useEffect(() => {
-    if (globalThis.window === undefined) return;
+    if (typeof window === 'undefined') return;
     if (typeof globalThis.matchMedia !== 'function') return;
     const mq = globalThis.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);

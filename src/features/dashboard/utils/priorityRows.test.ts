@@ -48,10 +48,10 @@ describe('selectPriorityRows', () => {
 
 describe('critFirst', () => {
   it('compares equal statuses as equal in both directions', () => {
-    const a = row('a', 'warn');
-    const b = row('b', 'warn');
-    expect(critFirst(a, b)).toBe(0);
-    expect(critFirst(b, a)).toBe(0);
+    const warnA = row('a', 'warn');
+    const warnB = row('b', 'warn');
+    expect(critFirst(warnA, warnB)).toBe(0);
+    expect(critFirst(warnB, warnA)).toBe(0);
   });
 
   it('orders critical ahead of anything else', () => {

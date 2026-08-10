@@ -5,6 +5,7 @@ import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
 import { RECOMMENDED_ITEMS } from '@/features/templates';
 import type { HouseholdConfig } from '@/shared/types';
+import type { QuickSetupSelection } from './OnboardQuickSetup';
 
 const household: HouseholdConfig = {
   adults: 2,
@@ -60,7 +61,7 @@ describe('OnboardQuickSetup', () => {
   });
 
   it('hands back every offered product when nothing was unticked', () => {
-    const onAddItems = vi.fn();
+    const onAddItems = vi.fn<(selection: QuickSetupSelection) => void>();
     renderStep({ onAddItems });
     fireEvent.click(
       screen.getByRole('button', {
@@ -73,7 +74,7 @@ describe('OnboardQuickSetup', () => {
   });
 
   it('drops an unticked product from the selection', () => {
-    const onAddItems = vi.fn();
+    const onAddItems = vi.fn<(selection: QuickSetupSelection) => void>();
     renderStep({ onAddItems });
     openList();
 
@@ -93,7 +94,7 @@ describe('OnboardQuickSetup', () => {
   });
 
   it('carries what the household already has', () => {
-    const onAddItems = vi.fn();
+    const onAddItems = vi.fn<(selection: QuickSetupSelection) => void>();
     renderStep({ onAddItems });
     openList();
 
@@ -132,7 +133,7 @@ describe('OnboardQuickSetup', () => {
   });
 
   it('reopening and reclosing the list does not lose the selection', () => {
-    const onAddItems = vi.fn();
+    const onAddItems = vi.fn<(selection: QuickSetupSelection) => void>();
     renderStep({ onAddItems });
 
     openList();
