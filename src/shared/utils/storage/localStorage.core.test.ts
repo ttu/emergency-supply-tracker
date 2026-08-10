@@ -7,6 +7,7 @@ import {
   exportToJSON,
   importFromJSON,
 } from './localStorage';
+import type { ExportData } from './localStorage';
 import {
   createMockAppData,
   createMockCategory,
@@ -108,7 +109,7 @@ describe('localStorage utilities', () => {
     it('exports data to JSON with export metadata', () => {
       const mockData = createMockAppData();
       const json = exportToJSON(mockData);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ExportData;
 
       // Verify all original data is present
       expect(parsed.version).toBe(mockData.version);

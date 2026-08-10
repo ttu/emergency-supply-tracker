@@ -12,7 +12,7 @@ interface ScoreCircleProps {
   colorClass: string;
 }
 
-function ScoreCircle({ score, colorClass }: ScoreCircleProps) {
+function ScoreCircle({ score, colorClass }: Readonly<ScoreCircleProps>) {
   return (
     <div className={styles.scoreCircle}>
       <svg viewBox="0 0 100 100" className={styles.scoreSvg}>

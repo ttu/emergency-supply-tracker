@@ -129,7 +129,7 @@ describe('urlLanguage', () => {
       clearLanguageFromUrl();
 
       expect(replaceStateSpy).toHaveBeenCalledTimes(1);
-      const newUrl = replaceStateSpy.mock.calls[0][2];
+      const newUrl = replaceStateSpy.mock.calls[0][2] as string;
       expect(newUrl).not.toContain('lang=');
       expect(newUrl).toContain('other=value');
     });
@@ -150,7 +150,7 @@ describe('urlLanguage', () => {
       clearLanguageFromUrl();
 
       expect(replaceStateSpy).toHaveBeenCalledTimes(1);
-      const newUrl = replaceStateSpy.mock.calls[0][2];
+      const newUrl = replaceStateSpy.mock.calls[0][2] as string;
       expect(newUrl).not.toContain('lang=');
     });
   });
@@ -357,7 +357,6 @@ describe('urlLanguage', () => {
       globalThis.history.replaceState({}, '', '/');
 
       expect(getInitialLanguage()).toBe('en');
-      expect(getInitialLanguage(undefined)).toBe('en');
     });
 
     it('returns default "en" for unsupported URL lang', () => {

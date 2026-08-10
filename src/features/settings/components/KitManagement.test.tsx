@@ -1,4 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  type MockInstance,
+} from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { KitManagement } from './KitManagement';
 import * as templatesModule from '@/features/templates';
@@ -98,7 +106,7 @@ const createMockContext = (overrides = {}) => ({
 const mockContext = createMockContext();
 
 describe('KitManagement', () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance<typeof document.createElement>;
   let originalCreateElement: typeof document.createElement;
 
   beforeEach(() => {

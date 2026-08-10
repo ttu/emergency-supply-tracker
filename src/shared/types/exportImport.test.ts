@@ -142,6 +142,21 @@ describe('exportImport types and helpers', () => {
       expect(disabledRecommendedItemsInfo?.count).toBe(1);
     });
 
+    it('excludes disabledCategories from the legacy section list', () => {
+      // Documents the current, deliberate gap noted on ALL_EXPORT_SECTIONS:
+      // exportToJSONSelective never wires this field for the legacy format.
+      expect(ALL_EXPORT_SECTIONS).not.toContain('disabledCategories');
+
+      const data = createMockAppData({
+        disabledCategories: ['food'],
+      });
+      const info = getSectionInfo(data);
+
+      expect(
+        info.find((i) => i.section === 'disabledCategories'),
+      ).toBeUndefined();
+    });
+
     it('correctly identifies customRecommendedItems section', () => {
       const data = createMockAppData({
         customRecommendedItems: {
@@ -279,6 +294,17 @@ describe('exportImport types and helpers', () => {
       expect(itemsInfo?.count).toBe(1);
       expect(householdInfo?.hasData).toBe(true);
       expect(householdInfo?.count).toBe(1);
+    });
+
+    it('correctly identifies disabledCategories section', () => {
+      const data = { disabledCategories: ['pets' as const] };
+      const info = getInventorySetSectionInfo(data);
+      const disabledCategoriesInfo = info.find(
+        (i) => i.section === 'disabledCategories',
+      );
+
+      expect(disabledCategoriesInfo?.hasData).toBe(true);
+      expect(disabledCategoriesInfo?.count).toBe(1);
     });
   });
 

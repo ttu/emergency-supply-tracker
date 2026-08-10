@@ -10,7 +10,10 @@ interface NavigationProps {
   onNavigate: (page: PageType) => void;
 }
 
-export function Navigation({ currentPage, onNavigate }: NavigationProps) {
+export function Navigation({
+  currentPage,
+  onNavigate,
+}: Readonly<NavigationProps>) {
   const { t } = useTranslation();
 
   const navItems: { page: PageType; label: string }[] = useMemo(

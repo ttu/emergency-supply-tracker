@@ -11,8 +11,8 @@ type ServiceWorkerConfig = {
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
   window.location.hostname === '[::1]' ||
-  window.location.hostname.match(
-    /^127(?:\.(?:25[0-5]|2[0-4]\d|[01]?\d\d?)){3}$/,
+  /^127(?:\.(?:25[0-5]|2[0-4]\d|[01]?\d\d?)){3}$/.exec(
+    window.location.hostname,
   ),
 );
 
@@ -33,11 +33,15 @@ export function register(config?: ServiceWorkerConfig): void {
         // Running on localhost - check if service worker still exists
         checkValidServiceWorker(swUrl, config);
 
-        navigator.serviceWorker.ready.then(() => {
-          console.log(
-            'This web app is being served cache-first by a service worker.',
-          );
-        });
+        navigator.serviceWorker.ready
+          .then(() => {
+            console.log(
+              'This web app is being served cache-first by a service worker.',
+            );
+          })
+          .catch((error: unknown) => {
+            console.error('Error waiting for service worker readiness:', error);
+          });
       } else {
         // Not localhost - just register service worker
         registerValidSW(swUrl, config);
@@ -78,7 +82,7 @@ function registerValidSW(swUrl: string, config?: ServiceWorkerConfig): void {
         };
       };
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.error('Error during service worker registration:', error);
       if (config && config.onError) {
         config.onError(error);
@@ -102,11 +106,11 @@ function checkValidServiceWorker(
         (contentType != null && contentType.indexOf('javascript') === -1)
       ) {
         // No service worker found - probably a different app
-        navigator.serviceWorker.ready.then((registration) => {
+        return navigator.serviceWorker.ready.then((registration) =>
           registration.unregister().then(() => {
             window.location.reload();
-          });
-        });
+          }),
+        );
       } else {
         // Service worker found - proceed as normal
         registerValidSW(swUrl, config);
@@ -122,11 +126,9 @@ function checkValidServiceWorker(
 export function unregister(): void {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready
-      .then((registration) => {
-        registration.unregister();
-      })
-      .catch((error) => {
-        console.error(error.message);
+      .then((registration) => registration.unregister())
+      .catch((error: unknown) => {
+        console.error('Error unregistering service worker:', error);
       });
   }
 }

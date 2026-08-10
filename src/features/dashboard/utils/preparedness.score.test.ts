@@ -1,7 +1,17 @@
 import {
-  calculatePreparednessScore,
+  // eslint-disable-next-line sonarjs/deprecation -- NOSONAR
+  calculatePreparednessScore as deprecatedCalculatePreparednessScore,
   calculatePreparednessScoreFromCategoryStatuses,
 } from './preparedness';
+
+// Wrapper around the deprecated implementation - see preparedness.behaviors.test.ts
+// for why this pattern avoids triggering the deprecation lint per call site while
+// still exercising the deprecated impl for regression coverage.
+const calculatePreparednessScore = (
+  // eslint-disable-next-line sonarjs/deprecation -- NOSONAR
+  ...args: Parameters<typeof deprecatedCalculatePreparednessScore>
+  // eslint-disable-next-line sonarjs/deprecation -- NOSONAR
+): number => deprecatedCalculatePreparednessScore(...args);
 import type { CategoryStatusSummary } from './categoryStatus';
 import type { InventoryItem } from '@/shared/types';
 import {

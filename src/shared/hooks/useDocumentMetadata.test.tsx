@@ -161,7 +161,9 @@ describe('useDocumentMetadata', () => {
   it('updates JSON-LD structured data description', () => {
     renderHook(() => useDocumentMetadata());
 
-    const updatedJsonLd = JSON.parse(mockJsonLdScript.textContent || '{}');
+    const updatedJsonLd = JSON.parse(
+      mockJsonLdScript.textContent || '{}',
+    ) as Record<string, unknown>;
     expect(updatedJsonLd.description).toBe('Test Description');
   });
 
@@ -175,7 +177,9 @@ describe('useDocumentMetadata', () => {
 
     renderHook(() => useDocumentMetadata());
 
-    const updatedJsonLd = JSON.parse(mockJsonLdScript.textContent || '{}');
+    const updatedJsonLd = JSON.parse(
+      mockJsonLdScript.textContent || '{}',
+    ) as Record<string, unknown>;
     expect(updatedJsonLd.description).toBeUndefined();
   });
 

@@ -3,7 +3,12 @@ import { render, screen, act, waitFor } from '@testing-library/react';
 import { RecommendedItemsProvider } from './index';
 import { useRecommendedItems } from '../hooks';
 import * as localStorage from '@/shared/utils/storage/localStorage';
-import type { RecommendedItemsFile, UploadedKit, KitId } from '@/shared/types';
+import type {
+  RecommendedItemsFile,
+  UploadedKit,
+  KitId,
+  AppData,
+} from '@/shared/types';
 import { CURRENT_SCHEMA_VERSION } from '@/shared/utils/storage/migrations';
 import {
   createProductTemplateId,
@@ -48,9 +53,9 @@ vi.mock('@/shared/utils/storage/localStorage', () => ({
 // Test component that uses the context
 function TestComponent({
   onContextReady,
-}: {
+}: Readonly<{
   onContextReady?: (ctx: ReturnType<typeof useRecommendedItems>) => void;
-}) {
+}>) {
   const context = useRecommendedItems();
 
   if (onContextReady) {
@@ -61,10 +66,16 @@ function TestComponent({
     <div>
       <div data-testid="items-count">{context.recommendedItems.length}</div>
       <div data-testid="is-custom">
-        {context.isUsingCustomRecommendations ? 'true' : 'false'}
+        {
+          // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
+          context.isUsingCustomRecommendations ? 'true' : 'false'
+        }
       </div>
       <div data-testid="custom-info">
-        {context.customRecommendationsInfo?.name || 'none'}
+        {
+          // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
+          context.customRecommendationsInfo?.name || 'none'
+        }
       </div>
       <div data-testid="selected-kit">{context.selectedKitId || 'none'}</div>
       <div data-testid="available-kits-count">
@@ -76,7 +87,9 @@ function TestComponent({
 
 describe('RecommendedItemsProvider', () => {
   const mockGetAppData = localStorage.getAppData as Mock;
-  const mockSaveAppData = localStorage.saveAppData as Mock;
+  const mockSaveAppData = localStorage.saveAppData as Mock<
+    (data: AppData) => void
+  >;
 
   const validCustomFile: RecommendedItemsFile = {
     meta: {
@@ -335,7 +348,7 @@ describe('RecommendedItemsProvider', () => {
     const lastCall =
       mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
     expect(lastCall.uploadedRecommendationKits).toBeDefined();
-    expect(lastCall.uploadedRecommendationKits.length).toBeGreaterThan(0);
+    expect(lastCall.uploadedRecommendationKits!.length).toBeGreaterThan(0);
   });
 
   describe('getItemName', () => {
@@ -482,12 +495,13 @@ describe('RecommendedItemsProvider', () => {
 
     let info!: ReturnType<
       typeof useRecommendedItems
-    >['customRecommendationsInfo'];
+    >['customRecommendationsInfo']; // eslint-disable-line sonarjs/deprecation -- testing the legacy backward-compat shim
 
     render(
       <RecommendedItemsProvider>
         <TestComponent
           onContextReady={(ctx) => {
+            // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
             info = ctx.customRecommendationsInfo;
           }}
         />
@@ -666,7 +680,7 @@ describe('RecommendedItemsProvider', () => {
 
       const lastCall =
         mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
-      const updatedKit = lastCall.uploadedRecommendationKits.find(
+      const updatedKit = lastCall.uploadedRecommendationKits!.find(
         (k: { id: string }) => k.id === 'test-kit-uuid',
       );
       expect(updatedKit?.file.meta.name).toBe('Updated Kit Name');
@@ -738,7 +752,7 @@ describe('RecommendedItemsProvider', () => {
 
       const lastCall =
         mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
-      const updatedKit = lastCall.uploadedRecommendationKits.find(
+      const updatedKit = lastCall.uploadedRecommendationKits!.find(
         (k: { id: string }) => k.id === 'test-kit-uuid',
       );
       expect(updatedKit?.file.items.length).toBe(3);
@@ -810,7 +824,7 @@ describe('RecommendedItemsProvider', () => {
 
       const lastCall =
         mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
-      const updatedKit = lastCall.uploadedRecommendationKits.find(
+      const updatedKit = lastCall.uploadedRecommendationKits!.find(
         (k: { id: string }) => k.id === 'test-kit-uuid',
       );
       const updatedItem = updatedKit?.file.items.find(
@@ -878,7 +892,7 @@ describe('RecommendedItemsProvider', () => {
 
       const lastCall =
         mockSaveAppData.mock.calls[mockSaveAppData.mock.calls.length - 1][0];
-      const updatedKit = lastCall.uploadedRecommendationKits.find(
+      const updatedKit = lastCall.uploadedRecommendationKits!.find(
         (k: { id: string }) => k.id === 'test-kit-uuid',
       );
       expect(updatedKit?.file.items.length).toBe(1);
@@ -916,12 +930,13 @@ describe('RecommendedItemsProvider', () => {
     it('should import and auto-select via importRecommendedItems', async () => {
       let importFn!: ReturnType<
         typeof useRecommendedItems
-      >['importRecommendedItems'];
+      >['importRecommendedItems']; // eslint-disable-line sonarjs/deprecation -- testing the legacy backward-compat shim
 
       render(
         <RecommendedItemsProvider>
           <TestComponent
             onContextReady={(ctx) => {
+              // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
               importFn = ctx.importRecommendedItems;
             }}
           />
@@ -948,12 +963,13 @@ describe('RecommendedItemsProvider', () => {
 
       let resetFn!: ReturnType<
         typeof useRecommendedItems
-      >['resetToDefaultRecommendations'];
+      >['resetToDefaultRecommendations']; // eslint-disable-line sonarjs/deprecation -- testing the legacy backward-compat shim
 
       render(
         <RecommendedItemsProvider>
           <TestComponent
             onContextReady={(ctx) => {
+              // eslint-disable-next-line sonarjs/deprecation -- testing the legacy backward-compat shim
               resetFn = ctx.resetToDefaultRecommendations;
             }}
           />
@@ -1199,9 +1215,9 @@ describe('RecommendedItemsProvider', () => {
       expect(lastCall.customCategories).toBeDefined();
       expect(lastCall.customCategories).toHaveLength(2);
 
-      const cyclingTools = lastCall.customCategories.find(
+      const cyclingTools = lastCall.customCategories!.find(
         (c: { id: string }) => c.id === 'cycling-tools',
-      );
+      )!;
       expect(cyclingTools).toBeDefined();
       expect(cyclingTools.name).toBe('Cycling Tools');
       expect(cyclingTools.names).toEqual({
@@ -1261,9 +1277,9 @@ describe('RecommendedItemsProvider', () => {
       expect(lastCall.customCategories).toHaveLength(3);
 
       // User category should be preserved
-      const userCat = lastCall.customCategories.find(
+      const userCat = lastCall.customCategories!.find(
         (c: { id: string }) => c.id === 'user-category',
-      );
+      )!;
       expect(userCat).toBeDefined();
       expect(userCat.name).toBe('User Category');
     });

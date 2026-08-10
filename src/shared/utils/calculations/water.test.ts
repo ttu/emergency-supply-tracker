@@ -32,6 +32,7 @@ import { faker } from '@faker-js/faker';
 describe('water calculations', () => {
   describe('validateWaterRequirement', () => {
     it('returns undefined for undefined value', () => {
+      // eslint-disable-next-line sonarjs/no-undefined-argument -- explicit undefined is the case under test
       expect(validateWaterRequirement(undefined)).toBeUndefined();
     });
 
@@ -474,11 +475,11 @@ describe('water calculations', () => {
 
   describe('validateWaterRequirement - mutation killing', () => {
     it('returns error for non-number type', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- testing invalid input from an untyped/JS caller
       expect(validateWaterRequirement('not a number' as any)).toBe(
         'Water requirement must be a number',
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- testing invalid input from an untyped/JS caller
       expect(validateWaterRequirement(true as any)).toBe(
         'Water requirement must be a number',
       );

@@ -20,6 +20,8 @@ import {
   getLastDataValidationResult,
   clearDataValidationResult,
 } from './localStorage';
+import type { ExportData } from './localStorage';
+import type { RootStorage } from '@/shared/types';
 import type {
   PartialExportData,
   MultiInventoryExportData,
@@ -33,6 +35,7 @@ import { CURRENT_SCHEMA_VERSION, MigrationError } from './migrations';
 import {
   createCategoryId,
   createItemId,
+  createInventorySetId,
   createProductTemplateId,
   createAlertId,
   createQuantity,
@@ -499,7 +502,7 @@ describe('localStorage utilities', () => {
         ],
       });
       const json = exportToJSONSelective(mockData, ['customCategories']);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as PartialExportData;
       // categoryCount = customCategories.length + STANDARD_CATEGORIES.length
       expect(parsed.exportMetadata.categoryCount).toBeGreaterThan(2);
       expect(parsed.customCategories).toHaveLength(2);
@@ -513,12 +516,12 @@ describe('localStorage utilities', () => {
         ],
       });
       const jsonWithout = exportToJSONSelective(mockData, ['items']);
-      const parsedWithout = JSON.parse(jsonWithout);
+      const parsedWithout = JSON.parse(jsonWithout) as PartialExportData;
       const jsonWith = exportToJSONSelective(mockData, [
         'items',
         'customCategories',
       ]);
-      const parsedWith = JSON.parse(jsonWith);
+      const parsedWith = JSON.parse(jsonWith) as PartialExportData;
       // With customCategories: higher count; without: just standard categories
       expect(parsedWith.exportMetadata.categoryCount).toBeGreaterThan(
         parsedWithout.exportMetadata.categoryCount,
@@ -533,9 +536,9 @@ describe('localStorage utilities', () => {
         },
       });
       const json = exportToJSONSelective(mockData, ['customRecommendedItems']);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as PartialExportData;
       expect(parsed.customRecommendedItems).toBeDefined();
-      expect(parsed.customRecommendedItems.meta.name).toBe('Test');
+      expect(parsed.customRecommendedItems?.meta.name).toBe('Test');
     });
 
     it('excludes customRecommendedItems when that section is not selected', () => {
@@ -546,7 +549,7 @@ describe('localStorage utilities', () => {
         },
       });
       const json = exportToJSONSelective(mockData, ['items']);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as PartialExportData;
       expect(parsed.customRecommendedItems).toBeUndefined();
     });
 
@@ -555,11 +558,11 @@ describe('localStorage utilities', () => {
         dismissedAlertIds: [createAlertId('alert-x')],
       });
       const jsonWith = exportToJSONSelective(mockData, ['dismissedAlertIds']);
-      const parsedWith = JSON.parse(jsonWith);
+      const parsedWith = JSON.parse(jsonWith) as PartialExportData;
       expect(parsedWith.dismissedAlertIds).toHaveLength(1);
 
       const jsonWithout = exportToJSONSelective(mockData, ['items']);
-      const parsedWithout = JSON.parse(jsonWithout);
+      const parsedWithout = JSON.parse(jsonWithout) as PartialExportData;
       expect(parsedWithout.dismissedAlertIds).toBeUndefined();
     });
 
@@ -570,11 +573,11 @@ describe('localStorage utilities', () => {
       const jsonWith = exportToJSONSelective(mockData, [
         'disabledRecommendedItems',
       ]);
-      const parsedWith = JSON.parse(jsonWith);
+      const parsedWith = JSON.parse(jsonWith) as PartialExportData;
       expect(parsedWith.disabledRecommendedItems).toHaveLength(1);
 
       const jsonWithout = exportToJSONSelective(mockData, ['items']);
-      const parsedWithout = JSON.parse(jsonWithout);
+      const parsedWithout = JSON.parse(jsonWithout) as PartialExportData;
       expect(parsedWithout.disabledRecommendedItems).toBeUndefined();
     });
 
@@ -591,11 +594,11 @@ describe('localStorage utilities', () => {
         ],
       });
       const jsonWith = exportToJSONSelective(mockData, ['customTemplates']);
-      const parsedWith = JSON.parse(jsonWith);
+      const parsedWith = JSON.parse(jsonWith) as PartialExportData;
       expect(parsedWith.customTemplates).toHaveLength(1);
 
       const jsonWithout = exportToJSONSelective(mockData, ['items']);
-      const parsedWithout = JSON.parse(jsonWithout);
+      const parsedWithout = JSON.parse(jsonWithout) as PartialExportData;
       expect(parsedWithout.customTemplates).toBeUndefined();
     });
   });
@@ -1365,7 +1368,7 @@ describe('localStorage utilities', () => {
     it('uses 0 for itemCount when items array is empty', () => {
       const mockData = createMockAppData({ items: [] });
       const json = exportToJSON(mockData);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ExportData;
       expect(parsed.exportMetadata.itemCount).toBe(0);
     });
 
@@ -1376,7 +1379,7 @@ describe('localStorage utilities', () => {
         items: undefined,
       } as unknown as typeof mockData;
       const json = exportToJSON(dataWithoutItems);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ExportData;
       expect(parsed.exportMetadata.itemCount).toBe(0);
     });
   });
@@ -1387,8 +1390,8 @@ describe('localStorage utilities', () => {
       getAppData();
       // Manually set a non-existent active ID
       const raw = localStorage.getItem(STORAGE_KEY)!;
-      const root = JSON.parse(raw);
-      root.activeInventorySetId = 'ghost-set';
+      const root = JSON.parse(raw) as RootStorage;
+      root.activeInventorySetId = createInventorySetId('ghost-set');
       localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
 
       const mockData = createMockAppData();
@@ -1402,7 +1405,7 @@ describe('localStorage utilities', () => {
       saveAppData(mockData);
       const stored = localStorage.getItem(STORAGE_KEY);
       expect(stored).not.toBeNull();
-      const parsed = JSON.parse(stored!);
+      const parsed = JSON.parse(stored!) as RootStorage;
       expect(parsed.inventorySets).toBeDefined();
     });
   });

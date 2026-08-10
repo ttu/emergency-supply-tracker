@@ -15,7 +15,7 @@ type TranslationParams = Record<string, unknown>;
  */
 function interpolate(template: string, params?: TranslationParams): string {
   if (!params) return template;
-  return template.replace(/\{\{(\w+)\}\}/g, (_, key) =>
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) =>
     String(params[key] ?? `{{${key}}}`),
   );
 }

@@ -2,7 +2,9 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/features/settings';
 
-export function ThemeApplier({ children }: { children: React.ReactNode }) {
+export function ThemeApplier({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const { settings } = useSettings();
   const { i18n } = useTranslation();
 

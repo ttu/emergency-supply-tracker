@@ -505,7 +505,7 @@ test.describe('Backup & Transfer', () => {
 
     // Set up alert handler to automatically dismiss it
     page.on('dialog', (dialog) => {
-      dialog.accept();
+      void dialog.accept();
     });
 
     // Try to import invalid file via Kit Selector upload

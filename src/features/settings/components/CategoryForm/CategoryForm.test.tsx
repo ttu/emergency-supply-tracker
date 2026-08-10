@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CategoryForm } from './CategoryForm';
-import type { Category } from '@/shared/types';
+import type { Category, LocalizedNames } from '@/shared/types';
 import { createCategoryId } from '@/shared/types';
 
 // Mock react-i18next
@@ -107,7 +107,9 @@ describe('CategoryForm', () => {
 
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
-        names: expect.objectContaining({ en: 'Test Category' }),
+        names: expect.objectContaining({
+          en: 'Test Category',
+        }) as LocalizedNames,
         icon: '📦', // Default icon
       }),
     );
@@ -137,7 +139,9 @@ describe('CategoryForm', () => {
 
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
-        names: expect.objectContaining({ en: 'New Category' }),
+        names: expect.objectContaining({
+          en: 'New Category',
+        }) as LocalizedNames,
         icon: '🎯',
       }),
     );

@@ -7,6 +7,7 @@ import {
   selectInventoryCategory,
 } from './fixtures';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
+import type { RootStorage } from '../src/shared/types';
 
 // Get base URL - use environment variable for deployed sites
 const getBaseURL = () =>
@@ -192,7 +193,7 @@ async function verifyCustomItemExists(page: Page) {
         const data = localStorage.getItem(key);
         if (!data) return false;
         try {
-          const root = JSON.parse(data);
+          const root = JSON.parse(data) as RootStorage;
           const ws = root.inventorySets?.[root.activeInventorySetId];
           return ws?.items?.some(
             (item: { name: string }) => item.name === 'Custom Test Item',
@@ -422,7 +423,7 @@ async function testSettingsFeatures(page: Page) {
       const data = localStorage.getItem(key);
       if (!data) return false;
       try {
-        const root = JSON.parse(data);
+        const root = JSON.parse(data) as RootStorage;
         return root.settings?.theme === 'dark';
       } catch {
         return false;
@@ -438,7 +439,7 @@ async function testSettingsFeatures(page: Page) {
     const data = localStorage.getItem(key);
     if (!data) return null;
     try {
-      return JSON.parse(data).settings?.theme;
+      return (JSON.parse(data) as RootStorage).settings?.theme;
     } catch {
       return null;
     }
@@ -536,9 +537,9 @@ async function testNavigationAndPersistence(page: Page) {
     const data = localStorage.getItem(key);
     if (!data) return { persisted: false, items: [] };
     try {
-      const root = JSON.parse(data);
+      const root = JSON.parse(data) as RootStorage;
       const items =
-        root.inventorySets?.[root.activeInventorySetId]?.items || [];
+        root.inventorySets?.[root.activeInventorySetId]?.items ?? [];
       return {
         persisted: true,
         items,

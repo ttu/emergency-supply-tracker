@@ -11,6 +11,7 @@ import {
 } from '../src/shared/utils/test/factories';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 import { createCategoryId } from '../src/shared/types';
+import type { RootStorage } from '../src/shared/types';
 
 test.describe('Custom Categories', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -61,7 +62,7 @@ test.describe('Custom Categories', () => {
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
       if (!data) return null;
-      const root = JSON.parse(data);
+      const root = JSON.parse(data) as RootStorage;
       return root.inventorySets?.[root.activeInventorySetId] ?? null;
     }, STORAGE_KEY);
     expect(storedData?.customCategories).toBeDefined();
@@ -166,13 +167,13 @@ test.describe('Custom Categories', () => {
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
       if (!data) return null;
-      const root = JSON.parse(data);
+      const root = JSON.parse(data) as RootStorage;
       return root.inventorySets?.[root.activeInventorySetId] ?? null;
     }, STORAGE_KEY);
 
     expect(storedData).toBeTruthy();
-    expect(storedData.customCategories).toBeDefined();
-    expect(storedData.customCategories.length).toBeGreaterThan(0);
+    expect(storedData!.customCategories).toBeDefined();
+    expect(storedData!.customCategories.length).toBeGreaterThan(0);
   });
 
   test('should show custom category on dashboard', async ({ page }) => {
@@ -373,7 +374,7 @@ test.describe('Custom Categories', () => {
     const storedData = await page.evaluate((key) => {
       const data = localStorage.getItem(key);
       if (!data) return null;
-      const root = JSON.parse(data);
+      const root = JSON.parse(data) as RootStorage;
       return root.inventorySets?.[root.activeInventorySetId] ?? null;
     }, STORAGE_KEY);
 

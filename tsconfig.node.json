@@ -17,7 +17,19 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "types": ["node"]
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "vitest.config.stryker.ts",
+    "vitest.shims.d.ts",
+    "playwright.config.ts",
+    "scripts/**/*.ts",
+    ".storybook/**/*.ts",
+    "src/test/fakerSeed.ts",
+    "src/test/globalSetup.ts",
+    "src/types/vitest.d.ts"
+  ]
 }

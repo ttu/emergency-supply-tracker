@@ -52,7 +52,7 @@ export function DataErrorPage({
     // Add error info to the export so user knows why it failed
     const exportReason = t('dataError.page.exportReason');
     try {
-      const rawData = JSON.parse(rawJson);
+      const rawData = JSON.parse(rawJson) as Record<string, unknown>;
       const exportData = {
         ...rawData,
         _exportInfo: {

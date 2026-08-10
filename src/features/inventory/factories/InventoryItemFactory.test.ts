@@ -163,6 +163,26 @@ describe('InventoryItemFactory', () => {
       }).toThrow(InventoryItemValidationError);
     });
 
+    it('throws validation error (not a raw TypeError) when name is a number', () => {
+      expect(() => {
+        InventoryItemFactory.create({
+          ...validInput,
+          // @ts-expect-error - Testing invalid input from an untyped/JS caller
+          name: 42,
+        });
+      }).toThrow(InventoryItemValidationError);
+    });
+
+    it('throws validation error (not a raw TypeError) when itemType is a number', () => {
+      expect(() => {
+        InventoryItemFactory.create({
+          ...validInput,
+          // @ts-expect-error - Testing invalid input from an untyped/JS caller
+          itemType: 42,
+        });
+      }).toThrow(InventoryItemValidationError);
+    });
+
     it('throws error when categoryId is missing', () => {
       expect(() => {
         InventoryItemFactory.create({

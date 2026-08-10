@@ -128,7 +128,7 @@ test.describe('Shopping List Export Formats', () => {
     const dialogPromise = page.waitForEvent('dialog', { timeout: 5000 });
 
     // Click export button - don't await since it will block until dialog is dismissed
-    exportButton.click();
+    void exportButton.click();
 
     // Wait for the dialog and verify the message
     const dialog = await dialogPromise;

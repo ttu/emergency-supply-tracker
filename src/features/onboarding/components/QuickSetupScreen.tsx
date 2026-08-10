@@ -27,7 +27,7 @@ function SetupSummary({
   selectedCount,
   totalCount,
   supplyDurationDays,
-}: SetupSummaryProps) {
+}: Readonly<SetupSummaryProps>) {
   const { t } = useTranslation();
   const entries = [
     { value: selectedCount, label: t('quickSetup.selectedItems') },

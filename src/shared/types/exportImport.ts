@@ -7,6 +7,7 @@ import type {
   ProductTemplate,
   AlertId,
   ProductTemplateId,
+  StandardCategoryId,
   RecommendedItemsFile,
   InventorySetData,
   InventorySetId,
@@ -45,7 +46,13 @@ export const ALL_INVENTORY_SET_SECTIONS: InventorySetSection[] = [
 ];
 
 /**
- * All available export sections in display order (legacy)
+ * All available export sections in display order (legacy).
+ * Deliberately excludes 'disabledCategories': exportToJSONSelective and its
+ * import counterpart never populated that field for the legacy single-set
+ * format, and this list drives what section-selection UI would offer, so
+ * adding it here without also wiring the read/write paths would silently
+ * promise support that doesn't exist. The multi-inventory-set format
+ * (ALL_INVENTORY_SET_SECTIONS) handles it correctly.
  */
 export const ALL_EXPORT_SECTIONS: ExportSection[] = [
   'items',
@@ -131,6 +138,7 @@ export interface PartialExportData {
   customTemplates?: ProductTemplate[];
   dismissedAlertIds?: AlertId[];
   disabledRecommendedItems?: ProductTemplateId[];
+  disabledCategories?: StandardCategoryId[];
   customRecommendedItems?: RecommendedItemsFile | null;
   lastModified: string;
 }
@@ -181,6 +189,13 @@ export function getSectionInfo(
         break;
       case 'disabledRecommendedItems':
         count = data.disabledRecommendedItems?.length ?? 0;
+        hasData = count > 0;
+        break;
+      case 'disabledCategories':
+        // Not in ALL_EXPORT_SECTIONS (see its doc comment), so this never
+        // actually runs today; kept so the switch stays exhaustive over
+        // ExportSection and is correct if that changes.
+        count = data.disabledCategories?.length ?? 0;
         hasData = count > 0;
         break;
       case 'customRecommendedItems':
@@ -281,16 +296,14 @@ export function getInventorySetSectionsWithData(
  * Check if export data is in the new multi-inventory format
  */
 export function isMultiInventoryExport(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any,
+  data: unknown,
 ): data is MultiInventoryExportData {
+  if (typeof data !== 'object' || data === null) return false;
+  const d = data as Record<string, unknown>;
   return (
-    data &&
-    typeof data === 'object' &&
-    Array.isArray(data.inventorySets) &&
-    (data.inventorySets.length > 0 ||
-      (typeof data.exportedAt === 'string' &&
-        typeof data.appVersion === 'string'))
+    Array.isArray(d.inventorySets) &&
+    (d.inventorySets.length > 0 ||
+      (typeof d.exportedAt === 'string' && typeof d.appVersion === 'string'))
   );
 }
 

@@ -351,7 +351,9 @@ describe('validateRecommendedItemsFile with disabledCategories', () => {
       expect.objectContaining({
         code: 'INVALID_DISABLED_CATEGORY',
         path: 'disabledCategories[1]',
-        message: expect.stringContaining('Invalid standard category ID'),
+        message: expect.stringContaining(
+          'Invalid standard category ID',
+        ) as string,
       }),
     );
   });
@@ -455,7 +457,9 @@ describe('validateRecommendedItemsFile with disabledCategories', () => {
       expect.objectContaining({
         code: 'DUPLICATE_DISABLED_CATEGORY',
         path: 'disabledCategories[1]',
-        message: expect.stringContaining('Duplicate disabled category'),
+        message: expect.stringContaining(
+          'Duplicate disabled category',
+        ) as string,
       }),
     );
   });

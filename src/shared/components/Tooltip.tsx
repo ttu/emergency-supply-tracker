@@ -13,7 +13,7 @@ export function Tooltip({
   children,
   position = 'top',
   delay = 200,
-}: TooltipProps) {
+}: Readonly<TooltipProps>) {
   const [isVisible, setIsVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const timeoutRef = useRef<number | null>(null);

@@ -63,7 +63,7 @@ describe('useSeenNotifications mutation killers', () => {
       expect(result.current.seenNotificationIds.has(id)).toBe(true);
 
       // Verify it persisted to localStorage with the correct value
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!) as string[];
       expect(stored).toEqual(['test-notification-1']);
     });
 

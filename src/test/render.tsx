@@ -143,7 +143,7 @@ export function renderWithProviders(
     saveAppData(data);
   }
 
-  function AllProviders({ children }: { children: ReactNode }) {
+  function AllProviders({ children }: Readonly<{ children: ReactNode }>) {
     let wrapped: ReactNode = children;
 
     // Build provider tree from inside out (reverse order of nesting)

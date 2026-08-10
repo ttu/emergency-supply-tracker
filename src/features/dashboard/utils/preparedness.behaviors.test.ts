@@ -15,7 +15,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
-  calculatePreparednessScore as deprecatedCalculatePreparednessScore, // NOSONAR
+  // NOSONAR: intentionally exercising the deprecated impl, see wrapper below
+  // eslint-disable-next-line sonarjs/deprecation
+  calculatePreparednessScore as deprecatedCalculatePreparednessScore,
   calculatePreparednessScoreFromCategoryStatuses,
   calculateCategoryPreparedness,
 } from './preparedness';
@@ -35,7 +37,8 @@ const calculatePreparednessScore = (
   household: HouseholdConfig,
   recommendedItems: RecommendedItemDefinition[],
 ): number =>
-  deprecatedCalculatePreparednessScore(items, household, recommendedItems); // NOSONAR
+  // eslint-disable-next-line sonarjs/deprecation -- NOSONAR
+  deprecatedCalculatePreparednessScore(items, household, recommendedItems);
 import {
   createMockHousehold,
   createMockInventoryItem,

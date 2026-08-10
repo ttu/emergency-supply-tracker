@@ -47,7 +47,6 @@ export function OverriddenRecommendations() {
           inventoryItem: item,
         };
       })
-      .filter((item) => item !== null)
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [items, t]);
 

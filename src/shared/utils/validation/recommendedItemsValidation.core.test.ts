@@ -272,7 +272,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'MISSING_META_NAME',
           path: 'meta.name',
-          message: expect.stringContaining('Meta name is required'),
+          message: expect.stringContaining('Meta name is required') as string,
         }),
       );
     });
@@ -287,7 +287,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'MISSING_META_NAME',
           path: 'meta.name',
-          message: expect.stringContaining('Meta name is required'),
+          message: expect.stringContaining('Meta name is required') as string,
         }),
       );
     });
@@ -306,7 +306,7 @@ describe('validateRecommendedItemsFile', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'MISSING_META_NAME',
-          message: expect.stringContaining('Meta name is required'),
+          message: expect.stringContaining('Meta name is required') as string,
         }),
       );
     });
@@ -337,7 +337,9 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_META_DESCRIPTION',
           path: 'meta.description',
-          message: expect.stringContaining('Meta description must be'),
+          message: expect.stringContaining(
+            'Meta description must be',
+          ) as string,
         }),
       );
     });
@@ -434,7 +436,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_META_LANGUAGE',
           path: 'meta.language',
-          message: expect.stringContaining('Meta language must be'),
+          message: expect.stringContaining('Meta language must be') as string,
         }),
       );
     });
@@ -532,7 +534,7 @@ describe('validateRecommendedItemsFile', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'MISSING_NAME',
-          message: expect.stringContaining('i18nKey or names.en'),
+          message: expect.stringContaining('i18nKey or names.en') as string,
         }),
       );
     });
@@ -557,7 +559,7 @@ describe('validateRecommendedItemsFile', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'MISSING_NAME',
-          message: expect.stringContaining('i18nKey or names.en'),
+          message: expect.stringContaining('i18nKey or names.en') as string,
         }),
       );
     });
@@ -647,7 +649,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_CATEGORY',
           path: 'items[0].category',
-          message: expect.stringContaining('Invalid category'),
+          message: expect.stringContaining('Invalid category') as string,
         }),
       );
     });
@@ -675,7 +677,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_UNIT',
           path: 'items[0].unit',
-          message: expect.stringContaining('Invalid unit'),
+          message: expect.stringContaining('Invalid unit') as string,
         }),
       );
     });
@@ -691,7 +693,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_QUANTITY',
           path: 'items[0].baseQuantity',
-          message: expect.stringContaining('positive finite number'),
+          message: expect.stringContaining('positive finite number') as string,
         }),
       );
     });
@@ -742,7 +744,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'DUPLICATE_ID',
           path: 'items[1].id',
-          message: expect.stringContaining('Duplicate item ID'),
+          message: expect.stringContaining('Duplicate item ID') as string,
         }),
       );
     });
@@ -803,7 +805,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_I18N_KEY',
           path: 'items[0].i18nKey',
-          message: expect.stringContaining('non-empty string'),
+          message: expect.stringContaining('non-empty string') as string,
         }),
       );
     });
@@ -886,7 +888,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].requiresWaterLiters',
-          message: expect.stringContaining('requiresWaterLiters'),
+          message: expect.stringContaining('requiresWaterLiters') as string,
         }),
       );
     });
@@ -942,7 +944,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].defaultExpirationMonths',
-          message: expect.stringContaining('defaultExpirationMonths'),
+          message: expect.stringContaining('defaultExpirationMonths') as string,
         }),
       );
     });
@@ -1014,7 +1016,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].requiresFreezer',
-          message: expect.stringContaining('requiresFreezer'),
+          message: expect.stringContaining('requiresFreezer') as string,
         }),
       );
     });
@@ -1050,7 +1052,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].caloriesPerUnit',
-          message: expect.stringContaining('caloriesPerUnit'),
+          message: expect.stringContaining('caloriesPerUnit') as string,
         }),
       );
     });
@@ -1091,7 +1093,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].caloriesPer100g',
-          message: expect.stringContaining('caloriesPer100g'),
+          message: expect.stringContaining('caloriesPer100g') as string,
         }),
       );
     });
@@ -1117,7 +1119,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].weightGramsPerUnit',
-          message: expect.stringContaining('weightGramsPerUnit'),
+          message: expect.stringContaining('weightGramsPerUnit') as string,
         }),
       );
     });
@@ -1133,7 +1135,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].weightGramsPerUnit',
-          message: expect.stringContaining('weightGramsPerUnit'),
+          message: expect.stringContaining('weightGramsPerUnit') as string,
         }),
       );
     });
@@ -1174,7 +1176,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_NAME_VALUE',
           path: 'items[0].names.fi',
-          message: expect.stringContaining('names.fi'),
+          message: expect.stringContaining('names.fi') as string,
         }),
       );
     });
@@ -1215,7 +1217,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].capacityMah',
-          message: expect.stringContaining('capacityMah'),
+          message: expect.stringContaining('capacityMah') as string,
         }),
       );
     });
@@ -1231,7 +1233,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].capacityMah',
-          message: expect.stringContaining('capacityMah'),
+          message: expect.stringContaining('capacityMah') as string,
         }),
       );
     });
@@ -1247,7 +1249,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].capacityWh',
-          message: expect.stringContaining('capacityWh'),
+          message: expect.stringContaining('capacityWh') as string,
         }),
       );
     });
@@ -1263,7 +1265,7 @@ describe('validateRecommendedItemsFile', () => {
         expect.objectContaining({
           code: 'INVALID_OPTIONAL',
           path: 'items[0].capacityWh',
-          message: expect.stringContaining('capacityWh'),
+          message: expect.stringContaining('capacityWh') as string,
         }),
       );
     });

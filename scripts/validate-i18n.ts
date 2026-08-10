@@ -20,7 +20,7 @@ const NAMESPACES = ['common', 'categories', 'products', 'units'] as const;
 const BASE_DIR = join(__dirname, '..', 'public', 'locales');
 
 interface TranslationObject {
-  [key: string]: string | TranslationObject;
+  [key: string]: string | TranslationObject | null;
 }
 
 /**

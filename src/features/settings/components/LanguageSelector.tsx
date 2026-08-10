@@ -8,8 +8,14 @@ export function LanguageSelector() {
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const language = e.target.value as 'en' | 'fi';
-    updateSettings({ language });
-    i18n.changeLanguage(language);
+    i18n
+      .changeLanguage(language)
+      .then(() => {
+        updateSettings({ language });
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to change language:', error);
+      });
   };
 
   const options = [

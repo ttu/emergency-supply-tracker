@@ -57,6 +57,16 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        project: [
+          './tsconfig.json',
+          './tsconfig.node.json',
+          './tsconfig.test.json',
+          './tsconfig.storybook.json',
+          './tsconfig.e2e.json',
+        ],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -85,6 +95,23 @@ export default tseslint.config(
       // Redundant with @typescript-eslint/no-unused-vars above, which is
       // type-aware and honours the `_` prefix convention.
       'sonarjs/no-unused-vars': 'off',
+      // Type-aware rules. Introduced at warn with a ratcheting
+      // --max-warnings ceiling and promoted to 'error' as each rule's
+      // count reached zero - all eight have now graduated. See
+      // docs/CODE_QUALITY.md for how the ratchet worked.
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      // Off rather than warn/error: at 384 warnings across 116 files, the
+      // fix-per-callsite cost (each requires judgment about presence vs.
+      // empty-string vs. zero-as-unset intent) outweighs the value here.
+      // Revisit if the codebase wants to take this on deliberately.
+      '@typescript-eslint/strict-boolean-expressions': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
     },
   },
   {
@@ -138,6 +165,15 @@ export default tseslint.config(
 | `react-refresh/only-export-components` | warn    | Fast refresh compatibility                    |
 | `sonarjs/*` (recommended)              | error   | Bug patterns, duplication, complexity         |
 | `sonarjs/cognitive-complexity`         | error   | Max complexity 15 per function                |
+| `@typescript-eslint/no-floating-promises` | error   | Catch unhandled promise rejections            |
+| `@typescript-eslint/no-misused-promises`  | error   | Catch async handlers used where a sync callback is expected |
+| `@typescript-eslint/switch-exhaustiveness-check` | error   | Require every union case be handled in a `switch` |
+| `@typescript-eslint/strict-boolean-expressions` | off     | Disallow implicit truthy/falsy checks on nullable/non-boolean values |
+| `@typescript-eslint/no-unsafe-assignment` | error   | Catch `any` assigned into a typed binding             |
+| `@typescript-eslint/no-unsafe-call`   | error   | Catch calling an `any`-typed value as a function       |
+| `@typescript-eslint/no-unsafe-member-access` | error   | Catch property access on an `any`-typed value          |
+| `@typescript-eslint/no-unsafe-return`  | error   | Catch a function returning an `any`-typed value        |
+| `@typescript-eslint/no-unsafe-argument` | error   | Catch passing an `any`-typed value as an argument      |
 
 **On `sonarjs/*`:** the recommended set is on for all `.ts`/`.tsx`, with the
 reasoning for every exception inline in `eslint.config.js` above. Three rules are
@@ -157,6 +193,67 @@ config array (see `WelcomeScreen.tsx`, `HouseholdForm.tsx`). Note the rule does
 not count depth inside `.map()` callbacks or `&&`/ternary branches, so it catches
 direct nesting only. The `jsx-runtime` config is included because React 19 needs
 no `React` import in scope.
+
+### Type-Aware Linting
+
+ESLint parses with full TypeScript type information (`parserOptions.project`
+listing all five `tsconfig*.json` files, `tsconfigRootDir` set to the repo
+root) rather than `typescript-eslint`'s syntax-only `recommended` config alone.
+This enables rules that need to know a value's actual type, not just its
+syntax:
+
+- `no-floating-promises` / `no-misused-promises` — catch unhandled promise
+  rejections and async callbacks passed where a sync one is expected (e.g.
+  `onClick={async () => …}`).
+- `switch-exhaustiveness-check` — a `switch` over a union type must handle
+  every member, turning "we added a new status" into a compile-time-adjacent
+  lint error instead of a silent fallthrough.
+- `no-unsafe-assignment` / `no-unsafe-call` / `no-unsafe-member-access` /
+  `no-unsafe-return` / `no-unsafe-argument` — catch `any` leaking into typed
+  code from an untyped source (JSON.parse, external libs, etc.).
+
+`strict-boolean-expressions` (disallows implicit truthy/falsy checks on
+values that aren't already `boolean`) was evaluated and left `off`: at 384
+warnings across 116 files, most requiring a judgment call about
+presence-vs-empty-string-vs-zero intent per callsite, the fix cost outweighed
+the value here.
+
+**Multi-tsconfig setup:** the repo has five tsconfig files (main `src`, node
+tooling, tests, Storybook, e2e) with different `include`/`exclude` and no
+project-references between them. `parserOptions.project` (the classic,
+non-`projectService` mode) accepts an array and resolves each linted file
+against whichever listed tsconfig's `include` covers it — this is what makes
+type-aware linting work correctly across all five without solution-style
+references. `tsconfig.node.json` was widened to include the previously
+uncovered root tooling scripts (`vite.config.ts`, `playwright.config.ts`,
+`scripts/**/*.ts`, `.storybook/**/*.ts`, `vitest.config.stryker.ts`,
+`src/test/fakerSeed.ts`, `src/test/globalSetup.ts`) so every linted file
+resolves to a project — these files also weren't covered by any
+`type-check*` npm script before. `src/types/vitest.d.ts` (the `provide`/
+`ProvidedContext` module augmentation used by `globalSetup.ts`) is also
+included, since an ambient `.d.ts` only takes effect for files compiled in
+the same program.
+
+**The ratchet (now paid off):** turning on type info also activates
+type-aware `sonarjs` rules that were already configured at `error` in this
+file but had never actually run (they silently no-op without type info) -
+fixed as part of introducing this. The eight individual rules above (five of
+them grouped under `no-unsafe-*`) were new, though, and enabling all of them
+at `error` immediately would have surfaced ~800 pre-existing violations in
+one PR. They were introduced at `warn` with a ratcheting `--max-warnings`
+ceiling in `package.json`'s `lint` script instead: the ceiling started at the
+current warning count and was lowered as each PR fixed some of them, with a
+rule promoted to `error` once its count reached zero -
+`no-floating-promises` first, then `no-misused-promises`,
+`switch-exhaustiveness-check`, `no-unsafe-assignment`, `no-unsafe-call`,
+`no-unsafe-member-access`, and finally `no-unsafe-return` /
+`no-unsafe-argument` together. All eight are now `error` with the ceiling
+back at 0, same as every other rule in this file. If a new type-aware rule
+is added later and starts with a large existing backlog, repeat this
+pattern rather than enabling it at `error` outright: introduce at `warn`
+with the current count as the ceiling, ratchet down PR by PR, promote once
+clean. `lint-staged` mirrors `npm run lint`'s `--max-warnings=0` again now
+that there's no ratchet debt left to avoid blocking on.
 
 ---
 
@@ -425,7 +522,7 @@ npm run validate:all   # validate + E2E tests
 
 | Check      | Requirement                          |
 | ---------- | ------------------------------------ |
-| Linting    | Zero ESLint warnings                 |
+| Linting    | Zero ESLint errors and warnings (`--max-warnings=0`)   |
 | Formatting | Prettier check passes                |
 | Tests      | All Vitest tests pass                |
 | Storybook  | Component tests pass                 |

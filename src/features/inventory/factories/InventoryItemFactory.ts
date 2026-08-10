@@ -98,16 +98,18 @@ function validateNonNegative(
 
 /**
  * Validates required fields and constraints for item creation.
+ * Accepts a Partial since this guards a runtime boundary - callers may pass
+ * data of unknown shape (imported JSON, JS call sites) despite the static type.
  */
-function validateItemInput(input: CreateItemInput): void {
+function validateItemInput(input: Partial<CreateItemInput>): void {
   // Required fields
-  if (!input.name?.trim()) {
+  if (typeof input.name !== 'string' || !input.name.trim()) {
     throw new InventoryItemValidationError(
       'name is required and cannot be empty',
     );
   }
 
-  if (!input.itemType?.trim()) {
+  if (typeof input.itemType !== 'string' || !input.itemType.trim()) {
     throw new InventoryItemValidationError(
       'itemType is required and cannot be empty',
     );

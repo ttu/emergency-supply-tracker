@@ -364,7 +364,7 @@ describe('errorLogger storage', () => {
       const stored = localStorage.getItem(ERROR_LOG_STORAGE_KEY);
       expect(stored).not.toBeNull();
 
-      const parsed = JSON.parse(stored!);
+      const parsed = JSON.parse(stored!) as ErrorLogData;
       expect(parsed.logs).toHaveLength(1);
       expect(parsed.logs[0].id).toBe('test-1');
       expect(parsed.logs[0].message).toBe('Test message');

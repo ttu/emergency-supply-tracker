@@ -25,7 +25,7 @@ describe('recommendedItemsValidation mutation kills', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'INVALID_UNIT',
-          message: expect.stringContaining('Invalid unit'),
+          message: expect.stringContaining('Invalid unit') as string,
         }),
       );
     });

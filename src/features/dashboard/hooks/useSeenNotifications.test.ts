@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+} from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useSeenNotifications } from './useSeenNotifications';
 import { createAlertId } from '@/shared/types';
@@ -6,8 +14,8 @@ import { createAlertId } from '@/shared/types';
 const STORAGE_KEY = 'emergencySupplyTracker_notifications_seen';
 
 describe('useSeenNotifications', () => {
-  let getItemSpy: ReturnType<typeof vi.spyOn>;
-  let setItemSpy: ReturnType<typeof vi.spyOn>;
+  let getItemSpy: MockInstance<typeof Storage.prototype.getItem>;
+  let setItemSpy: MockInstance<typeof Storage.prototype.setItem>;
 
   beforeEach(() => {
     getItemSpy = vi.spyOn(Storage.prototype, 'getItem');

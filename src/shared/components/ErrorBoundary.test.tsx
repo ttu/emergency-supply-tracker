@@ -13,7 +13,7 @@ vi.mock('react-i18next', async () => {
 import { ErrorBoundary } from './ErrorBoundary';
 
 // Initialize i18n for tests
-i18n.use(initReactI18next).init({
+void i18n.use(initReactI18next).init({
   lng: 'en',
   resources: {
     en: {
@@ -54,7 +54,7 @@ i18n.use(initReactI18next).init({
 });
 
 // Component that throws an error
-function ThrowError({ shouldThrow }: { shouldThrow: boolean }) {
+function ThrowError({ shouldThrow }: Readonly<{ shouldThrow: boolean }>) {
   if (shouldThrow) {
     throw new Error('Test error');
   }

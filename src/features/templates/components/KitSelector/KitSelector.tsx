@@ -31,7 +31,7 @@ export function KitSelector({
   const builtInKits = availableKits.filter((kit) => kit.isBuiltIn);
   const customKits = availableKits.filter((kit) => !kit.isBuiltIn);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const processFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !onUploadKit) return;
 
@@ -49,6 +49,12 @@ export function KitSelector({
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  // Sync wrapper so the type React event handlers expect (void return) matches
+  // reality - the async work is intentionally not awaited by the caller.
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    void processFileChange(e);
   };
 
   const handleUploadClick = () => {

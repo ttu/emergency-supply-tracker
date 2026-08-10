@@ -6,6 +6,7 @@ import {
   afterEach,
   vi,
   type Mock,
+  type MockInstance,
 } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
 import { ShoppingListExport } from './ShoppingListExport';
@@ -19,7 +20,7 @@ import {
 } from '@/shared/types';
 
 describe('ShoppingListExport', () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance<typeof document.createElement>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -212,7 +213,8 @@ describe('ShoppingListExport', () => {
     const button = screen.getByText('settings.shoppingList.button');
     fireEvent.click(button);
 
-    const blobCall = (globalThis.URL.createObjectURL as Mock).mock.calls[0][0];
+    const blobCall = (globalThis.URL.createObjectURL as Mock).mock
+      .calls[0][0] as Blob;
     expect(blobCall).toBeInstanceOf(Blob);
     expect(blobCall.type).toBe('text/plain;charset=utf-8');
   });

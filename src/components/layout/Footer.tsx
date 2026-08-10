@@ -6,7 +6,7 @@ export interface FooterProps {
   links?: ReactNode;
 }
 
-export function Footer({ copyright, links }: FooterProps) {
+export function Footer({ copyright, links }: Readonly<FooterProps>) {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>

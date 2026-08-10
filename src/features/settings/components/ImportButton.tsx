@@ -20,7 +20,7 @@ interface ImportButtonProps {
   onImportSuccess?: () => void;
 }
 
-export function ImportButton({ onImportSuccess }: ImportButtonProps) {
+export function ImportButton({ onImportSuccess }: Readonly<ImportButtonProps>) {
   const { t } = useTranslation();
   const { showNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);

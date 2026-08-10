@@ -5,6 +5,10 @@ import { ExportSelectionModal } from './ExportSelectionModal';
 import type { InventorySetExportInfo } from '@/shared/utils/storage/localStorage';
 import { createMockInventorySetData } from '@/shared/utils/test/factories';
 import { createInventorySetId } from '@/shared/types';
+import type {
+  InventorySetSection,
+  MultiInventoryExportSelection,
+} from '@/shared/types/exportImport';
 
 const createMockInventorySetExportInfo = (
   overrides?: Partial<InventorySetExportInfo>,
@@ -92,9 +96,12 @@ describe('ExportSelectionModal', () => {
         includeSettings: true,
         inventorySets: expect.arrayContaining([
           expect.objectContaining({
-            sections: expect.arrayContaining(['items', 'household']),
+            sections: expect.arrayContaining([
+              'items',
+              'household',
+            ]) as InventorySetSection[],
           }),
-        ]),
+        ]) as MultiInventoryExportSelection['inventorySets'],
       }),
     );
   });
@@ -322,9 +329,12 @@ describe('ExportSelectionModal', () => {
       expect.objectContaining({
         inventorySets: expect.arrayContaining([
           expect.objectContaining({
-            sections: expect.arrayContaining(['items', 'household']),
+            sections: expect.arrayContaining([
+              'items',
+              'household',
+            ]) as InventorySetSection[],
           }),
-        ]),
+        ]) as MultiInventoryExportSelection['inventorySets'],
       }),
     );
   });

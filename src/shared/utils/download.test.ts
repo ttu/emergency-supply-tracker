@@ -1,4 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  type MockInstance,
+} from 'vitest';
 import {
   downloadFile,
   generateDateFilename,
@@ -7,9 +15,9 @@ import {
 
 describe('download utilities', () => {
   describe('downloadFile', () => {
-    let createObjectURLSpy: ReturnType<typeof vi.spyOn>;
-    let revokeObjectURLSpy: ReturnType<typeof vi.spyOn>;
-    let appendChildSpy: ReturnType<typeof vi.spyOn>;
+    let createObjectURLSpy: MockInstance<typeof URL.createObjectURL>;
+    let revokeObjectURLSpy: MockInstance<typeof URL.revokeObjectURL>;
+    let appendChildSpy: MockInstance<typeof document.body.appendChild>;
     let clickSpy: ReturnType<typeof vi.fn>;
     let removeSpy: ReturnType<typeof vi.fn>;
 

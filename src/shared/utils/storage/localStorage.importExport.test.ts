@@ -307,7 +307,7 @@ describe('localStorage utilities', () => {
 
       const sections: ExportSection[] = ['items', 'household'];
       const json = exportToJSONSelective(mockData, sections);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as PartialExportData;
 
       expect(parsed.items).toBeDefined();
       expect(parsed.household).toBeDefined();
@@ -329,7 +329,7 @@ describe('localStorage utilities', () => {
         'customRecommendedItems',
       ];
       const json = exportToJSONSelective(mockData, allSections);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as PartialExportData;
 
       expect(parsed.items).toBeDefined();
       expect(parsed.household).toBeDefined();
@@ -367,7 +367,7 @@ describe('localStorage utilities', () => {
       });
 
       const json = exportToJSONSelective(mockData, ['items']);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as PartialExportData;
 
       expect(parsed.exportMetadata.itemCount).toBe(2);
     });
@@ -390,7 +390,7 @@ describe('localStorage utilities', () => {
       });
 
       const json = exportToJSONSelective(mockData, ['household']);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as PartialExportData;
 
       expect(parsed.exportMetadata.itemCount).toBe(0);
     });

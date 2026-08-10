@@ -18,8 +18,8 @@ import { VALID_UNITS } from '@/shared/types';
  * ```
  */
 export function isValidUnit(unit: string): unit is Unit {
-  // Handle edge cases: null, undefined, non-string types
-  if (unit === null || unit === undefined || typeof unit !== 'string') {
+  // Guards untyped/JS callers passing non-string values despite the string param type.
+  if (typeof unit !== 'string') {
     return false;
   }
 

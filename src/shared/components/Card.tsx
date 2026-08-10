@@ -13,7 +13,7 @@ export function Card({
   className,
   children,
   ...props
-}: CardProps) {
+}: Readonly<CardProps>) {
   const classNames = [
     styles.card,
     styles[variant],

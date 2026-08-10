@@ -38,7 +38,7 @@ function SellingPoint({
   title,
   description,
   comingSoon = false,
-}: SellingPointProps) {
+}: Readonly<SellingPointProps>) {
   const className = comingSoon
     ? `${styles.sellingPoint} ${styles.comingSoon}`
     : styles.sellingPoint;
@@ -61,7 +61,7 @@ interface FeatureProps {
   description: string;
 }
 
-function Feature({ title, description }: FeatureProps) {
+function Feature({ title, description }: Readonly<FeatureProps>) {
   return (
     <div className={styles.feature}>
       <h3>{title}</h3>
@@ -70,7 +70,7 @@ function Feature({ title, description }: FeatureProps) {
   );
 }
 
-export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
+export function WelcomeScreen({ onContinue }: Readonly<WelcomeScreenProps>) {
   const { t, i18n } = useTranslation();
   const { settings, updateSettings } = useSettings();
 

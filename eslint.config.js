@@ -23,6 +23,16 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        project: [
+          './tsconfig.json',
+          './tsconfig.node.json',
+          './tsconfig.test.json',
+          './tsconfig.storybook.json',
+          './tsconfig.e2e.json',
+        ],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -51,6 +61,23 @@ export default tseslint.config(
       // Redundant with @typescript-eslint/no-unused-vars above, which is
       // type-aware and honours the `_` prefix convention.
       'sonarjs/no-unused-vars': 'off',
+      // Type-aware rules. Introduced at warn with a ratcheting
+      // --max-warnings ceiling and promoted to 'error' as each rule's
+      // count reached zero - all eight have now graduated. See
+      // docs/CODE_QUALITY.md for how the ratchet worked.
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      // Off rather than warn/error: at 384 warnings across 116 files, the
+      // fix-per-callsite cost (each requires judgment about presence vs.
+      // empty-string vs. zero-as-unset intent) outweighs the value here.
+      // Revisit if the codebase wants to take this on deliberately.
+      '@typescript-eslint/strict-boolean-expressions': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
     },
   },
   {
