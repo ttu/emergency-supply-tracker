@@ -404,8 +404,8 @@ function MobileInventoryRowImpl({
     color: r.item.quantity === 0 ? 'var(--color-crit)' : 'var(--color-text)',
   };
   return (
-    <div
-      role="button" /* NOSONAR S6819 - hosts the nested stepper <button>s; <button> can't contain <button> */
+    <div // NOSONAR S6819 - hosts the nested stepper <button>s; <button> can't contain <button>
+      role="button"
       tabIndex={0}
       onClick={select}
       onKeyDown={handleKeyDown}

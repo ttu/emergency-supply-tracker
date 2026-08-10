@@ -117,8 +117,8 @@ function InventoryRowImpl({
   const increaseLabel = t('inventory.quantityStepper.increase');
 
   return (
-    <div
-      role="button" /* NOSONAR S6819 - hosts the nested stepper <button>s; <button> can't contain <button> */
+    <div // NOSONAR S6819 - hosts the nested stepper <button>s; <button> can't contain <button>
+      role="button"
       tabIndex={0}
       data-testid={`v2-inventory-row-${id}`}
       onClick={select}
