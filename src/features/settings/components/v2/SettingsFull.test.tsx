@@ -18,7 +18,7 @@ describe('SettingsFull (v2 orchestrator)', () => {
   it('renders the page title and lead copy in cockpit voice', () => {
     setup();
     expect(screen.getByText('v2.settings.title.cockpit')).toBeInTheDocument();
-    expect(screen.getByText('v2.settings.title.cockpit')).toBeInTheDocument();
+    expect(screen.getByText('v2.settings.intro.cockpit')).toBeInTheDocument();
   });
 
   it('renders the SettingsRail with all 11 section labels', () => {

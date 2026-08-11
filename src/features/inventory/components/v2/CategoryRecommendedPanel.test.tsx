@@ -122,7 +122,7 @@ describe('CategoryRecommendedPanel (v2)', () => {
       'v2.inventory.markEnough.cockpit',
     );
     expect(markable.length).toBeGreaterThan(0);
-    expect(markable.length).toBeLessThan(rows.length + 1);
+    expect(markable.length).toBeLessThan(rows.length);
   });
 
   // WCAG 2.1 AA wants 44x44 on touch. The desktop row is denser than that by

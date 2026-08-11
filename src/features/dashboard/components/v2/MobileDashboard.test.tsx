@@ -92,7 +92,13 @@ describe('MobileDashboard (v2)', () => {
 
   it('surfaces the alert banner above the KPIs', async () => {
     setup([missing]);
-    expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
+    const banner = await screen.findByTestId('v2-alert-banner');
+    const readinessKpi = screen.getByText('v2.voice.readiness.cockpit');
+
+    expect(
+      banner.compareDocumentPosition(readinessKpi) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it('speaks the civil headline under the civil theme', () => {
