@@ -163,6 +163,7 @@ export function AlertBanner({
         {isCollapsible && (
           <AccentTextButton
             onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
             data-testid="v2-alert-toggle"
           >
             {expanded

@@ -416,6 +416,7 @@ interface AccentTextButtonProps {
   onClick: () => void;
   fontSize?: number;
   'aria-label'?: string;
+  'aria-expanded'?: boolean;
   'data-testid'?: string;
 }
 
@@ -429,6 +430,7 @@ export function AccentTextButton({
   onClick,
   fontSize = 10,
   'aria-label': ariaLabel,
+  'aria-expanded': ariaExpanded,
   'data-testid': testId,
 }: Readonly<AccentTextButtonProps>) {
   return (
@@ -436,6 +438,7 @@ export function AccentTextButton({
       type="button"
       onClick={onClick}
       aria-label={ariaLabel}
+      aria-expanded={ariaExpanded}
       data-testid={testId}
       style={{
         background: 'transparent',

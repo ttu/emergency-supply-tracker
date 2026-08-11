@@ -82,12 +82,17 @@ describe('AlertBanner (v2)', () => {
       setup(manyAlerts());
       expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
 
-      fireEvent.click(screen.getByTestId('v2-alert-toggle'));
+      const toggle = screen.getByTestId('v2-alert-toggle');
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+      fireEvent.click(toggle);
       const expanded = screen.getAllByTestId('v2-alert-row').length;
       expect(expanded).toBeGreaterThan(3);
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
-      fireEvent.click(screen.getByTestId('v2-alert-toggle'));
+      fireEvent.click(toggle);
       expect(screen.getAllByTestId('v2-alert-row')).toHaveLength(3);
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('shows no toggle when everything already fits', async () => {
