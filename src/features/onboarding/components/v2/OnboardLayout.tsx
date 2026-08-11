@@ -48,6 +48,7 @@ export interface OnboardLayoutProps {
   back?: () => void;
   onContinue: () => void;
   primaryLabel?: string;
+  continueDisabled?: boolean;
 }
 
 /** Shared chrome for every onboarding step: brand, step bar, lead, content, footer. */
@@ -61,6 +62,7 @@ export function OnboardLayout({
   back,
   onContinue,
   primaryLabel,
+  continueDisabled,
 }: Readonly<OnboardLayoutProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
@@ -204,7 +206,11 @@ export function OnboardLayout({
                 {t(`v2.voice.back.${themeKey}`)}
               </Button>
             )}
-            <Button variant="primary" onClick={onContinue}>
+            <Button
+              variant="primary"
+              onClick={onContinue}
+              disabled={continueDisabled}
+            >
               {primaryLabel ?? t(`v2.voice.continueAction.${themeKey}`)}
             </Button>
           </div>

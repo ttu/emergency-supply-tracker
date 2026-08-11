@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Caption,
@@ -31,6 +31,9 @@ export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   /** Sequence number of the most recent file pick; see `handleFile`. */
   const latestUploadRef = useRef(0);
+  // Blocks Continue while a file is being read/validated, so navigation
+  // can't proceed with the kit selected before the upload lands.
+  const [isUploading, setIsUploading] = useState(false);
 
   const reportUploadError = (error: string) =>
     showNotification(t('kits.uploadError', { error }), 'error', 6000);
@@ -41,25 +44,33 @@ export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
     // and selecting it over the household's actual choice.
     const request = ++latestUploadRef.current;
     const isStale = () => request !== latestUploadRef.current;
+    setIsUploading(true);
 
-    let parsed: RecommendedItemsFile;
     try {
-      parsed = JSON.parse(await file.text()) as RecommendedItemsFile;
-    } catch {
+      let parsed: RecommendedItemsFile;
+      try {
+        parsed = JSON.parse(await file.text()) as RecommendedItemsFile;
+      } catch {
+        if (isStale()) return;
+        // A file that isn't JSON at all never reaches the upload validator, so
+        // it has to be reported from this side.
+        reportUploadError(t('kits.invalidJson'));
+        return;
+      }
       if (isStale()) return;
-      // A file that isn't JSON at all never reaches the upload validator, so
-      // it has to be reported from this side.
-      reportUploadError(t('kits.invalidJson'));
-      return;
+      const result = uploadKit(parsed);
+      if (result.kitId) {
+        selectKit(result.kitId);
+        showNotification(
+          t('kits.uploadSuccess', { name: file.name }),
+          'success',
+        );
+        return;
+      }
+      reportUploadError(result.errors?.[0]?.message ?? t('kits.invalidJson'));
+    } finally {
+      if (!isStale()) setIsUploading(false);
     }
-    if (isStale()) return;
-    const result = uploadKit(parsed);
-    if (result.kitId) {
-      selectKit(result.kitId);
-      showNotification(t('kits.uploadSuccess', { name: file.name }), 'success');
-      return;
-    }
-    reportUploadError(result.errors?.[0]?.message ?? t('kits.invalidJson'));
   };
 
   const kitCard = (kit: KitInfo) => {
@@ -208,6 +219,7 @@ export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
       }}
       back={onBack}
       onContinue={onNext}
+      continueDisabled={isUploading}
     >
       <Caption>{t(`v2.onboarding.kit.builtInCaption.${themeKey}`)}</Caption>
       <div

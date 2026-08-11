@@ -96,6 +96,27 @@ describe('OnboardKit', () => {
     );
   });
 
+  it('blocks Continue while a kit upload is still being read', async () => {
+    const onNext = vi.fn();
+    renderStep({ onNext });
+    const input = screen.getByTestId('v2-kit-file-input');
+    const pending = deferredKitFile('Pending Kit');
+
+    fireEvent.change(input, { target: { files: [pending.file] } });
+
+    const continueButton = screen.getByRole('button', {
+      name: 'v2.voice.continueAction.cockpit',
+    });
+    await waitFor(() => expect(continueButton).toBeDisabled());
+    fireEvent.click(continueButton);
+    expect(onNext).not.toHaveBeenCalled();
+
+    pending.release();
+    await waitFor(() => expect(continueButton).not.toBeDisabled());
+    fireEvent.click(continueButton);
+    expect(onNext).toHaveBeenCalledTimes(1);
+  });
+
   it('offers an upload for a kit of your own', () => {
     renderStep();
     expect(screen.getByTestId('v2-kit-upload')).toBeVisible();
