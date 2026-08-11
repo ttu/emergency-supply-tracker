@@ -7,6 +7,22 @@ import {
   createMockSettings,
 } from '@/shared/utils/test/factories';
 
+// The day-option labels and the water formula both interpolate their values,
+// so this file needs a mock that resolves {{count}} / {{adults}} etc. rather
+// than echoing the key.
+vi.mock('react-i18next', async () => {
+  const { createI18nMock } = await import('@/test/i18n');
+  return createI18nMock({
+    translations: {
+      'v2.onboarding.household.dayOption.cockpit': '{{count}}D',
+      'v2.onboarding.household.waterFormula':
+        '= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} × {{days}} {{daysLabel}}',
+      'v2.onboarding.household.waterFormulaWithChildren':
+        '= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} + {{children}} {{childrenLabel}} × {{childWeight}} × {{days}} {{daysLabel}}',
+    },
+  });
+});
+
 const renderStep = (
   overrides: Partial<Parameters<typeof OnboardHousehold>[0]> = {},
 ) =>
@@ -41,6 +57,31 @@ describe('OnboardHousehold (v2)', () => {
     renderStep();
     // 3 × 2 × 7 = 42
     expect(screen.getByText('42')).toBeInTheDocument();
+  });
+
+  it('states the water formula without a children term when there are none', () => {
+    renderStep();
+    expect(
+      screen.getByText(
+        '= 3 L × 2 v2.onboarding.labelAdults.cockpit × 7 v2.onboarding.labelDays.cockpit',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('adds the children term to the water formula when children are present', () => {
+    renderStep({
+      household: createMockHousehold({
+        adults: 2,
+        children: 2,
+        pets: 0,
+        supplyDurationDays: 7,
+      }),
+    });
+    expect(
+      screen.getByText(
+        '= 3 L × 2 v2.onboarding.labelAdults.cockpit + 2 v2.onboarding.labelChildren.cockpit × 0.75 × 7 v2.onboarding.labelDays.cockpit',
+      ),
+    ).toBeInTheDocument();
   });
 
   describe('accessible controls', () => {

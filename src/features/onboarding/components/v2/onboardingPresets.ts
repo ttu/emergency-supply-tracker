@@ -51,13 +51,24 @@ export const ONBOARDING_PRESETS: PresetDef[] = [
   },
 ];
 
+/** Litres of water a single adult needs per day. */
+export const ONBOARDING_WATER_LITERS_PER_ADULT_PER_DAY = 3;
+/** A child counts as this fraction of an adult in the supply math. */
+export const ONBOARDING_CHILD_WEIGHT = 0.75;
+/** Calories a single adult needs per day. */
+export const ONBOARDING_KCAL_PER_ADULT_PER_DAY = 2200;
+
 export function computeOnboardingTargets(h: {
   adults: number;
   children: number;
   supplyDurationDays: number;
 }) {
-  const ppl = h.adults + h.children * 0.75;
-  const water = Math.ceil(3 * ppl * h.supplyDurationDays);
-  const kcal = Math.ceil(2200 * ppl * h.supplyDurationDays);
+  const ppl = h.adults + h.children * ONBOARDING_CHILD_WEIGHT;
+  const water = Math.ceil(
+    ONBOARDING_WATER_LITERS_PER_ADULT_PER_DAY * ppl * h.supplyDurationDays,
+  );
+  const kcal = Math.ceil(
+    ONBOARDING_KCAL_PER_ADULT_PER_DAY * ppl * h.supplyDurationDays,
+  );
   return { water, kcal };
 }

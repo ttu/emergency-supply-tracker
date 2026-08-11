@@ -1645,6 +1645,21 @@
           "cockpit": "KATTAVUUSTAVOITE",
           "civil": "KATTAVUUSTAVOITE",
           "pantry": "Tavoitepäivät"
+        },
+        "waterFormula": {
+          "cockpit": "= {{waterPerPerson}} l × {{adults}} {{adultsLabel}} × {{days}} {{daysLabel}}",
+          "civil": "= {{waterPerPerson}} l × {{adults}} {{adultsLabel}} × {{days}} {{daysLabel}}",
+          "pantry": "= {{waterPerPerson}} l × {{adults}} {{adultsLabel}} × {{days}} {{daysLabel}}"
+        },
+        "waterFormulaWithChildren": {
+          "cockpit": "= {{waterPerPerson}} l × {{adults}} {{adultsLabel}} + {{children}} {{childrenLabel}} × {{childWeight}} × {{days}} {{daysLabel}}",
+          "civil": "= {{waterPerPerson}} l × {{adults}} {{adultsLabel}} + {{children}} {{childrenLabel}} × {{childWeight}} × {{days}} {{daysLabel}}",
+          "pantry": "= {{waterPerPerson}} l × {{adults}} {{adultsLabel}} + {{children}} {{childrenLabel}} × {{childWeight}} × {{days}} {{daysLabel}}"
+        },
+        "dayOption": {
+          "cockpit": "{{count}}D",
+          "civil": "{{count}}D",
+          "pantry": "{{count}} päivää"
         }
       },
       "kit": {

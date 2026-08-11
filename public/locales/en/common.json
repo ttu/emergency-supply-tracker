@@ -1645,6 +1645,21 @@
           "cockpit": "COVERAGE TARGET",
           "civil": "COVERAGE TARGET",
           "pantry": "Target days"
+        },
+        "waterFormula": {
+          "cockpit": "= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} × {{days}} {{daysLabel}}",
+          "civil": "= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} × {{days}} {{daysLabel}}",
+          "pantry": "= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} × {{days}} {{daysLabel}}"
+        },
+        "waterFormulaWithChildren": {
+          "cockpit": "= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} + {{children}} {{childrenLabel}} × {{childWeight}} × {{days}} {{daysLabel}}",
+          "civil": "= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} + {{children}} {{childrenLabel}} × {{childWeight}} × {{days}} {{daysLabel}}",
+          "pantry": "= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} + {{children}} {{childrenLabel}} × {{childWeight}} × {{days}} {{daysLabel}}"
+        },
+        "dayOption": {
+          "cockpit": "{{count}}D",
+          "civil": "{{count}}D",
+          "pantry": "{{count}} days"
         }
       },
       "kit": {

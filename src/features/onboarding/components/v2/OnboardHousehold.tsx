@@ -9,7 +9,11 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import type { HouseholdConfig } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
-import { computeOnboardingTargets } from './onboardingPresets';
+import {
+  computeOnboardingTargets,
+  ONBOARDING_CHILD_WEIGHT,
+  ONBOARDING_WATER_LITERS_PER_ADULT_PER_DAY,
+} from './onboardingPresets';
 
 interface OnboardHouseholdProps {
   household: HouseholdConfig;
@@ -24,9 +28,29 @@ export function OnboardHousehold({
   onNext,
   onBack,
 }: Readonly<OnboardHouseholdProps>) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { themeKey } = useDesignTheme();
   const targets = computeOnboardingTargets(household);
+
+  const waterFormula =
+    household.children > 0
+      ? t('v2.onboarding.household.waterFormulaWithChildren', {
+          waterPerPerson: ONBOARDING_WATER_LITERS_PER_ADULT_PER_DAY,
+          adults: household.adults,
+          adultsLabel: t(`v2.onboarding.labelAdults.${themeKey}`),
+          children: household.children,
+          childrenLabel: t(`v2.onboarding.labelChildren.${themeKey}`),
+          childWeight: ONBOARDING_CHILD_WEIGHT,
+          days: household.supplyDurationDays,
+          daysLabel: t(`v2.onboarding.labelDays.${themeKey}`),
+        })
+      : t('v2.onboarding.household.waterFormula', {
+          waterPerPerson: ONBOARDING_WATER_LITERS_PER_ADULT_PER_DAY,
+          adults: household.adults,
+          adultsLabel: t(`v2.onboarding.labelAdults.${themeKey}`),
+          days: household.supplyDurationDays,
+          daysLabel: t(`v2.onboarding.labelDays.${themeKey}`),
+        });
 
   return (
     <OnboardLayout
@@ -68,17 +92,7 @@ export function OnboardHousehold({
                 marginTop: 6,
               }}
             >
-              = 3 L × {household.adults}{' '}
-              {t(`v2.onboarding.labelAdults.${themeKey}`)}
-              {household.children > 0 && (
-                <>
-                  {' '}
-                  + {household.children}{' '}
-                  {t(`v2.onboarding.labelChildren.${themeKey}`)} × 0.75
-                </>
-              )}{' '}
-              × {household.supplyDurationDays}{' '}
-              {t(`v2.onboarding.labelDays.${themeKey}`)}
+              {waterFormula}
             </div>
           </div>
           <div
@@ -91,7 +105,10 @@ export function OnboardHousehold({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <NumberDisplay value={targets.kcal.toLocaleString()} size={36} />
+              <NumberDisplay
+                value={targets.kcal.toLocaleString(i18n.language)}
+                size={36}
+              />
             </div>
             <div
               style={{
@@ -161,7 +178,9 @@ export function OnboardHousehold({
                   letterSpacing: '0.06em',
                 }}
               >
-                {n}D
+                {t(`v2.onboarding.household.dayOption.${themeKey}`, {
+                  count: n,
+                })}
               </button>
             );
           })}
