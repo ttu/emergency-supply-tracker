@@ -7,7 +7,11 @@ import {
   createMockInventoryItem,
   createMockSettings,
 } from '@/shared/utils/test/factories';
-import { createCategoryId, createQuantity } from '@/shared/types';
+import {
+  createCategoryId,
+  createDateOnly,
+  createQuantity,
+} from '@/shared/types';
 
 const setup = (
   items: ReturnType<typeof createMockInventoryItem>[],
@@ -61,6 +65,17 @@ const missingWater = () =>
     categoryId: createCategoryId('water-beverages'),
     quantity: createQuantity(0),
     ...NO_EXPIRY,
+  });
+
+// Expiration alerts are the only kind that carry an itemId — the row is
+// keyed off it, and the Resolve pill always targets it directly.
+const expiredMeds = () =>
+  createMockInventoryItem({
+    name: 'Expired meds',
+    categoryId: createCategoryId('medical-health'),
+    quantity: createQuantity(2),
+    neverExpires: false,
+    expirationDate: createDateOnly('2020-01-01'),
   });
 
 describe('AlertBanner (v2)', () => {
@@ -157,6 +172,35 @@ describe('AlertBanner (v2)', () => {
     fireEvent.click(screen.getByRole('button', { name: /water-beverages/ }));
 
     expect(onCategorySelect).toHaveBeenCalledWith('water-beverages');
+  });
+
+  it('resolving an item-level alert invokes onItemSelect with its itemId', async () => {
+    const item = expiredMeds();
+    const onItemSelect = vi.fn();
+    setup([item], onItemSelect);
+    expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.resolveAction.cockpit' }),
+    );
+
+    expect(onItemSelect).toHaveBeenCalledWith(String(item.id));
+  });
+
+  it('the message action on an item-level alert routes to its category, not the item', async () => {
+    // The row's message click and the Resolve pill are deliberately
+    // different actions: the message opens the broader category context,
+    // the pill jumps straight to the item that needs fixing.
+    const item = expiredMeds();
+    const onItemSelect = vi.fn();
+    const onCategorySelect = vi.fn();
+    setup([item], onItemSelect, onCategorySelect);
+    expect(await screen.findByTestId('v2-alert-banner')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Expired meds/ }));
+
+    expect(onCategorySelect).toHaveBeenCalledWith('medical-health');
+    expect(onItemSelect).not.toHaveBeenCalled();
   });
 
   it('dismisses every alert at once', async () => {

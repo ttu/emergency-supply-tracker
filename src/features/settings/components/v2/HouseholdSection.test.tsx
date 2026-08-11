@@ -1,5 +1,20 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent, within } from '@testing-library/react';
+
+// The formula caption interpolates the real computed operands, which the
+// default mock's bare key-echo would hide entirely.
+vi.mock('react-i18next', async () => {
+  const { createI18nMock } = await import('@/test/i18n');
+  return createI18nMock({
+    translations: {
+      'v2.settings.household.waterFormula':
+        '= {{water}} L x {{people}} people x {{days}} d',
+      'v2.settings.household.foodFormula':
+        '= {{calories}} kcal x {{people}} people x {{days}} d',
+    },
+  });
+});
+
 import { HouseholdSection } from './HouseholdSection';
 import { renderWithProviders } from '@/test/render';
 import {
@@ -69,9 +84,10 @@ describe('HouseholdSection (v2)', () => {
 
     // 2 L x (3 + 1x0.5) people x 14 days = 98.
     expect(screen.getByText('98')).toBeInTheDocument();
-    expect(
-      screen.getByText('v2.settings.household.waterFormula'),
-    ).toBeInTheDocument();
+    // The effective count folds in the child's 0.5 multiplier (3.5), not the
+    // 3 raw adults — the caption has to quote the number that actually
+    // produced the figure above it.
+    expect(screen.getByText('= 2 L x 3.5 people x 14 d')).toBeInTheDocument();
   });
 
   describe('presets', () => {
