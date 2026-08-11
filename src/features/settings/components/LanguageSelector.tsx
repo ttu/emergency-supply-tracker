@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/features/settings';
 import styles from './LanguageSelector.module.css';
@@ -5,13 +6,19 @@ import styles from './LanguageSelector.module.css';
 export function LanguageSelector() {
   const { t, i18n } = useTranslation();
   const { settings, updateSettings } = useSettings();
+  // Guards against an earlier changeLanguage call resolving after a later
+  // one and persisting a stale selection.
+  const latestRequestedLanguageRef = useRef<'en' | 'fi' | null>(null);
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const language = e.target.value as 'en' | 'fi';
+    latestRequestedLanguageRef.current = language;
     i18n
       .changeLanguage(language)
       .then(() => {
-        updateSettings({ language });
+        if (latestRequestedLanguageRef.current === language) {
+          updateSettings({ language });
+        }
       })
       .catch((error: unknown) => {
         console.error('Failed to change language:', error);

@@ -27,10 +27,14 @@ export function OnboardWelcome({ onNext }: Readonly<OnboardWelcomeProps>) {
   ];
 
   const setLang = (lang: 'en' | 'fi') => {
-    i18n.changeLanguage(lang).catch(() => {
-      /* ignore language switch errors */
-    });
-    updateSettings({ language: lang });
+    i18n
+      .changeLanguage(lang)
+      .then(() => {
+        updateSettings({ language: lang });
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to switch language', error);
+      });
   };
 
   const outputs: Array<[string, string]> = [
