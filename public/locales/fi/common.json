@@ -1953,7 +1953,13 @@
           "cockpit": "TUMMA OPERATIIVINEN KONSOLI",
           "civil": "VIRALLINEN ASIAKIRJA",
           "pantry": "Rauhallinen, pohjoismainen"
-        }
+        },
+        "themeName": {
+          "cockpit": "Cockpit",
+          "civil": "Civil Defense",
+          "pantry": "Pantry"
+        },
+        "themeGroupLabel": "Teema"
       },
       "classic": {
         "blurb": {

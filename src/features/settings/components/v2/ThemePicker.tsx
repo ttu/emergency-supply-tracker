@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useRef, type CSSProperties, type KeyboardEvent } from 'react';
 import {
   DESIGN_V2_THEMES,
   type DesignV2Theme,
@@ -10,7 +10,6 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 const PREVIEWS: Record<
   DesignV2Theme,
   {
-    name: string;
     bg: string;
     text: string;
     text3: string;
@@ -29,7 +28,6 @@ const PREVIEWS: Record<
   }
 > = {
   cockpit: {
-    name: 'Cockpit',
     bg: '#0d141a',
     text: '#e6ecf0',
     text3: '#5a6975',
@@ -47,7 +45,6 @@ const PREVIEWS: Record<
     monoNumbers: true,
   },
   civil: {
-    name: 'Civil Defense',
     bg: '#f4f1ea',
     text: '#0b1d2a',
     text3: '#5b6b62',
@@ -65,7 +62,6 @@ const PREVIEWS: Record<
     monoNumbers: true,
   },
   pantry: {
-    name: 'Pantry',
     bg: '#eef0ea',
     text: '#1a2620',
     text3: '#6c7a72',
@@ -116,27 +112,58 @@ export function ThemePicker({
     ? { display: 'flex', flexDirection: 'column', gap: 8 }
     : { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 };
 
+  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  // Roving tabindex: only the checked radio sits in the tab order, and the
+  // arrow keys move both focus and the selection between the others —
+  // standard keyboard behavior for a radiogroup (WAI-ARIA APG).
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>, i: number) => {
+    let next: number | undefined;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      next = (i + 1) % DESIGN_V2_THEMES.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      next = (i - 1 + DESIGN_V2_THEMES.length) % DESIGN_V2_THEMES.length;
+    }
+    if (next === undefined) return;
+    e.preventDefault();
+    onChange(DESIGN_V2_THEMES[next]);
+    buttonRefs.current[next]?.focus();
+  };
+
   return (
-    <div style={containerStyle} role="radiogroup" aria-label="Theme">
-      {DESIGN_V2_THEMES.map((key) => {
+    <div
+      style={containerStyle}
+      role="radiogroup"
+      aria-label={translate('v2.settings.appearance.themeGroupLabel')}
+    >
+      {DESIGN_V2_THEMES.map((key, i) => {
         const t = PREVIEWS[key];
+        const name = translate(`v2.settings.appearance.themeName.${key}`);
         const selected = value === key;
         const accent = PREVIEWS[activeKey]?.accent ?? PREVIEWS.cockpit.accent;
         return (
           <button
             key={key}
+            ref={(el) => {
+              buttonRefs.current[i] = el;
+            }}
             type="button"
             role="radio"
             aria-checked={selected}
+            tabIndex={selected ? 0 : -1}
             onClick={() => onChange(key)}
+            onKeyDown={(e) => handleKeyDown(e, i)}
             style={{
+              // The selected state is carried by the border and the
+              // checkmark badge below, not by an inline outline — an
+              // outline set here (in either state) would win over the
+              // global :focus-visible ring regardless of value, leaving
+              // keyboard users without a focus indicator.
               border: `1.5px solid ${selected ? accent : t.rule}`,
               borderRadius: t.radius,
               cursor: 'pointer',
               background: t.bg,
               overflow: 'hidden',
-              outline: selected ? `2px solid ${accent}` : 'none',
-              outlineOffset: -3,
               padding: 0,
               textAlign: 'left',
               fontFamily: 'inherit',
@@ -166,7 +193,7 @@ export function ThemePicker({
                   color: t.text,
                 }}
               >
-                {t.name}
+                {name}
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 {(['text', 'accent', 'ok', 'warn', 'crit'] as const).map(
@@ -232,7 +259,7 @@ export function ThemePicker({
                     color: t.text,
                   }}
                 >
-                  {t.name}
+                  {name}
                 </div>
                 <div
                   style={{

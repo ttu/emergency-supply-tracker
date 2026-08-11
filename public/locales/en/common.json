@@ -1953,7 +1953,13 @@
           "cockpit": "DARK OPERATIONAL CONSOLE",
           "civil": "OFFICIAL DOCUMENT",
           "pantry": "Calm, Nordic"
-        }
+        },
+        "themeName": {
+          "cockpit": "Cockpit",
+          "civil": "Civil Defense",
+          "pantry": "Pantry"
+        },
+        "themeGroupLabel": "Theme"
       },
       "classic": {
         "blurb": {
