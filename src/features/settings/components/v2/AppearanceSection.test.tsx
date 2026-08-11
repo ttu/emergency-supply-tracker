@@ -10,7 +10,13 @@ const { changeLanguageSpy } = vi.hoisted(() => ({
 
 vi.mock('react-i18next', async () => {
   const { createI18nMock } = await import('@/test/i18n');
-  return createI18nMock({ changeLanguage: changeLanguageSpy });
+  return createI18nMock({
+    changeLanguage: changeLanguageSpy,
+    translations: {
+      'v2.settings.appearance.languageOption.en': 'English',
+      'v2.settings.appearance.languageOption.fi': 'Suomi',
+    },
+  });
 });
 
 const render = () =>

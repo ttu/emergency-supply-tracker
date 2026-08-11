@@ -1920,6 +1920,10 @@
           "civil": "LANGUAGE · §1.2",
           "pantry": "Language"
         },
+        "languageOption": {
+          "en": "English",
+          "fi": "Suomi"
+        },
         "highContrast": {
           "cockpit": "HIGH CONTRAST MODE",
           "civil": "HIGH CONTRAST MODE",
@@ -2115,7 +2119,10 @@
           "civil": "WARN ≤ N DAYS BEFORE EXPIRY",
           "pantry": "fixed"
         },
-        "expiryWindowValue": "{{days}} days"
+        "expiryWindowValue": "{{days}} days",
+        "caloriesSuffix": "kcal",
+        "waterSuffix": "L",
+        "childrenSuffix": "%"
       },
       "advanced": {
         "title": {

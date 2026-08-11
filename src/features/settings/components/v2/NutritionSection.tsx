@@ -42,7 +42,7 @@ export function NutritionSection() {
           step={50}
           min={0}
           max={10000}
-          suffix="kcal"
+          suffix={t('v2.settings.nutrition.caloriesSuffix')}
         />
         <StepperRow
           label={t(`v2.settings.nutrition.water.${themeKey}`)}
@@ -55,7 +55,7 @@ export function NutritionSection() {
           decimals={1}
           min={0}
           max={20}
-          suffix="L"
+          suffix={t('v2.settings.nutrition.waterSuffix')}
         />
         <StepperRow
           label={t(`v2.settings.nutrition.children.${themeKey}`)}
@@ -71,7 +71,7 @@ export function NutritionSection() {
           step={5}
           min={0}
           max={100}
-          suffix="%"
+          suffix={t('v2.settings.nutrition.childrenSuffix')}
         />
         <ReadField
           label={t(`v2.settings.nutrition.expiryWindow.${themeKey}`)}

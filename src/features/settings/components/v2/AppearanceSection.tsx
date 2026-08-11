@@ -64,8 +64,14 @@ export function AppearanceSection() {
             }}
           >
             {[
-              { code: 'en', label: 'English' },
-              { code: 'fi', label: 'Suomi' },
+              {
+                code: 'en',
+                label: t('v2.settings.appearance.languageOption.en'),
+              },
+              {
+                code: 'fi',
+                label: t('v2.settings.appearance.languageOption.fi'),
+              },
             ].map((l) => {
               const sel = settings.language === l.code;
               return (

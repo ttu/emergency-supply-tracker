@@ -63,7 +63,7 @@ export function ProductPicker({
     'units',
   ]);
   const { themeKey } = useDesignTheme();
-  const lang = (i18n?.language || 'en') as 'en' | 'fi';
+  const lang = i18n?.language || 'en';
 
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState(initialCategoryId);
@@ -96,8 +96,8 @@ export function ProductPicker({
           name.toLowerCase().includes(query) &&
           (!categoryId || String(item.category) === categoryId),
       )
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [templates, query, categoryId, t]);
+      .sort((a, b) => a.name.localeCompare(b.name, lang));
+  }, [templates, query, categoryId, t, lang]);
 
   const visibleCustomTemplates = useMemo(() => {
     return customTemplates
@@ -107,8 +107,8 @@ export function ProductPicker({
           name.toLowerCase().includes(query) &&
           (!categoryId || String(item.category) === categoryId),
       )
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [customTemplates, query, categoryId]);
+      .sort((a, b) => a.name.localeCompare(b.name, lang));
+  }, [customTemplates, query, categoryId, lang]);
 
   const total = visibleTemplates.length + visibleCustomTemplates.length;
 

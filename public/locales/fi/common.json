@@ -1920,6 +1920,10 @@
           "civil": "KIELI · §1.2",
           "pantry": "Kieli"
         },
+        "languageOption": {
+          "en": "English",
+          "fi": "Suomi"
+        },
         "highContrast": {
           "cockpit": "KORKEAN KONTRASTIN TILA",
           "civil": "KORKEAN KONTRASTIN TILA",
@@ -2115,7 +2119,10 @@
           "civil": "VAROITA ≤ N PÄIVÄÄ ENNEN VANHENEMISTA",
           "pantry": "kiinteä"
         },
-        "expiryWindowValue": "{{days}} päivää"
+        "expiryWindowValue": "{{days}} päivää",
+        "caloriesSuffix": "kcal",
+        "waterSuffix": "l",
+        "childrenSuffix": "%"
       },
       "advanced": {
         "title": {

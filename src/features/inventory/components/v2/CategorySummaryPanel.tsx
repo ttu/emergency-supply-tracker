@@ -74,7 +74,7 @@ export function CategorySummaryPanel({
     ? Math.round(summary.totalNeededCalories ?? 0)
     : summary.totalNeeded;
   const translatedUnit = unit ? t(unit, { ns: 'units' }) : '';
-  const unitLabel = isFood ? 'kcal' : translatedUnit;
+  const unitLabel = isFood ? t('kcal', { ns: 'units' }) : translatedUnit;
 
   return (
     <Panel padding={0}>
