@@ -16,6 +16,12 @@ interface OnboardCompleteProps {
   onComplete: (household: HouseholdConfig, items: InventoryItem[]) => void;
 }
 
+function readinessTone(readiness: number): 'crit' | 'warn' | 'ok' {
+  if (readiness === 0) return 'crit';
+  if (readiness === 100) return 'ok';
+  return 'warn';
+}
+
 /** One captioned figure in the completion screen's summary grid. */
 function SummaryStat({
   caption,
@@ -102,7 +108,7 @@ export function OnboardComplete({
               value={readiness}
               suffix="%"
               size={36}
-              tone={readiness === 0 ? 'crit' : 'warn'}
+              tone={readinessTone(readiness)}
             />
           </SummaryStat>
           <SummaryStat

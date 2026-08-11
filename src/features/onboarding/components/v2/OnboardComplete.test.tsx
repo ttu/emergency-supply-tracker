@@ -56,7 +56,23 @@ describe('OnboardComplete', () => {
 
   it('reads 0% readiness when nothing was marked owned', () => {
     renderComplete({ items: itemsAt(0, 10) });
-    expect(screen.getByText('0')).toBeInTheDocument();
+    const readiness = screen.getByText('0');
+    expect(readiness).toBeInTheDocument();
+    expect(readiness).toHaveStyle({ color: 'var(--color-crit)' });
+  });
+
+  it('shows a success tone at 100% readiness', () => {
+    renderComplete({ items: itemsAt(3, 10) });
+    expect(screen.getByText('100')).toHaveStyle({
+      color: 'var(--color-ok)',
+    });
+  });
+
+  it('shows a warning tone at partial readiness', () => {
+    renderComplete({ items: [...itemsAt(3, 4), ...itemsAt(0, 6)] });
+    expect(screen.getByText('40')).toHaveStyle({
+      color: 'var(--color-warn)',
+    });
   });
 
   it('reflects what the household already had', () => {
