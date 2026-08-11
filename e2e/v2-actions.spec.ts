@@ -248,6 +248,30 @@ test.describe('Inventory actions', () => {
     await expect(page.getByPlaceholder(/SEARCH/i)).toHaveValue('soup');
   });
 
+  test('search and status filters narrow the list on a phone', async ({
+    page,
+  }) => {
+    // MobileInventory renders its own filter chips and search box (no
+    // v2-status-* testids, no category rail) — desktop coverage above
+    // doesn't exercise any of that.
+    await boot(page, 'mobile');
+    await openInventory(page);
+    await expect(page.getByText('Bottled water')).toBeVisible();
+
+    await page.getByPlaceholder(/SEARCH/i).fill('soup');
+    await expect(page.getByText('Canned soup')).toBeVisible();
+    await expect(page.getByText('Bottled water')).toHaveCount(0);
+    await page.getByPlaceholder(/SEARCH/i).fill('');
+
+    // The expired item is the only CRIT one.
+    await page.getByRole('button', { name: 'CRIT' }).click();
+    await expect(page.getByText('Expired meds')).toBeVisible();
+    await expect(page.getByText('Bottled water')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'ALL' }).click();
+    await expect(page.getByText('Bottled water')).toBeVisible();
+  });
+
   test('add an item and see it persisted', async ({ page }) => {
     await boot(page);
     await openInventory(page);
@@ -490,9 +514,18 @@ test.describe('Settings', () => {
     // controls. Dropped from 11 when the dead hygiene-water switch was cut.
     expect(count).toBeGreaterThanOrEqual(10);
 
+    // Snapshot each switch's accessible name up front, then look each one up
+    // by name rather than position: nth(i) on the live locator can drift if
+    // an earlier toggle changes what else renders.
+    const labels: string[] = [];
     for (let i = 0; i < count; i++) {
-      const sw = switches.nth(i);
-      const label = (await sw.getAttribute('aria-label')) ?? `switch-${i}`;
+      labels.push(
+        (await switches.nth(i).getAttribute('aria-label')) ?? `switch-${i}`,
+      );
+    }
+
+    for (const label of labels) {
+      const sw = page.getByRole('switch', { name: label });
       const before = await sw.getAttribute('aria-checked');
       await sw.scrollIntoViewIfNeeded();
       await sw.click();
