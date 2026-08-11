@@ -116,6 +116,40 @@ describe('OnboardQuickSetup', () => {
     ).toBeDisabled();
   });
 
+  it('drops the owned mark when an owned product is deselected', () => {
+    const onAddItems = vi.fn<(selection: QuickSetupSelection) => void>();
+    renderStep({ onAddItems });
+    openList();
+
+    fireEvent.click(screen.getByTestId(`v2-quick-setup-owned-${firstItemId}`));
+    fireEvent.click(screen.getByTestId(`v2-quick-setup-item-${firstItemId}`));
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'v2.onboarding.quickSetup.addSelected.cockpit',
+      }),
+    );
+    const { selectedIds, ownedIds } = onAddItems.mock.calls[0][0];
+    expect(selectedIds.has(firstItemId)).toBe(false);
+    expect(ownedIds.has(firstItemId)).toBe(false);
+  });
+
+  it('clears every owned mark when everything is deselected at once', () => {
+    const onAddItems = vi.fn<(selection: QuickSetupSelection) => void>();
+    renderStep({ onAddItems });
+    openList();
+
+    fireEvent.click(screen.getByTestId(`v2-quick-setup-owned-${firstItemId}`));
+    fireEvent.click(screen.getByTestId('v2-quick-setup-select-all'));
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'v2.onboarding.quickSetup.addSelected.cockpit',
+      }),
+    );
+    expect(onAddItems.mock.calls[0][0].ownedIds.size).toBe(0);
+  });
+
   it('deselect all clears every tick, and selecting all restores them', () => {
     renderStep();
     openList();

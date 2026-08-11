@@ -235,7 +235,20 @@ export function OnboardQuickSetup({
     }));
   }, [offered, t]);
 
-  const toggleSelected = (id: string) => setDeselected((d) => toggle(d, id));
+  const toggleSelected = (id: string) => {
+    const isDeselecting = !deselected.has(id);
+    setDeselected((d) => toggle(d, id));
+    // Deselecting an item drops any "owned" mark with it, so the owned
+    // count and the seeded quantities can't outlive the selection they
+    // were scoped to.
+    if (isDeselecting && ownedIds.has(id)) {
+      setOwnedIds((o) => {
+        const next = new Set(o);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
   const toggleOwned = (id: string) => setOwnedIds((o) => toggle(o, id));
 
   const allSelected = deselected.size === 0;
@@ -331,13 +344,15 @@ export function OnboardQuickSetup({
             {showDetails && (
               <button
                 type="button"
-                onClick={() =>
-                  setDeselected(
-                    allSelected
-                      ? new Set(offered.map((i) => String(i.id)))
-                      : new Set(),
-                  )
-                }
+                onClick={() => {
+                  if (allSelected) {
+                    // Deselecting everything drops every "owned" mark with it.
+                    setDeselected(new Set(offered.map((i) => String(i.id))));
+                    setOwnedIds(new Set());
+                  } else {
+                    setDeselected(new Set());
+                  }
+                }}
                 data-testid="v2-quick-setup-select-all"
                 style={{
                   background: 'transparent',
