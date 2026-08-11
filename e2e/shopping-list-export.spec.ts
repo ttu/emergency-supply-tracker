@@ -135,20 +135,18 @@ test.describe('Shopping List Export Formats', () => {
     const exportButton = page.getByTestId('export-shopping-list-button');
     await expect(exportButton).toBeVisible({ timeout: 10000 });
 
-    const downloadPromise = page
-      .waitForEvent('download', { timeout: 5000 })
-      .catch(() => null);
+    // No catch and no conditional guards: a download that never fires, or a
+    // file that never lands, has to fail the test rather than skip every
+    // assertion below and report success.
+    const downloadPromise = page.waitForEvent('download', { timeout: 5000 });
     await exportButton.click();
     const download = await downloadPromise;
 
-    if (download) {
-      const path = await download.path();
-      if (path) {
-        const fs = await import('node:fs/promises');
-        const content = await fs.readFile(path, 'utf-8');
-        expect(content).toMatch(/rice/i);
-        expect(content).not.toMatch(/canned fish/i);
-      }
-    }
+    const path = await download.path();
+    expect(path).toBeTruthy();
+    const fs = await import('node:fs/promises');
+    const content = await fs.readFile(path!, 'utf-8');
+    expect(content).toMatch(/rice/i);
+    expect(content).not.toMatch(/canned fish/i);
   });
 });
