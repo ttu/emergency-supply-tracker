@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const KEY = 'est:design-prefs';
 // Pre-1.0 key used while v2 was an exploration. Migrated on first read.
@@ -69,18 +69,25 @@ export function useDesignPrefs(): [
   (k: keyof DesignPrefs, v: boolean) => void,
 ] {
   const [prefs, setPrefs] = useState<DesignPrefs>(load);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     applyToDocument(prefs);
+    // Skip persisting on mount: `prefs` was just loaded from storage (or
+    // defaults), so there is nothing new to save yet.
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    save(prefs);
   }, [prefs]);
   const updatePref = (k: keyof DesignPrefs, v: boolean) => {
     // Functional update: two prefs changed in the same tick must both land,
-    // rather than the second overwriting the first from a stale render.
-    setPrefs((prev) => {
-      const next = { ...prev, [k]: v };
-      save(next);
-      return next;
-    });
+    // rather than the second overwriting the first from a stale render. The
+    // updater only computes the next state — persisting happens in the
+    // effect above, since React may invoke this updater more than once
+    // (e.g. Strict Mode) and it must stay a pure function of prev state.
+    setPrefs((prev) => ({ ...prev, [k]: v }));
   };
   return [prefs, updatePref];
 }
