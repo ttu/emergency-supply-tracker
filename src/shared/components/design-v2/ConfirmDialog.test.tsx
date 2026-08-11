@@ -127,4 +127,47 @@ describe('ConfirmDialog (v2)', () => {
     setup({ tone: 'danger', confirmLabel: 'Delete' });
     expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
   });
+
+  describe('focus restoration', () => {
+    // The dialog is rendered conditionally by its caller (open flips false,
+    // or the caller unmounts it outright), so both paths have to hand focus
+    // back rather than leaving it on a button that's gone.
+    const trigger = () => {
+      const button = document.createElement('button');
+      button.textContent = 'Open dialog';
+      document.body.appendChild(button);
+      button.focus();
+      return button;
+    };
+
+    it('restores focus to the triggering element once the dialog closes', () => {
+      const opener = trigger();
+      const { rerender, onConfirm, onCancel } = setup();
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+
+      rerender(
+        <ConfirmDialog
+          open={false}
+          title="Clear everything"
+          message="This cannot be undone."
+          onConfirm={onConfirm}
+          onCancel={onCancel}
+        />,
+      );
+
+      expect(document.activeElement).toBe(opener);
+      opener.remove();
+    });
+
+    it('restores focus to the triggering element on unmount', () => {
+      const opener = trigger();
+      const { unmount } = setup();
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+
+      unmount();
+
+      expect(document.activeElement).toBe(opener);
+      opener.remove();
+    });
+  });
 });
