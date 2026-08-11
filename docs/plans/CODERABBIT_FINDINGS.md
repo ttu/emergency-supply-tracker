@@ -84,10 +84,19 @@ findings (#1–9, #11–12). Verified against live Playwright runs, not just
 type-checking — this surfaced and fixed a stale e2e assertion left over from
 pass 1 (onboarding.spec.ts's backup-import accept-attribute check).
 
-Remaining and not yet started: the CSS-module extraction findings (#13, #15,
-#16, #18, #23, #25, #29, #31, #32, #40, #41, #42, #47, #49), new-test-suite
-additions (#22, #46, #48, #50, #52, #54–58, #61, #63–64, #67–68, #71–73,
-#75–76, #78, #80), and #17 (support-links flex-wrap).
+**Pass 3** (12 commits): every new-test-suite / file-naming finding (#22,
+#46, #48, #50, #52, #54–58, #61, #63–64, #67–68, #71–73, #75–76, #78, #80).
+Full unit suite (`--project=unit`) run before each commit touching shared
+fixtures — this caught a real flake of its own (designStatus.test.ts: two
+`statusOf` fixtures didn't pin `neverExpires`, so the factory's random
+expiration date could return 'warn' instead of the expected 'crit').
+
+65 of 82 findings done. Remaining and not yet started: the CSS-module
+extraction findings (#13, #15, #16, #18, #23, #25, #29, #31, #32, #35, #37,
+#40, #41, #42, #47, #49) and #17 (support-links flex-wrap) — 17 findings,
+all in `src/features/onboarding/components/v2/*`,
+`src/features/settings/components/v2/*`, and a few shared v2 components.
+These need `/visual-verify` since they move inline styles to CSS Modules.
 
 ## Findings
 
@@ -336,7 +345,7 @@ type FilterKey = InventoryStatusFilter;
 
 #### 22. [major] — lines 27–68
 
-- [ ] Add unit tests for useRemoveEmptyItems covering zero-quantity filtering, categoryId scoping, the zero-count handleOpen path, handleCancel closing confirmation state, and handleConfirm passing only the selected item IDs to deleteItems. Mock useInventory, translation, and theme dependencies, and verify the hook’s returned count and confirmation state transitions.
+- [x] Add unit tests for useRemoveEmptyItems covering zero-quantity filtering, categoryId scoping, the zero-count handleOpen path, handleCancel closing confirmation state, and handleConfirm passing only the selected item IDs to deleteItems. Mock useInventory, translation, and theme dependencies, and verify the hook’s returned count and confirmation state transitions.
 
 ### `src/features/onboarding/components/v2/OnboardComplete.tsx`
 
@@ -537,7 +546,7 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 46. [major] — lines 35–205
 
-- [ ] Add a ConfirmDialog.test.tsx suite covering the closed state, Escape-triggered onCancel, Tab and Shift+Tab focus trapping, focus restoration after close or unmount, and restoration of body overflow during cleanup. Exercise the rendered ConfirmDialog behavior with appropriate mocks for translation, theme, portal, and callbacks while preserving the existing component API.
+- [x] Add a ConfirmDialog.test.tsx suite covering the closed state, Escape-triggered onCancel, Tab and Shift+Tab focus trapping, focus restoration after close or unmount, and restoration of body overflow during cleanup. Exercise the rendered ConfirmDialog behavior with appropriate mocks for translation, theme, portal, and callbacks while preserving the existing component API.
 
 #### 47. [major] — lines 115–201
 
@@ -547,7 +556,7 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 48. [major] — lines 38–341
 
-- [ ] Add unit tests covering both DesktopShell and MobileShell, rendering each variant with representative props and verifying all navigation buttons invoke onNav with the selected NAV id, only the active page has aria-current="page", and both shell layouts render their expected content and navigation controls.
+- [x] Add unit tests covering both DesktopShell and MobileShell, rendering each variant with representative props and verifying all navigation buttons invoke onNav with the selected NAV id, only the active page has aria-current="page", and both shell layouts render their expected content and navigation controls.
 
 #### 49. [major] — lines 48–339
 
@@ -557,7 +566,7 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 50. [major] — lines 59–143
 
-- [ ] The new useDesignData hook lacks unit-test coverage for its derived dashboard behavior. Add a useDesignData.test.ts suite that mocks the five provider hooks and verifies recommendation mapping, category applicability, readiness, expiration counts, and daysCovered/daysCoveredDetail output, using complete typed fixtures and covering the key boundary cases.
+- [x] The new useDesignData hook lacks unit-test coverage for its derived dashboard behavior. Add a useDesignData.test.ts suite that mocks the five provider hooks and verifies recommendation mapping, category applicability, readiness, expiration counts, and daysCovered/daysCoveredDetail output, using complete typed fixtures and covering the key boundary cases.
 
 ### `src/shared/types/exportImport.ts`
 
@@ -585,7 +594,7 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 52. [major] — lines 13–115
 
-- [ ] Add a designStatus.test.ts suite covering toDesignStatus and ALERT_TYPE_TO_DESIGN_STATUS mappings, statusOf/categoryStats item counts, non-applicable category handling, and coverageCounts totals excluding inapplicable categories. Use complete typed fixtures and assert both per-status counts and aggregate coverage results.
+- [x] Add a designStatus.test.ts suite covering toDesignStatus and ALERT_TYPE_TO_DESIGN_STATUS mappings, statusOf/categoryStats item counts, non-applicable category handling, and coverageCounts totals excluding inapplicable categories. Use complete typed fixtures and assert both per-status counts and aggregate coverage results.
 
 ### `scripts/ai/block_big_reads.sh`
 
@@ -597,13 +606,13 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 54. [minor] — lines 147–155
 
-- [ ] Add item-level alert coverage to the AlertBanner tests by creating an alert fixture with an itemId, then trigger both the message action and the Resolve action and assert each invokes onItemSelect with that itemId. Keep the existing category-selection test unchanged and use the suite’s established setup and querying patterns.
+- [x] Add item-level alert coverage to the AlertBanner tests by creating an alert fixture with an itemId, then trigger both the message action and the Resolve action and assert each invokes onItemSelect with that itemId. Keep the existing category-selection test unchanged and use the suite’s established setup and querying patterns.
 
 ### `src/features/dashboard/components/v2/MobileDashboard.test.tsx`
 
 #### 55. [minor] — lines 93–96
 
-- [ ] Update the test named “surfaces the alert banner above the KPIs” to locate the readiness KPI element and assert that the v2-alert-banner appears before it in the rendered DOM order. Keep the existing presence assertion and ensure the test fails when the banner renders below the readiness KPI.
+- [x] Update the test named “surfaces the alert banner above the KPIs” to locate the readiness KPI element and assert that the v2-alert-banner appears before it in the rendered DOM order. Keep the existing presence assertion and ensure the test fails when the banner renders below the readiness KPI.
 
 <details><summary>CodeRabbit suggested code</summary>
 
@@ -626,19 +635,19 @@ it('surfaces the alert banner above the KPIs', async () => {
 
 #### 56. [minor] — line 66
 
-- [ ] Move the behavior cases from useSeenNotifications.behaviors.test.ts into the canonical useSeenNotifications.test.ts file, preserving their assertions and setup. Remove the nonconforming behavior test file so the suite follows the required [function].test.ts naming convention.
+- [x] Move the behavior cases from useSeenNotifications.behaviors.test.ts into the canonical useSeenNotifications.test.ts file, preserving their assertions and setup. Remove the nonconforming behavior test file so the suite follows the required [function].test.ts naming convention.
 
 ### `src/features/dashboard/utils/preparedness.score.test.ts`
 
 #### 57. [minor] — lines 2–14
 
-- [ ] Rename the test file to calculatePreparednessScore.test.ts because the suite exercises calculatePreparednessScore, including its deprecated wrapper. Keep the existing tests together unless they target additional functions, in which case split those suites into their respective [function].test.ts files.
+- [x] Rename the test file to calculatePreparednessScore.test.ts because the suite exercises calculatePreparednessScore, including its deprecated wrapper. Keep the existing tests together unless they target additional functions, in which case split those suites into their respective [function].test.ts files.
 
 ### `src/features/dashboard/utils/priorityRows.test.ts`
 
 #### 58. [minor] — lines 1–61
 
-- [ ] Split the tests in priorityRows.test.ts by exported function: move the selectPriorityRows describe suite into selectPriorityRows.test.ts and the critFirst describe suite into critFirst.test.ts. Update each new file’s imports to include only the function it tests, and remove the original combined test file.
+- [x] Split the tests in priorityRows.test.ts by exported function: move the selectPriorityRows describe suite into selectPriorityRows.test.ts and the critFirst describe suite into critFirst.test.ts. Update each new file’s imports to include only the function it tests, and remove the original combined test file.
 
 ### `src/features/design/navMapping.test.ts`
 
@@ -656,7 +665,7 @@ it('surfaces the alert banner above the KPIs', async () => {
 
 #### 61. [minor] — lines 117–126
 
-- [ ] The test currently uses a weak count comparison that is always true because mark-enough actions are inside recommended rows. Update the test around setup, expand, and row queries to assert that at least one `v2-recommended-row` does not contain a `v2.inventory.markEnough.cockpit` action, while retaining the requirement that at least one markable action exists.
+- [x] The test currently uses a weak count comparison that is always true because mark-enough actions are inside recommended rows. Update the test around setup, expand, and row queries to assert that at least one `v2-recommended-row` does not contain a `v2.inventory.markEnough.cockpit` action, while retaining the requirement that at least one markable action exists.
 
 <details><summary>CodeRabbit suggested code</summary>
 
@@ -683,13 +692,13 @@ it('only offers to accept the quantity on hand where there is one', async () => 
 
 #### 63. [minor] — lines 112–146
 
-- [ ] Extend the test “DELETE opens a themed confirm dialog and only deletes when confirmed” to click the dialog’s themed confirm button after verifying the cancel behavior, then assert the deletion outcome and any expected navigation callback. Import and use within to target the confirm button inside the alertdialog, preserving the existing themed dialog and cancel-path assertions.
+- [x] Extend the test “DELETE opens a themed confirm dialog and only deletes when confirmed” to click the dialog’s themed confirm button after verifying the cancel behavior, then assert the deletion outcome and any expected navigation callback. Import and use within to target the confirm button inside the alertdialog, preserving the existing themed dialog and cancel-path assertions.
 
 ### `src/features/inventory/components/v2/MobileItemDetail.test.tsx`
 
 #### 64. [minor] — lines 46–60
 
-- [ ] Update the test around MobileItemDetail to match the NEW_ITEM_ID flow: either assert that NewItemTemplateStep’s picker is rendered initially, or interact with the picker to advance before asserting the embedded ItemForm and its save button. Remove the misleading form-rendering comments and retain the not-found assertion only if it remains relevant.
+- [x] Update the test around MobileItemDetail to match the NEW_ITEM_ID flow: either assert that NewItemTemplateStep’s picker is rendered initially, or interact with the picker to advance before asserting the embedded ItemForm and its save button. Remove the misleading form-rendering comments and retain the not-found assertion only if it remains relevant.
 
 <details><summary>CodeRabbit suggested code</summary>
 
@@ -728,13 +737,13 @@ it('shows the product picker first in NEW mode', async () => {
 
 #### 67. [minor] — lines 1–141
 
-- [ ] Rename the test file for the useCategoryCoverage hook from the current JSX-oriented suffix to useCategoryCoverage.test.ts, preserving its existing test contents and behavior.
+- [x] Rename the test file for the useCategoryCoverage hook from the current JSX-oriented suffix to useCategoryCoverage.test.ts, preserving its existing test contents and behavior.
 
 ### `src/features/inventory/hooks/useInventoryFilters.test.tsx`
 
 #### 68. [minor] — lines 1–109
 
-- [ ] Rename the test file for the useInventoryFilters suite from the JSX-oriented .test.tsx suffix to useInventoryFilters.test.ts, preserving its existing test contents and behavior.
+- [x] Rename the test file for the useInventoryFilters suite from the JSX-oriented .test.tsx suffix to useInventoryFilters.test.ts, preserving its existing test contents and behavior.
 
 ### `src/features/onboarding/components/v2/OnboardHousehold.stories.tsx`
 
@@ -752,19 +761,19 @@ it('shows the product picker first in NEW mode', async () => {
 
 #### 71. [minor] — lines 49–75
 
-- [ ] Update the test case “states the arithmetic that produced the figure, children included” to assert the rendered formula includes the daily amount, effective household count including the child multiplier, and supply duration (for example, the expected “2 L x 3.5 PEOPLE x 14 D” operands), rather than only checking the translation key. Keep the existing 98 total assertion.
+- [x] Update the test case “states the arithmetic that produced the figure, children included” to assert the rendered formula includes the daily amount, effective household count including the child multiplier, and supply duration (for example, the expected “2 L x 3.5 PEOPLE x 14 D” operands), rather than only checking the translation key. Keep the existing 98 total assertion.
 
 ### `src/features/settings/components/v2/NotificationsSection.tsx`
 
 #### 72. [minor] — lines 136–154
 
-- [ ] Add focused unit tests for NotificationsSection hidden-alert behavior, covering zero hidden alerts, reactivateAlert restoring one alert, and reactivateAllAlerts restoring all alerts. Mock or provide the relevant useInventory, useNotificationPrefs, alert-generation, and household dependencies so tests exercise the hiddenAlerts computation and restoration actions rather than only asserting the section header.
+- [x] Add focused unit tests for NotificationsSection hidden-alert behavior, covering zero hidden alerts, reactivateAlert restoring one alert, and reactivateAllAlerts restoring all alerts. Mock or provide the relevant useInventory, useNotificationPrefs, alert-generation, and household dependencies so tests exercise the hiddenAlerts computation and restoration actions rather than only asserting the section header.
 
 ### `src/features/settings/components/v2/NutritionSection.test.tsx`
 
 #### 73. [minor] — lines 12–48
 
-- [ ] Expand the NutritionSection tests to interact with every StepperRow and verify each control calls updateSettings with the expected values, covering calorie and water bounds plus child-percentage limits of 0 and 100. Reuse the existing renderWithProviders setup and assert the settings update path for each nutrition control rather than only checking labels.
+- [x] Expand the NutritionSection tests to interact with every StepperRow and verify each control calls updateSettings with the expected values, covering calorie and water bounds plus child-percentage limits of 0 and 100. Reuse the existing renderWithProviders setup and assert the settings update path for each nutrition control rather than only checking labels.
 
 ### `src/features/settings/components/v2/NutritionSection.tsx`
 
@@ -776,7 +785,7 @@ it('shows the product picker first in NEW mode', async () => {
 
 #### 75. [minor] — lines 18–22
 
-- [ ] Update the test case “renders the page title and lead copy in cockpit voice” so its second assertion targets the lead-copy translation key rather than repeating “v2.settings.title.cockpit”; keep the existing title assertion unchanged.
+- [x] Update the test case “renders the page title and lead copy in cockpit voice” so its second assertion targets the lead-copy translation key rather than repeating “v2.settings.title.cockpit”; keep the existing title assertion unchanged.
 
 <details><summary>CodeRabbit suggested code</summary>
 
@@ -794,7 +803,7 @@ it('renders the page title and lead copy in cockpit voice', () => {
 
 #### 76. [minor] — lines 79–121
 
-- [ ] Extend the StepperRow tests around the existing increment and decrement cases to cover both clamped calculations: verify incrementing a value near max calls onChange with max, and verify decrementing a value above min calls onChange with min. Keep the assertions focused on the resulting onChange values and preserve the existing disabled-button test for values already at the boundary.
+- [x] Extend the StepperRow tests around the existing increment and decrement cases to cover both clamped calculations: verify incrementing a value near max calls onChange with max, and verify decrementing a value above min calls onChange with min. Keep the assertions focused on the resulting onChange values and preserve the existing disabled-button test for values already at the boundary.
 
 ### `src/features/settings/hooks/useDesignPref.ts`
 
@@ -806,7 +815,7 @@ it('renders the page title and lead copy in cockpit voice', () => {
 
 #### 78. [minor] — lines 51–60
 
-- [ ] Update the test setup around beforeEach and afterEach to capture the original property descriptors for Element.prototype.scrollIntoView and Element.prototype.scrollTo before replacing them, then restore those descriptors during cleanup after each test. Keep the existing global unstubbing and document cleanup behavior.
+- [x] Update the test setup around beforeEach and afterEach to capture the original property descriptors for Element.prototype.scrollIntoView and Element.prototype.scrollTo before replacing them, then restore those descriptors during cleanup after each test. Keep the existing global unstubbing and document cleanup behavior.
 
 ### `src/shared/utils/calculations/daysCovered.ts`
 
@@ -828,7 +837,7 @@ if (supplyDurationDays <= 0 || !Number.isFinite(supplyDurationDays)) {
 
 #### 80. [minor] — lines 35–37
 
-- [ ] Update the test setup around register() to capture each test’s added window load callback, and change triggerLoad() to invoke only that captured callback instead of dispatching a global load event. Reset the captured callback between tests so stale listeners cannot execute or cause duplicate registrations.
+- [x] Update the test setup around register() to capture each test’s added window load callback, and change triggerLoad() to invoke only that captured callback instead of dispatching a global load event. Reset the captured callback between tests so stale listeners cannot execute or cause duplicate registrations.
 
 ### `src/styles/design-themes.css`
 
