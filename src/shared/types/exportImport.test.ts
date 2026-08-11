@@ -382,6 +382,15 @@ describe('exportImport types and helpers', () => {
       expect(isMultiInventoryExport('string')).toBeFalsy();
       expect(isMultiInventoryExport(123)).toBeFalsy();
     });
+
+    it('returns false for populated inventory sets missing metadata', () => {
+      const data = {
+        version: CURRENT_SCHEMA_VERSION,
+        inventorySets: [{ name: 'Test', includedSections: [], data: {} }],
+      };
+
+      expect(isMultiInventoryExport(data)).toBe(false);
+    });
   });
 
   describe('convertLegacyToMultiInventory', () => {

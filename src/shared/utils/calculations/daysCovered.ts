@@ -131,7 +131,7 @@ export function calculateDaysCovered(
   categoryStatuses: readonly ResourceCoverageInput[],
   supplyDurationDays: number,
 ): DaysCoveredResult {
-  if (!supplyDurationDays || !Number.isFinite(supplyDurationDays)) {
+  if (supplyDurationDays <= 0 || !Number.isFinite(supplyDurationDays)) {
     return NOTHING_COVERED;
   }
 

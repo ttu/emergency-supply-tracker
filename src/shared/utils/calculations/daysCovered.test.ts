@@ -231,6 +231,12 @@ describe('calculateDaysCovered', () => {
 
       expect(result.days).toBe(0);
     });
+
+    it('returns 0 for a negative supply duration', () => {
+      const result = calculateDaysCovered([foodStatus(), waterStatus()], -7);
+
+      expect(result.days).toBe(0);
+    });
   });
 
   describe('empty and invalid inventories', () => {

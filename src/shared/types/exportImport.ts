@@ -302,8 +302,8 @@ export function isMultiInventoryExport(
   const d = data as Record<string, unknown>;
   return (
     Array.isArray(d.inventorySets) &&
-    (d.inventorySets.length > 0 ||
-      (typeof d.exportedAt === 'string' && typeof d.appVersion === 'string'))
+    typeof d.exportedAt === 'string' &&
+    typeof d.appVersion === 'string'
   );
 }
 
