@@ -13,6 +13,7 @@
  * (their <main> is overflow:auto). Without this rule the page itself can
  * pick up a scrollbar that competes with the inner one, producing a
  * "double scrollbar" effect. */
+:root:is([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry']),
 :where(html, body):has(
   :where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
 ) {

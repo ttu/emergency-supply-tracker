@@ -34,6 +34,9 @@ describe('design v2 full-viewport containers', () => {
   it('locks the document to the dynamic viewport too', () => {
     const css = read('styles/design-themes.css');
     expect(css).toMatch(
+      /:root[^{}]*\[data-theme='cockpit'\][^{}]*\{[^}]*height:\s*100dvh/,
+    );
+    expect(css).toMatch(
       /overflow:\s*hidden;\s*height:\s*100vh;\s*height:\s*100dvh/,
     );
   });
@@ -44,7 +47,7 @@ describe('design v2 full-viewport containers', () => {
     ['features/onboarding/components/v2/OnboardComplete.tsx', 1],
   ])('%s uses the class rather than an inline 100vh', (file, expected) => {
     const source = read(file);
-    expect(source).not.toMatch(/height:\s*'100vh'/);
+    expect(source).not.toMatch(/height\s*:\s*['"]100vh['"]/);
     // Count the applications, not the prose — these files explain the trap in
     // comments that also name the class.
     expect(source.match(/className="v2-viewport-height"/g) ?? []).toHaveLength(
