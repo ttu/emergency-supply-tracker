@@ -1,97 +1,120 @@
 import { describe, it, expect } from 'vitest';
 import {
   toDesignStatus,
+  ALERT_TYPE_TO_DESIGN_STATUS,
   statusOf,
   categoryStats,
   coverageCounts,
-  ALERT_TYPE_TO_DESIGN_STATUS,
   type CategoryStats,
 } from './designStatus';
 import {
   createMockCategory,
   createMockInventoryItem,
 } from '@/shared/utils/test/factories';
-import { createCategoryId, createQuantity } from '@/shared/types';
-
-const FOOD = createCategoryId('food');
-const WATER = createCategoryId('water');
-
-/** Quantity decides the status once expiry is taken out of the picture. */
-const stocked = (id: string, categoryId = FOOD, quantity = 10) =>
-  createMockInventoryItem({
-    name: id,
-    categoryId,
-    quantity: createQuantity(quantity),
-    neverExpires: true,
-    expirationDate: undefined,
-    // The factory randomises this, and it short-circuits to ok.
-    markedAsEnough: false,
-  });
+import { createCategoryId, createItemId, createQuantity } from '@/shared/types';
 
 describe('toDesignStatus', () => {
-  it('shortens each canonical status to its v2 name', () => {
+  it('maps critical to crit', () => {
     expect(toDesignStatus('critical')).toBe('crit');
+  });
+
+  it('maps warning to warn', () => {
     expect(toDesignStatus('warning')).toBe('warn');
+  });
+
+  it('maps ok to ok', () => {
     expect(toDesignStatus('ok')).toBe('ok');
   });
 });
 
 describe('ALERT_TYPE_TO_DESIGN_STATUS', () => {
-  it('carries alert severity across to the status colours', () => {
+  it('maps critical and warning alerts to their matching status', () => {
     expect(ALERT_TYPE_TO_DESIGN_STATUS.critical).toBe('crit');
     expect(ALERT_TYPE_TO_DESIGN_STATUS.warning).toBe('warn');
   });
 
-  it('renders info alerts in the calm colour rather than as a warning', () => {
+  it('maps info alerts to ok, not a warning colour', () => {
     expect(ALERT_TYPE_TO_DESIGN_STATUS.info).toBe('ok');
   });
 });
 
 describe('statusOf', () => {
-  it('reads a fully stocked item as ok', () => {
-    expect(statusOf(stocked('beans', FOOD, 10), 10)).toBe('ok');
+  it('is crit at zero quantity', () => {
+    // neverExpires pinned everywhere in this describe: the factory hands out
+    // a random expiration date otherwise, and expiration is checked before
+    // quantity, so an unlucky date could return 'warn' instead.
+    const item = createMockInventoryItem({
+      quantity: createQuantity(0),
+      neverExpires: true,
+    });
+    expect(statusOf(item, 10)).toBe('crit');
   });
 
-  it('reads an item the household owns none of as critical', () => {
-    expect(statusOf(stocked('beans', FOOD, 0), 10)).toBe('crit');
+  it('is warn below half the recommended quantity', () => {
+    const item = createMockInventoryItem({
+      quantity: createQuantity(3),
+      neverExpires: true,
+    });
+    expect(statusOf(item, 10)).toBe('warn');
   });
 
-  it('treats an unknown recommendation as no requirement to fall short of', () => {
-    // No recommendation means nothing to be short against, so any quantity
-    // reads ok rather than critical.
-    expect(statusOf(stocked('beans', FOOD, 1), undefined)).toBe('ok');
+  it('is ok at or above the recommended quantity', () => {
+    const item = createMockInventoryItem({
+      quantity: createQuantity(10),
+      neverExpires: true,
+    });
+    expect(statusOf(item, 10)).toBe('ok');
+  });
+
+  it('treats an undefined recommendation as zero', () => {
+    const item = createMockInventoryItem({
+      quantity: createQuantity(0),
+      neverExpires: true,
+    });
+    expect(statusOf(item, undefined)).toBe('crit');
   });
 });
 
 describe('categoryStats', () => {
-  it('counts only the items belonging to the category', () => {
-    const category = createMockCategory({ id: FOOD });
-    const items = [stocked('beans', FOOD), stocked('bottles', WATER)];
-
-    const stats = categoryStats(category, items, new Map(), 'ok');
-
-    expect(stats.category).toBe(category);
-    expect(stats.total).toBe(1);
+  const category = createMockCategory({
+    id: createCategoryId('food'),
+    name: 'Food',
+    icon: '🍚',
   });
 
-  it('splits the category across ok, warn and crit', () => {
-    const category = createMockCategory({ id: FOOD });
-    const full = stocked('full', FOOD, 10);
-    // Below half the recommendation, which is where warn starts.
-    const half = stocked('half', FOOD, 4);
-    const empty = stocked('empty', FOOD, 0);
-    const recommended = new Map([
-      [String(full.id), 10],
-      [String(half.id), 10],
-      [String(empty.id), 10],
+  it('tallies items into ok/warn/crit buckets, scoped to the category', () => {
+    const items = [
+      createMockInventoryItem({
+        id: createItemId('ok-1'),
+        categoryId: category.id,
+        quantity: createQuantity(10),
+        neverExpires: true,
+      }),
+      createMockInventoryItem({
+        id: createItemId('warn-1'),
+        categoryId: category.id,
+        quantity: createQuantity(3),
+        neverExpires: true,
+      }),
+      createMockInventoryItem({
+        id: createItemId('crit-1'),
+        categoryId: category.id,
+        quantity: createQuantity(0),
+        neverExpires: true,
+      }),
+      createMockInventoryItem({
+        id: createItemId('other-cat'),
+        categoryId: createCategoryId('water-beverages'),
+        quantity: createQuantity(0),
+      }),
+    ];
+    const recommendedByItem = new Map([
+      ['ok-1', 10],
+      ['warn-1', 10],
+      ['crit-1', 10],
     ]);
 
-    const stats = categoryStats(
-      category,
-      [full, half, empty],
-      recommended,
-      'crit',
-    );
+    const stats = categoryStats(category, items, recommendedByItem, 'ok');
 
     expect(stats.total).toBe(3);
     expect(stats.ok).toBe(1);
@@ -99,41 +122,48 @@ describe('categoryStats', () => {
     expect(stats.crit).toBe(1);
   });
 
-  it('reports an empty category as all zeroes', () => {
-    const stats = categoryStats(
-      createMockCategory({ id: FOOD }),
-      [],
-      new Map(),
-      'crit',
-    );
-    expect(stats).toMatchObject({ total: 0, ok: 0, warn: 0, crit: 0 });
+  it('carries through the coverage and applicable flags it was given', () => {
+    const stats = categoryStats(category, [], new Map(), 'warn', false);
+    expect(stats.coverage).toBe('warn');
+    expect(stats.applicable).toBe(false);
+  });
+
+  it('defaults applicable to true', () => {
+    const stats = categoryStats(category, [], new Map(), 'ok');
+    expect(stats.applicable).toBe(true);
   });
 });
 
 describe('coverageCounts', () => {
   const stat = (
-    coverage: 'ok' | 'warn' | 'crit',
+    coverage: CategoryStats['coverage'],
     applicable = true,
-  ): CategoryStats => ({ coverage, applicable }) as CategoryStats;
+  ): CategoryStats => ({
+    category: createMockCategory({ id: createCategoryId('food') }),
+    total: 0,
+    ok: 0,
+    warn: 0,
+    crit: 0,
+    coverage,
+    applicable,
+  });
 
-  it('counts the categories by how they stand against their recommendations', () => {
+  it('totals only the applicable categories', () => {
     const counts = coverageCounts([
-      stat('ok'),
       stat('ok'),
       stat('warn'),
       stat('crit'),
+      stat('ok', false),
     ]);
-    expect(counts).toEqual({ total: 4, ok: 2, warn: 1, crit: 1 });
+    expect(counts).toEqual({ total: 3, ok: 1, warn: 1, crit: 1 });
   });
 
-  it('leaves out categories with nothing to meet', () => {
-    // Pets with no pets in the household: neither a gap nor an achievement,
-    // so counting it either way would misstate readiness.
-    const counts = coverageCounts([stat('ok'), stat('ok', false)]);
-    expect(counts).toEqual({ total: 1, ok: 1, warn: 0, crit: 0 });
+  it('excludes non-applicable categories from every bucket, not just the total', () => {
+    const counts = coverageCounts([stat('crit', false)]);
+    expect(counts).toEqual({ total: 0, ok: 0, warn: 0, crit: 0 });
   });
 
-  it('is all zeroes with nothing applicable', () => {
+  it('reads all-zero for an empty list', () => {
     expect(coverageCounts([])).toEqual({ total: 0, ok: 0, warn: 0, crit: 0 });
   });
 });
