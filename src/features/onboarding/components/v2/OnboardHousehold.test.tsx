@@ -15,9 +15,9 @@ vi.mock('react-i18next', async () => {
   return createI18nMock({
     translations: {
       'v2.onboarding.household.dayOption.cockpit': '{{count}}D',
-      'v2.onboarding.household.waterFormula':
+      'v2.onboarding.household.waterFormula.cockpit':
         '= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} × {{days}} {{daysLabel}}',
-      'v2.onboarding.household.waterFormulaWithChildren':
+      'v2.onboarding.household.waterFormulaWithChildren.cockpit':
         '= {{waterPerPerson}} L × {{adults}} {{adultsLabel}} + {{children}} {{childrenLabel}} × {{childWeight}} × {{days}} {{daysLabel}}',
     },
   });

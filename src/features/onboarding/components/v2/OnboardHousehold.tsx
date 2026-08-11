@@ -34,7 +34,7 @@ export function OnboardHousehold({
 
   const waterFormula =
     household.children > 0
-      ? t('v2.onboarding.household.waterFormulaWithChildren', {
+      ? t(`v2.onboarding.household.waterFormulaWithChildren.${themeKey}`, {
           waterPerPerson: ONBOARDING_WATER_LITERS_PER_ADULT_PER_DAY,
           adults: household.adults,
           adultsLabel: t(`v2.onboarding.labelAdults.${themeKey}`),
@@ -44,7 +44,7 @@ export function OnboardHousehold({
           days: household.supplyDurationDays,
           daysLabel: t(`v2.onboarding.labelDays.${themeKey}`),
         })
-      : t('v2.onboarding.household.waterFormula', {
+      : t(`v2.onboarding.household.waterFormula.${themeKey}`, {
           waterPerPerson: ONBOARDING_WATER_LITERS_PER_ADULT_PER_DAY,
           adults: household.adults,
           adultsLabel: t(`v2.onboarding.labelAdults.${themeKey}`),
