@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  waitForStoredData,
+} from './fixtures';
 
 /**
  * v2 puts the capability toggles in Settings → §5 Advanced (not §4 Nutrition).
@@ -22,7 +27,7 @@ test.describe('Advanced Features', () => {
     if ((await toggle.getAttribute('aria-checked')) !== 'true') {
       await toggle.click();
     }
-    expect(await toggle.getAttribute('aria-checked')).toBe('true');
+    await expect(toggle).toHaveAttribute('aria-checked', 'true');
   });
 
   test('should enable power management', async ({ page }) => {
@@ -32,7 +37,7 @@ test.describe('Advanced Features', () => {
     if ((await toggle.getAttribute('aria-checked')) !== 'true') {
       await toggle.click();
     }
-    expect(await toggle.getAttribute('aria-checked')).toBe('true');
+    await expect(toggle).toHaveAttribute('aria-checked', 'true');
   });
 
   test('should toggle calorie tracking on and off', async ({ page }) => {
@@ -40,11 +45,13 @@ test.describe('Advanced Features', () => {
     const toggle = page.getByRole('switch', { name: /CALORIE TRACKING/i });
     const initial = (await toggle.getAttribute('aria-checked')) === 'true';
     await toggle.click();
-    expect(await toggle.getAttribute('aria-checked')).toBe(
+    await expect(toggle).toHaveAttribute(
+      'aria-checked',
       initial ? 'false' : 'true',
     );
     await toggle.click();
-    expect(await toggle.getAttribute('aria-checked')).toBe(
+    await expect(toggle).toHaveAttribute(
+      'aria-checked',
       initial ? 'true' : 'false',
     );
   });
@@ -55,12 +62,14 @@ test.describe('Advanced Features', () => {
     if ((await toggle.getAttribute('aria-checked')) !== 'true') {
       await toggle.click();
     }
-    await page.waitForTimeout(500);
+    await waitForStoredData(page, (raw) =>
+      raw.includes('"calorieTracking":true'),
+    );
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await section(page);
     const after = page.getByRole('switch', { name: /CALORIE TRACKING/i });
-    expect(await after.getAttribute('aria-checked')).toBe('true');
+    await expect(after).toHaveAttribute('aria-checked', 'true');
   });
 
   test('should render the advanced section header in cockpit voice', async ({
@@ -69,5 +78,17 @@ test.describe('Advanced Features', () => {
     await section(page);
     await expect(page.getByText('§5')).toBeVisible();
     await expect(page.getByText('ADVANCED FEATURES')).toBeVisible();
+  });
+
+  test('reaches the advanced section on mobile, where the rail is hidden', async ({
+    page,
+  }) => {
+    // Below 768px, navigateToSettingsSection falls back to scrolling the
+    // section into view by id instead of clicking the (hidden) rail entry.
+    await page.setViewportSize({ width: 375, height: 812 });
+    await section(page);
+    await expect(
+      page.getByRole('switch', { name: /CALORIE TRACKING/i }),
+    ).toBeVisible();
   });
 });
