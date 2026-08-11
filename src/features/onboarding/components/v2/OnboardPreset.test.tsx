@@ -73,7 +73,7 @@ describe('OnboardPreset (v2)', () => {
     it('offers a backup import for someone who already has data', () => {
       renderStep();
       const input = screen.getByTestId('v2-import-file-input');
-      expect(input).toHaveAttribute('accept', '.json');
+      expect(input).toHaveAttribute('accept', 'application/json,.json');
 
       // The visible control is a link; the file input behind it is hidden.
       const click = vi.spyOn(input as HTMLInputElement, 'click');

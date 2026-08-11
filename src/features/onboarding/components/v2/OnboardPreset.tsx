@@ -60,9 +60,9 @@ export function OnboardPreset({
       back={onBack}
       onContinue={() => {
         const preset = ONBOARDING_PRESETS.find((p) => p.code === presetCode);
-        // 'P-04' is the "start from scratch" preset, and an unrecognised code
-        // is treated the same way: continue without applying a household.
-        if (preset && preset.code !== 'P-04') {
+        // An unrecognised code is treated like a non-applying preset:
+        // continue without applying a household.
+        if (preset?.appliesHousehold) {
           onApplyPreset({
             adults: preset.adults,
             children: preset.children,
@@ -218,7 +218,7 @@ export function OnboardPreset({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".json"
+          accept="application/json,.json"
           onChange={handleFileChange}
           hidden
           aria-label={t('onboarding.import.button')}

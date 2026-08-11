@@ -20,6 +20,11 @@ describe('ONBOARDING_PRESETS', () => {
       expect(validKeys).toContain(p.nameKey);
     }
   });
+
+  it('only the start-from-scratch preset opts out of applying its household', () => {
+    const nonApplying = ONBOARDING_PRESETS.filter((p) => !p.appliesHousehold);
+    expect(nonApplying.map((p) => p.code)).toEqual(['P-04']);
+  });
 });
 
 describe('computeOnboardingTargets', () => {

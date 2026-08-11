@@ -6,6 +6,8 @@ export interface PresetDef {
   children: number;
   days: number;
   pets: number;
+  /** Whether continuing with this preset applies its household figures. */
+  appliesHousehold: boolean;
 }
 
 export const ONBOARDING_PRESETS: PresetDef[] = [
@@ -16,6 +18,7 @@ export const ONBOARDING_PRESETS: PresetDef[] = [
     children: 0,
     days: 7,
     pets: 0,
+    appliesHousehold: true,
   },
   {
     code: 'P-02',
@@ -24,6 +27,7 @@ export const ONBOARDING_PRESETS: PresetDef[] = [
     children: 0,
     days: 7,
     pets: 0,
+    appliesHousehold: true,
   },
   {
     code: 'P-03',
@@ -32,6 +36,7 @@ export const ONBOARDING_PRESETS: PresetDef[] = [
     children: 2,
     days: 7,
     pets: 0,
+    appliesHousehold: true,
   },
   {
     code: 'P-04',
@@ -40,6 +45,9 @@ export const ONBOARDING_PRESETS: PresetDef[] = [
     children: 0,
     days: 7,
     pets: 0,
+    // "Start from scratch" — the household figures shown are just the form's
+    // starting point, not something to apply on continue.
+    appliesHousehold: false,
   },
 ];
 
