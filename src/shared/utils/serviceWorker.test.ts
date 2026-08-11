@@ -32,8 +32,15 @@ function createMockRegistration(): MockRegistration {
   };
 }
 
+// register() adds a fresh 'load' listener every call and never removes it,
+// so dispatching a real event would also re-fire every earlier test's
+// listener (stale mocks, duplicate registrations). Capture only the most
+// recently added one and invoke that directly instead.
+let capturedLoadCallback: (() => void) | undefined;
+let addEventListenerSpy: MockInstance<typeof window.addEventListener>;
+
 function triggerLoad(): void {
-  window.dispatchEvent(new Event('load'));
+  capturedLoadCallback?.();
 }
 
 function mockFetchResponse(
@@ -59,6 +66,15 @@ describe('serviceWorker', () => {
   beforeEach(() => {
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    capturedLoadCallback = undefined;
+    addEventListenerSpy = vi
+      .spyOn(window, 'addEventListener')
+      .mockImplementation((event, listener) => {
+        if (event === 'load') {
+          capturedLoadCallback = listener as () => void;
+        }
+      });
 
     globalThis.location = {
       ...globalThis.location,
@@ -92,6 +108,8 @@ describe('serviceWorker', () => {
   afterEach(() => {
     consoleLogSpy.mockRestore();
     consoleErrorSpy.mockRestore();
+    addEventListenerSpy.mockRestore();
+    capturedLoadCallback = undefined;
     globalThis.fetch = originalFetch;
     // @ts-expect-error -- cleanup of a property defined only for these tests
     delete navigator.serviceWorker;

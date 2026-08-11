@@ -48,8 +48,21 @@ function renderSections() {
 }
 
 describe('useSettingsScrollSpy', () => {
+  // jsdom implements neither, so there is nothing to spy on — capture
+  // whatever descriptor (if any) predates this file's own stubbing and put
+  // it back, rather than leaving Element.prototype permanently patched.
+  let originalScrollIntoView: PropertyDescriptor | undefined;
+  let originalScrollTo: PropertyDescriptor | undefined;
+
   beforeEach(() => {
-    // jsdom implements neither, and the hook calls whichever applies.
+    originalScrollIntoView = Object.getOwnPropertyDescriptor(
+      Element.prototype,
+      'scrollIntoView',
+    );
+    originalScrollTo = Object.getOwnPropertyDescriptor(
+      Element.prototype,
+      'scrollTo',
+    );
     Element.prototype.scrollIntoView = vi.fn();
     Element.prototype.scrollTo = vi.fn();
     renderSections();
@@ -57,6 +70,20 @@ describe('useSettingsScrollSpy', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     document.body.innerHTML = '';
+    if (originalScrollIntoView) {
+      Object.defineProperty(
+        Element.prototype,
+        'scrollIntoView',
+        originalScrollIntoView,
+      );
+    } else {
+      delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView;
+    }
+    if (originalScrollTo) {
+      Object.defineProperty(Element.prototype, 'scrollTo', originalScrollTo);
+    } else {
+      delete (Element.prototype as { scrollTo?: unknown }).scrollTo;
+    }
   });
 
   it('starts on the first section', () => {
