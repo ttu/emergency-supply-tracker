@@ -5,6 +5,8 @@
       "args": [
         "@playwright/mcp@0.0.78",
         "--headless",
+        "--browser",
+        "webkit",
         "--caps",
         "vision",
         "--viewport-size",
