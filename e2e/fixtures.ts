@@ -204,7 +204,7 @@ export async function navigateV2(page: Page, id: V2NavId) {
   const nav = page.getByTestId(`v2-nav-${id}`);
   await expect(nav).toBeVisible({ timeout: 5000 });
   await nav.click();
-  await page.waitForTimeout(100);
+  await expect(nav).toHaveAttribute('aria-current', 'page');
 }
 
 /**
@@ -254,18 +254,21 @@ export async function navigateToSettingsSection(
   const viewport = page.viewportSize();
   const isMobile = viewport && viewport.width < 768;
   const rail = page.getByTestId(`v2-settings-section-${sectionId}`);
+  const section = page.locator(`#sec-${sectionId}`);
 
   if (!isMobile && (await rail.isVisible().catch(() => false))) {
     await rail.click();
-    await page.waitForTimeout(150);
+    await expect(section).toBeInViewport();
     return;
   }
 
   // Mobile (or rail hidden): scroll the target section directly.
   await page.evaluate((id) => {
-    document.getElementById(`sec-${id}`)?.scrollIntoView({ block: 'start' });
+    const el = document.getElementById(`sec-${id}`);
+    if (!el) throw new Error(`Settings section "sec-${id}" not found`);
+    el.scrollIntoView({ block: 'start' });
   }, sectionId);
-  await page.waitForTimeout(150);
+  await expect(section).toBeInViewport();
 }
 
 /**
