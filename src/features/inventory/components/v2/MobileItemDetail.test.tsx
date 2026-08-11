@@ -43,7 +43,7 @@ describe('MobileItemDetail (v2)', () => {
     expect(onBack).toHaveBeenCalled();
   });
 
-  it('renders the embedded ItemForm in NEW mode', () => {
+  it('shows the product picker first in NEW mode', async () => {
     renderWithProviders(
       <MobileItemDetail itemId={NEW_ITEM_ID} onBack={vi.fn()} />,
       {
@@ -52,11 +52,10 @@ describe('MobileItemDetail (v2)', () => {
         }),
       },
     );
-    // ItemForm is the v1 form embedded inside the v2 shell.
-    // It renders a form element with the expected save button label.
     expect(
-      screen.queryByText('v2.itemDetail.notFound'),
-    ).not.toBeInTheDocument();
+      await screen.findByRole('button', { name: /custom/i }),
+    ).toBeInTheDocument();
+    expect(document.querySelector('#name')).not.toBeInTheDocument();
   });
 
   it('choosing "custom" leaves the product picker for the blank form', async () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { ItemDetail, NEW_ITEM_ID } from './ItemDetail';
 import { renderWithProviders } from '@/test/render';
 import {
@@ -143,6 +143,21 @@ describe('ItemDetail (v2)', () => {
     );
     expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
     expect(onBack).not.toHaveBeenCalled();
+
+    // Reopen and confirm: the dialog's own action button shares the header
+    // DELETE button's label, so it has to be targeted within the dialog.
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.delete.cockpit' }),
+    );
+    const reopened = await screen.findByRole('alertdialog');
+    fireEvent.click(
+      within(reopened).getByRole('button', {
+        name: 'v2.voice.delete.cockpit',
+      }),
+    );
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(onBack).toHaveBeenCalledTimes(1);
   });
 
   it('picking a recommended product seeds the form from it', async () => {
