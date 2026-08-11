@@ -513,11 +513,13 @@ test.describe('Settings', () => {
       .locator('#sec-household')
       .getByRole('button', { name: /increase|^\+$/i })
       .first();
+
+    const before = (await activeSet(page)).household.adults;
     await plus.click();
 
-    const root = await storage(page);
-    const household = root.inventorySets[root.activeInventorySetId].household;
-    expect(household.adults).toBeGreaterThanOrEqual(1);
+    await expect
+      .poll(async () => (await activeSet(page)).household.adults)
+      .toBe(before + 1);
   });
 
   test('danger zone reset asks for confirmation', async ({ page }) => {
