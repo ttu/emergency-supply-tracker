@@ -29,6 +29,20 @@ const continueButton = (page: import('@playwright/test').Page) =>
 const openChecklist = (page: import('@playwright/test').Page) =>
   page.getByTestId('v2-quick-setup-details').click();
 
+/**
+ * Click CONTINUE from step 1 (Welcome) through to step 6 (Quick Setup),
+ * confirming the expected STEP marker after each click rather than firing
+ * five clicks blind and hoping the flow kept up.
+ */
+const advanceToQuickSetup = async (page: import('@playwright/test').Page) => {
+  for (let step = 2; step <= 6; step++) {
+    await continueButton(page).click();
+    await expect(
+      page.getByText(new RegExp(`STEP 0${step} / 06`)),
+    ).toBeVisible();
+  }
+};
+
 test.describe('Onboarding Flow', () => {
   test('should show onboarding for first-time users', async ({ page }) => {
     await clearAndReload(page);
@@ -68,7 +82,7 @@ test.describe('Onboarding Flow', () => {
     page,
   }) => {
     await clearAndReload(page);
-    for (let i = 0; i < 5; i++) await continueButton(page).click();
+    await advanceToQuickSetup(page);
 
     await page.getByRole('button', { name: /ADD ALL ITEMS →/ }).click();
     await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
@@ -90,7 +104,7 @@ test.describe('Onboarding Flow', () => {
     page,
   }) => {
     await clearAndReload(page);
-    for (let i = 0; i < 5; i++) await continueButton(page).click();
+    await advanceToQuickSetup(page);
 
     await page.getByRole('button', { name: /SKIP FOR NOW/ }).click();
     await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
@@ -138,8 +152,7 @@ test.describe('Onboarding Flow', () => {
     page,
   }) => {
     await clearAndReload(page);
-    for (let i = 0; i < 5; i++) await continueButton(page).click();
-    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+    await advanceToQuickSetup(page);
 
     await openChecklist(page);
     const bottledWater = page.getByTestId('v2-quick-setup-item-bottled-water');
@@ -167,8 +180,7 @@ test.describe('Onboarding Flow', () => {
     page,
   }) => {
     await clearAndReload(page);
-    for (let i = 0; i < 5; i++) await continueButton(page).click();
-    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+    await advanceToQuickSetup(page);
 
     await openChecklist(page);
     await page.getByTestId('v2-quick-setup-owned-bottled-water').click();
@@ -197,8 +209,7 @@ test.describe('Onboarding Flow', () => {
 
   test('the checklist stays collapsed until asked', async ({ page }) => {
     await clearAndReload(page);
-    for (let i = 0; i < 5; i++) await continueButton(page).click();
-    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+    await advanceToQuickSetup(page);
 
     // 70-odd rows of things already agreed to is a wall to scroll past.
     await expect(
@@ -250,7 +261,7 @@ test.describe('Onboarding Flow', () => {
     await expect(page.getByTestId('v2-import-backup')).toBeVisible();
     await expect(page.getByTestId('v2-import-file-input')).toHaveAttribute(
       'accept',
-      '.json',
+      'application/json,.json',
     );
   });
 
@@ -260,8 +271,7 @@ test.describe('Onboarding Flow', () => {
     // is unreachable below the fold.
     await page.setViewportSize({ width: 390, height: 844 });
     await clearAndReload(page);
-    for (let i = 0; i < 5; i++) await continueButton(page).click();
-    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+    await advanceToQuickSetup(page);
     // Open the checklist — collapsed it fits on screen and has nothing to
     // scroll, which is not what this test is about.
     await openChecklist(page);
