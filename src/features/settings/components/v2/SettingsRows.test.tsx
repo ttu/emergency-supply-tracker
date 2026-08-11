@@ -118,6 +118,44 @@ describe('StepperRow (v2)', () => {
     );
     expect(screen.getByText('1.5')).toBeInTheDocument();
   });
+
+  it('clamps an increment that would overshoot max, rather than passing the raw sum', () => {
+    // The + button is still enabled here (9 < 10), so the click goes
+    // through — clamping has to happen in the handler, not just the
+    // disabled check.
+    const onChange = vi.fn();
+    render(
+      <StepperRow
+        label="Days"
+        value={9}
+        step={5}
+        max={10}
+        onChange={onChange}
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.settings.stepperIncreaseAria' }),
+    );
+    expect(onChange).toHaveBeenCalledWith(10);
+  });
+
+  it('clamps a decrement that would undershoot min, rather than passing the raw difference', () => {
+    // The − button is still enabled here (2 > 1).
+    const onChange = vi.fn();
+    render(
+      <StepperRow
+        label="Days"
+        value={2}
+        step={5}
+        min={1}
+        onChange={onChange}
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.settings.stepperDecreaseAria' }),
+    );
+    expect(onChange).toHaveBeenCalledWith(1);
+  });
 });
 
 describe('ReadField (v2)', () => {
