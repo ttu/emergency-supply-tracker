@@ -23,6 +23,7 @@ BLOCKED_EXTENSIONS=(
     ".jpg"
     ".jpeg"
     ".gif"
+    ".webp"
     ".ico"
     ".woff"
     ".woff2"

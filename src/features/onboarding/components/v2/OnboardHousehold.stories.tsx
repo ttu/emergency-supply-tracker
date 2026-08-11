@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { fn } from 'storybook/test';
 import { OnboardHousehold } from './OnboardHousehold';
 import { DesignV2Story } from '@/shared/components/design-v2/storybook';
 import { createMockHousehold } from '@/shared/utils/test/factories';
@@ -14,10 +15,12 @@ const meta = {
       </DesignV2Story>
     ),
   ],
-  argTypes: {
-    onHouseholdChange: { action: 'household changed' },
-    onNext: { action: 'next' },
-    onBack: { action: 'back' },
+  // fn() args (not a bare no-op) so the Actions panel still logs calls —
+  // a plain () => {} here would satisfy the props but go silent.
+  args: {
+    onHouseholdChange: fn(),
+    onNext: fn(),
+    onBack: fn(),
   },
 } satisfies Meta<typeof OnboardHousehold>;
 export default meta;
@@ -31,9 +34,6 @@ export const Couple: Story = {
       pets: 0,
       supplyDurationDays: 7,
     }),
-    onHouseholdChange: () => {},
-    onNext: () => {},
-    onBack: () => {},
   },
 };
 export const Family: Story = {
@@ -44,8 +44,5 @@ export const Family: Story = {
       pets: 1,
       supplyDurationDays: 14,
     }),
-    onHouseholdChange: () => {},
-    onNext: () => {},
-    onBack: () => {},
   },
 };
