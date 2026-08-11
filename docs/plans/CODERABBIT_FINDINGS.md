@@ -72,18 +72,22 @@ Per AGENTS.md: UI-affecting fixes require the `/visual-verify` loop; no `--no-ve
 
 ### Progress
 
-First pass complete: the 24 correctness/logic findings (#10, #14, #19–21,
+**Pass 1** (14 commits): the 24 correctness/logic findings (#10, #14, #19–21,
 #24, #26–28, #30, #33–34, #38–39, #45, #51, #62, #66, #70, #74, #77, #79,
-#81–82) are fixed, tested, and committed as 14 separate commits on
-`design-update`. Ran `/visual-verify`, which caught and fixed one real
-regression introduced during this pass (a missing themeKey suffix on the new
-onboarding water-formula translation keys — see the OnboardHousehold commit).
+#81–82). Ran `/visual-verify`, which caught and fixed one real regression
+introduced during this pass (a missing themeKey suffix on the new onboarding
+water-formula translation keys — see the OnboardHousehold commit).
+
+**Pass 2** (11 commits): remaining logic/behavior findings not needing CSS
+work (#36, #43, #44, #53, #59, #60, #65, #69) and all e2e reliability
+findings (#1–9, #11–12). Verified against live Playwright runs, not just
+type-checking — this surfaced and fixed a stale e2e assertion left over from
+pass 1 (onboarding.spec.ts's backup-import accept-attribute check).
 
 Remaining and not yet started: the CSS-module extraction findings (#13, #15,
 #16, #18, #23, #25, #29, #31, #32, #40, #41, #42, #47, #49), new-test-suite
 additions (#22, #46, #48, #50, #52, #54–58, #61, #63–64, #67–68, #71–73,
-#75–76, #78, #80), e2e reliability findings (#1–9, #11–12), the minor CSS
-findings (#53, #65, #69), and #17 (support-links flex-wrap).
+#75–76, #78, #80), and #17 (support-links flex-wrap).
 
 ## Findings
 
@@ -91,11 +95,11 @@ findings (#53, #65, #69), and #17 (support-links flex-wrap).
 
 #### 1. [major] — lines 22–25
 
-- [ ] Replace one-time getAttribute checks for aria-checked with Playwright’s retrying expect(toggle).toHaveAttribute assertion in the toggle flows shown around the existing toggle.click logic, including the repeated cases in advanced-features.spec.ts and theme-switching.spec.ts. Preserve the conditional click behavior while ensuring the post-click checked-state validation waits for the attribute to become true.
+- [x] Replace one-time getAttribute checks for aria-checked with Playwright’s retrying expect(toggle).toHaveAttribute assertion in the toggle flows shown around the existing toggle.click logic, including the repeated cases in advanced-features.spec.ts and theme-switching.spec.ts. Preserve the conditional click behavior while ensuring the post-click checked-state validation waits for the attribute to become true.
 
 #### 2. [major] — line 58
 
-- [ ] Replace the fixed 500 ms wait in the test flow with the exported waitForStoredData helper, importing it from ./fixtures alongside the existing fixtures. Wait for the setting to be persisted before reloading, preserving the test’s existing behavior.
+- [x] Replace the fixed 500 ms wait in the test flow with the exported waitForStoredData helper, importing it from ./fixtures alongside the existing fixtures. Wait for the setting to be persisted before reloading, preserving the test’s existing behavior.
 
 <details><summary>CodeRabbit suggested code</summary>
 
@@ -107,17 +111,17 @@ await waitForStoredData(page, (raw) => raw.includes('"calorieTracking":true'));
 
 #### 3. [minor] — lines 8–16
 
-- [ ] Add a Playwright test in the “Advanced Features” suite that uses a viewport narrower than 768px and invokes the existing section helper to verify the advanced settings section is reached and visible. Keep the current beforeEach setup and desktop coverage intact, and exercise the mobile branch of navigateToSettingsSection.
+- [x] Add a Playwright test in the “Advanced Features” suite that uses a viewport narrower than 768px and invokes the existing section helper to verify the advanced settings section is reached and visible. Keep the current beforeEach setup and desktop coverage intact, and exercise the mobile branch of navigateToSettingsSection.
 
 ### `e2e/fixtures.ts`
 
 #### 4. [major] — lines 203–208
 
-- [ ] Replace the fixed waitForTimeout calls in navigateV2 and the settings-navigation helpers with state-based assertions: verify the clicked navigation item has aria-current="page", and verify the settings section is visible where applicable. Preserve the existing navigation and click flow while removing the timing-based sleeps.
+- [x] Replace the fixed waitForTimeout calls in navigateV2 and the settings-navigation helpers with state-based assertions: verify the clicked navigation item has aria-current="page", and verify the settings section is visible where applicable. Preserve the existing navigation and click flow while removing the timing-based sleeps.
 
 #### 5. [major] — lines 264–268
 
-- [ ] Update navigateToSettingsSection’s page.evaluate scroll path to require the sec-${id} element and throw a clear error when document.getElementById cannot find it, rather than silently skipping scrollIntoView. Preserve the existing scroll behavior when the element exists.
+- [x] Update navigateToSettingsSection’s page.evaluate scroll path to require the sec-${id} element and throw a clear error when document.getElementById cannot find it, rather than silently skipping scrollIntoView. Preserve the existing scroll behavior when the element exists.
 
 <details><summary>CodeRabbit suggested code</summary>
 
@@ -137,23 +141,23 @@ await page.waitForTimeout(150);
 
 #### 6. [major] — line 71
 
-- [ ] Replace the unguarded five-click loop in the onboarding test with a reusable advanceToQuickSetup helper that clicks continue and asserts the expected STEP 02 / 06 through STEP 06 / 06 marker after each transition. Reuse the helper at the other locations currently repeating the literal 5, preserving the step progression and ensuring each rendered step is confirmed before the next click.
+- [x] Replace the unguarded five-click loop in the onboarding test with a reusable advanceToQuickSetup helper that clicks continue and asserts the expected STEP 02 / 06 through STEP 06 / 06 marker after each transition. Reuse the helper at the other locations currently repeating the literal 5, preserving the step progression and ensuring each rendered step is confirmed before the next click.
 
 ### `e2e/shopping-list-export.spec.ts`
 
 #### 7. [major] — lines 112–135
 
-- [ ] Update the third export test around the exportButton interaction to remove any conditional download guard. Await the download event unconditionally, trigger the export, and perform the existing download assertions so the test fails when no download fires, matching the pattern used by the second test.
+- [x] Update the third export test around the exportButton interaction to remove any conditional download guard. Await the download event unconditionally, trigger the export, and perform the existing download assertions so the test fails when no download fires, matching the pattern used by the second test.
 
 ### `e2e/theme-switching.spec.ts`
 
 #### 8. [major] — lines 33–35
 
-- [ ] Replace the fixed wait and page.waitForLoadState('networkidle') in the theme-switching test with waitForStoredData from ./fixtures, importing it alongside the existing fixture helpers. Await the observable localStorage write before reloading, while preserving the existing reload behavior.
+- [x] Replace the fixed wait and page.waitForLoadState('networkidle') in the theme-switching test with waitForStoredData from ./fixtures, importing it alongside the existing fixture helpers. Await the observable localStorage write before reloading, while preserving the existing reload behavior.
 
 #### 9. [minor] — lines 118–133
 
-- [ ] Add a mobile-viewport variant of the v2 theme application test in the existing theme-switching suite, using a viewport below 768px so the bottom tab bar and scroll-by-id navigation path are exercised. Reuse the existing theme setup and assertions for the home, inventory, and settings pages, while preserving the desktop coverage.
+- [x] Add a mobile-viewport variant of the v2 theme application test in the existing theme-switching suite, using a viewport below 768px so the bottom tab bar and scroll-by-id navigation path are exercised. Reuse the existing theme setup and assertions for the home, inventory, and settings pages, while preserving the desktop coverage.
 
 ### `e2e/v2-actions.spec.ts`
 
@@ -189,11 +193,11 @@ test('household steppers update the computed targets', async ({ page }) => {
 
 #### 11. [minor] — lines 69–83
 
-- [ ] Add a mobile Playwright test case in this file, preferably covering the inventory filter flow, and invoke boot with viewport set to 'mobile'. Follow the mobile navigation path using the bottom tab bar rather than the desktop left rail, while preserving existing desktop coverage and boot initialization.
+- [x] Add a mobile Playwright test case in this file, preferably covering the inventory filter flow, and invoke boot with viewport set to 'mobile'. Follow the mobile navigation path using the bottom tab bar rather than the desktop left rail, while preserving existing desktop coverage and boot initialization.
 
 #### 12. [minor] — lines 487–505
 
-- [ ] Update the switch iteration in the settings-page test to snapshot each switch’s accessible name before toggling, then locate each control by its captured name rather than using switches.nth(i) on the live locator. Preserve the existing before-state capture, click, and aria-checked flip assertion for every named switch.
+- [x] Update the switch iteration in the settings-page test to snapshot each switch’s accessible name before toggling, then locate each control by its captured name rather than using switches.nth(i) on the live locator. Preserve the existing before-state capture, click, and aria-checked flip assertion for every named switch.
 
 ### `src/features/alerts/components/v2/AlertBanner.tsx`
 
@@ -444,7 +448,7 @@ type FilterKey = InventoryStatusFilter;
 
 #### 36. [minor] — lines 238–239
 
-- [ ] Update toggleSelected and the “deselect all” handler to remove deselected IDs from ownedIds, clearing ownedIds when all items are deselected. Keep ownedIds restricted to currently selected items so the owned summary and onAddItems receive consistent data, and add regression coverage for both transitions.
+- [x] Update toggleSelected and the “deselect all” handler to remove deselected IDs from ownedIds, clearing ownedIds when all items are deselected. Keep ownedIds restricted to currently selected items so the owned summary and onAddItems receive consistent data, and add regression coverage for both transitions.
 
 ### `src/features/onboarding/components/v2/OnboardWelcome.tsx`
 
@@ -497,11 +501,11 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 43. [major] — lines 120–144
 
-- [ ] Update the ThemePicker radio group to implement complete keyboard behavior: use native radio inputs or add roving tabIndex with ArrowLeft/Right/Up/Down navigation, focus movement, and selection updates across DESIGN_V2_THEMES. Replace the unconditional outline removal for unselected buttons with a visible :focus-visible indicator while preserving selected styling and click behavior.
+- [x] Update the ThemePicker radio group to implement complete keyboard behavior: use native radio inputs or add roving tabIndex with ArrowLeft/Right/Up/Down navigation, focus movement, and selection updates across DESIGN_V2_THEMES. Replace the unconditional outline removal for unselected buttons with a visible :focus-visible indicator while preserving selected styling and click behavior.
 
 #### 44. [minor] — lines 31–84
 
-- [ ] Update PREVIEWS to store translation keys instead of hardcoded theme names, then use useTranslation in ThemePicker to translate each card name and the radiogroup aria-label at render time. Ensure all visible theme names and the “Theme” group label go through the existing translation mechanism.
+- [x] Update PREVIEWS to store translation keys instead of hardcoded theme names, then use useTranslation in ThemePicker to translate each card name and the radiogroup aria-label at render time. Ensure all visible theme names and the “Theme” group label go through the existing translation mechanism.
 
 ### `src/shared/components/DataErrorPage.tsx`
 
@@ -587,7 +591,7 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 53. [minor] — lines 78–84
 
-- [ ] Add .webp to BLOCKED_EXTENSIONS so webp files outside the directories exempted by the screenshot-path check are blocked, while preserving the existing screenshot exemption logic.
+- [x] Add .webp to BLOCKED_EXTENSIONS so webp files outside the directories exempted by the screenshot-path check are blocked, while preserving the existing screenshot exemption logic.
 
 ### `src/features/alerts/components/v2/AlertBanner.test.tsx`
 
@@ -640,13 +644,13 @@ it('surfaces the alert banner above the KPIs', async () => {
 
 #### 59. [minor] — lines 9–39
 
-- [ ] Split the tests in navMapping.test.ts into function-specific files named navIdForPage.test.ts and pageForNavId.test.ts, placing each mapping’s direct and round-trip coverage with its corresponding function while preserving all existing assertions and behavior.
+- [x] Split the tests in navMapping.test.ts into function-specific files named navIdForPage.test.ts and pageForNavId.test.ts, placing each mapping’s direct and round-trip coverage with its corresponding function while preserving all existing assertions and behavior.
 
 ### `src/features/household/constants.test.ts`
 
 #### 60. [minor] — lines 10–16
 
-- [ ] Update the DEFAULT_HOUSEHOLD assertion in the constants test to use the concrete intended values: adults 1, children 0, pets 0, supplyDurationDays 3, and useFreezer false, rather than referencing HOUSEHOLD_DEFAULTS.
+- [x] Update the DEFAULT_HOUSEHOLD assertion in the constants test to use the concrete intended values: adults 1, children 0, pets 0, supplyDurationDays 3, and useFreezer false, rather than referencing HOUSEHOLD_DEFAULTS.
 
 ### `src/features/inventory/components/v2/CategoryRecommendedPanel.test.tsx`
 
@@ -712,7 +716,7 @@ it('shows the product picker first in NEW mode', async () => {
 
 #### 65. [minor] — lines 40–49
 
-- [ ] Update the .search:focus styling in ProductPicker.module.css to add the same visible outline treatment already used by the :focus-visible rules for the chip, row, and custom button, while preserving the existing border-color change. Ensure the search input has a non-color-only focus indicator despite the base outline: none.
+- [x] Update the .search:focus styling in ProductPicker.module.css to add the same visible outline treatment already used by the :focus-visible rules for the chip, row, and custom button, while preserving the existing border-color change. Ensure the search input has a non-color-only focus indicator despite the base outline: none.
 
 ### `src/features/inventory/components/v2/ProductPicker.tsx`
 
@@ -736,7 +740,7 @@ it('shows the product picker first in NEW mode', async () => {
 
 #### 69. [minor] — lines 17–21
 
-- [ ] Remove the no-op onHouseholdChange, onNext, and onBack callback entries from the args objects in the OnboardHousehold stories and the Family story so the argTypes action handlers are used. Verify that satisfies Meta<typeof OnboardHousehold> still type-checks without these args; if required by the Storybook version, preserve type correctness while avoiding overrides that disable the declared actions.
+- [x] Remove the no-op onHouseholdChange, onNext, and onBack callback entries from the args objects in the OnboardHousehold stories and the Family story so the argTypes action handlers are used. Verify that satisfies Meta<typeof OnboardHousehold> still type-checks without these args; if required by the Storybook version, preserve type correctness while avoiding overrides that disable the declared actions.
 
 ### `src/features/settings/components/v2/AppearanceSection.tsx`
 
