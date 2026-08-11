@@ -1,4 +1,9 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  waitForStoredData,
+} from './fixtures';
 
 test.describe('Theme Switching', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -25,19 +30,19 @@ test.describe('Theme Switching', () => {
     const classicSelect = page.locator('#classic-theme-select');
     await classicSelect.selectOption('midnight');
 
-    let themeAttribute = await page.evaluate(
+    const themeAttribute = await page.evaluate(
       () => document.documentElement.dataset.theme,
     );
     expect(themeAttribute).toBe('midnight');
 
-    await page.waitForTimeout(1000);
+    await waitForStoredData(page, (raw) => raw.includes('"theme":"midnight"'));
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle');
 
-    themeAttribute = await page.evaluate(
-      () => document.documentElement.dataset.theme,
-    );
-    expect(themeAttribute).toBe('midnight');
+    // The theme applies via an effect once the reloaded app has read
+    // storage back, not the instant the page finishes loading.
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.dataset.theme))
+      .toBe('midnight');
   });
 
   test('should apply a classic theme immediately without reload', async ({
@@ -118,6 +123,29 @@ test.describe('Theme Switching', () => {
   test('should apply a v2 theme to every v2 page', async ({ page }) => {
     await navigateToSettingsSection(page, 'appearance');
     // Switch to civil (still a v2 theme — shell stays mounted).
+    await page
+      .getByRole('radiogroup', { name: 'Theme' })
+      .getByRole('radio')
+      .nth(1)
+      .click();
+
+    for (const id of ['home', 'inv', 'settings'] as const) {
+      await page.getByTestId(`v2-nav-${id}`).click();
+      expect(
+        await page.evaluate(() => document.documentElement.dataset.theme),
+      ).toBe('civil');
+    }
+  });
+
+  test('should apply a v2 theme to every v2 page on a phone', async ({
+    page,
+  }) => {
+    // Below 768px the top-nav rail becomes a bottom tab bar; the same
+    // data-testids drive both, but this is the only coverage that actually
+    // exercises the mobile shell rather than assuming the desktop one
+    // generalizes.
+    await page.setViewportSize({ width: 375, height: 812 });
+    await navigateToSettingsSection(page, 'appearance');
     await page
       .getByRole('radiogroup', { name: 'Theme' })
       .getByRole('radio')
