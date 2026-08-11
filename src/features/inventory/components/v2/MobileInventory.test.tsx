@@ -14,6 +14,7 @@ import {
   type DateOnly,
 } from '@/shared/types';
 import { LOCATION_FILTER_NONE } from '@/features/inventory';
+import { reloadInventoryFilters } from '@/features/inventory/hooks/useInventoryFilters';
 
 const renderInv = (onAddItem = vi.fn()) =>
   renderWithProviders(
@@ -221,6 +222,31 @@ describe('MobileInventory (v2)', () => {
 
     expect(screen.getByText('Canned soup')).toBeInTheDocument();
     expect(screen.queryByText('Bottled water')).not.toBeInTheDocument();
+  });
+
+  it('keeps the location select clearable when no location suggestions remain', async () => {
+    // Simulates the last item at "Garage" having been deleted elsewhere:
+    // the filter is still active in storage, but no item suggests it anymore.
+    globalThis.localStorage.setItem(
+      'emergencySupplyTracker_inventoryFilters',
+      JSON.stringify({ location: 'Garage' }),
+    );
+    reloadInventoryFilters();
+
+    renderWithProviders(
+      <MobileInventory onItemSelect={vi.fn()} onAddItem={vi.fn()} />,
+      {
+        initialAppData: createMockAppData({
+          settings: createMockSettings({ theme: 'cockpit' }),
+          items: [{ ...water, location: '' }],
+          customCategories: [],
+        }),
+      },
+    );
+
+    expect(
+      await screen.findByLabelText('v2.inventory.locationAria.cockpit'),
+    ).toBeInTheDocument();
   });
 
   it('the EXP filter keeps only what expires soon', async () => {

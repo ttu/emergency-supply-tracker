@@ -1,4 +1,10 @@
-import { memo, useMemo, type CSSProperties, type KeyboardEvent } from 'react';
+import {
+  memo,
+  useCallback,
+  useMemo,
+  type CSSProperties,
+  type KeyboardEvent,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -19,7 +25,10 @@ import {
 import { compareItemsBy } from '@/features/inventory/utils/sortItems';
 import { matchesLocationFilter } from '@/features/inventory/utils/locationFilter';
 import type { SortBy } from '@/features/inventory';
-import { useInventoryFilters } from '../../hooks/useInventoryFilters';
+import {
+  useInventoryFilters,
+  type InventoryStatusFilter,
+} from '../../hooks/useInventoryFilters';
 import { MissingItemsTable } from './MissingItemsTable';
 import { CategorySelect } from './CategorySelect';
 import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
@@ -38,7 +47,7 @@ interface MobileInventoryProps {
   /** `templateId` pre-fills the new item from that recommended product. */
   onAddItem: (templateId?: string) => void;
 }
-type FilterKey = 'all' | 'crit' | 'warn' | 'ok' | 'exp' | 'missing';
+type FilterKey = InventoryStatusFilter;
 
 export function MobileInventory({
   onItemSelect,
@@ -50,10 +59,13 @@ export function MobileInventory({
   const allMissing = useMissingRecommendedItems();
   const { items, updateItem } = useInventory();
   const locations = useLocationSuggestions(items);
-  const handleQuantityChange = (id: string, quantity: number) =>
-    updateItem(createItemId(id), {
-      quantity: createQuantity(Math.max(0, quantity)),
-    });
+  const handleQuantityChange = useCallback(
+    (id: string, quantity: number) =>
+      updateItem(createItemId(id), {
+        quantity: createQuantity(Math.max(0, quantity)),
+      }),
+    [updateItem],
+  );
   const [filters, setFilters] = useInventoryFilters();
   const {
     categoryId: selectedCategoryId,
@@ -171,7 +183,7 @@ export function MobileInventory({
         onCategoryChange={(categoryId) => setFilters({ categoryId })}
       />
       <div style={{ display: 'flex', gap: 8 }}>
-        {locations.length > 0 && (
+        {(locations.length > 0 || locationFilter !== undefined) && (
           <select
             // Empty option, not a magic "all", so a location named "all"
             // remains selectable. See InventoryFilters.location.

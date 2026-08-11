@@ -146,7 +146,7 @@ export function InventoryFilterStrip({
           minWidth: 0,
         }}
       >
-        {locations.length > 0 && (
+        {(locations.length > 0 || locationFilter !== undefined) && (
           <select
             // The every-location choice is the empty option rather than a
             // magic string, so a location actually named "all" stays

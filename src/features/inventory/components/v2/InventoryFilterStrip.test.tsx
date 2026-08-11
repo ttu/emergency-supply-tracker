@@ -75,4 +75,20 @@ describe('InventoryFilterStrip (v2)', () => {
     });
     expect(onSearchChange).toHaveBeenCalledWith('water');
   });
+
+  it('keeps the location select visible so a stale filter can still be cleared', () => {
+    // No suggestions left (e.g. the last item at that location was deleted),
+    // but a location filter is still active — it must stay clearable.
+    renderStrip({ locations: [], locationFilter: 'Pantry' });
+    expect(
+      screen.getByLabelText('v2.inventory.locationAria.cockpit'),
+    ).toBeInTheDocument();
+  });
+
+  it('hides the location select when there are no locations and no active filter', () => {
+    renderStrip({ locations: [], locationFilter: undefined });
+    expect(
+      screen.queryByLabelText('v2.inventory.locationAria.cockpit'),
+    ).not.toBeInTheDocument();
+  });
 });
