@@ -1,4 +1,4 @@
-import { memo, useState, type CSSProperties } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AccentTextButton,
@@ -9,102 +9,18 @@ import { useDashboardAlerts } from '@/features/dashboard';
 import type { Alert, AlertType } from '@/features/alerts';
 import type { AlertId } from '@/shared/types';
 import { ALERT_TYPE_TO_DESIGN_STATUS } from '@/shared/utils/designStatus';
+import styles from './AlertBanner.module.css';
 
 interface AlertBannerProps {
   onItemSelect: (id: string) => void;
   onCategorySelect: (categoryId: string) => void;
 }
 
-const CONTAINER_STYLE: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-};
-
-const ROW_BASE_STYLE: CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'auto 1fr auto auto',
-  gap: 14,
-  alignItems: 'center',
-  // Fixed row height so rows with a resolve action line up with those
-  // without one.
-  minHeight: 44,
-  padding: '11px 16px',
-  borderRadius: 'var(--radius-sm)',
-  background: 'var(--color-panel)',
-  border: '1px solid var(--color-rule-soft)',
-};
-
-const MESSAGE_BASE_STYLE: CSSProperties = {
-  fontSize: 13,
-  fontWeight: 500,
-  color: 'var(--color-text)',
-  fontFamily: 'var(--font-body)',
-  letterSpacing: 'var(--caps-tracking)',
-  background: 'transparent',
-  border: 0,
-  padding: 0,
-  margin: 0,
-  textAlign: 'left',
-  minWidth: 0,
-  width: '100%',
-};
-
-const PILL_BUTTON_STYLE: CSSProperties = {
-  background: 'transparent',
-  border: '1px solid var(--color-rule)',
-  color: 'var(--color-text-2)',
-  fontFamily: 'var(--font-mono)',
-  fontSize: 10,
-  padding: '4px 10px',
-  cursor: 'pointer',
-  borderRadius: 'var(--radius-pill)',
-  letterSpacing: '0.08em',
-  fontWeight: 700,
-  lineHeight: 1,
-};
-
-const DISMISS_BUTTON_STYLE: CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: 14,
-  color: 'var(--color-text-3)',
-  cursor: 'pointer',
-  lineHeight: 1,
-  padding: '0 2px',
-  background: 'transparent',
-  border: 0,
-};
-
-const MESSAGE_BUTTON_STYLE: CSSProperties = {
-  ...MESSAGE_BASE_STYLE,
-  cursor: 'pointer',
-};
-
-/** Severity stripe colour down the leading edge of each row. */
-const STRIPE_COLOR: Record<AlertType, string> = {
-  critical: 'var(--color-crit)',
-  warning: 'var(--color-warn)',
-  info: 'var(--color-accent)',
-};
-
-/** One row style per severity, so the stripe costs no per-render object. */
-const ROW_STYLE: Record<AlertType, CSSProperties> = {
-  critical: {
-    ...ROW_BASE_STYLE,
-    borderLeft: `3px solid ${STRIPE_COLOR.critical}`,
-  },
-  warning: {
-    ...ROW_BASE_STYLE,
-    borderLeft: `3px solid ${STRIPE_COLOR.warning}`,
-  },
-  info: { ...ROW_BASE_STYLE, borderLeft: `3px solid ${STRIPE_COLOR.info}` },
-};
-
-const TOGGLE_ROW_STYLE: CSSProperties = {
-  display: 'flex',
-  justifyContent: 'flex-end',
-  gap: 16,
-  paddingRight: 4,
+/** Severity stripe modifier class, one per row style. */
+const ROW_STRIPE_CLASS: Record<AlertType, string> = {
+  critical: styles.rowCritical,
+  warning: styles.rowWarning,
+  info: styles.rowInfo,
 };
 
 /**
@@ -147,7 +63,7 @@ export function AlertBanner({
       : activeAlerts;
 
   return (
-    <div style={CONTAINER_STYLE} data-testid="v2-alert-banner">
+    <div className={styles.container} data-testid="v2-alert-banner">
       {visibleAlerts.map((alert) => (
         <AlertBannerRow
           key={String(alert.id)}
@@ -159,7 +75,7 @@ export function AlertBanner({
           dismissLabel={dismissLabel}
         />
       ))}
-      <div style={TOGGLE_ROW_STYLE}>
+      <div className={styles.toggleRow}>
         {isCollapsible && (
           <AccentTextButton
             onClick={() => setExpanded((v) => !v)}
@@ -212,19 +128,22 @@ function AlertBannerRowImpl({
     : alert.message;
 
   return (
-    <div style={ROW_STYLE[alert.type]} data-testid="v2-alert-row">
+    <div
+      className={`${styles.row} ${ROW_STRIPE_CLASS[alert.type]}`}
+      data-testid="v2-alert-row"
+    >
       <StatusDot status={ALERT_TYPE_TO_DESIGN_STATUS[alert.type]} size={8} />
       {hasRowAction ? (
         <button
           type="button"
           onClick={handleRowClick}
           data-testid="v2-alert-message"
-          style={MESSAGE_BUTTON_STYLE}
+          className={`${styles.message} ${styles.messageButton}`}
         >
           {label}
         </button>
       ) : (
-        <span data-testid="v2-alert-message" style={MESSAGE_BASE_STYLE}>
+        <span data-testid="v2-alert-message" className={styles.message}>
           {label}
         </span>
       )}
@@ -232,7 +151,7 @@ function AlertBannerRowImpl({
         <button
           type="button"
           onClick={() => onSelectItem(itemId)}
-          style={PILL_BUTTON_STYLE}
+          className={styles.pillButton}
         >
           {resolveLabel}
         </button>
@@ -243,7 +162,7 @@ function AlertBannerRowImpl({
         type="button"
         onClick={() => onDismiss(alert.id)}
         aria-label={dismissLabel}
-        style={DISMISS_BUTTON_STYLE}
+        className={styles.dismissButton}
       >
         ×
       </button>

@@ -1,0 +1,82 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  /* Fixed row height so rows with a resolve action line up with those
+   * without one. */
+  min-height: 44px;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule-soft);
+}
+
+.rowCritical {
+  border-left: 3px solid var(--color-crit);
+}
+
+.rowWarning {
+  border-left: 3px solid var(--color-warn);
+}
+
+.rowInfo {
+  border-left: 3px solid var(--color-accent);
+}
+
+.message {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  letter-spacing: var(--caps-tracking);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  min-width: 0;
+  width: 100%;
+}
+
+.messageButton {
+  cursor: pointer;
+}
+
+.pillButton {
+  background: transparent;
+  border: 1px solid var(--color-rule);
+  color: var(--color-text-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dismissButton {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-text-3);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 2px;
+  background: transparent;
+  border: 0;
+}
+
+.toggleRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-right: 4px;
+}

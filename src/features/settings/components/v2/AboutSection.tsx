@@ -4,6 +4,7 @@ import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { APP_VERSION } from '@/shared/utils/version';
 import { CONTACT_EMAIL } from '@/shared/utils/constants';
 import { Caption, PanelHeader, SectionHeader } from './SettingsRows';
+import styles from './AboutSection.module.css';
 
 export function AboutSection() {
   const { t } = useTranslation();
@@ -34,13 +35,7 @@ export function AboutSection() {
         code="§10"
         title={t(`v2.settings.about.title.${themeKey}`)}
       />
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1.4fr 1fr',
-          gap: 14,
-        }}
-      >
+      <div className={styles.grid}>
         <Panel padding={22}>
           <Caption>{t(`v2.settings.about.appCaption.${themeKey}`)}</Caption>
           <p
