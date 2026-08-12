@@ -1,0 +1,179 @@
+.sectionHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.sectionHeaderCode {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-3);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.sectionHeaderSub {
+  font-size: 13px;
+  color: var(--color-text-2);
+  margin-left: auto;
+}
+
+.panelHeader {
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+.toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--color-rule);
+  position: relative;
+  flex-shrink: 0;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.toggleOn {
+  background: var(--color-accent);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--color-bg-2);
+  transition: left 150ms;
+}
+
+.toggleThumbOn {
+  left: 22px;
+}
+
+.row {
+  padding: 16px 22px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+.rowLast {
+  border-bottom: none;
+}
+
+.stepperRow {
+  padding: 14px 22px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+.stepperRowLast {
+  border-bottom: none;
+}
+
+.rowLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.rowHint {
+  font-size: 12px;
+  color: var(--color-text-2);
+  margin-top: 3px;
+}
+
+.stepperHint {
+  font-size: 12px;
+  color: var(--color-text-2);
+  margin-top: 4px;
+}
+
+.stepperControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stepperButton {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.stepperButtonPrimary {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border: none;
+}
+
+.stepperValue {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 600;
+  min-width: 64px;
+  text-align: center;
+  color: var(--color-text);
+  font-feature-settings: 'tnum';
+}
+
+.stepperSuffix {
+  font-size: 12px;
+  color: var(--color-text-2);
+  margin-left: 4px;
+}
+
+.readField {
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+.readFieldLast {
+  border-bottom: none;
+}
+
+.readFieldRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 4px;
+}
+
+.readFieldValue {
+  font-size: 16px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.readFieldActionButton {
+  background: transparent;
+  border: 0;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  padding: 0;
+}
+
+.readFieldHintText {
+  font-size: 11px;
+  color: var(--color-text-3);
+}

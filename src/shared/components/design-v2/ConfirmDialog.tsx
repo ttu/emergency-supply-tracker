@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { Button, CAPS_STYLE, Panel } from './primitives';
+import styles from './ConfirmDialog.module.css';
 
 interface ConfirmDialogProps {
   /** Controlled-open. Render the component conditionally — when `open` is
@@ -113,17 +114,7 @@ export function ConfirmDialog({
   if (!open) return null;
 
   const dialogContent = (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1200,
-        padding: 16,
-      }}
-    >
+    <div className={styles.overlay}>
       {/* Click-outside-to-cancel as a real button rather than a click handler
           on the scrim div: a non-interactive element with a mouse listener is
           unreachable by keyboard. Labelled "dismiss" rather than "cancel" so
@@ -133,14 +124,7 @@ export function ConfirmDialog({
         type="button"
         onClick={onCancel}
         aria-label={t('actions.dismiss')}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'rgba(0, 0, 0, 0.55)',
-          border: 0,
-          padding: 0,
-          cursor: 'default',
-        }}
+        className={styles.scrim}
       />
       <div
         ref={dialogRef}
@@ -148,18 +132,15 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={messageId}
-        style={{ position: 'relative', maxWidth: 460, width: '100%' }}
+        className={styles.dialog}
       >
         <Panel padding={24}>
           <h2
             id={titleId}
+            className={styles.title}
             style={{
-              margin: 0,
-              fontFamily: 'var(--font-display)',
               fontSize: themeKey === 'pantry' ? 20 : 16,
-              fontWeight: 600,
               letterSpacing: themeKey === 'pantry' ? '-0.01em' : '0.04em',
-              color: 'var(--color-text)',
               ...(themeKey === 'pantry' ? {} : CAPS_STYLE),
             }}
           >
@@ -167,25 +148,10 @@ export function ConfirmDialog({
           </h2>
           {/* A div, not a p: `message` is a ReactNode and callers pass lists
               and paragraphs, which cannot legally nest inside one. */}
-          <div
-            id={messageId}
-            style={{
-              marginTop: 12,
-              fontSize: 14,
-              color: 'var(--color-text-2)',
-              lineHeight: 1.55,
-            }}
-          >
+          <div id={messageId} className={styles.message}>
             {message}
           </div>
-          <div
-            style={{
-              marginTop: 24,
-              display: 'flex',
-              justifyContent: 'flex-end',
-              gap: 10,
-            }}
-          >
+          <div className={styles.actions}>
             <Button variant="secondary" onClick={onCancel}>
               {cancelLabel ?? t(`v2.voice.cancel.${themeKey}`)}
             </Button>

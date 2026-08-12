@@ -108,10 +108,28 @@ applied once those moved into the CSS module, so they were updated to assert
 the module class instead. Full onboarding suite (262 tests) plus the
 dashboard/help suites pass; type-check, lint and format all clean.
 
-78 of 82 findings done. Remaining and not yet started: #41 (SettingsRows.tsx),
-#42 (ThemePicker.tsx grid layout), #47 (ConfirmDialog.tsx), #49 (Shell.tsx) —
-the last 4 CSS-module extractions, plus a final `/visual-verify` pass and a
-push to PR #279.
+Finished pass 4 with the last 4 CSS-module extractions: #41 (SettingsRows —
+PanelHeader/Toggle/ToggleRow/StepperRow/ReadField; boolean states like
+toggle-on and row-is-last became modifier classes, `disabled` styling moved
+to a `:disabled` selector instead of a value-dependent inline style), #42
+(ThemePicker's grid layout — `repeat(3, 1fr)` became `repeat(auto-fit,
+minmax(180px, 1fr))`; with exactly 3 cards this renders identically at
+normal widths since auto-fit collapses the empty tracks, but now reflows
+instead of clipping on a narrow settings panel), #47 (ConfirmDialog — kept
+the `themeKey === 'pantry'` font-size/letter-spacing/CAPS_STYLE branch
+inline since it's genuinely per-theme, not per-breakpoint), and #49 (Shell —
+DesktopShell + MobileShell; the one two-state intersection, active nav item
+in the civil theme specifically, got its own modifier class
+`navButtonActiveCivilAccent` rather than a conditional inline style).
+
+All 82 findings done. Visually verified via Playwright MCP against the dev
+server: walked the full onboarding flow (Welcome → Theme → Preset →
+Household → Kit → QuickSetup → Complete) at desktop and mobile widths,
+exercised QuickSetup's checkbox/owned-pill interactive states, and checked
+the dashboard Shell, Settings (all 11 sections incl. ThemePicker's list
+layout), and ConfirmDialog (via Danger Zone → Reset Inventory) — no visual
+or behavioral regressions. Full suite (4018 tests), type-check, lint,
+duplication check, and build all clean before each commit.
 
 ## Findings
 
@@ -515,13 +533,13 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 41. [major] — lines 20–344
 
-- [ ] The shared layout and visual styles in PanelHeader, Toggle, ToggleRow, StepperRow, ReadField, and stepperButtonStyle should be moved into SettingsRows.module.css. Replace duplicated static inline style objects with CSS Module class names, retaining only dynamic state-dependent values such as toggle position/color or conditional borders via CSS custom properties or minimal inline styles, while preserving the existing TypeScript props and component behavior.
+- [x] The shared layout and visual styles in PanelHeader, Toggle, ToggleRow, StepperRow, ReadField, and stepperButtonStyle should be moved into SettingsRows.module.css. Replace duplicated static inline style objects with CSS Module class names, retaining only dynamic state-dependent values such as toggle position/color or conditional borders via CSS custom properties or minimal inline styles, while preserving the existing TypeScript props and component behavior.
 
 ### `src/features/settings/components/v2/ThemePicker.tsx`
 
 #### 42. [major] — lines 115–117
 
-- [ ] Update the non-list layout in ThemePicker’s containerStyle to use the component’s CSS Module and a responsive grid that reduces columns on narrow panels, such as auto-fit with an appropriate minimum card width or a breakpoint. Preserve the existing list layout and spacing while ensuring cards do not become too narrow or overflow.
+- [x] Update the non-list layout in ThemePicker’s containerStyle to use the component’s CSS Module and a responsive grid that reduces columns on narrow panels, such as auto-fit with an appropriate minimum card width or a breakpoint. Preserve the existing list layout and spacing while ensuring cards do not become too narrow or overflow.
 
 #### 43. [major] — lines 120–144
 
@@ -565,7 +583,7 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 47. [major] — lines 115–201
 
-- [ ] Move the inline layout and visual styles in ConfirmDialog’s dialogContent markup into classes defined in ConfirmDialog.module.css, then apply those classes through the CSS Module import. Preserve the existing CSS-variable-based theme values and all current sizing, spacing, positioning, and accessibility behavior; keep only genuinely dynamic values in inline styles if needed.
+- [x] Move the inline layout and visual styles in ConfirmDialog’s dialogContent markup into classes defined in ConfirmDialog.module.css, then apply those classes through the CSS Module import. Preserve the existing CSS-variable-based theme values and all current sizing, spacing, positioning, and accessibility behavior; keep only genuinely dynamic values in inline styles if needed.
 
 ### `src/shared/components/design-v2/Shell.tsx`
 
@@ -575,7 +593,7 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 49. [major] — lines 48–339
 
-- [ ] Move the presentation rules in the desktop shell and MobileShell from inline style objects into scoped CSS Module classes, including layout, spacing, typography, borders, and responsive structure. Preserve CSS custom properties such as var(--color-bg) and var(--font-body) for theme tokens, while retaining dynamic state-dependent values like active navigation styling through appropriate class composition or CSS variables. Keep the existing Shell and MobileShell props and behavior unchanged.
+- [x] Move the presentation rules in the desktop shell and MobileShell from inline style objects into scoped CSS Module classes, including layout, spacing, typography, borders, and responsive structure. Preserve CSS custom properties such as var(--color-bg) and var(--font-body) for theme tokens, while retaining dynamic state-dependent values like active navigation styling through appropriate class composition or CSS variables. Keep the existing Shell and MobileShell props and behavior unchanged.
 
 ### `src/shared/hooks/useDesignData.ts`
 

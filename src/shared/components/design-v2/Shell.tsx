@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { APP_VERSION } from '@/shared/utils/version';
 import { CAPS_STYLE, StatusBadge } from './primitives';
+import styles from './Shell.module.css';
 
 /**
  * Navigation mirrors the real app: four pages only. Alerts live on the
@@ -45,59 +46,25 @@ export function DesktopShell({
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
-    <div
-      className="v2-viewport-height"
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '232px 1fr',
-        background: 'var(--color-bg)',
-        color: 'var(--color-text)',
-        fontFamily: 'var(--font-body)',
-        fontSize: 14,
-      }}
-    >
+    <div className={`v2-viewport-height ${styles.desktopRoot}`}>
       <aside
         aria-label={t('v2.voice.navPrimaryAria')}
-        style={{
-          background: 'var(--color-bg-2)',
-          borderRight: '1px solid var(--color-rule)',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
+        className={styles.sidebar}
       >
-        <div
-          style={{
-            padding: '20px 20px 16px',
-            borderBottom: '1px solid var(--color-rule)',
-          }}
-        >
+        <div className={styles.sidebarHeader}>
           <div
+            className={styles.brandName}
             style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 14,
-              fontWeight: 700,
               letterSpacing: themeKey === 'pantry' ? '-0.02em' : '0.1em',
-              color: 'var(--color-text)',
             }}
           >
             {t(`v2.voice.appName.${themeKey}`)}
           </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-3)',
-              marginTop: 4,
-              ...CAPS_STYLE,
-            }}
-          >
+          <div className={styles.tagline} style={CAPS_STYLE}>
             {t(`v2.voice.tagline.${themeKey}`)}
           </div>
         </div>
-        <nav
-          aria-label={t('v2.voice.navMainAria')}
-          style={{ padding: '12px 8px', flex: 1 }}
-        >
+        <nav aria-label={t('v2.voice.navMainAria')} className={styles.nav}>
           {NAV.map((n) => {
             const isActive = active === n.id;
             return (
@@ -107,121 +74,51 @@ export function DesktopShell({
                 onClick={() => onNav(n.id)}
                 aria-current={isActive ? 'page' : undefined}
                 data-testid={`v2-nav-${n.id}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: 'var(--radius-sm)',
-                  cursor: 'pointer',
-                  background: isActive ? 'var(--color-panel)' : 'transparent',
-                  color: isActive ? 'var(--color-text)' : 'var(--color-text-2)',
-                  borderLeft:
-                    isActive && themeKey === 'civil'
-                      ? '3px solid var(--color-accent)'
-                      : '3px solid transparent',
-                  borderRight: 0,
-                  borderTop: 0,
-                  borderBottom: 0,
-                  marginBottom: 2,
-                  textAlign: 'left',
-                  fontFamily: 'inherit',
-                }}
+                className={`${styles.navButton} ${isActive ? styles.navButtonActive : ''} ${isActive && themeKey === 'civil' ? styles.navButtonActiveCivilAccent : ''}`}
               >
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 14,
-                    width: 16,
-                    textAlign: 'center',
-                    color: isActive
-                      ? 'var(--color-accent)'
-                      : 'var(--color-text-3)',
-                  }}
+                  className={`${styles.navIcon} ${isActive ? styles.navIconActive : ''}`}
                   aria-hidden
                 >
                   {n.icon}
                 </span>
-                <span
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    flex: 1,
-                    ...CAPS_STYLE,
-                  }}
-                >
+                <span className={styles.navLabel} style={CAPS_STYLE}>
                   {t(`v2.voice.${n.labelKey}.${themeKey}`)}
                 </span>
               </button>
             );
           })}
         </nav>
-        <div
-          style={{
-            padding: '14px 20px',
-            borderTop: '1px solid var(--color-rule)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-text-3)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            ...CAPS_STYLE,
-          }}
-        >
+        <div className={styles.footer} style={CAPS_STYLE}>
           <span>{APP_VERSION}</span>
-          <span style={{ color: 'var(--color-ok)' }}>
+          <span className={styles.footerStatus}>
             ● {t('v2.voice.storageLocal')}
           </span>
         </div>
       </aside>
 
-      <div
-        style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
-      >
-        <header
-          style={{
-            height: 56,
-            borderBottom: '1px solid var(--color-rule)',
-            padding: '0 28px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: 'var(--color-bg)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div className={styles.mainColumn}>
+        <header className={styles.header}>
+          <div className={styles.headerLeft}>
             <span
+              className={styles.headerTitle}
               style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 14,
-                fontWeight: 600,
                 letterSpacing: themeKey === 'pantry' ? '-0.01em' : '0.04em',
               }}
             >
               {title}
             </span>
             {breadcrumb && (
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text-3)',
-                  ...CAPS_STYLE,
-                }}
-              >
+              <span className={styles.headerBreadcrumb} style={CAPS_STYLE}>
                 · {breadcrumb}
               </span>
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div className={styles.headerRight}>
             <StatusBadge>{t('v2.voice.storageLocal')}</StatusBadge>
           </div>
         </header>
-        <main
-          id="main-content"
-          style={{ flex: 1, overflow: 'auto', padding: 28 }}
-        >
+        <main id="main-content" className={styles.main}>
           {children}
         </main>
       </div>
@@ -238,31 +135,11 @@ export function MobileShell({
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   return (
-    <div
-      className="v2-viewport-height"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--color-bg)',
-        color: 'var(--color-text)',
-        fontFamily: 'var(--font-body)',
-      }}
-    >
-      <header
-        style={{
-          padding: '12px 20px',
-          borderBottom: '1px solid var(--color-rule)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          background: 'var(--color-bg-2)',
-        }}
-      >
+    <div className={`v2-viewport-height ${styles.mobileRoot}`}>
+      <header className={styles.mobileHeader}>
         <div
+          className={styles.mobileTitle}
           style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 16,
-            fontWeight: 700,
             letterSpacing: themeKey === 'pantry' ? '-0.01em' : '0.06em',
           }}
         >
@@ -272,18 +149,12 @@ export function MobileShell({
           {t('v2.voice.statusLive')}
         </StatusBadge>
       </header>
-      <main id="main-content" style={{ flex: 1, overflow: 'auto' }}>
+      <main id="main-content" className={styles.mobileMain}>
         {children}
       </main>
       <nav
         aria-label={t('v2.voice.navPrimaryAria')}
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${NAV.length}, 1fr)`,
-          borderTop: '1px solid var(--color-rule)',
-          background: 'var(--color-bg-2)',
-          paddingBottom: 16,
-        }}
+        className={styles.mobileNav}
       >
         {NAV.map((n) => {
           const id = n.id;
@@ -295,40 +166,17 @@ export function MobileShell({
               onClick={() => onNav(id)}
               aria-current={isActive ? 'page' : undefined}
               data-testid={`v2-nav-${id}`}
-              style={{
-                padding: '10px 4px 6px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                background: 'transparent',
-                border: 'none',
-                borderTop: isActive
-                  ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-                marginTop: -1,
-              }}
+              className={`${styles.mobileNavButton} ${isActive ? styles.mobileNavButtonActive : ''}`}
             >
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 16,
-                  color: isActive
-                    ? 'var(--color-accent)'
-                    : 'var(--color-text-3)',
-                  position: 'relative',
-                  display: 'inline-block',
-                }}
+                className={`${styles.mobileNavIcon} ${isActive ? styles.mobileNavIconActive : ''}`}
                 aria-hidden
               >
                 {n.icon}
               </div>
               <div
-                style={{
-                  fontSize: 9,
-                  marginTop: 2,
-                  color: isActive ? 'var(--color-text)' : 'var(--color-text-3)',
-                  ...CAPS_STYLE,
-                  fontWeight: 600,
-                }}
+                className={`${styles.mobileNavLabel} ${isActive ? styles.mobileNavLabelActive : ''}`}
+                style={CAPS_STYLE}
               >
                 {t(`v2.voice.${n.labelKey}.${themeKey}`)}
               </div>

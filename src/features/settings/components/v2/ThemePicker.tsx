@@ -1,4 +1,4 @@
-import { useRef, type CSSProperties, type KeyboardEvent } from 'react';
+import { useRef, type KeyboardEvent } from 'react';
 import {
   DESIGN_V2_THEMES,
   type DesignV2Theme,
@@ -6,6 +6,7 @@ import {
 } from '@/shared/types';
 import { useTranslation } from 'react-i18next';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import styles from './ThemePicker.module.css';
 
 const PREVIEWS: Record<
   DesignV2Theme,
@@ -108,9 +109,6 @@ export function ThemePicker({
   const { t: translate } = useTranslation();
   const { themeKey: activeKey } = useDesignTheme();
   const isList = layout === 'list';
-  const containerStyle: CSSProperties = isList
-    ? { display: 'flex', flexDirection: 'column', gap: 8 }
-    : { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 };
 
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -132,7 +130,7 @@ export function ThemePicker({
 
   return (
     <div
-      style={containerStyle}
+      className={isList ? styles.list : styles.grid}
       role="radiogroup"
       aria-label={translate('v2.settings.appearance.themeGroupLabel')}
     >
