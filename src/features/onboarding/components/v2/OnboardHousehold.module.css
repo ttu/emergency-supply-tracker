@@ -1,0 +1,109 @@
+.sidePanel {
+  margin-top: 16px;
+  padding: 20px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+}
+
+.sidePanelSpaced {
+  margin-top: 14px;
+}
+
+.figureRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.figureLabel {
+  font-size: 14px;
+  color: var(--color-text-2);
+}
+
+.formula {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-3);
+  margin-top: 6px;
+}
+
+.coverageBlock {
+  margin-top: 14px;
+}
+
+.dayOptions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.dayButton {
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border: 1.5px solid var(--color-rule);
+  color: var(--color-text-2);
+  background: transparent;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.dayButtonActive {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.stepperRow {
+  padding: 18px 22px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+.stepperHint {
+  font-size: 12px;
+  color: var(--color-text-2);
+  margin-top: 4px;
+}
+
+.stepperControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stepperButton {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.stepperButton:disabled {
+  opacity: 0.4;
+}
+
+.stepperButtonIncrement {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border: none;
+}
+
+.stepperValue {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 600;
+  min-width: 56px;
+  text-align: center;
+  color: var(--color-text);
+  font-feature-settings: 'tnum';
+}

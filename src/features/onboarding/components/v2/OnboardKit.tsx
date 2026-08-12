@@ -9,6 +9,7 @@ import { useRecommendedItems } from '@/features/templates';
 import { useNotification } from '@/shared/hooks';
 import type { KitId, KitInfo, RecommendedItemsFile } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
+import styles from './OnboardKit.module.css';
 
 interface OnboardKitProps {
   onNext: () => void;
@@ -82,64 +83,12 @@ export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
         aria-pressed={selected}
         data-testid={`v2-kit-${String(kit.id)}`}
         onClick={() => selectKit(kit.id as KitId)}
-        style={{
-          padding: 20,
-          border: `1.5px solid ${selected ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-          background: selected ? 'var(--color-panel)' : 'transparent',
-          borderRadius: 'var(--radius-lg)',
-          cursor: 'pointer',
-          // The selected ring is an inset shadow rather than an outline: an
-          // inline outline (in either state) overrides the :focus-visible ring
-          // from global.css, leaving keyboard users with no focus indicator.
-          // Unselected leaves the property unset rather than 'none', or the
-          // inline value would in turn suppress that ring's halo.
-          boxShadow: selected
-            ? 'inset 0 0 0 1px var(--color-accent)'
-            : undefined,
-          textAlign: 'left',
-          fontFamily: 'inherit',
-          color: 'inherit',
-          display: 'block',
-          width: '100%',
-        }}
+        className={`${styles.kitCard} ${selected ? styles.kitCardSelected : ''}`}
       >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            gap: 12,
-          }}
-        >
+        <div className={styles.kitCardHeader}>
+          <span className={styles.kitName}>{kit.name}</span>
           <span
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 20,
-              fontWeight: 600,
-              letterSpacing: '-0.01em',
-              color: 'var(--color-text)',
-              maxWidth: '76%',
-            }}
-          >
-            {kit.name}
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              padding: '4px 8px',
-              borderRadius: 'var(--radius-pill)',
-              background: selected
-                ? 'var(--color-accent)'
-                : 'var(--color-panel-2)',
-              color: selected
-                ? 'var(--color-accent-ink)'
-                : 'var(--color-text-3)',
-              border: `1px solid ${selected ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-              whiteSpace: 'nowrap',
-            }}
+            className={`${styles.kitBadge} ${selected ? styles.kitBadgeSelected : ''}`}
           >
             {t(
               kit.isBuiltIn
@@ -149,55 +98,18 @@ export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
           </span>
         </div>
         {kit.description && (
-          <div
-            style={{
-              marginTop: 10,
-              fontSize: 13,
-              color: 'var(--color-text-2)',
-              lineHeight: 1.55,
-              minHeight: 40,
-            }}
-          >
-            {kit.description}
-          </div>
+          <div className={styles.kitDescription}>{kit.description}</div>
         )}
-        <div
-          style={{
-            marginTop: 16,
-            paddingTop: 14,
-            borderTop: '1px solid var(--color-rule-soft)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+        <div className={styles.kitFooter}>
+          <span className={styles.kitCount}>
             <NumberDisplay value={kit.itemCount} size={24} />
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-3)',
-                letterSpacing: '0.06em',
-              }}
-            >
+            <span className={styles.kitCountLabel}>
               {t(`v2.onboarding.kit.items.${themeKey}`)}
             </span>
           </span>
           <span
             aria-hidden
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: 999,
-              border: `1.5px solid ${selected ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-              background: selected ? 'var(--color-accent)' : 'transparent',
-              display: 'grid',
-              placeItems: 'center',
-              color: 'var(--color-accent-ink)',
-              fontSize: 12,
-              fontWeight: 700,
-            }}
+            className={`${styles.kitCheck} ${selected ? styles.kitCheckSelected : ''}`}
           >
             {selected ? '✓' : ''}
           </span>
@@ -222,81 +134,25 @@ export function OnboardKit({ onNext, onBack }: Readonly<OnboardKitProps>) {
       continueDisabled={isUploading}
     >
       <Caption>{t(`v2.onboarding.kit.builtInCaption.${themeKey}`)}</Caption>
-      <div
-        style={{
-          marginTop: 12,
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: 14,
-        }}
-      >
-        {builtIn.map(kitCard)}
-      </div>
+      <div className={styles.kitGrid}>{builtIn.map(kitCard)}</div>
 
       <Caption style={{ marginTop: 26 }}>
         {t(`v2.onboarding.kit.yourKitsCaption.${themeKey}`)}
       </Caption>
       {uploaded.length > 0 && (
-        <div
-          style={{
-            marginTop: 12,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: 14,
-          }}
-        >
-          {uploaded.map(kitCard)}
-        </div>
+        <div className={styles.kitGrid}>{uploaded.map(kitCard)}</div>
       )}
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
         data-testid="v2-kit-upload"
-        style={{
-          marginTop: 12,
-          width: '100%',
-          padding: '28px 20px',
-          textAlign: 'center',
-          border: '1.5px dashed var(--color-rule)',
-          borderRadius: 'var(--radius-lg)',
-          background: 'transparent',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          color: 'inherit',
-        }}
+        className={styles.uploadButton}
       >
-        <span
-          style={{
-            display: 'block',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 22,
-            color: 'var(--color-accent)',
-            lineHeight: 1,
-          }}
-        >
-          +
-        </span>
-        <span
-          style={{
-            display: 'block',
-            marginTop: 10,
-            fontSize: 15,
-            fontWeight: 600,
-            color: 'var(--color-text)',
-          }}
-        >
+        <span className={styles.uploadIcon}>+</span>
+        <span className={styles.uploadTitle}>
           {t(`v2.onboarding.kit.uploadTitle.${themeKey}`)}
         </span>
-        <span
-          style={{
-            display: 'block',
-            marginTop: 4,
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-text-3)',
-            letterSpacing: '0.04em',
-          }}
-        >
+        <span className={styles.uploadHint}>
           {t(`v2.onboarding.kit.uploadHint.${themeKey}`)}
         </span>
       </button>

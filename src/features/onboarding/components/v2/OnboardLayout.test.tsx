@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { OnboardLayout, StepBar } from './OnboardLayout';
 import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
+import styles from './OnboardLayout.module.css';
 
 describe('StepBar (v2)', () => {
   it('renders one segment per step', () => {
@@ -86,7 +87,9 @@ describe('OnboardLayout (v2)', () => {
   it('owns its scrolling — the v2 themes lock the document', () => {
     renderLayout();
     const root = screen.getByTestId('v2-onboard-layout');
-    expect(root.style.overflowY).toBe('auto');
+    // Scrolling (overflow-y: auto) and the stretch alignContent live in
+    // OnboardLayout.module.css now; this class carries both.
+    expect(root).toHaveClass(styles.viewport);
     // Height comes from the shared class so it can carry a 100dvh/100vh
     // fallback pair; an inline style can only hold one of the two, and the
     // 100vh half hides the footer behind iOS Safari's chrome.
@@ -101,7 +104,7 @@ describe('OnboardLayout (v2)', () => {
     // step floating above a band of dead background and lifts the footer up
     // under the lead text. Stretch only hands out spare height, so it does
     // not undo the scrolling asserted above.
-    expect(root.style.alignContent).toBe('stretch');
+    expect(root).toHaveClass(styles.viewport);
   });
 
   describe('narrow viewports', () => {

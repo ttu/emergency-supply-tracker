@@ -6,6 +6,7 @@ import {
 } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { CONTACT_EMAIL } from '@/shared/utils/constants';
+import styles from './Guide.module.css';
 
 const SECTION_KEYS = [
   's1',
@@ -39,120 +40,42 @@ export function Guide() {
     body: t(`v2.guide.sections.${k}.body`),
   }));
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16,
-        maxWidth: 920,
-      }}
-    >
+    <div className={styles.page}>
       <div>
         <Caption>{t(`v2.voice.guide.${themeKey}`)}</Caption>
         <Title size={36} style={{ marginTop: 4 }}>
           {t(`v2.guide.title.${themeKey}`)}
         </Title>
-        <div
-          style={{
-            marginTop: 8,
-            fontSize: 14,
-            color: 'var(--color-text-2)',
-            lineHeight: 1.6,
-            maxWidth: 720,
-          }}
-        >
-          {t(`v2.guide.intro.${themeKey}`)}
-        </div>
+        <div className={styles.intro}>{t(`v2.guide.intro.${themeKey}`)}</div>
       </div>
       <Panel padding={0}>
         {sections.map((s, i) => (
           <div
             key={s.code}
-            style={{
-              padding: '20px 24px',
-              borderBottom:
-                i < sections.length - 1
-                  ? '1px solid var(--color-rule-soft)'
-                  : 'none',
-              display: 'grid',
-              gridTemplateColumns: '60px 1fr',
-              gap: 16,
-            }}
+            className={`${styles.section} ${i === sections.length - 1 ? styles.sectionLast : ''}`}
           >
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                color: 'var(--color-text-3)',
-                fontWeight: 600,
-              }}
-            >
-              {s.code}
-            </span>
+            <span className={styles.sectionCode}>{s.code}</span>
             <div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: 'var(--color-text)',
-                }}
-              >
-                {s.title}
-              </div>
-              <div
-                style={{
-                  marginTop: 8,
-                  fontSize: 14,
-                  color: 'var(--color-text-2)',
-                  lineHeight: 1.65,
-                }}
-              >
-                {s.body}
-              </div>
+              <div className={styles.sectionTitle}>{s.title}</div>
+              <div className={styles.sectionBody}>{s.body}</div>
             </div>
           </div>
         ))}
       </Panel>
       <Panel padding={24}>
-        <div
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 18,
-            fontWeight: 600,
-            color: 'var(--color-text)',
-          }}
-        >
+        <div className={styles.supportTitle}>
           {t(`v2.guide.supportTitle.${themeKey}`)}
         </div>
-        <div
-          style={{
-            marginTop: 8,
-            fontSize: 14,
-            color: 'var(--color-text-2)',
-            lineHeight: 1.65,
-          }}
-        >
-          {t('help.contactText')}
-        </div>
-        <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            style={{
-              fontSize: 13,
-              color: 'var(--color-accent)',
-            }}
-          >
+        <div className={styles.supportText}>{t('help.contactText')}</div>
+        <div className={styles.supportLinks}>
+          <a href={`mailto:${CONTACT_EMAIL}`} className={styles.supportLink}>
             {CONTACT_EMAIL}
           </a>
           <a
             href="https://github.com/ttu/emergency-supply-tracker"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              fontSize: 13,
-              color: 'var(--color-accent)',
-            }}
+            className={styles.supportLink}
           >
             {t('help.githubLink')}
           </a>

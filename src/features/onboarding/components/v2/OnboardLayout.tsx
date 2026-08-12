@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Title } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import styles from './OnboardLayout.module.css';
 
 interface StepBarProps {
   step: number;
@@ -18,16 +19,11 @@ export function StepBar({ step, total }: Readonly<StepBarProps>) {
     [total],
   );
   return (
-    <div style={{ display: 'flex', gap: 4 }}>
+    <div className={styles.stepBar}>
       {segmentIds.map((id, i) => (
         <div
           key={id}
-          style={{
-            flex: 1,
-            height: 3,
-            background: i < step ? 'var(--color-accent)' : 'var(--color-rule)',
-            transition: 'background 200ms',
-          }}
+          className={`${styles.stepSegment} ${i < step ? styles.stepSegmentActive : ''}`}
         />
       ))}
     </div>
@@ -81,126 +77,40 @@ export function OnboardLayout({
       // Height comes from `.v2-viewport-height` (100dvh, falling back to
       // 100vh) — an inline height cannot carry the fallback declaration, and
       // on iOS a plain 100vh hides the footer behind the browser chrome.
-      className="v2-viewport-height"
-      style={{
-        width: '100%',
-        // The v2 themes lock document scrolling (design-themes.css) because
-        // the desktop/mobile shells own their inner scroll. Onboarding runs
-        // outside those shells, so it has to be its own scroll container —
-        // otherwise anything taller than the viewport is simply unreachable.
-        overflowY: 'auto',
-        background: 'var(--color-bg)',
-        color: 'var(--color-text)',
-        fontFamily: 'var(--font-body)',
-        display: 'grid',
-        gridTemplateColumns: sideBeside ? '1fr 1fr' : '1fr',
-        // Stretch, not `start`: the row has to fill the viewport so the
-        // footer sits at the bottom and the side panel's border runs the
-        // full height. `start` sized the row to its content, which left a
-        // short step — welcome, theme — floating above a band of dead
-        // background. Stretch only distributes *spare* height, so a step
-        // taller than the viewport still overflows and scrolls.
-        alignContent: 'stretch',
-      }}
+      className={`v2-viewport-height ${styles.viewport} ${sideBeside ? styles.viewportSideBeside : ''}`}
     >
-      <div
-        style={{
-          // 56px of side padding is over a quarter of a phone screen, which
-          // pushed every step into horizontal scroll.
-          padding: 'clamp(24px, 5vw, 48px) clamp(16px, 6vw, 56px)',
-          display: 'flex',
-          flexDirection: 'column',
-          minWidth: 0,
-        }}
-      >
+      <div className={styles.contentColumn}>
         <div
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 14,
-            fontWeight: 700,
-            letterSpacing: themeKey === 'pantry' ? '-0.01em' : '0.1em',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
+          className={styles.brand}
+          style={{ letterSpacing: themeKey === 'pantry' ? '-0.01em' : '0.1em' }}
         >
           <span
-            style={{
-              width: 10,
-              height: 10,
-              background: 'var(--color-accent)',
-              borderRadius: themeKey === 'pantry' ? 999 : 0,
-            }}
+            className={styles.brandDot}
+            style={{ borderRadius: themeKey === 'pantry' ? 999 : 0 }}
           />
           {t(`v2.voice.appName.${themeKey}`)}
         </div>
-        <div
-          style={{
-            marginTop: 28,
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-text-3)',
-            letterSpacing: '0.1em',
-          }}
-        >
+        <div className={styles.stepLabel}>
           {t('v2.onboarding.stepLabel', {
             step: String(step).padStart(2, '0'),
             total: String(total).padStart(2, '0'),
             title,
           })}
         </div>
-        <div style={{ marginTop: 8 }}>
+        <div className={styles.stepBarWrap}>
           <StepBar step={step} total={total} />
         </div>
-        <div style={{ marginTop: 24 }}>
+        <div className={styles.leadWrap}>
           <Title size={44}>{lead.title}</Title>
-          {lead.sub && (
-            <div
-              style={{
-                marginTop: 14,
-                fontSize: 16,
-                color: 'var(--color-text-2)',
-                lineHeight: 1.55,
-                maxWidth: 520,
-              }}
-            >
-              {lead.sub}
-            </div>
-          )}
+          {lead.sub && <div className={styles.leadSub}>{lead.sub}</div>}
         </div>
-        <div style={{ marginTop: 28, flex: 1 }}>{children}</div>
-        {sideStacked && (
-          <div
-            style={{
-              marginTop: 28,
-              paddingTop: 24,
-              borderTop: '1px solid var(--color-rule)',
-            }}
-          >
-            {side}
-          </div>
-        )}
-        <div
-          style={{
-            marginTop: 24,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingTop: 20,
-            borderTop: '1px solid var(--color-rule-soft)',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-3)',
-              letterSpacing: '0.08em',
-            }}
-          >
+        <div className={styles.contentSlot}>{children}</div>
+        {sideStacked && <div className={styles.sideStackedWrap}>{side}</div>}
+        <div className={styles.footer}>
+          <span className={styles.footerNote}>
             {t(`v2.onboarding.footerNote.${themeKey}`)}
           </span>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div className={styles.footerActions}>
             {back && (
               <Button variant="secondary" onClick={back}>
                 {t(`v2.voice.back.${themeKey}`)}
@@ -216,17 +126,7 @@ export function OnboardLayout({
           </div>
         </div>
       </div>
-      {sideBeside && (
-        <aside
-          style={{
-            background: 'var(--color-bg-2)',
-            borderLeft: '1px solid var(--color-rule)',
-            padding: '48px 48px',
-          }}
-        >
-          {side}
-        </aside>
-      )}
+      {sideBeside && <aside className={styles.sideAside}>{side}</aside>}
     </div>
   );
 }

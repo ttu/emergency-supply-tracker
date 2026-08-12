@@ -16,6 +16,7 @@ import type {
 } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
 import { offeredItems } from './buildOnboardingItems';
+import styles from './OnboardQuickSetup.module.css';
 
 export interface QuickSetupSelection {
   selectedIds: Set<string>;
@@ -64,66 +65,26 @@ function QuickSetupRow({
   const id = String(item.id);
 
   return (
-    <div
-      style={{
-        padding: '11px 18px',
-        display: 'grid',
-        gridTemplateColumns: '1fr auto auto',
-        gap: 14,
-        alignItems: 'center',
-        borderBottom: '1px solid var(--color-rule-soft)',
-        opacity: selected ? 1 : 0.5,
-      }}
-    >
-      <label
-        style={{
-          position: 'relative',
-          display: 'grid',
-          gridTemplateColumns: '20px 1fr',
-          gap: 14,
-          alignItems: 'center',
-          cursor: 'pointer',
-          textAlign: 'left',
-        }}
-      >
+    <div className={`${styles.row} ${selected ? styles.rowSelected : ''}`}>
+      <label className={styles.checkboxLabel}>
         {/* A real checkbox carries the state and keyboard handling; the square
             below is only its picture, so the input is hidden without being
             removed from the accessibility tree. */}
         <input
           type="checkbox"
-          className="proxied-checkbox"
+          className={`proxied-checkbox ${styles.hiddenCheckbox}`}
           checked={selected}
           data-testid={`v2-quick-setup-item-${id}`}
           onChange={onToggleSelected}
-          style={{
-            position: 'absolute',
-            width: 1,
-            height: 1,
-            opacity: 0,
-            margin: 0,
-          }}
         />
         <span
           aria-hidden
-          className="checkbox-proxy"
-          style={{
-            width: 18,
-            height: 18,
-            border: `1.5px solid ${selected ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-            background: selected ? 'var(--color-accent)' : 'transparent',
-            borderRadius: themeKey === 'pantry' ? 4 : 0,
-            display: 'grid',
-            placeItems: 'center',
-            color: 'var(--color-accent-ink)',
-            fontSize: 11,
-            fontWeight: 700,
-          }}
+          className={`checkbox-proxy ${styles.checkboxProxy} ${selected ? styles.checkboxProxySelected : ''}`}
+          style={{ borderRadius: themeKey === 'pantry' ? 4 : 0 }}
         >
           {selected ? '✓' : ''}
         </span>
-        <span
-          style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)' }}
-        >
+        <span className={styles.itemLabel}>
           {t(productKey(item.i18nKey), { ns: 'products' })}
         </span>
       </label>
@@ -133,19 +94,7 @@ function QuickSetupRow({
         disabled={!selected}
         data-testid={`v2-quick-setup-owned-${id}`}
         onClick={onToggleOwned}
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          fontWeight: 700,
-          letterSpacing: '0.06em',
-          padding: '3px 8px',
-          borderRadius: 'var(--radius-pill)',
-          whiteSpace: 'nowrap',
-          background: owned ? 'transparent' : 'var(--color-panel)',
-          border: `1px solid ${owned ? 'var(--color-ok)' : 'var(--color-rule)'}`,
-          color: owned ? 'var(--color-ok)' : 'var(--color-text-3)',
-          cursor: selected ? 'pointer' : 'not-allowed',
-        }}
+        className={`${styles.ownedButton} ${owned ? styles.ownedButtonActive : ''}`}
       >
         {t(
           owned
@@ -153,16 +102,7 @@ function QuickSetupRow({
             : `v2.onboarding.quickSetup.markOwned.${themeKey}`,
         )}
       </button>
-      <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 12,
-          color: 'var(--color-accent)',
-          textAlign: 'right',
-          fontFeatureSettings: '"tnum"',
-          minWidth: 84,
-        }}
-      >
+      <span className={styles.quantity}>
         {calculateRecommendedQuantity(item, household)}{' '}
         {t(item.unit, { ns: 'units' })}
       </span>
@@ -256,7 +196,7 @@ export function OnboardQuickSetup({
   const summary = (caption: string, value: number, tone?: 'ok') => (
     <Panel padding={14}>
       <Caption>{caption}</Caption>
-      <div style={{ marginTop: 6 }}>
+      <div className={styles.summaryValue}>
         <NumberDisplay value={value} size={28} tone={tone} />
       </div>
     </Panel>
@@ -278,14 +218,7 @@ export function OnboardQuickSetup({
           : `v2.onboarding.quickSetup.addSelected.${themeKey}`,
       )}
     >
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 8,
-          marginBottom: 16,
-        }}
-      >
+      <div className={styles.summaryGrid}>
         {summary(
           t(`v2.onboarding.quickSetup.selectedCaption.${themeKey}`),
           selectedIds.size,
@@ -302,37 +235,20 @@ export function OnboardQuickSetup({
       </div>
 
       <Panel padding={0}>
-        <div
-          style={{
-            padding: '11px 18px',
-            borderBottom: '1px solid var(--color-rule-soft)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 12,
-          }}
-        >
+        <div className={styles.kitHeader}>
           <Caption>
             {t(`v2.onboarding.quickSetup.kitCaption.${themeKey}`, {
               kit: kitName,
               count: offered.length,
             })}
           </Caption>
-          <div style={{ display: 'flex', gap: 16 }}>
+          <div className={styles.kitHeaderActions}>
             <button
               type="button"
               onClick={() => setShowDetails((s) => !s)}
               aria-expanded={showDetails}
               data-testid="v2-quick-setup-details"
-              style={{
-                background: 'transparent',
-                border: 0,
-                cursor: 'pointer',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                letterSpacing: '0.06em',
-                color: 'var(--color-accent)',
-              }}
+              className={styles.headerAction}
             >
               {t(
                 showDetails
@@ -354,15 +270,7 @@ export function OnboardQuickSetup({
                   }
                 }}
                 data-testid="v2-quick-setup-select-all"
-                style={{
-                  background: 'transparent',
-                  border: 0,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  letterSpacing: '0.06em',
-                  color: 'var(--color-text-2)',
-                }}
+                className={`${styles.headerAction} ${styles.headerActionMuted}`}
               >
                 {t(
                   allSelected
@@ -377,34 +285,11 @@ export function OnboardQuickSetup({
         {showDetails &&
           groups.map((group) => (
             <div key={group.categoryId}>
-              <div
-                style={{
-                  padding: '10px 18px',
-                  background: 'var(--color-panel-2)',
-                  borderBottom: '1px solid var(--color-rule-soft)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    ...CAPS_STYLE,
-                    color: 'var(--color-text)',
-                  }}
-                >
+              <div className={styles.categoryHeader}>
+                <span className={styles.categoryLabel} style={CAPS_STYLE}>
                   {t(group.categoryId, { ns: 'categories' })}
                 </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text-3)',
-                  }}
-                >
+                <span className={styles.categoryCount}>
                   {group.items.length}
                 </span>
               </div>
@@ -423,7 +308,7 @@ export function OnboardQuickSetup({
           ))}
       </Panel>
 
-      <div style={{ marginTop: 14, display: 'flex', gap: 10 }}>
+      <div className={styles.footerActions}>
         <Button variant="secondary" onClick={onSkip}>
           {t(`v2.onboarding.quickSetup.skip.${themeKey}`)}
         </Button>

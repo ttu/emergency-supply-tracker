@@ -1,0 +1,75 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 920px;
+}
+
+.intro {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--color-text-2);
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+.section {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-rule-soft);
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 16px;
+}
+
+.sectionLast {
+  border-bottom: none;
+}
+
+.sectionCode {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-3);
+  font-weight: 600;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.sectionBody {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--color-text-2);
+  line-height: 1.65;
+}
+
+.supportTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.supportText {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--color-text-2);
+  line-height: 1.65;
+}
+
+/* Two support links do not fit side by side on narrow viewports; wrapping
+ * stacks them instead of clipping the second link. */
+.supportLinks {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.supportLink {
+  font-size: 13px;
+  color: var(--color-accent);
+}

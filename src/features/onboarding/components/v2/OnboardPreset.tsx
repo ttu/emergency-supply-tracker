@@ -5,6 +5,7 @@ import { useImportData } from '@/shared/hooks';
 import type { HouseholdConfig } from '@/shared/types';
 import { OnboardLayout } from './OnboardLayout';
 import { ONBOARDING_PRESETS } from './onboardingPresets';
+import styles from './OnboardPreset.module.css';
 
 interface OnboardPresetProps {
   presetCode: string;
@@ -36,19 +37,6 @@ export function OnboardPreset({
     skipConfirmation: true,
   });
 
-  const linkStyle = {
-    background: 'transparent',
-    border: 0,
-    padding: 0,
-    fontFamily: 'var(--font-mono)',
-    fontSize: 12,
-    fontWeight: 700,
-    color: 'var(--color-accent)',
-    letterSpacing: '0.06em',
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  } as const;
-
   return (
     <OnboardLayout
       step={3}
@@ -73,14 +61,7 @@ export function OnboardPreset({
         onNext();
       }}
     >
-      <div
-        style={{
-          display: 'grid',
-          // Two across where there is room, one on a phone.
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: 14,
-        }}
-      >
+      <div className={styles.presetGrid}>
         {ONBOARDING_PRESETS.map((p) => {
           const sel = presetCode === p.code;
           return (
@@ -89,73 +70,21 @@ export function OnboardPreset({
               type="button"
               onClick={() => onPresetChange(p.code)}
               aria-pressed={sel}
-              style={{
-                padding: 20,
-                border: `1.5px solid ${sel ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-                background: sel ? 'var(--color-panel)' : 'transparent',
-                borderRadius: 'var(--radius-lg)',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                color: 'var(--color-text)',
-                textAlign: 'left',
-              }}
+              className={`${styles.presetCard} ${sel ? styles.presetCardSelected : ''}`}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-text-3)',
-                    letterSpacing: '0.08em',
-                  }}
-                >
-                  {p.code}
-                </span>
+              <div className={styles.presetCardHeader}>
+                <span className={styles.presetCode}>{p.code}</span>
                 <span
                   aria-hidden
-                  style={{
-                    width: 18,
-                    height: 18,
-                    borderRadius: 999,
-                    border: `1.5px solid ${sel ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-                    background: sel ? 'var(--color-accent)' : 'transparent',
-                    display: 'grid',
-                    placeItems: 'center',
-                    color: 'var(--color-accent-ink)',
-                    fontSize: 11,
-                    fontWeight: 700,
-                  }}
+                  className={`${styles.presetCheck} ${sel ? styles.presetCheckSelected : ''}`}
                 >
                   {sel ? '✓' : ''}
                 </span>
               </div>
-              <div
-                style={{
-                  marginTop: 14,
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 22,
-                  fontWeight: 600,
-                  letterSpacing: '-0.015em',
-                }}
-              >
+              <div className={styles.presetName}>
                 {t(`v2.onboarding.preset.presetNames.${p.nameKey}.${themeKey}`)}
               </div>
-              <div
-                style={{
-                  marginTop: 18,
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 12,
-                  paddingTop: 16,
-                  borderTop: '1px solid var(--color-rule-soft)',
-                }}
-              >
+              <div className={styles.presetStats}>
                 <PresetStat
                   label={t(`v2.onboarding.labelAdults.${themeKey}`)}
                   value={p.adults}
@@ -174,43 +103,24 @@ export function OnboardPreset({
         })}
       </div>
 
-      <div
-        style={{
-          marginTop: 18,
-          paddingTop: 16,
-          borderTop: '1px solid var(--color-rule-soft)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          gap: 20,
-          flexWrap: 'wrap',
-        }}
-      >
+      <div className={styles.altActions}>
         <div>
           <button
             type="button"
             onClick={onTryDemoData}
-            style={linkStyle}
+            className={styles.link}
             data-testid="v2-try-demo-data"
           >
             {t('onboarding.tryDemoData.link')}
           </button>
-          <div
-            style={{
-              marginTop: 6,
-              fontSize: 12,
-              color: 'var(--color-text-2)',
-              lineHeight: 1.45,
-              maxWidth: 360,
-            }}
-          >
+          <div className={styles.demoDataHint}>
             {t('onboarding.tryDemoData.hint')}
           </div>
         </div>
         <button
           type="button"
           onClick={triggerFileInput}
-          style={{ ...linkStyle, whiteSpace: 'nowrap' }}
+          className={`${styles.link} ${styles.linkNoWrap}`}
           data-testid="v2-import-backup"
         >
           {t('onboarding.import.link')}
@@ -238,18 +148,7 @@ function PresetStat({ label, value }: Readonly<PresetStatProps>) {
   return (
     <div>
       <Caption>{label}</Caption>
-      <div
-        style={{
-          fontFamily: 'var(--display-number-font)',
-          fontSize: 22,
-          fontWeight: 600,
-          marginTop: 4,
-          color: 'var(--color-text)',
-          fontFeatureSettings: '"tnum"',
-        }}
-      >
-        {value}
-      </div>
+      <div className={styles.statValue}>{value}</div>
     </div>
   );
 }

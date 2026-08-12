@@ -8,6 +8,7 @@ import {
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useDesignData } from '@/shared/hooks/useDesignData';
 import { selectPriorityRows } from '../../utils/priorityRows';
+import styles from './PriorityQueue.module.css';
 
 interface PriorityQueueProps {
   onViewAll: () => void;
@@ -26,78 +27,30 @@ export function PriorityQueue({
 
   return (
     <Panel padding={0}>
-      <div
-        style={{
-          padding: '14px 20px',
-          borderBottom: '1px solid var(--color-rule-soft)',
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
+      <div className={styles.header}>
         <Caption>{t(`v2.dashboard.priorityTitle.${themeKey}`)}</Caption>
         <button
           type="button"
           onClick={onViewAll}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-accent)',
-            letterSpacing: '0.08em',
-            fontWeight: 700,
-          }}
+          className={styles.viewAllButton}
         >
           {t('v2.dashboard.priorityViewAll')}
         </button>
       </div>
       {priority.length === 0 && (
-        <div
-          style={{
-            padding: 24,
-            color: 'var(--color-text-2)',
-            fontSize: 13,
-            textAlign: 'center',
-          }}
-        >
+        <div className={styles.empty}>
           {t(`v2.dashboard.priorityEmpty.${themeKey}`)}
         </div>
       )}
       {priority.map((r, i) => (
         <div
           key={String(r.item.id)}
-          style={{
-            padding: '14px 20px',
-            display: 'grid',
-            gridTemplateColumns: 'auto 1fr auto',
-            gap: 14,
-            alignItems: 'center',
-            borderBottom:
-              i < priority.length - 1
-                ? '1px solid var(--color-rule-soft)'
-                : 'none',
-          }}
+          className={`${styles.row} ${i === priority.length - 1 ? styles.rowLast : ''}`}
         >
           <StatusDot status={r.status} size={7} />
           <div>
-            <div
-              style={{
-                fontSize: 13,
-                fontWeight: 500,
-                color: 'var(--color-text)',
-              }}
-            >
-              {r.item.name}
-            </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-3)',
-                marginTop: 2,
-              }}
-            >
+            <div className={styles.itemName}>{r.item.name}</div>
+            <div className={styles.itemMeta}>
               {t('v2.dashboard.priorityMeta', {
                 code: r.categoryCode,
                 quantity: r.item.quantity,

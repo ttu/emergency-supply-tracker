@@ -1,0 +1,50 @@
+.header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-rule-soft);
+  display: flex;
+  justify-content: space-between;
+}
+
+.viewAllButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-accent);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.empty {
+  padding: 24px;
+  color: var(--color-text-2);
+  font-size: 13px;
+  text-align: center;
+}
+
+.row {
+  padding: 14px 20px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+.rowLast {
+  border-bottom: none;
+}
+
+.itemName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.itemMeta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-3);
+  margin-top: 2px;
+}

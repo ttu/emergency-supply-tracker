@@ -91,12 +91,27 @@ fixtures — this caught a real flake of its own (designStatus.test.ts: two
 `statusOf` fixtures didn't pin `neverExpires`, so the factory's random
 expiration date could return 'warn' instead of the expected 'crit').
 
-65 of 82 findings done. Remaining and not yet started: the CSS-module
-extraction findings (#13, #15, #16, #18, #23, #25, #29, #31, #32, #35, #37,
-#40, #41, #42, #47, #49) and #17 (support-links flex-wrap) — 17 findings,
-all in `src/features/onboarding/components/v2/*`,
-`src/features/settings/components/v2/*`, and a few shared v2 components.
-These need `/visual-verify` since they move inline styles to CSS Modules.
+**Pass 4** (in progress): the CSS-module extraction findings. Committed and
+visually verified #13, #18, #40 (AlertBanner, InventoryFilterStrip,
+AboutSection) first, checking rendering in both desktop and mobile
+viewports and across themes via Playwright MCP — no regressions. Then
+extracted #15, #16, #17 (PriorityQueue, Guide) and the full onboarding set
+#23, #25, #29, #31, #32, #35, #37 (OnboardComplete, OnboardHousehold,
+OnboardKit, OnboardLayout, OnboardPreset, OnboardQuickSetup, OnboardWelcome).
+For genuinely value-dependent styling (selected/active states, theme-keyed
+values), used boolean modifier classes or left a single inline declaration
+in place per the findings' own guidance ("keep only genuinely value-dependent
+declarations inline"). Added `max-width` media queries where a finding asked
+for responsive adjustments. OnboardLayout.test.tsx's two assertions that
+read `root.style.overflowY` / `root.style.alignContent` directly no longer
+applied once those moved into the CSS module, so they were updated to assert
+the module class instead. Full onboarding suite (262 tests) plus the
+dashboard/help suites pass; type-check, lint and format all clean.
+
+78 of 82 findings done. Remaining and not yet started: #41 (SettingsRows.tsx),
+#42 (ThemePicker.tsx grid layout), #47 (ConfirmDialog.tsx), #49 (Shell.tsx) —
+the last 4 CSS-module extractions, plus a final `/visual-verify` pass and a
+push to PR #279.
 
 ## Findings
 
@@ -212,7 +227,7 @@ test('household steppers update the computed targets', async ({ page }) => {
 
 #### 13. [major] — lines 18–108
 
-- [ ] Move the style rules defined by CONTAINER_STYLE, ROW_BASE_STYLE, MESSAGE_BASE_STYLE, PILL_BUTTON_STYLE, DISMISS_BUTTON_STYLE, MESSAGE_BUTTON_STYLE, ROW_STYLE, and TOGGLE_ROW_STYLE into AlertBanner.module.css, including severity-specific stripe styling from STRIPE_COLOR. Update the AlertBanner component to apply the corresponding CSS Module class names instead of inline CSSProperties, then run /visual-verify to confirm the UI remains unchanged.
+- [x] Move the style rules defined by CONTAINER_STYLE, ROW_BASE_STYLE, MESSAGE_BASE_STYLE, PILL_BUTTON_STYLE, DISMISS_BUTTON_STYLE, MESSAGE_BUTTON_STYLE, ROW_STYLE, and TOGGLE_ROW_STYLE into AlertBanner.module.css, including severity-specific stripe styling from STRIPE_COLOR. Update the AlertBanner component to apply the corresponding CSS Module class names instead of inline CSSProperties, then run /visual-verify to confirm the UI remains unchanged.
 
 #### 14. [minor] — lines 164–171
 
@@ -238,17 +253,17 @@ test('household steppers update the computed targets', async ({ page }) => {
 
 #### 15. [major] — lines 28–115
 
-- [ ] Move all inline presentation rules in the PriorityQueue component into scoped classes in a new PriorityQueue.module.css file, including the panel header, view-all button, empty state, priority row, item details, metadata, and border variants. Import the module and replace each style object with the corresponding className, preserving the existing dynamic last-row border behavior through conditional classes or CSS module variants.
+- [x] Move all inline presentation rules in the PriorityQueue component into scoped classes in a new PriorityQueue.module.css file, including the panel header, view-all button, empty state, priority row, item details, metadata, and border variants. Import the module and replace each style object with the corresponding className, preserving the existing dynamic last-row border behavior through conditional classes or CSS module variants.
 
 ### `src/features/help/components/v2/Guide.tsx`
 
 #### 16. [major] — lines 42–160
 
-- [ ] Replace the inline style objects in the Guide component, including the outer layout, section rows, typography, support panel, and links, with named classes from Guide.module.css. Add the corresponding CSS Module rules and update the JSX to use the module class names, preserving the current visual behavior and responsive/interactive styling. Ensure the component continues using complete TypeScript props and CSS Module imports.
+- [x] Replace the inline style objects in the Guide component, including the outer layout, section rows, typography, support panel, and links, with named classes from Guide.module.css. Add the corresponding CSS Module rules and update the JSX to use the module class names, preserving the current visual behavior and responsive/interactive styling. Ensure the component continues using complete TypeScript props and CSS Module imports.
 
 #### 17. [major] — lines 138–159
 
-- [ ] Update the support-links flex container in Guide to allow wrapping on narrow viewports by adding the appropriate flex-wrap styling, while preserving the existing layout, spacing, and link styles.
+- [x] Update the support-links flex container in Guide to allow wrapping on narrow viewports by adding the appropriate flex-wrap styling, while preserving the existing layout, spacing, and link styles.
 
 <details><summary>CodeRabbit suggested code</summary>
 
@@ -283,7 +298,7 @@ test('household steppers update the computed targets', async ({ page }) => {
 
 #### 18. [major] — lines 7–16
 
-- [ ] Move the styles defined by SELECT_STYLE and the referenced inline style objects in InventoryFilterStrip into InventoryFilterStrip.module.css, then import the module in InventoryFilterStrip and replace style props with className usage. Preserve the active chip styling through a dedicated modifier class combined with the base chip class.
+- [x] Move the styles defined by SELECT_STYLE and the referenced inline style objects in InventoryFilterStrip into InventoryFilterStrip.module.css, then import the module in InventoryFilterStrip and replace style props with className usage. Preserve the active chip styling through a dedicated modifier class combined with the base chip class.
 
 ### `src/features/inventory/components/v2/MobileInventory.tsx`
 
@@ -351,7 +366,7 @@ type FilterKey = InventoryStatusFilter;
 
 #### 23. [major] — lines 45–128
 
-- [ ] Move the inline layout and visual styles from the OnboardComplete component into an imported OnboardComplete.module.css, replacing the style props with CSS Module class names. Define classes for the viewport, content, completion label, subtitle, summary grid, and action area, preserving the existing appearance while enabling responsive rules; leave component-specific dynamic values and child component props unchanged.
+- [x] Move the inline layout and visual styles from the OnboardComplete component into an imported OnboardComplete.module.css, replacing the style props with CSS Module class names. Define classes for the viewport, content, completion label, subtitle, summary grid, and action area, preserving the existing appearance while enabling responsive rules; leave component-specific dynamic values and child component props unchanged.
 
 #### 24. [minor] — lines 100–106
 
@@ -377,7 +392,7 @@ type FilterKey = InventoryStatusFilter;
 
 #### 25. [major] — lines 46–107
 
-- [ ] Replace the static inline style objects in OnboardHouse, including the household water and kcal panels and the referenced day-option and two-panel layouts, with className values backed by OnboardHouse.module.css. Keep only genuinely value-dependent declarations inline, and preserve the existing visual styling while enabling responsive media-query rules for the layouts.
+- [x] Replace the static inline style objects in OnboardHouse, including the household water and kcal panels and the referenced day-option and two-panel layouts, with className values backed by OnboardHouse.module.css. Keep only genuinely value-dependent declarations inline, and preserve the existing visual styling while enabling responsive media-query rules for the layouts.
 
 #### 26. [minor] — lines 71–81
 
@@ -407,7 +422,7 @@ type FilterKey = InventoryStatusFilter;
 
 #### 29. [major] — lines 68–303
 
-- [ ] The OnboardKit component currently uses inline styles, including the card, grid, upload control, and focus-related styling. Create or update OnboardKit.module.css with class names for these styles, replace the inline style objects in the kit card and upload/grid elements with CSS Module className references, and preserve the existing selected-state visuals and focus-visible behavior.
+- [x] The OnboardKit component currently uses inline styles, including the card, grid, upload control, and focus-related styling. Create or update OnboardKit.module.css with class names for these styles, replace the inline style objects in the kit card and upload/grid elements with CSS Module className references, and preserve the existing selected-state visuals and focus-visible behavior.
 
 #### 30. [major] — lines 38–63
 
@@ -417,13 +432,13 @@ type FilterKey = InventoryStatusFilter;
 
 #### 31. [major] — lines 76–224
 
-- [ ] Move the shared visual and layout styles from OnboardLayout’s inline style objects into an imported OnboardLayout.module.css, including viewport scrolling, grid columns, responsive padding, content/footer placement, and sidebar presentation. Replace the affected style props with CSS Module class names, using the existing sideBeside and sideStacked conditions to select responsive layout classes while preserving current behavior.
+- [x] Move the shared visual and layout styles from OnboardLayout’s inline style objects into an imported OnboardLayout.module.css, including viewport scrolling, grid columns, responsive padding, content/footer placement, and sidebar presentation. Replace the affected style props with CSS Module class names, using the existing sideBeside and sideStacked conditions to select responsive layout classes while preserving current behavior.
 
 ### `src/features/onboarding/components/v2/OnboardPreset.tsx`
 
 #### 32. [major] — lines 39–50
 
-- [ ] Replace the inline style objects in OnboardPreset, including linkStyle and the preset grid styles, with classes defined in a colocated CSS Module. Update the component’s className usage accordingly, preserving the current visual styling while adding responsive media-query adjustments for the fixed padding and font sizes.
+- [x] Replace the inline style objects in OnboardPreset, including linkStyle and the preset grid styles, with classes defined in a colocated CSS Module. Update the component’s className usage accordingly, preserving the current visual styling while adding responsive media-query adjustments for the fixed padding and font sizes.
 
 #### 33. [major] — lines 61–74
 
@@ -453,7 +468,7 @@ type FilterKey = InventoryStatusFilter;
 
 #### 35. [major] — lines 66–169
 
-- [ ] Move the inline styles in the quick-setup component, including the additional styles in the referenced lower section, into an OnboardQuickSetup.module.css file. Import the module and replace each style prop with descriptive module class names, preserving layout, responsive behavior, checkbox states, button states, and theme-specific styling through appropriate classes or modifiers.
+- [x] Move the inline styles in the quick-setup component, including the additional styles in the referenced lower section, into an OnboardQuickSetup.module.css file. Import the module and replace each style prop with descriptive module class names, preserving layout, responsive behavior, checkbox states, button states, and theme-specific styling through appropriate classes or modifiers.
 
 #### 36. [minor] — lines 238–239
 
@@ -463,7 +478,7 @@ type FilterKey = InventoryStatusFilter;
 
 #### 37. [major] — lines 57–172
 
-- [ ] Extract the inline style objects in OnboardWelcome, including the side panel, output rows, and language button/selection elements, into a colocated CSS Module and import its classes. Preserve the current visual states and layout while adding responsive media-query rules so the 40px output grid and 60px/1fr/24px language grid adapt appropriately on narrow screens; keep TypeScript props unchanged and complete.
+- [x] Extract the inline style objects in OnboardWelcome, including the side panel, output rows, and language button/selection elements, into a colocated CSS Module and import its classes. Preserve the current visual states and layout while adding responsive media-query rules so the 40px output grid and 60px/1fr/24px language grid adapt appropriately on narrow screens; keep TypeScript props unchanged and complete.
 
 #### 38. [major] — lines 29–34
 
@@ -494,7 +509,7 @@ const setLang = (lang: 'en' | 'fi') => {
 
 #### 40. [major] — lines 37–42
 
-- [ ] Replace the inline grid styling in the AboutSection component with a CSS Module class, preserving the two-column layout by default and switching to a single column at the appropriate narrow-viewport breakpoint. Apply the module class to the container holding the description and link panels.
+- [x] Replace the inline grid styling in the AboutSection component with a CSS Module class, preserving the two-column layout by default and switching to a single column at the appropriate narrow-viewport breakpoint. Apply the module class to the container holding the description and link panels.
 
 ### `src/features/settings/components/v2/SettingsRows.tsx`
 

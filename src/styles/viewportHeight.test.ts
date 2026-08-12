@@ -49,9 +49,13 @@ describe('design v2 full-viewport containers', () => {
     const source = read(file);
     expect(source).not.toMatch(/height\s*:\s*['"]100vh['"]/);
     // Count the applications, not the prose — these files explain the trap in
-    // comments that also name the class.
-    expect(source.match(/className="v2-viewport-height"/g) ?? []).toHaveLength(
-      expected,
-    );
+    // comments that also name the class. A CSS-module class can ride along in
+    // the same template literal, so match the class as the attribute's
+    // leading token rather than requiring an exact standalone value.
+    const applications =
+      source.match(
+        /className=(?:"v2-viewport-height"|\{`v2-viewport-height[^`]*`\})/g,
+      ) ?? [];
+    expect(applications).toHaveLength(expected);
   });
 });

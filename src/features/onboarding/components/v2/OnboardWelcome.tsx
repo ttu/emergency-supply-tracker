@@ -4,6 +4,7 @@ import { Caption } from '@/shared/components/design-v2/primitives';
 import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
 import { useSettings } from '@/features/settings';
 import { OnboardLayout } from './OnboardLayout';
+import styles from './OnboardWelcome.module.css';
 
 interface OnboardWelcomeProps {
   onNext: () => void;
@@ -58,50 +59,18 @@ export function OnboardWelcome({ onNext }: Readonly<OnboardWelcomeProps>) {
           <Caption>
             {t(`v2.onboarding.welcome.outputsCaption.${themeKey}`)}
           </Caption>
-          <div
-            style={{
-              marginTop: 14,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 14,
-            }}
-          >
+          <div className={styles.outputList}>
             {outputs.map(([code, text]) => (
-              <div
-                key={code}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '40px 1fr',
-                  gap: 14,
-                  paddingBottom: 14,
-                  borderBottom: '1px solid var(--color-rule-soft)',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-text-3)',
-                    fontWeight: 600,
-                  }}
-                >
-                  {code}
-                </span>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{text}</div>
+              <div key={code} className={styles.outputRow}>
+                <span className={styles.outputCode}>{code}</span>
+                <div className={styles.outputText}>{text}</div>
               </div>
             ))}
           </div>
           <Caption style={{ marginTop: 32 }}>
             {t(`v2.onboarding.welcome.languageCaption.${themeKey}`)}
           </Caption>
-          <div
-            style={{
-              marginTop: 14,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}
-          >
+          <div className={styles.langList}>
             {langs.map((l) => {
               const sel = settings.language === l.code;
               return (
@@ -110,62 +79,20 @@ export function OnboardWelcome({ onNext }: Readonly<OnboardWelcomeProps>) {
                   type="button"
                   onClick={() => setLang(l.code)}
                   aria-pressed={sel}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '60px 1fr 24px',
-                    alignItems: 'center',
-                    gap: 14,
-                    padding: '12px 14px',
-                    border: `1.5px solid ${sel ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-                    background: sel ? 'var(--color-panel-2)' : 'transparent',
-                    borderRadius: 'var(--radius-sm)',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    color: 'var(--color-text)',
-                    textAlign: 'left',
-                  }}
+                  className={`${styles.langButton} ${sel ? styles.langButtonSelected : ''}`}
                 >
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: sel
-                        ? 'var(--color-accent)'
-                        : 'var(--color-text-2)',
-                      letterSpacing: '0.08em',
-                    }}
+                    className={`${styles.langCode} ${sel ? styles.langCodeSelected : ''}`}
                   >
                     {l.code.toUpperCase()}
                   </span>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>
-                      {l.label}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        color: 'var(--color-text-3)',
-                        marginTop: 2,
-                      }}
-                    >
-                      {l.sub}
-                    </div>
+                    <div className={styles.langLabel}>{l.label}</div>
+                    <div className={styles.langSub}>{l.sub}</div>
                   </div>
                   <span
                     aria-hidden
-                    style={{
-                      width: 18,
-                      height: 18,
-                      borderRadius: 999,
-                      border: `1.5px solid ${sel ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-                      background: sel ? 'var(--color-accent)' : 'transparent',
-                      display: 'grid',
-                      placeItems: 'center',
-                      color: 'var(--color-accent-ink)',
-                      fontSize: 11,
-                      fontWeight: 700,
-                    }}
+                    className={`${styles.langCheck} ${sel ? styles.langCheckSelected : ''}`}
                   >
                     {sel ? '✓' : ''}
                   </span>

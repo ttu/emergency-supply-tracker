@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
@@ -14,6 +13,7 @@ import {
   ONBOARDING_CHILD_WEIGHT,
   ONBOARDING_WATER_LITERS_PER_ADULT_PER_DAY,
 } from './onboardingPresets';
+import styles from './OnboardHousehold.module.css';
 
 interface OnboardHouseholdProps {
   household: HouseholdConfig;
@@ -67,57 +67,25 @@ export function OnboardHousehold({
           <Caption>
             {t(`v2.onboarding.household.computedCaption.${themeKey}`)}
           </Caption>
-          <div
-            style={{
-              marginTop: 16,
-              padding: 20,
-              background: 'var(--color-panel)',
-              border: '1px solid var(--color-rule)',
-              borderRadius: 'var(--radius-sm)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <div className={styles.sidePanel}>
+            <div className={styles.figureRow}>
               <NumberDisplay value={targets.water} size={48} />
-              <span style={{ fontSize: 14, color: 'var(--color-text-2)' }}>
+              <span className={styles.figureLabel}>
                 {t(`v2.onboarding.household.waterLabel.${themeKey}`, {
                   days: household.supplyDurationDays,
                 })}
               </span>
             </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-3)',
-                marginTop: 6,
-              }}
-            >
-              {waterFormula}
-            </div>
+            <div className={styles.formula}>{waterFormula}</div>
           </div>
-          <div
-            style={{
-              marginTop: 14,
-              padding: 20,
-              background: 'var(--color-panel)',
-              border: '1px solid var(--color-rule)',
-              borderRadius: 'var(--radius-sm)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <div className={`${styles.sidePanel} ${styles.sidePanelSpaced}`}>
+            <div className={styles.figureRow}>
               <NumberDisplay
                 value={targets.kcal.toLocaleString(i18n.language)}
                 size={36}
               />
             </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-3)',
-                marginTop: 6,
-              }}
-            >
+            <div className={styles.formula}>
               {t(`v2.onboarding.household.kcalTotal.${themeKey}`)}
             </div>
           </div>
@@ -148,11 +116,11 @@ export function OnboardHousehold({
           t={t}
         />
       </Panel>
-      <div style={{ marginTop: 14 }}>
+      <div className={styles.coverageBlock}>
         <Caption>
           {t(`v2.onboarding.household.coverageTarget.${themeKey}`)}
         </Caption>
-        <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
+        <div className={styles.dayOptions}>
           {[3, 7, 14, 30].map((n) => {
             const sel = household.supplyDurationDays === n;
             return (
@@ -165,18 +133,7 @@ export function OnboardHousehold({
                 onClick={() =>
                   onHouseholdChange((h) => ({ ...h, supplyDurationDays: n }))
                 }
-                style={{
-                  padding: '8px 16px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  border: `1.5px solid ${sel ? 'var(--color-accent)' : 'var(--color-rule)'}`,
-                  color: sel ? 'var(--color-accent)' : 'var(--color-text-2)',
-                  background: 'transparent',
-                  borderRadius: 'var(--radius-pill)',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                }}
+                className={`${styles.dayButton} ${sel ? styles.dayButtonActive : ''}`}
               >
                 {t(`v2.onboarding.household.dayOption.${themeKey}`, {
                   count: n,
@@ -207,36 +164,13 @@ function OnboardStepperRow({
   min = 0,
   t,
 }: Readonly<StepperRowProps>) {
-  const buttonStyle: CSSProperties = {
-    width: 36,
-    height: 36,
-    border: '1px solid var(--color-rule)',
-    background: 'transparent',
-    color: 'var(--color-text)',
-    fontSize: 18,
-    cursor: 'pointer',
-    borderRadius: 'var(--radius-sm)',
-  };
   return (
-    <div
-      style={{
-        padding: '18px 22px',
-        display: 'grid',
-        gridTemplateColumns: '1fr auto',
-        alignItems: 'center',
-        gap: 16,
-        borderBottom: '1px solid var(--color-rule-soft)',
-      }}
-    >
+    <div className={styles.stepperRow}>
       <div>
         <Caption>{label}</Caption>
-        <div
-          style={{ fontSize: 12, color: 'var(--color-text-2)', marginTop: 4 }}
-        >
-          {hint}
-        </div>
+        <div className={styles.stepperHint}>{hint}</div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className={styles.stepperControls}>
         <button
           type="button"
           aria-label={t('v2.onboarding.stepperDecreaseAria', { label })}
@@ -244,7 +178,7 @@ function OnboardStepperRow({
           // At the floor the button does nothing; saying so beats letting
           // someone press it and wonder why the count will not move.
           disabled={value <= min}
-          style={{ ...buttonStyle, opacity: value <= min ? 0.4 : 1 }}
+          className={styles.stepperButton}
         >
           −
         </button>
@@ -267,15 +201,7 @@ function OnboardStepperRow({
               onChange(Math.max(min, value - 1));
             }
           }}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 28,
-            fontWeight: 600,
-            minWidth: 56,
-            textAlign: 'center',
-            color: 'var(--color-text)',
-            fontFeatureSettings: '"tnum"',
-          }}
+          className={styles.stepperValue}
         >
           {String(value).padStart(2, '0')}
         </div>
@@ -283,12 +209,7 @@ function OnboardStepperRow({
           type="button"
           aria-label={t('v2.onboarding.stepperIncreaseAria', { label })}
           onClick={() => onChange(value + 1)}
-          style={{
-            ...buttonStyle,
-            background: 'var(--color-accent)',
-            color: 'var(--color-accent-ink)',
-            border: 'none',
-          }}
+          className={`${styles.stepperButton} ${styles.stepperButtonIncrement}`}
         >
           +
         </button>
