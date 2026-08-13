@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 
-const MOBILE_BREAKPOINT = 768;
+// The v2 desktop shell reserves 232px for its sidebar; below that plus the
+// Inventory page's ~950px minimum content width (category rail + filter
+// strip + table), columns run off the right edge without any way to reach
+// them. 1200px keeps a small margin above that ~1180px hard floor.
+const MOBILE_BREAKPOINT = 1200;
 
 /** Defensive read so we don't crash in SSR / jsdom where matchMedia is missing. */
 function readMobile(): boolean {
