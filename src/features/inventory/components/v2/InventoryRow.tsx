@@ -53,16 +53,11 @@ const categoryStyle: CSSProperties = {
 };
 const qtyCellStyle: CSSProperties = {
   display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-end',
-  gap: 2,
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  gap: 3,
   fontFamily: 'var(--font-mono)',
   whiteSpace: 'nowrap',
-};
-const stepperStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 3,
 };
 const recPartStyle: CSSProperties = { color: 'var(--color-text-3)' };
 
@@ -147,47 +142,41 @@ function InventoryRowImpl({
       </span>
       <span style={categoryStyle}>{r.categoryCode}</span>
       <span style={qtyCellStyle}>
-        <span style={stepperStyle}>
-          <button
-            type="button"
-            aria-label={decreaseLabel}
-            disabled={atMin}
-            onClick={(e) => {
-              e.stopPropagation();
-              onQuantityChange(id, r.item.quantity - 1);
-            }}
-            style={stepperButtonStyle(atMin)}
-          >
-            −
-          </button>
-          <span
-            style={{
-              minWidth: 16,
-              textAlign: 'center',
-              color:
-                r.item.quantity === 0
-                  ? 'var(--color-crit)'
-                  : 'var(--color-text)',
-            }}
-          >
-            {r.item.quantity}
-          </span>
-          <button
-            type="button"
-            aria-label={increaseLabel}
-            onClick={(e) => {
-              e.stopPropagation();
-              onQuantityChange(id, r.item.quantity + 1);
-            }}
-            style={stepperButtonStyle(false)}
-          >
-            +
-          </button>
+        <button
+          type="button"
+          aria-label={decreaseLabel}
+          disabled={atMin}
+          onClick={(e) => {
+            e.stopPropagation();
+            onQuantityChange(id, r.item.quantity - 1);
+          }}
+          style={stepperButtonStyle(atMin)}
+        >
+          −
+        </button>
+        <span
+          style={{
+            color:
+              r.item.quantity === 0 ? 'var(--color-crit)' : 'var(--color-text)',
+          }}
+        >
+          {r.item.quantity}
         </span>
         <span style={recPartStyle}>
           {'/ '}
           {r.recommended || '—'}
         </span>
+        <button
+          type="button"
+          aria-label={increaseLabel}
+          onClick={(e) => {
+            e.stopPropagation();
+            onQuantityChange(id, r.item.quantity + 1);
+          }}
+          style={stepperButtonStyle(false)}
+        >
+          +
+        </button>
       </span>
       <span
         style={{
