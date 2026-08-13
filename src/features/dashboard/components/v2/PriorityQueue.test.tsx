@@ -16,13 +16,17 @@ import {
 const setup = (
   items: ReturnType<typeof createMockInventoryItem>[],
   onViewAll = vi.fn(),
+  onItemSelect = vi.fn(),
 ) =>
-  renderWithProviders(<PriorityQueue onViewAll={onViewAll} />, {
-    initialAppData: createMockAppData({
-      settings: createMockSettings({ theme: 'cockpit' }),
-      items,
-    }),
-  });
+  renderWithProviders(
+    <PriorityQueue onViewAll={onViewAll} onItemSelect={onItemSelect} />,
+    {
+      initialAppData: createMockAppData({
+        settings: createMockSettings({ theme: 'cockpit' }),
+        items,
+      }),
+    },
+  );
 
 describe('PriorityQueue (v2)', () => {
   it('renders the priority queue caption in cockpit theme', async () => {
@@ -90,5 +94,22 @@ describe('PriorityQueue (v2)', () => {
     // first, so the queue must reorder them.
     const rows = await screen.findAllByText(/^(Low soup|No water)$/);
     expect(rows.map((n) => n.textContent)).toEqual(['No water', 'Low soup']);
+  });
+
+  it('clicking a row resolve button invokes onItemSelect with the item id', async () => {
+    const onItemSelect = vi.fn();
+    const item = createMockInventoryItem({
+      name: 'Bottled water',
+      categoryId: createCategoryId('water-beverages'),
+      quantity: createQuantity(0),
+    });
+    setup([item], vi.fn(), onItemSelect);
+
+    const resolveButton = await screen.findByRole('button', {
+      name: 'v2.voice.resolveAction.cockpit',
+    });
+    fireEvent.click(resolveButton);
+
+    expect(onItemSelect).toHaveBeenCalledWith(String(item.id));
   });
 });

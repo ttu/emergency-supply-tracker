@@ -12,18 +12,21 @@ import styles from './PriorityQueue.module.css';
 
 interface PriorityQueueProps {
   onViewAll: () => void;
+  onItemSelect: (id: string) => void;
   /** How many priority rows to show. Defaults to 5. */
   limit?: number;
 }
 
 export function PriorityQueue({
   onViewAll,
+  onItemSelect,
   limit = 5,
 }: Readonly<PriorityQueueProps>) {
   const { t } = useTranslation();
   const { themeKey } = useDesignTheme();
   const { rows } = useDesignData();
   const priority = selectPriorityRows(rows, limit);
+  const resolveLabel = t(`v2.voice.resolveAction.${themeKey}`);
 
   return (
     <Panel padding={0}>
@@ -65,6 +68,13 @@ export function PriorityQueue({
             </div>
           </div>
           <StatusPill status={r.status} />
+          <button
+            type="button"
+            onClick={() => onItemSelect(String(r.item.id))}
+            className={styles.pillButton}
+          >
+            {resolveLabel}
+          </button>
         </div>
       ))}
     </Panel>

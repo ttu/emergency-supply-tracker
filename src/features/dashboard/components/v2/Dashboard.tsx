@@ -81,7 +81,10 @@ export function Dashboard({
       </div>
       <KpiRow />
       <CoverageMatrix onCategorySelect={onCategorySelect} />
-      <PriorityQueue onViewAll={onViewAllPriority} />
+      <PriorityQueue
+        onViewAll={onViewAllPriority}
+        onItemSelect={onItemSelect}
+      />
     </div>
   );
 }

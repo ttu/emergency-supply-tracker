@@ -13,10 +13,17 @@ const meta = {
       </DesignV2Story>
     ),
   ],
-  argTypes: { onViewAll: { action: 'view all' } },
+  argTypes: {
+    onViewAll: { action: 'view all' },
+    onItemSelect: { action: 'select item' },
+  },
 } satisfies Meta<typeof PriorityQueue>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: { onViewAll: () => {} } };
-export const LimitTwo: Story = { args: { onViewAll: () => {}, limit: 2 } };
+export const Default: Story = {
+  args: { onViewAll: () => {}, onItemSelect: () => {} },
+};
+export const LimitTwo: Story = {
+  args: { onViewAll: () => {}, onItemSelect: () => {}, limit: 2 },
+};
