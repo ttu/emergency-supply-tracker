@@ -66,6 +66,9 @@ export function Guide() {
         <div className={styles.supportTitle}>
           {t(`v2.guide.supportTitle.${themeKey}`)}
         </div>
+        <div className={styles.supportText}>
+          {t(`v2.guide.howIsItFree.${themeKey}`)}
+        </div>
         <div className={styles.supportText}>{t('help.contactText')}</div>
         <div className={styles.supportLinks}>
           <a href={`mailto:${CONTACT_EMAIL}`} className={styles.supportLink}>

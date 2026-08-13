@@ -2596,63 +2596,63 @@
     },
     "guide": {
       "title": {
-        "cockpit": "SIVIILIVARAUTUMINEN · PERUSTASO",
-        "civil": "SIVIILIVARAUTUMINEN · PERUSTASO",
-        "pantry": "Näin varaudut"
+        "cockpit": "OHJE & UKK",
+        "civil": "OHJE & UKK",
+        "pantry": "Ohje & UKK"
       },
       "intro": {
-        "cockpit": "PERUSOHJE KOTITALOUDEN VARAUTUMISEEN · 72 TUNNIN MINIMI · 7 PÄIVÄN TAVOITE.",
-        "civil": "PERUSOHJE KOTITALOUDEN VARAUTUMISEEN · 72 TUNNIN MINIMI · 7 PÄIVÄN TAVOITE.",
-        "pantry": "Lyhyt, käytännöllinen opas — mitä pitää kotona, jotta sähkökatko, vesikatko tai tarvikepula on harmi, ei kriisi."
+        "cockpit": "USEIN KYSYTYT KYSYMYKSET · SOVELLUKSEN KÄYTTÖ.",
+        "civil": "USEIN KYSYTYT KYSYMYKSET · SOVELLUKSEN KÄYTTÖ.",
+        "pantry": "Löydä vastauksia yleisiin kysymyksiin Hätävarasto-sovelluksen käytöstä."
       },
       "sections": {
         "s1": {
           "title": {
-            "cockpit": "TARKOITUS",
-            "civil": "TARKOITUS",
-            "pantry": "Miksi varautua?"
+            "cockpit": "ALOITTAMINEN",
+            "civil": "ALOITTAMINEN",
+            "pantry": "Miten aloitan?"
           },
-          "body": "Sähkökatkot, vesihäiriöt, tarvikepulat. 72 tunnin omavaraisuus on käytännön perustaso; viikko on suositeltu tavoite useimmille kotitalouksille."
+          "body": "Onboarding opastaa sinut läpi prosessin: valitse kieli, valitse kotitalouden esiasetus tai määritä se manuaalisesti, aseta aikuiset, lapset ja varastojakso, ja lisää lopuksi suositellut tuotteet tai aloita tyhjällä varastolla. Kotitalouden asetuksia voi muokata myöhemmin Asetuksista."
         },
         "s2": {
           "title": {
-            "cockpit": "VESI · TASO 1",
-            "civil": "VESI · TASO 1",
-            "pantry": "Vesi — tärkein"
+            "cockpit": "KOTITALOUDEN KOKO",
+            "civil": "KOTITALOUDEN KOKO",
+            "pantry": "Kotitalouden koko"
           },
-          "body": "Varaudu 3 l/hlö/vrk juomiseen ja ruoanlaittoon, lisäksi 3 l hygieniaan. Kahden hengen kotitalous tarvitsee n. 84 l viikoksi. Pullovesi, kanisterit tai täytetyt astiat käyvät."
+          "body": "Suositellut määrät skaalautuvat kotitaloutesi koon ja varastojakson mukaan — 4 hengen perhe, joka varautuu 72 tuntiin, tarvitsee enemmän kuin yksin asuva henkilö."
         },
         "s3": {
           "title": {
-            "cockpit": "RUOKA · TASO 1",
-            "civil": "RUOKA · TASO 1",
-            "pantry": "Ruokaa joka säilyy"
+            "cockpit": "SUOSITELLUT TUOTTEET",
+            "civil": "SUOSITELLUT TUOTTEET",
+            "pantry": "Suositellut tuotteet"
           },
-          "body": "Energiapitoinen, säilyvä, syötävissä ilman kypsentämistä: säilykkeet, kuivapasta ja riisi, näkkileipä, maapähkinävoi, kuivatut hedelmät. Kierrätä 6–12 kuukauden välein."
+          "body": "Suositellut tuotteet ovat ennalta määritettyjä malleja, jotka perustuvat hätätilanteen varautumisohjeisiin ja sisältävät ehdotetut määrät, yksiköt ja kategoriat täydellisen hätävaraston rakentamiseen."
         },
         "s4": {
           "title": {
-            "cockpit": "VALO & VIRTA",
-            "civil": "VALO & VIRTA",
-            "pantry": "Valoa & lämpöä"
+            "cockpit": "VIIMEINEN KÄYTTÖPÄIVÄ",
+            "civil": "VIIMEINEN KÄYTTÖPÄIVÄ",
+            "pantry": "Viimeinen käyttöpäivä"
           },
-          "body": "Kaksi itsenäistä valonlähdettä per huone. Paristokäyttöinen radio. Ladattu varavirtalähde. Tarvittaessa kaasuliesi ja kahden päivän polttoaine."
+          "body": "Tuotteilla voi olla viimeinen käyttöpäivä tai ne voi merkitä 'Ei vanhene' -tilaan. Saat hälytyksen, kun jokin vanhenee 30 päivän sisällä tai on jo vanhentunut — kierrätä esimerkiksi paristot ja lääkkeet säännöllisesti."
         },
         "s5": {
           "title": {
-            "cockpit": "LÄÄKINTÄ",
-            "civil": "LÄÄKINTÄ",
-            "pantry": "Ensiapu"
+            "cockpit": "KATEGORIAT",
+            "civil": "KATEGORIAT",
+            "pantry": "Kategoriat"
           },
-          "body": "Tavallinen ensiapulaukku. Kahden viikon reseptilääkkeet. Jodi­tabletit pelastusviranomaisten suosituksen mukaan."
+          "body": "Tarvikkeet on järjestetty 9 kategoriaan — Vesi ja juomat, Ruoka, Ruoanlaitto ja lämmitys, Valo ja sähkö, Viestintä ja tiedotus, Lääkkeet ja terveys, Hygienia ja sanitaatio, Työkalut ja tarvikkeet sekä Käteinen ja dokumentit — kattavan varautumisen varmistamiseksi."
         },
         "s6": {
           "title": {
-            "cockpit": "ASIAKIRJAT & KÄTEINEN",
-            "civil": "ASIAKIRJAT & KÄTEINEN",
-            "pantry": "Asiakirjat & käteinen"
+            "cockpit": "TILAVÄRIT",
+            "civil": "TILAVÄRIT",
+            "pantry": "Tilavärit"
           },
-          "body": "Henkilöllisyystodistuksen, vakuutusten ja pankkitietojen kopiot. 500 € pieninä seteleinä. Molemmat vedenpitävässä rasiassa."
+          "body": "Vihreä tarkoittaa riittäviä tarvikkeita, keltainen vähissä olevia tai pian vanhenevia, punainen loppuneita tai vanhentuneita. Kojelauta näyttää värikoodatun tilan jokaiselle kategorialle."
         },
         "s7": {
           "title": {
@@ -2683,6 +2683,11 @@
         "cockpit": "TUKI",
         "civil": "TUKI",
         "pantry": "Tarvitsetko lisää apua?"
+      },
+      "howIsItFree": {
+        "cockpit": "MITEN TÄMÄ ON ILMAINEN · Oma projekti, jaettu avoimesti. Tekoäly on nopeuttanut kehitystä, ja sovellus toimii täysin selaimessa GitHub Pagesissa — ainoa toistuva kustannus on noin 10 dollarin verkkotunnus vuodessa.",
+        "civil": "MITEN TÄMÄ ON ILMAINEN · Oma projekti, jaettu avoimesti. Tekoäly on nopeuttanut kehitystä, ja sovellus toimii täysin selaimessa GitHub Pagesissa — ainoa toistuva kustannus on noin 10 dollarin verkkotunnus vuodessa.",
+        "pantry": "Miten tämä on ilmainen? Sovellus syntyi omaan käyttöön ja on jaettu avoimesti. Tekoäly on nopeuttanut kehitystä, ja sovellus toimii täysin selaimessa GitHub Pagesissa — ainoa toistuva kustannus on noin 10 dollarin verkkotunnus vuodessa."
       }
     }
   }

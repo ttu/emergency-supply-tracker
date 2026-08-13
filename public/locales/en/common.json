@@ -2596,63 +2596,63 @@
     },
     "guide": {
       "title": {
-        "cockpit": "CIVIL PREPAREDNESS · BASELINE",
-        "civil": "CIVIL PREPAREDNESS · BASELINE",
-        "pantry": "How to be prepared"
+        "cockpit": "HELP & FAQ",
+        "civil": "HELP & FAQ",
+        "pantry": "Help & FAQ"
       },
       "intro": {
-        "cockpit": "BASELINE GUIDANCE FOR HOUSEHOLD PREPAREDNESS · 72-HOUR MINIMUM · 7-DAY TARGET.",
-        "civil": "BASELINE GUIDANCE FOR HOUSEHOLD PREPAREDNESS · 72-HOUR MINIMUM · 7-DAY TARGET.",
-        "pantry": "A short, practical guide — what to keep at home so a power cut, water break, or supply shock is an inconvenience, not a crisis."
+        "cockpit": "FREQUENTLY ASKED QUESTIONS · HOW THE APP WORKS.",
+        "civil": "FREQUENTLY ASKED QUESTIONS · HOW THE APP WORKS.",
+        "pantry": "Find answers to common questions about using the Emergency Supply Tracker."
       },
       "sections": {
         "s1": {
           "title": {
-            "cockpit": "PURPOSE",
-            "civil": "PURPOSE",
-            "pantry": "Why prepare?"
+            "cockpit": "GETTING STARTED",
+            "civil": "GETTING STARTED",
+            "pantry": "Getting started"
           },
-          "body": "Power outages, water disruptions, supply shocks. 72 hours of self-sufficiency is the practical baseline; one week is the recommended target for most households."
+          "body": "Onboarding walks you through it: choose a language, pick a household preset or configure it manually, set adults, children, and supply duration, then add recommended items or start from an empty inventory. Household settings can be changed anytime from Settings."
         },
         "s2": {
           "title": {
-            "cockpit": "WATER · TIER 1",
-            "civil": "WATER · TIER 1",
-            "pantry": "Water — the priority"
+            "cockpit": "HOUSEHOLD SIZE",
+            "civil": "HOUSEHOLD SIZE",
+            "pantry": "Household size"
           },
-          "body": "Plan for 3 L/person/day for drinking and cooking, plus 3 L for hygiene. A two-person household needs ~84 L for one week. Bottled, jerrycans, or filled containers all qualify."
+          "body": "Recommended quantities scale with your household size and supply duration — a family of four planning for 72 hours needs more than someone living alone."
         },
         "s3": {
           "title": {
-            "cockpit": "FOOD · TIER 1",
-            "civil": "FOOD · TIER 1",
-            "pantry": "Food that lasts"
+            "cockpit": "RECOMMENDED ITEMS",
+            "civil": "RECOMMENDED ITEMS",
+            "pantry": "Recommended items"
           },
-          "body": "Calorie-dense, shelf-stable, edible without cooking: canned goods, dry pasta and rice, crackers, peanut butter, dried fruit. Rotate every 6–12 months."
+          "body": "Recommended items are pre-configured templates based on emergency preparedness guidelines, with suggested quantities, units, and categories to help you build a complete kit."
         },
         "s4": {
           "title": {
-            "cockpit": "LIGHT & POWER",
-            "civil": "LIGHT & POWER",
-            "pantry": "Light & warmth"
+            "cockpit": "EXPIRATION DATES",
+            "civil": "EXPIRATION DATES",
+            "pantry": "Expiration dates"
           },
-          "body": "Two independent light sources per room. Battery-powered radio. Power bank charged. If applicable: gas stove with two days of fuel."
+          "body": "Items can carry an expiration date or be marked 'Never Expires'. You're alerted when something expires within 30 days or already has — rotate items like batteries and medication regularly."
         },
         "s5": {
           "title": {
-            "cockpit": "MEDICAL",
-            "civil": "MEDICAL",
-            "pantry": "First aid"
+            "cockpit": "CATEGORIES",
+            "civil": "CATEGORIES",
+            "pantry": "Categories"
           },
-          "body": "Standard first-aid kit. Two weeks of any prescription medication. Iodine tablets per civil-defense recommendation."
+          "body": "Supplies are organized into 9 categories — Water & Beverages, Food, Cooking & Heat, Light & Power, Communication & Info, Medical & Health, Hygiene & Sanitation, Tools & Supplies, and Cash & Documents — for full coverage of essential supply types."
         },
         "s6": {
           "title": {
-            "cockpit": "DOCS & CASH",
-            "civil": "DOCS & CASH",
-            "pantry": "Documents & cash"
+            "cockpit": "STATUS COLORS",
+            "civil": "STATUS COLORS",
+            "pantry": "Status colors"
           },
-          "body": "Copies of ID, insurance, bank info. €500 in small bills. Both sealed in a waterproof container."
+          "body": "Green means adequate supplies, yellow means low or expiring soon, red means out of stock or expired. The dashboard shows a color-coded status for each category."
         },
         "s7": {
           "title": {
@@ -2683,6 +2683,11 @@
         "cockpit": "SUPPORT",
         "civil": "SUPPORT",
         "pantry": "Need more help?"
+      },
+      "howIsItFree": {
+        "cockpit": "HOW IS THIS FREE · Personal project, shared openly. AI-assisted development kept the build time low, and it runs entirely in the browser on GitHub Pages — the only recurring cost is the ~$10/year domain.",
+        "civil": "HOW IS THIS FREE · Personal project, shared openly. AI-assisted development kept the build time low, and it runs entirely in the browser on GitHub Pages — the only recurring cost is the ~$10/year domain.",
+        "pantry": "How is this free? It started as a personal project and is shared openly. AI-assisted development kept the build time low, and it runs entirely in the browser on GitHub Pages — the only recurring cost is the ~$10/year domain."
       }
     }
   }
