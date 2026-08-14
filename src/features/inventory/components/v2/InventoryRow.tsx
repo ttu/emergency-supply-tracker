@@ -45,16 +45,18 @@ const locationStyle: CSSProperties = {
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  textAlign: 'center',
 };
 const categoryStyle: CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: 10,
   color: 'var(--color-text-2)',
+  textAlign: 'center',
 };
 const qtyCellStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: 'center',
   gap: 3,
   fontFamily: 'var(--font-mono)',
   whiteSpace: 'nowrap',
@@ -182,6 +184,7 @@ function InventoryRowImpl({
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: 11,
+          textAlign: 'center',
           color: r.item.expirationDate
             ? 'var(--color-text-2)'
             : 'var(--color-text-3)',

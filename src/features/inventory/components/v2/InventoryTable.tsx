@@ -42,7 +42,7 @@ const HEADER_STYLE: CSSProperties = {
   background: 'var(--color-panel-2)',
 };
 
-const HEADER_RIGHT_CELL: CSSProperties = { textAlign: 'right' };
+const HEADER_CENTER_CELL: CSSProperties = { textAlign: 'center' };
 
 const EMPTY_STATE_STYLE: CSSProperties = {
   padding: 32,
@@ -74,12 +74,18 @@ export function InventoryTable({
       <div style={HEADER_STYLE}>
         <span>{t('v2.inventory.tableId')}</span>
         <span>{t('v2.inventory.tableItem')}</span>
-        <span>{t('v2.inventory.tableCategory')}</span>
-        <span style={HEADER_RIGHT_CELL}>
+        <span style={HEADER_CENTER_CELL}>
+          {t('v2.inventory.tableCategory')}
+        </span>
+        <span style={HEADER_CENTER_CELL}>
           {t(`v2.voice.qty.${themeKey}`)} / {t(`v2.voice.rec.${themeKey}`)}
         </span>
-        <span>{t(`v2.voice.expires.${themeKey}`)}</span>
-        <span>{t(`v2.voice.location.${themeKey}`)}</span>
+        <span style={HEADER_CENTER_CELL}>
+          {t(`v2.voice.expires.${themeKey}`)}
+        </span>
+        <span style={HEADER_CENTER_CELL}>
+          {t(`v2.voice.location.${themeKey}`)}
+        </span>
         <span>{t('v2.inventory.tableStatus')}</span>
       </div>
 
