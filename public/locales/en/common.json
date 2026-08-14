@@ -717,7 +717,7 @@
     },
     "howIsItFree": {
       "question": "How can this be free?",
-      "answer": "• This application was developed for personal use and is shared openly for others to benefit from\n• AI has significantly accelerated development, so development has been quite fast. Status 01/2026: About 50 hours of work time invested\n• Running costs are minimal, as the app runs entirely in the browser\n• Hosted on GitHub Pages (free)\n• CI/CD and project management on GitHub (free)\n• Development and other tools (free)\n• The only cost is the domain, approximately $10 per year"
+      "answer": "• This application was developed for personal use and is shared openly for others to benefit from\n• AI has significantly accelerated development, so development has been quite fast. Status 08/2026: About 100 hours of work time invested\n• Running costs are minimal, as the app runs entirely in the browser\n• Hosted on GitHub Pages (free)\n• CI/CD and project management on GitHub (free)\n• Development and other tools (free)\n• The only cost is the domain, approximately $10 per year"
     },
     "tips": {
       "tip1": "Set realistic supply duration (72 hours minimum, 2 weeks recommended)",
@@ -2685,9 +2685,9 @@
         "pantry": "Need more help?"
       },
       "howIsItFree": {
-        "cockpit": "HOW IS THIS FREE · Personal project, shared openly. AI-assisted development kept the build time low, and it runs entirely in the browser on GitHub Pages — the only recurring cost is the ~$10/year domain.",
-        "civil": "HOW IS THIS FREE · Personal project, shared openly. AI-assisted development kept the build time low, and it runs entirely in the browser on GitHub Pages — the only recurring cost is the ~$10/year domain.",
-        "pantry": "How is this free? It started as a personal project and is shared openly. AI-assisted development kept the build time low, and it runs entirely in the browser on GitHub Pages — the only recurring cost is the ~$10/year domain."
+        "cockpit": "HOW IS THIS FREE · Personal project, shared openly. AI-accelerated development — about 100 hours of work as of 08/2026. Runs entirely in the browser; hosting, CI/CD, and tooling are all free on GitHub. Only recurring cost: the ~$10/year domain.",
+        "civil": "HOW IS THIS FREE · Personal project, shared openly. AI-accelerated development — about 100 hours of work as of 08/2026. Runs entirely in the browser; hosting, CI/CD, and tooling are all free on GitHub. Only recurring cost: the ~$10/year domain.",
+        "pantry": "How is this free? It started as a personal project and is shared openly. AI has sped up development a lot — about 100 hours of work so far, as of August 2026. It runs entirely in the browser, and hosting plus CI/CD are both free on GitHub. The only real cost is the domain, about $10 a year."
       }
     }
   }

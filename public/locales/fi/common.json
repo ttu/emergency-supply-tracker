@@ -717,7 +717,7 @@
     },
     "howIsItFree": {
       "question": "Miten tämä voi olla ilmainen?",
-      "answer": "• Sovellus on kehitetty omaan käyttöön ja jaettu avoimesti muiden hyödyksi\n• AI on nopeuttanut kehitystä merkittävästi, joten tämän on ehtinyt kehittää melko nopeasti. Tilanne 01/2026: Työaikaa on käytetty noin 50 tuntia\n• Juoksevat kulut ovat minimaaliset, koska sovellus toimii täysin selaimessa\n• Hostaus GitHub Pages -palvelussa (ilmainen)\n• CI/CD ja projektinhallinta GitHubissa (ilmainen)\n• Kehitys ja muut työkalut (ilmaiset)\n• Ainoa kustannus on verkkotunnus, noin 10 dollaria vuodessa"
+      "answer": "• Sovellus on kehitetty omaan käyttöön ja jaettu avoimesti muiden hyödyksi\n• AI on nopeuttanut kehitystä merkittävästi, joten tämän on ehtinyt kehittää melko nopeasti. Tilanne 08/2026: Työaikaa on käytetty noin 100 tuntia\n• Juoksevat kulut ovat minimaaliset, koska sovellus toimii täysin selaimessa\n• Hostaus GitHub Pages -palvelussa (ilmainen)\n• CI/CD ja projektinhallinta GitHubissa (ilmainen)\n• Kehitys ja muut työkalut (ilmaiset)\n• Ainoa kustannus on verkkotunnus, noin 10 dollaria vuodessa"
     },
     "tips": {
       "tip1": "Aseta realistinen varastojakso (vähintään 72 tuntia, suositus 2 viikkoa)",
@@ -2685,9 +2685,9 @@
         "pantry": "Tarvitsetko lisää apua?"
       },
       "howIsItFree": {
-        "cockpit": "MITEN TÄMÄ ON ILMAINEN · Oma projekti, jaettu avoimesti. Tekoäly on nopeuttanut kehitystä, ja sovellus toimii täysin selaimessa GitHub Pagesissa — ainoa toistuva kustannus on noin 10 dollarin verkkotunnus vuodessa.",
-        "civil": "MITEN TÄMÄ ON ILMAINEN · Oma projekti, jaettu avoimesti. Tekoäly on nopeuttanut kehitystä, ja sovellus toimii täysin selaimessa GitHub Pagesissa — ainoa toistuva kustannus on noin 10 dollarin verkkotunnus vuodessa.",
-        "pantry": "Miten tämä on ilmainen? Sovellus syntyi omaan käyttöön ja on jaettu avoimesti. Tekoäly on nopeuttanut kehitystä, ja sovellus toimii täysin selaimessa GitHub Pagesissa — ainoa toistuva kustannus on noin 10 dollarin verkkotunnus vuodessa."
+        "cockpit": "MITEN TÄMÄ ON ILMAINEN · Oma projekti, jaettu avoimesti. Tekoälyn avulla kehitetty nopeasti — noin 100 tuntia työtä 08/2026 mennessä. Toimii täysin selaimessa; hostaus, CI/CD ja työkalut ovat ilmaisia GitHubissa. Ainoa toistuva kustannus on noin 10 dollarin verkkotunnus vuodessa.",
+        "civil": "MITEN TÄMÄ ON ILMAINEN · Oma projekti, jaettu avoimesti. Tekoälyn avulla kehitetty nopeasti — noin 100 tuntia työtä 08/2026 mennessä. Toimii täysin selaimessa; hostaus, CI/CD ja työkalut ovat ilmaisia GitHubissa. Ainoa toistuva kustannus on noin 10 dollarin verkkotunnus vuodessa.",
+        "pantry": "Miten tämä on ilmainen? Sovellus syntyi omaan käyttöön ja on jaettu avoimesti. Tekoäly on nopeuttanut kehitystä paljon — noin 100 tuntia työtä tähän mennessä (elokuu 2026). Sovellus toimii täysin selaimessa, ja hostaus sekä CI/CD ovat molemmat ilmaisia GitHubissa. Ainoa oikea kustannus on verkkotunnus, noin 10 dollaria vuodessa."
       }
     }
   }
