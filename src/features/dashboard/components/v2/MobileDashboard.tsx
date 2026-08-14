@@ -78,6 +78,7 @@ export function MobileDashboard({
   // Same selection as the desktop PriorityQueue: sorted critical-first before
   // the slice, so a critical item further down the rows is not cut.
   const priority = selectPriorityRows(rows, 4);
+  const resolveLabel = t(`v2.voice.resolveAction.${themeKey}`);
   // Borders come off the final row, whatever its size — the grid is two
   // columns and the list can be shorter than the six it slices to.
   const visibleStats = stats.slice(0, 6);
@@ -208,7 +209,7 @@ export function MobileDashboard({
               style={{
                 padding: '11px 14px',
                 display: 'grid',
-                gridTemplateColumns: '14px 1fr auto',
+                gridTemplateColumns: '14px 1fr auto auto',
                 gap: 10,
                 alignItems: 'center',
                 borderBottom:
@@ -241,6 +242,25 @@ export function MobileDashboard({
                 </div>
               </div>
               <StatusPill status={r.status} />
+              <button
+                type="button"
+                onClick={() => onItemSelect(String(r.item.id))}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--color-rule)',
+                  color: 'var(--color-text-2)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 10,
+                  padding: '4px 10px',
+                  cursor: 'pointer',
+                  borderRadius: 'var(--radius-pill)',
+                  letterSpacing: '0.08em',
+                  fontWeight: 700,
+                  lineHeight: 1,
+                }}
+              >
+                {resolveLabel}
+              </button>
             </div>
           ))}
         </Panel>

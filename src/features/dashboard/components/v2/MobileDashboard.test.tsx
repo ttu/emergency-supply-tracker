@@ -78,6 +78,18 @@ describe('MobileDashboard (v2)', () => {
     expect(screen.getByText('Canned soup')).toBeInTheDocument();
   });
 
+  it('clicking a priority row resolve button invokes onItemSelect with the item id', async () => {
+    const onItemSelect = vi.fn();
+    setup([missing], { onItemSelect });
+
+    const resolveButton = await screen.findByRole('button', {
+      name: 'v2.voice.resolveAction.cockpit',
+    });
+    fireEvent.click(resolveButton);
+
+    expect(onItemSelect).toHaveBeenCalledWith(String(missing.id));
+  });
+
   it('renders the coverage grid and reports a tapped category', async () => {
     const onCategorySelect = vi.fn();
     setup([stocked, missing], { onCategorySelect });
