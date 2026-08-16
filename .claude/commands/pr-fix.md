@@ -19,6 +19,11 @@ When fixing a PR, check these in order:
 
 ## Instructions
 
+If any `gh`/`git push` command reports not authenticated, don't ask the user to run
+`gh auth login` — export the devcontainer's forwarded token inline in the same command instead:
+`export GH_TOKEN="$GH_EST_TOKEN"; gh ...` (see AGENTS.md's Version Control & PR Workflow section
+for why). Each `Bash` call is a fresh shell, so re-export it in every command that needs it.
+
 1. Get the current branch and find the associated PR:
 
    ```bash
