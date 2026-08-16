@@ -115,13 +115,22 @@ export function MobileDashboard({
           {t(`v2.voice.addItem.${themeKey}`)}
         </Button>
         <div style={{ display: 'flex', gap: 8 }}>
-          <Button variant="secondary" onClick={() => onViewInventory()}>
+          <Button
+            variant="secondary"
+            onClick={() => onViewInventory()}
+            // Equal-width, wrapping labels: on narrow phones "EXPORT SHOPPING
+            // LIST" is wider than half the row, and Button's whiteSpace:nowrap
+            // plus the flex item's default min-width:auto would otherwise push
+            // it past the edge of the screen instead of shrinking.
+            style={{ flex: 1, minWidth: 0, whiteSpace: 'normal' }}
+          >
             {t(`v2.dashboard.quickViewInventory.${themeKey}`)}
           </Button>
           <Button
             variant="secondary"
             onClick={() => handleExport()}
             disabled={itemsToRestock.length === 0}
+            style={{ flex: 1, minWidth: 0, whiteSpace: 'normal' }}
           >
             {t(`v2.dashboard.quickExportShoppingList.${themeKey}`)}
           </Button>
