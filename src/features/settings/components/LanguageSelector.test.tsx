@@ -97,4 +97,39 @@ describe('LanguageSelector', () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  it('only persists the most recently selected language when requests resolve out of order', async () => {
+    let resolveFi: () => void = () => {};
+    let resolveEn: () => void = () => {};
+    mockChangeLanguage.mockImplementation((language: string) => {
+      if (language === 'fi') {
+        return new Promise<void>((resolve) => {
+          resolveFi = resolve;
+        });
+      }
+      return new Promise<void>((resolve) => {
+        resolveEn = resolve;
+      });
+    });
+
+    render(<LanguageSelector />);
+
+    const select = screen.getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: 'fi' } });
+    fireEvent.change(select, { target: { value: 'en' } });
+
+    // Resolve in reverse order: the later ('en') request finishes first,
+    // then the earlier ('fi') request resolves after it.
+    resolveEn();
+    await vi.waitFor(() => {
+      expect(mockUpdateSettings).toHaveBeenCalledWith({ language: 'en' });
+    });
+    mockUpdateSettings.mockClear();
+
+    resolveFi();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockUpdateSettings).not.toHaveBeenCalled();
+  });
 });

@@ -28,8 +28,8 @@ describe('localStorage utilities', () => {
 
       expect(defaultData.version).toBe(CURRENT_SCHEMA_VERSION);
       expect(defaultData.household).toBeDefined();
-      expect(defaultData.household.adults).toBe(2);
-      expect(defaultData.household.children).toBe(3);
+      expect(defaultData.household.adults).toBe(1);
+      expect(defaultData.household.children).toBe(0);
       expect(defaultData.household.supplyDurationDays).toBe(3);
       expect(defaultData.household.useFreezer).toBe(false);
       expect(defaultData.settings).toBeDefined();

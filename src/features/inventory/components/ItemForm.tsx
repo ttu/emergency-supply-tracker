@@ -148,6 +148,19 @@ export const ItemForm = ({
     };
   });
 
+  // Keep the quantity field in step with the stored item when it changes from
+  // outside this form — the v2 item detail puts −1 / +1 / Consume quick-actions
+  // next to the form and those write straight to storage. Without this the
+  // field keeps its stale value and submitting silently reverts the
+  // adjustment. Adjusted during render (not in an effect) per the React
+  // "adjusting state when a prop changes" pattern, so there is no extra
+  // render pass or cascading-update lint violation.
+  const [syncedQuantity, setSyncedQuantity] = useState(item?.quantity);
+  if (item?.quantity !== undefined && item.quantity !== syncedQuantity) {
+    setSyncedQuantity(item.quantity);
+    setFormData((prev) => ({ ...prev, quantity: item.quantity.toString() }));
+  }
+
   const initialFormDataRef = useRef<FormData | null>(null);
   const hasCapturedInitialRef = useRef(false);
   useEffect(() => {
@@ -335,7 +348,15 @@ export const ItemForm = ({
     'boxes',
   ] as const;
 
-  const unitOptions = COMMON_UNITS.map((unit) => ({
+  // An item may already carry a unit the curated list leaves out — kit
+  // templates use rolls, grams and days. Without its own unit among the
+  // options the select falls back to the first one, so the form shows a unit
+  // the item does not have and one careless change silently rewrites it.
+  const offeredUnits: Unit[] = COMMON_UNITS.includes(formData.unit as Unit)
+    ? COMMON_UNITS
+    : [...COMMON_UNITS, formData.unit as Unit];
+
+  const unitOptions = offeredUnits.map((unit) => ({
     value: unit,
     label: t(unit, { ns: 'units' }),
   }));

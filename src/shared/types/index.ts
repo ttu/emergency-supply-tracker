@@ -105,9 +105,21 @@ export const VALID_THEMES = [
   'forest',
   'lavender',
   'minimal',
+  'cockpit',
+  'civil',
+  'pantry',
 ] as const;
 
 export type Theme = (typeof VALID_THEMES)[number];
+
+/** Theme keys for the design v2 system. Selecting one swaps the entire app
+ *  shell + views to the new design. The other themes keep the existing layout. */
+export const DESIGN_V2_THEMES = ['cockpit', 'civil', 'pantry'] as const;
+export type DesignV2Theme = (typeof DESIGN_V2_THEMES)[number];
+
+export function isDesignV2Theme(theme: string): theme is DesignV2Theme {
+  return (DESIGN_V2_THEMES as readonly string[]).includes(theme);
+}
 
 /** Themes available for user selection (excludes 'auto') */
 export const SELECTABLE_THEMES = [
@@ -119,6 +131,9 @@ export const SELECTABLE_THEMES = [
   'forest',
   'lavender',
   'minimal',
+  'cockpit',
+  'civil',
+  'pantry',
 ] as const satisfies readonly Theme[];
 
 export interface UserSettings {
@@ -131,6 +146,8 @@ export interface UserSettings {
     waterTracking: boolean;
   };
   onboardingCompleted?: boolean;
+  /** True once the user has acknowledged or dismissed the design v2 availability banner. */
+  designV2NoticeDismissed?: boolean;
   // Customizable nutrition and requirement settings
   dailyCaloriesPerPerson?: number; // Default: 2000 kcal
   dailyWaterPerPerson?: number; // Default: 3 liters

@@ -1,0 +1,58 @@
+.viewport {
+  width: 100%;
+  /* Its own scroll container, for the same reason OnboardLayout is one: the
+   * v2 themes lock the document. */
+  overflow-y: auto;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 6vw, 60px);
+}
+
+.content {
+  max-width: 720px;
+  text-align: left;
+}
+
+.completeLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-accent);
+  letter-spacing: 0.12em;
+}
+
+.subtitle {
+  margin-top: 18px;
+  font-size: 16px;
+  color: var(--color-text-2);
+  line-height: 1.6;
+}
+
+.summaryGrid {
+  margin-top: 32px;
+  padding: 24px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-lg);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 480px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.statValue {
+  margin-top: 8px;
+}
+
+.actions {
+  margin-top: 32px;
+}

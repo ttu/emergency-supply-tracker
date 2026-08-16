@@ -34,6 +34,12 @@ vi.mock('@/shared/utils/storage/storageUsage', () => ({
 
 vi.mock('@/features/alerts', () => ({
   generateDashboardAlerts: vi.fn(),
+  readNotificationPrefs: () => ({
+    critical: true,
+    lowStock: true,
+    expiry: true,
+    backup: true,
+  }),
 }));
 
 const mockShowNotification = vi.fn();

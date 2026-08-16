@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import App from './App';
 import { createMockAppData } from '@/shared/utils/test/factories';
@@ -27,12 +27,14 @@ vi.mock('react-i18next', () => ({
     },
 }));
 
-// Helper to set up localStorage with onboarding completed (use saveAppData for root/inventory set shape)
+// Helper to set up localStorage with onboarding completed.
+// Uses 'cockpit' (the default design v2 theme) so the integration tests
+// exercise the v2 shell that real users will see.
 const setupCompletedOnboarding = () => {
   const appData = createMockAppData({
     settings: {
       language: 'en',
-      theme: 'light',
+      theme: 'cockpit',
       highContrast: false,
       onboardingCompleted: true,
     },
@@ -59,111 +61,131 @@ describe('App', () => {
   it('renders navigation', () => {
     renderApp();
 
-    expect(screen.getByText('navigation.dashboard')).toBeInTheDocument();
-    expect(screen.getByText('navigation.inventory')).toBeInTheDocument();
-    expect(screen.getByText('navigation.settings')).toBeInTheDocument();
+    // The mocked t() echoes the key back, so the nav reads as its voice keys.
+    expect(
+      screen.getByRole('button', { name: 'v2.voice.navHome.cockpit' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'v2.voice.navInventory.cockpit' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'v2.voice.navSettings.cockpit' }),
+    ).toBeInTheDocument();
   });
 
   it('renders dashboard by default', async () => {
     renderApp();
 
-    // Dashboard should show quick actions (wait for lazy loading)
+    // The v2 dashboard leads with the READINESS caption (no Quick Actions).
     await waitFor(() => {
-      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
   });
 
   it('navigates to inventory when clicking inventory button', async () => {
     renderApp();
 
-    // Wait for initial dashboard to load
     await waitFor(() => {
-      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
 
-    const inventoryButton = screen.getByText('navigation.inventory');
-    fireEvent.click(inventoryButton);
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navInventory.cockpit' }),
+    );
 
-    // Should show inventory page content (wait for lazy loading)
+    // v2 Inventory shows the "+ ADD" primary button and an "ALL" filter chip.
     await waitFor(() => {
-      expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      ).toBeInTheDocument();
     });
-    // Dashboard content should not be visible
     expect(
-      screen.queryByText('dashboard.quickActions'),
+      screen.queryByText('v2.voice.readiness.cockpit'),
     ).not.toBeInTheDocument();
   });
 
   it('navigates to settings when clicking settings button', async () => {
     renderApp();
 
-    // Wait for initial dashboard to load
     await waitFor(() => {
-      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
-    });
-
-    const settingsButton = screen.getByText('navigation.settings');
-    fireEvent.click(settingsButton);
-
-    // Should show settings sections (wait for lazy loading)
-    // Scope to sidebar to avoid duplicates from drawer
-    await waitFor(() => {
-      const sidebar = screen.getByTestId('sidemenu-sidebar');
       expect(
-        within(sidebar).getByText('settings.navigation.sections.household'),
+        screen.getByText('v2.voice.readiness.cockpit'),
       ).toBeInTheDocument();
     });
-    // Dashboard content should not be visible
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navSettings.cockpit' }),
+    );
+
+    // v2 Settings has a sub-nav rail captioned "SECTIONS".
+    await waitFor(() => {
+      expect(
+        screen.getByText('v2.settings.railSections.cockpit'),
+      ).toBeInTheDocument();
+    });
+    // APPEARANCE shows up in both the rail and the §1 heading.
     expect(
-      screen.queryByText('dashboard.quickActions'),
-    ).not.toBeInTheDocument();
+      screen.getAllByText('v2.settings.appearance.title.cockpit').length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('navigates between pages', async () => {
     renderApp();
 
-    // Start on dashboard (wait for lazy loading)
     await waitFor(() => {
-      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
-    });
-
-    // Go to settings
-    fireEvent.click(screen.getByText('navigation.settings'));
-    await waitFor(() => {
-      // Scope to sidebar to avoid duplicates from drawer
-      const sidebar = screen.getByTestId('sidemenu-sidebar');
       expect(
-        within(sidebar).getByText('settings.navigation.sections.household'),
+        screen.getByText('v2.voice.readiness.cockpit'),
       ).toBeInTheDocument();
     });
 
-    // Go to inventory
-    fireEvent.click(screen.getByText('navigation.inventory'));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navSettings.cockpit' }),
+    );
     await waitFor(() => {
-      expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.settings.railSections.cockpit'),
+      ).toBeInTheDocument();
     });
 
-    // Go back to dashboard
-    fireEvent.click(screen.getByText('navigation.dashboard'));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navInventory.cockpit' }),
+    );
     await waitFor(() => {
-      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navHome.cockpit' }),
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
   });
 
   it('navigates to help page', async () => {
     renderApp();
 
-    // Wait for initial dashboard to load
     await waitFor(() => {
-      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
 
-    const helpButton = screen.getByText('navigation.help');
-    fireEvent.click(helpButton);
+    fireEvent.click(
+      screen.getByRole('button', { name: 'v2.voice.navHelp.cockpit' }),
+    );
 
-    // Should show help page content (wait for lazy loading)
+    // v2 Guide renders §1–§6 sections; §1 is always present.
     await waitFor(() => {
-      expect(screen.getByText('help.title')).toBeInTheDocument();
+      expect(screen.getByText('§1')).toBeInTheDocument();
     });
   });
 
@@ -173,7 +195,7 @@ describe('App', () => {
     const appData = createMockAppData({
       settings: {
         language: 'en',
-        theme: 'light',
+        theme: 'cockpit',
         highContrast: false,
         onboardingCompleted: false,
       },
@@ -182,9 +204,9 @@ describe('App', () => {
 
     renderApp();
 
-    // Should show onboarding content (wait for lazy loading)
+    // v2 onboarding step 01 (Welcome) leads with the step indicator.
     await waitFor(() => {
-      expect(screen.getByText('app.title')).toBeInTheDocument();
+      expect(screen.getByText('v2.onboarding.stepLabel')).toBeInTheDocument();
     });
   });
 
@@ -199,26 +221,26 @@ describe('App', () => {
   it('navigates to inventory with category when clicking category from dashboard', async () => {
     renderApp();
 
-    // Wait for dashboard to load
     await waitFor(() => {
-      expect(screen.getByText('dashboard.quickActions')).toBeInTheDocument();
+      expect(
+        screen.getByText('v2.voice.readiness.cockpit'),
+      ).toBeInTheDocument();
     });
 
-    // Find and click a category card (water-beverages category)
-    const categoryCard = screen.getByTestId('category-water-beverages');
-    fireEvent.click(categoryCard);
+    // v2 dashboard tags each category tile with v2-category-<id>.
+    const tile = screen.getByTestId('v2-category-water-beverages');
+    fireEvent.click(tile);
 
-    // Should show inventory page with category filter active
+    // Should land on Inventory.
     await waitFor(() => {
-      expect(screen.getByText('inventory.addFromTemplate')).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'v2.voice.addItem.cockpit' }),
+      ).toBeInTheDocument();
     });
 
-    // The category should be selected in the SideMenu (has aria-current="page")
-    // Scope to sidebar to avoid duplicates from drawer
-    const sidebar = screen.getByTestId('sidemenu-sidebar');
-    const categoryNavButton = within(sidebar).getByTestId(
-      'sidemenu-item-water-beverages',
-    );
-    expect(categoryNavButton).toHaveAttribute('aria-current', 'page');
+    // The category rail should arrive with water-beverages selected.
+    expect(
+      screen.getByTestId('v2-category-row-water-beverages'),
+    ).toHaveAttribute('aria-current', 'true');
   });
 });

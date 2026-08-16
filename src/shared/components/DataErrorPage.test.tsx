@@ -328,4 +328,26 @@ describe('DataErrorPage', () => {
       'emergency-supplies-raw-2024-01-01.json',
     );
   });
+
+  it.each([
+    ['null', 'null'],
+    ['an array', '[1,2,3]'],
+    ['a string', '"just a string"'],
+  ])(
+    'downloads raw JSON when parsed data is %s rather than an object',
+    async (_description, rawJson) => {
+      const user = userEvent.setup();
+      globalThis.localStorage.setItem(STORAGE_KEY, rawJson);
+
+      const { downloadFile } = await import('@/shared/utils/download');
+
+      renderWithI18n(<DataErrorPage />);
+      await user.click(screen.getByRole('button', { name: 'Download Data' }));
+
+      expect(downloadFile).toHaveBeenCalledWith(
+        rawJson,
+        'emergency-supplies-raw-2024-01-01.json',
+      );
+    },
+  );
 });

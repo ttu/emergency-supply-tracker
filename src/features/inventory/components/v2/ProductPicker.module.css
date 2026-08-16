@@ -1,0 +1,368 @@
+/* Product picker (design v2).
+ *
+ * Most v2 surfaces are styled inline, but this one leans on hover and
+ * focus-visible states across four different controls, which inline styles
+ * cannot express. Everything below reads from the same theme tokens the
+ * inline styles use, so cockpit/civil/pantry stay in step.
+ */
+
+.searchRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.field {
+  position: relative;
+}
+
+.field svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-text-3);
+  fill: none;
+  pointer-events: none;
+}
+
+.search {
+  width: 100%;
+  background: var(--color-panel-2);
+  border: var(--border-width) solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 15px 16px 15px 44px;
+  outline: none;
+}
+
+.search::placeholder {
+  color: var(--color-text-3);
+}
+
+.search:focus {
+  border-color: var(--color-accent);
+}
+
+.railHead,
+.resultHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.railHead {
+  margin: 24px 2px 12px;
+}
+
+.resultHead {
+  margin: 26px 2px 12px;
+}
+
+.rail {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categoryChip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--color-panel-2);
+  border: var(--border-width) solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.categoryChip:hover {
+  background: var(--color-panel);
+}
+
+.categoryChip:focus-visible,
+.productRow:focus-visible,
+.customButton:focus-visible,
+.search:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.chipIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  flex: none;
+  font-size: 15px;
+  line-height: 1;
+  background: var(--color-panel);
+  box-shadow: inset 0 0 0 1px var(--color-rule-soft);
+}
+
+.chipMeta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.chipCode {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--caps-tracking);
+  color: var(--color-text-3);
+}
+
+.chipName {
+  font-size: 13px;
+  color: var(--color-text-2);
+}
+
+.categoryChip[aria-pressed='true'] {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+.categoryChip[aria-pressed='true'] .chipName {
+  color: var(--color-text);
+}
+
+/* The selected chip inverts its glyph tile, per the design. A CSS rule beats
+   the `stroke` presentation attribute the icon carries. */
+.categoryChip[aria-pressed='true'] .chipIcon {
+  background: var(--color-accent);
+  box-shadow: none;
+}
+
+.categoryChip[aria-pressed='true'] .chipIcon svg {
+  stroke: var(--color-accent-ink);
+}
+
+.customButton {
+  margin: 22px 0 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: var(--caps-tracking);
+  text-transform: var(--caps-transform);
+  padding: 18px;
+  cursor: pointer;
+  transition: filter 0.14s ease;
+}
+
+.customButton svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  fill: none;
+}
+
+.customButton:hover {
+  filter: brightness(1.12);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.productRow {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  background: var(--color-panel-2);
+  border: var(--border-width) solid var(--color-rule-soft);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.14s ease,
+    background 0.14s ease,
+    transform 0.14s ease;
+}
+
+.productRow:hover {
+  border-color: var(--color-accent);
+  background: var(--color-panel);
+  transform: translateX(2px);
+}
+
+.badge {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  line-height: 1;
+  background: var(--color-panel);
+  box-shadow: inset 0 0 0 1px var(--color-rule-soft);
+}
+
+/* Rows are buttons, so their contents are spans; the layout below needs
+   them to behave like blocks. */
+.info {
+  display: block;
+  min-width: 0;
+}
+
+.productName {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.productMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.productCategory {
+  font-size: 14px;
+  color: var(--color-text-2);
+  margin: 0;
+}
+
+.metaDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-text-3);
+  flex: none;
+}
+
+.productRecommended {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-3);
+  margin: 0;
+}
+
+.productRecommended b {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.go {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--caps-tracking);
+  text-transform: var(--caps-transform);
+  color: var(--color-text-3);
+}
+
+.goArrow {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  border: var(--border-width) solid var(--color-rule);
+}
+
+.goArrow svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-text-2);
+  stroke-width: 2;
+  fill: none;
+}
+
+.productRow:hover .goLabel {
+  color: var(--color-accent);
+}
+
+.productRow:hover .goArrow {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.productRow:hover .goArrow svg {
+  stroke: var(--color-accent-ink);
+}
+
+.sectionHeader {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--caps-tracking);
+  text-transform: var(--caps-transform);
+  color: var(--color-text-3);
+  margin: 6px 2px 0;
+}
+
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: var(--caps-tracking);
+}
+
+@media (max-width: 920px) {
+  .productRow {
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    padding: 14px 16px;
+  }
+
+  .badge {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  /* The arrow is decoration on a row that is itself the button; on a narrow
+     screen the name and its recommendation matter more. */
+  .go {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .productRow,
+  .categoryChip,
+  .customButton {
+    transition: none;
+  }
+
+  .productRow:hover {
+    transform: none;
+  }
+}

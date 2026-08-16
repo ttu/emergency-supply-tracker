@@ -1,0 +1,80 @@
+import { useTranslation } from 'react-i18next';
+import {
+  Button,
+  Caption,
+  Title,
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { categoryCode } from '@/shared/i18n/voice';
+
+interface ItemDetailHeaderProps {
+  isNew: boolean;
+  itemName?: string;
+  itemCategoryId?: string;
+  categoryName?: string;
+  onDelete?: () => void;
+  onCopy?: () => void;
+}
+
+export function ItemDetailHeader({
+  isNew,
+  itemName,
+  itemCategoryId,
+  categoryName,
+  onDelete,
+  onCopy,
+}: Readonly<ItemDetailHeaderProps>) {
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
+
+  // A brand-new item has no name of its own yet, so the header stands in for
+  // one and the copy/delete actions have nothing to act on.
+  const caption = isNew
+    ? t(`v2.itemDetail.captionNew.${themeKey}`)
+    : t(`v2.itemDetail.captionExisting.${themeKey}`);
+  const title = isNew ? t(`v2.itemDetail.titleNew.${themeKey}`) : itemName;
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
+      }}
+    >
+      <div>
+        <Caption>{caption}</Caption>
+        <Title size={32} style={{ marginTop: 4 }}>
+          {title}
+        </Title>
+        {itemCategoryId && (
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              color: 'var(--color-text-3)',
+              marginTop: 6,
+              letterSpacing: '0.06em',
+            }}
+          >
+            {categoryCode(itemCategoryId)} · {categoryName ?? itemCategoryId}
+          </div>
+        )}
+      </div>
+      {!isNew && (onCopy || onDelete) && (
+        <div style={{ display: 'flex', gap: 8 }}>
+          {onCopy && (
+            <Button variant="secondary" onClick={onCopy}>
+              {t(`v2.voice.copy.${themeKey}`)}
+            </Button>
+          )}
+          {onDelete && (
+            <Button variant="secondary" onClick={onDelete}>
+              {t(`v2.voice.delete.${themeKey}`)}
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

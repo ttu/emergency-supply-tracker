@@ -52,7 +52,17 @@ export function DataErrorPage({
     // Add error info to the export so user knows why it failed
     const exportReason = t('dataError.page.exportReason');
     try {
-      const rawData = JSON.parse(rawJson) as Record<string, unknown>;
+      const parsedData: unknown = JSON.parse(rawJson);
+      if (
+        parsedData === null ||
+        typeof parsedData !== 'object' ||
+        Array.isArray(parsedData)
+      ) {
+        const filename = generateDateFilename(EXPORT_BASENAME_RAW);
+        downloadFile(rawJson, filename);
+        return;
+      }
+      const rawData = parsedData as Record<string, unknown>;
       const exportData = {
         ...rawData,
         _exportInfo: {

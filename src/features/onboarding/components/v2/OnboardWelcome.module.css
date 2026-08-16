@@ -1,0 +1,106 @@
+.outputList {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.outputRow {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+@media (max-width: 480px) {
+  .outputRow {
+    grid-template-columns: 28px 1fr;
+  }
+}
+
+.outputCode {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-3);
+  font-weight: 600;
+}
+
+.outputText {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.langList {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.langButton {
+  display: grid;
+  grid-template-columns: 60px 1fr 24px;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--color-rule);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--color-text);
+  text-align: left;
+}
+
+@media (max-width: 480px) {
+  .langButton {
+    grid-template-columns: 44px 1fr 24px;
+  }
+}
+
+.langButtonSelected {
+  border-color: var(--color-accent);
+  background: var(--color-panel-2);
+}
+
+.langCode {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-2);
+  letter-spacing: 0.08em;
+}
+
+.langCodeSelected {
+  color: var(--color-accent);
+}
+
+.langLabel {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.langSub {
+  font-size: 11px;
+  color: var(--color-text-3);
+  margin-top: 2px;
+}
+
+.langCheck {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-rule);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: var(--color-accent-ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.langCheckSelected {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}

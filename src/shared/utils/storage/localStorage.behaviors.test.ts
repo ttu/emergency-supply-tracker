@@ -44,6 +44,7 @@ import {
   createMockAppData,
   createMockHousehold,
 } from '@/shared/utils/test/factories';
+import { DEFAULT_HOUSEHOLD } from '@/features/household';
 import { CURRENT_SCHEMA_VERSION } from './migrations';
 import { DEFAULT_KIT_ID } from '@/features/templates/kits';
 import { STANDARD_CATEGORIES } from '@/features/categories/data';
@@ -1270,8 +1271,10 @@ describe('importMultiInventory section selection', () => {
     const imported = Object.values(result.inventorySets).find(
       (s) => s.name === 'Test',
     );
-    expect(imported?.household.adults).toBe(2);
-    expect(imported?.household.supplyDurationDays).toBe(3);
+    // The point is that the imported household was ignored, not what the
+    // default happens to be — assert against the constant so tuning the
+    // default does not read as a regression here.
+    expect(imported?.household).toEqual(DEFAULT_HOUSEHOLD);
   });
 
   it('uses imported household when section is selected', () => {

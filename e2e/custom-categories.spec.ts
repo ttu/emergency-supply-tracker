@@ -9,428 +9,104 @@ import {
   createMockCategory,
   createMockInventoryItem,
 } from '../src/shared/utils/test/factories';
-import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
-import { createCategoryId } from '../src/shared/types';
-import type { RootStorage } from '../src/shared/types';
+import { createCategoryId, createQuantity } from '../src/shared/types';
+
+/**
+ * Design v2 manages custom categories under Settings → Categories (§8).
+ * The v1 sidemenu category list is gone — categories surface in the
+ * CoverageMatrix tiles and the inventory filter-strip <select>.
+ */
+
+const v2Settings = {
+  onboardingCompleted: true as const,
+  language: 'en' as const,
+  theme: 'cockpit' as const,
+  highContrast: false,
+  advancedFeatures: {
+    calorieTracking: false,
+    powerManagement: false,
+    waterTracking: false,
+  },
+};
+
+async function seed(
+  page: import('@playwright/test').Page,
+  extra: {
+    customCategories?: ReturnType<typeof createMockCategory>[];
+    items?: ReturnType<typeof createMockInventoryItem>[];
+  } = {},
+) {
+  await page.goto('/');
+  await setAppStorage(
+    page,
+    createMockAppData({
+      settings: v2Settings,
+      customCategories: extra.customCategories ?? [],
+      items: extra.items ?? [],
+    }),
+  );
+  await page.reload({ waitUntil: 'domcontentloaded' });
+}
 
 test.describe('Custom Categories', () => {
-  test.beforeEach(async ({ setupApp }) => {
-    await setupApp();
-  });
-
-  test('should display custom category in category list when it exists', async ({
-    page,
-  }) => {
-    // Create app data with a custom category
-    const customCategory = createMockCategory({
-      name: 'Custom Category',
-      names: { en: 'Custom Category', fi: 'Mukautettu kategoria' },
-      icon: '⭐',
-      isCustom: true,
-    });
-
-    const appData = createMockAppData({
-      customCategories: [customCategory],
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-    });
-
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
-
-    await expect(page.getByTestId('page-inventory')).toBeVisible();
-
-    // Verify custom category is visible in the sidebar
+  test('should render the Categories section in Settings', async ({ page }) => {
+    await seed(page);
+    await navigateToSettingsSection(page, 'categories');
+    await expect(page.getByText('§8', { exact: true })).toBeVisible();
     await expect(
-      page.getByTestId('sidemenu-sidebar').getByText('Custom Category'),
+      page.getByRole('heading', { name: 'CATEGORIES', exact: true }),
     ).toBeVisible();
-
-    // Verify custom category exists in data
-    const storedData = await page.evaluate((key) => {
-      const data = localStorage.getItem(key);
-      if (!data) return null;
-      const root = JSON.parse(data) as RootStorage;
-      return root.inventorySets?.[root.activeInventorySetId] ?? null;
-    }, STORAGE_KEY);
-    expect(storedData?.customCategories).toBeDefined();
-    expect(storedData?.customCategories.length).toBeGreaterThan(0);
   });
 
-  test('should allow adding items to custom category', async ({ page }) => {
-    // Setup with custom category
-    const customCategory = createMockCategory({
-      name: 'Pets',
-      icon: '🐾',
-      isCustom: true,
-    });
-
-    const appData = createMockAppData({
-      customCategories: [customCategory],
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-    });
-
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
-
-    // Click on custom category (if visible in navigation)
-    // Or add item and select custom category
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
-    await expect(page.getByTestId('item-form')).toBeVisible();
-
-    // Fill form
-    await page.fill('input[name="name"]', 'Pet Food');
-    // Try to select custom category from dropdown
-    const categorySelect = page.locator('select[name="category"]');
-    const categoryOptions = await categorySelect
-      .locator('option')
-      .allTextContents();
-
-    // If custom category is in options, select it
-    const petsOption = categoryOptions.find((opt) => opt.includes('Pets'));
-    if (petsOption) {
-      await categorySelect.selectOption({ label: petsOption });
-    } else {
-      // Fallback to a standard category
-      await categorySelect.selectOption('food');
-    }
-
-    await page.fill('input[name="quantity"]', '5');
-    await page.selectOption('select[name="unit"]', 'pieces');
-    await page.check('input[type="checkbox"]');
-    await page.getByTestId('save-item-button').click();
-
-    // Item should be added - use getByRole to target item card button specifically
-    await expect(page.getByRole('button', { name: /Pet Food/i })).toBeVisible();
-  });
-
-  test('should persist custom categories after reload', async ({ page }) => {
-    // Setup with custom category
-    const customCategory = createMockCategory({
-      name: 'Test Category',
-      icon: '🧪',
-      isCustom: true,
-    });
-
-    const appData = createMockAppData({
-      customCategories: [customCategory],
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-    });
-
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Reload again
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Custom category should still exist
-    // Verify by checking localStorage or trying to use it
-    const storedData = await page.evaluate((key) => {
-      const data = localStorage.getItem(key);
-      if (!data) return null;
-      const root = JSON.parse(data) as RootStorage;
-      return root.inventorySets?.[root.activeInventorySetId] ?? null;
-    }, STORAGE_KEY);
-
-    expect(storedData).toBeTruthy();
-    expect(storedData!.customCategories).toBeDefined();
-    expect(storedData!.customCategories.length).toBeGreaterThan(0);
-  });
-
-  test('should show custom category on dashboard', async ({ page }) => {
-    // Setup with custom category and item in that category
-    const customCategory = createMockCategory({
-      name: 'Custom Supplies',
-      icon: '📦',
-      isCustom: true,
-    });
-
-    const appData = createMockAppData({
-      customCategories: [customCategory],
-      items: [
-        createMockInventoryItem({
-          name: 'Custom Item',
-          categoryId: customCategory.id,
-          neverExpires: true,
-        }),
-      ],
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-    });
-
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Custom category should appear on dashboard
-    // Dashboard shows category cards, custom categories should be included
-    await expect(page.getByTestId('page-dashboard')).toBeVisible();
-
-    // Category might be shown as a card or in a list
-    // This is a soft check - custom categories are supported in the data model
-    // but may not be fully integrated in the dashboard UI yet
-    const categoryVisible = await page
-      .getByText(/Custom Supplies|📦/i)
-      .isVisible()
-      .catch(() => false);
-
-    // Assert the actual category visibility value
-    // Note: Custom categories may not be fully integrated in dashboard UI yet
-    // If not visible, verify at least the dashboard loads correctly
-    if (categoryVisible) {
-      expect(categoryVisible).toBe(true);
-    } else {
-      // Custom category not visible in UI (integration may be pending)
-      // Verify dashboard loaded successfully as fallback
-      await expect(page.getByTestId('page-dashboard')).toBeVisible();
-    }
-  });
-
-  test('should allow filtering by custom category', async ({ page }) => {
-    // Setup with custom category and items
-    const customCategory = createMockCategory({
-      name: 'Special Items',
-      icon: '⭐',
-      isCustom: true,
-    });
-
-    const appData = createMockAppData({
-      customCategories: [customCategory],
-      items: [
-        createMockInventoryItem({
-          name: 'Special Item 1',
-          categoryId: customCategory.id,
-          neverExpires: true,
-        }),
-        createMockInventoryItem({
-          name: 'Food Item',
-          categoryId: createCategoryId('food'),
-          neverExpires: true,
-        }),
-      ],
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-    });
-
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Navigate to Inventory
-    await page.getByTestId('nav-inventory').click();
-
-    // Try to filter by custom category
-    // Custom categories should appear in category navigation
-    const categoryNav = page.locator(
-      '[role="tablist"], nav, [class*="category"]',
-    );
-    const hasCategoryNav = await categoryNav.isVisible().catch(() => false);
-
-    if (hasCategoryNav) {
-      // Click on custom category tab/filter
-      const customCategoryTab = page.getByText(/Special Items|⭐/i);
-      const tabVisible = await customCategoryTab.isVisible().catch(() => false);
-
-      if (tabVisible) {
-        await customCategoryTab.click();
-        // Should see only items in that category
-        // Use getByRole to target item card buttons specifically
-        await expect(
-          page.getByRole('button', { name: /Special Item 1/i }),
-        ).toBeVisible();
-        await expect(
-          page.getByRole('button', { name: /Food Item/i }),
-        ).not.toBeVisible();
-      }
-    }
-  });
-
-  test('should navigate to custom categories section in settings', async ({
+  test('should show a custom category tile on the dashboard when seeded', async ({
     page,
   }) => {
-    const appData = createMockAppData({
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
+    const custom = createMockCategory({
+      id: createCategoryId('custom-x'),
+      name: 'Custom X',
     });
+    await seed(page, { customCategories: [custom] });
 
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-
-    // Navigate to Custom Categories section
-    await navigateToSettingsSection(page, 'customCategories');
-    await expect(page.getByTestId('section-custom-categories')).toBeVisible();
-
-    // Should show empty state or add button
-    const addButton = page.getByRole('button', { name: /add category/i });
-    await expect(addButton).toBeVisible();
+    await expect(page.getByTestId('v2-category-custom-x')).toBeVisible();
   });
 
-  test('should create a new custom category via settings', async ({ page }) => {
-    const appData = createMockAppData({
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-    });
-
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Navigate to Settings -> Custom Categories
-    await page.getByTestId('nav-settings').click();
-    await navigateToSettingsSection(page, 'customCategories');
-
-    // Click Add Category
-    const addButton = page.getByRole('button', { name: /add category/i });
-    await addButton.click();
-
-    // Fill in the form - use label to find input
-    await page.getByLabel(/name \(english\)/i).fill('Test Category');
-    await page.getByLabel(/icon/i).fill('🧪');
-
-    // Submit the form
-    await page.getByRole('button', { name: /save/i }).click();
-
-    // Verify the category was created (RootStorage: read active inventory set)
-    const storedData = await page.evaluate((key) => {
-      const data = localStorage.getItem(key);
-      if (!data) return null;
-      const root = JSON.parse(data) as RootStorage;
-      return root.inventorySets?.[root.activeInventorySetId] ?? null;
-    }, STORAGE_KEY);
-
-    expect(storedData?.customCategories).toBeDefined();
-    expect(storedData?.customCategories.length).toBeGreaterThan(0);
-  });
-
-  test('should handle custom category in data import/export', async ({
+  test('custom category appears as an option in the inventory filter', async ({
     page,
   }) => {
-    // Create custom category
-    const customCategory = createMockCategory({
-      name: 'Imported Category',
-      icon: '📥',
-      isCustom: true,
+    const custom = createMockCategory({
+      id: createCategoryId('garden'),
+      name: 'Garden',
     });
+    await seed(page, { customCategories: [custom] });
 
-    const appData = createMockAppData({
-      customCategories: [customCategory],
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
+    await page.getByTestId('v2-nav-inv').click();
+    // Custom categories get a rail row, alongside the ten standard ones.
+    const row = page.getByTestId('v2-category-row-garden');
+    await expect(row).toBeVisible();
+    await expect(row).toContainText('Garden');
+  });
+
+  test('items in a custom category show in inventory when filtered', async ({
+    page,
+  }) => {
+    const custom = createMockCategory({
+      id: createCategoryId('garden'),
+      name: 'Garden',
     });
-
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Export data
-    await page.getByTestId('nav-settings').click();
-    await navigateToSettingsSection(page, 'backupTransfer');
-    const exportButton = page.getByTestId('export-data-button');
-    await expect(exportButton).toBeVisible({ timeout: 10000 });
-    await exportButton.click();
-
-    // Wait for export selection modal to open and click export button
-    const exportModalButton = page.locator('button', {
-      hasText: /^Export$|^Vie$/i,
+    const item = createMockInventoryItem({
+      name: 'Seeds',
+      categoryId: createCategoryId('garden'),
+      quantity: createQuantity(10),
+      unit: 'pieces',
+      neverExpires: true,
     });
-    await expect(exportModalButton).toBeVisible({ timeout: 5000 });
-    await exportModalButton.click();
+    await seed(page, { customCategories: [custom], items: [item] });
 
-    // Wait for modal to close and download to complete
-    await page.waitForTimeout(500);
-
-    // Verify custom category is in exported data
-    // This is tested via the export functionality
-    // Custom categories are included in the export format
-    await expect(exportButton).toBeVisible();
+    await page.getByTestId('v2-nav-inv').click();
+    // Custom categories get a rail row of their own.
+    await page.getByTestId('v2-category-row-garden').click();
+    await expect(
+      page.getByText('Seeds', { exact: true }).first(),
+    ).toBeVisible();
   });
 });

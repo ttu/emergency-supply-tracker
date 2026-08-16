@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, startAddCustomItem } from './fixtures';
 
 test.describe('Item Status Indicators', () => {
   test.beforeEach(async ({ setupApp }) => {
@@ -8,10 +8,8 @@ test.describe('Item Status Indicators', () => {
   test('should show OK status for item with sufficient quantity', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByTestId('v2-nav-inv').click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity >= recommended
@@ -48,10 +46,8 @@ test.describe('Item Status Indicators', () => {
   test('should show Warning status for item with low quantity', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByTestId('v2-nav-inv').click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity < 50% of recommended
@@ -100,10 +96,8 @@ test.describe('Item Status Indicators', () => {
   test('should show Critical status for item with zero quantity', async ({
     page,
   }) => {
-    await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByTestId('v2-nav-inv').click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     // Add item with quantity = 0
@@ -123,19 +117,20 @@ test.describe('Item Status Indicators', () => {
     const itemCard = itemCardButton.locator('..');
     await expect(itemCard).toBeVisible();
 
-    // Critical items should trigger alerts on dashboard
-    await page.getByTestId('nav-dashboard').click();
-    await expect(page.getByTestId('alerts-section')).toBeVisible({
+    // Critical items surface in the dashboard alert banner.
+    await page.getByTestId('v2-nav-home').click();
+    await expect(page.getByTestId('v2-alert-banner')).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByText('Critical Status Item').first()).toBeVisible({
       timeout: 5000,
     });
   });
 
   test('should show Critical status for expired item', async ({ page }) => {
     // Add expired item
-    await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByTestId('v2-nav-inv').click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Expired Critical Item');
@@ -148,34 +143,26 @@ test.describe('Item Status Indicators', () => {
     await page.getByTestId('save-item-button').click();
 
     // Navigate to Inventory to check item card status (not dashboard alerts)
-    await page.getByTestId('nav-inventory').click();
-    await expect(page.getByTestId('page-inventory')).toBeVisible({
+    await page.getByTestId('v2-nav-inv').click();
+    await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible({
       timeout: 5000,
     });
 
-    // Should show expired text in item card - use getByRole to target item card button specifically
+    // v2 inventory row has no "expired" CSS class; instead the expiration
+    // column shows the past date and the StatusPill shows CRIT.
     const itemCardButton = page.getByRole('button', {
       name: /Expired Critical Item/i,
     });
     await expect(itemCardButton).toBeVisible();
-    // Check that expired text is visible within the item card
-    // Use CSS selector to target the expired class specifically to avoid matching item name
-    const itemCard = itemCardButton.locator('..');
-    // Target the expired status element by its CSS class (contains "expired" in the class name)
-    const expiredElement = itemCard.locator('[class*="expired"]');
-    await expect(expiredElement).toBeVisible({
-      timeout: 5000,
-    });
-    // Verify it contains the expired text
-    await expect(expiredElement.getByText(/⚠️/i)).toBeVisible();
+    // The row contains both the date string and the CRIT pill text.
+    await expect(itemCardButton).toContainText('2024-01-01');
+    await expect(itemCardButton).toContainText('CRIT');
   });
 
   test('should update status when quantity changes', async ({ page }) => {
     // Add item with low quantity
-    await page.getByTestId('nav-inventory').click();
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await page.getByTestId('v2-nav-inv').click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
 
     await page.fill('input[name="name"]', 'Status Update Item');
@@ -204,12 +191,10 @@ test.describe('Item Status Indicators', () => {
 
   test('should show status in category summary', async ({ page }) => {
     // Add items with different statuses
-    await page.getByTestId('nav-inventory').click();
+    await page.getByTestId('v2-nav-inv').click();
 
     // Add OK item
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'OK Food Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -219,9 +204,7 @@ test.describe('Item Status Indicators', () => {
     await page.getByTestId('save-item-button').click();
 
     // Add Critical item
-    await page.getByTestId('add-item-button').click();
-    await expect(page.getByTestId('template-selector')).toBeVisible();
-    await page.getByTestId('custom-item-button').click();
+    await startAddCustomItem(page);
     await expect(page.getByTestId('item-form')).toBeVisible();
     await page.fill('input[name="name"]', 'Critical Food Item');
     await page.selectOption('select[name="category"]', 'food');
@@ -230,15 +213,9 @@ test.describe('Item Status Indicators', () => {
     await page.check('input[type="checkbox"]');
     await page.getByTestId('save-item-button').click();
 
-    // Navigate to Dashboard
-    await page.getByTestId('nav-dashboard').click();
-
-    // Food category card should show status (critical due to zero quantity item)
-    const foodCategoryCard = page.locator('[data-testid="category-food"]');
-    await expect(foodCategoryCard).toBeVisible();
-
-    // Category should reflect critical status
-    // Status might be shown as color, icon, or text
-    await expect(foodCategoryCard).toBeVisible();
+    // Navigate to Dashboard — v2 uses CoverageMatrix tiles instead of v1
+    // category-overview cards.
+    await page.getByTestId('v2-nav-home').click();
+    await expect(page.getByTestId('v2-category-food')).toBeVisible();
   });
 });

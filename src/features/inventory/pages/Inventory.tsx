@@ -13,10 +13,12 @@ import {
   CategoryStatusSummary,
 } from '@/features/inventory';
 import type { SortBy } from '@/features/inventory';
+import { compareItemsBy } from '@/features/inventory/utils/sortItems';
 import { calculateItemStatus } from '@/shared/utils/calculations/itemStatus';
 import { getRecommendedQuantityForItem } from '@/shared/utils/calculations/itemRecommendedQuantity';
 import { calculateRecommendedQuantity } from '@/shared/utils/calculations/recommendedQuantity';
 import { useRecommendedItems, TemplateSelector } from '@/features/templates';
+import { offerableTemplates } from '@/features/templates/utils/offerableTemplates';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
@@ -54,28 +56,6 @@ export interface InventoryProps {
  * Comparator for the inventory list. Items that never expire sort last when
  * sorting by expiration.
  */
-function compareItemsBy(
-  a: InventoryItem,
-  b: InventoryItem,
-  sortBy: SortBy,
-): number {
-  switch (sortBy) {
-    case 'name':
-      return a.name.localeCompare(b.name);
-    case 'quantity':
-      return b.quantity - a.quantity;
-    case 'expiration':
-      if (a.neverExpires && b.neverExpires) return 0;
-      if (a.neverExpires) return 1;
-      if (b.neverExpires) return -1;
-      // Compare date-only strings directly to avoid timezone issues
-      // Date-only strings (YYYY-MM-DD) can be compared lexicographically
-      return (a.expirationDate || '').localeCompare(b.expirationDate || '');
-    default:
-      return 0;
-  }
-}
-
 /** The active filter selections applied to the inventory list. */
 interface ItemFilters {
   selectedCategoryId: string | undefined;
@@ -155,6 +135,7 @@ export function Inventory({
     deleteItem,
     deleteItems,
     disableRecommendedItem,
+    disabledRecommendedItems,
     disabledCategories,
     disableCategory,
     customCategories,
@@ -186,9 +167,10 @@ export function Inventory({
     [customCategories],
   );
 
-  // Filter out recommended items with 0 quantity (e.g., pet items when pets = 0)
+  // Filter out recommended items with 0 quantity (e.g., pet items when pets = 0),
+  // then the ones the household has switched off, product or whole category.
   const applicableRecommendedItems = useMemo(() => {
-    return recommendedItems.filter((item) => {
+    const needed = recommendedItems.filter((item) => {
       const qty = calculateRecommendedQuantity(
         item,
         household,
@@ -196,7 +178,18 @@ export function Inventory({
       );
       return qty > 0;
     });
-  }, [recommendedItems, household, calculationOptions.childrenMultiplier]);
+    return offerableTemplates(
+      needed,
+      disabledRecommendedItems,
+      enabledCategories.map((c) => String(c.id)),
+    );
+  }, [
+    recommendedItems,
+    household,
+    calculationOptions.childrenMultiplier,
+    disabledRecommendedItems,
+    enabledCategories,
+  ]);
 
   // Filter and sort state - use controlled state if provided, otherwise local state
   const [localCategoryId, setLocalCategoryId] = useState<string | undefined>(
@@ -893,7 +886,7 @@ export function Inventory({
         >
           <TemplateSelector
             templates={applicableRecommendedItems}
-            categories={allCategories}
+            categories={enabledCategories}
             onSelectTemplate={handleSelectTemplate}
             onSelectCustom={handleSelectCustomItem}
             initialCategoryId={selectedCategoryId || ''}

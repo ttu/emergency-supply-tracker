@@ -207,7 +207,7 @@ describe('validateAppDataValues', () => {
       expect(result.errors[0].interpolation).toEqual({
         value: 'invalid-theme',
         allowed:
-          'light, dark, auto, midnight, ocean, sunset, forest, lavender, minimal',
+          'light, dark, auto, midnight, ocean, sunset, forest, lavender, minimal, cockpit, civil, pantry',
       });
     });
 

@@ -53,9 +53,9 @@ describe('HouseholdForm', () => {
       'settings.household.supplyDays',
     ) as HTMLInputElement;
 
-    // Default household: adults 2, children 3, pets 0, supplyDurationDays 3
-    expect(adultsInput.value).toBe('2');
-    expect(childrenInput.value).toBe('3');
+    // Default household: adults 1, children 0, pets 0, supplyDurationDays 3
+    expect(adultsInput.value).toBe('1');
+    expect(childrenInput.value).toBe('0');
     expect(petsInput.value).toBe('0');
     expect(supplyDaysInput.value).toBe('3');
   });

@@ -37,6 +37,14 @@ export const PET_REQUIREMENT_MULTIPLIER = 1;
  */
 export const DAILY_WATER_PER_PERSON = 3;
 
+/**
+ * Category id of the water & beverages category.
+ * Water is calculated differently from every other category (drinking water plus
+ * the water stored food needs for preparation), so several modules have to name
+ * it explicitly.
+ */
+export const WATER_CATEGORY_ID = 'water-beverages';
+
 // =============================================================================
 // CALORIE CONSTANTS
 // =============================================================================

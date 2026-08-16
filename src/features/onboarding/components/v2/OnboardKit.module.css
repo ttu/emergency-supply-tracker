@@ -1,0 +1,149 @@
+.kitGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.kitCard {
+  padding: 20px;
+  border: 1.5px solid var(--color-rule);
+  background: transparent;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  display: block;
+  width: 100%;
+}
+
+/* The selected ring is an inset shadow rather than an outline: an inline
+ * outline (in either state) overrides the :focus-visible ring from
+ * global.css, leaving keyboard users with no focus indicator. */
+.kitCardSelected {
+  border-color: var(--color-accent);
+  background: var(--color-panel);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.kitCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.kitName {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  max-width: 76%;
+}
+
+.kitBadge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-panel-2);
+  color: var(--color-text-3);
+  border: 1px solid var(--color-rule);
+  white-space: nowrap;
+}
+
+.kitBadgeSelected {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border-color: var(--color-accent);
+}
+
+.kitDescription {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--color-text-2);
+  line-height: 1.55;
+  min-height: 40px;
+}
+
+.kitFooter {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-rule-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kitCount {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.kitCountLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-3);
+  letter-spacing: 0.06em;
+}
+
+.kitCheck {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-rule);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: var(--color-accent-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.kitCheckSelected {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.uploadButton {
+  margin-top: 12px;
+  width: 100%;
+  padding: 28px 20px;
+  text-align: center;
+  border: 1.5px dashed var(--color-rule);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+.uploadIcon {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.uploadTitle {
+  display: block;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.uploadHint {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-3);
+  letter-spacing: 0.04em;
+}

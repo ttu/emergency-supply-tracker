@@ -1,327 +1,102 @@
 import {
   test,
   expect,
-  expandRecommendedItems,
-  ensureNoModals,
-  waitForCountChange,
-  selectInventoryCategory,
   navigateToSettingsSection,
+  waitForStoredData,
 } from './fixtures';
+
+/**
+ * The v2 Settings page exposes 11 sectioned panels driven by the
+ * SettingsRail. Sub-tests here verify the major sections render +
+ * the most interactive controls (language, household stepper,
+ * about links). Theme + high-contrast are covered in
+ * theme-switching.spec.ts; advanced toggles in advanced-features.spec.ts;
+ * nutrition in nutrition-settings.spec.ts.
+ */
 
 test.describe('Settings', () => {
   test.beforeEach(async ({ setupApp }) => {
     await setupApp();
   });
 
-  test('should display settings page', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Verify settings page is visible
-    await expect(page.getByTestId('page-settings')).toBeVisible();
-    // Household is the default section
-    await expect(page.getByTestId('section-household')).toBeVisible();
-
-    // Navigate to appearance section via side menu
-    await navigateToSettingsSection(page, 'appearance');
-    await expect(page.getByTestId('section-appearance')).toBeVisible();
+  test('should display the settings page with hero + rail', async ({
+    page,
+  }) => {
+    await page.getByTestId('v2-nav-settings').click();
+    await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible();
+    // Rail exposes the 11 section buttons by data-testid.
+    await expect(
+      page.getByTestId('v2-settings-section-appearance'),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId('v2-settings-section-household'),
+    ).toBeVisible();
+    await expect(page.getByTestId('v2-settings-section-danger')).toBeVisible();
   });
 
   test('should change language', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to appearance section which has the language selector
     await navigateToSettingsSection(page, 'appearance');
-
-    // Find language selector by its specific ID
-    const languageSelect = page.locator('#language-select');
-
-    // Change to Finnish
-    await languageSelect.selectOption('fi');
-
-    // Wait for language change to apply by waiting for Finnish text to appear
-    // Finnish for "Dashboard" is "Etusivu"
-    await expect(page.getByTestId('nav-dashboard')).toContainText('Etusivu', {
-      timeout: 5000,
-    });
-
-    // Navigate to different page to see translated content
-    await page.getByTestId('nav-dashboard').click();
-
-    // Check if navigation changed to Finnish
-    // (This assumes navigation labels change with language)
-    const navText = await page.locator('nav').textContent();
-    // Just verify navigation is still functional
-    expect(navText).toBeTruthy();
+    // v2 language picker is two role="button" cards (EN / FI), not a select.
+    await page.getByRole('button', { name: 'FI Suomi' }).click();
+    // After switching to FI, the SETTINGS nav button keeps its cockpit label
+    // (voice strings are theme-driven, not i18n keys), so just verify the
+    // language card is now aria-pressed.
+    await expect(
+      page.getByRole('button', { name: 'FI Suomi' }),
+    ).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test('should update household configuration', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to household section
+  test('should update household configuration via stepper', async ({
+    page,
+  }) => {
     await navigateToSettingsSection(page, 'household');
-    await expect(page.getByTestId('section-household')).toBeVisible();
+    await expect(page.getByText('PROFILE · §2.1')).toBeVisible();
+    const inc = page.getByRole('button', { name: /Increase ADULTS/ });
+    await inc.click(); // 2 → 3
+    await waitForStoredData(page, (raw) => raw.includes('"adults":3'));
 
-    // Find household inputs
-    const adultsInput = page.locator('input[type="number"]').first();
-    await adultsInput.fill('3');
-
-    // Values should be saved to localStorage automatically
-    // Navigate away and back to verify persistence
-    await page.getByTestId('nav-dashboard').click();
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('v2-nav-home').click();
     await navigateToSettingsSection(page, 'household');
-
-    // Verify value persisted
-    await expect(adultsInput).toHaveValue('3');
+    // Scoped to the ADULTS row: a page-wide getByText('3') also matches the
+    // other stepper values, so it passed whether or not adults persisted.
+    const adultsValue = page
+      .getByRole('button', { name: /Decrease ADULTS/ })
+      .locator('xpath=following-sibling::span[1]');
+    await expect(adultsValue).toHaveText(/3/);
   });
 
-  test('should use household presets', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to household section
-    await navigateToSettingsSection(page, 'household');
-    await expect(page.getByTestId('section-household')).toBeVisible();
-
-    // Click a preset button (e.g., "Family")
-    await page.getByTestId('preset-family').click();
-
-    // Household values should be updated
-    const adultsInput = page.locator('input[type="number"]').first();
-    const adultsValue = await adultsInput.inputValue();
-
-    // Should have a valid number
-    expect(parseInt(adultsValue)).toBeGreaterThan(0);
-  });
-
-  test('should toggle advanced features', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to appearance section which has the high contrast checkbox
-    await navigateToSettingsSection(page, 'appearance');
-    await expect(page.getByTestId('section-appearance')).toBeVisible();
-
-    // Find and toggle the high contrast checkbox by its specific ID
-    const featureCheckbox = page.locator('#high-contrast-toggle');
-    const initialState = await featureCheckbox.isChecked();
-
-    // Toggle the checkbox
-    await featureCheckbox.click();
-
-    // Verify state changed
-    const newState = await featureCheckbox.isChecked();
-    expect(newState).toBe(!initialState);
-  });
-
-  test('should navigate to GitHub from About section', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to about section
+  test('should expose GitHub + bug-tracker links in About section', async ({
+    page,
+  }) => {
     await navigateToSettingsSection(page, 'about');
-    await expect(page.getByTestId('section-about')).toBeVisible();
-
-    // Find GitHub link
-    const githubLink = page.locator('a[href*="github"]');
-
-    // Verify it exists and has correct attributes
-    await expect(githubLink).toHaveAttribute('target', '_blank');
-    await expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(page.getByText('§10')).toBeVisible();
+    const github = page.getByRole('link', { name: /GITHUB/ });
+    await expect(github).toHaveAttribute('target', '_blank');
+    await expect(github).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(page.getByRole('link', { name: /BUG TRACKER/ })).toBeVisible();
   });
 
-  test('should display disabled recommendations section', async ({ page }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to disabled recommendations section
-    await navigateToSettingsSection(page, 'disabledRecommendations');
-
-    // Verify disabled recommendations section exists
+  test('should render the Recommendations section', async ({ page }) => {
+    await navigateToSettingsSection(page, 'recommendations');
+    await expect(page.getByText('§7', { exact: true })).toBeVisible();
     await expect(
-      page.getByTestId('section-disabled-recommendations'),
-    ).toBeVisible();
-
-    // Should show empty message when no items are disabled
-    // Note: Using text locator here since empty state message is dynamic content
-    await expect(
-      page.locator('text=No disabled recommendations'),
+      page.getByRole('heading', { name: 'RECOMMENDATIONS', exact: true }),
     ).toBeVisible();
   });
 
-  test('should show disabled item in settings after disabling from inventory', async ({
-    page,
-  }) => {
-    // First, disable an item from inventory
-    await page.getByTestId('nav-inventory').click();
-
-    // Ensure no modals are open
-    await ensureNoModals(page);
-
-    // Select Water & Beverages category using SideMenu
-    await selectInventoryCategory(page, 'water-beverages');
-
-    // Expand recommended items (they are hidden by default)
-    await expandRecommendedItems(page);
-
-    // Ensure no modals are blocking before clicking
-    await ensureNoModals(page);
-
-    // Get the count before disabling
-    const missingItemsLocator = page.locator('[class*="missingItemText"]');
-    const initialCount = await missingItemsLocator.count();
-
-    // Click the × button to disable the first recommended item
-    const disableButton = page.locator('button:has-text("×")').first();
-    await disableButton.click();
-
-    // Wait for the count to decrease
-    await waitForCountChange(missingItemsLocator, initialCount, {
-      decrease: true,
-    });
-
-    // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to disabled recommendations section
-    await navigateToSettingsSection(page, 'disabledRecommendations');
-
-    // Should see the Disabled Recommendations section with the item
+  test('should render the Danger Zone section', async ({ page }) => {
+    await navigateToSettingsSection(page, 'danger');
+    await expect(page.getByText('§11')).toBeVisible();
     await expect(
-      page.getByTestId('section-disabled-recommendations'),
+      page.getByRole('heading', { name: 'DANGER ZONE' }),
     ).toBeVisible();
-
-    // The disabled item should appear in the list
-    await expect(
-      page.locator('text=No disabled recommendations'),
-    ).not.toBeVisible();
-
-    // Should have an Enable button
-    await expect(page.locator('button:has-text("Enable")')).toBeVisible();
   });
 
-  test('should re-enable disabled recommendation from settings', async ({
-    page,
-  }) => {
-    // First, disable an item from inventory
-    await page.getByTestId('nav-inventory').click();
-
-    // Ensure no modals are open
-    await ensureNoModals(page);
-
-    // Select Water & Beverages category using SideMenu
-    await selectInventoryCategory(page, 'water-beverages');
-
-    // Expand recommended items (they are hidden by default)
-    await expandRecommendedItems(page);
-
-    // Ensure no modals are blocking before clicking
-    await ensureNoModals(page);
-
-    // Count initial recommended items
-    const missingItemsLocator = page.locator('[class*="missingItemText"]');
-    const initialCount = await missingItemsLocator.count();
-
-    // Disable the first item
-    await page.locator('button:has-text("×")').first().click();
-
-    // Wait for item to be disabled
-    await waitForCountChange(missingItemsLocator, initialCount, {
-      decrease: true,
-    });
-
-    // Verify item is disabled
-    const afterDisableCount = await missingItemsLocator.count();
-    expect(afterDisableCount).toBe(initialCount - 1);
-
-    // Navigate to Settings and re-enable the item
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to disabled recommendations section
-    await navigateToSettingsSection(page, 'disabledRecommendations');
-    await expect(
-      page.getByTestId('section-disabled-recommendations'),
-    ).toBeVisible();
-
-    // Click Enable button (not Enable All)
-    const enableButton = page
-      .locator('button', { hasText: /^Enable$/ })
-      .first();
-    await enableButton.click();
-
-    // Navigate back to inventory
-    await page.getByTestId('nav-inventory').click();
-    await selectInventoryCategory(page, 'water-beverages');
-
-    // Expand recommended items again
-    await expandRecommendedItems(page);
-
-    // The item should be back in the recommended list
-    const finalMissingItemsLocator = page.locator('[class*="missingItemText"]');
-    await expect(finalMissingItemsLocator).toHaveCount(initialCount, {
-      timeout: 5000,
-    });
-  });
-
-  test('should enable all disabled recommendations at once', async ({
-    page,
-  }) => {
-    // First, disable multiple items from inventory
-    await page.getByTestId('nav-inventory').click();
-
-    // Ensure no modals are open
-    await ensureNoModals(page);
-
-    // Select Water & Beverages category using SideMenu
-    await selectInventoryCategory(page, 'water-beverages');
-
-    // Expand recommended items (they are hidden by default)
-    await expandRecommendedItems(page);
-
-    // Ensure no modals are blocking before clicking
-    await ensureNoModals(page);
-
-    // Count initial recommended items
-    const missingItemsLocator = page.locator('[class*="missingItemText"]');
-    const initialCount = await missingItemsLocator.count();
-
-    // Disable first item
-    await page.locator('button:has-text("×")').first().click();
-    await waitForCountChange(missingItemsLocator, initialCount, {
-      decrease: true,
-    });
-
-    // Disable second item
-    await page.locator('button:has-text("×")').first().click();
-    await waitForCountChange(missingItemsLocator, initialCount - 1, {
-      decrease: true,
-    });
-
-    // Navigate to Settings
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to disabled recommendations section
-    await navigateToSettingsSection(page, 'disabledRecommendations');
-    await expect(
-      page.getByTestId('section-disabled-recommendations'),
-    ).toBeVisible();
-
-    // Should see Enable All button
-    const enableAllButton = page.locator(
-      'button:has-text("Enable All Recommendations")',
-    );
-    await expect(enableAllButton).toBeVisible();
-
-    // Click Enable All
-    await enableAllButton.click();
-
-    // Navigate back to inventory
-    await page.getByTestId('nav-inventory').click();
-    await selectInventoryCategory(page, 'water-beverages');
-
-    // Expand recommended items again
-    await expandRecommendedItems(page);
-
-    // All items should be back
-    const finalMissingItemsLocator = page.locator('[class*="missingItemText"]');
-    await expect(finalMissingItemsLocator).toHaveCount(initialCount, {
-      timeout: 5000,
-    });
+  test('SettingsRail navigation marks active section', async ({ page }) => {
+    await page.getByTestId('v2-nav-settings').click();
+    const data = page.getByTestId('v2-settings-section-data');
+    await data.click();
+    // Active section gets aria-current="true"
+    await expect(data).toHaveAttribute('aria-current', 'true');
   });
 });

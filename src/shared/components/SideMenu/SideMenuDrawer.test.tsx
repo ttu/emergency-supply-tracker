@@ -228,4 +228,62 @@ describe('SideMenuDrawer', () => {
       'navigation.sideMenu.menuLabel',
     );
   });
+
+  describe('focus trap', () => {
+    const renderOpen = () =>
+      render(
+        <SideMenuDrawer isOpen onClose={vi.fn()}>
+          <button type="button">First</button>
+          <button type="button">Middle</button>
+          <button type="button">Last</button>
+        </SideMenuDrawer>,
+      );
+
+    const buttons = () =>
+      Array.from(
+        screen.getByTestId('sidemenu-drawer').querySelectorAll('button'),
+      );
+
+    it('wraps forwards from the last control', () => {
+      renderOpen();
+      const all = buttons();
+      const last = all[all.length - 1];
+
+      last.focus();
+      fireEvent.keyDown(document, { key: 'Tab' });
+
+      expect(document.activeElement).toBe(all[0]);
+    });
+
+    it('wraps backwards from the first control', () => {
+      renderOpen();
+      const all = buttons();
+
+      all[0].focus();
+      fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+
+      expect(document.activeElement).toBe(all[all.length - 1]);
+    });
+
+    it('leaves focus alone in the middle of the drawer', () => {
+      renderOpen();
+      const all = buttons();
+      const middle = all[Math.floor(all.length / 2)];
+
+      middle.focus();
+      fireEvent.keyDown(document, { key: 'Tab' });
+
+      expect(document.activeElement).toBe(middle);
+    });
+
+    it('ignores keys other than Tab', () => {
+      renderOpen();
+      const all = buttons();
+      all[0].focus();
+
+      fireEvent.keyDown(document, { key: 'a' });
+
+      expect(document.activeElement).toBe(all[0]);
+    });
+  });
 });

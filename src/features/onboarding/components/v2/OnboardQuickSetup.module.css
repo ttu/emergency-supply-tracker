@@ -1,0 +1,157 @@
+.row {
+  padding: 11px 18px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid var(--color-rule-soft);
+  opacity: 0.5;
+}
+
+.rowSelected {
+  opacity: 1;
+}
+
+.checkboxLabel {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 14px;
+  align-items: center;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* A real checkbox carries the state and keyboard handling; the square beside
+ * it is only its picture, so the input is hidden without being removed from
+ * the accessibility tree. */
+.hiddenCheckbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  margin: 0;
+}
+
+.checkboxProxy {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--color-rule);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: var(--color-accent-ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.checkboxProxySelected {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.itemLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.ownedButton {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  color: var(--color-text-3);
+  cursor: pointer;
+}
+
+.ownedButton:disabled {
+  cursor: not-allowed;
+}
+
+.ownedButtonActive {
+  background: transparent;
+  border-color: var(--color-ok);
+  color: var(--color-ok);
+}
+
+.quantity {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-accent);
+  text-align: right;
+  font-feature-settings: 'tnum';
+  min-width: 84px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.summaryValue {
+  margin-top: 6px;
+}
+
+.kitHeader {
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--color-rule-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.kitHeaderActions {
+  display: flex;
+  gap: 16px;
+}
+
+.headerAction {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+}
+
+.headerActionMuted {
+  color: var(--color-text-2);
+}
+
+.categoryHeader {
+  padding: 10px 18px;
+  background: var(--color-panel-2);
+  border-bottom: 1px solid var(--color-rule-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.categoryLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.categoryCount {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-3);
+}
+
+.footerActions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}

@@ -60,3 +60,96 @@
   /* Add contrasting box-shadow for visibility on all backgrounds */
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.3);
 }
+
+/* --- Design v2 (cockpit / civil / pantry) override ---------------------- */
+/*
+ * Under v2 themes, --color-success / --color-error-dark / --color-primary
+ * get remapped to v2 tokens (ok/crit/accent) — but that still renders the
+ * v1 saturated-pill aesthetic, just with v2 hues. We want a fully v2-native
+ * surface: panel-coloured background with a status-tinted left edge.
+ *
+ * `!important` on the variant backgrounds because the v1 `.success` etc.
+ * rules in this file have the same effective specificity once CSS Modules
+ * hashes the class names — without !important the cascade-order resolution
+ * (later wins) is technically on our side, but bundlers can hoist module
+ * blocks in ways that flip the order. Make the intent unambiguous.
+ */
+[data-theme='cockpit'] .notification,
+[data-theme='civil'] .notification,
+[data-theme='pantry'] .notification {
+  background-color: var(--color-panel) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-rule);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+[data-theme='cockpit'] .notification.success,
+[data-theme='civil'] .notification.success,
+[data-theme='pantry'] .notification.success {
+  background-color: var(--color-panel) !important;
+  border-left-color: var(--color-ok);
+  color: var(--color-text) !important;
+}
+[data-theme='cockpit'] .notification.error,
+[data-theme='civil'] .notification.error,
+[data-theme='pantry'] .notification.error {
+  background-color: var(--color-panel) !important;
+  border-left-color: var(--color-crit);
+  color: var(--color-text) !important;
+}
+[data-theme='cockpit'] .notification.info,
+[data-theme='civil'] .notification.info,
+[data-theme='pantry'] .notification.info {
+  background-color: var(--color-panel) !important;
+  border-left-color: var(--color-accent);
+  color: var(--color-text) !important;
+}
+
+[data-theme='cockpit'] .notification .icon,
+[data-theme='civil'] .notification .icon,
+[data-theme='pantry'] .notification .icon {
+  color: var(--color-text-2);
+}
+[data-theme='cockpit'] .notification.success .icon,
+[data-theme='civil'] .notification.success .icon,
+[data-theme='pantry'] .notification.success .icon {
+  color: var(--color-ok);
+}
+[data-theme='cockpit'] .notification.error .icon,
+[data-theme='civil'] .notification.error .icon,
+[data-theme='pantry'] .notification.error .icon {
+  color: var(--color-crit);
+}
+[data-theme='cockpit'] .notification.info .icon,
+[data-theme='civil'] .notification.info .icon,
+[data-theme='pantry'] .notification.info .icon {
+  color: var(--color-accent);
+}
+
+[data-theme='cockpit'] .notification .message,
+[data-theme='civil'] .notification .message,
+[data-theme='pantry'] .notification .message {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+[data-theme='cockpit'] .notification .closeButton,
+[data-theme='civil'] .notification .closeButton,
+[data-theme='pantry'] .notification .closeButton {
+  color: var(--color-text-3);
+}
+[data-theme='cockpit'] .notification .closeButton:hover,
+[data-theme='civil'] .notification .closeButton:hover,
+[data-theme='pantry'] .notification .closeButton:hover {
+  color: var(--color-text);
+}
+[data-theme='cockpit'] .notification .closeButton:focus-visible,
+[data-theme='civil'] .notification .closeButton:focus-visible,
+[data-theme='pantry'] .notification .closeButton:focus-visible {
+  outline-color: var(--color-accent);
+  box-shadow: none;
+}

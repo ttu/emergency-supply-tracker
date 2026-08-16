@@ -1,0 +1,126 @@
+.stepBar {
+  display: flex;
+  gap: 4px;
+}
+
+.stepSegment {
+  flex: 1;
+  height: 3px;
+  background: var(--color-rule);
+  transition: background 200ms;
+}
+
+.stepSegmentActive {
+  background: var(--color-accent);
+}
+
+.viewport {
+  width: 100%;
+  /* The v2 themes lock document scrolling (design-themes.css) because the
+   * desktop/mobile shells own their inner scroll. Onboarding runs outside
+   * those shells, so it has to be its own scroll container — otherwise
+   * anything taller than the viewport is simply unreachable. */
+  overflow-y: auto;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  display: grid;
+  grid-template-columns: 1fr;
+  /* Stretch, not `start`: the row has to fill the viewport so the footer
+   * sits at the bottom and the side panel's border runs the full height.
+   * `start` sized the row to its content, which left a short step —
+   * welcome, theme — floating above a band of dead background. Stretch
+   * only distributes *spare* height, so a step taller than the viewport
+   * still overflows and scrolls. */
+  align-content: stretch;
+}
+
+.viewportSideBeside {
+  grid-template-columns: 1fr 1fr;
+}
+
+.contentColumn {
+  /* 56px of side padding is over a quarter of a phone screen, which pushed
+   * every step into horizontal scroll. */
+  padding: clamp(24px, 5vw, 48px) clamp(16px, 6vw, 56px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandDot {
+  width: 10px;
+  height: 10px;
+  background: var(--color-accent);
+}
+
+.stepLabel {
+  margin-top: 28px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-3);
+  letter-spacing: 0.1em;
+}
+
+.stepBarWrap {
+  margin-top: 8px;
+}
+
+.leadWrap {
+  margin-top: 24px;
+}
+
+.leadSub {
+  margin-top: 14px;
+  font-size: 16px;
+  color: var(--color-text-2);
+  line-height: 1.55;
+  max-width: 520px;
+}
+
+.contentSlot {
+  margin-top: 28px;
+  flex: 1;
+}
+
+.sideStackedWrap {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-rule);
+}
+
+.footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-rule-soft);
+}
+
+.footerNote {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-3);
+  letter-spacing: 0.08em;
+}
+
+.footerActions {
+  display: flex;
+  gap: 10px;
+}
+
+.sideAside {
+  background: var(--color-bg-2);
+  border-left: 1px solid var(--color-rule);
+  padding: 48px 48px;
+}

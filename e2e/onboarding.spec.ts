@@ -1,219 +1,314 @@
-import { test, expect, setAppStorage } from './fixtures';
-import { createMockAppData } from '../src/shared/utils/test/factories';
+import { test, expect } from './fixtures';
+import type { RootStorage } from '../src/shared/types';
+
+/**
+ * Design v2 onboarding is a six-step flow plus a completion screen:
+ *   1 Welcome / Language
+ *   2 Theme picker
+ *   3 Preset (single / couple / family / custom)
+ *   4 Household profile (steppers)
+ *   5 Recommendation kit
+ *   6 Quick setup (the starting checklist)
+ *   — Complete
+ *
+ * Each step renders the shared OnboardLayout — STEP NN / 06 header + a
+ * "CONTINUE →" / "BACK" footer (cockpit voice). Quick setup replaces CONTINUE
+ * with "ADD ALL ITEMS →", and the completion screen with "OPEN OVERVIEW →".
+ */
+
+const clearAndReload = async (page: import('@playwright/test').Page) => {
+  await page.goto('/');
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: 'domcontentloaded' });
+};
+
+const continueButton = (page: import('@playwright/test').Page) =>
+  page.getByRole('button', { name: /CONTINUE →/ });
+
+/** Quick setup ships collapsed; the per-line controls need it opened. */
+const openChecklist = (page: import('@playwright/test').Page) =>
+  page.getByTestId('v2-quick-setup-details').click();
+
+/**
+ * Click CONTINUE from step 1 (Welcome) through to step 6 (Quick Setup),
+ * confirming the expected STEP marker after each click rather than firing
+ * five clicks blind and hoping the flow kept up.
+ */
+const advanceToQuickSetup = async (page: import('@playwright/test').Page) => {
+  for (let step = 2; step <= 6; step++) {
+    await continueButton(page).click();
+    await expect(
+      page.getByText(new RegExp(`STEP 0${step} / 06`)),
+    ).toBeVisible();
+  }
+};
 
 test.describe('Onboarding Flow', () => {
   test('should show onboarding for first-time users', async ({ page }) => {
-    // Clear localStorage to simulate first-time user
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Should see welcome screen
-    await expect(page.getByTestId('onboarding-welcome')).toBeVisible();
-    await expect(page.getByTestId('get-started-button')).toBeVisible();
+    await clearAndReload(page);
+    await expect(page.getByText(/STEP 01 \/ 06/)).toBeVisible();
+    await expect(continueButton(page)).toBeVisible();
   });
 
-  test('should complete onboarding flow: Welcome → Preset → Household → Quick Setup', async ({
+  test('should complete the full v2 onboarding flow', async ({ page }) => {
+    await clearAndReload(page);
+
+    await continueButton(page).click(); // 1 → 2
+    await expect(page.getByText(/STEP 02 \/ 06/)).toBeVisible();
+    await continueButton(page).click(); // 2 → 3
+    await expect(page.getByText(/STEP 03 \/ 06/)).toBeVisible();
+
+    await page.getByRole('button', { name: /P-02/ }).click(); // couple
+    await continueButton(page).click(); // 3 → 4
+    await expect(page.getByText(/STEP 04 \/ 06/)).toBeVisible();
+
+    await continueButton(page).click(); // 4 → 5
+    await expect(page.getByText(/STEP 05 \/ 06/)).toBeVisible();
+    await expect(page.getByTestId('v2-kit-72tuntia-standard')).toBeVisible();
+
+    await continueButton(page).click(); // 5 → 6
+    await expect(page.getByText(/STEP 06 \/ 06/)).toBeVisible();
+
+    await page.getByRole('button', { name: /ADD ALL ITEMS →/ }).click();
+    await expect(page.getByText('PROVISIONING COMPLETE')).toBeVisible();
+
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible({
+      timeout: 5000,
+    });
+  });
+
+  test('the finished inventory holds what quick setup offered', async ({
     page,
   }) => {
-    // Clear localStorage
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await clearAndReload(page);
+    await advanceToQuickSetup(page);
 
-    // Step 1: Welcome screen
-    await expect(page.getByTestId('onboarding-welcome')).toBeVisible();
-    await page.getByTestId('get-started-button').click();
+    await page.getByRole('button', { name: /ADD ALL ITEMS →/ }).click();
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
 
-    // Step 2: Preset selection
-    await expect(page.getByTestId('onboarding-preset-selector')).toBeVisible({
-      timeout: 5000,
+    const itemCount = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      ) as Partial<RootStorage>;
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: unknown[];
+      }[];
+      return sets[0]?.items?.length ?? 0;
     });
-    await expect(page.getByTestId('preset-single')).toBeVisible();
-    await expect(page.getByTestId('preset-couple')).toBeVisible();
-    await expect(page.getByTestId('preset-family')).toBeVisible();
-
-    // Select "Couple" preset
-    await page.getByTestId('preset-couple').click();
-
-    // Step 3: Household configuration
-    await expect(page.getByTestId('onboarding-household-form')).toBeVisible({
-      timeout: 5000,
-    });
-
-    // Verify preset pre-filled values (Couple = 2 adults, 0 children)
-    const adultsInput = page.locator('input[type="number"]').first();
-    await expect(adultsInput).toHaveValue('2');
-
-    // Submit form to go to Kit Selection (button is "Save")
-    await page.getByTestId('household-save-button').click();
-
-    // Step 4: Kit Selection - clicking a kit advances to next step
-    await expect(
-      page.getByTestId('onboarding-recommendation-kit-step'),
-    ).toBeVisible({
-      timeout: 5000,
-    });
-    // Select a kit (clicking advances to next step)
-    const defaultKitCard = page.getByTestId('kit-card-72tuntia-standard');
-    await expect(defaultKitCard).toBeVisible({ timeout: 5000 });
-    await defaultKitCard.click();
-
-    // Step 5: Quick Setup
-    await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
-      timeout: 5000,
-    });
-    await expect(page.getByTestId('add-items-button')).toBeVisible();
-    await expect(page.getByTestId('skip-quick-setup-button')).toBeVisible();
-
-    // Choose to skip
-    await page.getByTestId('skip-quick-setup-button').click();
-
-    // Should navigate to Dashboard after completion
-    await expect(page.getByTestId('page-dashboard')).toBeVisible({
-      timeout: 5000,
-    });
+    expect(itemCount).toBeGreaterThan(0);
   });
 
-  test('should add selected items during quick setup', async ({ page }) => {
-    // Clear localStorage
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+  test('skipping quick setup finishes with an empty inventory', async ({
+    page,
+  }) => {
+    await clearAndReload(page);
+    await advanceToQuickSetup(page);
 
-    // Navigate through onboarding
-    await page.getByTestId('get-started-button').click();
-    await page.getByTestId('preset-single').click();
-    await page.getByTestId('household-save-button').click();
-    // Kit Selection step - clicking a kit advances to next step
-    await expect(
-      page.getByTestId('onboarding-recommendation-kit-step'),
-    ).toBeVisible({ timeout: 5000 });
-    // Select a kit (clicking advances to next step)
-    const defaultKitCard = page.getByTestId('kit-card-72tuntia-standard');
-    await expect(defaultKitCard).toBeVisible({ timeout: 5000 });
-    await defaultKitCard.click();
-    // Quick Setup step
-    await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
-      timeout: 5000,
+    await page.getByRole('button', { name: /SKIP FOR NOW/ }).click();
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
+
+    const itemCount = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      ) as Partial<RootStorage>;
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: unknown[];
+      }[];
+      return sets[0]?.items?.length ?? 0;
     });
+    expect(itemCount).toBe(0);
+  });
 
-    // Select some items first (button is disabled when no items selected)
-    // Show details to access item checkboxes
-    const showDetailsButton = page.getByRole('button', {
-      name: /Show item details|Näytä tuotetiedot/i,
-    });
-    await showDetailsButton.click({ timeout: 5000 });
+  test('should allow going back through onboarding steps', async ({ page }) => {
+    await clearAndReload(page);
 
-    // Wait for checkboxes to appear and select first item
-    const firstCheckbox = page
-      .locator('input[type="checkbox"][id^="item-"]')
-      .first();
-    await firstCheckbox.waitFor({ state: 'visible', timeout: 5000 });
-    await firstCheckbox.click();
+    await continueButton(page).click(); // → 2
+    await continueButton(page).click(); // → 3
+    await expect(page.getByText(/STEP 03 \/ 06/)).toBeVisible();
 
-    // Click "Add Selected Items" using data-testid
-    await page.getByTestId('add-items-button').click();
+    await page.getByRole('button', { name: 'BACK', exact: true }).click();
+    await expect(page.getByText(/STEP 02 \/ 06/)).toBeVisible();
+  });
 
-    // Should navigate to Dashboard
-    await expect(page.getByTestId('page-dashboard')).toBeVisible({
-      timeout: 5000,
-    });
+  test('should let user pick the family preset', async ({ page }) => {
+    await clearAndReload(page);
+    await continueButton(page).click(); // 1→2
+    await continueButton(page).click(); // 2→3
 
-    // Navigate to Inventory to verify items were added
-    await page.getByTestId('nav-inventory').click();
-    await expect(page.getByTestId('add-item-button')).toBeVisible();
+    await page.getByRole('button', { name: /P-03/ }).click(); // family
+    await continueButton(page).click(); // 3→4
 
-    // Should have items in inventory (at least some recommended items)
-    // Note: Items are added with quantity 0, so they may not be visible
-    // But the category should show in the side menu (use sidebar for desktop viewport)
     await expect(
       page
-        .getByTestId('sidemenu-sidebar')
-        .getByTestId('sidemenu-item-water-beverages'),
+        .getByText('PROFILE · §2.1')
+        .or(page.getByText('CONFIRM HOUSEHOLD PARAMETERS')),
     ).toBeVisible();
   });
 
-  test('should not show onboarding for returning users', async ({ page }) => {
-    // Setup with onboarding completed
-    const appData = createMockAppData({
-      settings: {
-        onboardingCompleted: true,
-        language: 'en',
-        theme: 'light',
-        highContrast: false,
-        advancedFeatures: {
-          calorieTracking: false,
-          powerManagement: false,
-          waterTracking: false,
-        },
-      },
-    });
-
-    await page.goto('/');
-    await setAppStorage(page, appData);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-
-    // Should go directly to Dashboard, not onboarding
-    await expect(page.getByTestId('page-dashboard')).toBeVisible();
-    await expect(page.getByTestId('onboarding-welcome')).not.toBeVisible();
-  });
-
-  test('should allow language selection during onboarding', async ({
+  test('quick setup untick drops the product from the seeded inventory', async ({
     page,
   }) => {
-    // Clear localStorage
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await clearAndReload(page);
+    await advanceToQuickSetup(page);
 
-    // Welcome screen should have language selector
-    const languageSelect = page.locator('select').first();
-    await expect(languageSelect).toBeVisible();
+    await openChecklist(page);
+    const bottledWater = page.getByTestId('v2-quick-setup-item-bottled-water');
+    await expect(bottledWater).toBeChecked();
+    await bottledWater.uncheck();
+    await expect(bottledWater).not.toBeChecked();
 
-    // Change to Finnish
-    await languageSelect.selectOption('fi');
+    await page.getByRole('button', { name: /ADD SELECTED →/ }).click();
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
 
-    // Continue through onboarding
-    await page.getByTestId('get-started-button').click();
-    await page.getByTestId('preset-couple').click();
-    await page.getByTestId('household-save-button').click();
-    // Kit Selection step - clicking a kit advances to next step
-    await expect(
-      page.getByTestId('onboarding-recommendation-kit-step'),
-    ).toBeVisible({ timeout: 5000 });
-    // Select a kit (clicking advances to next step)
-    const defaultKitCard = page.getByTestId('kit-card-72tuntia-standard');
-    await expect(defaultKitCard).toBeVisible({ timeout: 5000 });
-    await defaultKitCard.click();
-    // Quick Setup step
-    await expect(page.getByTestId('onboarding-quick-setup')).toBeVisible({
-      timeout: 5000,
+    const hasWater = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      ) as Partial<RootStorage>;
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: { itemType?: string }[];
+      }[];
+      return (sets[0]?.items ?? []).some((i) => i.itemType === 'bottled-water');
     });
-    await page.getByTestId('skip-quick-setup-button').click();
-
-    // Language should persist - navigation should be in Finnish
-    await expect(page.getByTestId('nav-dashboard')).toBeVisible({
-      timeout: 5000,
-    });
+    expect(hasWater).toBe(false);
   });
 
-  test('should allow going back in onboarding flow', async ({ page }) => {
-    // Clear localStorage
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload({ waitUntil: 'domcontentloaded' });
+  test('marking a product owned seeds it stocked rather than at zero', async ({
+    page,
+  }) => {
+    await clearAndReload(page);
+    await advanceToQuickSetup(page);
 
-    // Welcome → Preset
-    await page.getByTestId('get-started-button').click();
-    await expect(page.getByTestId('onboarding-preset-selector')).toBeVisible();
+    await openChecklist(page);
+    await page.getByTestId('v2-quick-setup-owned-bottled-water').click();
+    await page.getByRole('button', { name: /ADD ALL ITEMS →/ }).click();
+    await page.getByRole('button', { name: /OPEN OVERVIEW →/ }).click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
 
-    // Preset → Household
-    await page.getByTestId('preset-single').click();
-    await expect(page.getByTestId('onboarding-household-form')).toBeVisible();
+    const quantities = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      ) as Partial<RootStorage>;
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: { itemType?: string; quantity?: number }[];
+      }[];
+      const items = sets[0]?.items ?? [];
+      return {
+        water: items.find((i) => i.itemType === 'bottled-water')?.quantity ?? 0,
+        others: items
+          .filter((i) => i.itemType !== 'bottled-water')
+          .every((i) => i.quantity === 0),
+      };
+    });
+    expect(quantities.water).toBeGreaterThan(0);
+    expect(quantities.others).toBe(true);
+  });
 
-    // Go back to Preset (button is "Back")
-    await page.getByTestId('household-back-button').click();
-    await expect(page.getByTestId('onboarding-preset-selector')).toBeVisible();
+  test('the checklist stays collapsed until asked', async ({ page }) => {
+    await clearAndReload(page);
+    await advanceToQuickSetup(page);
+
+    // 70-odd rows of things already agreed to is a wall to scroll past.
+    await expect(
+      page.getByTestId('v2-quick-setup-item-bottled-water'),
+    ).toHaveCount(0);
+    await expect(page.getByTestId('v2-quick-setup-select-all')).toHaveCount(0);
+
+    await openChecklist(page);
+    await expect(
+      page.getByTestId('v2-quick-setup-item-bottled-water'),
+    ).toBeVisible();
+    await expect(page.getByTestId('v2-quick-setup-select-all')).toBeVisible();
+  });
+
+  test('demo data can be taken from the preset step', async ({ page }) => {
+    await clearAndReload(page);
+    await continueButton(page).click(); // → theme
+    await continueButton(page).click(); // → preset
+
+    await page.getByTestId('v2-try-demo-data').click();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible({
+      timeout: 5000,
+    });
+
+    const demo = await page.evaluate(() => {
+      const root = JSON.parse(
+        localStorage.getItem('emergencySupplyTracker') ?? '{}',
+      ) as Partial<RootStorage>;
+      const sets = Object.values(root.inventorySets ?? {}) as {
+        items?: { quantity?: number }[];
+        household?: { children?: number };
+      }[];
+      return {
+        children: sets[0]?.household?.children,
+        stocked: (sets[0]?.items ?? []).some((i) => (i.quantity ?? 0) > 0),
+      };
+    });
+    expect(demo.children).toBe(2);
+    expect(demo.stocked).toBe(true);
+  });
+
+  test('the preset step offers a backup import', async ({ page }) => {
+    await clearAndReload(page);
+    await continueButton(page).click();
+    await continueButton(page).click();
+
+    // Someone who already has a backup should not have to answer the
+    // questionnaire first.
+    await expect(page.getByTestId('v2-import-backup')).toBeVisible();
+    await expect(page.getByTestId('v2-import-file-input')).toHaveAttribute(
+      'accept',
+      'application/json,.json',
+    );
+  });
+
+  test('the quick-setup list is reachable on a phone', async ({ page }) => {
+    // The v2 themes lock document scrolling for the app shells; onboarding
+    // runs outside them, so it has to scroll itself or the 70-row checklist
+    // is unreachable below the fold.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await clearAndReload(page);
+    await advanceToQuickSetup(page);
+    // Open the checklist — collapsed it fits on screen and has nothing to
+    // scroll, which is not what this test is about.
+    await openChecklist(page);
+
+    const layout = page.getByTestId('v2-onboard-layout');
+    const scrolled = await layout.evaluate((el) => {
+      el.scrollTop = 10_000;
+      return { top: el.scrollTop, max: el.scrollHeight - el.clientHeight };
+    });
+    expect(scrolled.max).toBeGreaterThan(0);
+    expect(scrolled.top).toBe(scrolled.max);
+
+    // …and nothing spills sideways.
+    const overflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    );
+    expect(overflow).toBe(0);
+  });
+
+  test('the side panel stacks into the flow on a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await clearAndReload(page);
+
+    // Step 1's OUTPUTS panel is a second column on a desktop; on a phone that
+    // column sat half off the screen.
+    await expect(page.locator('aside')).toHaveCount(0);
+    await expect(page.getByText('BASELINE PROCUREMENT LIST')).toBeVisible();
+  });
+
+  test('should not show onboarding for returning users', async ({
+    setupApp,
+    page,
+  }) => {
+    await setupApp();
+    await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible();
+    await expect(page.getByText(/STEP 01 \/ 06/)).not.toBeVisible();
   });
 });

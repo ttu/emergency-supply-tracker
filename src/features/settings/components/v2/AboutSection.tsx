@@ -1,0 +1,141 @@
+import { useTranslation } from 'react-i18next';
+import { Panel } from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { APP_VERSION } from '@/shared/utils/version';
+import { CONTACT_EMAIL } from '@/shared/utils/constants';
+import { Caption, PanelHeader, SectionHeader } from './SettingsRows';
+import styles from './AboutSection.module.css';
+
+export function AboutSection() {
+  const { t } = useTranslation();
+  const { themeKey } = useDesignTheme();
+
+  const links = [
+    {
+      href: 'https://github.com/ttu/emergency-supply-tracker',
+      label: t(`v2.settings.about.linkSource.${themeKey}`),
+    },
+    {
+      href: 'https://github.com/ttu/emergency-supply-tracker/issues',
+      label: t(`v2.settings.about.linkBugs.${themeKey}`),
+    },
+    {
+      href: 'https://72tuntia.fi',
+      label: t(`v2.settings.about.link72tuntia.${themeKey}`),
+    },
+    {
+      href: `mailto:${CONTACT_EMAIL}`,
+      label: t(`v2.settings.about.linkContact.${themeKey}`),
+    },
+  ];
+
+  return (
+    <section id="sec-about" style={{ scrollMarginTop: 16 }}>
+      <SectionHeader
+        code="§10"
+        title={t(`v2.settings.about.title.${themeKey}`)}
+      />
+      <div className={styles.grid}>
+        <Panel padding={22}>
+          <Caption>{t(`v2.settings.about.appCaption.${themeKey}`)}</Caption>
+          <p
+            style={{
+              fontSize: 14,
+              color: 'var(--color-text-2)',
+              lineHeight: 1.65,
+              marginTop: 10,
+              marginBottom: 0,
+            }}
+          >
+            {t('app.tagline')}
+          </p>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 12,
+              marginTop: 22,
+              paddingTop: 18,
+              borderTop: '1px solid var(--color-rule-soft)',
+            }}
+          >
+            <AboutStat
+              label={t(`v2.settings.about.version.${themeKey}`)}
+              value={APP_VERSION}
+            />
+            <AboutStat
+              label={t(`v2.settings.about.license.${themeKey}`)}
+              value="MIT"
+            />
+            <AboutStat
+              label={t(`v2.settings.about.source.${themeKey}`)}
+              value="72tuntia.fi"
+            />
+          </div>
+        </Panel>
+        <Panel padding={0}>
+          <PanelHeader>
+            {t(`v2.settings.about.linksHeader.${themeKey}`)}
+          </PanelHeader>
+          {links.map((l, i) => (
+            <a
+              key={l.href}
+              href={l.href}
+              target={l.href.startsWith('http') ? '_blank' : undefined}
+              rel={
+                l.href.startsWith('http') ? 'noopener noreferrer' : undefined
+              }
+              style={{
+                padding: '12px 22px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                color: 'var(--color-text)',
+                textDecoration: 'none',
+                borderBottom:
+                  i < links.length - 1
+                    ? '1px solid var(--color-rule-soft)'
+                    : 'none',
+                fontSize: 13,
+              }}
+            >
+              <span>{l.label}</span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 12,
+                  color: 'var(--color-text-3)',
+                }}
+              >
+                ↗
+              </span>
+            </a>
+          ))}
+        </Panel>
+      </div>
+    </section>
+  );
+}
+
+interface AboutStatProps {
+  label: string;
+  value: string;
+}
+
+function AboutStat({ label, value }: Readonly<AboutStatProps>) {
+  return (
+    <div>
+      <Caption>{label}</Caption>
+      <div
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: 14,
+          marginTop: 4,
+          fontWeight: 600,
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}

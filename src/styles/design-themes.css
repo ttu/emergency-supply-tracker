@@ -1,0 +1,493 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Emergency Supply Tracker — Design v2 Theme Tokens
+ * Three new themes (cockpit / civil / pantry) introduced by the design update.
+ * Coexist with the existing 8 themes in variables.css.
+ *
+ * These tokens follow the design package contract — semantic names instead of
+ * the existing --color-background / --color-primary scheme. The new design's
+ * components consume these directly.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* Lock the document scroll under design v2 themes — the DesktopShell /
+ * MobileShell wrappers are fixed at 100vh and own the inner scrolling
+ * (their <main> is overflow:auto). Without this rule the page itself can
+ * pick up a scrollbar that competes with the inner one, producing a
+ * "double scrollbar" effect. */
+:root:is([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry']),
+:where(html, body):has(
+  :where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+) {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Full-viewport containers under design v2 (the two shells, the onboarding
+ * layout, the completion screen).
+ *
+ * iOS Safari resolves 100vh to the viewport with its browser chrome
+ * *collapsed*, which is taller than what you can actually see. A container
+ * fixed at 100vh therefore runs behind the bottom toolbar and hides its last
+ * row — onboarding's CONTINUE button, the mobile shell's nav. Dragging
+ * collapses the chrome and reveals it; letting go brings the chrome back and
+ * hides it again. 100dvh tracks the visible viewport as it changes, with the
+ * 100vh declaration left above it as the fallback for older browsers. */
+.v2-viewport-height {
+  height: 100vh;
+  height: 100dvh;
+}
+[data-theme='cockpit'],
+[data-theme='civil'],
+[data-theme='pantry'] {
+  overflow: hidden;
+}
+
+/* ========== Embedded v1 components inside design v2 sections ========== */
+/* Add class="design-v2-embed" to a wrapper that contains a v1 component
+ * (HouseholdForm, KitManagement, CategoriesSection etc.) so its buttons,
+ * inputs, selects and pill toggles pick up v2 tokens instead of the
+ * hardcoded v1 light/dark palette. Toggle/switch buttons keep their own
+ * styling because we target by tag, not role. */
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button:not([role='switch']):not([aria-pressed]) {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: var(--caps-tracking);
+  text-transform: var(--caps-transform);
+  cursor: pointer;
+  box-shadow: none;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='secondary']:not([role='switch']):not([aria-pressed]),
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='outline']:not([role='switch']):not([aria-pressed]) {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-rule);
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='ghost']:not([role='switch']):not([aria-pressed]) {
+  background: transparent;
+  color: var(--color-text-2);
+  border: none;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='danger']:not([role='switch']):not([aria-pressed]),
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='Danger']:not([role='switch']):not([aria-pressed]) {
+  background: var(--color-crit);
+  color: #fff;
+  border: none;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='text'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='number'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='date'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='email'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input[type='search'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  textarea,
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  select {
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  input:focus,
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  select:focus,
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  textarea:focus {
+  border-color: var(--color-accent);
+}
+/* Inline status badges (e.g. Active) inside embedded panels */
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  span[class*='active'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  span[class*='Active'],
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  span[class*='badge'] {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+}
+
+/* ========== COCKPIT — dark operational ========== */
+[data-theme='cockpit'] {
+  --color-bg: #0d141a;
+  --color-bg-2: #121b22;
+  --color-panel: #172129;
+  --color-panel-2: #1d2933;
+  --color-rule: #26333d;
+  --color-rule-soft: #1f2a33;
+
+  --color-text: #e6ecf0;
+  --color-text-2: #8b9aa6;
+  --color-text-3: #5a6975;
+
+  --color-ok: #4ade80;
+  --color-warn: #facc15;
+  --color-crit: #f87171;
+  --color-accent: #7dd3fc;
+  --color-accent-ink: #0d141a;
+
+  --font-display:
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --radius-sm: 4px;
+  --radius-lg: 6px;
+  --radius-pill: 4px;
+  --border-width: 1px;
+
+  --caps-transform: uppercase;
+  --caps-tracking: 0.08em;
+  --display-number-font: var(--font-mono);
+  --display-number-weight: 600;
+
+  --shadow-card: none;
+
+  /* Bridge to existing token system so the existing Navigation / shared
+     components don't visually break if mounted under a design theme. */
+  --color-background: var(--color-bg);
+  --color-background-secondary: var(--color-bg-2);
+  --color-background-tertiary: var(--color-panel-2);
+  --color-surface: var(--color-panel);
+  --color-surface-hover: var(--color-panel-2);
+  --color-surface-active: var(--color-panel-2);
+  --color-surface-secondary: var(--color-panel-2);
+  --color-text-secondary: var(--color-text-2);
+  --color-text-tertiary: var(--color-text-3);
+  --color-text-disabled: var(--color-text-3);
+  --color-border: var(--color-rule);
+  --color-border-hover: var(--color-rule);
+  --color-border-focus: var(--color-accent);
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent);
+  --color-primary-active: var(--color-accent);
+  --color-primary-light: var(--color-accent);
+  --color-primary-alpha: rgba(125, 211, 252, 0.15);
+  --color-primary-alpha-hover: rgba(125, 211, 252, 0.2);
+  --color-primary-on-surface-active: var(--color-accent);
+  --color-success: var(--color-ok);
+  --color-success-light: var(--color-ok);
+  --color-success-dark: var(--color-ok);
+  --color-success-alpha: rgba(74, 222, 128, 0.15);
+  --color-on-success: var(--color-accent-ink);
+  --color-warning: var(--color-warn);
+  --color-warning-light: var(--color-warn);
+  --color-warning-alpha: rgba(250, 204, 21, 0.15);
+  --color-error: var(--color-crit);
+  --color-error-light: var(--color-crit);
+  --color-error-dark: var(--color-crit);
+  --color-error-alpha: rgba(248, 113, 113, 0.15);
+  --color-info: var(--color-accent);
+  --color-info-light: var(--color-accent);
+  --color-info-alpha: rgba(125, 211, 252, 0.15);
+  --color-critical: var(--color-crit);
+  --color-focus: var(--color-accent);
+  --color-focus-ring: rgba(125, 211, 252, 0.4);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  color-scheme: dark;
+}
+
+/* ========== CIVIL DEFENSE — light, official, document-style ========== */
+[data-theme='civil'] {
+  --color-bg: #f4f1ea;
+  --color-bg-2: #ffffff;
+  --color-panel: #ffffff;
+  --color-panel-2: #fbf8f1;
+  --color-rule: #0b1d2a;
+  --color-rule-soft: #c9bfae;
+
+  --color-text: #0b1d2a;
+  --color-text-2: #1f3346;
+  --color-text-3: #5b6b62;
+
+  --color-ok: #2f6b3a;
+  --color-warn: #b9851b;
+  --color-crit: #a3340d;
+  --color-accent: #d94e1f;
+  --color-accent-ink: #ffffff;
+
+  --font-display: 'Inter Tight', 'Helvetica Neue', system-ui, sans-serif;
+  --font-body: 'Inter Tight', 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 0px;
+  --border-width: 1px;
+
+  --caps-transform: uppercase;
+  --caps-tracking: 0.08em;
+  --display-number-font: var(--font-display);
+  --display-number-weight: 700;
+
+  --shadow-card: none;
+
+  --color-background: var(--color-bg);
+  --color-background-secondary: var(--color-bg-2);
+  --color-background-tertiary: var(--color-panel-2);
+  --color-surface: var(--color-panel);
+  --color-surface-hover: var(--color-panel-2);
+  --color-surface-active: var(--color-panel-2);
+  --color-surface-secondary: var(--color-panel-2);
+  --color-text-secondary: var(--color-text-2);
+  --color-text-tertiary: var(--color-text-3);
+  --color-text-disabled: var(--color-text-3);
+  --color-border: var(--color-rule);
+  --color-border-hover: var(--color-rule);
+  --color-border-focus: var(--color-accent);
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent);
+  --color-primary-active: var(--color-accent);
+  --color-primary-light: var(--color-accent);
+  --color-primary-alpha: rgba(217, 78, 31, 0.1);
+  --color-primary-alpha-hover: rgba(217, 78, 31, 0.15);
+  --color-primary-on-surface-active: var(--color-accent);
+  --color-success: var(--color-ok);
+  --color-success-light: var(--color-ok);
+  --color-success-dark: var(--color-ok);
+  --color-success-alpha: rgba(47, 107, 58, 0.1);
+  --color-on-success: #ffffff;
+  --color-warning: var(--color-warn);
+  --color-warning-light: var(--color-warn);
+  --color-warning-alpha: rgba(185, 133, 27, 0.1);
+  --color-error: var(--color-crit);
+  --color-error-light: var(--color-crit);
+  --color-error-dark: var(--color-crit);
+  --color-error-alpha: rgba(163, 52, 13, 0.1);
+  --color-info: var(--color-accent);
+  --color-info-light: var(--color-accent);
+  --color-info-alpha: rgba(217, 78, 31, 0.1);
+  --color-critical: var(--color-crit);
+  --color-focus: var(--color-accent);
+  --color-focus-ring: rgba(217, 78, 31, 0.3);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  color-scheme: light;
+}
+
+/* ========== PANTRY — light, calm, Nordic, serif headlines ========== */
+[data-theme='pantry'] {
+  --color-bg: #eef0ea;
+  --color-bg-2: #fbfaf5;
+  --color-panel: #fbfaf5;
+  --color-panel-2: #f5f3eb;
+  --color-rule: #d8dbcf;
+  --color-rule-soft: #e6e8df;
+
+  --color-text: #1a2620;
+  --color-text-2: #5b6b62;
+  --color-text-3: #6c7a72; /* darkened from #8a978d for WCAG AA on light bg */
+
+  --color-ok: #506b53;
+  --color-warn: #8a6428; /* darkened from #b6863a for WCAG AA contrast */
+  --color-crit: #a14637;
+  --color-accent: #b35d3a; /* darkened from #c9744d for WCAG AA contrast */
+  --color-accent-ink: #fbfaf5;
+
+  --font-display: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+
+  --caps-transform: none;
+  --caps-tracking: 0.04em;
+  --display-number-font: var(--font-display);
+  --display-number-weight: 400;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03);
+
+  --color-background: var(--color-bg);
+  --color-background-secondary: var(--color-bg-2);
+  --color-background-tertiary: var(--color-panel-2);
+  --color-surface: var(--color-panel);
+  --color-surface-hover: var(--color-panel-2);
+  --color-surface-active: var(--color-panel-2);
+  --color-surface-secondary: var(--color-panel-2);
+  --color-text-secondary: var(--color-text-2);
+  --color-text-tertiary: var(--color-text-3);
+  --color-text-disabled: var(--color-text-3);
+  --color-border: var(--color-rule);
+  --color-border-hover: var(--color-rule);
+  --color-border-focus: var(--color-accent);
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent);
+  --color-primary-active: var(--color-accent);
+  --color-primary-light: var(--color-accent);
+  --color-primary-alpha: rgba(179, 93, 58, 0.1);
+  --color-primary-alpha-hover: rgba(179, 93, 58, 0.15);
+  --color-primary-on-surface-active: var(--color-accent);
+  --color-success: var(--color-ok);
+  --color-success-light: var(--color-ok);
+  --color-success-dark: var(--color-ok);
+  --color-success-alpha: rgba(80, 107, 83, 0.1);
+  --color-on-success: #ffffff;
+  --color-warning: var(--color-warn);
+  --color-warning-light: var(--color-warn);
+  --color-warning-alpha: rgba(138, 100, 40, 0.1);
+  --color-error: var(--color-crit);
+  --color-error-light: var(--color-crit);
+  --color-error-dark: var(--color-crit);
+  --color-error-alpha: rgba(161, 70, 55, 0.1);
+  --color-info: var(--color-accent);
+  --color-info-light: var(--color-accent);
+  --color-info-alpha: rgba(179, 93, 58, 0.1);
+  --color-critical: var(--color-crit);
+  --color-focus: var(--color-accent);
+  --color-focus-ring: rgba(179, 93, 58, 0.3);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  color-scheme: light;
+}
+
+/* Template picker inside a v2 surface.
+ *
+ * The generic `.design-v2-embed button` rule above paints buttons as primary
+ * actions, which is right for the handful of buttons in an embedded form but
+ * wrong for TemplateSelector: its product cards are buttons too, and a list of
+ * eighty accent-filled blocks is unreadable. Render them as panel rows and
+ * leave only the explicit "custom item" button looking like an action. */
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='templateCard']:not([role='switch']):not([aria-pressed]) {
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+:where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  .design-v2-embed
+  button[class*='templateCard']:not([role='switch']):not([aria-pressed]):hover {
+  border-color: var(--color-accent);
+}
+
+/* ========== HIGH CONTRAST ==========
+ *
+ * The v2 themes carry their own token vocabulary (--color-panel, --color-rule,
+ * --color-text-2/3, --color-crit …), none of which the classic high-contrast
+ * block in variables.css touches. Without these rules the toggle in §1
+ * Appearance changed nothing at all on cockpit, civil or pantry, while its
+ * own hint promised contrast above WCAG AA.
+ *
+ * The :root prefix and the two attributes put these at specificity (0,3,0),
+ * above both the theme blocks above and the classic high-contrast rules. */
+:root[data-theme='civil'][data-high-contrast='true'],
+:root[data-theme='pantry'][data-high-contrast='true'] {
+  --color-bg: #ffffff;
+  --color-bg-2: #ffffff;
+  --color-panel: #ffffff;
+  --color-panel-2: #f0f0f0;
+  --color-rule: #000000;
+  --color-rule-soft: #000000;
+
+  --color-text: #000000;
+  --color-text-2: #1a1a1a;
+  --color-text-3: #1a1a1a;
+
+  --color-ok: #006400;
+  --color-warn: #6b3d00;
+  --color-crit: #8b0000;
+  --color-accent: #0000cc;
+  --color-accent-ink: #ffffff;
+
+  --shadow-card: none;
+}
+
+:root[data-theme='cockpit'][data-high-contrast='true'] {
+  --color-bg: #000000;
+  --color-bg-2: #000000;
+  --color-panel: #0a0a0a;
+  --color-panel-2: #1a1a1a;
+  --color-rule: #ffffff;
+  --color-rule-soft: #ffffff;
+
+  --color-text: #ffffff;
+  --color-text-2: #e0e0e0;
+  --color-text-3: #e0e0e0;
+
+  --color-ok: #00ff00;
+  --color-warn: #ffff00;
+  --color-crit: #ff4444;
+  --color-accent: #66b3ff;
+  --color-accent-ink: #000000;
+
+  --shadow-card: none;
+}
+
+/* The bridge tokens the shared v1 components read when mounted inside a v2
+ * shell (see each theme block above) have to follow, or an embedded classic
+ * control keeps its normal-contrast surface inside a high-contrast page. */
+:root[data-theme='cockpit'][data-high-contrast='true'],
+:root[data-theme='civil'][data-high-contrast='true'],
+:root[data-theme='pantry'][data-high-contrast='true'] {
+  --color-background: var(--color-bg);
+  --color-background-secondary: var(--color-bg-2);
+  --color-background-tertiary: var(--color-panel-2);
+  --color-surface: var(--color-panel);
+  --color-surface-hover: var(--color-panel-2);
+  --color-surface-active: var(--color-panel-2);
+  --color-surface-secondary: var(--color-panel-2);
+  --color-border: var(--color-rule);
+  --color-text-secondary: var(--color-text-2);
+  --color-critical: var(--color-crit);
+  --color-warning: var(--color-warn);
+}

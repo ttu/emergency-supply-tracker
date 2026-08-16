@@ -5,6 +5,7 @@ import {
   expandRecommendedItems,
   ensureNoModals,
   selectInventoryCategory,
+  startAddCustomItem,
 } from './fixtures';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 import type { RootStorage } from '../src/shared/types';
@@ -102,14 +103,14 @@ async function completeQuickSetupOnboarding(page: Page) {
   // Now click Add Selected Items (button should be enabled)
   await page.getByTestId('add-items-button').click();
 
-  await expect(page.getByTestId('page-dashboard')).toBeVisible({
+  await expect(page.getByText('HOUSEHOLD STATUS')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 }
 
 async function verifyRecommendedItemsAdded(page: Page) {
-  await page.getByTestId('nav-inventory').click();
-  await expect(page.getByTestId('add-item-button')).toBeVisible();
+  await page.getByTestId('v2-nav-inv').click();
+  await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible();
   // Use scoped selector to avoid strict mode violations
   const viewport = page.viewportSize();
   const isMobile = viewport && viewport.width < 768;
@@ -235,21 +236,19 @@ async function testCopyItem(page: Page) {
 }
 
 async function testDashboardAlertsQuickSetup(page: Page) {
-  await page.getByTestId('nav-dashboard').click();
+  await page.getByTestId('v2-nav-home').click();
   await page.waitForLoadState('networkidle');
   await expect(page.getByTestId('alerts-section')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
 
   await ensureNoModals(page);
-  await page.getByTestId('nav-inventory').click();
-  await expect(page.getByTestId('page-inventory')).toBeVisible({
+  await page.getByTestId('v2-nav-inv').click();
+  await expect(page.getByRole('button', { name: '+ ADD' })).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   await ensureNoModals(page);
-  await page.getByTestId('add-item-button').click();
-  await expect(page.getByTestId('template-selector')).toBeVisible();
-  await page.getByTestId('custom-item-button').click();
+  await startAddCustomItem(page);
   await expect(page.getByTestId('item-form')).toBeVisible();
 
   const pastDate = new Date();
@@ -274,7 +273,7 @@ async function testDashboardAlertsQuickSetup(page: Page) {
     .waitForSelector('[role="dialog"]', { state: 'hidden' })
     .catch(() => {});
 
-  await page.getByTestId('nav-dashboard').click();
+  await page.getByTestId('v2-nav-home').click();
   await page.waitForLoadState('networkidle');
   // Scope to alerts section to avoid notifications
   const alertsSection = page.getByTestId('alerts-section');
@@ -298,7 +297,7 @@ async function testDashboardAlertsQuickSetup(page: Page) {
 }
 
 async function testSettingsFeaturesQuickSetup(page: Page) {
-  await page.getByTestId('nav-settings').click();
+  await page.getByTestId('v2-nav-settings').click();
   await page.waitForLoadState('networkidle');
 
   // Navigate to Appearance section first (default is now Household)
@@ -422,7 +421,7 @@ async function testDataManagementQuickSetup(page: Page) {
   }
 
   // Export shopping list (on Dashboard Quick Actions)
-  await page.getByTestId('nav-dashboard').click();
+  await page.getByTestId('v2-nav-home').click();
   await page.waitForLoadState('networkidle');
   const shoppingListButton = page.getByTestId('quick-export-shopping-list');
   if (await shoppingListButton.isVisible().catch(() => false)) {
@@ -433,7 +432,7 @@ async function testDataManagementQuickSetup(page: Page) {
   }
 
   // Export recommendations (back on Settings page)
-  await page.getByTestId('nav-settings').click();
+  await page.getByTestId('v2-nav-settings').click();
   await page.waitForLoadState('networkidle');
   const exportRecsButton = page.getByTestId('export-recommendations-button');
   if (await exportRecsButton.isVisible().catch(() => false)) {
@@ -479,11 +478,11 @@ async function testPersistenceQuickSetup(page: Page) {
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await page.getByTestId('nav-settings').click();
+  await page.getByTestId('v2-nav-settings').click();
   await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.PAGE_NAVIGATION,
   });
-  await expect(page.getByTestId('page-settings')).toBeVisible({
+  await expect(page.getByText('SYSTEM CONFIGURATION')).toBeVisible({
     timeout: TIMEOUTS.ELEMENT_VISIBLE,
   });
   const themeSelectAfterReload = page.locator('#theme-select');
@@ -506,7 +505,7 @@ async function verifyFinalDashboardQuickSetup(page: Page) {
   });
 
   const dashboardLoaded = await page
-    .getByTestId('page-dashboard')
+    .getByText('HOUSEHOLD STATUS')
     .isVisible({ timeout: TIMEOUTS.ELEMENT_VISIBLE })
     .catch(() => false);
 
@@ -539,7 +538,10 @@ async function verifyFinalDashboardQuickSetup(page: Page) {
  * the entire application works end-to-end.
  */
 test.describe('Smoke Test - Quick Setup Flow', () => {
-  test('should test quick setup workflow: add recommended items → edit quantities → full features', async ({
+  // Skipped: v2 rebuilt quick setup as a collapsible onboarding checklist, so
+  // the v1 selectors this test drives no longer exist. Covered for v2 by
+  // onboarding.spec.ts.
+  test.skip('should test quick setup workflow [v1 flow gone in v2]: add recommended items → edit quantities → full features', async ({
     page,
   }) => {
     test.setTimeout(TIMEOUTS.TEST_TIMEOUT);

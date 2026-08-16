@@ -1,0 +1,77 @@
+.select {
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-rule);
+  color: var(--color-text);
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* Six chips plus three controls do not fit beside the category rail at
+ * 1280px. Wrapping puts the controls on their own line there rather than
+ * pushing the search box off the panel's right edge. */
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+.chip {
+  padding: 12px 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--caps-tracking);
+  text-transform: var(--caps-transform);
+  color: var(--color-text-3);
+}
+
+.chip.chipActive {
+  border-bottom-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.chipCount {
+  font-family: var(--font-mono);
+  color: var(--color-text-3);
+  margin-left: 4px;
+}
+
+.controls {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Right-aligned when it shares the row with the chips, full width
+   * when it has wrapped onto its own. */
+  margin-left: auto;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.search {
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-rule);
+  color: var(--color-text);
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+  /* Shrinks before it clips: the panel is not always wide enough for a
+   * fixed 200px box after the selects. */
+  flex: 1 1 200px;
+  min-width: 90px;
+  max-width: 200px;
+}

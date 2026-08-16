@@ -13,7 +13,13 @@ import { NotificationBar } from '@/shared/components/NotificationBar';
 import { NotificationProvider } from '@/shared/contexts/NotificationProvider';
 import { composeProviders } from '@/shared/utils/composeProviders';
 import { useDataValidation } from '@/shared/hooks';
-import type { HouseholdConfig, InventoryItem } from '@/shared/types';
+import {
+  isDesignV2Theme,
+  type HouseholdConfig,
+  type InventoryItem,
+} from '@/shared/types';
+import { DesignApp, DesignOnboarding, DesignV2Notice } from '@/features/design';
+import { navIdForPage, pageForNavId } from '@/features/design/navMapping';
 import './App.css';
 
 /**
@@ -169,11 +175,29 @@ function AppContent() {
     }
   };
 
+  const useDesignV2 = isDesignV2Theme(settings.theme);
+
   if (!settings.onboardingCompleted) {
+    const onboardingNode = useDesignV2 ? (
+      <DesignOnboarding onComplete={handleOnboardingComplete} />
+    ) : (
+      <Onboarding onComplete={handleOnboardingComplete} />
+    );
+    return <Suspense fallback={<LoadingFallback />}>{onboardingNode}</Suspense>;
+  }
+
+  if (useDesignV2) {
     return (
-      <Suspense fallback={<LoadingFallback />}>
-        <Onboarding onComplete={handleOnboardingComplete} />
-      </Suspense>
+      <>
+        <a href="#main-content" className="skip-link">
+          {t('accessibility.skipToContent')}
+        </a>
+        <DesignApp
+          initialNav={navIdForPage(currentPage)}
+          onNavChange={(nav) => setCurrentPage(pageForNavId(nav))}
+        />
+        <NotificationBar />
+      </>
     );
   }
 
@@ -183,6 +207,7 @@ function AppContent() {
         {t('accessibility.skipToContent')}
       </a>
       <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+      <DesignV2Notice />
       <main id="main-content" className="main">
         {renderPage()}
       </main>

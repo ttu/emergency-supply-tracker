@@ -1,0 +1,344 @@
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
+import {
+  Button,
+  Caption,
+  NumberDisplay,
+  Panel,
+  StatusBar,
+  StatusDot,
+  StatusPill,
+} from '@/shared/components/design-v2/primitives';
+import { useDesignTheme } from '@/shared/hooks/useDesignTheme';
+import { useDesignData } from '@/shared/hooks/useDesignData';
+import { categoryCode } from '@/shared/i18n/voice';
+import { resolveCategoryLabel } from '@/shared/i18n/categoryLabel';
+import { AlertBanner } from '@/features/alerts/components/v2/AlertBanner';
+import { useShoppingListExport } from '@/features/settings/hooks/useShoppingListExport';
+import { selectPriorityRows } from '../../utils/priorityRows';
+import type { CategoryId } from '@/shared/types';
+
+interface MobileDashboardProps {
+  onCategorySelect: (id: string) => void;
+  onItemSelect: (id: string) => void;
+  /** Jumps straight to a blank add-item flow. */
+  onAddItem: () => void;
+  onViewInventory: () => void;
+}
+
+function mobileReadinessTone(readiness: number): 'ok' | 'warn' | 'crit' {
+  if (readiness >= 80) return 'ok';
+  if (readiness >= 60) return 'warn';
+  return 'crit';
+}
+
+function pantryHeadline(readiness: number, t: TFunction): string {
+  return readiness >= 80
+    ? t('v2.dashboard.mobileHeadlinePantryReady')
+    : t('v2.dashboard.mobileHeadlinePantryAttention');
+}
+
+function mobileHeadline(
+  themeKey: string,
+  readiness: number,
+  t: TFunction,
+): string {
+  if (themeKey === 'pantry') return pantryHeadline(readiness, t);
+  if (themeKey === 'civil') return t('v2.dashboard.mobileHeadlineCivil');
+  return t('v2.dashboard.mobileHeadlineCockpit');
+}
+
+export function MobileDashboard({
+  onCategorySelect,
+  onItemSelect,
+  onAddItem,
+  onViewInventory,
+}: Readonly<MobileDashboardProps>) {
+  const { t, i18n } = useTranslation(['common', 'categories']);
+  const { themeKey } = useDesignTheme();
+  const { itemsToRestock, handleExport } = useShoppingListExport();
+  const {
+    categories,
+    coverageTotals,
+    readiness,
+    stats,
+    expiringCount,
+    criticalCount,
+    rows,
+  } = useDesignData();
+  const lang = i18n.language || 'en';
+  const categoryName = (id: CategoryId) =>
+    resolveCategoryLabel(
+      categories.find((c) => c.id === id),
+      String(id),
+      lang,
+      t,
+    );
+  const tone = mobileReadinessTone(readiness);
+  // Same selection as the desktop PriorityQueue: sorted critical-first before
+  // the slice, so a critical item further down the rows is not cut.
+  const priority = selectPriorityRows(rows, 4);
+  const resolveLabel = t(`v2.voice.resolveAction.${themeKey}`);
+  // Borders come off the final row, whatever its size — the grid is two
+  // columns and the list can be shorter than the six it slices to.
+  const visibleStats = stats.slice(0, 6);
+  const lastRowStart = Math.floor((visibleStats.length - 1) / 2) * 2;
+  const headline = mobileHeadline(themeKey, readiness, t);
+
+  return (
+    <div
+      style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}
+    >
+      <div>
+        <Caption>{t(`v2.voice.greeting.${themeKey}`)}</Caption>
+        <div
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 22,
+            fontWeight: themeKey === 'pantry' ? 400 : 600,
+            letterSpacing: '-0.02em',
+            marginTop: 6,
+            color: 'var(--color-text)',
+          }}
+        >
+          {headline}
+        </div>
+      </div>
+
+      <AlertBanner
+        onItemSelect={onItemSelect}
+        onCategorySelect={onCategorySelect}
+      />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <Button variant="primary" full onClick={() => onAddItem()}>
+          {t(`v2.voice.addItem.${themeKey}`)}
+        </Button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="secondary" onClick={() => onViewInventory()}>
+            {t(`v2.dashboard.quickViewInventory.${themeKey}`)}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => handleExport()}
+            disabled={itemsToRestock.length === 0}
+          >
+            {t(`v2.dashboard.quickExportShoppingList.${themeKey}`)}
+          </Button>
+        </div>
+      </div>
+
+      <Panel padding={16}>
+        <Caption>{t(`v2.voice.readiness.${themeKey}`)}</Caption>
+        <div
+          style={{
+            marginTop: 10,
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: 6,
+          }}
+        >
+          <NumberDisplay value={readiness} suffix="%" size={48} tone={tone} />
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <StatusBar
+            ok={coverageTotals.ok}
+            warn={coverageTotals.warn}
+            crit={coverageTotals.crit}
+            total={Math.max(coverageTotals.total, 1)}
+            height={5}
+          />
+        </div>
+        <div
+          style={{
+            marginTop: 8,
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 10,
+          }}
+        >
+          <span style={{ color: 'var(--color-ok)' }}>
+            {coverageTotals.ok} {t(`v2.voice.statusOk.${themeKey}`)}
+          </span>
+          <span style={{ color: 'var(--color-warn)' }}>
+            {coverageTotals.warn} {t(`v2.voice.statusWarn.${themeKey}`)}
+          </span>
+          <span style={{ color: 'var(--color-crit)' }}>
+            {coverageTotals.crit} {t(`v2.voice.statusCrit.${themeKey}`)}
+          </span>
+        </div>
+      </Panel>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <Panel padding={14}>
+          <Caption>{t(`v2.voice.expiringSoon.${themeKey}`)}</Caption>
+          <div style={{ marginTop: 6 }}>
+            <NumberDisplay
+              value={expiringCount}
+              size={32}
+              tone={expiringCount > 0 ? 'warn' : undefined}
+            />
+          </div>
+        </Panel>
+        <Panel padding={14}>
+          <Caption>{t(`v2.voice.critical.${themeKey}`)}</Caption>
+          <div style={{ marginTop: 6 }}>
+            <NumberDisplay
+              value={criticalCount}
+              size={32}
+              tone={criticalCount > 0 ? 'crit' : 'ok'}
+            />
+          </div>
+        </Panel>
+      </div>
+
+      {priority.length > 0 && (
+        <Panel padding={0}>
+          <div
+            style={{
+              padding: '12px 14px',
+              borderBottom: '1px solid var(--color-rule-soft)',
+            }}
+          >
+            <Caption>{t(`v2.dashboard.mobilePriority.${themeKey}`)}</Caption>
+          </div>
+          {priority.map((r, i) => (
+            <div
+              key={String(r.item.id)}
+              style={{
+                padding: '11px 14px',
+                display: 'grid',
+                gridTemplateColumns: '14px 1fr auto auto',
+                gap: 10,
+                alignItems: 'center',
+                borderBottom:
+                  i < priority.length - 1
+                    ? '1px solid var(--color-rule-soft)'
+                    : 'none',
+              }}
+            >
+              <StatusDot status={r.status} size={7} />
+              <div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: 'var(--color-text)',
+                  }}
+                >
+                  {r.item.name}
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    color: 'var(--color-text-3)',
+                    marginTop: 1,
+                  }}
+                >
+                  {r.item.quantity}/{r.recommended || '—'}{' '}
+                  {t(r.item.unit, { ns: 'units' })}
+                </div>
+              </div>
+              <StatusPill status={r.status} />
+              <button
+                type="button"
+                onClick={() => onItemSelect(String(r.item.id))}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--color-rule)',
+                  color: 'var(--color-text-2)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 10,
+                  padding: '4px 10px',
+                  cursor: 'pointer',
+                  borderRadius: 'var(--radius-pill)',
+                  letterSpacing: '0.08em',
+                  fontWeight: 700,
+                  lineHeight: 1,
+                }}
+              >
+                {resolveLabel}
+              </button>
+            </div>
+          ))}
+        </Panel>
+      )}
+
+      <Panel padding={0}>
+        <div
+          style={{
+            padding: '12px 14px',
+            borderBottom: '1px solid var(--color-rule-soft)',
+          }}
+        >
+          <Caption>{t(`v2.dashboard.mobileCoverage.${themeKey}`)}</Caption>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+          {visibleStats.map((s, i) => {
+            const tn = s.coverage;
+            return (
+              <button
+                key={String(s.category.id)}
+                type="button"
+                onClick={() => onCategorySelect(String(s.category.id))}
+                style={{
+                  padding: '12px 14px',
+                  borderRight:
+                    i % 2 === 0 ? '1px solid var(--color-rule-soft)' : 'none',
+                  borderBottom:
+                    i < lastRowStart
+                      ? '1px solid var(--color-rule-soft)'
+                      : 'none',
+                  background: 'transparent',
+                  border: 0,
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  color: 'inherit',
+                }}
+              >
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 9,
+                      color: 'var(--color-text-3)',
+                    }}
+                  >
+                    {categoryCode(String(s.category.id))}
+                  </span>
+                  <StatusDot status={tn} size={6} />
+                </div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 600,
+                    marginTop: 4,
+                    color: 'var(--color-text)',
+                  }}
+                >
+                  {categoryName(s.category.id)}
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 14,
+                    color: 'var(--color-text-2)',
+                    marginTop: 4,
+                    fontFeatureSettings: '"tnum"',
+                  }}
+                >
+                  {s.ok}/{s.total}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </Panel>
+    </div>
+  );
+}

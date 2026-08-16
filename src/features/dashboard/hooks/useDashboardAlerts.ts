@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/features/inventory';
 import { useHousehold } from '@/features/household';
 import { useRecommendedItems } from '@/features/templates';
-import { generateDashboardAlerts, type Alert } from '@/features/alerts';
+import {
+  generateDashboardAlerts,
+  readNotificationPrefs,
+  type Alert,
+} from '@/features/alerts';
 import { useBackupTracking } from './useBackupTracking';
 import { useSeenNotifications } from './useSeenNotifications';
 import { APP_NOTIFICATIONS } from '../constants/notifications';
@@ -53,15 +57,28 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
   const [backupReminderDismissed, setBackupReminderDismissed] = useState(false);
   const [storageAlertDismissed, setStorageAlertDismissed] = useState(false);
 
+  // Read notification prefs (Settings → Notifications) at render time so the
+  // dashboard suppresses the categories the user opted out of.
+
+  const notificationPrefs = readNotificationPrefs();
+
   // Generate alerts (including water shortage alerts)
   const allAlerts = useMemo(
-    () => generateDashboardAlerts(items, t, household, recommendedItems),
-    [items, t, household, recommendedItems],
+    () =>
+      generateDashboardAlerts(
+        items,
+        t,
+        household,
+        recommendedItems,
+        notificationPrefs,
+      ),
+    [items, t, household, recommendedItems, notificationPrefs],
   );
 
   // Generate backup reminder alert if needed
   // Note: items is included in deps to re-evaluate when inventory changes
   const backupReminderAlert: Alert | undefined = useMemo(() => {
+    if (!notificationPrefs.backup) return undefined;
     if (backupReminderDismissed) return undefined;
 
     // Get lastModified from appData for backup reminder check
@@ -80,6 +97,7 @@ export function useDashboardAlerts(): UseDashboardAlertsResult {
       message,
     };
   }, [
+    notificationPrefs.backup,
     backupReminderDismissed,
     t,
     items,

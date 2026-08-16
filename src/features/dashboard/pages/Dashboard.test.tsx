@@ -108,6 +108,12 @@ vi.mock('@/features/alerts', () => ({
     </div>
   ),
   generateDashboardAlerts: () => mockGenerateDashboardAlerts(),
+  readNotificationPrefs: () => ({
+    critical: true,
+    lowStock: true,
+    expiry: true,
+    backup: true,
+  }),
 }));
 
 describe('Dashboard', () => {

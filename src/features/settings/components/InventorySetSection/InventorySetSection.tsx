@@ -14,6 +14,7 @@ export function InventorySetSection() {
     createInventorySet,
     deleteInventorySet,
     renameInventorySet,
+    setActiveInventorySet,
   } = useInventorySet();
   const [newName, setNewName] = useState('');
   const [editingId, setEditingId] = useState<InventorySetId | null>(null);
@@ -198,6 +199,19 @@ export function InventorySetSection() {
                     )}
                   </span>
                   <div className={styles.actions}>
+                    {/* The list is the only switcher design v2 has — it
+                        embeds this component without the classic settings
+                        header that carries the set dropdown. */}
+                    {w.id !== activeInventorySetId && (
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        onClick={() => setActiveInventorySet(w.id)}
+                        aria-label={t('settings.inventorySets.switchLabel')}
+                      >
+                        {t('settings.inventorySets.switch')}
+                      </Button>
+                    )}
                     <Button
                       variant="secondary"
                       size="small"

@@ -70,6 +70,65 @@ Users need a quick overview of their emergency preparedness status without navig
 
 **Note:** The preparedness calculation uses a simplified approach for `scaleWithPeople` items, using `totalPeople` (adults + children) directly instead of the peopleMultiplier formula (adults × 1.0 + children × 0.75). This provides a simpler calculation while still being reasonably accurate for preparedness scoring.
 
+### Readiness and the Coverage Matrix (v2)
+
+The v2 Readiness KPI is the **same figure the classic dashboard reports** —
+`calculatePreparednessScoreFromCategoryStatuses`, the share of applicable categories
+whose status is `ok`. A household that switches design must not see its headline
+number move while its supplies stay put.
+
+The breakdown under the number, and the dot on each Coverage Matrix tile, come from
+the same per-category verdicts (`CategoryStats.coverage`, mapped from the v1
+`CategoryStatusSummary.status` in `useDesignData`). Categories with nothing to meet —
+pets with no pets, or anything the active kit makes no recommendation for — are
+marked `applicable: false` and left out of both halves of the count, matching how the
+v1 score filters `totalNeeded === 0`.
+
+**History:** Until 2026-08-05 Readiness was `readinessPercent()`, the share of _owned
+items_ with `ok` status. That could not see a gap: a category the household owned
+nothing in contributed no `crit` and no `warn`, so it scored as covered and its tile
+showed a green dot. A migrating household read 0% in v1 and 67% in v2 on identical
+data, with Cooking & Heat green in v2 while v1 called it critical.
+
+**Location:** `src/shared/utils/designStatus.ts` (`categoryStats`, `coverageCounts`),
+`src/shared/hooks/useDesignData.ts`, rendered by `KpiRow`, `MobileDashboard` and
+`CoverageMatrix`.
+
+### Days Covered (v2 KPI)
+
+Distinct from the preparedness score above: preparedness counts how many recommended
+items are sufficiently stocked, while **Days Covered** answers how long the household
+can actually drink and eat. Only water and calories have a defensible per-day burn
+rate, so no other category enters the figure.
+
+```
+foodDays  = totalActualCalories / (totalNeededCalories / supplyDurationDays)
+waterDays = totalWaterActual / (drinkingRatePerDay + preparationRatePerDay)
+daysCovered = min(foodDays, waterDays)
+```
+
+Preparation water scales with the amount of stored food rather than with days, so it
+is amortised over the food it prepares (`preparationWaterNeeded / foodDays`) — each
+day the household drinks its ration and cooks one day's worth. Reserving the whole
+amount against day one would make buying more food _lower_ the water figure.
+
+The result is not capped at the target: the tile prints the household's own target
+beside it, so a value above target reads correctly as being ahead of goal. When the
+figure is short of target, the tile also names the limiting resource.
+
+Either leg is dropped when it cannot be measured (category disabled, no calorie
+requirement, or a water total summed across mixed units); if neither can be measured
+the result is 0.
+
+**Location:** `src/shared/utils/calculations/daysCovered.ts` — pure calculation over
+the category status summaries, consumed by `useDesignData` and rendered by
+`src/features/dashboard/components/v2/KpiRow.tsx`.
+
+**History:** Until 2026-08-04 this KPI was `okRatio × supplyDurationDays` — the share
+of inventory rows with `ok` status rescaled onto the day axis, which made it a
+duplicate of Readiness and let a household with surplus water and food read as 2.8 of
+7 days. See `docs/design-docs/2026-08-04-days-covered-design.md`.
+
 ### Dashboard Components
 
 **Location:** `src/pages/Dashboard.tsx`

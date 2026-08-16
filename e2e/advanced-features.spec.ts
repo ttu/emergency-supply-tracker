@@ -1,202 +1,94 @@
-import { test, expect, navigateToSettingsSection } from './fixtures';
+import {
+  test,
+  expect,
+  navigateToSettingsSection,
+  waitForStoredData,
+} from './fixtures';
+
+/**
+ * v2 puts the capability toggles in Settings → §5 Advanced (not §4 Nutrition).
+ * They render as role="switch" with aria-label = the row's label.
+ */
 
 test.describe('Advanced Features', () => {
   test.beforeEach(async ({ setupApp }) => {
     await setupApp();
   });
 
-  test('should enable calorie tracking and show calorie data', async ({
-    page,
-  }) => {
-    await page.getByTestId('nav-settings').click();
+  const section = async (page: import('@playwright/test').Page) => {
+    await navigateToSettingsSection(page, 'advanced');
+    await expect(page.getByText('ADVANCED FEATURES')).toBeVisible();
+  };
 
-    // Navigate to nutrition section which contains the feature checkboxes
-    await navigateToSettingsSection(page, 'nutrition');
-    await expect(page.getByTestId('section-nutrition')).toBeVisible();
-
-    // Advanced features checkboxes might be in a section or might not be visible
-    // Check if there are any checkboxes in the settings page
-    const allCheckboxes = page.locator('input[type="checkbox"]');
-    const checkboxCount = await allCheckboxes.count();
-
-    // If no checkboxes found, skip this test (advanced features UI might not be implemented)
-    if (checkboxCount === 0) {
-      test.skip();
-      return;
+  test('should enable calorie tracking', async ({ page }) => {
+    await section(page);
+    const toggle = page.getByRole('switch', { name: /CALORIE TRACKING/i });
+    await expect(toggle).toBeVisible();
+    if ((await toggle.getAttribute('aria-checked')) !== 'true') {
+      await toggle.click();
     }
-
-    // Use the first checkbox for calorie tracking
-    const calorieCheckbox = allCheckboxes.nth(0);
-
-    // Enable calorie tracking (click only if not already checked)
-    const initialState = await calorieCheckbox.isChecked();
-    if (!initialState) {
-      await calorieCheckbox.click();
-    }
-
-    // Verify calorie tracking is enabled
-    const newState = await calorieCheckbox.isChecked();
-    expect(newState).toBe(true);
-
-    // Note: Verifying that calorie data appears on dashboard depends on
-    // the actual implementation. The toggle functionality is tested here.
-    // Data visibility is tested in unit tests and integration tests.
+    await expect(toggle).toHaveAttribute('aria-checked', 'true');
   });
 
-  test('should enable water tracking and show water preparation needs', async ({
-    page,
-  }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to nutrition section which contains the feature checkboxes
-    await navigateToSettingsSection(page, 'nutrition');
-    await expect(page.getByTestId('section-nutrition')).toBeVisible();
-
-    // Check if checkboxes exist
-    const allCheckboxes = page.locator('input[type="checkbox"]');
-    const checkboxCount = await allCheckboxes.count();
-
-    // Need at least 2 checkboxes for this test (water tracking is the second one)
-    if (checkboxCount < 2) {
-      test.skip();
-      return;
+  test('should enable power management', async ({ page }) => {
+    await section(page);
+    const toggle = page.getByRole('switch', { name: /POWER MANAGEMENT/i });
+    await expect(toggle).toBeVisible();
+    if ((await toggle.getAttribute('aria-checked')) !== 'true') {
+      await toggle.click();
     }
-
-    // Use the second checkbox for water tracking
-    const waterCheckbox = allCheckboxes.nth(1);
-
-    // Enable water tracking (click only if not already checked)
-    const initialState = await waterCheckbox.isChecked();
-    if (!initialState) {
-      await waterCheckbox.click();
-    }
-
-    // Verify water tracking is enabled
-    const newState = await waterCheckbox.isChecked();
-    expect(newState).toBe(true);
-
-    // Note: Verifying that water data appears on dashboard depends on
-    // the actual implementation. The toggle functionality is tested here.
+    await expect(toggle).toHaveAttribute('aria-checked', 'true');
   });
 
-  test('should enable power management and show power data', async ({
-    page,
-  }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to nutrition section which contains the feature checkboxes
-    await navigateToSettingsSection(page, 'nutrition');
-    await expect(page.getByTestId('section-nutrition')).toBeVisible();
-
-    // Check if checkboxes exist
-    const allCheckboxes = page.locator('input[type="checkbox"]');
-    const checkboxCount = await allCheckboxes.count();
-
-    // Need at least 3 checkboxes for this test (power management is the third one)
-    if (checkboxCount < 3) {
-      test.skip();
-      return;
-    }
-
-    // Use the third checkbox for power management
-    const powerCheckbox = allCheckboxes.nth(2);
-
-    // Enable power management (click only if not already checked)
-    const initialState = await powerCheckbox.isChecked();
-    if (!initialState) {
-      await powerCheckbox.click();
-    }
-
-    // Verify power management is enabled
-    const newState = await powerCheckbox.isChecked();
-    expect(newState).toBe(true);
-
-    // Note: Verifying that power data appears on dashboard depends on
-    // the actual implementation. The toggle functionality is tested here.
+  test('should toggle calorie tracking on and off', async ({ page }) => {
+    await section(page);
+    const toggle = page.getByRole('switch', { name: /CALORIE TRACKING/i });
+    const initial = (await toggle.getAttribute('aria-checked')) === 'true';
+    await toggle.click();
+    await expect(toggle).toHaveAttribute(
+      'aria-checked',
+      initial ? 'false' : 'true',
+    );
+    await toggle.click();
+    await expect(toggle).toHaveAttribute(
+      'aria-checked',
+      initial ? 'true' : 'false',
+    );
   });
 
-  test('should persist advanced features settings after reload', async ({
-    page,
-  }) => {
-    await page.getByTestId('nav-settings').click();
-
-    // Navigate to nutrition section which contains the feature checkboxes
-    await navigateToSettingsSection(page, 'nutrition');
-    await expect(page.getByTestId('section-nutrition')).toBeVisible();
-
-    // Check if checkboxes exist
-    const allCheckboxes = page.locator('input[type="checkbox"]');
-    const checkboxCount = await allCheckboxes.count();
-
-    if (checkboxCount === 0) {
-      test.skip();
-      return;
+  test('should persist advanced features after reload', async ({ page }) => {
+    await section(page);
+    const toggle = page.getByRole('switch', { name: /CALORIE TRACKING/i });
+    if ((await toggle.getAttribute('aria-checked')) !== 'true') {
+      await toggle.click();
     }
+    await waitForStoredData(page, (raw) =>
+      raw.includes('"calorieTracking":true'),
+    );
 
-    // Use first available checkbox (if multiple exist, test with first one)
-    const firstCheckbox = page.locator('input[type="checkbox"]').first();
-
-    // Toggle first checkbox if it exists
-    if (checkboxCount > 0) {
-      const initialState = await firstCheckbox.isChecked();
-      if (!initialState) {
-        await firstCheckbox.click();
-      }
-
-      // Wait for settings to save
-      await page.waitForTimeout(500);
-
-      // Reload page
-      await page.reload({ waitUntil: 'domcontentloaded' });
-
-      // Verify settings persisted - use helper to handle mobile hamburger menu
-      await page.getByTestId('nav-settings').click();
-      await navigateToSettingsSection(page, 'nutrition');
-      await page.waitForLoadState('networkidle');
-      const checkboxAfterReload = page
-        .locator('input[type="checkbox"]')
-        .first();
-      const stateAfterReload = await checkboxAfterReload.isChecked();
-      expect(stateAfterReload).toBe(true);
-    }
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await section(page);
+    const after = page.getByRole('switch', { name: /CALORIE TRACKING/i });
+    await expect(after).toHaveAttribute('aria-checked', 'true');
   });
 
-  test('should disable advanced features and hide related data', async ({
+  test('should render the advanced section header in cockpit voice', async ({
     page,
   }) => {
-    await page.getByTestId('nav-settings').click();
+    await section(page);
+    await expect(page.getByText('§5')).toBeVisible();
+    await expect(page.getByText('ADVANCED FEATURES')).toBeVisible();
+  });
 
-    // Navigate to nutrition section which contains the feature checkboxes
-    await navigateToSettingsSection(page, 'nutrition');
-    await expect(page.getByTestId('section-nutrition')).toBeVisible();
-
-    // Check if checkboxes exist
-    const allCheckboxes = page.locator('input[type="checkbox"]');
-    const checkboxCount = await allCheckboxes.count();
-
-    if (checkboxCount === 0) {
-      test.skip();
-      return;
-    }
-
-    const firstCheckbox = page.locator('input[type="checkbox"]').first();
-    const initialState = await firstCheckbox.isChecked();
-
-    // Toggle the checkbox
-    await firstCheckbox.click();
-
-    // Verify state changed
-    const newState = await firstCheckbox.isChecked();
-    expect(newState).toBe(!initialState);
-
-    // Toggle back
-    await firstCheckbox.click();
-
-    // Verify state changed back
-    const finalState = await firstCheckbox.isChecked();
-    expect(finalState).toBe(initialState);
-
-    // Note: Verifying that data is hidden depends on the actual implementation.
-    // The toggle functionality is tested here.
+  test('reaches the advanced section on mobile, where the rail is hidden', async ({
+    page,
+  }) => {
+    // Below 768px, navigateToSettingsSection falls back to scrolling the
+    // section into view by id instead of clicking the (hidden) rail entry.
+    await page.setViewportSize({ width: 375, height: 812 });
+    await section(page);
+    await expect(
+      page.getByRole('switch', { name: /CALORIE TRACKING/i }),
+    ).toBeVisible();
   });
 });
