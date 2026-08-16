@@ -149,7 +149,9 @@ section{padding:80px 0}
 .sell-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .sell-card{background:var(--panel);border:1px solid var(--ruleSoft);border-left:2px solid var(--accent);border-radius:4px;padding:22px}
 .sell-card.soon{border-left-color:var(--warn)}
-.sell-card .ic{font-size:20px;margin-bottom:12px}
+.sell-card .ic{width:20px;height:20px;margin-bottom:12px;color:var(--accent)}
+.sell-card .ic svg{display:block;width:100%;height:100%}
+.sell-card.soon .ic{color:var(--warn)}
 .sell-card h3{font-size:16px;margin-bottom:7px;font-family:var(--mono);letter-spacing:.01em}
 .sell-card p{color:var(--text2);font-size:14px}
 .tag{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--warn);border:1px solid rgba(250,204,21,.3);border-radius:3px;padding:2px 6px;margin-left:8px;vertical-align:middle}
@@ -292,12 +294,12 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
       <p data-i18n="sell.sub">A serious preparedness tool that respects your data and your wallet.</p>
     </div>
     <div class="sell-grid">
-      <div class="sell-card"><div class="ic">✓</div><h3 data-i18n="sell.card1.h">No signup required</h3><p data-i18n="sell.card1.p">Start using it immediately. No account, no email, no waiting.</p></div>
-      <div class="sell-card"><div class="ic">🔒</div><h3 data-i18n="sell.card2.h">100% browser-based</h3><p data-i18n="sell.card2.p">Your data stays on your device, completely private. Nothing is uploaded.</p></div>
-      <div class="sell-card"><div class="ic">🎁</div><h3 data-i18n="sell.card3.h">Completely free</h3><p data-i18n="sell.card3.p">Every feature included. No premium tiers, no paywalls, ever.</p></div>
-      <div class="sell-card"><div class="ic">🔌</div><h3 data-i18n="sell.card4.h">Works offline</h3><p data-i18n="sell.card4.p">Access your supplies anytime, even with no internet connection.</p></div>
-      <div class="sell-card"><div class="ic">💻</div><h3 data-i18n="sell.card5.h">Open source</h3><p data-i18n="sell.card5.p">Transparent code you can inspect, audit, and contribute to.</p></div>
-      <div class="sell-card soon"><div class="ic">☁️</div><h3 data-i18n-html="sell.card6.h">Cloud sync<span class="tag">Coming soon</span></h3><p data-i18n="sell.card6.p">Optional sync to your own cloud provider — on your terms.</p></div>
+      <div class="sell-card"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 data-i18n="sell.card1.h">No signup required</h3><p data-i18n="sell.card1.p">Start using it immediately. No account, no email, no waiting.</p></div>
+      <div class="sell-card"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3 data-i18n="sell.card2.h">100% browser-based</h3><p data-i18n="sell.card2.p">Your data stays on your device, completely private. Nothing is uploaded.</p></div>
+      <div class="sell-card"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div><h3 data-i18n="sell.card3.h">Completely free</h3><p data-i18n="sell.card3.p">Every feature included. No premium tiers, no paywalls, ever.</p></div>
+      <div class="sell-card"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div><h3 data-i18n="sell.card4.h">Works offline</h3><p data-i18n="sell.card4.p">Access your supplies anytime, even with no internet connection.</p></div>
+      <div class="sell-card"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><h3 data-i18n="sell.card5.h">Open source</h3><p data-i18n="sell.card5.p">Transparent code you can inspect, audit, and contribute to.</p></div>
+      <div class="sell-card soon"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div><h3 data-i18n-html="sell.card6.h">Cloud sync<span class="tag">Coming soon</span></h3><p data-i18n="sell.card6.p">Optional sync to your own cloud provider — on your terms.</p></div>
     </div>
   </div>
 </section>
