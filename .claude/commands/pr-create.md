@@ -19,6 +19,11 @@ Create a pull request for the current branch following our project conventions.
 
 3. Push the branch to origin if not already pushed:
    - Run `git push -u origin <branch-name>`
+   - If `gh`/`git push` reports not authenticated, don't ask the user to run `gh auth login` —
+     export the devcontainer's forwarded token inline in the same command instead:
+     `export GH_TOKEN="$GH_EST_TOKEN"; gh pr create ...` (see AGENTS.md's Version Control & PR
+     Workflow section for why). Each `Bash` call is a fresh shell, so this must be re-exported in
+     every command that needs it, not just once.
 
 4. Create the PR using GitHub CLI with this format:
 

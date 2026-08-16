@@ -113,6 +113,8 @@ Session artifacts are saved to `verification-sessions/` (gitignored).
 
 **Cursor/agents:** Use `required_permissions: ['all']` for git push and `gh pr create` (sandbox bypass).
 
+**`gh` auth in the devcontainer:** if `gh`/`git push` reports "not authenticated" inside the devcontainer, do **not** ask the user to run `gh auth login` — the container forwards a repo-scoped token as `GH_EST_TOKEN` (not the generic `GH_TOKEN`, so it can't collide with another repo's devcontainer token on the same host; see README.md's Dev Container section). `post-create.sh` bridges it to `GH_TOKEN` once at container creation, but that only lives in that script's own process, not in later shells — each `Bash` tool call is a fresh shell, so the bridge doesn't carry over. Fix it per-command by exporting inline in the same call that needs it, e.g. `export GH_TOKEN="$GH_EST_TOKEN"; gh pr create ...`. Only fall back to asking the user if `$GH_EST_TOKEN` is unset.
+
 **Commits:** `type: description` + optional bullet details + `Refs: #issue`. Types: `feat`, `fix`, `refactor`, `test`, `docs`, `style`, `chore`, `ci`, `build`, `perf`. No Co-Authored-By/Generated-with; no scopes (use `feat:` not `feat(scope):`). Implementation steps: use types (`chore` setup, `feat` feature, etc.) not "Step X:". **Never commit with `--no-verify`**; run pre-commit hooks (format, type-check, lint, test, build) and fix failures instead of skipping.
 
 **PR:** Use `/pr-create` and `/pr-fix` (see Commands).
