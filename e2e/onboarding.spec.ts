@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, APP_URL } from './fixtures';
 import type { RootStorage } from '../src/shared/types';
 
 /**
@@ -17,7 +17,7 @@ import type { RootStorage } from '../src/shared/types';
  */
 
 const clearAndReload = async (page: import('@playwright/test').Page) => {
-  await page.goto('/');
+  await page.goto(APP_URL);
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'domcontentloaded' });
 };

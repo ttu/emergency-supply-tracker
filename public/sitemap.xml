@@ -9,6 +9,19 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+  <!--
+    Crawlers arrive with empty localStorage, so the root gate in index.html
+    always redirects them here. This is the page that actually gets indexed
+    for a first-time visitor, so it has to be listed in its own right.
+  -->
+  <url>
+    <loc>https://www.emergencysupplytracker.com/landing.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.emergencysupplytracker.com/landing.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="fi" href="https://www.emergencysupplytracker.com/landing.html?lang=fi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.emergencysupplytracker.com/landing.html"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
   <url>
     <loc>https://www.emergencysupplytracker.com/?lang=en</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.emergencysupplytracker.com/?lang=en"/>

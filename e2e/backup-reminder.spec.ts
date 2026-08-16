@@ -4,6 +4,7 @@ import {
   setAppStorage,
   navigateToSettingsSection,
   toLocalDateString,
+  APP_URL,
 } from './fixtures';
 import {
   createMockAppData,
@@ -66,7 +67,7 @@ test.describe('Backup Reminder', () => {
       settings: v2Settings,
     });
 
-    await page.goto('/');
+    await page.goto(APP_URL);
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
@@ -90,7 +91,7 @@ test.describe('Backup Reminder', () => {
       settings: v2Settings,
     });
 
-    await page.goto('/');
+    await page.goto(APP_URL);
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
@@ -129,7 +130,7 @@ test.describe('Backup Reminder', () => {
       settings: v2Settings,
     });
 
-    await page.goto('/');
+    await page.goto(APP_URL);
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
@@ -155,7 +156,7 @@ test.describe('Backup Reminder', () => {
       settings: v2Settings,
     });
 
-    await page.goto('/');
+    await page.goto(APP_URL);
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
@@ -201,7 +202,7 @@ test.describe('Backup Reminder', () => {
       settings: v2Settings,
     });
 
-    await page.goto('/');
+    await page.goto(APP_URL);
     await setAppStorage(page, appData);
     await page.reload({ waitUntil: 'domcontentloaded' });
 

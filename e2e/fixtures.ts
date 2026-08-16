@@ -11,6 +11,16 @@ import {
 } from '../src/shared/utils/storage/localStorage';
 import type { AppData } from '../src/shared/types';
 
+/**
+ * The app's own URL, with the root gate's bypass applied.
+ *
+ * `/` shows the static landing page to anyone with no stored data (see the
+ * gate script in index.html), and a spec starting from a clean profile looks
+ * exactly like that first-time visitor. `?app=1` is the same bypass the
+ * landing page's CTAs use, so specs exercise the app rather than the pitch.
+ */
+export const APP_URL = '/?app=1';
+
 /** Set localStorage to RootStorage built from AppData (for E2E fixtures). */
 export async function setAppStorage(
   page: Page,
@@ -180,7 +190,7 @@ export const test = base.extend<{
 }>({
   setupApp: async ({ page }, use) => {
     const setup = async () => {
-      await page.goto('/');
+      await page.goto(APP_URL);
       // Close any modals that might be open
       await closeAnyOpenModals(page);
       await setAppStorage(page, defaultAppData);

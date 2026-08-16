@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { test, expect, APP_URL } from './fixtures';
 import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 
 test.describe('Landing page', () => {
@@ -13,7 +13,7 @@ test.describe('Landing page', () => {
   test('CTAs open the app', async ({ page }) => {
     await page.goto('/landing.html');
     await page.getByRole('link', { name: 'Start tracking →' }).click();
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/\?app=1$/);
   });
 
   test('shows "get started" CTAs, not "open app", for a first-time visitor', async ({
@@ -76,7 +76,7 @@ test.describe('Landing page', () => {
   test('redirects a visitor who has loaded the app before, even without completing onboarding', async ({
     page,
   }) => {
-    await page.goto('/');
+    await page.goto(APP_URL);
     await page.evaluate(() => localStorage.clear());
     await page.reload({ waitUntil: 'domcontentloaded' });
     // Loading the app once, even mid-onboarding, writes the storage key.
@@ -93,8 +93,18 @@ test.describe('Landing page', () => {
   test('a fresh visitor with cleared storage sees the landing page instead of the app root', async ({
     page,
   }) => {
-    await page.goto('/');
+    // Load the app once so it writes its key, then wipe storage from the
+    // landing page instead of the app. The landing page never writes the key
+    // itself, so the clear cannot race an app effect putting it straight back.
+    await page.goto(APP_URL);
+    await expect
+      .poll(async () =>
+        page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY),
+      )
+      .not.toBeNull();
+    await page.goto('/landing.html?preview=1');
     await page.evaluate(() => localStorage.clear());
+
     // A never-visited browser has no storage key at all yet.
     await page.goto('/landing.html');
     await expect(
@@ -125,6 +135,50 @@ test.describe('Landing page', () => {
     page,
   }) => {
     await page.goto('/landing.html?lang=fi');
+    await expect(
+      page.getByRole('heading', { name: /oikeasti valmis/ }),
+    ).toBeVisible();
+  });
+});
+
+test.describe('Landing page as the site root', () => {
+  test('sends a first-time visitor at / to the landing page', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/landing\.html$/);
+    await expect(
+      page.getByRole('heading', { name: /actually ready/ }),
+    ).toBeVisible();
+  });
+
+  test('leaves a returning visitor at / on the app', async ({
+    page,
+    setupApp,
+  }) => {
+    await setupApp();
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByTestId('v2-nav-home')).toBeVisible();
+  });
+
+  test('does not bounce a first-time visitor who clicked through from the pitch', async ({
+    page,
+  }) => {
+    await page.goto('/landing.html');
+    await page.getByRole('link', { name: 'Start tracking →' }).click();
+
+    // The visitor still has no stored data at this point, so without the
+    // ?app=1 bypass the root gate would send them straight back and the two
+    // redirects would loop forever. They land in onboarding, not the
+    // dashboard, since this is still their first visit.
+    await expect(page).toHaveURL(/\/\?app=1$/);
+    await expect(page.getByText(/STEP 01 \/ 06/)).toBeVisible();
+  });
+
+  test('carries ?lang=fi through to the landing page', async ({ page }) => {
+    await page.goto('/?lang=fi');
+    await expect(page).toHaveURL(/\/landing\.html\?lang=fi$/);
     await expect(
       page.getByRole('heading', { name: /oikeasti valmis/ }),
     ).toBeVisible();

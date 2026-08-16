@@ -23,6 +23,7 @@ const OFFLINE_URL = resolvePath(OFFLINE_PAGE);
 // Note: index.html is served by Vite at the root path (''), not as a separate file
 const PRECACHE_PATHS = [
   '',
+  'landing.html',
   'offline.html',
   'manifest.json',
   'favicon.svg',

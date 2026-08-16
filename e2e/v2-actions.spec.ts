@@ -5,6 +5,7 @@ import {
   toLocalDateString,
   startAddCustomItem,
   waitForStoredData,
+  APP_URL,
 } from './fixtures';
 import {
   createMockAppData,
@@ -72,7 +73,7 @@ async function boot(page: Page, viewport: 'desktop' | 'mobile' = 'desktop') {
       ? { width: 1440, height: 960 }
       : { width: 390, height: 844 },
   );
-  await page.goto('/');
+  await page.goto(APP_URL);
   await setAppStorage(
     page,
     createMockAppData({ settings, items: [...items], customCategories: [] }),

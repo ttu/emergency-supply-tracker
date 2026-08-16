@@ -245,7 +245,11 @@ Sample recommendation files are available in `public/samples/`:
 A static marketing page at `/landing.html`, separate from the React app bundle.
 
 - Shown only to visitors with no `emergencySupplyTracker` localStorage key (i.e. they have never loaded the app before). Anyone with that key — including a visitor mid-onboarding who never finished — is redirected straight to `/`.
-- All CTAs ("Get started", "Open app") link to `/`, where the app decides between onboarding and the dashboard as usual.
+- It is also the site's front door: an inline gate at the top of `index.html` redirects `/` to `/landing.html` for those same first-time visitors. The decision reads `localStorage`, so it has to run in the browser — no hosting rewrite (Vercel or GitHub Pages) can make it. The two guards are mirror images and never both fire for one visitor.
+- All CTAs ("Get started", "Open app") link to `/?app=1`. The `app=1` bypass is required: a first-time visitor clicking through still has no storage key, so without it the root gate would bounce them back and the redirects would loop. The app then decides between onboarding and the dashboard as usual.
+- The root gate also stands down for an installed PWA (`display-mode: standalone`), so a launched app never opens the marketing page, and when `localStorage` is unavailable (privacy mode), where it falls through to the app.
+- `?lang=en` / `?lang=fi` on `/` is carried through to the landing page, so shared language-specific links keep working.
+- E2E specs starting from a clean profile use the `APP_URL` constant in `e2e/fixtures.ts` (`/?app=1`) rather than `/`, since a fresh Playwright profile looks exactly like a first-time visitor.
 - Fully translated (English/Finnish) via a small inline i18n dictionary; language priority matches the app (`?lang=` param → stored `settings.language` → `en`), plus a manual EN/FI toggle in the nav.
 - Linked from the in-app Help/Guide page's support section.
 

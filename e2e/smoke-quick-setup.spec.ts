@@ -11,8 +11,16 @@ import { STORAGE_KEY } from '../src/shared/utils/storage/localStorage';
 import type { RootStorage } from '../src/shared/types';
 
 // Get base URL - use environment variable for deployed sites
-const getBaseURL = () =>
-  process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
+const getBaseURL = () => {
+  const base = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
+  // `/` shows the static landing page to visitors with no stored data, which
+  // is exactly what a smoke test's clean profile looks like. These specs
+  // exercise onboarding, so they take the same ?app=1 bypass the landing
+  // page's own CTAs use. See the root gate script in index.html.
+  const url = new URL(base);
+  url.searchParams.set('app', '1');
+  return url.toString();
+};
 
 // Timeout constants to avoid magic numbers
 const TIMEOUTS = {
