@@ -84,7 +84,7 @@ test.describe('Accessibility', () => {
     page,
   }) => {
     await page.getByTestId('v2-nav-help').click();
-    await expect(page.getByText('CIVIL PREPAREDNESS · BASELINE')).toBeVisible();
+    await expect(page.getByText('HELP & FAQ')).toBeVisible();
     const results = await axe(page).analyze();
     expect(results.violations).toEqual([]);
   });

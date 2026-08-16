@@ -19,7 +19,7 @@ test.describe('Navigation', () => {
 
     // Navigate to Help (Guide)
     await page.getByTestId('v2-nav-help').click();
-    await expect(page.getByText('CIVIL PREPAREDNESS · BASELINE')).toBeVisible();
+    await expect(page.getByText('HELP & FAQ')).toBeVisible();
 
     // Navigate back to Dashboard
     await page.getByTestId('v2-nav-home').click();

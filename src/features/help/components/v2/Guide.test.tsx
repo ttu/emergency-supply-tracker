@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/test/render';
 import { createMockSettings } from '@/shared/utils/test/factories';
 
 describe('Guide (v2)', () => {
-  it('renders the CIVIL PREPAREDNESS title in cockpit voice', () => {
+  it('renders the guide title in cockpit voice', () => {
     renderWithProviders(<Guide />, {
       initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
     });
