@@ -102,6 +102,10 @@ export function Title({ children, size = 32, style }: Readonly<TitleProps>) {
         lineHeight: 1.05,
         color: 'var(--color-text)',
         margin: 0,
+        // At the default 44px size, single long words (e.g. "RECOMMENDATION")
+        // can exceed the mobile content column's width; without this they
+        // overflow past the edge of the screen instead of breaking.
+        overflowWrap: 'break-word',
         ...style,
       }}
     >
