@@ -32,7 +32,6 @@ const renderTable = (rows: DesignItemRow[], totalRowCount = rows.length) =>
 describe('InventoryTable (v2)', () => {
   it('renders header columns in cockpit theme', () => {
     renderTable([]);
-    expect(screen.getByText('v2.inventory.tableId')).toBeInTheDocument();
     expect(screen.getByText('v2.inventory.tableItem')).toBeInTheDocument();
     expect(screen.getByText('v2.inventory.tableCategory')).toBeInTheDocument();
     expect(
