@@ -44,7 +44,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap"/>
 <style>
 :root{
   --bg:#0a1017; --bg2:#0d141a; --panel:#172129; --panel2:#1d2933;
@@ -181,14 +181,16 @@ section{padding:80px 0}
 /* THEMES */
 .themes{background:var(--bg2);border-top:1px solid var(--ruleSoft)}
 .theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.swatch{border:1px solid var(--ruleSoft);border-radius:8px;overflow:hidden}
-.swatch-top{height:132px;padding:18px;display:flex;flex-direction:column;justify-content:space-between}
-.swatch-top .nm{font-size:15px;font-weight:600}
-.swatch-top .chips{display:flex;gap:6px}
-.swatch-top .chips i{width:22px;height:22px;border-radius:4px;display:block;border:1px solid rgba(0,0,0,.15)}
-.swatch-meta{padding:14px 18px;border-top:1px solid var(--ruleSoft);background:var(--panel)}
-.swatch-meta h4{font-size:14px;margin:0 0 4px}
-.swatch-meta p{font-size:12.5px;color:var(--text2)}
+.swatch{border:1.5px solid var(--ruleSoft);overflow:hidden}
+.swatch-top{padding:16px;display:flex;flex-direction:column;gap:10px}
+.swatch-top .nm{font-size:12px;font-weight:700}
+.swatch-top .chips{display:flex;gap:4px}
+.swatch-top .chips i{width:20px;height:20px;display:block}
+.swatch-bar{display:flex;height:4px;overflow:hidden}
+.swatch-meta{padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.swatch-meta h4{font-size:13px;font-weight:600;margin:0 0 2px}
+.swatch-meta p{font-size:9.5px;letter-spacing:.06em;margin:0}
+.swatch-radio{width:16px;height:16px;border-radius:999px;display:grid;place-items:center;font-size:10px;font-weight:700;flex:none;color:#fff}
 @media(max-width:820px){.theme-grid{grid-template-columns:1fr}}
 
 /* FAQ */
@@ -382,26 +384,62 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
       <p data-i18n="themes.sub">Pick the feel that fits you — a dark operational console, an official civil-defense document, or a calm Nordic pantry.</p>
     </div>
     <div class="theme-grid">
-      <div class="swatch">
+      <div class="swatch" style="border-radius:4px;border-color:#7dd3fc">
         <div class="swatch-top" style="background:#0d141a">
-          <div class="nm" style="color:#e6ecf0;font-family:var(--mono)">Cockpit</div>
-          <div class="chips"><i style="background:#7dd3fc"></i><i style="background:#4ade80"></i><i style="background:#facc15"></i><i style="background:#172129"></i></div>
+          <div class="nm" style="color:#e6ecf0;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase">Cockpit</div>
+          <div class="chips">
+            <i style="background:#e6ecf0;border-radius:4px"></i>
+            <i style="background:#7dd3fc;border-radius:4px"></i>
+            <i style="background:#4ade80;border-radius:4px"></i>
+            <i style="background:#facc15;border-radius:4px"></i>
+            <i style="background:#f87171;border-radius:4px"></i>
+          </div>
+          <div class="swatch-bar" style="border-radius:4px">
+            <i style="flex:6;background:#4ade80"></i><i style="flex:3;background:#facc15"></i><i style="flex:1;background:#f87171"></i>
+          </div>
         </div>
-        <div class="swatch-meta"><h4>Cockpit</h4><p data-i18n="themes.cockpit">Dark operational console. Mono type, terse readouts, built for people who like a dashboard.</p></div>
+        <div class="swatch-meta" style="background:#172129;border-top:1px solid #26333d">
+          <div><h4 style="color:#e6ecf0;font-family:var(--mono)">Cockpit</h4><p style="color:#5a6975;font-family:var(--mono)" data-i18n="themes.cockpit">Dark operational console. Mono type, terse readouts, built for people who like a dashboard.</p></div>
+          <span class="swatch-radio" style="background:#7dd3fc">✓</span>
+        </div>
       </div>
-      <div class="swatch">
+      <div class="swatch" style="border-radius:0;border-color:#0b1d2a">
         <div class="swatch-top" style="background:#f4f1ea">
-          <div class="nm" style="color:#0b1d2a">Civil Defense</div>
-          <div class="chips"><i style="background:#d94e1f"></i><i style="background:#0b1d2a"></i><i style="background:#2f6b3a"></i><i style="background:#ffffff"></i></div>
+          <div class="nm" style="color:#0b1d2a;font-family:'Inter Tight',sans-serif;letter-spacing:.1em;text-transform:uppercase">Civil Defense</div>
+          <div class="chips">
+            <i style="background:#0b1d2a"></i>
+            <i style="background:#d94e1f"></i>
+            <i style="background:#2f6b3a"></i>
+            <i style="background:#b9851b"></i>
+            <i style="background:#a3340d"></i>
+          </div>
+          <div class="swatch-bar">
+            <i style="flex:6;background:#2f6b3a"></i><i style="flex:3;background:#b9851b"></i><i style="flex:1;background:#a3340d"></i>
+          </div>
         </div>
-        <div class="swatch-meta"><h4>Civil Defense</h4><p data-i18n="themes.civil">Official document look. Numbered forms, sharp corners, an authoritative voice.</p></div>
+        <div class="swatch-meta" style="background:#ffffff;border-top:1px solid #0b1d2a">
+          <div><h4 style="color:#0b1d2a;font-family:'Inter Tight',sans-serif">Civil Defense</h4><p style="color:#5b6b62;font-family:var(--mono)" data-i18n="themes.civil">Official document look. Numbered forms, sharp corners, an authoritative voice.</p></div>
+          <span class="swatch-radio" style="border:1.5px solid #0b1d2a"></span>
+        </div>
       </div>
-      <div class="swatch">
+      <div class="swatch" style="border-radius:12px;border-color:#d8dbcf">
         <div class="swatch-top" style="background:#eef0ea">
-          <div class="nm" style="color:#1a2620;font-family:Georgia,serif">Pantry</div>
-          <div class="chips"><i style="background:#c9744d"></i><i style="background:#506b53"></i><i style="background:#b6863a"></i><i style="background:#fbfaf5"></i></div>
+          <div class="nm" style="color:#1a2620;font-family:'Fraunces',Georgia,serif">Pantry</div>
+          <div class="chips">
+            <i style="background:#1a2620;border-radius:12px"></i>
+            <i style="background:#b35d3a;border-radius:12px"></i>
+            <i style="background:#506b53;border-radius:12px"></i>
+            <i style="background:#8a6428;border-radius:12px"></i>
+            <i style="background:#a14637;border-radius:12px"></i>
+          </div>
+          <div class="swatch-bar" style="border-radius:12px">
+            <i style="flex:6;background:#506b53"></i><i style="flex:3;background:#8a6428"></i><i style="flex:1;background:#a14637"></i>
+          </div>
         </div>
-        <div class="swatch-meta"><h4>Pantry</h4><p data-i18n="themes.pantry">Calm and Nordic. Soft serif, plain language, preparedness without the pressure.</p></div>
+        <div class="swatch-meta" style="background:#fbfaf5;border-top:1px solid #d8dbcf">
+          <div><h4 style="color:#1a2620;font-family:'Fraunces',Georgia,serif">Pantry</h4><p style="color:#6c7a72;font-family:var(--mono)" data-i18n="themes.pantry">Calm and Nordic. Soft serif, plain language, preparedness without the pressure.</p></div>
+          <span class="swatch-radio" style="border:1.5px solid #d8dbcf"></span>
+        </div>
       </div>
     </div>
   </div>
