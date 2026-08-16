@@ -15,11 +15,6 @@ interface InventoryRowProps {
   onQuantityChange: (id: string, quantity: number) => void;
 }
 
-const codeStyle: CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: 10,
-  color: 'var(--color-text-3)',
-};
 // `minWidth: 0` on both this and the label: a grid item defaults to
 // `min-width: auto`, so without it a long product name widens the whole
 // column past the panel instead of ellipsing.
@@ -137,7 +132,6 @@ function InventoryRowImpl({
         width: '100%',
       }}
     >
-      <span style={codeStyle}>{String(r.item.id).slice(0, 10)}</span>
       <span style={nameStyle} title={r.item.name}>
         <StatusDot status={r.status} size={6} />
         <span style={nameLabelStyle}>{r.item.name}</span>

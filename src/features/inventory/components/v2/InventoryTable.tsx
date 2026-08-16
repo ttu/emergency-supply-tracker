@@ -23,7 +23,7 @@ interface InventoryTableProps {
 const CELL_STYLES: CSSProperties = {
   display: 'grid',
   gridTemplateColumns:
-    '70px minmax(140px, 1fr) 56px 96px 88px minmax(72px, 110px) 72px',
+    'minmax(140px, 1fr) 56px 96px 88px minmax(72px, 110px) 72px',
   columnGap: 10,
   padding: '12px 16px',
   alignItems: 'center',
@@ -72,7 +72,6 @@ export function InventoryTable({
   return (
     <div data-testid="v2-inventory-table">
       <div style={HEADER_STYLE}>
-        <span>{t('v2.inventory.tableId')}</span>
         <span>{t('v2.inventory.tableItem')}</span>
         <span style={HEADER_CENTER_CELL}>
           {t('v2.inventory.tableCategory')}
