@@ -675,6 +675,7 @@
     "contactTitle": "Need More Help?",
     "contactText": "Report bugs, suggest features, leave feedback, or contribute—visit our GitHub repository or email us.",
     "githubLink": "Visit GitHub Repository",
+    "landingLink": "View Landing Page",
     "gettingStarted": {
       "question": "How do I get started?",
       "answer": "When you open the app for the first time, you'll be guided through an onboarding process. The process will help you:\n\n1. Select your language (English/Finnish)\n2. Choose a household preset or configure it manually\n3. Set up your household information (adults, children, supply duration)\n4. Add recommended items to your inventory or start with an empty inventory\n\nAfter onboarding, you can start using the app. You can modify household settings later from the Settings tab."
@@ -2683,6 +2684,21 @@
         "cockpit": "SUPPORT",
         "civil": "SUPPORT",
         "pantry": "Need more help?"
+      },
+      "landingTitle": {
+        "cockpit": "LANDING PAGE",
+        "civil": "LANDING PAGE",
+        "pantry": "The landing page"
+      },
+      "landingText": {
+        "cockpit": "PUBLIC OVERVIEW · The marketing page shown to first-time visitors — a quick summary of what this app does.",
+        "civil": "PUBLIC OVERVIEW · The marketing page shown to first-time visitors — a quick summary of what this app does.",
+        "pantry": "This is the page new visitors see before they start — a friendly overview of what's here."
+      },
+      "landingLink": {
+        "cockpit": "VIEW LANDING PAGE",
+        "civil": "VIEW LANDING PAGE",
+        "pantry": "View the landing page"
       },
       "howIsItFree": {
         "cockpit": "HOW IS THIS FREE · Personal project, shared openly. AI-accelerated development — about 100 hours of work as of 08/2026. Runs entirely in the browser; hosting, CI/CD, and tooling are all free on GitHub. Only recurring cost: the ~$10/year domain.",

@@ -4,6 +4,7 @@ import {
   setAppStorage,
   navigateToSettingsSection,
   toLocalDateString,
+  APP_URL,
 } from './fixtures';
 import {
   createMockAppData,
@@ -44,7 +45,7 @@ async function seed(
   page: import('@playwright/test').Page,
   items: ReturnType<typeof createMockInventoryItem>[],
 ) {
-  await page.goto('/');
+  await page.goto(APP_URL);
   await setAppStorage(page, createMockAppData({ settings: v2Settings, items }));
   await page.reload({ waitUntil: 'domcontentloaded' });
 }

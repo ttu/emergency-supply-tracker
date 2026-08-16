@@ -84,6 +84,24 @@ export function Guide() {
           </a>
         </div>
       </Panel>
+      <Panel padding={24}>
+        <div className={styles.supportTitle}>
+          {t(`v2.guide.landingTitle.${themeKey}`)}
+        </div>
+        <div className={styles.supportText}>
+          {t(`v2.guide.landingText.${themeKey}`)}
+        </div>
+        <div className={styles.supportLinks}>
+          <a
+            href="/landing.html?preview=1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.supportLink}
+          >
+            {t(`v2.guide.landingLink.${themeKey}`)}
+          </a>
+        </div>
+      </Panel>
     </div>
   );
 }

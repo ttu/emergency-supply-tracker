@@ -26,6 +26,14 @@ function ContactLinks() {
         <GitHubIcon className={styles.githubIcon} />
         {t('help.githubLink')}
       </a>
+      <a
+        href="/landing.html?preview=1"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.link}
+      >
+        {t('help.landingLink')}
+      </a>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   navigateToSettingsSection,
   selectInventoryCategory,
   waitForStoredData,
+  APP_URL,
 } from './fixtures';
 import {
   createMockAppData,
@@ -70,7 +71,7 @@ test.describe('Pet Support', () => {
       pets: number,
       items: ReturnType<typeof createMockInventoryItem>[] = [],
     ) => {
-      await page.goto('/');
+      await page.goto(APP_URL);
       await setAppStorage(
         page,
         createMockAppData({
@@ -116,7 +117,7 @@ test.describe('Pet Support', () => {
     test('should allow setting pets count during onboarding', async ({
       page,
     }) => {
-      await page.goto('/');
+      await page.goto(APP_URL);
       await page.evaluate(() => localStorage.clear());
       await page.reload({ waitUntil: 'domcontentloaded' });
 

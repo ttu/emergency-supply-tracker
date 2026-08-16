@@ -23,6 +23,7 @@ const OFFLINE_URL = resolvePath(OFFLINE_PAGE);
 // Note: index.html is served by Vite at the root path (''), not as a separate file
 const PRECACHE_PATHS = [
   '',
+  'landing.html',
   'offline.html',
   'manifest.json',
   'favicon.svg',
@@ -103,10 +104,15 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // If network fails, try cache, then offline page
-          return caches.match(request).then((cachedResponse) => {
-            return cachedResponse || caches.match(OFFLINE_URL);
-          });
+          // If network fails, try cache, then offline page. Precached
+          // navigable pages (e.g. landing.html) have no query string, so
+          // ignore the request's search params (?lang=, ?app=, ?preview=)
+          // when matching.
+          return caches
+            .match(request, { ignoreSearch: true })
+            .then((cachedResponse) => {
+              return cachedResponse || caches.match(OFFLINE_URL);
+            });
         })
     );
     return;

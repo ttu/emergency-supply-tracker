@@ -240,6 +240,19 @@ Sample recommendation files are available in `public/samples/`:
 
 ### 5. User Workflows
 
+#### Landing Page
+
+A static marketing page at `/landing.html`, separate from the React app bundle.
+
+- Shown only to visitors with no `emergencySupplyTracker` localStorage key (i.e. they have never loaded the app before). Anyone with that key — including a visitor mid-onboarding who never finished — is redirected straight to `/`. `?preview=1` bypasses this redirect, for links back to the pitch from inside the app itself (e.g. the Guide screen), where the visitor always has the key set.
+- It is also the site's front door: an inline gate at the top of `index.html` redirects `/` to `/landing.html` for those same first-time visitors. The decision reads `localStorage`, so it has to run in the browser — no hosting rewrite (Vercel or GitHub Pages) can make it. The two guards are mirror images and never both fire for one visitor.
+- All CTAs ("Get started", "Open app") link to `/?app=1`. The `app=1` bypass is required: a first-time visitor clicking through still has no storage key, so without it the root gate would bounce them back and the redirects would loop. The app then decides between onboarding and the dashboard as usual.
+- The root gate also stands down for an installed PWA (`display-mode: standalone`, or `navigator.standalone` on iOS Safari, which doesn't always reflect standalone launches in `display-mode`), so a launched app never opens the marketing page, and when `localStorage` is unavailable (privacy mode), where it falls through to the app.
+- `?lang=en` / `?lang=fi` on `/` is carried through to the landing page, so shared language-specific links keep working.
+- E2E specs starting from a clean profile use the `APP_URL` constant in `e2e/fixtures.ts` (`/?app=1`) rather than `/`, since a fresh Playwright profile looks exactly like a first-time visitor. The smoke suites (`smoke-quick-setup.spec.ts`, `smoke-manual-entry.spec.ts`) use their own local `getBaseURL()` helper instead, which applies the same `?app=1` bypass on top of `PLAYWRIGHT_BASE_URL` so they can also run against a deployed site.
+- Fully translated (English/Finnish) via a small inline i18n dictionary; language priority matches the app (`?lang=` param → stored `settings.language` → `en`), plus a manual EN/FI toggle in the nav.
+- Linked from the in-app Help/Guide page's support section.
+
 #### First-Time Onboarding (4 Steps)
 
 **Step 1: Welcome**

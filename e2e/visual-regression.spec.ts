@@ -5,6 +5,7 @@ import {
   defaultAppData,
   selectInventoryCategory,
   navigateToSettingsSection,
+  APP_URL,
 } from './fixtures';
 import { createMockAppData } from '../src/shared/utils/test/factories';
 import {
@@ -130,7 +131,7 @@ async function loadWith(
   page: import('@playwright/test').Page,
   appData: ReturnType<typeof createMockAppData>,
 ) {
-  await page.goto('/');
+  await page.goto(APP_URL);
   await setAppStorage(page, appData);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await disableAnimations(page);
@@ -208,7 +209,7 @@ test.describe('Visual Regression - Settings', () => {
 
 test.describe('Visual Regression - Onboarding', () => {
   test('welcome screen', async ({ page }) => {
-    await page.goto('/');
+    await page.goto(APP_URL);
     await page.evaluate(() => localStorage.clear());
     await page.reload({ waitUntil: 'domcontentloaded' });
     await disableAnimations(page);

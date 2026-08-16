@@ -3,6 +3,7 @@ import {
   expect,
   setAppStorage,
   navigateToSettingsSection,
+  APP_URL,
 } from './fixtures';
 import {
   createMockAppData,
@@ -36,7 +37,7 @@ async function seed(
     items?: ReturnType<typeof createMockInventoryItem>[];
   } = {},
 ) {
-  await page.goto('/');
+  await page.goto(APP_URL);
   await setAppStorage(
     page,
     createMockAppData({

@@ -66,4 +66,12 @@ describe('Help', () => {
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
+
+  it('should render a link to the landing page', () => {
+    render(<Help />);
+    const link = screen.getByText('help.landingLink');
+    expect(link).toHaveAttribute('href', '/landing.html?preview=1');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
 });

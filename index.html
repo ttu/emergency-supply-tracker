@@ -3,6 +3,59 @@
   <head>
     <meta charset="UTF-8" />
 
+    <!--
+      Root gate: send first-time visitors to the static landing page.
+
+      The pitch is the front door of the site, but only for people who have
+      never loaded the app. Anyone with stored data gets the app directly, so
+      this has to run in the browser — no CDN or hosting rewrite can read
+      localStorage. It sits first in <head> so it fires before the app bundle,
+      the fonts, or the metadata script below do any work.
+
+      landing.html has the mirror-image guard: it redirects to / when the key
+      *is* present. The two never both fire for the same visitor, and ?app=1
+      keeps the landing page's own CTAs from bouncing back here.
+    -->
+    <script>
+      (function () {
+        try {
+          var params = new URLSearchParams(globalThis.location.search);
+
+          // The landing page's CTAs carry ?app=1. Without it a first-time
+          // visitor clicking "Get started" would be sent back to the pitch,
+          // since they still have no stored data at that moment.
+          if (params.get('app') === '1') return;
+
+          // An installed PWA launches at start_url. Opening a marketing page
+          // there is never right, even if storage was cleared. iOS Safari
+          // doesn't reliably reflect standalone launches in `display-mode`,
+          // so `navigator.standalone` is checked too.
+          var isStandalone =
+            (globalThis.matchMedia &&
+              globalThis.matchMedia('(display-mode: standalone)').matches) ||
+            (globalThis.navigator &&
+              globalThis.navigator.standalone === true);
+          if (isStandalone) {
+            return;
+          }
+
+          // Same key as STORAGE_KEY in src/shared/utils/storage/localStorage.ts.
+          if (!localStorage.getItem('emergencySupplyTracker')) {
+            var lang = params.get('lang');
+            var target =
+              lang === 'en' || lang === 'fi'
+                ? '/landing.html?lang=' + lang
+                : '/landing.html';
+            globalThis.location.replace(target);
+          }
+        } catch (error) {
+          // localStorage unavailable (privacy mode, embedded webview) — the
+          // app is the safer thing to show, so fall through to it.
+          console.warn('Root gate: localStorage unavailable.', error);
+        }
+      })();
+    </script>
+
     <!-- Primary Meta Tags -->
     <title>Emergency Supply Tracker - Preparedness Planning</title>
     <meta
