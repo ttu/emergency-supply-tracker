@@ -240,6 +240,15 @@ Sample recommendation files are available in `public/samples/`:
 
 ### 5. User Workflows
 
+#### Landing Page
+
+A static marketing page at `/landing.html`, separate from the React app bundle.
+
+- Shown only to visitors with no `emergencySupplyTracker` localStorage key (i.e. they have never loaded the app before). Anyone with that key — including a visitor mid-onboarding who never finished — is redirected straight to `/`.
+- All CTAs ("Get started", "Open app") link to `/`, where the app decides between onboarding and the dashboard as usual.
+- Fully translated (English/Finnish) via a small inline i18n dictionary; language priority matches the app (`?lang=` param → stored `settings.language` → `en`), plus a manual EN/FI toggle in the nav.
+- Linked from the in-app Help/Guide page's support section.
+
 #### First-Time Onboarding (4 Steps)
 
 **Step 1: Welcome**

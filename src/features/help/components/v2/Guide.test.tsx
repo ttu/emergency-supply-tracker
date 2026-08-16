@@ -73,4 +73,19 @@ describe('Guide (v2)', () => {
       'https://github.com/ttu/emergency-supply-tracker',
     );
   });
+
+  it('offers a landing page section, separate from support, with its own link', () => {
+    renderWithProviders(<Guide />, {
+      initialAppData: { settings: createMockSettings({ theme: 'cockpit' }) },
+    });
+    expect(
+      screen.getByText('v2.guide.landingTitle.cockpit'),
+    ).toBeInTheDocument();
+    const landingLink = screen.getByRole('link', {
+      name: 'v2.guide.landingLink.cockpit',
+    });
+    expect(landingLink).toHaveAttribute('href', '/landing.html?preview=1');
+    expect(landingLink).toHaveAttribute('target', '_blank');
+    expect(landingLink).toHaveAttribute('rel', 'noopener noreferrer');
+  });
 });

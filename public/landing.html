@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<script>
+  // Returning visitors skip the pitch. Any prior app load writes this key
+  // (see STORAGE_KEY in src/shared/utils/storage/localStorage.ts), so its
+  // presence means this browser already has a household set up.
+  // ?preview=1 bypasses this, for links back to the pitch from inside the
+  // app itself (e.g. the Guide screen) — those visitors always have the key
+  // set, so without the override the link would just bounce them right back.
+  (function () {
+    try {
+      var isPreview = new URLSearchParams(location.search).get('preview') === '1';
+      if (!isPreview && localStorage.getItem('emergencySupplyTracker')) {
+        location.replace('/');
+      }
+    } catch (e) {
+      /* localStorage unavailable (privacy mode, etc.) — just show the page */
+    }
+  })();
+</script>
+<title id="meta-title">Emergency Supply Tracker — Know you're ready</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta id="meta-description" name="description" content="Track your emergency supplies and know your household's real readiness. Free, no signup, 100% browser-based, works offline."/>
+<link id="meta-canonical" rel="canonical" href="https://www.emergencysupplytracker.com/landing.html"/>
+<link rel="alternate" hreflang="en" href="https://www.emergencysupplytracker.com/landing.html?lang=en"/>
+<link rel="alternate" hreflang="fi" href="https://www.emergencysupplytracker.com/landing.html?lang=fi"/>
+<link rel="alternate" hreflang="x-default" href="https://www.emergencysupplytracker.com/landing.html"/>
+<meta property="og:type" content="website"/>
+<meta id="meta-og-url" property="og:url" content="https://www.emergencysupplytracker.com/landing.html"/>
+<meta id="meta-og-title" property="og:title" content="Emergency Supply Tracker — Know you're ready"/>
+<meta id="meta-og-description" property="og:description" content="Track every emergency supply you own, get warned before things run low or expire, and see your real readiness at a glance. Free, no signup, works offline."/>
+<meta property="og:image" content="https://www.emergencysupplytracker.com/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta id="meta-og-locale" property="og:locale" content="en_US"/>
+<meta property="og:site_name" content="Emergency Supply Tracker"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta id="meta-twitter-title" name="twitter:title" content="Emergency Supply Tracker — Know you're ready"/>
+<meta id="meta-twitter-description" name="twitter:description" content="Track every emergency supply you own, get warned before things run low or expire, and see your real readiness at a glance."/>
+<meta name="twitter:image" content="https://www.emergencysupplytracker.com/og-image.png"/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"/>
+<style>
+:root{
+  --bg:#0a1017; --bg2:#0d141a; --panel:#172129; --panel2:#1d2933;
+  --rule:#26333d; --ruleSoft:#1f2a33;
+  --text:#e6ecf0; --text2:#8b9aa6; --text3:#5a6975;
+  --ok:#4ade80; --warn:#facc15; --crit:#f87171; --accent:#7dd3fc; --accentInk:#0a1017;
+  --mono:'JetBrains Mono',ui-monospace,monospace; --body:'Inter',sans-serif;
+  --maxw:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:600;line-height:1.1}
+p{margin:0}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:#a5e2ff}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+.mono{font-family:var(--mono)}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.04em;padding:13px 22px;border-radius:4px;border:1px solid transparent;cursor:pointer;transition:.15s;text-transform:uppercase}
+.btn[hidden]{display:none}
+.btn-primary{background:var(--accent);color:var(--accentInk);border-color:var(--accent)}
+.btn-primary:hover{background:#a5e2ff;color:var(--accentInk)}
+
+/* NAV */
+header.nav{position:sticky;top:0;z-index:50;background:rgba(10,16,23,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--ruleSoft)}
+.nav-in{display:flex;align-items:center;gap:28px;height:64px;max-width:var(--maxw);margin:0 auto;padding:0 28px}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-weight:700;letter-spacing:.02em}
+.brand .mk{display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--accent);border-radius:4px;color:var(--accent);font-size:13px;font-weight:700}
+.nav-links{display:flex;gap:26px;margin-left:auto;font-size:14px}
+.nav-links a{color:var(--text2)}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{display:flex;gap:12px;align-items:center}
+.lang-toggle{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--text2);border:1px solid var(--rule);border-radius:4px;padding:6px 9px}
+.lang-toggle:hover{color:var(--accent);border-color:var(--accent)}
+@media(max-width:820px){.nav-links{display:none}}
+@media(max-width:480px){
+  .nav-in{gap:10px}
+  .brand{font-size:13px}
+  .nav-cta{gap:8px}
+  .nav-cta .btn{padding:9px 14px;font-size:12px}
+}
+
+/* HERO */
+.hero{position:relative;padding:76px 0 40px;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(900px 420px at 20% -8%,rgba(125,211,252,.10),transparent 60%);pointer-events:none}
+.hero-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.hero h1{font-size:52px;letter-spacing:-.01em;margin:18px 0 20px;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{font-size:19px;color:var(--text2);max-width:30ch}
+.hero-cta{display:flex;gap:14px;margin:32px 0 20px;flex-wrap:wrap}
+.hero-note{display:flex;gap:18px;font-family:var(--mono);font-size:12px;color:var(--text3);flex-wrap:wrap}
+.hero-note span{display:flex;align-items:center;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:34px}.hero h1{font-size:40px}}
+
+/* BROWSER MOCK */
+.browser{border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--bg2);box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 0 1px rgba(125,211,252,.04)}
+.browser-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0f1720;border-bottom:1px solid var(--ruleSoft)}
+.tl{display:flex;gap:6px}
+.tl i{width:10px;height:10px;border-radius:50%;background:#2b3944;display:block}
+.addr{flex:1;font-family:var(--mono);font-size:11px;color:var(--text3);background:#0a1017;border:1px solid var(--ruleSoft);border-radius:4px;padding:5px 11px;display:flex;align-items:center;gap:7px}
+.addr b{color:var(--text2);font-weight:500}
+.lockico{color:var(--ok);font-size:10px}
+
+/* APP MOCK */
+.app{display:grid;grid-template-columns:52px 1fr;height:396px;font-family:var(--mono)}
+.app-rail{background:#0f1720;border-right:1px solid var(--ruleSoft);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:16px}
+.rail-mk{width:26px;height:26px;border:1px solid var(--accent);border-radius:4px;color:var(--accent);display:grid;place-items:center;font-size:11px;font-weight:700}
+.rail-ico{width:26px;height:26px;border-radius:4px;display:grid;place-items:center;color:var(--text3);font-size:14px}
+.rail-ico.on{background:rgba(125,211,252,.12);color:var(--accent)}
+.app-main{padding:16px 18px;overflow:hidden}
+.app-top{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--ruleSoft);padding-bottom:11px;margin-bottom:14px}
+.app-top .t{font-size:12px;letter-spacing:.14em;color:var(--text2)}
+.app-top .u{font-size:10px;color:var(--text3)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--ruleSoft);border-radius:4px;padding:10px 12px}
+.stat .lab{font-size:9px;letter-spacing:.12em;color:var(--text3)}
+.stat .val{font-size:24px;font-weight:700;margin-top:3px}
+.stat .val.ok{color:var(--ok)}.stat .val.warn{color:var(--warn)}.stat .val.acc{color:var(--accent)}
+.gauge{height:6px;border-radius:3px;background:#0a1017;margin-top:9px;overflow:hidden}
+.gauge i{display:block;height:100%;background:linear-gradient(90deg,var(--ok),var(--accent))}
+.cat-list{display:flex;flex-direction:column;gap:0}
+.cat{display:grid;grid-template-columns:38px 1fr auto;gap:11px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--ruleSoft)}
+.cat .code{font-size:10px;color:var(--text3);letter-spacing:.08em}
+.cat .nm{font-family:var(--body);font-size:12px;color:var(--text)}
+.cat .bars{display:flex;gap:3px;margin-top:4px}
+.cat .bars i{height:4px;width:20px;border-radius:2px;display:block}
+.pill{font-size:9px;padding:3px 8px;border-radius:3px;letter-spacing:.08em}
+.pill.ok{background:rgba(74,222,128,.14);color:var(--ok)}
+.pill.warn{background:rgba(250,204,21,.14);color:var(--warn)}
+.pill.crit{background:rgba(248,113,113,.14);color:var(--crit)}
+
+/* SECTIONS */
+section{padding:80px 0}
+.sec-head{max-width:640px;margin:0 auto 52px;text-align:center}
+.sec-head h2{font-size:34px;letter-spacing:-.01em;margin:14px 0 12px}
+.sec-head p{color:var(--text2);font-size:17px}
+
+/* SELLING POINTS */
+.sell{background:var(--bg2);border-top:1px solid var(--ruleSoft);border-bottom:1px solid var(--ruleSoft)}
+.sell-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sell-card{background:var(--panel);border:1px solid var(--ruleSoft);border-left:2px solid var(--accent);border-radius:4px;padding:22px}
+.sell-card.soon{border-left-color:var(--warn)}
+.sell-card .ic{font-size:20px;margin-bottom:12px}
+.sell-card h3{font-size:16px;margin-bottom:7px;font-family:var(--mono);letter-spacing:.01em}
+.sell-card p{color:var(--text2);font-size:14px}
+.tag{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--warn);border:1px solid rgba(250,204,21,.3);border-radius:3px;padding:2px 6px;margin-left:8px;vertical-align:middle}
+@media(max-width:820px){.sell-grid{grid-template-columns:1fr}}
+
+/* FEATURE ROWS */
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-bottom:34px}
+.feat:nth-child(even) .feat-media{order:-1}
+.feat h3{font-size:26px;margin:14px 0 12px}
+.feat p{color:var(--text2);font-size:16px;max-width:44ch}
+.feat ul{list-style:none;padding:0;margin:20px 0 0;display:flex;flex-direction:column;gap:11px}
+.feat li{display:flex;gap:11px;align-items:flex-start;font-size:14px;color:var(--text)}
+.feat li .ck{color:var(--accent);font-family:var(--mono);flex:none}
+.media{border:1px solid var(--rule);border-radius:8px;background:var(--panel);padding:18px;font-family:var(--mono)}
+@media(max-width:900px){.feat{grid-template-columns:1fr;gap:26px;margin-bottom:20px}.feat:nth-child(even) .feat-media{order:0}}
+
+/* alert banner mock */
+.alertbar{display:flex;gap:11px;align-items:flex-start;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.28);border-left:3px solid var(--crit);border-radius:4px;padding:12px 14px;margin-bottom:10px}
+.alertbar.warn{background:rgba(250,204,21,.08);border-color:rgba(250,204,21,.28);border-left-color:var(--warn)}
+.alertbar .ai{font-size:14px}
+.alertbar .at{font-size:12px}
+.alertbar .at b{display:block;font-size:11px;letter-spacing:.06em}
+.alertbar .at span{color:var(--text2);font-family:var(--body);font-size:12px}
+.mediarow{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid var(--ruleSoft);font-size:12px}
+.mediarow .r{color:var(--text3);font-size:11px}
+
+/* THEMES */
+.themes{background:var(--bg2);border-top:1px solid var(--ruleSoft)}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.swatch{border:1px solid var(--ruleSoft);border-radius:8px;overflow:hidden}
+.swatch-top{height:132px;padding:18px;display:flex;flex-direction:column;justify-content:space-between}
+.swatch-top .nm{font-size:15px;font-weight:600}
+.swatch-top .chips{display:flex;gap:6px}
+.swatch-top .chips i{width:22px;height:22px;border-radius:4px;display:block;border:1px solid rgba(0,0,0,.15)}
+.swatch-meta{padding:14px 18px;border-top:1px solid var(--ruleSoft);background:var(--panel)}
+.swatch-meta h4{font-size:14px;margin:0 0 4px}
+.swatch-meta p{font-size:12.5px;color:var(--text2)}
+@media(max-width:820px){.theme-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:0}
+details{border-bottom:1px solid var(--ruleSoft);padding:20px 4px}
+details summary{cursor:pointer;list-style:none;font-size:17px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:16px}
+details summary::-webkit-details-marker{display:none}
+details summary .pm{font-family:var(--mono);color:var(--accent);font-size:20px;flex:none;transition:.2s}
+details[open] summary .pm{transform:rotate(45deg)}
+details p{color:var(--text2);font-size:15px;margin-top:12px;max-width:64ch}
+
+/* CTA */
+.cta-band{text-align:center;background:linear-gradient(180deg,var(--bg2),var(--bg));border-top:1px solid var(--ruleSoft)}
+.cta-band h2{font-size:38px;margin-bottom:16px}
+.cta-band p{color:var(--text2);font-size:18px;margin-bottom:30px}
+.cta-band .hero-cta{justify-content:center}
+
+/* FOOTER */
+footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(--bg2)}
+.foot-in{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
+.foot-in .brand{margin-bottom:12px}
+.foot-cols{display:flex;gap:56px;flex-wrap:wrap}
+.foot-col h5{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin:0 0 12px}
+.foot-col a{display:block;color:var(--text2);font-size:14px;margin-bottom:9px}
+.foot-col a:hover{color:var(--text)}
+.foot-bot{max-width:var(--maxw);margin:32px auto 0;padding:22px 28px 0;border-top:1px solid var(--ruleSoft);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-in">
+    <a href="#top" class="brand"><span class="mk">E</span>Emergency Supply Tracker</a>
+    <nav class="nav-links">
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#how" data-i18n="nav.how">How it works</a>
+      <a href="#themes" data-i18n="nav.themes">Themes</a>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#" class="lang-toggle" data-lang-toggle>FI</a>
+      <a class="btn btn-primary" href="/" data-i18n="nav.openApp" data-cta="open-app" hidden>Open app</a>
+      <a class="btn btn-primary" href="/" data-i18n="nav.getStarted" data-cta="get-started">Get started</a>
+    </div>
+  </div>
+</header>
+
+<a id="top"></a>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker" data-i18n="hero.kicker">Household preparedness, tracked</span>
+      <h1 data-i18n-html="hero.title">Know your household is <em>actually ready</em>.</h1>
+      <p class="sub" data-i18n="hero.sub">Track every emergency supply you own, get warned before things run low or expire, and see your real readiness at a glance.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="/" data-i18n="hero.ctaPrimary" data-cta="get-started">Start tracking →</a>
+        <a class="btn btn-primary" href="/" data-i18n="hero.ctaGhost" data-cta="open-app" hidden>Open the app</a>
+      </div>
+      <div class="hero-note">
+        <span><i class="dot"></i><span data-i18n="hero.note1">No signup required</span></span>
+        <span><i class="dot"></i><span data-i18n="hero.note2">Free forever</span></span>
+        <span><i class="dot"></i><span data-i18n="hero.note3">Works offline</span></span>
+      </div>
+    </div>
+    <div class="hero-media">
+      <div class="browser">
+        <div class="browser-bar">
+          <div class="tl"><i></i><i></i><i></i></div>
+          <div class="addr"><span class="lockico">🔒</span><b>emergencysupplytracker.com</b>/overview</div>
+        </div>
+        <div class="app">
+          <div class="app-rail">
+            <div class="rail-mk">E</div>
+            <div class="rail-ico on">▤</div>
+            <div class="rail-ico">☰</div>
+            <div class="rail-ico">?</div>
+            <div class="rail-ico" style="margin-top:auto">⚙</div>
+          </div>
+          <div class="app-main">
+            <div class="app-top"><div class="t">OVERVIEW</div><div class="u">household.local</div></div>
+            <div class="stat-row">
+              <div class="stat"><div class="lab">READINESS</div><div class="val acc">74%</div><div class="gauge"><i style="width:74%"></i></div></div>
+              <div class="stat"><div class="lab">DAYS COVERED</div><div class="val ok">11</div></div>
+              <div class="stat"><div class="lab">NEEDS ACTION</div><div class="val warn">6</div></div>
+            </div>
+            <div class="cat-list">
+              <div class="cat"><span class="code">H2O</span><div><div class="nm">Water</div><div class="bars"><i style="background:var(--ok)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></div></div><span class="pill crit">1 CRIT</span></div>
+              <div class="cat"><span class="code">FUD</span><div><div class="nm">Food</div><div class="bars"><i style="background:var(--ok);width:34px"></i><i style="background:var(--warn)"></i></div></div><span class="pill warn">3 WARN</span></div>
+              <div class="cat"><span class="code">PWR</span><div><div class="nm">Light &amp; Power</div><div class="bars"><i style="background:var(--ok);width:28px"></i><i style="background:var(--warn)"></i></div></div><span class="pill warn">2 WARN</span></div>
+              <div class="cat"><span class="code">MED</span><div><div class="nm">Medical</div><div class="bars"><i style="background:var(--ok);width:30px"></i></div></div><span class="pill ok">OK</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sell" id="features" style="padding:64px 0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker" data-i18n="sell.kicker">Why it's different</span>
+      <h2 data-i18n="sell.title">Yours, private, and free — no strings.</h2>
+      <p data-i18n="sell.sub">A serious preparedness tool that respects your data and your wallet.</p>
+    </div>
+    <div class="sell-grid">
+      <div class="sell-card"><div class="ic">✓</div><h3 data-i18n="sell.card1.h">No signup required</h3><p data-i18n="sell.card1.p">Start using it immediately. No account, no email, no waiting.</p></div>
+      <div class="sell-card"><div class="ic">🔒</div><h3 data-i18n="sell.card2.h">100% browser-based</h3><p data-i18n="sell.card2.p">Your data stays on your device, completely private. Nothing is uploaded.</p></div>
+      <div class="sell-card"><div class="ic">🎁</div><h3 data-i18n="sell.card3.h">Completely free</h3><p data-i18n="sell.card3.p">Every feature included. No premium tiers, no paywalls, ever.</p></div>
+      <div class="sell-card"><div class="ic">🔌</div><h3 data-i18n="sell.card4.h">Works offline</h3><p data-i18n="sell.card4.p">Access your supplies anytime, even with no internet connection.</p></div>
+      <div class="sell-card"><div class="ic">💻</div><h3 data-i18n="sell.card5.h">Open source</h3><p data-i18n="sell.card5.p">Transparent code you can inspect, audit, and contribute to.</p></div>
+      <div class="sell-card soon"><div class="ic">☁️</div><h3 data-i18n-html="sell.card6.h">Cloud sync<span class="tag">Coming soon</span></h3><p data-i18n="sell.card6.p">Optional sync to your own cloud provider — on your terms.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker" data-i18n="how.kicker">How it works</span>
+      <h2 data-i18n="how.title">Three things it does, done well.</h2>
+    </div>
+
+    <div class="feat">
+      <div>
+        <span class="kicker" data-i18n="how.f1.kicker">01 · Track</span>
+        <h3 data-i18n="how.f1.h">Track every supply in one place</h3>
+        <p data-i18n="how.f1.p">Organize water, food, power, medical and more into clear categories. See quantity against your recommended target and know exactly what's covered.</p>
+        <ul>
+          <li><span class="ck">›</span><span data-i18n="how.f1.li1">Ten built-in categories, from water to pet supplies</span></li>
+          <li><span class="ck">›</span><span data-i18n="how.f1.li2">Quantity, location and expiry per item</span></li>
+          <li><span class="ck">›</span><span data-i18n="how.f1.li3">Presets to fill a household in minutes</span></li>
+        </ul>
+      </div>
+      <div class="feat-media">
+        <div class="media">
+          <div class="mediarow"><span>Bottled water 1.5 L</span><span class="r">0 / 56 btl · <span style="color:var(--crit)">OUT</span></span></div>
+          <div class="mediarow"><span>Canned soup</span><span class="r">12 / 14 can · exp 2026-06</span></div>
+          <div class="mediarow"><span>AA batteries</span><span class="r">8 / 20 pcs · <span style="color:var(--warn)">LOW</span></span></div>
+          <div class="mediarow" style="border:none"><span>Paracetamol 500 mg</span><span class="r">24 / 40 tab</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div>
+        <span class="kicker" data-i18n="how.f2.kicker">02 · Get alerts</span>
+        <h3 data-i18n="how.f2.h">Never get caught short</h3>
+        <p data-i18n="how.f2.p">The dashboard warns you the moment items run low or approach their expiry date — right where you'll see it, no notifications to set up.</p>
+        <ul>
+          <li><span class="ck">›</span><span data-i18n="how.f2.li1">Low-stock and expiry warnings, front and center</span></li>
+          <li><span class="ck">›</span><span data-i18n="how.f2.li2">Dismiss what you've handled</span></li>
+          <li><span class="ck">›</span><span data-i18n="how.f2.li3">Readiness score updates as you restock</span></li>
+        </ul>
+      </div>
+      <div class="feat-media">
+        <div class="media">
+          <div class="alertbar"><span class="ai">⚠</span><div class="at"><b>1 ITEM OUT OF STOCK</b><span>Bottled water is at zero — restock 56 bottles.</span></div></div>
+          <div class="alertbar warn"><span class="ai">⏳</span><div class="at"><b>3 ITEMS EXPIRING ≤30D</b><span>Canned soup, sports drinks, coffee.</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div>
+        <span class="kicker" data-i18n="how.f3.kicker">03 · Stay prepared</span>
+        <h3 data-i18n="how.f3.h">See your readiness at a glance</h3>
+        <p data-i18n="how.f3.p">One number tells you how ready your household really is, and how many days you're covered for. Export a shopping list for whatever's missing.</p>
+        <ul>
+          <li><span class="ck">›</span><span data-i18n="how.f3.li1">Overall readiness score and days-covered estimate</span></li>
+          <li><span class="ck">›</span><span data-i18n="how.f3.li2">Shopping list export for the gaps</span></li>
+          <li><span class="ck">›</span><span data-i18n="how.f3.li3">Built for the whole household</span></li>
+        </ul>
+      </div>
+      <div class="feat-media">
+        <div class="media">
+          <div style="display:flex;gap:12px">
+            <div class="stat" style="flex:1"><div class="lab" style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text3)">READINESS</div><div class="val acc" style="font-size:30px;font-weight:700;color:var(--accent)">74%</div><div class="gauge"><i style="width:74%"></i></div></div>
+            <div class="stat" style="flex:1"><div class="lab" style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text3)">DAYS COVERED</div><div class="val ok" style="font-size:30px;font-weight:700;color:var(--ok)">11</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="themes" id="themes">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker" data-i18n="themes.kicker">Make it yours</span>
+      <h2 data-i18n="themes.title">Three looks. Same tracker.</h2>
+      <p data-i18n="themes.sub">Pick the feel that fits you — a dark operational console, an official civil-defense document, or a calm Nordic pantry.</p>
+    </div>
+    <div class="theme-grid">
+      <div class="swatch">
+        <div class="swatch-top" style="background:#0d141a">
+          <div class="nm" style="color:#e6ecf0;font-family:var(--mono)">Cockpit</div>
+          <div class="chips"><i style="background:#7dd3fc"></i><i style="background:#4ade80"></i><i style="background:#facc15"></i><i style="background:#172129"></i></div>
+        </div>
+        <div class="swatch-meta"><h4>Cockpit</h4><p data-i18n="themes.cockpit">Dark operational console. Mono type, terse readouts, built for people who like a dashboard.</p></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-top" style="background:#f4f1ea">
+          <div class="nm" style="color:#0b1d2a">Civil Defense</div>
+          <div class="chips"><i style="background:#d94e1f"></i><i style="background:#0b1d2a"></i><i style="background:#2f6b3a"></i><i style="background:#ffffff"></i></div>
+        </div>
+        <div class="swatch-meta"><h4>Civil Defense</h4><p data-i18n="themes.civil">Official document look. Numbered forms, sharp corners, an authoritative voice.</p></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-top" style="background:#eef0ea">
+          <div class="nm" style="color:#1a2620;font-family:Georgia,serif">Pantry</div>
+          <div class="chips"><i style="background:#c9744d"></i><i style="background:#506b53"></i><i style="background:#b6863a"></i><i style="background:#fbfaf5"></i></div>
+        </div>
+        <div class="swatch-meta"><h4>Pantry</h4><p data-i18n="themes.pantry">Calm and Nordic. Soft serif, plain language, preparedness without the pressure.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker" data-i18n="faq.kicker">FAQ</span>
+      <h2 data-i18n="faq.title">Questions, answered.</h2>
+    </div>
+    <div class="faq">
+      <details open><summary><span data-i18n="faq.q1">Do I need an account?</span><span class="pm">+</span></summary><p data-i18n="faq.a1">No. Open the app and start tracking immediately — there's no signup, no email, and nothing to verify.</p></details>
+      <details><summary><span data-i18n="faq.q2">Where is my data stored?</span><span class="pm">+</span></summary><p data-i18n="faq.a2">Entirely on your own device, in your browser. Nothing is uploaded to a server, so your household inventory stays completely private.</p></details>
+      <details><summary><span data-i18n="faq.q3">Does it really work offline?</span><span class="pm">+</span></summary><p data-i18n="faq.a3">Yes. Once loaded, the app runs without an internet connection, so you can check and update your supplies during an outage.</p></details>
+      <details><summary><span data-i18n="faq.q4">Is it actually free?</span><span class="pm">+</span></summary><p data-i18n="faq.a4">Completely. Every feature is included with no premium tiers or paywalls, and the code is open source.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <span class="kicker" data-i18n="ctaBand.kicker">Ready in minutes</span>
+    <h2 data-i18n="ctaBand.title">Start tracking today.</h2>
+    <p data-i18n="ctaBand.sub">No account, no cost. Just open it and go.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="/" data-i18n="ctaBand.primary" data-cta="get-started">Get started →</a>
+      <a class="btn btn-primary" href="/" data-i18n="ctaBand.ghost" data-cta="open-app" hidden>Open the app</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <div>
+      <div class="brand"><span class="mk">E</span>Emergency Supply Tracker</div>
+      <p style="color:var(--text2);font-size:14px;max-width:34ch" data-i18n="footer.tagline">Household preparedness you actually keep up with. Private, offline, free.</p>
+    </div>
+    <div class="foot-cols">
+      <div class="foot-col"><h5 data-i18n="footer.col1.h">Product</h5><a href="#features" data-i18n="nav.features">Features</a><a href="#how" data-i18n="nav.how">How it works</a><a href="#themes" data-i18n="nav.themes">Themes</a><a href="/" data-i18n="nav.openApp">Open app</a></div>
+      <div class="foot-col"><h5 data-i18n="footer.col2.h">Get started</h5><a href="/" data-i18n="footer.col2.l1">Onboarding</a><a href="#faq" data-i18n="nav.faq">FAQ</a><a href="https://github.com/ttu/emergency-supply-tracker" data-i18n="footer.col2.l3">Source on GitHub</a></div>
+      <div class="foot-col"><h5 data-i18n="footer.col3.h">Contact</h5><a href="mailto:help@emergencysupplytracker.com">help@emergencysupplytracker.com</a><a href="https://github.com/ttu/emergency-supply-tracker/issues" data-i18n="footer.col3.l2">Report an issue</a></div>
+    </div>
+  </div>
+  <div class="foot-bot">
+    <span data-i18n="footer.copyright">© 2026 Emergency Supply Tracker</span>
+    <span data-i18n="footer.dataNote">Your data never leaves your device.</span>
+  </div>
+</footer>
+
+<script>
+  var I18N = {
+    en: {
+      'nav.features': 'Features',
+      'nav.how': 'How it works',
+      'nav.themes': 'Themes',
+      'nav.faq': 'FAQ',
+      'nav.openApp': 'Open app',
+      'nav.getStarted': 'Get started',
+      'hero.kicker': 'Household preparedness, tracked',
+      'hero.title': 'Know your household is <em>actually ready</em>.',
+      'hero.sub': "Track every emergency supply you own, get warned before things run low or expire, and see your real readiness at a glance.",
+      'hero.ctaPrimary': 'Start tracking →',
+      'hero.ctaGhost': 'Open the app',
+      'hero.note1': 'No signup required',
+      'hero.note2': 'Free forever',
+      'hero.note3': 'Works offline',
+      'sell.kicker': "Why it's different",
+      'sell.title': 'Yours, private, and free — no strings.',
+      'sell.sub': 'A serious preparedness tool that respects your data and your wallet.',
+      'sell.card1.h': 'No signup required',
+      'sell.card1.p': 'Start using it immediately. No account, no email, no waiting.',
+      'sell.card2.h': '100% browser-based',
+      'sell.card2.p': 'Your data stays on your device, completely private. Nothing is uploaded.',
+      'sell.card3.h': 'Completely free',
+      'sell.card3.p': 'Every feature included. No premium tiers, no paywalls, ever.',
+      'sell.card4.h': 'Works offline',
+      'sell.card4.p': 'Access your supplies anytime, even with no internet connection.',
+      'sell.card5.h': 'Open source',
+      'sell.card5.p': 'Transparent code you can inspect, audit, and contribute to.',
+      'sell.card6.h': 'Cloud sync<span class="tag">Coming soon</span>',
+      'sell.card6.p': 'Optional sync to your own cloud provider — on your terms.',
+      'how.kicker': 'How it works',
+      'how.title': 'Three things it does, done well.',
+      'how.f1.kicker': '01 · Track',
+      'how.f1.h': 'Track every supply in one place',
+      'how.f1.p': "Organize water, food, power, medical and more into clear categories. See quantity against your recommended target and know exactly what's covered.",
+      'how.f1.li1': 'Ten built-in categories, from water to pet supplies',
+      'how.f1.li2': 'Quantity, location and expiry per item',
+      'how.f1.li3': 'Presets to fill a household in minutes',
+      'how.f2.kicker': '02 · Get alerts',
+      'how.f2.h': 'Never get caught short',
+      'how.f2.p': "The dashboard warns you the moment items run low or approach their expiry date — right where you'll see it, no notifications to set up.",
+      'how.f2.li1': 'Low-stock and expiry warnings, front and center',
+      'how.f2.li2': "Dismiss what you've handled",
+      'how.f2.li3': 'Readiness score updates as you restock',
+      'how.f3.kicker': '03 · Stay prepared',
+      'how.f3.h': 'See your readiness at a glance',
+      'how.f3.p': "One number tells you how ready your household really is, and how many days you're covered for. Export a shopping list for whatever's missing.",
+      'how.f3.li1': 'Overall readiness score and days-covered estimate',
+      'how.f3.li2': 'Shopping list export for the gaps',
+      'how.f3.li3': 'Built for the whole household',
+      'themes.kicker': 'Make it yours',
+      'themes.title': 'Three looks. Same tracker.',
+      'themes.sub': 'Pick the feel that fits you — a dark operational console, an official civil-defense document, or a calm Nordic pantry.',
+      'themes.cockpit': 'Dark operational console. Mono type, terse readouts, built for people who like a dashboard.',
+      'themes.civil': 'Official document look. Numbered forms, sharp corners, an authoritative voice.',
+      'themes.pantry': 'Calm and Nordic. Soft serif, plain language, preparedness without the pressure.',
+      'faq.kicker': 'FAQ',
+      'faq.title': 'Questions, answered.',
+      'faq.q1': 'Do I need an account?',
+      'faq.a1': "No. Open the app and start tracking immediately — there's no signup, no email, and nothing to verify.",
+      'faq.q2': 'Where is my data stored?',
+      'faq.a2': 'Entirely on your own device, in your browser. Nothing is uploaded to a server, so your household inventory stays completely private.',
+      'faq.q3': 'Does it really work offline?',
+      'faq.a3': 'Yes. Once loaded, the app runs without an internet connection, so you can check and update your supplies during an outage.',
+      'faq.q4': 'Is it actually free?',
+      'faq.a4': 'Completely. Every feature is included with no premium tiers or paywalls, and the code is open source.',
+      'ctaBand.kicker': 'Ready in minutes',
+      'ctaBand.title': 'Start tracking today.',
+      'ctaBand.sub': 'No account, no cost. Just open it and go.',
+      'ctaBand.primary': 'Get started →',
+      'ctaBand.ghost': 'Open the app',
+      'footer.tagline': 'Household preparedness you actually keep up with. Private, offline, free.',
+      'footer.col1.h': 'Product',
+      'footer.col2.h': 'Get started',
+      'footer.col2.l1': 'Onboarding',
+      'footer.col2.l3': 'Source on GitHub',
+      'footer.col3.h': 'Contact',
+      'footer.col3.l2': 'Report an issue',
+      'footer.copyright': '© 2026 Emergency Supply Tracker',
+      'footer.dataNote': 'Your data never leaves your device.',
+      'meta.title': "Emergency Supply Tracker — Know you're ready",
+      'meta.description': "Track your emergency supplies and know your household's real readiness. Free, no signup, 100% browser-based, works offline.",
+      'meta.ogDescription': 'Track every emergency supply you own, get warned before things run low or expire, and see your real readiness at a glance. Free, no signup, works offline.',
+      'meta.twitterDescription': 'Track every emergency supply you own, get warned before things run low or expire, and see your real readiness at a glance.',
+      'meta.ogLocale': 'en_US',
+    },
+    fi: {
+      'nav.features': 'Ominaisuudet',
+      'nav.how': 'Näin se toimii',
+      'nav.themes': 'Teemat',
+      'nav.faq': 'UKK',
+      'nav.openApp': 'Avaa sovellus',
+      'nav.getStarted': 'Aloita',
+      'hero.kicker': 'Kotitalouden valmius, seurattuna',
+      'hero.title': 'Tiedä, että kotitaloutesi on <em>oikeasti valmis</em>.',
+      'hero.sub': 'Seuraa kaikkia hätävarusteitasi, saat varoituksen ennen kuin jokin loppuu tai vanhenee, ja näet todellisen valmiutesi yhdellä silmäyksellä.',
+      'hero.ctaPrimary': 'Aloita seuranta →',
+      'hero.ctaGhost': 'Avaa sovellus',
+      'hero.note1': 'Ei rekisteröitymistä',
+      'hero.note2': 'Aina ilmainen',
+      'hero.note3': 'Toimii offline-tilassa',
+      'sell.kicker': 'Miksi tämä on erilainen',
+      'sell.title': 'Sinun, yksityinen ja ilmainen — ei ehtoja.',
+      'sell.sub': 'Vakavasti otettava varautumistyökalu, joka kunnioittaa tietojasi ja lompakkoasi.',
+      'sell.card1.h': 'Ei rekisteröitymistä',
+      'sell.card1.p': 'Aloita käyttö heti. Ei tiliä, ei sähköpostia, ei odottelua.',
+      'sell.card2.h': '100 % selainpohjainen',
+      'sell.card2.p': 'Tietosi pysyvät laitteellasi, täysin yksityisinä. Mitään ei lähetetä minnekään.',
+      'sell.card3.h': 'Täysin ilmainen',
+      'sell.card3.p': 'Kaikki ominaisuudet mukana. Ei maksullisia tasoja, ei koskaan.',
+      'sell.card4.h': 'Toimii offline-tilassa',
+      'sell.card4.p': 'Pääset varastoosi käsiksi milloin vain, myös ilman internetyhteyttä.',
+      'sell.card5.h': 'Avoin lähdekoodi',
+      'sell.card5.p': 'Läpinäkyvä koodi, jota voit tarkastella, auditoida ja johon voit osallistua.',
+      'sell.card6.h': 'Pilvisynkronointi<span class="tag">Tulossa pian</span>',
+      'sell.card6.p': 'Valinnainen synkronointi omaan pilvipalveluusi — omilla ehdoillasi.',
+      'how.kicker': 'Näin se toimii',
+      'how.title': 'Kolme asiaa, jotka se tekee hyvin.',
+      'how.f1.kicker': '01 · Seuraa',
+      'how.f1.h': 'Seuraa kaikkia varusteita yhdessä paikassa',
+      'how.f1.p': 'Järjestä vesi, ruoka, sähkö, lääkintätarvikkeet ja muut selkeisiin kategorioihin. Näe määrä suhteessa suositukseen ja tiedä tarkalleen, mikä on katettu.',
+      'how.f1.li1': 'Kymmenen valmista kategoriaa, vedestä lemmikkitarvikkeisiin',
+      'how.f1.li2': 'Määrä, sijainti ja vanhenemispäivä jokaiselle tuotteelle',
+      'how.f1.li3': 'Valmiit pohjat, joilla kotitalous täyttyy minuuteissa',
+      'how.f2.kicker': '02 · Saat hälytykset',
+      'how.f2.h': 'Et jää enää yllätetyksi',
+      'how.f2.p': 'Kojelauta varoittaa heti, kun jokin tuote on vähissä tai lähestyy vanhenemispäivää — juuri siellä missä sen näet, ilman erillisiä ilmoitusasetuksia.',
+      'how.f2.li1': 'Vähäisen varaston ja vanhenemisen varoitukset näkyvästi esillä',
+      'how.f2.li2': 'Merkitse hoidetuksi, kun olet hoitanut asian',
+      'how.f2.li3': 'Valmiuspisteet päivittyvät, kun täydennät varastoa',
+      'how.f3.kicker': '03 · Pysy valmiina',
+      'how.f3.h': 'Näe valmiutesi yhdellä silmäyksellä',
+      'how.f3.p': 'Yksi luku kertoo, kuinka valmis kotitaloutesi todella on ja kuinka monta päivää varastosi riittää. Vie ostoslista puuttuvista tarvikkeista.',
+      'how.f3.li1': 'Kokonaisvalmiuspisteet ja arvio katetuista päivistä',
+      'how.f3.li2': 'Ostoslistan vienti puuttuville tuotteille',
+      'how.f3.li3': 'Suunniteltu koko kotitaloudelle',
+      'themes.kicker': 'Tee siitä omasi',
+      'themes.title': 'Kolme ilmettä. Sama seurantatyökalu.',
+      'themes.sub': 'Valitse itsellesi sopiva tunnelma — tumma ohjaamokonsoli, virallinen väestönsuojelun asiakirja tai rauhallinen pohjoismainen pentteri.',
+      'themes.cockpit': 'Tumma ohjaamokonsoli. Tasavälistä kirjasinta, tiiviit lukemat, tehty niille jotka pitävät kojelaudoista.',
+      'themes.civil': 'Virallisen asiakirjan ilme. Numeroidut lomakkeet, terävät kulmat, arvovaltainen sävy.',
+      'themes.pantry': 'Rauhallinen ja pohjoismainen. Pehmeä antiikva, selkeä kieli, varautumista ilman painetta.',
+      'faq.kicker': 'UKK',
+      'faq.title': 'Kysymyksiä ja vastauksia.',
+      'faq.q1': 'Tarvitsenko tilin?',
+      'faq.a1': 'Et. Avaa sovellus ja aloita seuranta heti — ei rekisteröitymistä, ei sähköpostia, ei mitään vahvistettavaa.',
+      'faq.q2': 'Missä tietoni säilytetään?',
+      'faq.a2': 'Kokonaan omalla laitteellasi, selaimessasi. Mitään ei lähetetä palvelimelle, joten kotitaloutesi varastotiedot pysyvät täysin yksityisinä.',
+      'faq.q3': 'Toimiiko se todella offline-tilassa?',
+      'faq.a3': 'Kyllä. Kerran ladattuna sovellus toimii ilman internetyhteyttä, joten voit tarkistaa ja päivittää varastoasi myös sähkökatkon aikana.',
+      'faq.q4': 'Onko se todella ilmainen?',
+      'faq.a4': 'Täysin. Kaikki ominaisuudet sisältyvät, ei maksullisia tasoja, ja koodi on avointa lähdekoodia.',
+      'ctaBand.kicker': 'Valmiina minuuteissa',
+      'ctaBand.title': 'Aloita seuranta tänään.',
+      'ctaBand.sub': 'Ei tiliä, ei kustannuksia. Avaa vain ja aloita.',
+      'ctaBand.primary': 'Aloita →',
+      'ctaBand.ghost': 'Avaa sovellus',
+      'footer.tagline': 'Kotitalouden varautuminen, josta oikeasti pidät kiinni. Yksityinen, offline, ilmainen.',
+      'footer.col1.h': 'Tuote',
+      'footer.col2.h': 'Aloitus',
+      'footer.col2.l1': 'Käyttöönotto',
+      'footer.col2.l3': 'Lähdekoodi GitHubissa',
+      'footer.col3.h': 'Yhteystiedot',
+      'footer.col3.l2': 'Ilmoita ongelmasta',
+      'footer.copyright': '© 2026 Emergency Supply Tracker',
+      'footer.dataNote': 'Tietosi eivät koskaan poistu laitteeltasi.',
+      'meta.title': 'Hätävarastojen seuranta — Tiedä, että olet valmis',
+      'meta.description': 'Seuraa hätävarastojasi ja tiedä kotitaloutesi todellinen valmius. Ilmainen, ei rekisteröitymistä, 100 % selainpohjainen, toimii offline-tilassa.',
+      'meta.ogDescription': 'Seuraa kaikkia hätävarusteitasi, saat varoituksen ennen kuin jokin loppuu tai vanhenee, ja näet todellisen valmiutesi yhdellä silmäyksellä. Ilmainen, ei rekisteröitymistä, toimii offline-tilassa.',
+      'meta.twitterDescription': 'Seuraa kaikkia hätävarusteitasi, saat varoituksen ennen kuin jokin loppuu tai vanhenee, ja näet todellisen valmiutesi yhdellä silmäyksellä.',
+      'meta.ogLocale': 'fi_FI',
+    },
+  };
+
+  (function () {
+    // Priority matches src/shared/utils/urlLanguage.ts: ?lang= param, then
+    // the language saved in the app's own settings, then 'en'.
+    function getStoredLanguage() {
+      try {
+        var raw = localStorage.getItem('emergencySupplyTracker');
+        if (!raw) return undefined;
+        var parsed = JSON.parse(raw);
+        return parsed && parsed.settings && parsed.settings.language;
+      } catch (e) {
+        return undefined;
+      }
+    }
+
+    var params = new URLSearchParams(location.search);
+    var urlLang = params.get('lang');
+    var lang =
+      urlLang === 'en' || urlLang === 'fi'
+        ? urlLang
+        : getStoredLanguage() === 'fi'
+          ? 'fi'
+          : 'en';
+
+    var dict = I18N[lang];
+
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (dict[key] !== undefined) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-html');
+      if (dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+
+    // A visitor with data already in localStorage has used the app before
+    // (this is the same key the redirect guard at the top of the file
+    // checks), so "Get started" reads wrong for them — show "Open app"
+    // instead. Buttons default to the get-started state in markup so this
+    // only has to flip one way or the other, never show both.
+    var isReturningVisitor = (function () {
+      try {
+        return !!localStorage.getItem('emergencySupplyTracker');
+      } catch (e) {
+        return false;
+      }
+    })();
+    document.querySelectorAll('[data-cta="get-started"]').forEach(
+      function (el) {
+        el.hidden = isReturningVisitor;
+      },
+    );
+    document.querySelectorAll('[data-cta="open-app"]').forEach(function (el) {
+      el.hidden = !isReturningVisitor;
+    });
+
+    document.documentElement.lang = lang;
+    document.getElementById('meta-title').textContent = dict['meta.title'];
+    document.title = dict['meta.title'];
+    document
+      .getElementById('meta-description')
+      .setAttribute('content', dict['meta.description']);
+    document
+      .getElementById('meta-og-title')
+      .setAttribute('content', dict['meta.title']);
+    document
+      .getElementById('meta-og-description')
+      .setAttribute('content', dict['meta.ogDescription']);
+    document
+      .getElementById('meta-og-locale')
+      .setAttribute('content', dict['meta.ogLocale']);
+    document
+      .getElementById('meta-twitter-title')
+      .setAttribute('content', dict['meta.title']);
+    document
+      .getElementById('meta-twitter-description')
+      .setAttribute('content', dict['meta.twitterDescription']);
+
+    var canonicalUrl =
+      'https://www.emergencysupplytracker.com/landing.html' +
+      (urlLang === 'en' || urlLang === 'fi' ? '?lang=' + urlLang : '');
+    document.getElementById('meta-canonical').setAttribute('href', canonicalUrl);
+    document.getElementById('meta-og-url').setAttribute('content', canonicalUrl);
+
+    var otherLang = lang === 'fi' ? 'en' : 'fi';
+    document.querySelectorAll('[data-lang-toggle]').forEach(function (toggle) {
+      toggle.textContent = otherLang.toUpperCase();
+      toggle.addEventListener('click', function (event) {
+        event.preventDefault();
+        var url = new URL(location.href);
+        url.searchParams.set('lang', otherLang);
+        location.href = url.toString();
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
