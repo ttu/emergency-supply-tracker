@@ -47,6 +47,7 @@
         } catch (error) {
           // localStorage unavailable (privacy mode, embedded webview) — the
           // app is the safer thing to show, so fall through to it.
+          console.warn('Root gate: localStorage unavailable.', error);
         }
       })();
     </script>

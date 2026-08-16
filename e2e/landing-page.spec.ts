@@ -123,6 +123,10 @@ test.describe('Landing page', () => {
     ).toBeVisible();
     await expect(page).toHaveTitle(/Tiedä, että olet valmis/);
 
+    // Mocked UI copy (app preview, feature previews, alerts) is translated too.
+    await expect(page.getByText('YLEISKATSAUS', { exact: true })).toBeVisible();
+    await expect(page.getByText('OVERVIEW', { exact: true })).not.toBeVisible();
+
     // Toggling back to English restores the original copy.
     await page.getByRole('link', { name: 'EN', exact: true }).click();
     await expect(page).toHaveURL(/\?lang=en$/);

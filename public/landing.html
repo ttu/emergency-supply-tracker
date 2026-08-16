@@ -15,8 +15,9 @@
       if (!isPreview && localStorage.getItem('emergencySupplyTracker')) {
         location.replace('/');
       }
-    } catch (e) {
-      /* localStorage unavailable (privacy mode, etc.) — just show the page */
+    } catch (error) {
+      // localStorage unavailable (privacy mode, etc.) — just show the page.
+      console.warn('Redirect guard: localStorage unavailable.', error);
     }
   })();
 </script>
@@ -233,8 +234,7 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
   </div>
 </header>
 
-<a id="top"></a>
-<section class="hero">
+<section id="top" class="hero">
   <div class="wrap hero-grid">
     <div>
       <span class="kicker" data-i18n="hero.kicker">Household preparedness, tracked</span>
@@ -265,17 +265,17 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
             <div class="rail-ico" style="margin-top:auto">⚙</div>
           </div>
           <div class="app-main">
-            <div class="app-top"><div class="t">OVERVIEW</div><div class="u">household.local</div></div>
+            <div class="app-top"><div class="t" data-i18n="mock.app.overview">OVERVIEW</div><div class="u" data-i18n="mock.app.user">household.local</div></div>
             <div class="stat-row">
-              <div class="stat"><div class="lab">READINESS</div><div class="val acc">74%</div><div class="gauge"><i style="width:74%"></i></div></div>
-              <div class="stat"><div class="lab">DAYS COVERED</div><div class="val ok">11</div></div>
-              <div class="stat"><div class="lab">NEEDS ACTION</div><div class="val warn">6</div></div>
+              <div class="stat"><div class="lab" data-i18n="mock.app.readiness">READINESS</div><div class="val acc">74%</div><div class="gauge"><i style="width:74%"></i></div></div>
+              <div class="stat"><div class="lab" data-i18n="mock.app.daysCovered">DAYS COVERED</div><div class="val ok">11</div></div>
+              <div class="stat"><div class="lab" data-i18n="mock.app.needsAction">NEEDS ACTION</div><div class="val warn">6</div></div>
             </div>
             <div class="cat-list">
-              <div class="cat"><span class="code">H2O</span><div><div class="nm">Water</div><div class="bars"><i style="background:var(--ok)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></div></div><span class="pill crit">1 CRIT</span></div>
-              <div class="cat"><span class="code">FUD</span><div><div class="nm">Food</div><div class="bars"><i style="background:var(--ok);width:34px"></i><i style="background:var(--warn)"></i></div></div><span class="pill warn">3 WARN</span></div>
-              <div class="cat"><span class="code">PWR</span><div><div class="nm">Light &amp; Power</div><div class="bars"><i style="background:var(--ok);width:28px"></i><i style="background:var(--warn)"></i></div></div><span class="pill warn">2 WARN</span></div>
-              <div class="cat"><span class="code">MED</span><div><div class="nm">Medical</div><div class="bars"><i style="background:var(--ok);width:30px"></i></div></div><span class="pill ok">OK</span></div>
+              <div class="cat"><span class="code">H2O</span><div><div class="nm" data-i18n="mock.app.water">Water</div><div class="bars"><i style="background:var(--ok)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></div></div><span class="pill crit" data-i18n="mock.app.crit1">1 CRIT</span></div>
+              <div class="cat"><span class="code">FUD</span><div><div class="nm" data-i18n="mock.app.food">Food</div><div class="bars"><i style="background:var(--ok);width:34px"></i><i style="background:var(--warn)"></i></div></div><span class="pill warn" data-i18n="mock.app.warn3">3 WARN</span></div>
+              <div class="cat"><span class="code">PWR</span><div><div class="nm" data-i18n="mock.app.power">Light &amp; Power</div><div class="bars"><i style="background:var(--ok);width:28px"></i><i style="background:var(--warn)"></i></div></div><span class="pill warn" data-i18n="mock.app.warn2">2 WARN</span></div>
+              <div class="cat"><span class="code">MED</span><div><div class="nm" data-i18n="mock.app.medical">Medical</div><div class="bars"><i style="background:var(--ok);width:30px"></i></div></div><span class="pill ok" data-i18n="mock.app.ok">OK</span></div>
             </div>
           </div>
         </div>
@@ -322,10 +322,10 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
       </div>
       <div class="feat-media">
         <div class="media">
-          <div class="mediarow"><span>Bottled water 1.5 L</span><span class="r">0 / 56 btl · <span style="color:var(--crit)">OUT</span></span></div>
-          <div class="mediarow"><span>Canned soup</span><span class="r">12 / 14 can · exp 2026-06</span></div>
-          <div class="mediarow"><span>AA batteries</span><span class="r">8 / 20 pcs · <span style="color:var(--warn)">LOW</span></span></div>
-          <div class="mediarow" style="border:none"><span>Paracetamol 500 mg</span><span class="r">24 / 40 tab</span></div>
+          <div class="mediarow"><span data-i18n="mock.f1.item1">Bottled water 1.5 L</span><span class="r"><span data-i18n="mock.f1.item1Qty">0 / 56 btl</span> · <span style="color:var(--crit)" data-i18n="mock.f1.out">OUT</span></span></div>
+          <div class="mediarow"><span data-i18n="mock.f1.item2">Canned soup</span><span class="r" data-i18n="mock.f1.item2Qty">12 / 14 can · exp 2026-06</span></div>
+          <div class="mediarow"><span data-i18n="mock.f1.item3">AA batteries</span><span class="r"><span data-i18n="mock.f1.item3Qty">8 / 20 pcs</span> · <span style="color:var(--warn)" data-i18n="mock.f1.low">LOW</span></span></div>
+          <div class="mediarow" style="border:none"><span data-i18n="mock.f1.item4">Paracetamol 500 mg</span><span class="r" data-i18n="mock.f1.item4Qty">24 / 40 tab</span></div>
         </div>
       </div>
     </div>
@@ -343,8 +343,8 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
       </div>
       <div class="feat-media">
         <div class="media">
-          <div class="alertbar"><span class="ai">⚠</span><div class="at"><b>1 ITEM OUT OF STOCK</b><span>Bottled water is at zero — restock 56 bottles.</span></div></div>
-          <div class="alertbar warn"><span class="ai">⏳</span><div class="at"><b>3 ITEMS EXPIRING ≤30D</b><span>Canned soup, sports drinks, coffee.</span></div></div>
+          <div class="alertbar"><span class="ai">⚠</span><div class="at"><b data-i18n="mock.f2.alert1Title">1 ITEM OUT OF STOCK</b><span data-i18n="mock.f2.alert1Desc">Bottled water is at zero — restock 56 bottles.</span></div></div>
+          <div class="alertbar warn"><span class="ai">⏳</span><div class="at"><b data-i18n="mock.f2.alert2Title">3 ITEMS EXPIRING ≤30D</b><span data-i18n="mock.f2.alert2Desc">Canned soup, sports drinks, coffee.</span></div></div>
         </div>
       </div>
     </div>
@@ -363,8 +363,8 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
       <div class="feat-media">
         <div class="media">
           <div style="display:flex;gap:12px">
-            <div class="stat" style="flex:1"><div class="lab" style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text3)">READINESS</div><div class="val acc" style="font-size:30px;font-weight:700;color:var(--accent)">74%</div><div class="gauge"><i style="width:74%"></i></div></div>
-            <div class="stat" style="flex:1"><div class="lab" style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text3)">DAYS COVERED</div><div class="val ok" style="font-size:30px;font-weight:700;color:var(--ok)">11</div></div>
+            <div class="stat" style="flex:1"><div class="lab" style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text3)" data-i18n="mock.app.readiness">READINESS</div><div class="val acc" style="font-size:30px;font-weight:700;color:var(--accent)">74%</div><div class="gauge"><i style="width:74%"></i></div></div>
+            <div class="stat" style="flex:1"><div class="lab" style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text3)" data-i18n="mock.app.daysCovered">DAYS COVERED</div><div class="val ok" style="font-size:30px;font-weight:700;color:var(--ok)">11</div></div>
           </div>
         </div>
       </div>
@@ -459,6 +459,33 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
       'nav.faq': 'FAQ',
       'nav.openApp': 'Open app',
       'nav.getStarted': 'Get started',
+      'mock.app.overview': 'OVERVIEW',
+      'mock.app.user': 'household.local',
+      'mock.app.readiness': 'READINESS',
+      'mock.app.daysCovered': 'DAYS COVERED',
+      'mock.app.needsAction': 'NEEDS ACTION',
+      'mock.app.water': 'Water',
+      'mock.app.crit1': '1 CRIT',
+      'mock.app.food': 'Food',
+      'mock.app.warn3': '3 WARN',
+      'mock.app.power': 'Light & Power',
+      'mock.app.warn2': '2 WARN',
+      'mock.app.medical': 'Medical',
+      'mock.app.ok': 'OK',
+      'mock.f1.item1': 'Bottled water 1.5 L',
+      'mock.f1.item1Qty': '0 / 56 btl',
+      'mock.f1.out': 'OUT',
+      'mock.f1.item2': 'Canned soup',
+      'mock.f1.item2Qty': '12 / 14 can · exp 2026-06',
+      'mock.f1.item3': 'AA batteries',
+      'mock.f1.item3Qty': '8 / 20 pcs',
+      'mock.f1.low': 'LOW',
+      'mock.f1.item4': 'Paracetamol 500 mg',
+      'mock.f1.item4Qty': '24 / 40 tab',
+      'mock.f2.alert1Title': '1 ITEM OUT OF STOCK',
+      'mock.f2.alert1Desc': 'Bottled water is at zero — restock 56 bottles.',
+      'mock.f2.alert2Title': '3 ITEMS EXPIRING ≤30D',
+      'mock.f2.alert2Desc': 'Canned soup, sports drinks, coffee.',
       'hero.kicker': 'Household preparedness, tracked',
       'hero.title': 'Know your household is <em>actually ready</em>.',
       'hero.sub': "Track every emergency supply you own, get warned before things run low or expire, and see your real readiness at a glance.",
@@ -545,6 +572,33 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
       'nav.faq': 'UKK',
       'nav.openApp': 'Avaa sovellus',
       'nav.getStarted': 'Aloita',
+      'mock.app.overview': 'YLEISKATSAUS',
+      'mock.app.user': 'kotitalous.local',
+      'mock.app.readiness': 'VALMIUS',
+      'mock.app.daysCovered': 'PÄIVIÄ KATETTU',
+      'mock.app.needsAction': 'TOIMENPITEITÄ',
+      'mock.app.water': 'Vesi',
+      'mock.app.crit1': '1 KRIIT',
+      'mock.app.food': 'Ruoka',
+      'mock.app.warn3': '3 VARO',
+      'mock.app.power': 'Valo ja sähkö',
+      'mock.app.warn2': '2 VARO',
+      'mock.app.medical': 'Lääkkeet',
+      'mock.app.ok': 'OK',
+      'mock.f1.item1': 'Pullovesi 1,5 l',
+      'mock.f1.item1Qty': '0 / 56 pll',
+      'mock.f1.out': 'LOPPU',
+      'mock.f1.item2': 'Purkkikeitto',
+      'mock.f1.item2Qty': '12 / 14 tlk · vanh 2026-06',
+      'mock.f1.item3': 'AA-paristot',
+      'mock.f1.item3Qty': '8 / 20 kpl',
+      'mock.f1.low': 'VÄHISSÄ',
+      'mock.f1.item4': 'Parasetamoli 500 mg',
+      'mock.f1.item4Qty': '24 / 40 tabl',
+      'mock.f2.alert1Title': '1 TUOTE LOPPU',
+      'mock.f2.alert1Desc': 'Pullovesi on lopussa — täydennä 56 pulloa.',
+      'mock.f2.alert2Title': '3 TUOTETTA VANHENEE ≤30VRK',
+      'mock.f2.alert2Desc': 'Purkkikeitto, urheilujuomat, kahvi.',
       'hero.kicker': 'Kotitalouden valmius, seurattuna',
       'hero.title': 'Tiedä, että kotitaloutesi on <em>oikeasti valmis</em>.',
       'hero.sub': 'Seuraa kaikkia hätävarusteitasi, saat varoituksen ennen kuin jokin loppuu tai vanhenee, ja näet todellisen valmiutesi yhdellä silmäyksellä.',
@@ -635,28 +689,25 @@ footer{border-top:1px solid var(--ruleSoft);padding:44px 0 40px;background:var(-
         if (!raw) return undefined;
         var parsed = JSON.parse(raw);
         return parsed && parsed.settings && parsed.settings.language;
-      } catch (e) {
+      } catch (error) {
+        console.warn('Could not read stored language preference.', error);
         return undefined;
       }
     }
 
     var params = new URLSearchParams(location.search);
     var urlLang = params.get('lang');
-    var lang =
-      urlLang === 'en' || urlLang === 'fi'
-        ? urlLang
-        : getStoredLanguage() === 'fi'
-          ? 'fi'
-          : 'en';
+    var storedLang = getStoredLanguage() === 'fi' ? 'fi' : 'en';
+    var lang = urlLang === 'en' || urlLang === 'fi' ? urlLang : storedLang;
 
     var dict = I18N[lang];
 
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
+      var key = el.dataset.i18n;
       if (dict[key] !== undefined) el.textContent = dict[key];
     });
     document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n-html');
+      var key = el.dataset.i18nHtml;
       if (dict[key] !== undefined) el.innerHTML = dict[key];
     });
 
