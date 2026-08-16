@@ -113,10 +113,15 @@ export function StepperRow({
   decimals = 0,
   last,
 }: Readonly<StepperRowProps>) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const clamp = (v: number) => Math.min(max, Math.max(min, v));
+  // Group digits by the language the app is showing, not the one the device
+  // happens to be set to: a Finnish reader wants "2 050" and an English one
+  // "2,050", and bare toLocaleString() gives whichever the OS prefers.
   const display =
-    decimals > 0 ? value.toFixed(decimals) : value.toLocaleString();
+    decimals > 0
+      ? value.toFixed(decimals)
+      : value.toLocaleString(i18n.language);
   return (
     <div
       className={`${styles.stepperRow} ${last ? styles.stepperRowLast : ''}`}
