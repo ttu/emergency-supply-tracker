@@ -187,4 +187,21 @@ test.describe('Landing page as the site root', () => {
       page.getByRole('heading', { name: /oikeasti valmis/ }),
     ).toBeVisible();
   });
+
+  test('does not bounce an installed iOS PWA to the landing page, even with no stored data', async ({
+    page,
+  }) => {
+    // iOS Safari doesn't reliably reflect a standalone launch in the
+    // `display-mode: standalone` media query, so the root gate also checks
+    // `navigator.standalone`. A cleared/lost storage key must not send an
+    // installed home-screen app to the marketing page.
+    await page.addInitScript(() => {
+      Object.defineProperty(window.navigator, 'standalone', {
+        value: true,
+        configurable: true,
+      });
+    });
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/$/);
+  });
 });

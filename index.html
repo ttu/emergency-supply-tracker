@@ -27,11 +27,15 @@
           if (params.get('app') === '1') return;
 
           // An installed PWA launches at start_url. Opening a marketing page
-          // there is never right, even if storage was cleared.
-          if (
-            globalThis.matchMedia &&
-            globalThis.matchMedia('(display-mode: standalone)').matches
-          ) {
+          // there is never right, even if storage was cleared. iOS Safari
+          // doesn't reliably reflect standalone launches in `display-mode`,
+          // so `navigator.standalone` is checked too.
+          var isStandalone =
+            (globalThis.matchMedia &&
+              globalThis.matchMedia('(display-mode: standalone)').matches) ||
+            (globalThis.navigator &&
+              globalThis.navigator.standalone === true);
+          if (isStandalone) {
             return;
           }
 
