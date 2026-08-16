@@ -1346,15 +1346,15 @@
         "pantry": "Don't recommend this item"
       },
       "removeEmptyItems": {
-        "cockpit": "CLEAR EMPTY",
-        "civil": "CLEAR EMPTY",
+        "cockpit": "REMOVE EMPTY ITEMS",
+        "civil": "REMOVE EMPTY ITEMS",
         "pantry": "Remove empty items"
       },
       "confirmRemoveEmpty": {
-        "cockpit_one": "CLEAR {{count}} EMPTY ITEM?",
-        "cockpit_other": "CLEAR {{count}} EMPTY ITEMS?",
-        "civil_one": "CLEAR {{count}} EMPTY ITEM?",
-        "civil_other": "CLEAR {{count}} EMPTY ITEMS?",
+        "cockpit_one": "REMOVE {{count}} EMPTY ITEM?",
+        "cockpit_other": "REMOVE {{count}} EMPTY ITEMS?",
+        "civil_one": "REMOVE {{count}} EMPTY ITEM?",
+        "civil_other": "REMOVE {{count}} EMPTY ITEMS?",
         "pantry_one": "Remove {{count}} empty item?",
         "pantry_other": "Remove {{count}} empty items?"
       },

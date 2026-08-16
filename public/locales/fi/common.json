@@ -1346,15 +1346,15 @@
         "pantry": "Älä suosittele tätä tuotetta"
       },
       "removeEmptyItems": {
-        "cockpit": "TYHJENNÄ TYHJÄT",
-        "civil": "TYHJENNÄ TYHJÄT",
+        "cockpit": "POISTA TYHJÄT TUOTTEET",
+        "civil": "POISTA TYHJÄT TUOTTEET",
         "pantry": "Poista tyhjät tuotteet"
       },
       "confirmRemoveEmpty": {
-        "cockpit_one": "TYHJENNÄ {{count}} TYHJÄ TUOTE?",
-        "cockpit_other": "TYHJENNÄ {{count}} TYHJÄÄ TUOTETTA?",
-        "civil_one": "TYHJENNÄ {{count}} TYHJÄ TUOTE?",
-        "civil_other": "TYHJENNÄ {{count}} TYHJÄÄ TUOTETTA?",
+        "cockpit_one": "POISTA {{count}} TYHJÄ TUOTE?",
+        "cockpit_other": "POISTA {{count}} TYHJÄÄ TUOTETTA?",
+        "civil_one": "POISTA {{count}} TYHJÄ TUOTE?",
+        "civil_other": "POISTA {{count}} TYHJÄÄ TUOTETTA?",
         "pantry_one": "Poistetaanko {{count}} tyhjä tuote?",
         "pantry_other": "Poistetaanko {{count}} tyhjää tuotetta?"
       },
