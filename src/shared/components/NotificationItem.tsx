@@ -1,11 +1,9 @@
-import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './NotificationItem.module.css';
 
 export interface NotificationItemProps {
   readonly message: string;
   readonly variant?: 'success' | 'error' | 'info';
-  readonly duration?: number;
   readonly onClose: () => void;
 }
 
@@ -22,36 +20,17 @@ const VARIANT_ICONS: Record<
  * Notification item component for use in NotificationBar.
  * Similar to Toast but doesn't use portal, allowing proper stacking.
  * Meets WCAG 2.1 AA accessibility requirements.
+ *
+ * Auto-dismiss timing is owned by NotificationProvider, not this component -
+ * that's what lets repeated updates to the same item extend the timer
+ * instead of racing an independent per-item clock.
  */
 export function NotificationItem({
   message,
   variant = 'success',
-  duration = 3000,
   onClose,
 }: Readonly<NotificationItemProps>) {
   const { t } = useTranslation();
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const onCloseRef = useRef(onClose);
-
-  // Update the ref whenever onClose changes
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  // Auto-dismiss timer - only depends on duration to avoid resetting
-  useEffect(() => {
-    if (duration > 0) {
-      timeoutRef.current = setTimeout(() => {
-        onCloseRef.current();
-      }, duration);
-    }
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [duration]);
 
   const icon = VARIANT_ICONS[variant];
 

@@ -13,6 +13,7 @@ export function NotificationProvider({
   children,
 }: Readonly<{ children: ReactNode }>) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const notificationsRef = useRef<Notification[]>([]);
   const timeoutsRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
     new Map(),
   );
@@ -29,9 +30,30 @@ export function NotificationProvider({
   }, []);
 
   const handleAutoDismiss = useCallback((id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    notificationsRef.current = notificationsRef.current.filter(
+      (n) => n.id !== id,
+    );
+    setNotifications(notificationsRef.current);
     timeoutsRef.current.delete(id);
   }, []);
+
+  const scheduleDismiss = useCallback(
+    (id: string, duration: number) => {
+      const existingTimeout = timeoutsRef.current.get(id);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
+      }
+      if (duration > 0) {
+        const timeoutId = setTimeout(() => {
+          handleAutoDismiss(id);
+        }, duration);
+        timeoutsRef.current.set(id, timeoutId);
+      } else {
+        timeoutsRef.current.delete(id);
+      }
+    },
+    [handleAutoDismiss],
+  );
 
   const showNotification = useCallback(
     (
@@ -39,6 +61,16 @@ export function NotificationProvider({
       variant: NotificationVariant = 'success',
       duration: number = 3000,
     ) => {
+      // If the same message is already showing, extend its timer instead of
+      // stacking a duplicate toast (e.g. rapid quick-quantity button clicks).
+      const existing = notificationsRef.current.find(
+        (n) => n.message === message,
+      );
+      if (existing) {
+        scheduleDismiss(existing.id, duration);
+        return;
+      }
+
       const id = `${Date.now()}-${Math.random()}`;
       const notification: Notification = {
         id,
@@ -47,17 +79,11 @@ export function NotificationProvider({
         duration,
       };
 
-      setNotifications((prev) => [...prev, notification]);
-
-      // Auto-dismiss if duration > 0
-      if (duration > 0) {
-        const timeoutId = setTimeout(() => {
-          handleAutoDismiss(id);
-        }, duration);
-        timeoutsRef.current.set(id, timeoutId);
-      }
+      notificationsRef.current = [...notificationsRef.current, notification];
+      setNotifications(notificationsRef.current);
+      scheduleDismiss(id, duration);
     },
-    [handleAutoDismiss],
+    [scheduleDismiss],
   );
 
   const removeNotification = useCallback((id: string) => {
@@ -67,7 +93,10 @@ export function NotificationProvider({
       clearTimeout(timeoutId);
       timeoutsRef.current.delete(id);
     }
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    notificationsRef.current = notificationsRef.current.filter(
+      (n) => n.id !== id,
+    );
+    setNotifications(notificationsRef.current);
   }, []);
 
   const clearAll = useCallback(() => {
@@ -76,6 +105,7 @@ export function NotificationProvider({
       clearTimeout(timeout);
     });
     timeoutsRef.current.clear();
+    notificationsRef.current = [];
     setNotifications([]);
   }, []);
 

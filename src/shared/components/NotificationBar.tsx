@@ -29,7 +29,6 @@ export function NotificationBar() {
           <NotificationItem
             message={notification.message}
             variant={notification.variant}
-            duration={notification.duration}
             onClose={() => removeNotification(notification.id)}
           />
         </div>

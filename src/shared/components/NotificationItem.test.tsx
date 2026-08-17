@@ -1,14 +1,10 @@
 /// <reference types="@testing-library/jest-dom" />
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NotificationItem } from './NotificationItem';
 
 describe('NotificationItem', () => {
-  // Ensure timers are always restored after each test to avoid leaks
-  afterEach(() => {
-    vi.useRealTimers();
-  });
   it('renders notification with message', () => {
     const onClose = vi.fn();
     render(<NotificationItem message="Test message" onClose={onClose} />);
@@ -91,82 +87,6 @@ describe('NotificationItem', () => {
     await user.click(closeButton);
 
     expect(onClose).toHaveBeenCalledTimes(1);
-  });
-
-  it('auto-dismisses after duration', async () => {
-    vi.useFakeTimers();
-    try {
-      const onClose = vi.fn();
-      render(
-        <NotificationItem
-          message="Test message"
-          duration={1000}
-          onClose={onClose}
-        />,
-      );
-
-      expect(
-        screen.getByTestId('notification-item-success'),
-      ).toBeInTheDocument();
-      expect(screen.getByTestId('notification-message')).toHaveTextContent(
-        'Test message',
-      );
-
-      vi.advanceTimersByTime(1000);
-
-      expect(onClose).toHaveBeenCalledTimes(1);
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it('does not auto-dismiss when duration is 0', () => {
-    vi.useFakeTimers();
-    try {
-      const onClose = vi.fn();
-      render(
-        <NotificationItem
-          message="Test message"
-          duration={0}
-          onClose={onClose}
-        />,
-      );
-
-      expect(
-        screen.getByTestId('notification-item-success'),
-      ).toBeInTheDocument();
-      expect(screen.getByTestId('notification-message')).toHaveTextContent(
-        'Test message',
-      );
-
-      vi.advanceTimersByTime(5000);
-
-      expect(onClose).not.toHaveBeenCalled();
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it('cleans up timeout on unmount', () => {
-    vi.useFakeTimers();
-    try {
-      const onClose = vi.fn();
-      const { unmount } = render(
-        <NotificationItem
-          message="Test message"
-          duration={1000}
-          onClose={onClose}
-        />,
-      );
-
-      unmount();
-
-      vi.advanceTimersByTime(1000);
-
-      expect(onClose).not.toHaveBeenCalled();
-    } finally {
-      vi.useRealTimers();
-    }
   });
 
   it('has proper accessibility attributes', () => {
