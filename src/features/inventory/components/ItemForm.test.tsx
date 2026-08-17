@@ -89,6 +89,49 @@ describe('ItemForm', () => {
     ).toBeInTheDocument();
   });
 
+  it('should not submit when pressing Enter in the name field, and should blur it', () => {
+    const item = createMockInventoryItem({
+      id: createItemId('1'),
+      name: 'Water',
+    });
+
+    render(
+      <ItemForm
+        item={item}
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    nameInput.focus();
+    fireEvent.change(nameInput, { target: { value: 'Bottled Water' } });
+    fireEvent.keyDown(nameInput, { key: 'Enter', code: 'Enter' });
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(nameInput).not.toHaveFocus();
+  });
+
+  it('should allow Enter to insert a newline in notes without submitting', () => {
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const notesTextarea = document.querySelector(
+      '#notes',
+    ) as HTMLTextAreaElement;
+    notesTextarea.focus();
+    fireEvent.keyDown(notesTextarea, { key: 'Enter', code: 'Enter' });
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(notesTextarea).toHaveFocus();
+  });
+
   it('should validate required fields', () => {
     render(
       <ItemForm

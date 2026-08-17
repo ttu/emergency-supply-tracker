@@ -291,6 +291,18 @@ export const ItemForm = ({
     );
   };
 
+  // Pressing Enter in a field (e.g. after typing/editing the name) should not
+  // submit the form — on mobile it just closes the keyboard, and the user
+  // still has to tap Save explicitly. Textarea keeps Enter for newlines, and
+  // the Save button keeps it for its native activation behavior.
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key !== 'Enter') return;
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'TEXTAREA' || target.tagName === 'BUTTON') return;
+    e.preventDefault();
+    target.blur();
+  };
+
   const handleChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
@@ -366,6 +378,7 @@ export const ItemForm = ({
       ref={formRefProp}
       className={styles.form}
       onSubmit={handleSubmit}
+      onKeyDown={handleFormKeyDown}
       data-testid="item-form"
     >
       {formData.itemType && (
