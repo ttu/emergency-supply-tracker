@@ -41,6 +41,29 @@ describe('design v2 full-viewport containers', () => {
     );
   });
 
+  it('takes body out of flow so it has no scroll range of its own', () => {
+    // `overflow: hidden` on body only blocks user-gesture scrolling — it does
+    // not stop `window.scrollTo`/`documentElement.scrollTop`, which browsers
+    // invoke themselves to bring a focused element into view (e.g. a form
+    // field tapped while the on-screen keyboard opens). That residual scroll
+    // then persists after the keyboard closes, landing the shell's bottom nav
+    // away from the screen edge. `position: fixed` removes body from normal
+    // flow entirely, so there is no scroll range for either path to move
+    // into — verified in-browser that `overflow: hidden` alone still let
+    // `window.scrollTo` move the page, and that this pairing stops it.
+    const css = read('styles/design-themes.css');
+    const rule =
+      /:root:is\(\[data-theme='cockpit'\][^{}]*\)\s*body\s*\{([^}]*)\}/.exec(
+        css,
+      );
+    expect(rule).not.toBeNull();
+    expect(rule![1]).toMatch(/position:\s*fixed/);
+    expect(rule![1]).toMatch(/top:\s*0/);
+    expect(rule![1]).toMatch(/right:\s*0/);
+    expect(rule![1]).toMatch(/bottom:\s*0/);
+    expect(rule![1]).toMatch(/left:\s*0/);
+  });
+
   it.each([
     ['shared/components/design-v2/Shell.tsx', 2],
     ['features/onboarding/components/v2/OnboardLayout.tsx', 1],
