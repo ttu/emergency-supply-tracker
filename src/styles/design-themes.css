@@ -12,11 +12,40 @@
  * MobileShell wrappers are fixed at 100vh and own the inner scrolling
  * (their <main> is overflow:auto). Without this rule the page itself can
  * pick up a scrollbar that competes with the inner one, producing a
- * "double scrollbar" effect. */
-:root:is([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry']),
-:where(html, body):has(
-  :where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
-) {
+ * "double scrollbar" effect.
+ *
+ * `data-theme` is set on <html> itself, not on some descendant of it, so a
+ * `:has()` check for it never matches html or body — that variant looked
+ * like it locked <body> too but never actually did, leaving body free to
+ * grow past the viewport (and drag the shell's bottom nav out of place)
+ * whenever inner content briefly exceeded 100dvh. Targeting body as a
+ * plain descendant of the themed root fixes that. */
+:root:is([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry']) {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* `overflow: hidden` on body only hides the scrollbar and blocks
+ * user-initiated wheel/touch scrolling — verified in-browser that it does
+ * NOT stop `window.scrollTo`/`documentElement.scrollTop` from moving the
+ * page (this holds even with the newer `overflow: clip`, which disables an
+ * element's own overflow scrolling but not the root scrolling element's).
+ * Browsers run exactly that kind of programmatic scroll on their own to
+ * bring a focused element into view — e.g. a form field tapped while the
+ * on-screen keyboard opens — and the residual scroll then persists after
+ * the keyboard closes, landing the shell's bottom nav somewhere other than
+ * the screen edge with the emptied space showing beneath it as "page
+ * overflow". Taking body out of the flow entirely with `position: fixed`
+ * closes that gap: with nothing left in normal flow under <html>, there is
+ * no scroll range for either the user or the browser to move into. */
+:root:is([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
+  body {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   overflow: hidden;
   height: 100vh;
   height: 100dvh;

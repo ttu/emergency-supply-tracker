@@ -147,6 +147,7 @@
 .mobileRoot {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
@@ -169,7 +170,12 @@
 
 .mobileMain {
   flex: 1;
+  min-height: 0;
   overflow: auto;
+  /* Without this, content that happens to end near the fold (e.g. the
+     "Custom Item" CTA in the add-item picker) sits flush against — and gets
+     clipped by — this scrollport's own edge, right where the nav begins. */
+  padding-bottom: 20px;
 }
 
 .mobileNav {
