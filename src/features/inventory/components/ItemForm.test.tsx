@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ItemForm } from './ItemForm';
 import { STANDARD_CATEGORIES } from '@/features/categories';
 import { createMockInventoryItem } from '@/shared/utils/test/factories';
@@ -87,6 +88,78 @@ describe('ItemForm', () => {
     expect(
       screen.getByRole('button', { name: 'common.save' }),
     ).toBeInTheDocument();
+  });
+
+  it('should not submit when pressing Enter in the name field, and should blur it', async () => {
+    const user = userEvent.setup();
+    const item = createMockInventoryItem({
+      id: createItemId('1'),
+      name: 'Water',
+      neverExpires: false,
+      expirationDate: createDateOnly('2025-12-31'),
+    });
+
+    render(
+      <ItemForm
+        item={item}
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const nameInput = document.querySelector('#name') as HTMLInputElement;
+    nameInput.focus();
+    fireEvent.change(nameInput, { target: { value: 'Bottled Water' } });
+    await user.keyboard('{Enter}');
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(nameInput).not.toHaveFocus();
+  });
+
+  it('should allow Enter to insert a newline in notes without submitting', async () => {
+    const user = userEvent.setup();
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    const notesTextarea = document.querySelector(
+      '#notes',
+    ) as HTMLTextAreaElement;
+    notesTextarea.focus();
+    await user.keyboard('{Enter}');
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(notesTextarea).toHaveFocus();
+    expect(notesTextarea.value).toContain('\n');
+  });
+
+  it('should keep focus on the input when Enter selects a highlighted autocomplete suggestion', async () => {
+    const user = userEvent.setup();
+    render(
+      <ItemForm
+        categories={STANDARD_CATEGORIES}
+        onSubmit={mockOnSubmit}
+        onCancel={mockOnCancel}
+        locationSuggestions={['Pantry', 'Garage']}
+      />,
+    );
+
+    const locationInput = document.querySelector(
+      '#location',
+    ) as HTMLInputElement;
+    await user.click(locationInput);
+    await user.type(locationInput, 'Pan');
+    await user.keyboard('{ArrowDown}');
+    await user.keyboard('{Enter}');
+
+    expect(locationInput).toHaveValue('Pantry');
+    expect(locationInput).toHaveFocus();
+    expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
   it('should validate required fields', () => {

@@ -118,7 +118,8 @@
   border-radius: var(--radius-sm);
   padding: 8px 10px;
   font-family: var(--font-body);
-  font-size: 13px;
+  /* 16px minimum — iOS Safari zooms the viewport on focus for inputs below this size */
+  font-size: 16px;
   outline: none;
 }
 :where([data-theme='cockpit'], [data-theme='civil'], [data-theme='pantry'])
