@@ -75,6 +75,7 @@ SCREENSHOT_DIRS=(
     ".playwright-mcp"
     "test-results"
     "playwright-report"
+    "tmp"
 )
 if [[ "$FILE_PATH" =~ \.(png|jpe?g|gif|webp)$ ]]; then
     for dir in "${SCREENSHOT_DIRS[@]}"; do

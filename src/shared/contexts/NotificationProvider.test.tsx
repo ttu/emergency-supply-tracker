@@ -159,6 +159,54 @@ describe('NotificationProvider', () => {
     );
   });
 
+  it('deduplicates rapid repeated notifications with the same message and extends the timer', async () => {
+    const user = userEvent.setup();
+    function TestComponent() {
+      const { showNotification } = useNotification();
+      return (
+        <div>
+          <button
+            onClick={() =>
+              showNotification('Item "Milk" updated', 'success', 300)
+            }
+          >
+            Show
+          </button>
+          <NotificationBar />
+        </div>
+      );
+    }
+
+    render(
+      <NotificationProvider>
+        <TestComponent />
+      </NotificationProvider>,
+    );
+
+    const button = screen.getByRole('button', { name: /show/i });
+
+    await user.click(button);
+    await user.click(button);
+    await user.click(button);
+
+    expect(screen.getAllByText('Item "Milk" updated')).toHaveLength(1);
+
+    // Each repeat click resets the auto-dismiss timer, so the notification
+    // should still be visible after the original 300ms duration elapses
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    expect(screen.getByText('Item "Milk" updated')).toBeInTheDocument();
+
+    // But once no further updates arrive, it eventually auto-dismisses
+    await waitFor(
+      () => {
+        expect(
+          screen.queryByText('Item "Milk" updated'),
+        ).not.toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
+  });
+
   it('does not auto-dismiss when duration is 0', async () => {
     const user = userEvent.setup();
     function TestComponent() {
