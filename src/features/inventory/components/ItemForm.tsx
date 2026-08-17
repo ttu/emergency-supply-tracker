@@ -296,7 +296,7 @@ export const ItemForm = ({
   // still has to tap Save explicitly. Textarea keeps Enter for newlines, and
   // the Save button keeps it for its native activation behavior.
   const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
-    if (e.key !== 'Enter') return;
+    if (e.key !== 'Enter' || e.defaultPrevented) return;
     const target = e.target as HTMLElement;
     if (target.tagName === 'TEXTAREA' || target.tagName === 'BUTTON') return;
     e.preventDefault();
@@ -378,7 +378,7 @@ export const ItemForm = ({
       ref={formRefProp}
       className={styles.form}
       onSubmit={handleSubmit}
-      onKeyDown={handleFormKeyDown}
+      onKeyDown={handleFormKeyDown} // NOSONAR S6819 - suppresses accidental submit-on-Enter across all fields, adds no new interactive affordance
       data-testid="item-form"
     >
       {formData.itemType && (
